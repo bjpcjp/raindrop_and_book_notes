@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Add Authorization to a Sinatra API using Auth0</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Add Authorization to a Sinatra API using Auth0</h1>
+    <p><strong>URL:</strong> <a href="https://auth0-com.cdn.ampproject.org/c/s/auth0.com/blog/amp/add-authorization-to-sinatra-api-using-auth0">https://auth0-com.cdn.ampproject.org/c/s/auth0.com/blog/amp/add-authorization-to-sinatra-api-using-auth0</a></p>
+    <p><strong>Tags:</strong> ruby, sinatra</p>
+    <p><strong>Bookmark ID:</strong> 876791776</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="articleBody"><p><a href="https://sinatrarb.com/" target="_top">Sinatra</a> is one of the most popular Ruby frameworks for developing web applications and APIs, used by over 200K applications. Sinatra is a <a href="https://en.wikipedia.org/wiki/Domain-specific_language" target="_top">Domain Specific Language (DSL)</a> for creating web applications and APIs in Ruby; it's not your typical web app Model-View-Controller framework but ties specific URLs directly to relevant Ruby code and returns its output in response.</p><p>In this blog post, you'll learn how to build a Sinatra API and protect its endpoints using Auth0. You'll build <strong>Sinatra Songs API</strong>, a songs CRUD API, and learn about the top songs of Frank Sinatra because there's no Sinatra API without some Frank Sinatra in it! 😉</p><h2 id="Project-Requirements">Project Requirements</h2><p>For this project, you'll use the following versions: </p><ul><li>Ruby 3.1.2</li><li>Sinatra 3.0.2</li><li>An <strong>Auth0 account</strong>. If you don't have one, you can <a data-amp-addparams="anonId=CLIENT_ID(cid-scope-cookie-fallback-name)" data-amp-replace="CLIENT_ID" href="https://a0.to/blog_signup" target="_top">sign up for a free Auth0 account here</a>.</li></ul><p>Try out the most powerful authentication platform for free.<a href="https://a0.to/blog_signup" target="_blank">Get started →</a></p><p>You'll build a <strong>Sinatra Songs API</strong> from scratch, but if you need it, you can check out <a href="https://github.com/auth0-blog/sinatra-auth0-songs-api" target="_top">the project repository</a>, which has two branches. The <code>main</code> branch contains the songs CRUD API, and the <a href="https://github.com/auth0-blog/sinatra-auth0-songs-api/tree/add-authorization" target="_top"><code>add-authorization</code> branch</a> includes the code used to connect with Auth0 and protect your endpoints.</p><h2 id="Building-the-Songs-API">Building the Songs API</h2><p>Let's start by creating a new project. In your terminal, create a new folder called <code>sinatra-auth0-songs-api</code> and make it your current directory. </p><h3 id="Installing-Sinatra">Installing Sinatra</h3><p>Let's go ahead and install Sinatra. First, you'll need to create a <code>Gemfile</code> to handle all your dependencies. </p><p>Create a new file, <code>Gemfile</code>, in the root of your project and fill it up with the following: </p><pre><code># Gemfile 
+
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+ruby File.read('.ruby-version').strip
+
+gem 'sinatra', '~&gt; 3.0', '&gt;= 3.0.2'
+gem 'puma'</code></pre><p>You can specify the ruby version in the <code>Gemfile</code>; this is a common practice I personally like because <a href="https://bundler.io/guides/gemfile_ruby.html#specifying-a-ruby-version" target="_top">as explained in the Bundler docs</a>: <em>This makes your app fail faster in case you depend on specific features in a Ruby VM. This way, the Ruby VM on your deployment server will match your local one.</em></p><p>To do so, you specify a file called <code>.ruby-version</code> and populate it with the Ruby version you'll use, as follows:</p><pre><code>3.1.2</code></pre><p>Finally, install the gems by running the following: </p><pre><code>bundle install</code></pre><p>And just like that, Sinatra 🎩 is installed! You also installed <a href="https://github.com/puma/puma" target="_top"><code>puma</code></a> as a web server.</p><h3 id="Creating-the-song-model">Creating the song model</h3><p>Let's create a class to represent a song. Create a new folder, <code>models</code>, and a new file, <code>song.rb</code> inside the <code>models</code> directory. </p><p>Populate the <code>song.rb</code> file with the following code: </p><pre><code># models/song.rb
+
+# frozen_string_literal: true
+
+# Class to represent a Song
+class Song
+  attr_accessor :id, :name, :url
+
+  def initialize(id, name, url)
+    @id = id
+    @name = name
+    @url = url
+  end
+
+  def to_json(*a)
+    {
+      'id' =&gt; id,
+      'name' =&gt; name,
+      'url' =&gt; url
+    }.to_json(*a)
+  end
+end</code></pre><p>You are defining a <code>Song</code> class with three attributes: <code>id</code>, <code>name</code>, and <code>url</code>. You are also implementing a more <a href="https://github.com/flori/json#more-examples" target="_top">specialized version</a> of the <a href="https://apidock.com/rails/Hash/to_json" target="_top"><code>to_json</code> method from Ruby</a>, which will act as a serializer when you render a song as JSON in the controller. </p><h3 id="Implement-CRUD-API">Implement CRUD API</h3><p>So far, you've only worked with Ruby; now it's time to get hands-on with Sinatra. </p><p>Create a new file, <code>api.rb</code> from your terminal and add the following content to the <code>api.rb</code> file, which will serve as a skeleton for the API: </p><pre><code># api.rb
+
+# frozen_string_literal: true
+
+require 'sinatra'
+require 'json'
+
+before do
+  content_type 'application/json'
+end
+
+get '/songs' do
+  return {todo: :implementation}.to_json
+end
+
+get '/songs/:id' do
+  return {todo: :implementation}.to_json
+end
+
+post '/songs' do
+  return {todo: :implementation}.to_json
+end
+
+put '/songs/:id' do
+  return {todo: :implementation}.to_json
+end
+
+delete '/songs/:id' do
+  return {todo: :implementation}.to_json
+end</code></pre><p>Let's break down what's going on in the <code>api.rb</code> file. </p><p>First, you are requiring the <code>sinatra</code> and <code>json</code> gems. </p><pre><code>require 'sinatra'
+require 'json'</code></pre><p>Unlike Rails, <strong>in Sinatra, you have to load everything yourself</strong>. This could be great because it removes all the Rails magic 🔮 by forcing you to be explicit with what you are using. </p><p>Next, you are defining a <code>before</code> filter: </p><pre><code>before do
+  content_type 'application/json'
+end</code></pre><p>As explained in the <a href="https://sinatrarb.com/intro.html#filters" target="_top">Sinatra Docs</a>, <strong><code>before</code> filters are evaluated before each request</strong>.</p><p>In this case, you are setting the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type" target="_top">Content-Type header</a> to <code>application/json</code>, meaning you are making the client aware that all the responses from this server have JSON format.</p><p>Next, you define the routes:</p><pre><code>get '/songs' do
+  # ...
+end
+get '/songs/:id' do
+  # ...
+end
+post '/songs' do
+  # ...
+end
+put '/songs/:id' do
+  # ...
+end
+delete '/songs/:id' do
+  # ...
+end</code></pre><p>These routes represent the <a href="https://it.wikipedia.org/wiki/CRUD" target="_top">CRUD</a> you'll be implementing.</p><ul><li>Create: POST <code>/songs</code></li><li>Read: GET <code>/songs</code></li><li>Read: GET <code>/songs/:id</code></li><li>Update: PUT <code>/songs/:id</code></li><li>Delete: DELETE <code>/songs/:id</code></li></ul><p>Well, it's more like <em>CRRUD</em>, but you get the point. 🫠</p><p>With your API skeleton in place, you can run the server and test the endpoints. </p><p>To run the server from your terminal: </p><pre><code>ruby api.rb</code></pre><p>Once the server is running, your terminal will look as follows: </p><pre><code>➜  sinatra-auth0-songs-api git:(main) ✗ ruby api.rb 
+== Sinatra (v3.0.2) has taken the stage on 4567 for development with backup from Puma
+Puma starting in single mode...
+* Puma version: 6.0.0 (ruby 3.1.2-p20) ("Sunflower")
+*  Min threads: 0
+*  Max threads: 5
+*  Environment: development
+*          PID: 98050
+* Listening on http://127.0.0.1:4567
+* Listening on http://[::1]:4567
+Use Ctrl-C to stop</code></pre><p>Now you can access the endpoints on <code>http://localhost:4567</code>. I've created a <a href="https://www.getpostman.com/collections/fdda888ac816a7e82f2c" target="_top">POSTMAN Collection</a>, so you can test the endpoints yourself. You can also use <code>curl</code> like so:</p><pre><code>➜ curl -v http://localhost:4567/songs 
+       
+{"todo":"implementation"}%</code></pre><h3 id="Populate-the-API-with-the--songs-json--file">Populate the API with the <code>songs.json</code> file</h3><p>To have some data in the API, you can download the <a href="https://github.com/auth0-blog/sinatra-auth0-songs-api/blob/main/songs.json" target="_top"><code>songs.json</code> file</a> from the repository accompanying this article, which was populated using data from the <a href="https://www.last.fm/api" target="_top">LastFM API</a>. The <code>songs.json</code> file contains Frank Sinatra's Top 10 Tracks in a simplified version of what LastFM provides with the following format: </p><pre><code>{
+  "id": 1,
+  "name": "My Way",
+  "url": "https://www.last.fm/music/Frank+Sinatra/_/My+Way"
+}</code></pre><p>Let's implement a helper to read from the <code>songs.json</code> file and load the data once the Sinatra API starts. </p><p>Create a new folder, <code>helpers</code>, and a <code>songs_helper.rb</code> inside of it and populate it with the following code: </p><pre><code># helpers/songs_helper.rb
+
+# frozen_string_literal: true
+
+require_relative '../models/song'
+require 'json'
+
+# Class to read songs from a JSON file
+class SongsHelper
+  def self.songs
+    filepath = File.join(File.dirname(__FILE__), '../songs.json')
+    file = File.read(filepath)
+    data = JSON.parse(file)['songs']
+
+    data.map do |song|
+      Song.new(song['id'], song['name'], song['url'])
+    end
+  end
+end</code></pre><p>The <code>SongsHelper</code> class implements a <code>songs</code> method that reads the <code>songs.json</code> file and maps its content into an array of <code>Song</code> objects. </p><p>Next, in your <code>api.rb</code> file, you can call the <code>SongsHelper.songs</code> function to load the songs:</p><pre><code># api.rb 
+
+# frozen_string_literal: true
+
+require 'sinatra'
+require 'json'
+# 👇 new code 
+require_relative 'helpers/songs_helper'
+
+songs ||= SongsHelper.songs
+# 👆 new code 
+
+# existing code ...</code></pre><p>You are importing the <code>helpers/songs_helper</code> file, calling the <code>songs</code> method, and storing it in a <code>songs</code> variable. </p><p>Note in a real-world app, you'd have a proper database, and there will be no need to do this step, but to keep this tutorial simple, we won't have a database and will work with the data coming from the <code>songs.json</code> file. </p><p>Using the <code>songs</code> variable, you can now manage the <code>GET songs</code> request as follows: </p><pre><code># api.rb 
+
+# frozen_string_literal: true
+
+require 'sinatra'
+require 'json'
+require_relative 'helpers/songs_helper'
+
+songs ||= SongsHelper.songs
+
+before do
+  content_type 'application/json'
+end
+
+# 👇 new code 
+get '/songs' do
+  return songs.to_json
+end
+# 👆 new code 
+
+# existing code ...</code></pre><p>The <code>GET songs</code> request will now retrieve an array of songs, testing it out with <code>curl</code>: </p><pre><code>➜ curl http://localhost:4567/songs 
+[
+  {"id":1,"name":"My Way","url":"https://www.last.fm/music/Frank+Sinatra/_/My+Way"},
+  {"id":2,"name":"Strangers in the Night","url":"https://www.last.fm/music/Frank+Sinatra/_/Strangers+in+the+Night"},
+  {"id":3,"name":"Fly Me to the Moon","url":"https://www.last.fm/music/Frank+Sinatra/_/Fly+Me+to+the+Moon"},
+  {"id":4,"name":"That's Life","url":"https://www.last.fm/music/Frank+Sinatra/_/That%27s+Life"},
+  {"id":5,"name":"I've Got You Under My Skin","url":"https://www.last.fm/music/Frank+Sinatra/_/I%27ve+Got+You+Under+My+Skin"},
+  {"id":6,"name":"Come Fly With Me","url":"https://www.last.fm/music/Frank+Sinatra/_/Come+Fly+With+Me"},
+  {"id":7,"name":"The Way You Look Tonight","url":"https://www.last.fm/music/Frank+Sinatra/_/The+Way+You+Look+Tonight"},
+  {"id":8,"name":"Fly Me to the Moon (In Other Words)","url":"https://www.last.fm/music/Frank+Sinatra/_/Fly+Me+to+the+Moon+(In+Other+Words)"},
+  {"id":9,"name":"Theme from New York, New York","url":"https://www.last.fm/music/Frank+Sinatra/_/Theme+from+New+York,+New+York"},
+  {"id":10,"name":"Jingle Bells","url":"https://www.last.fm/music/Frank+Sinatra/_/Jingle+Bells"}  
+]%</code></pre><p>Let's now implement the song details' route, <code>songs/:id</code>. To do so, let's introduce the concept of helpers and implement a new one. </p><p>In your <code>api.rb</code> file, add the following content: </p><pre><code># frozen_string_literal: true
+
+require 'sinatra'
+require 'json'
+require_relative 'helpers/songs_helper'
+
+songs ||= SongsHelper.songs
+
+# 👇 new code
+helpers do
+  def id_param
+    halt 400, { message: 'Bad Request' }.to_json if params['id'].to_i &lt; 1
+    params['id'].to_i
+  end
+end
+# 👆 new code 
+
+# existing code ...</code></pre><p>In Sinatra, <a href="https://sinatrarb.com/intro.html#helpers" target="_top">helpers</a> refer to a top-level method that defines helper methods to use in route handlers and templates. </p><p>In this case, you are defining a helper <code>id_param</code> that checks first if the <code>params</code> hash is defined. The <code>params</code> hash is a hash that Sinatra makes available for you in your route blocks, and it will automatically include relevant data from the request. </p><p>In the <code>id_param</code> method, you are showing a <code>Bad Request</code> error if the <code>params['id']</code> value is not positive. When it is a valid value, you return it and convert it to an integer. You'll use the <code>id_param</code> method for all the routes that require <code>:id</code> in the route, meaning: </p><ul><li>GET <code>/songs/:id</code></li><li>PUT <code>/songs/:id</code></li><li>DELETE <code>/songs/:id</code></li></ul><p>Now, going back to the <code>api.rb</code> file, you can implement the song details route by making use of the <code>id_param</code> helper method as follows:</p><pre><code># existing code ... 
+
+get '/songs' do
+  return songs.to_json
+end
+
+get '/songs/:id' do
+  # 👇 new code
+  song = songs.find { |s| s.id == id_param }
+  halt 404, { message: 'Song Not Found' }.to_json unless song
+
+  return song.to_json
+  # 👆 new code 
+end
+
+# existing code ...</code></pre><p>You are using Ruby's <a href="https://apidock.com/ruby/v2_5_5/Enumerable/find" target="_top"><code>Enumerable#find</code></a> method to find the song in the <code>songs</code> array that has the ID sent in the params. If the song was not found, then you'll return a <code>404 NOT FOUND</code> error. Otherwise, you'll return the <code>song</code> in JSON format. </p><p>Let's test it out with <code>curl</code>: </p><pre><code>➜ curl http://localhost:4567/songs/1
+
+{"id":1,"name":"My Way","url":"https://www.last.fm/music/Frank+Sinatra/_/My+Way"}%</code></pre><p><em>Noice</em>. At this point, you have implemented both of the read routes from your Songs API. Time to create, update, and delete. </p><p>Let's start by the create route. You can create a new song by providing a <code>name</code> and a <code>url</code>. In <code>curl</code>, that POST request will look as follows:</p><pre><code>curl -X POST 'http://localhost:4567/songs' \
+     -H 'Content-Type: application/json' \
+     -d '{
+          "name": "A new song",
+          "url": "http://example.com"
+        }'</code></pre><p>You must pass the <code>name</code> and <code>url</code> in the request's body and declare that they come with the correct JSON format. You'll also need to do this when updating a song. This is a hint for you to implement a helper.</p><p>Let's implement a new helper, <code>json_params</code>, that will check the body is indeed in JSON format. </p><p>In your <code>api.rb</code>, add the following code:</p><pre><code># api.rb
+
+# frozen_string_literal: true
+
+require 'sinatra'
+require 'json'
+require_relative 'helpers/songs_helper'
+
+songs ||= SongsHelper.songs
+
+helpers do
+  # existing code ...
+ 
+  # 👇 new code 
+  def json_params
+    request.body.rewind
+    @json_params ||= JSON.parse(request.body.read).transform_keys(&amp;:to_sym)
+  rescue JSON::ParserError
+    halt 400, { message: 'Invalid JSON body' }.to_json
+  end
+  # 👆 new code 
+
+  # existing code ...
+end
+
+# existing code ...</code></pre><p>The <code>json_params</code> method reads from the <code>request.body</code> and parses it using <code>JSON.parse</code>. If there is a <code>JSON::ParseError</code>, meaning the body was not in JSON format, the method will return <code>400 Bad Request</code>. </p><p>You should also validate that the body parameters are only the required ones: <code>name</code> and <code>url</code>. Let's create a new helper that will implement that validation: </p><pre><code># api.rb
+
+# existing code ...
+
+helpers do
+  # existing code ...
+ 
+  def json_params
+    request.body.rewind
+    @json_params ||= JSON.parse(request.body.read).transform_keys(&amp;:to_sym)
+  rescue JSON::ParserError
+    halt 400, { message: 'Invalid JSON body' }.to_json
+  end
+  
+  # 👇 new code
+  def require_params!
+    json_params
+
+    attrs = %i[name url]
+
+    halt(400, { message: 'Missing parameters' }.to_json) if (attrs &amp; @json_params.keys).empty?
+  end
+  # 👆 new code 
+
+  # existing code ...
+end
+
+# existing code ...</code></pre><p>The <code>require_params!</code> method will be the main method that you'll use in your routes. Firstly, it calls <code>json_params</code> to initialize the instance variable <code>@json_params</code> and is available in the <code>api.rb</code> context. Then, the <code>require_params!</code> method verifies that <code>@json_params.keys</code> includes any of the values <code>name</code> or <code>url</code> and no other parameter. You can think of it as an attempt of <a href="https://apidock.com/rails/ActionController/Parameters/permit" target="_top">Rails' <code>permit</code> method</a>. Otherwise, it returns <code>400 Bad Request</code>.</p><p>The <code>name</code> and <code>url</code> params are only required when creating and updating a song. You can create a <code>before</code> filter to accomplish this. </p><p>In your <code>api.rb</code>, add the following:</p><pre><code># frozen_string_literal: true
+
+require 'sinatra'
+require 'json'
+require_relative 'helpers/songs_helper'
+
+songs ||= SongsHelper.songs
+
+# 👇 new code 
+set :method do |*methods|
+  methods = methods.map { |m| m.to_s.upcase }
+  condition { methods.include?(request.request_method) }
+end
+# 👆 new code
+
+helpers do
+  # ... existing code 
+end
+
+before do
+  content_type 'application/json'
+end
+
+# 👇 new code 
+before method: %i[post put] do
+  require_params!
+end
+# 👆 new code</code></pre><p>Let's break this down. You added two new things: one is a <code>set</code> and the other is a <code>before</code> filter which you are already familiar with. </p><p>The <a href="https://sinatrarb.com/configuration.html" target="_top"><code>set</code> method</a> takes a setting name and value and creates an attribute on the application. </p><p>In this case, you'll use it to <strong>identify the HTTP method</strong>. The setting name is <code>:method</code>, and it takes an array of symbols as an argument. Then, you use a <a href="https://sinatrarb.com/intro#conditions" target="_top"><code>condition</code></a>, meaning <strong>you want this <code>before</code> filter only to execute when the <code>condition</code> is true</strong>, in this case, when the HTTP method is <code>POST</code> or <code>PUT</code>. </p><p>In the <code>before</code> filter, you are passing a list of symbols representing the HTTP methods where you want this code to execute, and then you call the <code>require_params!</code>.</p><p>Now let's add the code for creating and updating songs in your <code>api.rb</code>.</p><p>First, to create a new song, you'll handle the <code>POST /songs</code> request: </p><pre><code># existing code ...
+
+before method: %i[post put] do
+  require_params!
+end
+
+# existing code ...
+
+# 👇 new code 
+post '/songs' do
+  create_params = @json_params.slice(:name, :url)
+
+  if create_params.keys.sort == %i[name url]
+    new_song = { id: songs.size + 1, name: @json_params[:name], url: @json_params[:url] }
+  else
+    halt(400, { message: 'Missing parameters' }.to_json)
+  end
+
+  songs.push(new_song)
+
+  return new_song.to_json
+end
+# 👆new code 
+
+# existing code ...
+end
+# existing code ...</code></pre><p>The <code>post /songs</code> route tries to keep things simple. First, it verifies that <strong>both params <code>name</code> and <code>url</code> are present</strong> in the <code>@json_params</code> hash; keep in mind the <code>require_params!</code> filter already made sure these are the only parameters being passed. If the <code>name</code> and <code>url</code> are present, you can create a new song. Note you are just incrementing the <code>songs.size</code> value by 1 and then pushing the new song to the <code>songs</code> array. In a real-life application, you would create a new record in your database. If the <code>name</code> or <code>url</code> parameters are missing, then you return a <code>400 Bad Request</code> error. </p><p>Let's proceed to add the code for the update route, <code>put /songs/:id</code>: </p><pre><code># api.rb 
+# existing code ... 
+
+# 👇 new code 
+put '/songs/:id' do
+  song = songs.find { |s| s.id == id_param }
+
+  halt 404, { message: 'Song Not Found' }.to_json unless song
+
+  song.name = @json_params[:name] if @json_params.keys.include? :name
+  song.url = @json_params[:url] if @json_params.keys.include? :url
+
+  return song.to_json
+end
+# 👆new code 
+
+# existing code ...
+end</code></pre><p>When requested to update a song, your code attempts to find the song in the <code>songs</code> array using the <code>id_param</code>, similar to the song details route. If it's not found, it returns a <code>404 Not Found</code> error. If the song is found, <strong>it updates only the field that was sent in the request body</strong> and finally returns the song in JSON format. </p><p>Last but not least, there is the delete song route, <code>delete /songs/:id</code>. Let's add it to the <code>api.rb</code> file: </p><pre><code># api.rb 
+# existing code ... 
+
+# 👇 new code 
+delete '/songs/:id' do
+  song = songs.find { |s| s.id == id_param }
+  halt 404, { message: 'Song Not Found' }.to_json unless song
+
+  song = songs.delete(song)
+
+  return song.to_json
+end
+# 👆new code 
+
+# existing code ...
+end</code></pre><p>The delete song method is very similar to the update song method, but instead, it calls the <a href="https://apidock.com/ruby/Array/delete" target="_top"><code>Array#delete</code> </a> function and renders the song in JSON format as well. </p><p>Your Songs API is finished! But not secured 😩. At this point, your code must be very similar to the one on the <a href="https://github.com/auth0-blog/sinatra-auth0-songs-api" target="_top">main branch of the repository.</a></p><h2 id="Protect-Your-Endpoints-with-Auth0">Protect Your Endpoints with Auth0</h2><p>Up until here, you have created a CRUD Songs API, but anyone can call any endpoint. You want to make sure <strong>only authorized users can create, update, and delete songs.</strong> </p><p>To achieve this, you'll use <a href="https://auth0.com/docs/get-started/identity-fundamentals/introduction-to-auth0" target="_top"><strong>Auth0</strong> as your identity access management (IAM) provider</a>. </p><p>Note that from this point on, you will be writing the code that is already implemented in the <a href="https://github.com/auth0-blog/sinatra-auth0-songs-api/tree/add-authorization" target="_top"><code>add-authorization</code></a> branch, so you can use it as a guide. </p><h3 id="Connect-your-Sinatra-API-with-Auth0">Connect your Sinatra API with Auth0</h3><p>Before you jump into the code, you'll need to create a new Auth0 API. Head to the <a href="https://manage.auth0.com/#/apis" target="_top">API section of your Auth0 dashboard</a> and click the "Create API" button. Fill out the form with the following values:</p><ul><li><strong>Name</strong>: Sinatra Songs API</li><li><strong>Identifier</strong>: <code>https://sinatra-auth0-songs-api</code></li><li><strong>Signing Algorithm</strong>: RS256 (this should be the default selection)</li></ul><p>Copy the <code>identifier</code> value (<code>https://sinatra-auth0-songs-api</code>) — you'll need it when setting up your Sinatra API. You'll also need to grab your <strong>Auth0 Domain</strong>. Unless you're using a custom domain, this value will be <code>[TENANT_NAME].[REGION].auth0.com</code>. If you're unsure what this value is, open the "Test" tab in your API's settings and look at the <code>url</code> argument in the code sample under "Asking Auth0 for tokens from my application":</p><p>Once you've finished creating your API, you can head to the command line and start installing the dependencies.</p><h3 id="Install-dependencies">Install dependencies</h3><p>You'll need a few gems, so let's go ahead and add them to the <code>Gemfile</code>: </p><pre><code>gem 'dotenv'
+gem 'jwt'</code></pre><p>Next, in your terminal, run:</p><pre><code>bundle install</code></pre><p>You are installing the <a href="https://github.com/bkeepers/dotenv" target="_top"><strong>dotenv gem</strong></a> to read environment variables from a local <code>.env</code> file. You can use the <a href="https://github.com/auth0-blog/sinatra-auth0-songs-api/blob/add-authorization/.env.example" target="_top"><code>.env.example</code> file</a> from the repository as a template and copy its content to a <code>.env</code> file in the root of your project. </p><p>Remember in the previous step; you had to save your Auth0 domain and identifier? Well, this is where you get to use it. </p><p>Paste your <code>AUTH0_DOMAIN</code> and <code>AUTH0_IDENTIFIER</code> into your <code>.env</code> file.</p><p>You also installed the <a href="https://github.com/jwt/ruby-jwt" target="_top"><strong>JWT gem</strong></a>, which is a Ruby implementation of the JWT standard and will help you later on to validate JWT tokens, you'll learn more about those in a bit. </p><h3 id="Validate-the-access-token">Validate the access token</h3><p>In order to protect your API's endpoints, you'll use what's called <strong>token-based authorization</strong>. Basically, your Sinatra Songs API will receive an <a href="https://auth0.com/docs/secure/tokens/access-tokens" target="_top"><strong>access token</strong></a>; the passed access token informs the API that the bearer of the token has been authorized to access the API and perform specific actions specified by the <a href="https://auth0.com/docs/get-started/apis/scopes/openid-connect-scopes" target="_top">scope</a>. </p><p>Finally, your API will validate the access token by making sure it has the proper structure and that it was issued by the correct <a href="https://auth0.com/docs/authenticate/protocols/oauth#roles" target="_top"><strong>authorization server</strong></a>, in this case, Auth0. </p><h3 id="Create-an-Auth0-Client-class">Create an Auth0 Client class</h3><p>The first step to validate the access token is to create a new class to take care of the process. </p><p>In your <code>helpers</code> folder, create a new file called <code>auth0_client_helper.rb</code> and add the following code: </p><pre><code># helpers/auth0_client_helper.rb
+
+# frozen_string_literal: true
+
+require 'jwt'
+require 'net/http'
+
+# AuthoClient helper class to validate JWT access token
+class Auth0ClientHelper
+  # Auth0 Client Objects
+  Error = Struct.new(:message, :status)
+  Response = Struct.new(:decoded_token, :error)
+
+  # Helper Functions
+  def self.domain_url
+    "https://#{ENV['AUTH0_DOMAIN']}/"
+  end
+
+  def self.decode_token(token, jwks_hash)
+    JWT.decode(token, nil, true, {
+                 algorithm: 'RS256',
+                 iss: domain_url,
+                 verify_iss: true,
+                 aud: (ENV['AUTH0_AUDIENCE']).to_s,
+                 verify_aud: true,
+                 jwks: { keys: jwks_hash[:keys] }
+               })
+  end
+
+  def self.get_jwks
+    jwks_uri = URI("#{domain_url}.well-known/jwks.json")
+    Net::HTTP.get_response jwks_uri
+  end
+
+  # Token Validation
+  def self.validate_token(token)
+    jwks_response = get_jwks
+
+    unless jwks_response.is_a? Net::HTTPSuccess
+      error = Error.new(message: 'Unable to verify credentials', status: :internal_server_error)
+      return Response.new(nil, error)
+    end
+
+    jwks_hash = JSON.parse(jwks_response.body).transform_keys(&amp;:to_sym)
+
+    decoded_token = decode_token(token, jwks_hash)
+    Response.new(decoded_token, nil)
+  rescue JWT::VerificationError, JWT::DecodeError
+    error = Error.new('Bad credentials', 401)
+    Response.new(nil, error)
+  end
+end</code></pre><p>There are a few things going on in this class, and I've explained it extensively in the <a href="https://developer.auth0.com/resources/guides/api/rails/basic-authorization" target="_top"><strong>Rails API Authorization By Example Guide</strong></a>, particularly the section <a href="https://developer.auth0.com/resources/guides/api/rails/basic-authorization#validate-a-json-web-token-jwt-in-rails" target="_top"><strong>Validate a JSON Web Token (JWT) in Rails</strong> under <em>"What is the Auth0Client class doing under the hood?"</em></a>. Of course, I made a few changes to modify the code from Rails to Sinatra, but the main idea remains. </p><p>With that being said, let's take a look at the main method in this class: the <code>validate_token</code> method. </p><pre><code>def self.validate_token(token)
+    jwks_response = get_jwks
+
+    unless jwks_response.is_a? Net::HTTPSuccess
+      error = Error.new(message: 'Unable to verify credentials', status: :internal_server_error)
+      return Response.new(nil, error)
+    end
+
+    jwks_hash = JSON.parse(jwks_response.body).transform_keys(&amp;:to_sym)
+
+    decoded_token = decode_token(token, jwks_hash)
+    Response.new(decoded_token, nil)
+  rescue JWT::VerificationError, JWT::DecodeError
+    error = Error.new('Bad credentials', 401)
+    Response.new(nil, error)
+  end</code></pre><p>Let's break down what the <code>validate_token</code> method is doing:</p><ol start="1"><li>First, you call the <code>get_jwks</code> method, which in summary calls Auth0's <code>well-known</code> endpoint and returns the <a href="https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-sets" target="_top"><strong>JSON Web Key Set (JWKS)</strong></a> used to verify all Auth0-issued JWTs for your tenant. If there was an error getting the JWKS, then you throw an error because the token could not be validated.</li><li>Next, you parse the JWKS into a hash to make it easier to work with in Ruby.</li><li><p>Finally, you call the <code>decode_token</code> method, which uses the JWT gem to decode the access token as follows:</p><pre><code>JWT.decode(token, nil, true, {
+              algorithm: 'RS256',
+              iss: domain_url,
+              verify_iss: true,
+              aud: (ENV['AUTH0_AUDIENCE']).to_s,
+              verify_aud: true,
+              jwks: { keys: jwks_hash[:keys] }
+            })</code></pre></li></ol><p>The <code>domain_url</code> gets your <code>AUTH0_DOMAIN</code> from the environment variables, and you set your <code>AUTH0_AUDIENCE</code> in the <code>aud</code> value. Finally, you pass the <code>jwks_hash</code> you created earlier in the <code>jwks</code> argument.</p><p> To learn more about the <code>JWT.decode</code> arguments, you can refer to the <a href="https://developer.auth0.com/resources/guides/api/rails/basic-authorization#validate-a-json-web-token-jwt-in-rails" target="_top"><strong>Rails API Authorization By Example Developer Guide</strong></a>, section <em>"What is the Auth0Client class doing under the hood?"</em>.</p><h3 id="Create-an--authorize---helper">Create an <code>authorize!</code> helper</h3><p>The <code>Auth0ClientHelper</code> class is already doing most of the work to validate the access token. Now you need to actually call it in the endpoints you want to protect. </p><p>For that, you can use a helper, similar to how you used it earlier. </p><p>Go to your <code>api.rb</code> file and add the following code:</p><pre><code># api.rb 
+
+# existing code ...
+
+helpers do
+  # existing code ... 
+
+  # 👇 new code
+  def authorize!
+    token = token_from_request
+
+    validation_response = Auth0ClientHelper.validate_token(token)
+
+    return unless (error = validation_response.error)
+
+    halt error.status, { message: error.message }.to_json
+  end
+
+  def token_from_request
+    authorization_header_elements = request.env['HTTP_AUTHORIZATION']&amp;.split
+
+    halt 401, { message: 'Requires authentication' }.to_json unless authorization_header_elements
+
+    unless authorization_header_elements.length == 2
+      halt 401, { message: 'Authorization header value must follow this format: Bearer access-token' }.to_json
+    end
+
+    scheme, token = authorization_header_elements
+
+    halt 402, { message: 'Bad credentials' }.to_json unless scheme.downcase == 'bearer'
+
+    token
+  end
+  # 👆 new code
+end
+
+# existing code ...</code></pre><p>Well, you actually added two helpers but the <code>token_from_request</code> method is the helper of the <code>authorize!</code> helper 😛. </p><p>The <code>authorize!</code> helper gets the token from the request by calling the <code>token_from_request</code> method. This method checks the <code>HTTP_AUTHORIZATION</code> header and splits it to verify it is well-formed. </p><p>A well-formed <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization" target="_top"><code>Authorization</code> header</a> using the bearer scheme looks like this: </p><pre><code>Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.NHVaYe26MbtOYhSKkoKYdFVomg4i8ZJd8_-RU8VNbftc4TSMb4bXP3l3YlNWACwyXPGffz5aXHc6lty1Y2t4SWRqGteragsVdZufDn5BlnJl9pdR_kdVFUsra2rWKEofkZeIC4yWytE58sMIihvo9H1ScmmVwBcQP6XETqYd0aSHp1gOa9RdUPDvoXQ5oqygTqVtxaDr6wUFKrKItgBMzWIdNZ6y7O9E0DhEPTbE9rfBo6KTFsHAZnMg4k68CDp2woYIaXbmYTWcvbzIuHO7_37GT79XdIwkm95QJ7hYC9RiwrV7mesbY4PAahERJawntho0my942XheVLmGwLMBkQ</code></pre><p>Then, the <code>token_from_request</code> method verifies if the <code>Authorization</code> header is present, if the token is present, and if it has the correct scheme. Otherwise, it will return <code>401 Unauthorized</code>. </p><p>Once the token is retrieved from the <code>Authorization</code> header, the <code>authorize!</code> helper calls the <code>validate_token</code> method of the <code>Auth0ClientHelper</code> class to validate the token. If the token was validated without errors, the <code>authorize!</code> method finished its execution. If there is any error during the validation, it returns it with a proper status and message.</p><h3 id="Protect-your-API-endpoints-with-the--authorize---helper">Protect your API endpoints with the <code>authorize!</code> helper</h3><p>The last step to protect your endpoints is to call the <code>authorize!</code> helper <em>before</em> any client tries to call them. </p><p>So as you saw earlier, a <code>before</code> filter is the way to go. </p><p>In your <code>api.rb</code> file, you already had a <code>before</code> filter that you can reuse, so let's modify it:</p><pre><code># api.rb 
+# existing code ... 
+
+# old code
+# before method: %i[post put] do
+#   require_params!
+# end
+# old code
+
+# 👇 new code
+before method: %i[post put delete] do
+  require_params!
+  authorize!
+end
+# 👆 new code
+# existing code ...</code></pre><p>First, you added the <code>delete</code> method to the <code>before</code> filter because you want only authorized users to be able to create, update and delete songs. </p><p>Then you call the <code>authorize!</code> helper that will perform the authorization validation. </p><p>That's it! You can now test your endpoints with <code>curl</code> as follows: </p><pre><code>curl -X POST 'http://localhost:4567/songs' \
+-H 'Authorization: Bearer YOUR_TOKEN' \
+-d '{
+    "name": "A new song"
+    "url": "http://example.com"
+}'</code></pre><p>Once you replace the <code>YOUR_TOKEN</code> placeholder with a valid access token, the result of this request will be the following:</p><pre><code>{"id":11,"name":"A new song","url":"http://example.com"}</code></pre><p>To get a valid access token for your API, follow the steps shown in the section <a href="#Connect-your-Sinatra-API-with-Auth0"><em>Connect your Sinatra API With Auth0</em></a>.</p><h2 id="Summary">Summary</h2><p>In this blog post, you learned about the Ruby framework Sinatra and how to create a basic CRUD API to manage Frank Sinatra songs.</p><p>You created a new Auth0 account and a new API from the dashboard. You used the JWT gem to validate an access token issued by Auth0 and finally secured your API endpoints for creating, updating, and deleting songs by using token-based authorization and the bearer scheme. </p><p>I hope you enjoyed this post. Do you use any other Ruby frameworks? Let me know in the comments! </p><p>Thanks for reading!</p></div></div>
+  </div>
+</body>
+</html>

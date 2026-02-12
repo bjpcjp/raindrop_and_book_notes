@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SQLite Internals: Pages & B-trees</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>SQLite Internals: Pages & B-trees</h1>
+    <p><strong>URL:</strong> <a href="https://fly.io/blog/sqlite-internals-btree">https://fly.io/blog/sqlite-internals-btree</a></p>
+    <p><strong>Tags:</strong> databases, sqlite</p>
+    <p><strong>Bookmark ID:</strong> 876787667</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section>
+            <figure>
+                <img src="data:application/octet-stream;base64," alt="A parliament of owls meticulously inspecting various pages while in a tree. There's also two feet.">
+                <figcaption>
+                  <span>Image by</span>
+                  
+<svg role="img" style="pointer-events:none;width:17px;height:17px" viewBox="0 0 20 20" fill="currentColor" fill-rule="evenodd">
+  <g buffered-rendering="static">
+    <path fill-rule="evenodd" d="M1 8a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 018.07 3h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0016.07 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm13.5 3a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM10 14a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+  </g>
+</svg>
+
+                    <a href="https://annieruygtillustration.com/" target="_blank">
+                      Annie Ruygt
+                    </a>
+                </figcaption>
+            </figure>
+          <p><a href="http://fly.io/" title="">Fly.io</a> runs apps close to users around the world, by taking containers and upgrading them to full-fledged virtual machines running on our own hardware around the world. Sometimes those containers run SQLite and we make that easy too. <a href="https://fly.io/docs/speedrun/" title="">Give us a whirl</a> and get up and running quickly.</p>
+<p>Ok, I’ll admit it—I’m a SQLite shill. There are few holes that I don’t try to put a SQLite-shaped peg into. It’s not that I dislike other databases, they’re great. But SQLite is so easy to use and, more importantly, it’s simple. Simplicity leads to reliability and I don’t know of a more reliable database than SQLite.</p>
+
+<p>There’s a comfort with being able to read through a spec or a code repository and know that you’ve covered the full breadth of a tool. That’s why I love <a href="https://go.dev/ref/spec" title="">Go’s simple 100-page language specification</a> and that’s why I love SQLite’s 130KLOC core code base. It’s something that you can read through in a long weekend if, ya know, that’s what you do on weekends.</p>
+
+<p>This constrained size means that SQLite doesn’t include every bell and whistle. It’s careful to include the 95% of what you need in a database—strong SQL support, transactions, windowing functions, CTEs, etc—without cluttering the source with more esoteric features. This limited feature set also means the structure of the database can stay simple and makes it easy for anyone to understand.</p>
+
+<p>We here at Fly.io have an unreasonable affinity for explanations involving sandwiches and this post will continue in that sacred tradition.</p>
+<h2 id="i-have-binders-full-of-sandwiches"><a href="#i-have-binders-full-of-sandwiches" aria-label="Anchor"></a><span>I have binders full of sandwiches</span></h2>
+<p>Recently, I tried to remember a sandwich I ate last week but to no avail. Like any 10x engineer, I quickly over-engineered a solution by making a SQLite database to track every sandwich consumed.</p>
+
+<p>We’ll start off with our table definition:</p>
+<div>
+    <pre><code id="code-gpgz3ycz">CREATE TABLE sandwiches (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    length REAL,
+    count INTEGER
+)
+</code></pre>
+  </div>
+<p>Now we’ll have a record of every sandwich, its size in inches, and the number eaten.</p>
+
+<p>I live in Denver where we were known in the early 2000s for <a href="https://www.quiznos.com/" title="">toasted sandwiches</a>, and then in the 2010s for <a href="https://www.quiznos.com/" title="">bad toasted sandwiches</a> so we’ll kick off with a toasted Italian sub.</p>
+<div>
+    <pre><code id="code-dufo6wq2">INSERT INTO sandwiches (name, length, count) VALUES ('Italian', 7.5, 2)
+</code></pre>
+  </div>
+<p>Voila! Our data is safe on disk. It’s easy to gloss over all the steps it takes to get from hitting the “enter” key to bytes getting saved to disk. SQLite virtually guarantees that your database will never be corrupted or that your transaction will be half-written. But instead of glossing over, let’s dive in deep and see how our Italian sub looks on disk.</p>
+<h3 id="efficient-sandwich-encoding"><a href="#efficient-sandwich-encoding" aria-label="Anchor"></a><span>Efficient sandwich encoding</span></h3>
+<p>Our row of sandwich data exists as an array of bytes inside SQLite that’s encoded using its <a href="https://www.sqlite.org/fileformat.html#record_format" title=""><em>record format</em></a>. For our inserted row, we see the following bytes on disk:</p>
+<div>
+    <pre><code id="code-vdqgppfp">15 01 05 00 1b 07 01 49 74 61 6c 69 61 6e 40 1e 00 00 00 00 00 00 02
+</code></pre>
+  </div>
+<p>Let’s break these bytes down to see what’s going on.</p>
+
+<p>The first byte of <code>0x15</code> is the size of our row’s payload, in bytes. After this is our rowid which is used as our <code>PRIMARY KEY</code>. Since this is the first row, its <code>id</code> has a value of <code>0x01</code>.</p>
+
+<p>These first two fields use what’s called a variable-length integer (“varint”) encoding. This encoding is used so that we don’t use a huge 8-byte field for every integer and waste a bunch of space. It’d be like if a sandwich shop packaged every sandwich in enormous 6-foot party sub containers because they only could use one size of container. That’d make no sense! Instead, each size of sandwich gets its own container size.</p>
+
+<p>Varints use a simple trick. The high bit is used as a flag to indicate if there are more bytes to be read and the other 7 bits are our actual data. So if we wanted to represent 1,000, we start with its binary representation split into 7 bit chunks:</p>
+<div>
+    <pre><code id="code-4t96ot9u">0000111 1101000
+</code></pre>
+  </div>
+<p>Then we add a “1” flag bit to the beginning of the first chunk to indicate we have more chunks, and a “0” flag bit to the beginning of the second chunk to indicate we don’t have any  more chunks:</p>
+<div>
+    <pre><code id="code-361ldjxp">10000111 01101000
+</code></pre>
+  </div>
+<p>With varints, we can now store our integer in 2 bytes instead of 8. This may seem small but many SQLite databases have a lot of integers so it’s a huge win!</p>
+
+<p>The next two bytes after the rowid specify the data that is not spilled to overflow pages but <a href="https://www.sqlite.org/fileformat2.html#b_tree_pages" title="">the explanation is lengthy</a> so we’re gonna wave our hands over that part.</p>
+<h3 id="type-encoding"><a href="#type-encoding" aria-label="Anchor"></a><span>Type encoding</span></h3>
+<p>Next, we have a list of column types for our <code>name</code>, <code>size</code>, and <code>count</code> fields. Each data type has a different encoding that’s specified as a varint.</p>
+
+<p>For our name column, the <code>0x1b</code> value specifies that it is a <code>TEXT</code> type and has a length of 7 bytes. Type values that are odd and are greater or equal to 13 are <code>TEXT</code> fields and can be calculated with the formula <code>(n*2) + 13</code>. So our 7-byte string is <code>(7*2) + 13</code> which is 27, or <code>0x1b</code> in hex.</p>
+
+<p><code>BLOB</code> fields are similar except they’re even numbers calculated as <code>(n*2) + 12</code>. SQLite alternates these <code>TEXT</code> and <code>BLOB</code> type values so small lengths of both types can be encoded efficiently as varints.</p>
+
+<p>Next, we have our “length” field which is a floating-point number. These are always encoded as a <code>0x07</code>.</p>
+
+<p>After that, we have our “count” field which is an integer. These get packed down similar to <a href="https://flyio.slab.com/posts/blog-sq-lite-internals-pages-b-trees-55cw0y3o#hwetq-the-header-variable-length-integers" title="">varints</a> but in a slightly different format. Integers that can fit in an 8-bit integer are represented with a type value of <code>0x01</code>. 16-bit integers are <code>0x02</code>, 24-bit integers are <code>0x03</code> and so on.</p>
+<h3 id="value-encoding"><a href="#value-encoding" aria-label="Anchor"></a><span>Value encoding</span></h3>
+<p>Once our types are all encoded, we just need to pack our data in. The text value of <em>“Italian”</em> is represented as UTF-8:</p>
+<div>
+    <pre><code id="code-9jn52fut">49 74 61 6c 69 61 6e
+</code></pre>
+  </div>
+<p>Then our length of <em>7.5</em> is represented as an <a href="https://en.wikipedia.org/wiki/IEEE_754-2008_revision" title="">IEEE-754-2008 floating-point number</a>. SQLite can optimize integer floating-point values by storing them as pure integer fields but since we have a decimal place it is stored with 8-bytes:</p>
+<div>
+    <pre><code id="code-v3kwfzj8">40 1e 00 00 00 00 00 00
+</code></pre>
+  </div>
+<p>And finally we use a single byte to hold our count of 2:</p>
+<div>
+    <pre><code id="code-wegv6pc5">02
+</code></pre>
+  </div>
+<p>Congrats! You’re now an expert on SQLite record formatting.</p>
+<h2 id="e_toomanysandwiches"><a href="#e_toomanysandwiches" aria-label="Anchor"></a><span>E_TOOMANYSANDWICHES</span></h2>
+<p>As my sandwich addiction continues unabated, I fill my SQLite database with more and more rows. I even make friends on the <a href="https://www.reddit.com/r/eatsandwiches/" title="">/r/eatsandwiches</a> subreddit and start collecting their sandwiches. My sandwich database seems to grow without bound.</p>
+
+<p>Surprisingly though, adding or updating rows is still nearly as instantaneous as when I had a single row. So how does SQLite update a multi-gigabyte sandwich database in a fraction of a second? The answer is pages &amp; b-trees.</p>
+
+<p>A naive approach to a database would just be to pack records in sequentially in a file. However, there’s no way to insert or update rows in the middle of the file without shifting and rewriting all the bytes after the new row.</p>
+
+<p>Instead, SQLite groups rows together into 4KB chunks called “pages”. Why 4KB? That’s what file systems typically use as their page size so keeping everything aligned reduces page fetches from disk. Disks are usually the slowest part of a database so limiting page fetches can have a huge performance win.</p>
+<h3 id="inspecting-the-page-format"><a href="#inspecting-the-page-format" aria-label="Anchor"></a><span>Inspecting the page format</span></h3>
+<p>If we inspect our page, we can see its header:</p>
+<div>
+    <pre><code id="code-wce89r4m">0d xx xx 00 03 xx xx xx
+</code></pre>
+  </div>
+<p>There are several parts of this header but I masked out several bytes so we can focus on two particularly important fields. The first byte, <code>0x0d</code>, indicates the <em>page type</em>. This page type is a <em>table leaf</em>. We’ll talk about those more with b-trees.</p>
+
+<p>The second important field is the <em>cell count</em>, which is <code>0x0003</code>. This tells us that 3 records exist in this page.</p>
+
+<p>After the header, we have the <em>cell pointer index</em>:</p>
+<div>
+    <pre><code id="code-8j939spd">0f e9 0f d2 0f bb
+</code></pre>
+  </div>
+<p>This is a list of 2-byte values that represent offsets in the page for each record. The first record exists at offset 4,073 (<code>0x0fe9</code>), the second record exists at offset 4,050 (<code>0x0fd2</code>), etc. SQLite packs rows at the end of the page and then works backwards.</p>
+
+<p>After the index, we have a bunch of zeros until we reach the content area of the page which holds our row data in record format.</p>
+<h3 id="structuring-pages-into-trees"><a href="#structuring-pages-into-trees" aria-label="Anchor"></a><span>Structuring pages into trees</span></h3>
+<p>Now that we’ve chunked our data into pages, we can update a subset of our data without having to rewrite the whole file. That’s great for writing but now we have a list of pages to search through if we want to query our data and that won’t scale as-is.</p>
+
+<p>The simplest approach would be to start at the first page and then search every page for a given row. This is called a “table scan” and it can be really slow—especially if your data is at the end of your table. If you’re into <a href="https://en.wikipedia.org/wiki/Big_O_notation" title="">“big-O” notation</a>, it’s also referred to as “linear time complexity”, or <code>O(n)</code>. That means the amount of time it takes to search for a record has a linear relationship to the number of records you have, which is referred to as “<code>n</code>”.</p>
+<h3 id="searching-faster-with-binary-search"><a href="#searching-faster-with-binary-search" aria-label="Anchor"></a><span>Searching faster with binary search</span></h3>
+<p>If you are searching by your primary key, you could perform a binary search since the table is sorted by primary key. For a binary search, you search the page right in the middle of your table for your sandwich record. If the record exists, great! You’re done.</p>
+
+<p>If the sandwich you’re searching for is before that page, then you find a new “middle” page in the first half of your table. If it’s after the page, then you find a new middle page in the second half of your table. Keep slicing the search space in half and searching until you find your sandwich. If you squint a bit, this slicing and subdividing has the feel of a tree-like structure.</p>
+
+<p>A binary search has a logarithmic time complexity, or <code>O(log n)</code>. That’s considered pretty good for data structures since it means you can scale up to a large number of records, <code>n</code>, while the cost grows at a much slower rate.</p>
+<h3 id="improving-binary-search-by-persisting-the-tree"><a href="#improving-binary-search-by-persisting-the-tree" aria-label="Anchor"></a><span>Improving binary search by persisting the tree</span></h3>
+<p>While logarithmic time complexity is great, we still have a problem. Let’s run some numbers.</p>
+
+<p>If we have a small 2MB database with 4KB pages then that means we have 512 pages. A binary search of that many pages would have a worst-case scenario of <code>log₂(512)</code>, or 9 pages. That means we might have to read nine pages in our tiny database just to find one record! Page fetches are painfully slow in databases so we want to reduce that as much as possible.</p>
+
+<p>SQLite is structured as a b-tree, which is a data structure where each node can point to two or more child nodes and the values in these child nodes are all sorted. There are a ton of different variants of b-trees but the one that SQLite uses is called a b+tree. This type of tree stores all data in the leaf nodes, which is what our sorted list of pages represents, but also have an index of key ranges in the branch pages. SQLite refers to these branch pages as “interior pages”.</p>
+
+<p>To illustrate this, let’s say our leaf pages hold sandwich records that are each 40 bytes. The record also contains an integer primary key that is 4 bytes on average. That means we can fit about 100 records into one 4KB page. If we have less than 100 records, we only need one page. Easy peasy.</p>
+
+<p>But what happens when we add a 101st sandwich and it doesn’t fit anymore? SQLite will split the page into two leaf pages and add an interior page as the root of our b+tree that points to our child leaf pages. This interior page stores the key ranges for the leaf pages so that when you search, you can see what ranges each child page holds without having to actually read that child page.</p>
+
+<p>This doesn’t seem like a big improvement over our binary search until we start adding more data. Interior pages are also 4KB and they store pairs of child primary keys and their page numbers so each entry in our interior page takes about 8 bytes. That means we can store about 500 entries in an interior page. For our 2MB database, that means we can hold the key range for all of our leaf pages in a single interior page. To find a given record, we only need to search the root interior page to find the correct leaf page. That means our worst case search is only 2 pages.</p>
+<h3 id="growing-a-tree"><a href="#growing-a-tree" aria-label="Anchor"></a><span>Growing a tree</span></h3>
+<p>What happens when our root interior page fills up and we need a database bigger than 2MB? Similar to leaf pages, we split the interior page in two and add a new root parent interior page that points to the split interior pages. This means that we need to search the new root interior page to find the correct second-level interior page and then we search page that to find our leaf page. We now have a tree depth of 3.</p>
+
+<p>Since our new root can hold about 500 references to second-level interior pages and those second-level pages hold about 500 references to leaf pages, we can store about 250,000 pages, or about 1GB of data. If we continue adding rows, we’ll need to split the root page again and increase our tree depth to 4.</p>
+
+<p>At a tree depth of 4, we can hold about 500³ leaf pages, or about a 476GB database. That means we only need to read 4 pages to find a given record—even in a huge database!</p>
+<h2 id="ok-but-why"><a href="#ok-but-why" aria-label="Anchor"></a><span>OK, But Why?</span></h2>
+<p>While it’s interesting to noodle around with internals, how does this actually apply to real-world scenarios?</p>
+
+<p>Well, knowing about record formatting tells us that storing integers instead of floating-point numbers is wildly more efficient as SQLite doesn’t compress floats.</p>
+
+<p>Or perhaps knowing that b-tree time cost grows logarithmically will let you feel more comfortable designing an application with a multi-gigabyte table.</p>
+
+<p>Or maybe, just maybe, discovering the <a href="https://www.reddit.com/r/eatsandwiches/" title="">/r/eatsandwiches</a> subreddit will inspire your dinner tonight.</p>
+
+<p>Learning about the internals of our tools lets us feel comfortable with them and use them confidently. Hopefully low-level features like SQLite’s <a href="https://www.sqlite.org/pragma.html" title="">PRAGMAs</a> seem a little less opaque now.</p>
+
+<p>I’ll be writing more on SQLite internals in future posts—from rollback journals to write-ahead logs to the SQLite virtual machine. Want to know more about a specific topic? Hit me up on the <a href="https://community.fly.io/" title="">Fly Community forum</a> or <a href="https://twitter.com/flydotio" title="">ping us on Twitter</a>.</p>
+
+          
+        </section></div>
+  </div>
+</body>
+</html>

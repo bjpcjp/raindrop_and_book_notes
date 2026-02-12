@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How They Fit Together: Transform, Translate, Rotate, Scale, and Offset</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How They Fit Together: Transform, Translate, Rotate, Scale, and Offset</h1>
+    <p><strong>URL:</strong> <a href="https://danielcwilson.com/blog/2020/02/motion-path-transforms">https://danielcwilson.com/blog/2020/02/motion-path-transforms</a></p>
+    <p><strong>Tags:</strong> css</p>
+    <p><strong>Bookmark ID:</strong> 876774585</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+    
+    <p>
+      <time datetime="2020-02-25">Feb 25, 2020</time>
+    </p>
+
+    
+
+    <p>The <code>transform</code> property and its friends became more powerful through the addition of the new individual transform properties (<code>translate</code>, <code>rotate</code>, <code>scale</code>) and the <code>offset</code> properties (as a part of <a href="https://danielcwilson.com/blog/2020/01/motion-path-quirks/">CSS Motion Path</a>). All effectively provide a transformation for your element, and all have to follow specific rules to know how those transformations apply.</p>
+<p>These new properties are now available in Firefox 72+. Motion path properties are also in Chromium browsers, and the independent transform properties are behind the Experimental Web Platform Features flag.</p>
+<p>The power of the <code>transform</code> property is that it can hold <em>any number</em> of transformations. There can be multiple translations, rotations, scalings, skewings, and perspective changes. If you combine them in different orders, you can get different effects.</p>
+<p>How do all these new properties interact with <code>transform</code> and <code>transform-origin</code>?</p>
+<h3 id="basics-of-transformations" tabindex="-1">Basics of Transformations&nbsp;</h3>
+<p>When you perform transformations, you technically are not modifying the element itself. You are affecting its coordinate system. So a rotation rotates the x and y axes. If you have a transform that rotates 45 degrees and then apply a translate 100 pixels to the right, the translation will not go to the true right. It will instead go to the right of the already rotated coordinate system, so it will be going down and to the right at the 45 degree angle.</p>
+<p data-height="324" data-theme-id="dark" data-default-tab="css,result" data-user="danwilson" data-slug-hash="eEYdgo" data-editable="true" data-pen-title="Visual Reference: Transform Coordinate Systems">
+  <span>See the Pen <a href="https://codepen.io/danwilson/pen/eEYdgo">
+  Visual Reference: Transform Coordinate Systems</a> by Dan Wilson (<a href="https://codepen.io/danwilson">@danwilson</a>)
+  on <a href="https://codepen.io/">CodePen</a>.</span>
+</p>
+<h3 id="what-new-options-do-the-independent-transform-properties-provide" tabindex="-1">What new options do the independent transform properties provide?&nbsp;</h3>
+<pre><code><span>aside</span> <span>{</span><br>  <span>rotate</span><span>:</span> 33deg<span>;</span><br>  <span>scale</span><span>:</span> .85<span>;</span><br>  <span>translate</span><span>:</span> 20px 50px<span>;</span><br><span>}</span><br><span>aside.equivalent</span> <span>{</span><br>  <span>transform</span><span>:</span> <span>translate</span><span>(</span>20px<span>,</span> 50px<span>)</span> <span>rotate</span><span>(</span>33deg<span>)</span> <span>scale</span><span>(</span>.85<span>)</span><span>;</span><br><span>}</span></code></pre>
+<p>Instead of always having everything inside the <code>transform</code> function, we can specify one translation, one rotation, and one scale separately. This can be cleaner or more readable for some codebases.</p>
+<p>It also allows us to change one without overriding the other transformations.</p>
+<pre><code><span>aside</span> <span>{</span><br>  <span>transform</span><span>:</span> <span>rotate</span><span>(</span>10deg<span>)</span><br><span>}</span><br><span>aside:hover</span> <span>{</span><br>  <span>transform</span><span>:</span> <span>scale</span><span>(</span>.85<span>)</span><span>;</span><br><span>}</span></code></pre>
+<p>At first glance, you might expect this element to be rotated 10 degrees and then on hover add a scale down to the original transformation. But properties override, so the rotation is lost on hover. As different states or interactions become more complex it can be complicated to keep all the desired transformations straight.</p>
+<p>But with the independent transform properties, we can add or remove individual transformations without affecting the others. So we can slightly alter our code and get a different result where the hover state is both rotated and scaled.</p>
+<pre><code><span>aside</span> <span>{</span><br>  <span>rotate</span><span>:</span> 10deg<br><span>}</span><br><span>aside:hover</span> <span>{</span><br>  <span>scale</span><span>:</span> .85<span>;</span><br><span>}</span></code></pre>
+<p>We can also <code>transition</code> or animate each individually. In this example, the scale and translation change on hover with different durations and delays. The rotate does not transition but instead stays unaffected by the other two properties animating.</p>
+<p data-height="265" data-theme-id="dark" data-default-tab="css,result" data-user="danwilson" data-slug-hash="wvByMbX" data-editable="true" data-pen-title="Independent Transform Properties">
+  <span>See the Pen <a href="https://codepen.io/danwilson/pen/wvByMbX">
+  Independent Transform Properties</a> by Dan Wilson (<a href="https://codepen.io/danwilson">@danwilson</a>)
+  on <a href="https://codepen.io/">CodePen</a>.</span>
+</p>
+<h3 id="what-are-the-limitations" tabindex="-1">What are the limitations?&nbsp;</h3>
+<p>These properties do not take a list of options like the original <code>transform</code> property, so you only get one of each type per element. If you want more than that, you will need return to the <code>transform</code>.</p>
+<p>They also all share the same <code>transform-origin</code>, so whether you are using the <code>transform</code> property or the three individual properties they all depend on <code>transform-origin</code>.</p>
+<p>These properties are always applied in the same order, and they happen before everything in the <code>transform</code> property:</p>
+<ol>
+<li><code>translate</code></li>
+<li><code>rotate</code></li>
+<li><code>scale</code></li>
+</ol>
+<p data-height="455" data-theme-id="dark" data-default-tab="result" data-user="danwilson" data-slug-hash="abzGPmG" data-pen-title="Visual Reference: Order of translate, rotate, scale">
+  <span>See the Pen <a href="https://codepen.io/danwilson/pen/abzGPmG">
+  Visual Reference: Order of translate, rotate, scale</a> by Dan Wilson (<a href="https://codepen.io/danwilson">@danwilson</a>)
+  on <a href="https://codepen.io/">CodePen</a>.</span>
+</p>
+<p>If you want to have the rotation applied before a translation, you will need to use the <code>transform</code> property. Either of the following options would support this scenario.</p>
+<pre><code><span>aside</span> <span>{</span><br>  <span>transform</span><span>:</span> <span>rotate</span><span>(</span>30deg<span>)</span> <span>translate</span><span>(</span>10px<span>,</span>10px<span>)</span><span>;</span><br><span>}</span><br><span>/* These are still separate, so you still can work independently */</span><br><span>aside.alternate</span> <span>{</span><br>  <span>rotate</span><span>:</span> 30deg<span>;</span><br>  <span>transform</span><span>:</span> <span>translate</span><span>(</span>10px<span>,</span>10px<span>)</span><br><span>}</span></code></pre>
+<h3 id="wait...-why-were-the-offset-properties-mentioned-at-the-beginning" tabindex="-1">Wait... why were the <code>offset</code> properties mentioned at the beginning?&nbsp;</h3>
+<p>With the <code>transform</code> property we can translate, rotate, scale, and skew our element as we choose, and the <code>offset</code> properties also effectively translate and rotate our element.</p>
+<p>Even though it works in a different way, the <code>offset</code> properties all are effectively applying transformations on the coordinate system, in a similar manner to the transforms. As such, they also rely on the same <code>transform-origin</code> that the other four transformation properties use.</p>
+<h3 id="when-are-the-offset-properties-applied" tabindex="-1">When are the <code>offset</code> properties applied?&nbsp;</h3>
+<p>The three new independent transform properties happen <em>before</em> the offset properties. The <code>transform</code> functions are applied in order after the <code>offset</code>.</p>
+<ol>
+<li><code>translate</code></li>
+<li><code>rotate</code></li>
+<li><code>scale</code></li>
+<li><code>offset</code> (distance, anchor, and rotate)</li>
+<li><code>transform</code> (functions applied in the order specified)</li>
+</ol>
+<p>So for example, using a basic <code>offset-path</code> animation will produce a different visual result when you combine it with a <code>transform: translate(25px -35px)</code> versus combining it with a <code>translate: 25px -35px</code>.</p>
+<p data-height="404" data-theme-id="dark" data-default-tab="result" data-user="danwilson" data-slug-hash="xxbmZLw" data-pen-title="transform:translate vs translate with offset-path">
+  <span>See the Pen <a href="https://codepen.io/danwilson/pen/xxbmZLw">
+  transform:translate vs translate with offset-path</a> by Dan Wilson (<a href="https://codepen.io/danwilson">@danwilson</a>)
+  on <a href="https://codepen.io/">CodePen</a>.</span>
+</p>
+<p>(I also have a <a href="https://codepen.io/danwilson/pen/KKwXXqN">rotate example with <code>transform-origin</code> thrown in for good measure</a> if you so please).</p>
+<p>It is certainly interesting (and often confusing) how these all interact with each other. Knowing the order of transformations, though, is at least half the struggle in clearing up some of the transformation magic happening with <code>transform</code>, independent transform properties, and Motion Path.</p>
+
+  </article></div>
+  </div>
+</body>
+</html>

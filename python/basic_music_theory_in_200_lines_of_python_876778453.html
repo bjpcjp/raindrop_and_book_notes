@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Basic Music Theory in ~200 Lines of Python</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Basic Music Theory in ~200 Lines of Python</h1>
+    <p><strong>URL:</strong> <a href="https://www.mvanga.com/blog/basic-music-theory-in-200-lines-of-python">https://www.mvanga.com/blog/basic-music-theory-in-200-lines-of-python</a></p>
+    <p><strong>Tags:</strong> music, python</p>
+    <p><strong>Bookmark ID:</strong> 876778453</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><hr>
+<p><em>Note: all the code for this article can be found <a href="https://gist.github.com/mvanga/62a9bd4b85abe37305537d7bf754d7e9">here as a Github gist</a>. There’s also <a href="https://news.ycombinator.com/item?id=26859907">a nice discussion on Hacker News</a> with lots of comments that might be of interest.</em></p>
+<hr>
+<p>I’m a self-taught guitarist of many years, and like a lot of self-taught musicians,
+am woefully inept at (Western) music theory.</p>
+<p>So naturally, I decided to write some code.</p>
+<p>This article explains the very basics of Western music theory in around 200 lines
+of Python.</p>
+<p>We will first look at the notes in Western music theory, use them to derive the
+chromatic scale in a given key, and then to combine it with interval formulas to
+derive common scales and chords.</p>
+<p>Finally, we will look at <em>modes</em>, which are whole collections of scales derived
+from common scales, that can be used to evoke more subtle moods and atmospheres
+than the happy-sad dichotomy that major and minor scales provide.</p>
+<h2>The Twelve Notes</h2>
+<p>The musical alphabet of Western music consists of the letters A through G, and they
+represent different <em>pitches</em> of notes.</p>
+<p>We can represent the musical alphabet with the following list in Python:</p>
+<pre><code>alphabet = [<span>'A'</span>, <span>'B'</span>, <span>'C'</span>, <span>'D'</span>, <span>'E'</span>, <span>'F'</span>, <span>'G'</span>]
+</code></pre>
+<p>However, these notes are not evenly spaced in their frequencies. To get a more
+even spacing between pitches, we have the following twelve notes:</p>
+<pre><code>notes_basic = [
+    [<span>'A'</span>],
+    [<span>'A#'</span>, <span>'Bb'</span>],
+    [<span>'B'</span>],
+    [<span>'C'</span>],
+    [<span>'C#'</span>, <span>'Db'</span>],
+    [<span>'D'</span>],
+    [<span>'D#'</span>, <span>'Eb'</span>],
+    [<span>'E'</span>],
+    [<span>'F'</span>],
+    [<span>'F#'</span>, <span>'Gb'</span>],
+    [<span>'G'</span>],
+    [<span>'G#'</span>, <span>'Ab'</span>],
+]
+</code></pre>
+<p>There are four things to note here: first, each of the notes are a <em>half step</em>
+or <em>semitone</em> apart, second, the way this is represented is by an optional
+trailing symbol (called an <em>accidental</em>) to indicate a half-step raise (sharp, ♯) or a half-step
+lowering (flat, ♭) of the base note, and third, the above notes simply loop
+back and start over, but at a higher <em>octave</em><sup><a href="#fn1" id="fnref1">[1]</a></sup>.</p>
+<p>Finally, you’ll notice that some of these notes
+are represented by lists containing more than one name: these are <a href="https://en.wikipedia.org/wiki/Enharmonic"><em>enharmonic equivalents</em></a>,
+a fancy way of saying that the same note can have different “spellings”.
+So for example the note half a step above A is A♯, but it can also be thought
+of as half a step below B, and can thus be referred to as B♭. For historical
+reasons, there are no sharps or flats between the notes B/C, and E/F.</p>
+<p>The key thing to remember on why we need these equivalents is that, when we start to derive common scales
+(major, minor and the modes), <em>consecutive notes must start with consecutive letters</em>.
+Having enharmonic equivalents with different alphabets allows us to derive
+these scales correctly.</p>
+<p>In fact, for certain keys, the above enharmonic notes are not sufficient.
+In order to satisfy the “different-alphabets-for-consecutive-notes rule”, we end up having to use
+double sharps and double flats that raise or lower a note by a full step.
+These scales generally have equivalents that do not require these <em>double
+accidentals</em>, but for completeness, we can include all possible enharmonic
+equivalents by rewriting our notes as follows:</p>
+<pre><code>notes = [
+    [<span>'B#'</span>,  <span>'C'</span>,  <span>'Dbb'</span>],
+    [<span>'B##'</span>, <span>'C#'</span>, <span>'Db'</span>],
+    [<span>'C##'</span>, <span>'D'</span>,  <span>'Ebb'</span>],
+    [<span>'D#'</span>,  <span>'Eb'</span>, <span>'Fbb'</span>],
+    [<span>'D##'</span>, <span>'E'</span>,  <span>'Fb'</span>],
+    [<span>'E#'</span>,  <span>'F'</span>,  <span>'Gbb'</span>],
+    [<span>'E##'</span>, <span>'F#'</span>, <span>'Gb'</span>],
+    [<span>'F##'</span>, <span>'G'</span>,  <span>'Abb'</span>],
+    [<span>'G#'</span>,  <span>'Ab'</span>],
+    [<span>'G##'</span>, <span>'A'</span>,  <span>'Bbb'</span>],
+    [<span>'A#'</span>,  <span>'Bb'</span>, <span>'Cbb'</span>],
+    [<span>'A##'</span>, <span>'B'</span>,  <span>'Cb'</span>],
+]
+</code></pre>
+<h2>Chromatic Scales</h2>
+<p>The <em>chromatic scale</em> is the easiest scale possible, and simply consists of all the
+(twelve) semitones between an octave of a given key (the <em>main note</em> in a scale, also
+called the <em>tonic</em>).</p>
+<p>We can generate a chromatic scale for any given key very easily: <em>(i)</em> find the index of
+the note in our <code>notes</code> list, and then <em>(ii)</em> left-rotate the <code>notes</code> list that many times.</p>
+<h3>Finding the Index of a Given Note</h3>
+<p>Let’s write a simple function to find a particular note in this list:</p>
+<pre><code><span><span>def</span> <span>find_note_index</span>(<span>scale, search_note</span>):</span>
+    <span>''' Given a scale, find the index of a particular note '''</span>
+    <span>for</span> index, note <span>in</span> <span>enumerate</span>(scale):
+        <span># Deal with situations where we have a list of enharmonic</span>
+        <span># equivalents, as well as just a single note as and str.</span>
+        <span>if</span> <span>type</span>(note) == <span>list</span>:
+            <span>if</span> search_note <span>in</span> note:
+                <span>return</span> index
+        <span>elif</span> <span>type</span>(note) == <span>str</span>:
+            <span>if</span> search_note == note:
+                <span>return</span> index
+</code></pre>
+<p>The <code>find_note_index()</code> function takes as parameters a sequence of notes (<code>scale</code>),
+and a note to search for (<code>search_note</code>), and returns the index via a simple linear
+search. We handle two cases within the loop: <em>(i)</em> where the provided <code>scale</code> consists
+of individual notes (like our <code>alphabet</code> list above), or <em>(ii)</em> where it consists of
+a list of enharmonic equivalents (like our <code>notes</code> or <code>notes_basic</code> lists above).
+Here is an example of how the function works for both:</p>
+<pre><code>&gt;&gt;&gt; find_note_index(notes, 'A')    # notes is a list of lists
+9
+&gt;&gt;&gt; find_note_index(alphabet, 'A') # alphabet is a list of notes
+0
+</code></pre>
+<h3>Left-Rotating a Scale</h3>
+<p>We can now write a function to rotate a given <code>scale</code> by <code>n</code> steps:</p>
+<pre><code><span><span>def</span> <span>rotate</span>(<span>scale, n</span>):</span>
+    <span>''' Left-rotate a scale by n positions. '''</span>
+    <span>return</span> scale[n:] + scale[:n]
+</code></pre>
+<p>We slice the <code>scale</code> list at position <code>n</code> and exchange the two halves. Here is
+an example of rotating our <code>alphabet</code> list three places (which brings the note D
+to the front):</p>
+<pre><code>&gt;&gt;&gt; alphabet
+['A', 'B', 'C', 'D', 'E', 'F', 'G']
+&gt;&gt;&gt; rotate(alphabet, 3)
+['D', 'E', 'F', 'G', 'A', 'B', 'C']
+</code></pre>
+<h3>Generating a Chromatic Scale in a Given Key</h3>
+<p>We can now finally write our <code>chromatic()</code> function that generates a chromatic
+scale for a given key by rotating the <code>notes</code> array:</p>
+<pre><code><span><span>def</span> <span>chromatic</span>(<span>key</span>):</span>
+    <span>''' Generate a chromatic scale in a given key. '''</span>
+    <span># Figure out how much to rotate the notes list by and return</span>
+    <span># the rotated version.</span>
+    num_rotations = find_note_index(notes, key)
+    <span>return</span> rotate(notes, num_rotations)
+
+</code></pre>
+<p>The <code>chromatic()</code> function above finds the index of the provided key in the <code>notes</code>
+list (using our <code>find_note_index()</code> function), and then rotates it by that amount
+to bring it to the front (using our <code>rotate()</code> function). Here is an example of
+generating the D chromatic scale:</p>
+<pre><code>&gt;&gt;&gt; import pprint
+&gt;&gt;&gt; pprint.pprint(chromatic('D'))
+[['C##', 'D', 'Ebb'],
+ ['D#', 'Eb', 'Fbb'],
+ ['D##', 'E', 'Fb'],
+ ['E#', 'F', 'Gbb'],
+ ['E##', 'F#', 'Gb'],
+ ['F##', 'G', 'Abb'],
+ ['G#', 'Ab'],
+ ['G##', 'A', 'Bbb'],
+ ['A#', 'Bb', 'Cbb'],
+ ['A##', 'B', 'Cb'],
+ ['B#', 'C', 'Dbb'],
+ ['B##', 'C#', 'Db']]
+</code></pre>
+<p>For chromatic scales, one typically uses sharps
+when ascending and flats when descending.
+However, for now, we leave enharmonic equivalents just as they are; we will see
+how to pick the correct note to use later.</p>
+<h2>Intervals</h2>
+<p>Intervals specify the relative distance between notes.</p>
+<p>The notes of a chromatic scale can therfore be given names based on their relative distance from
+the tonic or <em>root note</em>. Below are the standard names for each note, ordered
+identical to the indexes in the <code>notes</code> list:</p>
+<pre><code>intervals = [
+    [<span>'P1'</span>, <span>'d2'</span>],  <span># Perfect unison   Diminished second</span>
+    [<span>'m2'</span>, <span>'A1'</span>],  <span># Minor second     Augmented unison</span>
+    [<span>'M2'</span>, <span>'d3'</span>],  <span># Major second     Diminished third</span>
+    [<span>'m3'</span>, <span>'A2'</span>],  <span># Minor third      Augmented second</span>
+    [<span>'M3'</span>, <span>'d4'</span>],  <span># Major third      Diminished fourth</span>
+    [<span>'P4'</span>, <span>'A3'</span>],  <span># Perfect fourth   Augmented third</span>
+    [<span>'d5'</span>, <span>'A4'</span>],  <span># Diminished fifth Augmented fourth</span>
+    [<span>'P5'</span>, <span>'d6'</span>],  <span># Perfect fifth    Diminished sixth</span>
+    [<span>'m6'</span>, <span>'A5'</span>],  <span># Minor sixth      Augmented fifth</span>
+    [<span>'M6'</span>, <span>'d7'</span>],  <span># Major sixth      Diminished seventh</span>
+    [<span>'m7'</span>, <span>'A6'</span>],  <span># Minor seventh    Augmented sixth</span>
+    [<span>'M7'</span>, <span>'d8'</span>],  <span># Major seventh    Diminished octave</span>
+    [<span>'P8'</span>, <span>'A7'</span>],  <span># Perfect octave   Augmented seventh</span>
+]
+</code></pre>
+<p>Again, the same note can have different interval names. For example,
+the root note can be thought of as a <em>perfect unison</em> or an diminished
+2<sup>nd</sup>.</p>
+<h3>Picking Out Notes from Enharmonic Equivalents</h3>
+<p>Given a chromatic scale in a given key, and an interval name in the above
+array, we can pin point the exact note to use (and filter it out from a set
+of enharmonic equivalents). Let’s look at the basic way to do this.</p>
+<p>As an example, let’s look at how to find the note corresponding to <code>M3</code>, or
+the major third interval, from the <code>D</code> chromatic scale.</p>
+<ol>
+<li>From our <code>intervals</code> array, we can see that the index at which we find <code>M3</code> is 4. That is <code>'M3' in intervals[4] == True</code>.</li>
+<li>Now we look at the same index in our D chromatic scale (modulo its length). We find that <code>chromatic('D')[4]</code> is the list of notes <code>['E##', 'F#', 'Gb']</code>.</li>
+<li>The number in <code>M3</code> (<em>i.e.</em>, the 3) indicates the alphabet we need to use, with 1 indicating the root alphabet. So for example, for the key of D, <code>1=D</code>, <code>2=E</code>, <code>3=F</code>, <code>4=G</code>, <code>5=A</code>, <code>6=B</code>, <code>7=C</code>, <code>8=D</code>… and so on. So we need to look for a note in our list of notes (<code>['E##', 'F#', 'Gb']</code>) containing the alphabet <code>F</code>. That’s the note F#.</li>
+<li>Conclusion: the major third (M3) relative to D is F#.</li>
+</ol>
+<h3>Programmatically Labeling Intervals for a Given Key</h3>
+<p>We can write a relatively simple function to apply this logic for us programmatically, and give us a dict mapping all interval names to the right note names in a given key:</p>
+<pre><code><span><span>def</span> <span>make_intervals_standard</span>(<span>key</span>):</span>
+    <span># Our labeled set of notes mapping interval names to notes</span>
+    labels = {}
+    
+    <span># Step 1: Generate a chromatic scale in our desired key</span>
+    chromatic_scale = chromatic(key)
+    
+    <span># The alphabets starting at provided key's alphabet</span>
+    alphabet_key = rotate(alphabet, find_note_index(alphabet, key[<span>0</span>]))
+    
+    <span># Iterate through all intervals (list of lists)</span>
+    <span>for</span> index, interval_list <span>in</span> <span>enumerate</span>(intervals):
+    
+        <span># Step 2: Find the notes to search through based on degree</span>
+        notes_to_search = chromatic_scale[index % <span>len</span>(chromatic_scale)]
+        
+        <span>for</span> interval_name <span>in</span> interval_list:
+            <span># Get the interval degree</span>
+            degree = <span>int</span>(interval_name[<span>1</span>]) - <span>1</span> <span># e.g. M3 --&gt; 3, m7 --&gt; 7</span>
+            
+            <span># Get the alphabet to look for</span>
+            alphabet_to_search = alphabet_key[degree % <span>len</span>(alphabet_key)]
+            
+            <span>try</span>:
+                note = [x <span>for</span> x <span>in</span> notes_to_search <span>if</span> x[<span>0</span>] == alphabet_to_search][<span>0</span>]
+            <span>except</span>:
+                note = notes_to_search[<span>0</span>]
+            
+            labels[interval_name] = note
+
+    <span>return</span> labels
+</code></pre>
+<p>And here is the dict we get back for the key of C:</p>
+<pre><code>&gt;&gt;&gt; import pprint
+&gt;&gt;&gt; pprint.pprint(make_intervals_standard('C'), sort_dicts=False)
+{'P1': 'C',
+ 'd2': 'Dbb',
+ 'm2': 'Db',
+ 'A1': 'C#',
+ 'M2': 'D',
+ 'd3': 'Ebb',
+ 'm3': 'Eb',
+ 'A2': 'D#',
+ 'M3': 'E',
+ 'd4': 'Fb',
+ 'P4': 'F',
+ 'A3': 'E#',
+ 'd5': 'Gb',
+ 'A4': 'F#',
+ 'P5': 'G',
+ 'd6': 'Abb',
+ 'm6': 'Ab',
+ 'A5': 'G#',
+ 'M6': 'A',
+ 'd7': 'Bbb',
+ 'm7': 'Bb',
+ 'A6': 'A#',
+ 'M7': 'B',
+ 'd8': 'Cb',
+ 'P8': 'C',
+ 'A7': 'B#'}
+</code></pre>
+<h2>Interval Formulas</h2>
+<p>We can now specify formulas, or groups of notes, using interval names, and
+be able to map them to any key that we want:</p>
+<pre><code><span><span>def</span> <span>make_formula</span>(<span>formula, labeled</span>):</span>
+    <span>'''
+    Given a comma-separated interval formula, and a set of labeled
+    notes in a key, return the notes of the formula.
+    '''</span>
+    <span>return</span> [labeled[x] <span>for</span> x <span>in</span> formula.split(<span>','</span>)]
+</code></pre>
+<h3>Major Scale Formula</h3>
+<p>For example, the formula for a major scale is:</p>
+<pre><code>formula = 'P1,M2,M3,P4,P5,M6,M7,P8'
+</code></pre>
+<p>We can use this to generate the major scale easily for different keys as shown below:</p>
+<pre><code>&gt;&gt;&gt; for key in alphabet:
+&gt;&gt;&gt;     print(key, make_formula(formula, make_intervals_standard(key)))
+C ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C']
+D ['D', 'E', 'F#', 'G', 'A', 'B', 'C#', 'D']
+E ['E', 'F#', 'G#', 'A', 'B', 'C#', 'D#', 'E']
+F ['F', 'G', 'A', 'Bb', 'C', 'D', 'E', 'F']
+G ['G', 'A', 'B', 'C', 'D', 'E', 'F#', 'G']
+A ['A', 'B', 'C#', 'D', 'E', 'F#', 'G#', 'A']
+B ['B', 'C#', 'D#', 'E', 'F#', 'G#', 'A#', 'B']
+</code></pre>
+<h3>Prettifying Scales</h3>
+<p>Let’s also quickly write a function to print scales in a nicer way:</p>
+<pre><code><span><span>def</span> <span>dump</span>(<span>scale, separator=<span>' '</span></span>):</span>
+    <span>'''
+    Pretty-print the notes of a scale. Replaces b and # characters
+    for unicode flat and sharp symbols.
+    '''</span>
+    <span>return</span> separator.join([<span>'{:&lt;3s}'</span>.<span>format</span>(x) <span>for</span> x <span>in</span> scale]) \
+                    .replace(<span>'b'</span>, <span>'\u266d'</span>) \
+                    .replace(<span>'#'</span>, <span>'\u266f'</span>)
+</code></pre>
+<p>Here is a nicer output using the correct unicode characters:</p>
+<pre><code>&gt;&gt;&gt; for key in alphabet:
+&gt;&gt;&gt;     scale = make_formula(formula, make_intervals_standard(key))
+&gt;&gt;&gt;     print('{}: {}'.format(key, dump(scale)))
+C: C   D   E   F   G   A   B   C
+D: D   E   F♯  G   A   B   C♯  D
+E: E   F♯  G♯  A   B   C♯  D♯  E
+F: F   G   A   B♭  C   D   E   F
+G: G   A   B   C   D   E   F♯  G
+A: A   B   C♯  D   E   F♯  G♯  A
+B: B   C♯  D♯  E   F♯  G♯  A♯  B
+</code></pre>
+<h3>Using Major-Scale Intervals for Formulas</h3>
+<p>An alternative approach to naming formulas is based on the notes of the major scale. This is easier when playing instruments as you can derive scales and chords in a given key if youre familiar with its major scale.</p>
+<p>Here are the interval names relative to the major scale in a given key:</p>
+<pre><code>intervals_major = [
+    [ <span>'1'</span>, <span>'bb2'</span>],
+    [<span>'b2'</span>,  <span>'#1'</span>],
+    [ <span>'2'</span>, <span>'bb3'</span>,   <span>'9'</span>],
+    [<span>'b3'</span>,  <span>'#2'</span>],
+    [ <span>'3'</span>,  <span>'b4'</span>],
+    [ <span>'4'</span>,  <span>'#3'</span>,  <span>'11'</span>],
+    [<span>'b5'</span>,  <span>'#4'</span>, <span>'#11'</span>],
+    [ <span>'5'</span>, <span>'bb6'</span>],
+    [<span>'b6'</span>,  <span>'#5'</span>],
+    [ <span>'6'</span>, <span>'bb7'</span>,  <span>'13'</span>],
+    [<span>'b7'</span>,  <span>'#6'</span>],
+    [ <span>'7'</span>,  <span>'b8'</span>],
+    [ <span>'8'</span>,  <span>'#7'</span>],
+]
+</code></pre>
+<p>I’ve also added common intervals used in more complex chords (9th’s, 11th’s, and 13th’s). These are essentially wrapped around modulo eight. So, for example, a 9th is just a 2nd, but an octave higher.</p>
+<p>We can also modify our <code>make_intervals()</code> function to use this:</p>
+<pre><code><span><span>def</span> <span>make_intervals</span>(<span>key, interval_type=<span>'standard'</span></span>):</span>
+    ...
+    <span>for</span> index, interval_list <span>in</span> <span>enumerate</span>(intervals):
+        ...
+        intervs = intervals <span>if</span> interval_type == <span>'standard'</span> <span>else</span> intervals_major
+        <span>for</span> interval_name <span>in</span> intervs:
+            <span># Get the interval degree</span>
+            <span>if</span> interval_type == <span>'standard'</span>:
+                degree = <span>int</span>(interval_name[<span>1</span>]) - <span>1</span> <span># e.g. M3 --&gt; 3, m7 --&gt; 7</span>
+            <span>elif</span> interval_type == <span>'major'</span>:
+                degree = <span>int</span>(re.sub(<span>'[b#]'</span>, <span>''</span>, interval_name)) - <span>1</span>
+            ...
+    <span>return</span> labels
+</code></pre>
+<p>Above, we’ve just added a new parameter (<code>interval_type</code>) to the <code>make_intervals()</code> function, and calculate the <code>degree</code> differently in the inner loop. If <code>interval_type</code> is specified as <code>'major'</code>, we just remove all <code>b</code> and <code>#</code> characters before converting to an integer to get the degree.</p>
+<h3>Deriving Common Scales and Chords</h3>
+<p>Here are a bunch of formulas covering the most common scales and chords:</p>
+<pre><code>formulas = {
+    <span># Scale formulas</span>
+    <span>'scales'</span>: {
+        <span># Major scale, its modes, and minor scale</span>
+        <span>'major'</span>:              <span>'1,2,3,4,5,6,7'</span>,
+        <span>'minor'</span>:              <span>'1,2,b3,4,5,b6,b7'</span>,
+        <span># Melodic minor and its modes</span>
+        <span>'melodic_minor'</span>:      <span>'1,2,b3,4,5,6,7'</span>,
+        <span># Harmonic minor and its modes</span>
+        <span>'harmonic_minor'</span>:     <span>'1,2,b3,4,5,b6,7'</span>,
+        <span># Blues scales</span>
+        <span>'major_blues'</span>:        <span>'1,2,b3,3,5,6'</span>,
+        <span>'minor_blues'</span>:        <span>'1,b3,4,b5,5,b7'</span>,
+        <span># Penatatonic scales</span>
+        <span>'pentatonic_major'</span>:   <span>'1,2,3,5,6'</span>,
+        <span>'pentatonic_minor'</span>:   <span>'1,b3,4,5,b7'</span>,
+        <span>'pentatonic_blues'</span>:   <span>'1,b3,4,b5,5,b7'</span>,
+    },
+    <span>'chords'</span>: {
+        <span># Major</span>
+        <span>'major'</span>:              <span>'1,3,5'</span>,
+        <span>'major_6'</span>:            <span>'1,3,5,6'</span>,
+        <span>'major_6_9'</span>:          <span>'1,3,5,6,9'</span>,
+        <span>'major_7'</span>:            <span>'1,3,5,7'</span>,
+        <span>'major_9'</span>:            <span>'1,3,5,7,9'</span>,
+        <span>'major_13'</span>:           <span>'1,3,5,7,9,11,13'</span>,
+        <span>'major_7_#11'</span>:        <span>'1,3,5,7,#11'</span>,
+        <span># Minor</span>
+        <span>'minor'</span>:              <span>'1,b3,5'</span>,
+        <span>'minor_6'</span>:            <span>'1,b3,5,6'</span>,
+        <span>'minor_6_9'</span>:          <span>'1,b3,5,6,9'</span>,
+        <span>'minor_7'</span>:            <span>'1,b3,5,b7'</span>,
+        <span>'minor_9'</span>:            <span>'1,b3,5,b7,9'</span>,
+        <span>'minor_11'</span>:           <span>'1,b3,5,b7,9,11'</span>,
+        <span>'minor_7_b5'</span>:         <span>'1,b3,b5,b7'</span>,
+        <span># Dominant</span>
+        <span>'dominant_7'</span>:         <span>'1,3,5,b7'</span>,
+        <span>'dominant_9'</span>:         <span>'1,3,5,b7,9'</span>,
+        <span>'dominant_11'</span>:        <span>'1,3,5,b7,9,11'</span>,
+        <span>'dominant_13'</span>:        <span>'1,3,5,b7,9,11,13'</span>,
+        <span>'dominant_7_#11'</span>:     <span>'1,3,5,b7,#11'</span>,
+        <span># Diminished</span>
+        <span>'diminished'</span>:         <span>'1,b3,b5'</span>,
+        <span>'diminished_7'</span>:       <span>'1,b3,b5,bb7'</span>,
+        <span>'diminished_7_half'</span>:  <span>'1,b3,b5,b7'</span>,
+        <span># Augmented</span>
+        <span>'augmented'</span>:          <span>'1,3,#5'</span>,
+        <span># Suspended</span>
+        <span>'sus2'</span>:               <span>'1,2,5'</span>,
+        <span>'sus4'</span>:               <span>'1,4,5'</span>,
+        <span>'7sus2'</span>:              <span>'1,2,5,b7'</span>,
+        <span>'7sus4'</span>:              <span>'1,4,5,b7'</span>,
+    },
+}
+</code></pre>
+<p>Here is the output when generating all these scales and chords in the key of C:</p>
+<pre><code>intervs = make_intervals(<span>'C'</span>, <span>'major'</span>)
+<span>for</span> ftype <span>in</span> formulas:
+    print(ftype)
+    <span>for</span> name, formula <span>in</span> formulas[ftype].items():
+        v = make_formula(formula, intervs)
+        print(<span>'\t{}: {}'</span>.<span>format</span>(name, dump(v)))
+</code></pre>
+<pre><code>scales
+    major: C   D   E   F   G   A   B
+    minor: C   D   E♭  F   G   A♭  B♭
+    melodic_minor: C   D   E♭  F   G   A   B
+    harmonic_minor: C   D   E♭  F   G   A♭  B
+    major_blues: C   D   E♭  E   G   A
+    minor_blues: C   E♭  F   G♭  G   B♭
+    pentatonic_major: C   D   E   G   A
+    pentatonic_minor: C   E♭  F   G   B♭
+    pentatonic_blues: C   E♭  F   G♭  G   B♭
+chords
+    major: C   E   G
+    major_6: C   E   G   A
+    major_6_9: C   E   G   A   D
+    major_7: C   E   G   B
+    major_9: C   E   G   B   D
+    major_13: C   E   G   B   D   F   A
+    major_7_#11: C   E   G   B   F♯
+    minor: C   E♭  G
+    minor_6: C   E♭  G   A
+    minor_6_9: C   E♭  G   A   D
+    minor_7: C   E♭  G   B♭
+    minor_9: C   E♭  G   B♭  D
+    minor_11: C   E♭  G   B♭  D   F
+    minor_7_b5: C   E♭  G♭  B♭
+    dominant_7: C   E   G   B♭
+    dominant_9: C   E   G   B♭  D
+    dominant_11: C   E   G   B♭  D   F
+    dominant_13: C   E   G   B♭  D   F   A
+    dominant_7_#11: C   E   G   B♭  F♯
+    diminished: C   E♭  G♭
+    diminished_7: C   E♭  G♭  B♭♭
+    diminished_7_half: C   E♭  G♭  B♭
+    augmented: C   E   G♯
+    sus2: C   D   G
+    sus4: C   F   G
+    7sus2: C   D   G   B♭
+    7sus4: C   F   G   B♭
+</code></pre>
+<h2>Modes</h2>
+<p>Modes are essentially left-rotations of a scale.</p>
+<pre><code>mode = rotate
+</code></pre>
+<p>The thing to note is that the resulting rotated scale, or mode, is in a different key since the root note changes after the rotation.</p>
+<p>For every key, there are exactly seven modes of the major scale depending on the number of left-rotations applied, and each has a specific name:</p>
+<pre><code>major_mode_rotations = {
+    <span>'Ionian'</span>:     <span>0</span>,
+    <span>'Dorian'</span>:     <span>1</span>,
+    <span>'Phrygian'</span>:   <span>2</span>,
+    <span>'Lydian'</span>:     <span>3</span>,
+    <span>'Mixolydian'</span>: <span>4</span>,
+    <span>'Aeolian'</span>:    <span>5</span>,
+    <span>'Locrian'</span>:    <span>6</span>,
+}
+</code></pre>
+<p>Using this, we can now generate modes of the major scale for any given key. Here’s an example for the C major scale:</p>
+<pre><code>intervs = make_intervals(<span>'C'</span>, <span>'major'</span>)
+c_major_scale = make_formula(formulas[<span>'scales'</span>][<span>'major'</span>], intervs)
+<span>for</span> m <span>in</span> major_mode_rotations:
+    v = mode(c_major_scale, major_mode_rotations[m])
+    print(<span>'{} {}: {}'</span>.<span>format</span>(dump([v[<span>0</span>]]), m, dump(v)))
+</code></pre>
+<p>And here is the result. Remember that the root note changes with each rotation:</p>
+<pre><code>C   Ionian: C   D   E   F   G   A   B
+D   Dorian: D   E   F   G   A   B   C
+E   Phrygian: E   F   G   A   B   C   D
+F   Lydian: F   G   A   B   C   D   E
+G   Mixolydian: G   A   B   C   D   E   F
+A   Aeolian: A   B   C   D   E   F   G
+B   Locrian: B   C   D   E   F   G   A
+</code></pre>
+<p>Above, we’re looking at modes that derive from a given scale. However, in practice, what you care about are modes for a given key. So given the key of C, we would want to know the C Ionian, the C Dorian, the C Mixolydian and so on.</p>
+<p>Another way to put this is that a “C Mixolidian”, for example, is not the same as “the Mixolydian of C”. The former means a Mixolydian scale where the root note is a C. The latter means the Mixolydian of the C major scale (<em>i.e.</em>, G Mixolydian from above).</p>
+<p>We can also generate modes in a given key quite easily.</p>
+<pre><code>keys = [
+    <span>'B#'</span>,  <span>'C'</span>, <span>'C#'</span>, <span>'Db'</span>, <span>'D'</span>, <span>'D#'</span>,  <span>'Eb'</span>, <span>'E'</span>,  <span>'Fb'</span>, <span>'E#'</span>,  <span>'F'</span>,
+    <span>'F#'</span>, <span>'Gb'</span>, <span>'G'</span>, <span>'G#'</span>,  <span>'Ab'</span>, <span>'A'</span>, <span>'A#'</span>,  <span>'Bb'</span>, <span>'B'</span>,  <span>'Cb'</span>,
+]
+
+modes = {}
+<span>for</span> key <span>in</span> keys:
+    intervs = make_intervals(key, <span>'major'</span>)
+    c_major_scale = make_formula(formulas[<span>'scales'</span>][<span>'major'</span>], intervs)
+    <span>for</span> m <span>in</span> major_mode_rotations:
+        v = mode(c_major_scale, major_mode_rotations[m])
+        <span>if</span> v[<span>0</span>] <span>not</span> <span>in</span> modes:
+            modes[v[<span>0</span>]] = {}
+        modes[v[<span>0</span>]][m] = v
+</code></pre>
+<p>Above, we go through each key, and build up a dict containing the modes of each key as we come across them (by checking the first note of the mode).</p>
+<p>Now, for example, if we print out <code>modes['C']</code>, we get the following:</p>
+<pre><code>{'Aeolian': ['C', 'D', 'Eb', 'F', 'G', 'Ab', 'Bb'],
+ 'Dorian': ['C', 'D', 'Eb', 'F', 'G', 'A', 'Bb'],
+ 'Ionian': ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
+ 'Locrian': ['C', 'Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb'],
+ 'Lydian': ['C', 'D', 'E', 'F#', 'G', 'A', 'B'],
+ 'Mixolydian': ['C', 'D', 'E', 'F', 'G', 'A', 'Bb'],
+ 'Phrygian': ['C', 'Db', 'Eb', 'F', 'G', 'Ab', 'Bb']}
+</code></pre>
+<h2>Summary</h2>
+<p>So we’ve looked at basic notes in Western music theory. How to derive chromatic scales from these notes. How to use interval names to pick out the right notes from enharmonic equivalents. Then we looked at how to generate scales and chords of various kinds using interval formulas, both using standard interval names and intervals relative to the major-scale. Finally, we saw that modes are simply rotations of a scale, and can be viewed in two way for a given key: the mode derived by rotating the scale of a given key (which will be in a another key), and the mode derived from some key such that the first note is the key we want.</p>
+<hr>
+<section>
+<ol>
+<li id="fn1"><p>You might wonder why we loop over twelve
+notes but call it an octave, implying only eight notes. The reason is that most common
+scales like the major and minor scales are made up of subsets of seven notes from these
+twelve. Therefore, the notes in scales wrap around on the eight note. Thus the term octave. <a href="#fnref1">↩︎</a></p>
+</li>
+</ol>
+</section>
+</div></div>
+  </div>
+</body>
+</html>

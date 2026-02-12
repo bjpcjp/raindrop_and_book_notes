@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>psql command line tutorial and cheat sheet | postgres</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>psql command line tutorial and cheat sheet | postgres</h1>
+    <p><strong>URL:</strong> <a href="https://tomcam.github.io/postgres">https://tomcam.github.io/postgres</a></p>
+    <p><strong>Tags:</strong> postgres</p>
+    <p><strong>Bookmark ID:</strong> 876776298</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      
+      <h2><a href="https://tomcam.github.io/postgres/">postgres</a></h2>
+      
+
+      
+
+<p>You’ve installed PostgreSQL. Now what? I assume you’ve been given a task that 
+uses <code>psql</code> and you want to learn the absolute minimum to
+get the job done.</p>
+
+<p>This is both a brief tutorial and a 
+quick reference for the absolute least you need to know about <code>psql</code>. 
+I assume you’re familiar with the command line and have a rough idea about
+what database administration tasks, but aren’t familiar with how to
+use <code>psql</code> to do the basics.</p>
+
+<p>View on <a href="https://tomcam.github.io/postgres/">GitHub Pages</a> or directly on <a href="https://github.com/tomcam/postgres/">GitHub</a></p>
+
+<p>The <a href="https://www.postgresql.org/docs/manuals/">PostgreSQL documentation</a> is incredibly 
+well written and thorough, but frankly, I didn’t know where to start reading. This
+is my answer to that problem.</p>
+
+<p>If you have any complaints or suggestions please let me know by 
+sending your feedback to tomcampbell@gmail.com.</p>
+
+<p>It shows how to do the following at the <code>psql</code> prompt:</p>
+
+<ul>
+  <li><a href="#opening-a-connection-locally">Start and quit <code>psql</code></a></li>
+  <li><a href="#h-help">Get help</a></li>
+  <li><a href="#getting-information-about-databases">Get information about databases</a></li>
+  <li><a href="#creating-a-database">Create databases</a></li>
+  <li><a href="#creating-a-table-create-table">CREATE TABLEs</a></li>
+  <li><a href="#adding-a-record-insert-into">INSERT, or add records to a table</a></li>
+  <li><a href="#select">SELECT, to do simple queries</a></li>
+  <li><a href="#reference">Reference</a> pointing to the official PostgreSQL documentation</li>
+</ul>
+
+<p>If you don’t have access to a live PostgreSQL installation at the moment we still have your back.
+You can follow through the examples and the output is shown as if you
+did type everything out.</p>
+
+<h2 id="the-psql-command-line-utility">The psql command line utility</h2>
+
+<p>Many administrative tasks can or should be done on your local machine, 
+even though if database lives on the cloud.
+You can do some of them through a visual user interface, but that’s not covered here. 
+Knowing how to perform these operations on the command line means you can script them,
+and scripting means you can automate tests, check errors, and do data entry on the command line.</p>
+
+<p>This section isn’t a full cheat sheet for <code>psql</code>.
+It covers the most common operations and shows them roughly in sequence, 
+as you’d use them in a typical work session.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Starting and quitting the psql interactive terminal</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="#using-psql">Command-line prompts for psql</a></td>
+    </tr>
+    <tr>
+      <td><a href="#quitting-pqsql">Quitting psql</a></td>
+    </tr>
+    <tr>
+      <td><a href="#opening-a-connection-locally">Opening a connection locally</a></td>
+    </tr>
+    <tr>
+      <td><a href="#opening-a-connection-remotely">Opening a connection remotely</a></td>
+    </tr>
+    <tr>
+      <td><a href="#looking-at-the-psql-prompt">Using the psql prompt</a></td>
+    </tr>
+    <tr>
+      <td><strong>Getting information about databases</strong></td>
+    </tr>
+    <tr>
+      <td><a href="#h-help">\h Help</a></td>
+    </tr>
+    <tr>
+      <td><a href="#l-list-databases">\l List databases</a></td>
+    </tr>
+    <tr>
+      <td><a href="#c-connect-to-a-database">\c Connect to a database</a></td>
+    </tr>
+    <tr>
+      <td><a href="#dt-display-tables">\dt Display tables</a></td>
+    </tr>
+    <tr>
+      <td><a href="#d-and-d-display-columns-field-names-of-a-table">\d and \d+ Display columns (field names) of a table</a></td>
+    </tr>
+    <tr>
+      <td><a href="#du-display-user-roles">\du Display user roles</a></td>
+    </tr>
+    <tr>
+      <td><strong>Creating and using tables and records</strong></td>
+    </tr>
+    <tr>
+      <td><a href="#creating-a-database">Creating a database</a></td>
+    </tr>
+    <tr>
+      <td><a href="#creating-a-table-create-table">Creating a table (CREATE TABLE)</a></td>
+    </tr>
+    <tr>
+      <td><a href="#adding-a-record-insert-into">Adding a record (INSERT INTO)</a></td>
+    </tr>
+    <tr>
+      <td><a href="#adding-inserting-several-records-at-once">Inserting several records at once (INSERT INTO)</a></td>
+    </tr>
+    <tr>
+      <td><a href="#adding-only-specific-columns-fields-from-a-record">Adding only specific fields from a record</a></td>
+    </tr>
+    <tr>
+      <td><a href="#doing-a-simple-query--get-a-list-of-records-select">Doing a simple query–get a list of records (SELECT)</a></td>
+    </tr>
+    <tr>
+      <td><strong>Maintenance and operations</strong></td>
+    </tr>
+    <tr>
+      <td><a href="#timing">Timing</a></td>
+    </tr>
+    <tr>
+      <td><a href="#watch">Watch</a></td>
+    </tr>
+    <tr>
+      <td><a href="#maintenance">Maintenance</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="what-you-need-to-know">What you need to know</h2>
+
+<p>Before using this section, you’ll need:</p>
+
+<ul>
+  <li>The user name and password for your PostgreSQL database</li>
+  <li>The IP address of your remote instance</li>
+</ul>
+
+<h3 id="command-line-prompts-on-the-operating-system">Command-line prompts on the operating system</h3>
+
+<p>The <code>$</code> starting a command line in the examples below represents your operating system prompt. 
+Prompts are configurable so it may well not look like this. 
+On Windows it might look like <code>C:\Program Files\PostgreSQL&gt;</code> but Windows prompts are also configurable.</p>
+
+<div><pre><code>$ psql -U sampleuser -h localhost
+</code></pre></div>
+
+<p>A line starting with <code>#</code> represents a comment. Same for everything to the right of a <code>#</code>. 
+If you accidentally type it or copy and paste it in, don’t worry. Nothing will happen.</p>
+
+<div><pre><code>This worked to connect to Postgres on DigitalOcean
+<span># -U is the username (it will appear in the \l command)</span>
+<span># -h is the name of the machine where the server is running.</span>
+<span># -p is the port where the database listens to connections. Default is 5432.</span>
+<span># -d is the name of the database to connect to. I think DO generated this for me, or maybe PostgreSQL.</span>
+<span># Password when asked is csizllepewdypieiib</span>
+<span>$ </span>psql <span>-U</span> doadmin <span>-h</span> production-sfo-test1-do-user-4866002-0.db.ondigitalocean.com <span>-p</span> 25060 <span>-d</span> mydb
+
+<span># Open a database in a remote location.</span>
+<span>$ </span>psql <span>-U</span> sampleuser <span>-h</span> production-sfo-test1-do-user-4866002-0.db.ondigitalocean.com <span>-p</span> 21334
+</code></pre></div>
+<h2 id="using-psql">Using psql</h2>
+
+<p>You’ll use <code>psql</code> (aka the <a href="https://www.postgresql.org/docs/current/app-psql.html">PostgreSQL interactive terminal</a>) most of all because it’s used to create databases and tables, show information about tables, and even to enter information (records) into the database.</p>
+
+<h3 id="quitting-pqsql">Quitting pqsql</h3>
+
+<p>Before we learn anything else, here’s how to quit <code>psql</code> and return to the operating system prompt.
+You type backslash, the letter <code>q</code>, and then you press the Enter or return key.</p>
+
+<div><pre><code># Press enter after typing \q
+# Remember this is backslash, not forward slash
+postgres=# \q
+</code></pre></div>
+
+<p>This takes you back out to the operating system prompt.</p>
+
+<h3 id="opening-a-connection-locally">Opening a connection locally</h3>
+
+<p>A common case during development is opening a connection to a local database (one on your own machine).
+Run <code>psql</code> with <code>-U</code> (for user name) followed by the name of the database, <code>postgres</code> in this example:</p>
+<div><pre><code># Log into Postgres as the user named postgres
+$ psql -U postgres
+</code></pre></div>
+
+<h3 id="opening-a-connection-remotely">Opening a connection remotely</h3>
+
+<p>To connect your remote PostgreSQL instance from your local machine, use <code>psql</code> at your operating system command line.
+Here’s a typical connection.</p>
+
+<div><pre><code><span># -U is the username (it will appear in the \l command)</span>
+<span># -h is the name of the machine where the server is running.</span>
+<span># -p is the port where the database listens to connections. Default is 5432.</span>
+<span># -d is the name of the database to connect to. I think DO generated this for me, or maybe PostgreSQL.</span>
+<span>$ </span>psql <span>-U</span> doadmin <span>-h</span> production-sfo-test1-do-user-4866002-0.db.ondigitalocean.com <span>-p</span> 25060 <span>-d</span> defaultdb
+</code></pre></div>
+
+<p>Here you’d enter the password. In case someone is peering over your shoulder, the characters are hidden. After you’ve entered your information properly you’ll get this message (truncated for clarity):</p>
+
+<h3 id="looking-at-the-psql-prompt">Looking at the psql prompt</h3>
+<p>A few things appear, then the <code>psql</code> prompt is displayed.
+The name of the current database appears before the prompt.</p>
+
+<div><pre><code>psql (11.1, server 11.0)
+Type "help" for help.
+
+postgres=# 
+</code></pre></div>
+
+<p>At this point you’re expected to type commands and parameters into the command line.</p>
+
+<h3 id="psql-vs-sql-commands">psql vs SQL commands</h3>
+
+<p><code>psql</code> has two different kinds of commands. Those starting with a backslash
+are for <code>psql</code> itself, as illustrated by the use of <code>\q</code> to quit.</p>
+
+<p>Those starting with valid SQL are of course interactive SQL used to
+create and modify PostgreSQL databases.</p>
+
+<h3 id="warning-sql-commands-end-with-a-semicolon">Warning: SQL commands end with a semicolon!</h3>
+
+<p>One gotcha is that almost all SQL commands you enter into <code>psql</code> must end in a semicolon.</p>
+
+<ul>
+  <li>For example,suppose you want to remove a table named <code>sample_property_5</code>. You’d enter this command:</li>
+</ul>
+
+<div><pre><code>postgres=# DROP TABLE "sample_property_5";
+</code></pre></div>
+
+<p>It’s easy to forget. If you do forget the semicolon, you’ll see this perplexing prompt.
+Note that a <code>[</code> has been inserted before the username portion of the prompt, and another
+prompt appears below it:</p>
+
+<div><pre><code>[postgres=# DROP TABLE "sample_property_5"
+postgres=#
+
+</code></pre></div>
+
+<p>When you do, just remember to finish it off with that semicolon:</p>
+
+<div><pre><code>[postgres=# DROP TABLE "sample_property_5"
+postgres=# ;
+</code></pre></div>
+
+<h3 id="scrolling-through-the-command-history">Scrolling through the command history</h3>
+
+<ul>
+  <li>Use the up and down arrow keys to move backwards and forwards through the command history.</li>
+</ul>
+
+<h2 id="getting-information-about-databases">Getting information about databases</h2>
+
+<p>These aren’t SQL commands so just press Enter after them. Remember that:</p>
+
+<ul>
+  <li>When there’s more output than fits the screen, it pauses. Press space to continue</li>
+  <li>If you want to halt the output, press <code>q</code>.</li>
+</ul>
+
+<h3 id="h-help">\h Help</h3>
+
+<div><pre><code># Get help. Note it's a backslash, not a forward slash.
+postgres=# \h
+</code></pre></div>
+<p>You’ll get a long list of commands, then output is paused:</p>
+
+<div><pre><code>Available help:
+  ABORT                            CREATE USER
+  ...
+  ALTER AGGREGATE                  CREATE USER MAPPING
+  ALTER PROCEDURE                  DROP INDEX
+:
+</code></pre></div>
+
+<ul>
+  <li>Press space to continue, or <code>q</code> to stop the output.</li>
+</ul>
+
+<p>You can get help on a particular item by listing it after the <code>\h</code> command.</p>
+
+<ul>
+  <li>For example, to get help on <code>DROP TABLE</code>:</li>
+</ul>
+
+<pre><code>postgres=# \h drop table
+</code></pre>
+
+<p>You’ll get help on just that item:</p>
+
+<pre><code>Command:     DROP TABLE
+Description: remove a table
+Syntax:
+DROP TABLE [ IF EXISTS ] name [, ...] [ CASCADE | RESTRICT ]
+</code></pre>
+
+<h3 id="l-list-databases">\l List databases</h3>
+
+<p>What most people think of as a database (say, a list of customers) is actually a table. A database is a set of tables, information about those tables, information about users and their permissions, and much more. Some of these databases (and the tables within) are updated automatically by PostgreSQL as you use them.</p>
+
+<p>To get a list of all databases:</p>
+
+<pre><code>postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ visitor   | tom      | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ markets   | tom      | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ tom       | tom      | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+
+</code></pre>
+
+<p>You can get info on a single database by following the <code>\l</code> prompt with its name.</p>
+
+<ul>
+  <li>For example, to view information about the <code>template0</code> database:</li>
+</ul>
+
+<pre><code>postgres=# \l template0
+</code></pre>
+
+<p>The output would be:</p>
+
+<pre><code>postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+</code></pre>
+
+<h3 id="l-list-databases-with-size-tablespace-and-description">\l+ List databases with size, tablespace, and description</h3>
+
+<p>To get additional information on the space consumed by database tables
+and comments describing those tables, use <code>\l+</code>:</p>
+
+<pre><code>postgres=# \l+
+</code></pre>
+
+<h3 id="x-expandnarrow-table-lists">\x Expand/narrow table lists</h3>
+
+<p>Use <code>\x</code> (X for eXpanded listing) to control 
+whether table listings use a wide or narrow format.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Command</th>
+      <th>Effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>\x off</code></td>
+      <td>Show table listings in wide format</td>
+    </tr>
+    <tr>
+      <td><code>\x on</code></td>
+      <td>Show table listings in narrow format</td>
+    </tr>
+    <tr>
+      <td><code>\x</code></td>
+      <td>Reverse the previous state</td>
+    </tr>
+    <tr>
+      <td><code>\x auto</code></td>
+      <td>Use terminal to determine format</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Example:</strong> Here’s an expanded listing:</p>
+
+<pre><code>/* List all databases. */
+postgres=# \l
+
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ foo       | tom      | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ foobarino | tom      | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ tom       | tom      | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+(6 rows)
+
+</code></pre>
+
+<p>Use <code>\x on</code> for narrower listings:</p>
+
+<pre><code>/* Turn on narrow listings. */
+postgres=# \x on
+postgres=# \l
+
+
+-[ RECORD 1 ]-----+----------------------
+Name              | foo
+Owner             | tom
+Encoding          | UTF8
+Collate           | en_US.UTF-8
+Ctype             | en_US.UTF-8
+Access privileges | 
+-[ RECORD 2 ]-----+----------------------
+Name              | foobarino
+Owner             | tom
+Encoding          | UTF8
+Collate           | en_US.UTF-8
+Ctype             | en_US.UTF-8
+Access privileges | 
+-[ RECORD 3 ]-----+----------------------
+Name              | postgres
+Owner             | postgres
+Encoding          | UTF8
+Collate           | en_US.UTF-8
+Ctype             | en_US.UTF-8
+Access privileges | 
+
+</code></pre>
+
+<h3 id="c-connect-to-a-database">\c Connect to a database</h3>
+
+<p>To see what’s inside a database, connect to it using <code>\c</code> followed by the database name. 
+The prompt changes to match the name of the database you’re connecting to.
+(The one named <code>postgres</code> is always interesting.) Here we’re connecting to the one named
+<code>markets</code>:</p>
+
+<pre><code>postgres=# \c markets
+psql (11.1, server 11.0)
+You are now connected to database "markets" as user "tom".
+markets=# 
+</code></pre>
+
+<h3 id="dt-display-tables">\dt Display tables</h3>
+
+<ul>
+  <li>Use <code>\dt</code> to list all the tables (technically, <em>relations</em>) in the database:</li>
+</ul>
+
+<pre><code>markets=# \dt
+
+                    List of relations
+ Schema |             Name             | Type  |  Owner   
+--------+------------------------------+-------+----------
+ public | addresspool                  | table | tom
+ public | adlookup                     | table | tom
+ public | bidactivitysummary           | table | tom
+ public | bidactivitydetail            | table | tom
+ public | customerpaymentsummary       | table | tom
+ ...
+
+</code></pre>
+
+<ul>
+  <li>If you choose a database such as <code>postgres</code> there could be many tables.
+Remember you can pause output by pressing space or halt it by pressing <code>q</code>.</li>
+</ul>
+
+<h3 id="d-and-d-display-columns-field-names-of-a-table">\d and \d+ Display columns (field names) of a table</h3>
+
+<p>To view the schema of a table, use <code>\d</code> followed by the name of the table.</p>
+
+<ul>
+  <li>To view the schema of a table named <code>customerpaymentsummary</code>, enter</li>
+</ul>
+
+<div><pre><code>markets=# \d customerpaymentsummary
+
+                            Table "public.customerpaymentsummary"
+            Column            |            Type             | Collation | Nullable | Default 
+------------------------------+-----------------------------+-----------+----------+--------
+ usersysid                    | integer                     |           | not null |        
+ paymentattemptsall           | integer                     |           |          |        
+ paymentattemptsmailin        | integer                     |           |          |        
+ paymentattemptspaypal        | integer                     |           |          |        
+ paymentattemptscreditcard    | integer                     |           |          |        
+ paymentacceptedoutagecredit  | integer                     |           |          |        
+ totalmoneyin                 | numeric(12,2)               |           |          |        
+ updatewhen1                  | timestamp without time zone |           |          |        
+ updatewhen2                  | timestamp without time zone |           |          |        
+
+</code></pre></div>
+
+<p>To view more detailed information on a table, use <code>\d+</code>:</p>
+<pre><code>markets=# \d customerpaymentsummary
+
+                            Table "public.customerpaymentsummary"
+            Column            |            Type             | Collation | Nullable | Default | Storage | Stats target |
+------------------------------+-----------------------------+-----------+----------+---------+---------+---------------
+ usersysid                    | integer                     |           | not null |         | plain   |              |   
+ paymentattemptsall           | integer                     |           |          |         | plain   |              |   
+ paymentattemptsmailin        | integer                     |           |          |         | plain   |              |   
+ paymentattemptspaypal        | integer                     |           |          |         | plain   |              |   
+ paymentattemptscreditcard    | integer                     |           |          |         | plain   |              |   
+ paymentacceptedoutagecredit  | integer                     |           |          |         | plain   |              |    
+ totalmoneyin                 | numeric(12,2)               |           |          |         | main    |              |    
+ updatewhen1                  | timestamp without time zone |           |          |         | plain   |              |   
+ updatewhen2                  | timestamp without time zone |           |          |         | plain   |              |    
+
+Indexes:
+</code></pre>
+
+<h3 id="du-display-user-roles">\du Display user roles</h3>
+
+<ul>
+  <li>To view all users and their roles, use <code>\du</code>:</li>
+</ul>
+
+<pre><code>postgres=# \du
+                                    List of roles
+ Role name  |                         Attributes                         | Member of 
+------------+------------------------------------------------------------+-----------
+ smanager   | Superuser                                                  | {}
+ postgres   | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ tom        | Superuser, Create role, Create DB                          | {}
+</code></pre>
+
+<ul>
+  <li>To view the role of a specific user, pass it after the <code>\du</code> command.
+For example, to see the only <code>tom</code> role:</li>
+</ul>
+
+<pre><code>postgres=# \du tom
+                                    List of roles
+ Role name  |                         Attributes                         | Member of 
+------------+------------------------------------------------------------+-----------
+ tom        | Superuser, Create role, Create DB                          | {}
+</code></pre>
+
+<h2 id="creating-a-database">Creating a database</h2>
+
+<p>Before you add tables, you need to create a database to contain those tables.
+That’s not done with <code>psql</code>, but instead it’s done with <code>createdb</code>
+(a separate external command; see the PostgreSQL <a href="https://www.postgresql.org/docs/current/app-createdb.html">createdb</a> documentation) at the operating system command line:</p>
+
+<div><pre><code><span># Replace markets with your database name</span>
+<span>$ </span>createdb markets
+</code></pre></div>
+<p>On success, there is no visual feedback. Thanks, PostgreSQL.</p>
+
+<h2 id="adding-tables-and-records">Adding tables and records</h2>
+
+<h3 id="creating-a-table-create-table">Creating a table (CREATE TABLE)</h3>
+
+<p>To add a table schema to the database:</p>
+
+<div><pre><code><span>postgres</span><span>=#</span> <span>create</span> <span>table</span> <span>if</span> <span>not</span> <span>exists</span> <span>product</span> <span>(</span>
+  <span>id</span>              <span>SERIAL</span><span>,</span>
+  <span>name</span>            <span>VARCHAR</span><span>(</span><span>100</span><span>)</span> <span>NOT</span> <span>NULL</span><span>,</span>
+  <span>sku</span>             <span>CHAR</span><span>(</span><span>8</span><span>)</span>
+<span>);</span>
+</code></pre></div>
+
+<p>And <code>psql</code> responds with:</p>
+
+<div><pre><code><span>CREATE</span> <span>TABLE</span>
+</code></pre></div>
+
+<p>For more see  <code>CREATE TABLE</code> in the <a href="https://www.postgresql.org/docs/10/sql-createtable.html">PostgreSQL official docs</a>.</p>
+
+<h3 id="adding-a-record-insert-into">Adding a record (INSERT INTO)</h3>
+
+<ul>
+  <li>Here’s how to add a record, populating every field:</li>
+</ul>
+
+<div><pre><code><span># The id field is an automatically assigned</span>
+<span># when you use DEFAULT. The serial primary key means</span>
+<span># that number will be increased by at least</span>
+<span># 1 and assigned to that same field when</span>
+<span># a new record is created.</span>
+<span># Using DEFAULT is a placeholder. </span>
+<span># In its place PostgreSQL automatically generates a unique integer for it.</span>
+<span>postgres</span><span>=</span><span># INSERT INTO product VALUES(DEFAULT, 'Apple, Fuji', '4131');</span>
+</code></pre></div>
+
+<p>PostgreSQL responds with:</p>
+
+<div><pre><code><span>INSERT</span> <span>0</span> <span>1</span>
+</code></pre></div>
+
+<ul>
+  <li>Try it again and you get a simliar response.</li>
+</ul>
+
+<div><pre><code><span>postgres</span><span>=#</span> <span>INSERT</span> <span>INTO</span> <span>product</span> <span>VALUES</span><span>(</span><span>DEFAULT</span><span>,</span> <span>'Banana'</span><span>,</span> <span>'4011'</span><span>);</span>
+<span>INSERT</span> <span>0</span> <span>1</span>
+</code></pre></div>
+
+<h3 id="adding-inserting-several-records-at-once">Adding (inserting) several records at once</h3>
+
+<ul>
+  <li>You can enter a list of records using this syntax:</li>
+</ul>
+
+<div><pre><code>postgres=# INSERT INTO product VALUES
+(DEFAULT, 'Carrots', 4562),
+(DEFAULT, 'Durian', 5228)
+;
+</code></pre></div>
+
+<h4 id="adding-only-specific-columns-fields-from-a-record">Adding only specific (columns) fields from a record</h4>
+
+<p>You can add records but specify only selected fields (also known as columns). MySQL will use common sense default values for the rest.</p>
+
+<p>In this example, only the <code>name</code> field will be populated. The <code>sku</code> column is left blank, and the <code>id</code> column is incremented and inserted.</p>
+
+<p>Two records are added:</p>
+
+<div><pre><code><span>postgres</span><span>=#</span> <span>INSERT</span> <span>INTO</span> <span>product</span> <span>(</span><span>name</span><span>)</span> <span>VALUES</span>
+<span>(</span><span>'Endive'</span><span>),</span>
+<span>(</span><span>'Figs'</span><span>)</span>
+<span>;</span>
+</code></pre></div>
+
+<p>PostgreSQL responds with the number of records inserted:</p>
+
+<pre><code>INSERT 0 2
+</code></pre>
+
+<p>For more on INSERT, see <code>INSERT</code> in the <a href="https://www.postgresql.org/docs/current/sql-insert.html">PostgreSQL official docs</a></p>
+
+
+<h3 id="doing-a-simple-queryget-a-list-of-records-select">Doing a simple query–get a list of records (SELECT)</h3>
+
+<p>Probably the most common thing you’ll do with a table is to obtain information about it
+with the <code>SELECT</code> statement. It’s a <a href="https://www.postgresql.org/docs/current/sql-select.html">huge topic</a></p>
+
+<ul>
+  <li>Let’s list all the records in the <code>product</code> table:</li>
+</ul>
+
+<div><pre><code><span>postgres</span><span>=#</span> <span>SELECT</span> <span>*</span> <span>FROM</span> <span>product</span><span>;</span>
+</code></pre></div>
+
+<p>The response:</p>
+
+<pre><code>postgres=# select * from product;
+ id |    name     |   sku    
+----+-------------+----------
+  1 | Apple, Fuji | 4131    
+  2 | Banana      | 4011    
+(2 rows)
+</code></pre>
+
+<h4 id="note">Note</h4>
+
+<p>If your table has mixed case objects such as column names or indexes, you’ll need to enclose them in double quotes. 
+For example, If a column name were <code>Product</code> instead of <code>product</code> your query would need to look like this:</p>
+
+<div><pre><code><span>SELECT</span> <span>*</span> <span>FROM</span> <span>"product"</span><span>;</span>
+</code></pre></div>
+<p>For more on SELECT, see the <code>SELECT</code> in the <a href="https://www.postgresql.org/docs/current/sql-select.html">PostgreSQL official docs</a>.</p>
+
+
+
+<h2 id="maintenance-and-operations-issues">Maintenance and operations issues</h2>
+
+<h2 id="timing">Timing</h2>
+
+
+<h3 id="t-timing-sql-operations">\t Timing SQL operations</h3>
+
+<p>Use <code>\t</code> to show timing for all SQL operations performed.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Command</th>
+      <th>Effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>\timing off</code></td>
+      <td>Disable timing of SQL operations</td>
+    </tr>
+    <tr>
+      <td><code>\timing on</code></td>
+      <td>Show timing after all SQL operations</td>
+    </tr>
+    <tr>
+      <td><code>\timing</code></td>
+      <td>Toggle (reverse) the setting</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="example-of-t-timing-command">Example of \t Timing command</h3>
+
+<div><pre><code>tom=# insert into todo values ('Retry on Android before app submission,'8.x and earlier');
+INSERT 0 1
+tom=# \timing on
+Timing is on.
+tom=# insert into todo values ('Correct footer bug','Mobile version only');
+INSERT 0 1
+Time: 1.067 ms
+tom=# insert into todo values ('Retry on Android before app submission', '8.x and earlier');
+INSERT 0 1
+Time: 23.312 ms
+tom=# \timing
+Timing is off.
+</code></pre></div>
+
+<h2 id="watch">Watch</h2>
+
+<p>The <code>\watch</code> command repeats the previous command at the specified interval.
+To use it, enter the SQL command you want repeated, then
+use <code>\watch</code> followed by the number of seconds you want for
+the interval between repeats, for rexample, <code>\watch 1</code>
+to repeat it every second.</p>
+
+<h3 id="example-of-the-watch-command">Example of the \Watch command</h3>
+
+<p>Here’s an example of using <code>\watch</code> to see if any records have been
+inserted within the last 5 seconds.</p>
+
+<div><pre><code>tom=# select count(*);
+  count 
+--------
+    726
+(726 rows)
+
+tom=# \watch 5
+Mon Nov 16 13:50:36 2020 (every 2s)
+
+  count 
+--------
+    726
+(726 rows)
+
+Mon Nov 16 13:50:38 2020 (every 2s)
+
+  count 
+--------
+    726
+(726 rows)
+
+Mon Nov 16 13:50:40 2020 (every 2s)
+
+  count 
+--------
+    726
+(726 rows)
+
+</code></pre></div>
+
+<h3 id="locate-the-pg_hbaconf-file">Locate the pg_hba.conf file</h3>
+
+<p>Postgres configuration is stored in a file named <code>pg_hba.conf</code> <em>somewhere</em> in the file system, but
+that location varies widely. The way to find it is to use <code>show  hba_file</code> like this:</p>
+
+<div><pre><code><span>show</span>  <span>hba_file</span><span>;</span>
+</code></pre></div>
+
+<p>See below for hot reloading this file while Postgres is running.</p>
+
+<h3 id="reload-the-configuration-file-while-postgres-is-running">Reload the configuration file while Postgres is running</h3>
+
+<p>If you make changes to the <code>pg_hba.conf</code> Postgres configuration sometimes you need to restart.
+But you may just choose to reload the <code>pg_hba.conf</code> configuration file like this:</p>
+
+<div><pre><code><span>SELECT</span> <span>pg_reload_conf</span><span>();</span>
+</code></pre></div>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li>PostgreSQL offical docs: <a href="https://www.postgresql.org/docs/current/admin.html">Server Administration</a></li>
+  <li><code>psql</code> , a.k.a the <a href="https://www.postgresql.org/docs/current/app-psql.html">PostgreSQL interactive terminal</a></li>
+  <li><code>createdb</code> in the <a href="https://www.postgresql.org/docs/current/app-createdb.html">PostgreSQL offical docs</a></li>
+  <li><code>CREATE TABLE</code> in the <a href="https://www.postgresql.org/docs/current/sql-createtable.html">PostgreSQL official docs</a></li>
+  <li><code>INSERT</code> in the <a href="https://www.postgresql.org/docs/current/sql-insert.html">PostgreSQL official docs</a></li>
+</ul>
+
+
+
+      
+    </div></div>
+  </div>
+</body>
+</html>

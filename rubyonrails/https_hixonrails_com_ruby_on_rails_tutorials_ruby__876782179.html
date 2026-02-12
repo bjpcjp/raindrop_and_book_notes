@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-application-monitoring/</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-application-monitoring/</h1>
+    <p><strong>URL:</strong> <a href="https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-application-monitoring">https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-application-monitoring</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876782179</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="section-2-160"><div id="div_block-59-160"><p><img id="image-125-160" alt="" src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/wiktor_vatar.png"></p><div id="div_block-159-160"><p><span id="span-56-160">Wiktor Plaga</span></p><div id="div_block-162-160"><p>Published:&nbsp;</p><p><span id="span-153-160">March 25, 2020</span></p></div></div></div><p><img id="image-149-160" alt="" src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/ruby-on-rails-application-monitoring-1.png"></p></div><div id="section-16-160"><p><span id="span-165-160">
+<p>This is the ultimate tutorial to Ruby on Rails application monitoring in 2020.</p>
+
+
+
+<p>In this comprehensive guide I'll cover:</p>
+
+
+
+<ul><li>Explanation of Ruby on Rails metrics worth monitoring</li><li>Breakdown of different monitoring departments</li><li>How to pick the right tool for the job</li><li>Ruby on Rails application monitoring tools comparison</li><li>An overview of things to consider as an application maintainer</li><li>Sane guide to Rails logger and monitoring tools setup</li></ul>
+
+
+
+<p>So if you want to sleep through the night with your Ruby on Rails application monitoring in place, you are in the right place.</p>
+
+
+
+<p id="table-of-contents">Table of contents</p>
+
+
+
+<ul><li><a rel="noreferrer noopener" aria-label="Ruby on Rails application monitoring basics (opens in a new tab)" href="#ruby-on-rails-application-monitoring-basics" target="_blank">Ruby on Rails application monitoring basics</a></li><li><a href="#breakdown-of-ruby-on-rails-application-monitoring">Breakdown of Ruby on Rails application monitoring </a><ul><li><a href="#application-performance-monitoring">Application Performance Monitoring</a></li><li><a href="#ruby-logger-error-and-exception-monitoring">Ruby logger Error and Exception monitoring</a></li><li><a href="#system-and-server-monitoring">Server and System monitoring</a></li><li><a href="#ruby-logs-monitoring">Ruby logs monitoring</a></li><li><a href="#system-security-monitoring">System Security monitoring</a></li></ul></li><li><a href="#ruby-on-rails-monitoring-tools-and-services-comparison">Ruby on Rails Monitoring Tools and Services Comparison</a></li><li><a href="#ruby-on-rails-application-performance-monitoring">Ruby on Rails Application Performance Monitoring</a><ul><li><a href="#appneta">AppNeta</a></li><li><a href="#appsignal">AppSignal</a></li><li><a href="#instrumental">Instrumental</a></li><li><a href="#new-relic">New Relic</a></li><li><a href="#ror-vs-wild">RoR vs Wild</a></li><li><a href="#skylight">Skylight</a></li><li><a href="#poor-mans-choice-rails-performance">Poor Man's Choice: Rails Performance</a></li></ul></li><li><a href="#ruby-on-rails-error-and-exception-monitoring">Ruby on Rails Error and Exception Monitoring</a><ul><li><a href="#airbrake">AirBrake</a></li><li><a href="#bugsnag">Bugsnag</a></li><li><a href="#honeybadger">Honeybadger</a></li><li><a href="#raygun">Raygun</a></li><li><a href="#rollbar">Rollbar</a></li><li><a href="#sentry">Sentry</a></li><li><a href="#poor-mans-choice-exception-track">Poor Man's Choice: Exception Track</a></li></ul></li><li><a href="#whats-next">What's next?</a><ul><li><a href="#system-monitoring">System monitoring</a></li><li><a href="#availability-monitoring">Availability monitoring</a></li><li><a href="#security-monitoring">Security monitoring</a></li><li><a href="#page-speed-monitoring">Page speed monitoring</a></li><li><a href="#seo-monitoring">SEO monitoring</a></li></ul></li><li><a href="#conclusion">Conclusion</a></li></ul>
+
+
+
+<p>Let's do it.</p>
+
+
+
+<h2 id="ruby-on-rails-application-monitoring-basics"><a href="#ruby-on-rails-application-monitoring-basics" title="Link to Ruby on Rails Application Monitoring Basics">#</a>Ruby on Rails Application Monitoring Basics</h2>
+
+
+
+<p>Out of the box, Ruby on Rails comes to us with a <code>Rails.logger</code>, an amazing tool that's both simple to use and easily extendable.</p>
+
+
+
+<p>In its basic form, the Rails logger is writing the application output to the dedicated log file as well as to the running process' stdout</p>
+
+
+
+<p>A name of the log file depends on the <code>RAILS_ENV</code> we are running the app in. In the default configuration in the <em>log</em> directory in the application root you will find:</p>
+
+
+
+<ul><li><em>development.log</em></li><li><em>test.log</em></li><li><em>production.log</em></li></ul>
+
+
+
+<p>On top of that, the logger is equipped in an ability to differentiate various events severity levels:</p>
+
+
+
+<ul><li>debug</li><li>info</li><li>warn</li><li>error</li><li>fatal</li><li>unknown</li></ul>
+
+
+
+<p>It's very useful for filtering, grouping and aggregating logs via third party services described in the next parts of this article.</p>
+
+
+
+<h2 id="breakdown-of-ruby-on-rails-application-monitoring"><a href="#breakdown-of-ruby-on-rails-application-monitoring" title="Link to Breakdown of Ruby on Rails Application Monitoring">#</a>Breakdown of Ruby on Rails Application Monitoring</h2>
+
+
+
+<p>As we know by this point, the dedicated Rails logger serves one purpose, and that's telling us exactly what happens in the domain of our Ruby on Rails application.</p>
+
+
+
+<p>However, that's not even a tip of an iceberg when considering the full suite Ruby on Rails application - there's so much more to consider.</p>
+
+
+
+<p>It all comes to asking ourselves - <strong>what exactly do we want to know about our Ruby on Rails application?</strong></p>
+
+
+
+<p>Let's break it down in order to answer this question.</p>
+
+
+
+<h3 id="application-performance-monitoring"><a href="#application-performance-monitoring" title="Link to Application Performance Monitoring">#</a>Application Performance Monitoring</h3>
+
+
+
+<p>First things first: we want to <strong>know about our Ruby on Rails application's bottlenecks</strong>.</p>
+
+
+
+<blockquote><p>A&nbsp;<em>bottleneck</em>&nbsp;is a point of congestion in a production system - such as an assembly line or a computer network - that occurs when workloads arrive too quickly for the production process to handle.</p><cite>"<em>Business Esentials</em>" by Investopedia</cite></blockquote>
+
+
+
+<p>This is the domain covered the most thoroughly by SaaS services, it even has its own shortcut, APM.</p>
+
+
+
+<p>Let's break down the classic Ruby on Rails usage, MVC, into small parts that one wants to monitor in the performance perspective:</p>
+
+
+
+<ul><li>Model - how long does it take for my app to communicate with its database?</li><li>View - how performant is my app's views rendering engine?</li><li>Controller - how fast is my app responding to the received requests?</li></ul>
+
+
+
+<p>Whenever thinking about the performance, <strong>the information we want to obtain is the execution time</strong> of different parts of our application.</p>
+
+
+
+<p>Remember, those are only basics - other things to compartmentalize in the performance perspective I can think of of the top of my head are:</p>
+
+
+
+<ul><li>How long does it take to run various rake tasks?</li><li>How performant is my background job processing?</li><li>Are there any bottlenecks in my mailing service adapter?</li><li>Is my payment processing fast enough?</li></ul>
+
+
+
+<p>It all depends on what your app does for a living. Let's take for example the processing of payments.</p>
+
+
+
+<p>It is crucial for our customers not to wait for payments to be processed for 3 days or even 3 hours - and that's exactly the bottlenecks we want and need to know about.</p>
+
+
+
+<p>With a correctly working APM in place, we are equipped to react quickly to the Rails application bottlenecks, which <strong>results in a better end-user experience</strong>.</p>
+
+
+
+<h2 id="ruby-logger-error-and-exception-monitoring"><a href="#ruby-logger-error-and-exception-monitoring" title="Link to Ruby logger: Error and Exception Monitoring">#</a>Ruby logger: Error and Exception Monitoring</h2>
+
+
+
+<p>The next part is the scariest one, yet inevitable - we want to know when our <strong>Ruby on Rails application behaves unexpectedly</strong>.</p>
+
+
+
+<p>Our Ruby on Rails logger comes to the rescue - by default, it logs all exceptions raised both into stdout and the dedicated file.</p>
+
+
+
+<p>Rails neatly prints the thrown exceptions' stack trace, which allows us to pinpoint the exact line of code causing the error.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-rollbar-code-line.png" alt="Rollbar's example of code line throwing an exception"><figcaption>Rollbar's example of code line throwing an exception</figcaption></figure>
+
+
+
+<p>That said, even for small applications that's not enough to easily work with. Why?</p>
+
+
+
+<ul><li>Log files format is not easy to read</li><li>No easy searching and filtering</li><li>Nobody wants to watch live app's stdout for a living</li></ul>
+
+
+
+<p>That's where an awesome <strong>error and exception monitoring services come with a HUGE help</strong>.</p>
+
+
+
+<p>When hooked up correctly, the amount of information on thrown exceptions provided is just enough for a developer to solve any problem in minutes.</p>
+
+
+
+<p>On top of that, you can usually tweak them with even more helpful intel, such as for example:</p>
+
+
+
+<ul><li>An exact user that caused the exception</li><li>Received request parameters</li><li>Custom tags</li><li>Any custom data that you find useful for a given part of your app</li></ul>
+
+
+
+<p>Let's be honest with each other - <strong>there isn't any golden bullet solution to prevent all of our Ruby on Rails application crashes</strong>.</p>
+
+
+
+<p>And its crashes are a piece of must-have knowledge for anybody responsible for maintaining a healthy system.</p>
+
+
+
+<p>With a correctly hooked up exception monitoring in place, we are equipped in just the right tools to fix them as quickly as possible.</p>
+
+
+
+<p>Thanks to no longer being blind to our Ruby on Rails application errors, our <strong>end-user gets exactly the experience we expect them to get</strong> by fixing anything that's out of place.</p>
+
+
+
+<h3 id="server-and-system-monitoring"><a href="#server-and-system-monitoring" title="Link to Server and System monitoring">#</a>Server and System monitoring</h3>
+
+
+
+<p>Ruby on Rails by itself is just a simple process running on the system that launched it - nothing more, nothing less.</p>
+
+
+
+<p>In order to obtain a full knowledge about our application, we want to have at least a basic intel about the system that runs our Ruby on Rails application.</p>
+
+
+
+<p>In the simplest form, this breaks down to other processes that are essential for our application to work as expected:</p>
+
+
+
+<ul><li>System: VPS, Cloud or any other,</li><li>Database: MySQL, PostgreSQL or any other</li><li>HTTP servers: Nginx, Apache or any other</li><li>Other popular tools like Redis, Sidekiq, RabbitMQ - you name it</li></ul>
+
+
+
+<p>It all comes down to what you use. </p>
+
+
+
+<p>When planning your monitoring suite, try to break it down to those little pieces and think about each process without which your Ruby on Rails application will not work as expected.</p>
+
+
+
+<h3 id="ruby-logs-monitoring"><a href="#ruby-logs-monitoring" title="Link to Ruby logs monitoring">#</a>Ruby logs monitoring</h3>
+
+
+
+<p>This one serves as <strong>an alternative both to the Ruby on Rails exception monitoring and the APM</strong>.</p>
+
+
+
+<p>The idea is to hook up your logs with some other process that aggregates them.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-logs-tail.png" alt="Fragment of raw Rails logs"><figcaption>Fragment of raw Rails logs</figcaption></figure>
+
+
+
+<p>It means that on top of errors and exceptions, you can extract additional data about anything that your Ruby on Rails logger tells you and break it down into both performance and exceptions reports.</p>
+
+
+
+<p>That is especially useful when you use Rails logger extensively with the information and warning severities.</p>
+
+
+
+<p>By customizing the tool of your choice a little, you can easily <strong>aggregate the data you need for almost any intel required</strong> to successfully maintain your Ruby on Rails application.</p>
+
+
+
+<p>Some common use-cases are:</p>
+
+
+
+<ul><li>gathering info on email delivery</li><li>setting warnings for various processes' performance drops</li><li>gluing together reports from multiple places</li></ul>
+
+
+
+<p>There are pros and cons of this solution.  </p>
+
+
+
+<p>On the one hand, you get the <strong>full, detailed overview</strong> of what you exactly need - no more, no less, just what you extract.</p>
+
+
+
+<p>On the other hand, this usually is <strong>not a drop-in solution</strong> to all your problems, and <strong>costs you the actual implementation time</strong> - the more you want to know, the <strong>more work</strong> you gonna put in.</p>
+
+
+
+<h3 id="system-security-monitoring"><a href="#system-security-monitoring" title="Link to System Security monitoring">#</a>System Security monitoring</h3>
+
+
+
+<p>There is one metric that when tread too lightly can even put you in jail these days.</p>
+
+
+
+<p>We're talking about information security.</p>
+
+
+
+<p>This topic is <strong>easily overlooked at the beginning and costs more than its worth in the later stages</strong> of the Ruby on Rails application lifetime.</p>
+
+
+
+<p>Cybersecurity breaks down to a multitude of aspects that both developers and business owners sadly don't bother much with on a daily basis.</p>
+
+
+
+<p>The good part is that <strong>the day you implement at least minimal security measures into your application is the day when you become less likely a target of any security breach</strong>.</p>
+
+
+
+<p>Most of the hackers do not waste time on difficult targets whenever there's an alternative in the low hanging fruit.</p>
+
+
+
+<p>All that said, Ruby on Rails security monitoring is a very, very nice thing to have in place. </p>
+
+
+
+<p>What are some common attacks that we want to monitor for?</p>
+
+
+
+<ul><li>Denial of Service, DDoS</li><li>SQL injection</li><li>Cross-Site Scripting, XSS</li><li>and <a href="http://web.archive.org/web/20221002070221/https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-security-best-practices/" data-wpel-link="internal">many, many more</a></li></ul>
+
+
+
+<p>Further down the article, I will present you with some examples of the tools we can use to monitor Ruby on Rails application security.</p>
+
+
+
+<p>That said, in my opinion, <strong>an increased awareness combined with prevention in the security field comes a long way</strong>.</p>
+
+
+
+<p>And there are tools to use in order to implement it.</p>
+
+
+
+<h2 id="ruby-on-rails-monitoring-tools-and-services-comparison"><a href="#ruby-on-rails-monitoring-tools-and-services-comparison" title="Link to Ruby on Rails Monitoring Tools and Services Comparison">#</a>Ruby on Rails Monitoring Tools and Services Comparison</h2>
+
+
+
+<p>In this part, we compare a multitude of logging and monitoring tools and services.</p>
+
+
+
+<p>In order to effectively do so, we take the following features into consideration:</p>
+
+
+
+<ul><li><strong>Free</strong> - the limit of using the tool without paying a dime</li><li><strong>Trial</strong> - can we test the tool without paying for it, and if so, for how long</li><li><strong>100k/m</strong> - how much does 100 thousand metrics (or requests if you wish) cost in their cheapest plan yearly - for easier comparison</li><li><strong>Lowest</strong> - the cheapest option's cost, and what do we pay for</li><li><strong>Since</strong> - since when is the tool available on the market</li></ul>
+
+
+
+<p>In order to fairly compare the costs, the <strong>100k/m</strong> column is calculated from the break down of the <strong>Lowest</strong> metric into the monthly cost of 100k requests <strong>in the annual plan</strong>.</p>
+
+
+
+<p>Stand aware that this is unfortunately not applicable to every single service available, as their plans vary.</p>
+
+
+
+<p>One other thing worth noting: the <strong>order of those tools does not matter in this comparison</strong>, they are simply sorted lexically.</p>
+
+
+
+<h2 id="ruby-on-rails-application-performance-monitoring"><a href="#ruby-on-rails-application-performance-monitoring" title="Link to Ruby on Rails Application Performance Monitoring">#</a>Ruby on Rails Application Performance Monitoring</h2>
+
+
+
+<p>Let's take a look at various APM options available for our Ruby on Rails application monitoring.</p>
+
+
+
+<figure><table><tbody><tr><td><strong>Tool</strong></td><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>AppNeta</td><td>yes*</td><td>?</td><td>?</td><td>$119* / ?</td><td>2011</td></tr><tr><td>AppSignal</td><td>no</td><td>30 days</td><td>$7.6</td><td>$19 / 250k</td><td>2012</td></tr><tr><td>Instrumental</td><td>no</td><td>other</td><td>$340</td><td>$0.0034 / metric/ day</td><td>2012</td></tr><tr><td>New Relic</td><td>yes</td><td>14 days</td><td>?</td><td>$12.5 / month</td><td>2007</td></tr><tr><td>RoR vs Wild</td><td>&lt; 100k</td><td>14 days</td><td>$0.8396 / 100k</td><td>$41.98 / 5000k</td><td>2017</td></tr><tr><td>Skylight</td><td>&lt; 100k</td><td>30 days</td><td>$2.23 / 100k</td><td>$20 / 1000k</td><td>2012</td></tr></tbody></table></figure>
+
+
+
+<p>This is the <strong>one department of the market that thrives</strong>, which has its <strong>pros</strong> and <strong>cons</strong>.</p>
+
+
+
+<ul><li><strong>PRO</strong>: Pricing is more or less leveled</li><li><strong>CON</strong>: Hard to decide if you're not sure what is it you're looking for</li></ul>
+
+
+
+<p>On the other hand, the moment we can <em>ignore</em> the pricing is the moment when we can focus on selecting both the features that really matter to us and a UI that we are the most comfortable to work with on the daily basis.</p>
+
+
+
+<p>Let's see what's available for Ruby on Rails Application Performance Monitoring.</p>
+
+
+
+<h3 id="appneta"><a href="#appneta" title="Link to AppNeta">#</a>AppNeta</h3>
+
+
+
+<p><a href="http://web.archive.org/web/20221002070221/https://www.appneta.com/pricing/" target="_blank" rel="noreferrer noopener" aria-label="AppNeta (opens in a new tab)" data-wpel-link="external">AppNeta</a> is a SaaS heavily focused on across-network performance monitoring.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-appneta.png" alt="Ruby on Rails Application Monitoring with AppNeta"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>yes*</td><td>?</td><td>?</td><td>$119* / ?</td><td>2011</td></tr></tbody></table></figure>
+
+
+
+<p>Addressing the <strong>* asterisk</strong> in the comparison table: their pricing page does not reveal any details, just the plans, but I've managed to track it on the <a rel="noreferrer noopener" aria-label="HackersNews Tools of The Trade repository (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://github.com/cjbarber/ToolsOfTheTrade#application-performance" target="_blank" data-wpel-link="external">HackersNews Tools of The Trade repository</a>.</p>
+
+
+
+<p>It comes in two available Cloud plans, Public and Private</p>
+
+
+
+<p>In other words, it means that you can either use their <strong>public hosting</strong> for all the monitored data or keep it on <strong>your own premises</strong>.</p>
+
+
+
+<blockquote><p>To get the big picture, you need to see further. Your business doesn't happen within your walls as much as it used to.</p><cite>appneta.com</cite></blockquote>
+
+
+
+<p>All that could mean that offered <strong>solutions are carefully crafted to your specific needs</strong> - you can get a quote by providing some basic information and being called or emailed by their Sales Team.</p>
+
+
+
+<p>AppNeta does not maintain any open sourced Ruby gem on <a href="http://web.archive.org/web/20221002070221/https://github.com/appneta" target="_blank" rel="noreferrer noopener" aria-label="their official GitHub organization website (opens in a new tab)" data-wpel-link="external">their official GitHub organization website</a> for integrating with them - there are either private gems or more likely their official API that you'd need to integrate with.</p>
+
+
+
+<p>One way or another, implementation costs exist and <strong>it is probably not a drop-in solution</strong> for the Ruby on Rails Application Performance Monitoring.</p>
+
+
+
+<p>Summing up, AppNeta is <strong>a complex solution and probably not the first choice</strong>. Its sales transparency has some room for improvement, as it is not easy to compare with other tools in order to pick the best one for us.</p>
+
+
+
+<h3 id="appsignal"><a href="#appsignal" title="Link to AppSignal">#</a>AppSignal</h3>
+
+
+
+<p><a href="http://web.archive.org/web/20221002070221/https://appsignal.com/plans" target="_blank" rel="noreferrer noopener" aria-label="AppSignal (opens in a new tab)" data-wpel-link="external">AppSignal</a> is a dedicated solution for monitoring Ruby on Rails and Elixir applications.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-appsignal.png" alt="Ruby on Rails Application Monitoring with AppSignal"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>no</td><td>30 days</td><td>$7.6</td><td>$19 / 250k</td><td>2012</td></tr></tbody></table></figure>
+
+
+
+<p>This can potentially go a long way for your Ruby on Rails Application.</p>
+
+
+
+<p>My reasoning is that <strong>the dedicated solution focused on the narrow niche such as Ruby on Rails applications might easily become the best tool for the job</strong>, providing unique flavors of the framework internals monitoring out of the box.</p>
+
+
+
+<blockquote><p>Catch errors, track performance, monitor hosts, detect anomalies — all in one tool.</p><cite>appsignal.com</cite></blockquote>
+
+
+
+<p>On their official Github organization website, AppSignal hosts an open-sourced <code>appsignal-ruby</code> gem dedicated to communicating with their cloud services.</p>
+
+
+
+<p>On top of that, they offer advanced integration with your Github account.</p>
+
+
+
+<p>All the reported data is available via the web browser, in the neatly crafted and what seems easy to use UI.</p>
+
+
+
+<p>Summing up, AppSignal offers transparent and fair pricing completed with an open-sourced gem used for implementing it in your Ruby on Rails application.</p>
+
+
+
+<h3 id="instrumental"><a href="#instrumental" title="Link to Instrumental">#</a>Instrumental</h3>
+
+
+
+<p><a href="http://web.archive.org/web/20221002070221/https://instrumentalapp.com/ruby-application-monitoring" target="_blank" rel="noreferrer noopener" aria-label="Instrumental (opens in a new tab)" data-wpel-link="external">Instrumental</a> provides a solution for monitoring both Ruby on Rails applications and their infrastructure.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-instrumentalapp.png" alt="Ruby on Rails Application Monitoring with Instrumental"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>no</td><td>other</td><td>$340</td><td>$0.0034 / metric/ day</td><td>2012</td></tr></tbody></table></figure>
+
+
+
+<p>Free Trial marked as <strong>other means that there is a free plan with up to 500 metrics with 3 hours of data visibility</strong> - a great option for development purposes.</p>
+
+
+
+<p>Next to dedicated Ruby implementation, they support .NET, Java, Node.js, PHP and Python, to name a few.</p>
+
+
+
+<p>By infrastructure monitoring, they mean drop-in solutions for AWS, Docker, MySQL, PostgreSQL, MongoDB, Redis and Memcached.</p>
+
+
+
+<blockquote><p>Instrumental helps you quickly get answers to complex questions - and you'll feel good doing it.</p><cite>instrumentalapp.com</cite></blockquote>
+
+
+
+<p>Instrumentalapp on their official Github account hosts an open-sourced <code>instrumental_agent-ruby</code> gem code for integrating with their monitoring cloud.</p>
+
+
+
+<p>On top of a dedicated UI, <strong>they provide Instrumental Query Language</strong> that allows end-users to aggregate, transform and time-shift all the data gathered.</p>
+
+
+
+<p>Summing up, Instrumentalapp offers a complex APM solution for Ruby on Rails application performance monitoring, as well as rich infrastructure monitoring options.</p>
+
+
+
+<p>However, it comes with a price not suited for small starting projects but scales nicely for big enterprises.</p>
+
+
+
+<h3 id="new-relic"><a href="#new-relic" title="Link to New Relic">#</a>New Relic</h3>
+
+
+
+<p><a rel="noreferrer noopener" aria-label="New Relic (opens in a new tab)" href="http://web.archive.org/web/20221002070221/http://newrelic.com/" target="_blank" data-wpel-link="external">New Relic</a> is one of the most popular choices for APM solutions world-wide.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-newrelic.png" alt="Ruby on Rails Application Monitoring with New Relic"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>yes</td><td>14 days</td><td>?</td><td>$12.5 / month</td><td>2007</td></tr></tbody></table></figure>
+
+
+
+<p>I did not manage to break down the cheapest plans costs into the price of 100k metrics a month - if you know how to do that, please leave me a comment.</p>
+
+
+
+<blockquote><p>Uptime is everything. That's why observability is so critical for today’s business infrastructure.</p><cite>newrelic.com</cite></blockquote>
+
+
+
+<p>The APM plan goes way beyond just Ruby on Rails monitoring, and it includes:</p>
+
+
+
+<ul><li>Response Time</li><li>Throughput and Error Rates</li><li>Filterable Error Analytics and Traces</li><li>Database Monitoring for Metrics and SQL Analysis</li></ul>
+
+
+
+<p>New Relic on their official Github organization account<a rel="noreferrer noopener" aria-label="their official Github organization account  (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://github.com/newrelic" target="_blank" data-wpel-link="external"> </a>hosts an open-sourced <code>newrelic_rpm</code> gem that transmits any Ruby on Rails application metrics to their cloud for your real-time monitoring.</p>
+
+
+
+<p>Summing up, New Relic is by far one of the most complex solutions on the market. Both wide-world usage and the big corporate structure speak in its favor.</p>
+
+
+
+<p>Despite the lack of an actual pricing comparison data, it is worth mentioning that this solution is not recognized as cheap on the Internet.</p>
+
+
+
+<h3 id="ror-vs-wild"><a href="#ror-vs-wild" title="Link to RoR vs Wild">#</a>RoR vs Wild</h3>
+
+
+
+<p><a href="http://web.archive.org/web/20221002070221/https://www.rorvswild.com/" target="_blank" rel="noreferrer noopener" aria-label="RoRvsWild (opens in a new tab)" data-wpel-link="external">RoRvsWild</a> is a dedicated Ruby on Rails application performance monitoring solution.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-rorvswild.png" alt="Ruby on Rails Application Monitoring with RoRvsWild"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>&lt; 100k</td><td>14 days</td><td>$0.8396 / 100k</td><td>$41.98 / 5000k</td><td>2017</td></tr></tbody></table></figure>
+
+
+
+<p>It is worth noting that the <strong>presented prices are converted from € to $</strong> on the day when $1.08 is €1. The actual cheapest plan's price on their website is €39 / 5000k monthly.</p>
+
+
+
+<blockquote><p>Slow and unreliable websites lose customers. RoRvsWild monitors the performances and errors of your Ruby on Rails applications, and provides you with insights to optimize what matters.</p><cite>rorvswild.com</cite></blockquote>
+
+
+
+<p><strong>Ruby on Rails versus Wild</strong> is one of the products created by the small web design &amp; development studio Base Secrète from Geneva, Switzerland, that <strong>specializes in Ruby on Rails applications</strong>.</p>
+
+
+
+<p>Strong sell points of the product are the fact, that its a dedicated Rails monitoring solution and <strong>ridiculously generous free tier</strong>.</p>
+
+
+
+<p>On their official Github organization account, they host an open-sourced gem <code>rorvswild</code> dedicated to integrating with their cloud monitoring services.</p>
+
+
+
+<p>Their web UI is slick, intuitive and very easy to catch up with, and <strong>I foresee a bright future for this product</strong> when combining this fact with their freemium scope.</p>
+
+
+
+<p>Summing up, RoRvsWild <strong>despite being very young, seems very promising and prospectful</strong>.</p>
+
+
+
+<p>I especially recommend using it for monitoring the performance of small, rising Ruby on Rails applications.</p>
+
+
+
+<h3 id="skylight"><a href="#skylight" title="Link to Skylight">#</a>Skylight</h3>
+
+
+
+<p>Skylight is yet another APM service dedicated to Ruby on Rails application monitoring.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-skylight.png" alt="Ruby on Rails Application Monitoring with Skylight"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>&lt; 100k</td><td>30 days</td><td>$2.23 / 100k</td><td>$20 / 1000k</td><td>2012</td></tr></tbody></table></figure>
+
+
+
+<p>It heavily focuses on maintaining simplicity in its dashboards, which saves us a lot of time when analyzing our Ruby on Rails application performance.</p>
+
+
+
+<blockquote><p>Trends at a glance. Endpoints to improve.&nbsp;Questions answered. Just the essentials. Not a zillion charts you don’t need.</p><cite>skylight.io</cite></blockquote>
+
+
+
+<p>On their official Github organization website, they maintain an open-sourced <code>skylight-ruby</code> gem serving the sole purpose of communicating with their cloud servers.</p>
+
+
+
+<p>Summing up, Skylight's offer is very transparent, easy to understand and generous.</p>
+
+
+
+<p>That, combined with the fact that it is a dedicated Ruby on Rails monitoring solutions makes this service very attractive.</p>
+
+
+
+<h3 id="poor-mans-choice-rails-performance"><a href="#poor-mans-choice-rails-performance" title="Link to Poor Man's Choice: Rails Performance">#</a>Poor Man's Choice: Rails Performance</h3>
+
+
+
+<p>Not only for those who decide not to pay for APM, but also a very nice solution to have bundled into you Ruby on Rails development process for a constant overview, is a <a rel="noreferrer noopener" aria-label="rails_performance gem (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://github.com/igorkasyanchuk/rails_performance/" target="_blank" data-wpel-link="external"><code>rails_performance</code> gem</a>.</p>
+
+
+
+<blockquote><p>A self-hosted tool to monitor the performance of your Ruby on Rails application. This is&nbsp;<strong>simple and free alternative</strong>&nbsp;to the New Relic APM, Datadog or other similar services.</p><cite>Rails Performance <em>README.md</em></cite></blockquote>
+
+
+
+<p>It is a relatively new project that has started in January 2020, so the features are limited - it only allows real-time monitoring, with a data-retention period equal to your Redis' TTL.</p>
+
+
+
+<p>What I personally like to do in my Ruby on Rails projects is launching it in the development process and glance at the dashboard from time to time.</p>
+
+
+
+<p>It is not a perfect solution, but still gives me some idea on how well the Ruby on Rails application performs, and can potentially point me in the right direction.</p>
+
+
+
+<h2 id="ruby-on-rails-error-and-exception-monitoring"><a href="#ruby-on-rails-error-and-exception-monitoring" title="Link to Ruby on Rails Error and Exception Monitoring">#</a>Ruby on Rails Error and Exception Monitoring</h2>
+
+
+
+<p>Now that we went through our options for the Ruby on Rails application performance monitoring, the next step is to get the right tool for error and exception logging and analytics.</p>
+
+
+
+<figure><table><tbody><tr><td><strong>Tool</strong></td><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>Airbrake</td><td>&lt; 7.5k</td><td>30 days</td><td>$59 / 100k</td><td>$59 / 100k</td><td>2008</td></tr><tr><td>Bugsnag</td><td>&lt; 7.5k</td><td>14 days</td><td>$39.34 / 100k</td><td>$59 / 150k</td><td>2012</td></tr><tr><td>Honeybadger</td><td>&lt; 12k</td><td>15 days</td><td>$26.23 / 100k</td><td>$59 / 225k</td><td>2012</td></tr><tr><td>Raygun</td><td>no</td><td>14 days</td><td>$79 / 100k</td><td>$19 / 1k</td><td>2007</td></tr><tr><td>Rollbar</td><td>&lt; 5k</td><td>14 days</td><td>$83 / 100k</td><td>$83 / 1000k</td><td>2012</td></tr><tr><td>Sentry</td><td>&lt; 5k</td><td>30 days</td><td>$26 / 100k</td><td>$26 / 1000k</td><td>2012</td></tr></tbody></table></figure>
+
+
+
+<p>That's another branch of the market that is very well suited, which has roughly the same pros and cons as the APM part.</p>
+
+
+
+<p>Let's see what Ruby on Rails Error and Exception Monitoring options there are available.</p>
+
+
+
+<h3 id="airbrake"><a href="#airbrake" title="Link to AirBrake">#</a>AirBrake</h3>
+
+
+
+<p><a rel="noreferrer noopener" aria-label="AirBrake (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://airbrake.io/" target="_blank" data-wpel-link="external">AirBrake</a> is one of the most popular choices not only for Ruby on Rails application monitoring but also for a wide range of other languages and frameworks.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-airbrake.png" alt="Ruby on Rails Application Monitoring with Airbrake"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>&lt; 7.5k</td><td>30 days</td><td>$59 / 100k</td><td>$59 / 100k</td><td>2008</td></tr></tbody></table></figure>
+
+
+
+<p>It does not monitor only errors and exceptions raised in the Ruby on Rails application - <strong>just recently they've released a dedicated APM solution</strong> along with the main product.</p>
+
+
+
+<p>On their official Github organization account, they maintain an open-sourced gem <code>airbrake</code> dedicated to sending errors straight to their API.</p>
+
+
+
+<p>What's worth mentioning, the gem equips Ruby on Rails in a very straightforward generator, <strong>a command-line tool that sets everything up with a single execution</strong> - neat.</p>
+
+
+
+<blockquote><p>Airbrake's powerful error monitoring is lightweight and dead simple to set up so you can spend less time tracking down problems and more time developing.</p><cite>airbrake.io</cite></blockquote>
+
+
+
+<p>On top of that, it still is fully customizable - in its basic form it just reports uncaught exceptions, but you are free to send any other events you like.</p>
+
+
+
+<p>Summing up, Airbrake is a solid choice for production-scale Ruby on Rails application errors and exceptions monitoring.</p>
+
+
+
+<p>However, there are cheaper options to start with, what can be considered a flaw. Read on.</p>
+
+
+
+<h3 id="bugsnag"><a href="#bugsnag" title="Link to Bugsnag">#</a>Bugsnag</h3>
+
+
+
+<p><a rel="noreferrer noopener" aria-label="BugSnag (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.bugsnag.com/" target="_blank" data-wpel-link="external">Bugsnag</a> is yet another widely used tool for Ruby on Rails application errors and exceptions monitoring.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-bugsnag.png" alt="Ruby on Rails Application Monitoring with Bugsnag"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>&lt; 7.5k</td><td>14 days</td><td>$39.34 / 100k</td><td>$59 / 150k</td><td>2012</td></tr></tbody></table></figure>
+
+
+
+<p>Like the previous one, <strong>it does not stop on Rails but is highly recognizable among other technologies, too</strong> - over 50 in total, as they say.</p>
+
+
+
+<blockquote><p>Bugsnag monitors application stability so you can make data-driven decisions on whether you should be building new features, or fixing bugs.</p><cite>bugsnag.com</cite></blockquote>
+
+
+
+<p>One nice thing about it is that we have a choice between using their servers and hosting it on our own premises.</p>
+
+
+
+<p>On their official Github organization website, they host an open-sourced <code>bugsnag-ruby</code> gem responsible for communicating with their API.</p>
+
+
+
+<p>Summing up, Bugsnag is a legit solution for whose quality speaks the fact that it supports many technologies.</p>
+
+
+
+<p>Combined with reasonable pricing that scales nicely, it seems like a good fit for medium to enterprise applications.</p>
+
+
+
+<h3 id="honeybadger"><a href="#honeybadger" title="Link to Honeybadger">#</a>Honeybadger</h3>
+
+
+
+<p><a rel="noreferrer noopener" aria-label="Honeybadger (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.honeybadger.io/" target="_blank" data-wpel-link="external">Honeybadger</a> is Ruby on Rails application monitoring for exceptions born from the frustration of the author's own Ruby on Rails project error.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-honeybadger.png" alt="Ruby on Rails Application Monitoring with Honeybadger"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>&lt; 12k</td><td>15 days</td><td>$26.23 / 100k</td><td>$59 / 225k</td><td>2012</td></tr></tbody></table></figure>
+
+
+
+<p>Here's a little backstory, bear with me.</p>
+
+
+
+<p>Honeybadger's authors used to use a tool called Hoptoad - now Airbrake - created by Thoughtbot and then sold.</p>
+
+
+
+<p>When they got frustrated with its unreliability, they created Honeybadger, which is now officially bundled with one of the most popular open-source Rails Application Templates, Suspenders, authored by Thoughtbot. </p>
+
+
+
+<p>History comes full circle.</p>
+
+
+
+<p>On their official Github organization website, they host an open-sourced <code>honeybadger-ruby</code> gem dedicated to reporting errors to their API.</p>
+
+
+
+<blockquote><p>Zero-instrumentation, 360 degree coverage of errors, outages and service degradation. Deploy with confidence and be your team's devops hero.</p><cite>honeybadger.io</cite></blockquote>
+
+
+
+<p>Strong sell point of the tool is the fact that it started from Ruby on Rails application monitoring, and is created by Ruby on Rails developers.</p>
+
+
+
+<p>They emphasize being dedicated to smaller teams, which is exactly the case most of the time - and also a very good reason to use it from your Ruby on Rails application's production day #1.</p>
+
+
+
+<h3 id="raygun"><a href="#raygun" title="Link to Raygun">#</a>Raygun</h3>
+
+
+
+<p><a rel="noreferrer noopener" aria-label="Raygun (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://raygun.com/" target="_blank" data-wpel-link="external">Raygun</a> is yet another platform that offers crash reporting for Ruby on Rails applications and other tools, among many other solutions.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-raygun.png" alt="Ruby on Rails Application Monitoring with Raygun"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>no</td><td>14 days</td><td>$79 / 100k</td><td>$19 / 1k</td><td>2007</td></tr></tbody></table></figure>
+
+
+
+<p>Here I've departed from the rule of comparing the cheapest plan, as it would heavily misrepresent this tool - in the <strong>100k/month</strong> column I've included their second-cheapest plan for a better overview.</p>
+
+
+
+<p>This is one of those full-spectrum solutions, that provides a wide range of things - APM, users' sessions monitoring and even some basic SEO analysis.</p>
+
+
+
+<blockquote><p>Raygun gives you visibility into how users are really experiencing your software. Detect, diagnose and resolve issues with greater speed and accuracy.</p><cite>raygun.com</cite></blockquote>
+
+
+
+<p>One can easily see that this guy's agenda is so much more than simple errors and exceptions Ruby on Rails monitoring.</p>
+
+
+
+<p>Take into consideration that they're a jack of all trades which probably results in being master of none. </p>
+
+
+
+<p>It'd be hard to be the best in everything, so from the errors and exceptions monitoring perspective, the dedicated, single-purpose solution might work better for you - at least in the beginning.</p>
+
+
+
+<p>On their official Github organization website, they host an open-sourced <code>raygun4ruby</code> gem dedicated to communicating with their API.</p>
+
+
+
+<p>Summing up, Raygun is long-established on the market and definitely solid solution for Ruby on Rails application crashes monitoring.</p>
+
+
+
+<h3 id="rollbar"><a href="#rollbar" title="Link to Rollbar">#</a>Rollbar</h3>
+
+
+
+<p><a href="http://web.archive.org/web/20221002070221/https://rollbar.com/" target="_blank" rel="noreferrer noopener" aria-label="Rollbar (opens in a new tab)" data-wpel-link="exclude">Rollbar</a> is one of two solutions for Ruby on Rails application monitoring we've decided to include in Hix on Rails right from the start.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-rollbar.png" alt="Ruby on Rails Application Monitoring with Rollbar"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>&lt; 5k</td><td>14 days</td><td>$83 / 100k</td><td>$83 / 1000k</td><td>2012</td></tr></tbody></table></figure>
+
+
+
+<p>It was due to the fact that <strong>it is very popular among the Ruby community, easy to set up and you can start using it for free</strong>.</p>
+
+
+
+<blockquote><p>Spend less time worrying and more time on improving code. With Rollbar, you can feel safe knowing every error is reported in real-time.</p><cite>rollbar.com</cite></blockquote>
+
+
+
+<p>It's worth noting that its offer is even more generous - in the annual plan you also <strong>get the first two months for free</strong>.</p>
+
+
+
+<p>On their official Github organization website, you can find an open-sourced <code>rollbar-gem</code>, and what's even better, you can <a href="http://web.archive.org/web/20221002070221/https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-rollbar-logger-installation-and-configuration/" target="_blank" rel="noreferrer noopener" aria-label=" (opens in a new tab)" data-wpel-link="internal">follow our comprehensive, step by step tutorial on how to set up Rollbar as the Ruby on Rails application monitoring tool</a>.</p>
+
+
+
+<p>One thing I can tell from my own experience about Rollbar is that its Ruby gem, compared to its other open-source integrations, is just a little behind.</p>
+
+
+
+<p>There are some options available in other languages, such as for example PHP, and unavailable in Ruby.</p>
+
+
+
+<p>Don't be put off by that though - I can still honestly recommend using Rollbar for your Ruby on Rails application monitoring.</p>
+
+
+
+<p>Summing up, Rollbar is a <strong>very reliable, sophisticated solution - and I am telling you that from my own experience</strong>, as that's what I use daily at work.</p>
+
+
+
+<h3 id="sentry"><a href="#sentry" title="Link to Sentry">#</a>Sentry</h3>
+
+
+
+<p><a rel="noreferrer noopener" aria-label="Sentry (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://sentry.io/welcome/" target="_blank" data-wpel-link="exclude">Sentry</a> is another Ruby on Rails application monitoring solution included in Hix on Rails from its start.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-application-monitoring-sentry.png" alt="Ruby on Rails Application Monitoring with Sentry"></figure>
+
+
+
+<figure><table><tbody><tr><td><strong>Free</strong></td><td><strong>Trial</strong></td><td><strong>100k/m</strong></td><td><strong>Lowest</strong></td><td><strong>Since</strong></td></tr><tr><td>&lt; 5k</td><td>30 days</td><td>$26 / 100k</td><td>$26 / 1000k</td><td>2012</td></tr></tbody></table></figure>
+
+
+
+<p>Similar to Rollbar, we've decided to go with it due to being <strong>very popular among the Ruby on Rails community</strong> and offering a free start for everybody, no matter how big a project they develop.</p>
+
+
+
+<blockquote><p>Sentry scales with your application. Just keep those bugs to a minimum and you’ll love us.</p><cite>sentry.io</cite></blockquote>
+
+
+
+<p>This is so true - I still run some of my not-so-popular side-projects with Sentry hooked up and easily manage to stay on the free plan.</p>
+
+
+
+<p>Hooking up a tool like Sentry for <strong>Ruby on Rails application monitoring from its first day on production goes a long way</strong> - and you can easily do that following <a href="http://web.archive.org/web/20221002070221/https://hixonrails.com/ruby-on-rails-tutorials/ruby-on-rails-sentry-logger-installation-and-configuration/" target="_blank" rel="noreferrer noopener" aria-label="our step by step tutorial on how to set up Sentry in Ruby on Rails (opens in a new tab)" data-wpel-link="internal">our step by step tutorial on how to set up Sentry in Ruby on Rails</a>.</p>
+
+
+
+<p>On their official Github organization profile, they host an open-sourced <code>raven-ruby</code> gem, that provides easy integration with their API.</p>
+
+
+
+<p>Summing up, and I am speaking from a pleasant experience as I browse my Sentry dashboard daily, it is a great tool - very generous pricing, just enough of the free plan and intuitive UI.</p>
+
+
+
+<h3 id="poor-mans-choice-exception-track"><a href="#poor-mans-choice-exception-track" title="Link to Poor Man's Choice: Exception Track">#</a>Poor Man's Choice: Exception Track</h3>
+
+
+
+<p>If you decide not to pay for error and exception monitoring in your Ruby on Rails application for whatever reason, you can still access them easily  via <a rel="noreferrer noopener" aria-label="exception-track gem (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://github.com/rails-engine/exception-track" target="_blank" data-wpel-link="external"><code>exception-track</code> gem</a>.</p>
+
+
+
+<blockquote><p>Tracking exceptions for Rails application and storing them in the database.</p><cite>Exception Track <em>README.md</em></cite></blockquote>
+
+
+
+<p>In my experience, it is especially useful for the development process, for exactly the same reasons as the aforementioned Rails Performance gem.</p>
+
+
+
+<p>My usual workflow with this gem hooked up in the development environment looks like this:</p>
+
+
+
+<ul><li>Before starting to work on the new feature, I delete all the exceptions from the table</li><li>I dive neck-deep into the feature implementation</li><li>During the process, I don't need to worry about fixing any collateral damage, as it's safely persisted in the dedicated database table</li><li>After finishing the feature, I review all the exceptions caused during the development process one by one and see if any of them still occurs</li></ul>
+
+
+
+<p>This simple workflow helps to keep the focus on the task at hand and still results in leaving the previously written code not broken.</p>
+
+
+
+<p>I wouldn't recommend using the tool in production though, as it is very basic and not so easy to work with.</p>
+
+
+
+<h2 id="whats-next"><a href="#whats-next" title="Link to What's next?">#</a>What's next?</h2>
+
+
+
+<p>When we have our APM exceptions monitoring in Ruby on Rails application in place, it is time to go a little beyond Rails itself.</p>
+
+
+
+<p>At some point in your career as a Ruby on Rails developer, you have probably heard about Rails not being performant and losing its popularity due to that fact.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-stackoverflow-rails-popularity.png" alt="Ruby on Rails in StackOverflow Survey 2019"><figcaption>StackOverflow Survey 2019</figcaption></figure>
+
+
+
+<p>This rumor alone should be a reason enough for anybody who builds his or her business on the Ruby on Rails stack to thoroughly monitor the performance of a system that hosts it.</p>
+
+
+
+<p>There are no excuses for not doing so, no matter if you use a dedicated cloud solution or your private VPS - and it is safe to say that you might end up saving yourself some money in the process by learning your limitations.</p>
+
+
+
+<p>This part of your Ruby on Rails application is too important to be left unmonitored, and here are some tools that might help you get the job done.</p>
+
+
+
+<h3 id="system-monitoring"><a href="#system-monitoring" title="Link to System monitoring">#</a>System monitoring</h3>
+
+
+
+<p>For a Ruby on Rails application so-called "system", in the simplest form, the monitoring breaks down to keeping track of the following:</p>
+
+
+
+<ul><li>CPU Usage</li><li>Memory Utilization</li><li>Disk I/O</li><li>Network Interface and Adapters</li><li>Hardware Health</li><li>Scheduled Tasks</li><li>Syslog Errors</li><li>Event logs</li></ul>
+
+
+
+<p>It should be monitored not only for your process running the Ruby on Rails application but also for anything that your app relies on, such as for example Nginx, Sidekiq, Redis, PostgreSQL - to name a few.</p>
+
+
+
+<p>The market is full of ready-to-use solutions dedicated to doing just that - some of them were mentioned along with the APM products.</p>
+
+
+
+<p>Here's some more, if you look for options:</p>
+
+
+
+<ul><li><a rel="noreferrer noopener" aria-label="Nagios (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.nagios.com/" target="_blank" data-wpel-link="external">Nagios</a></li><li><a rel="noreferrer noopener" aria-label="Riemann (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://riemann.io/" target="_blank" data-wpel-link="external">Riemann</a></li><li><a rel="noreferrer noopener" aria-label="Sensu (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://sensu.io/" target="_blank" data-wpel-link="external">Sensu</a></li><li><a rel="noreferrer noopener" aria-label="ServerDensity (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.serverdensity.com/" target="_blank" data-wpel-link="external">ServerDensity</a></li></ul>
+
+
+
+<p>I deliberately do not go into details about those tools, because they are way beyond the scope of Ruby on Rails application monitoring tutorial.</p>
+
+
+
+<p>That said, every conscious maintainer should give it some thought in order to keep full control of his system.</p>
+
+
+
+<h3 id="availability-monitoring"><a href="#availability-monitoring" title="Link to Availability monitoring">#</a>Availability monitoring</h3>
+
+
+
+<p>With the system monitoring in place and assuming that your Ruby on Rails application runs behind some public domain or even just a static IP address, it is time to set up an availability monitoring.</p>
+
+
+
+<p>In the most simple form, it's a classic heartbeat check - your domain gets pinged by a dedicated service every second.</p>
+
+
+
+<p>If it does not respond, you get notified.</p>
+
+
+
+<p>Some options to consider:</p>
+
+
+
+<ul><li><a rel="noreferrer noopener" aria-label="Pingdom (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.pingdom.com/" target="_blank" data-wpel-link="external">Pingdom</a></li><li><a href="http://web.archive.org/web/20221002070221/https://www.site24x7.com/" target="_blank" rel="noreferrer noopener" aria-label="Site24x7 (opens in a new tab)" data-wpel-link="external">Site24x7</a></li><li><a rel="noreferrer noopener" aria-label="UptimeRobot (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://uptimerobot.com/" target="_blank" data-wpel-link="external">UptimeRobot</a></li><li><a rel="noreferrer noopener" aria-label=" (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://wheresitup.com/" target="_blank" data-wpel-link="external">Where's It Up?</a></li></ul>
+
+
+
+<p>Same as with system monitoring, I deliberately do not go into specifics, as it is far beyond the Ruby on Rails application monitoring scope.</p>
+
+
+
+<p>One thing I can say is that personally I find UptimeRobot very nice to work with for small projects, as it has a reasonable free tier</p>
+
+
+
+<blockquote><p>Downtime Happens. Get Notified! 50 Monitors, Checked Every 5 Minutes, Totally Free!</p><cite>uptimerobot.com</cite></blockquote>
+
+
+
+<p>This does not by any means suggest that you should use this tool instead of any others available. Always consider your options.</p>
+
+
+
+<h3 id="security-monitoring"><a href="#security-monitoring" title="Link to Security monitoring">#</a>Security monitoring</h3>
+
+
+
+<p>This one is tricky, yet very reassuring once you have it in place. It is also one of the least covered parts of the market Rails-wise.</p>
+
+
+
+<p>Let's break our options into three categories.</p>
+
+
+
+<p>The first category is a list of ready-to-use tools and services that we can purchase or subscribe to. Those are:</p>
+
+
+
+<ul><li><a rel="noreferrer noopener" aria-label="Sqreen (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.sqreen.com/" target="_blank" data-wpel-link="exclude">Sqreen</a></li><li><a rel="noreferrer noopener" aria-label="Tinfoil (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.tinfoilsecurity.com/" target="_blank" data-wpel-link="external">Tinfoil</a></li><li><a href="http://web.archive.org/web/20221002070221/https://portswigger.net/burp" data-wpel-link="external">Burp, by Portswigger</a></li></ul>
+
+
+
+<p>They're available in various plans, providing pretty much the same thing - a dedicated dashboard on which you can see your Ruby on Rails application vulnerabilities.</p>
+
+
+
+<p>Same as before, I'll spare you the details - review them and adapt to your specific needs. This is not cheap stuff though.</p>
+
+
+
+<p>The second category is my favorite combination of three CLI tools that are easy to set up on your Continuous Integration suite, and those are:</p>
+
+
+
+<ul><li>Brakeman</li><li>Bundler Audit</li><li>Dawnscanner</li></ul>
+
+
+
+<p>Both Brakeman and Dawnscanner check your Ruby on Rails application code against <a href="http://web.archive.org/web/20221002070221/https://cve.mitre.org/" data-wpel-link="external">Common Vulnerabilities and Exposures (CVE)</a> list.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-common-vulnerabilities-and-exposures.png" alt="CVE - Common Vulnerabilities and Exposures"><figcaption>CVE - Common Vulnerabilities and Exposures</figcaption></figure>
+
+
+
+<p>Bunder Audit does pretty much the same, just not with your app's own code, but with its dependencies.</p>
+
+
+
+<p>All of the tools come with an easily executable CLI command, which makes them easy to run in CI - just remember to set their exit code to a warning, not an error, as your checks can start crashing overnight.</p>
+
+
+
+<p>With those three in place, you've got yourself a nice security-breach prevention system. Just remember, it's never enough in this domain.</p>
+
+
+
+<p>The third category is especially important for monitoring Ruby on Rails applications that render HTML views.</p>
+
+
+
+<p>There's a multitude of attacks executable via a web browser that loads your website served by Ruby on Rails application.</p>
+
+
+
+<p>With help come those tools:</p>
+
+
+
+<ul><li><a href="http://web.archive.org/web/20221002070221/https://observatory.mozilla.org/" target="_blank" rel="noreferrer noopener" aria-label="Mozilla Observatory (opens in a new tab)" data-wpel-link="external">Mozilla Observatory</a></li><li><a href="http://web.archive.org/web/20221002070221/https://securityheaders.com/" target="_blank" rel="noreferrer noopener" aria-label="Security Headers (opens in a new tab)" data-wpel-link="external">Security Headers</a></li><li><a href="http://web.archive.org/web/20221002070221/https://www.digicert.com/help/" target="_blank" rel="noreferrer noopener" aria-label="DigiCert (opens in a new tab)" data-wpel-link="external">DigiCert</a></li></ul>
+
+
+
+<p>The first two tools audit your domains HTTP security headers, which are:</p>
+
+
+
+<ul><li>Strict-Transport-Security</li><li>X-Content-Type-Options</li><li>X-XSS-Protection</li><li>Content-Security-Policy</li><li>X-Frame-Options</li><li>Referrer-Policy</li><li>Feature-Policy</li><li>Expect-CT</li></ul>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-security-headers-summary.png" alt="Security Headers Report Summary"><figcaption>Security Headers Report Summary</figcaption></figure>
+
+
+
+<p>On top of that, Mozilla checks:</p>
+
+
+
+<ul><li>Cross-origin Resource Sharing</li><li>Cookies security</li><li>Subresource Integrity</li></ul>
+
+
+
+<p>All of those you're able to append to any HTML document you serve with your Ruby on Rails application in order to instruct the browser what actions it should execute.</p>
+
+
+
+<p>The last of the tools above validates your domain's or IP's SSL certificate, which presence is pretty much standard nowadays.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-digicert-ssl-report.png" alt="Digicert SSL Report"><figcaption>Digicert SSL Report</figcaption></figure>
+
+
+
+<p>Some of those headers are also applicable for the pure backend API versions of Ruby on Rails applications.</p>
+
+
+
+<p>Along with the HTML documents you send, there is also a matter of assets, and one of many things worth keeping in check is the Content-Disposition header.</p>
+
+
+
+<p>Take your time to read more about all of those and at least manually audit your website from time to time - as I have said before, it goes a long way.</p>
+
+
+
+<h3 id="pagespeed-monitoring"><a href="#pagespeed-monitoring" title="Link to Pagespeed monitoring">#</a>Pagespeed monitoring</h3>
+
+
+
+<p>Although applicable only for Ruby on Rails applications that provide both frontend and backend and not for API-only projects, <strong>page speed monitoring is crucial for the end-user experience</strong>.</p>
+
+
+
+<p>Let's see what's available:</p>
+
+
+
+<ul><li><a rel="noreferrer noopener" aria-label="Pagespeed Insights by Google (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://developers.google.com/speed/pagespeed/insights/" target="_blank" data-wpel-link="external">Pagespeed Insights by Google</a></li><li><a rel="noreferrer noopener" aria-label="GTmetrix (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://gtmetrix.com/pro/" target="_blank" data-wpel-link="external">GTmetrix</a></li><li><a rel="noreferrer noopener" aria-label=" (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://tools.pingdom.com/" target="_blank" data-wpel-link="external">Pingdom Website Speed Test</a></li><li><a rel="noreferrer noopener" aria-label="web.dev (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://web.dev/" target="_blank" data-wpel-link="external">Lighthouse by Google</a></li></ul>
+
+
+
+<p>The first solution, Pagespeed Insights is a simple tool that allows us to audit a single URL at the time.</p>
+
+
+
+<p>It gives a great overview, to begin with, but this does not scale well, which gets us to the next two.</p>
+
+
+
+<p>Both GTmetrix and Pingdom Website Speed Test are services that anybody can subscribe to. Depending on the selected plan, they allow constant monitoring of a fixed number of URL addresses.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-pingdom-website-speed-test.png" alt="Pingdom Website Speed Test Results"><figcaption>Pingdom Website Speed Test Results</figcaption></figure>
+
+
+
+<p>After reviewing their plans you might think - wow, that's a little expensive for something that is not critical for the business to work.</p>
+
+
+
+<blockquote><p>A 100-millisecond delay in load time can cause conversion rates to drop by 7%</p><cite><a rel="noreferrer noopener" aria-label="Akamai research (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.akamai.com/uk/en/about/news/press/2017-press/akamai-releases-spring-2017-state-of-online-retail-performance-report.jsp" target="_blank" data-wpel-link="external">Akamai research, spring 2017</a></cite></blockquote>
+
+
+
+<p>This can turn out as a gamechanger for a lot of businesses and is definitely worth considering in the long run.</p>
+
+
+
+<p><strong>Bonus</strong>: if you're like the most in the world, you probably use Google Analytics. </p>
+
+
+
+<p>One thing you might want to consider using <strong>completely for free </strong>is a drop-in solution, a <a rel="noreferrer noopener" aria-label="Site Performance Dashboard (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://analytics.google.com/analytics/gallery/#posts/search/%3F_.term%3DSpeed%26_.start%3D0%26_.viewId%3DRZ8-NOorRSqtyaPi-lDCOQ/" target="_blank" data-wpel-link="external">Site Performance Dashboard</a>.</p>
+
+
+
+<p>Here's how it looks:</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-ga-site-performance-dashboard.png" alt="Google Analytics Site Performance Dashboard"><figcaption>Google Analytics Site Performance Dashboard</figcaption></figure>
+
+
+
+<p>In order to gather more data in the early stages of your website served by Ruby on Rails, you can simply configure the GA javascript client to <a rel="noreferrer noopener" aria-label=" (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#siteSpeedSampleRate" target="_blank" data-wpel-link="external">send more reports by increasing the <code>siteSpeedSampleRate</code> parameter</a>.</p>
+
+
+
+<p>Where does might Google get this data from, you ask? </p>
+
+
+
+<p>The answer is the <a rel="noreferrer noopener" aria-label="Chrome User Experience Report (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://developers.google.com/web/tools/chrome-user-experience-report/" target="_blank" data-wpel-link="external">Chrome User Experience Report</a>.</p>
+
+
+
+<p>You can also access this intel in the aforementioned Google Pagespeed Insights tool.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-pagespeed-insights-chrome-user-experience-report.png" alt="PageSpeed Insights Chrome User Experience Report"><figcaption>PageSpeed Insights Chrome User Experience Report</figcaption></figure>
+
+
+
+<p>Yet still, it is nice to have a dedicated dashboard for it and glance at it once in a while, just in case.</p>
+
+
+
+<p>One last thing worth mentioning is that the Lighthouse hosted at the web.dev is also available in the form of two NPM packages that suit perfectly into the Continuous Integration suite:</p>
+
+
+
+<ul><li><a rel="noreferrer noopener" aria-label="lighthouse (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.npmjs.com/package/lighthouse" target="_blank" data-wpel-link="external">lighthouse</a></li><li><a href="http://web.archive.org/web/20221002070221/https://www.npmjs.com/package/lighthouse-ci" target="_blank" rel="noreferrer noopener" aria-label="lighthouse-ci (opens in a new tab)" data-wpel-link="external">lighthouse-ci</a></li></ul>
+
+
+
+<p>Using one of those you can probably hook it all up by yourself and avoid monthly expenses - the only cost it is going to take is your time for implementing it properly.</p>
+
+
+
+<h3 id="seo-monitoring"><a href="#seo-monitoring" title="Link to SEO monitoring">#</a>SEO monitoring</h3>
+
+
+
+<p>The last, but by no means the least important metric that we will describe here is our website's SEO. </p>
+
+
+
+<p>This again does not apply to API-only Ruby on Rails application monitoring but is still worth mentioning along with other aspects of the business lifecycle.</p>
+
+
+
+<p>Here are some services that you can subscribe to:</p>
+
+
+
+<ul><li><a rel="noreferrer noopener" aria-label="Pulno (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://www.pulno.com/" target="_blank" data-wpel-link="external">Pulno</a></li><li><a rel="noreferrer noopener" aria-label="SEOmator (opens in a new tab)" href="http://web.archive.org/web/20221002070221/https://seomator.com/" target="_blank" data-wpel-link="external">SEOmator</a></li><li><a rel="noreferrer noopener" href="http://web.archive.org/web/20221002070221/https://www.seoptimer.com/" target="_blank" data-wpel-link="external">SEOptimer</a></li><li><a rel="noreferrer noopener" href="http://web.archive.org/web/20221002070221/https://seositecheckup.com/" target="_blank" data-wpel-link="external">SEO Site Checkup</a></li><li><a rel="noreferrer noopener" href="http://web.archive.org/web/20221002070221/https://www.semrush.com/siteaudit/" target="_blank" data-wpel-link="external">Site Audit by SEMRush</a></li><li><a rel="noreferrer noopener" href="http://web.archive.org/web/20221002070221/https://www.woorank.com/" target="_blank" data-wpel-link="external">WooRank</a></li></ul>
+
+
+
+<p>Most of them let you drop your website's URL or domain and present a thorough overview of applicable improvements.</p>
+
+
+
+<figure><img src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/rails-monitoring-woorank-summary.png" alt="WooRank report on Google's on-page SEO"><figcaption>WooRank report on Google's on-page SEO</figcaption></figure>
+
+
+
+<p>Again, for a small price, you can automate the process and have them constantly crawl multiple endpoints in order to tell you more frequently about the problems that arise during new features development.</p>
+
+
+
+<h2 id="conclusion"><a href="#conclusion" title="Link to Conclusion">#</a>Conclusion</h2>
+
+
+
+<p>Summing it all up, Rails Application monitoring is a very complex process.</p>
+
+
+
+<p>As you could see, a lot of people made a living of it, and this is good - thanks to them, you don't have to break a sweat.</p>
+
+
+
+<p>Just pick a toolset that works best for you and calmly sleep through the night, knowing that dedicated services keep an eye on your Ruby on Rails application.</p>
+
+
+
+<p>What's your take on the Ruby on Rails application monitoring? </p>
+
+
+
+<p>Did you find an answer to your questions, is your maintainer's need satisfied?</p>
+
+
+
+<p><strong>Please let me know in the comments!</strong></p>
+
+
+
+<p>Or maybe you would like to see any of those tools integrated into the <a href="http://web.archive.org/web/20221002070221/https://hixonrails.com/" data-wpel-link="internal">Hix on Rails Application Template</a>?</p>
+
+
+
+<p><strong>If so, you can <a href="http://web.archive.org/web/20221002070221/https://trello.com/b/5jMzgllX/hix-on-rails-roadmap" target="_blank" rel="noreferrer noopener" aria-label="vote on them on our product's roadmap (opens in a new tab)" data-wpel-link="external">vote on them on our product's roadmap</a> - all it takes is a Trello account and you're good to go!</strong></p>
+
+
+
+<p>Thanks for reading!</p>
+<!-- Rate my Post Plugin --></span></p></div><div id="section-33-14"><a id="link-63-14" href="http://web.archive.org/web/20221002070221/https://hixonrails.com/" target="_self" data-wpel-link="internal"><img id="image-64-14" alt="Hix on Rails" src="http://web.archive.org/web/20221002070221im_/https://hixonrails.com/wp-content/uploads/logo-menu.png"><p>Hix on Rails</p></a><p>Follow us on <span id="span-75-14">Twitter</span>&nbsp;for RoR news and tutorials!</p></div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Read Code from the Showcase Ruby on Rails Engine</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Read Code from the Showcase Ruby on Rails Engine</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2025/10/01/how-to-read-code-from-the-showcase-ruby-on-rails-engine.html">https://blog.appsignal.com/2025/10/01/how-to-read-code-from-the-showcase-ruby-on-rails-engine.html</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 1364819202</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Reading a lot of code from very senior engineers is probably one of the best ways to level up as a Ruby on Rails developer. By doing so, we can learn new tips and techniques that we can reuse in our jobs. Thanks to open source, we can read code written by the best developers from all over the world, and for free!</p>
+<p>However, reading code from a Ruby gem or a Rails engine for the first time without being guided can be daunting. There are so many files; how do we even know where to start?</p>
+<p>In this three-part series, we are going to read the source code from the Showcase Rails engine.</p>
+<p>We will learn about:</p>
+<ul>
+<li>The main files in a Rails engine</li>
+<li>How to read source code without getting lost</li>
+</ul>
+<p>In this first part, we'll set up Showcase in a Rails application and run it locally.</p>
+<p>Let’s get started!</p>
+<h2 id="what-is-showcase-for-ruby-on-rails">What is Showcase for Ruby on Rails?</h2>
+<p><a href="https://github.com/bullet-train-co/showcase">Showcase</a> (written mainly by <a href="https://github.com/kaspth">Kasper Timm Hansen</a>, Rails consultant and former Rails Core team member) is a Rails engine that allows us to document a design system. Here is what it looks like:</p>
+<figure><p><img alt="Showcase button page" loading="lazy" width="2898" height="1630" decoding="async" data-nimg="1" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fblog%2F2025-10%2Fshowcase_button_page.png&amp;w=3840&amp;q=90"></p></figure>
+<p>For a good understanding of how Showcase works before reading its code, we should use it in a project. Let's create a new Rails application and <code>cd</code> into it:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>According to the <a href="https://github.com/bullet-train-co/showcase?tab=readme-ov-file#installation">Showcase README</a>, we need to add <code>showcase-rails</code> and <code>rouge</code> to our <code>Gemfile</code>:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>If you are not familiar with the <code>rouge</code> gem, it is a syntax highlighter used to highlight code in the "View source" accordion, as shown below:</p>
+<figure><p><img alt="Showcase button component" loading="lazy" width="2250" height="378" decoding="async" data-nimg="1" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fblog%2F2025-10%2Fshowcase_button_component.png&amp;w=3840&amp;q=90"></p></figure>
+<p>As we add new gems to our <code>Gemfile</code>, let's not forget to run <code>bundle install</code>. We then have to <code>mount</code> the engine in our routes to make the engine's routes available to our main Rails application:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<h3 id="build-a-component">Build a Component</h3>
+<p>Let’s now create our first component. Every application needs buttons, right? Let’s create one with three different sizes:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>To style our button, we will need CSS, of course. As this is just a demo application, we'll simply write our CSS in the <code>application.css</code> file generated for us:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Finally, let’s create the preview file to document our button component:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>We can now navigate to <code>http://localhost:3000/docs/showcase/previews/components/button</code> to see our first preview:</p>
+<figure><p><img alt="Showcase demo" loading="lazy" width="2900" height="1642" decoding="async" data-nimg="1" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fblog%2F2025-10%2Fshowcase_demo.png&amp;w=3840&amp;q=90"></p></figure>
+<p>Gems and engines allow us to use other people's code in our Rails applications. If we use those gems and have absolutely no idea how they work, we have an opportunity to learn something new.</p>
+<h2 id="setting-up-our-ruby-on-rails-development-environment">Setting Up Our Ruby on Rails Development Environment</h2>
+<p>Let's learn about the magic behind gems by reading some source code!</p>
+<h3 id="rails-engines-file-structure">Rails Engines File Structure</h3>
+<p>The first step to read or contribute to a Rails engine is to clone the repository locally:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Let’s open the repository with our text editor and have a look at the different files:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>The first thing we should realize is that the file structure is very similar to a standard Rails application with models, views, controllers, and routes. In fact, we can view a Rails engine as a standalone Rails application that will get merged into our main Rails application!</p>
+<p>Our engine also has a <code>/test</code> folder used to test the engine, with a special <code>/dummy</code> folder that is particularly useful. If we have a look at the file structure of the <code>/test/dummy</code> folder, we can see the following tree:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Wait a minute, isn't this the exact file structure of a standard Rails application? Yes, it is! The <code>test/dummy</code> folder contains a real Rails application that we can launch in the browser for development. It is also useful to write tests for our engine in the context of a real Rails application.</p>
+<h3 id="running-the-rails-engine-locally">Running the Rails Engine Locally</h3>
+<p>Now that we have a better understanding of the file structure, it's useful to be able to run this <code>test/dummy</code> Rails application on <code>localhost</code>.</p>
+<p>As with any other Rails application, the first step is to install dependencies. Before we do so, we have to talk about the <code>showcase.gemspec</code> and the <code>Gemfile</code>. If we open the <code>showcase.gemspec</code>, it currently contains the following code:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Most of it is just information about the authors, the license, and useful links that you'll find on the <a href="https://rubygems.org/gems/showcase-rails/versions/0.4.6?locale=en">RubyGems website</a>. However, the most interesting part is the last two lines:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>The first line indicates that <code>showcase</code> depends on Rails version 6.1 or above.</p>
+<p>The second line indicates a <em>development dependency</em> on <code>tailwindcss-rails</code>. This means that <code>showcase</code> uses <code>tailwindcss-rails</code> for styling purposes in development, but you do not need to have <code>tailwindcss-rails</code> installed in your main Rails application to use <code>showcase</code>.</p>
+<p>Let’s now have a look at the <code>Gemfile</code>:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>The <code>Gemfile</code> should look familiar: It lists additional <em>development dependencies</em> used to run the <code>/test/dummy</code> application.</p>
+<p>Those dependencies are from the <code>gemspec</code>, plus the additional ones listed in our <code>Gemfile</code>. This <code>Gemfile</code> also enables us to choose the Rails version we want to use in development by passing the <code>RAILS_VERSION</code> environment variable, and defaults to version <code>7.0</code>.</p>
+<blockquote>
+<p><em><strong>Note</strong>: While writing this article, I realized there is a <a href="https://github.com/bullet-train-co/showcase/pull/85">small bug</a> when running Showcase with Rails <code>7.0.X</code>. It is not a very interesting bug to talk about, so we'll just ignore it and use Rails <code>8.X</code> version instead.</em></p>
+</blockquote>
+<blockquote>
+<p><em>As specified in the <code>Gemfile</code>, we can use the <code>RAILS_VERSION</code> environment variable to specify the Rails version we want to use. To do this, we simply have to prefix all of our commands with <code>RAILS_VERSION=8</code>:</em></p>
+</blockquote>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Let's try to install the dependencies now:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>With all the dependencies installed, we should now be able to run the Rails server:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>If we now visit <code>http://localhost:3000</code>, we should see the showcase landing page from the <code>test/dummy</code> application:</p>
+<figure><p><img alt="Showcase landing page" loading="lazy" width="2844" height="1358" decoding="async" data-nimg="1" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fblog%2F2025-10%2Fshowcase_landing_page.png&amp;w=3840&amp;q=90"></p></figure>
+<p>We should also be able to see our Rails server logs in the terminal:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>This is going to be very helpful when analyzing how Showcase works, as we'll simply be able to follow the logs!</p>
+<h2 id="next-up-the-button-component-preview">Next Up: The Button Component Preview</h2>
+<p>In this post, we learned:</p>
+<ul>
+<li>How to use <code>showcase</code> in a real Rails application</li>
+<li>What the different files in a Rails engine are used for</li>
+<li>How to run the <code>test/dummy</code> Rails application locally</li>
+</ul>
+<p>In the next part of this series, we will read some Ruby code written by experienced Rails developers. In order to do this without getting lost, we are going to choose one feature of the <code>showcase</code> engine — the button component preview — and analyze how it works.</p>
+<p>Until then, happy coding!</p></div><div id="authors"><figure><img alt="Alexandre Ruban" decoding="async" data-nimg="fill" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fauthors%2Falexandre.jpg&amp;w=3840&amp;q=90" width="80" height="80"></figure><div><h2>Alexandre Ruban</h2><div><p>Our guest author Alexandre is a freelance Ruby on Rails developer and author of the Turbo Rails tutorial. He enjoys writing about Ruby on Rails and reading open source code. He has contributed to Ruby on Rails, Hotwire, and Phlex.</p><p><span><a href="https://blog.appsignal.com/authors/alexandre-ruban.html">All articles by <!-- -->Alexandre Ruban</a></span></p></div></div></div></div>
+  </div>
+</body>
+</html>

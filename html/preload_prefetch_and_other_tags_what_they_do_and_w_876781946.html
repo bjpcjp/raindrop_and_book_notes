@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Preload, prefetch and other tags: what they do and when to use them</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Preload, prefetch and other tags: what they do and when to use them</h1>
+    <p><strong>URL:</strong> <a href="https://3perf.com/blog/link-rels">https://3perf.com/blog/link-rels</a></p>
+    <p><strong>Tags:</strong> html</p>
+    <p><strong>Bookmark ID:</strong> 876781946</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article><div><p>There’re lots of ways to improve web performance (see <a href="http://3perf.com/talks/web-perf-101">Web Performance 101</a> for a full overview). One of those ways is to preload content you’ll need later in advance. Prefetch a CSS file, prerender a full page, or resolve a domain ahead of time – and you won’t have to wait for it when it’s actually needed! Sounds cool.</p>
+<p>What’s even cooler is that browsers have a simple built-in way to do all these things. There’re six <code>&lt;link rel&gt;</code> tags that instruct the browser to preload something:</p>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>prefetch<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/style.css<span>"</span></span> <span>as</span><span><span>=</span><span>"</span>style<span>"</span></span> <span>/&gt;</span></span>
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>preload<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/style.css<span>"</span></span> <span>as</span><span><span>=</span><span>"</span>style<span>"</span></span> <span>/&gt;</span></span>
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>preconnect<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>https://example.com<span>"</span></span> <span>/&gt;</span></span>
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>dns-prefetch<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>https://example.com<span>"</span></span> <span>/&gt;</span></span>
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>prerender<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>https://example.com/about.html<span>"</span></span> <span>/&gt;</span></span>
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>modulepreload<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/script.js<span>"</span></span> <span>/&gt;</span></span></code></pre></div>
+<p>Here’s what they each of them does and when to use them.</p>
+<figure><picture><img src="data:application/octet-stream;base64," srcset="data:application/octet-stream;base64, 225w, data:application/octet-stream;base64, 450w, data:application/octet-stream;base64, 900w, data:application/octet-stream;base64, 1200w" alt="" width="900" height="471"></picture></figure>
+<p>Jump to:</p>
+<ul>
+<li><a href="#preload"><code>preload</code></a> – when you’re going to need a resource in a few seconds</li>
+<li><a href="#prefetch"><code>prefetch</code></a> – when you need a resource for the next page</li>
+<li><a href="#preconnect"><code>preconnect</code></a> – when you know you’ll need a resource soon, but you don’t know its full url yet</li>
+<li><a href="#dns-prefetch"><code>dns-prefetch</code></a> – when you know you’ll need a resource soon, but you don’t know its full url yet (for older browsers)</li>
+<li><a href="#prerender"><code>prerender</code></a> – when you’re certain most users will navigate to a specific page, and you want to speed it up</li>
+<li><a href="#modulepreload"><code>modulepreload</code></a> – when you’re going to need an ES module script soon</li>
+</ul>
+
+<p><code>&lt;link rel="preload"&gt;</code> tells the browser to download and cache a resource (like a script or a stylesheet) as soon as possible. It’s helpful when you need that resource a few seconds after loading the page, and you want to speed it up.</p>
+<p>The browser doesn’t do anything with the resource after downloading it. Scripts aren’t executed, stylesheets aren’t applied. It’s just cached – so that when something else needs it, it’s available immediately.</p>
+<h2 id="example"><a href="#example" aria-label="example permalink"></a>Example</h2>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>preload<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/style.css<span>"</span></span> <span>as</span><span><span>=</span><span>"</span>style<span>"</span></span> <span>/&gt;</span></span></code></pre></div>
+<p><code>href</code> points to the resource you want to download.</p>
+<p><code>as</code> can be anything you can download in a browser:</p>
+<ul>
+<li><code>style</code> for stylesheets,</li>
+<li><code>script</code> for scripts,</li>
+<li><code>font</code> for fonts,</li>
+<li><code>fetch</code> for resources downloaded with <code>fetch()</code> or <code>XMLHttpRequest</code>,</li>
+<li>other values – see the full list <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#What_types_of_content_can_be_preloaded">on MDN</a></li>
+</ul>
+<p>It’s important to specify the <code>as</code> attribute – it helps the browser to prioritize and schedule the download properly.</p>
+<h2 id="when-to-use"><a href="#when-to-use" aria-label="when to use permalink"></a>When to use</h2>
+<p><strong>Use it when you’ll need a resource soon.</strong> <code>&lt;link rel="preload"&gt;</code> will help when you know you’ll need a resource soon after loading the page, and you want to start loading it earlier. For example:</p>
+<ul>
+<li>
+<p>You use custom fonts. The <code>@font-face</code> rule that applies those fonts is in an external CSS file:</p>
+<div data-language="html"><pre><code><span>&lt;!-- index.html --&gt;</span>
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>stylesheet<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>index.css<span>"</span></span> <span>/&gt;</span></span></code></pre></div>
+<div data-language="css"><pre><code><span>/* index.css */</span>
+<span><span>@font-face</span></span> <span>{</span>
+    src<span>:</span> <span><span>url</span><span>(</span><span>'comic-sans.woff2'</span><span>)</span></span> <span>format</span><span>(</span><span>'woff2'</span><span>)</span><span>;</span>
+<span>}</span></code></pre></div>
+<p>By default, <code>comic-sans.woff2</code> will start downloading only when <code>index.css</code> is fetched and applied. Instead of waiting for it that long, use <code>&lt;link rel="preload"&gt;</code> to initiate the download sooner:</p>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>preload<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>comic-sans.woff2<span>"</span></span> <span>as</span><span><span>=</span><span>"</span>font<span>"</span></span> <span>/&gt;</span></span></code></pre></div>
+</li>
+<li>
+<p>You split your styles per <a href="https://3perf.com/talks/web-perf-101/#css-block-rendering-1">the Critical CSS approach</a>. With this approach, you’ll split your CSS into two parts – critical (required for immediate rendering) and non-critical:</p>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>style</span><span>&gt;</span></span><span><span>
+  <span>/* Inlined critical styles */</span>
+</span></span><span><span><span>&lt;/</span>style</span><span>&gt;</span></span>
+
+<span><span><span>&lt;</span>script</span><span>&gt;</span></span><span><span>
+  <span>/* Custom JS that starts downloading non-critical styles */</span>
+  <span>loadCSS</span><span>(</span><span>'/app/non-critical.css'</span><span>)</span><span>;</span>
+</span></span><span><span><span>&lt;/</span>script</span><span>&gt;</span></span></code></pre></div>
+<p>With this approach, non-critical styles will start downloading only when JavaScript starts executing – which can be a few seconds after the first render. Instead of waiting for JS to execute, use <code>&lt;link rel="preload"&gt;</code> to initiate the download sooner:</p>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>style</span><span>&gt;</span></span><span><span>
+  <span>/* Inlined critical styles */</span>
+</span></span><span><span><span>&lt;/</span>style</span><span>&gt;</span></span>
+
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>preload<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/app/non-critical.css<span>"</span></span> <span>as</span><span><span>=</span><span>"</span>style<span>"</span></span> <span>/&gt;</span></span>
+
+<span><span><span>&lt;</span>script</span><span>&gt;</span></span><span><span>
+  <span>/* Custom JS that starts downloading non-critical styles */</span>
+  <span>loadCSS</span><span>(</span><span>'/app/non-critical.css'</span><span>)</span><span>;</span>
+</span></span><span><span><span>&lt;/</span>script</span><span>&gt;</span></span></code></pre></div>
+</li>
+</ul>
+<p><strong>Don’t overuse it.</strong> Preloading everything won’t magically speed up the site – instead, it will likely prevent the browser from scheduling everything smartly.</p>
+<p><strong>Don’t confuse with <code>prefetch</code>.</strong> Don’t use <code>&lt;link rel="preload"&gt;</code> if you don’t need a resource immediately after the page loads. If you only need it later – e.g., for a next page – use <code>&lt;link rel="prefetch"&gt;</code>.</p>
+<h2 id="more-details"><a href="#more-details" aria-label="more details permalink"></a>More details</h2>
+<p><strong>It’s mandatory.</strong> Unlike all other preload-related <code>&lt;link&gt;</code> tags (except <a href="#modulepreload"><code>modulepreload</code></a>), this tag is mandatory for the browser (if it supports the tag). A browser <em>has</em> to download the resource specified in <code>&lt;link rel="preload"&gt;</code>. With other tags described here, a browser is free to skip preloading the resource if it decides to – e.g. if the network is slow.</p>
+<p><strong>Priorities.</strong> For different kinds of resources (styles, scripts, fonts, etc.), browsers typically assign different priorities. This allows for downloading the most important resources first. For a resource fetched with <code>&lt;link rel="preload"&gt;</code>, browsers use the <code>as</code> attribute to determine its priority. For Chrome, see <a href="https://docs.google.com/document/d/1bCDuq9H1ih9iNjgzyAL0gpwNFiEP4TZS-YLRp_RuMlc/edit#">the full table of Chrome priorities</a> for more details</p>
+<blockquote data-conversation="none"><div lang="en" dir="ltr"><p>2) How I find what to preload:</p><p>— Go to DevTools and run a performance recording of how the page loads<br>— Scroll through the Network section and find stuff that blocks page rendering but gets downloaded too late (= too much down in Network section). That’s usually CSS or JS</p><p>1/2 <a href="https://t.co/5Uem9U34jc">pic.twitter.com/5Uem9U34jc</a></p></div>— Ivan Akulov (@iamakulov) <a href="https://twitter.com/iamakulov/status/1080467599392206848?ref_src=twsrc%5Etfw">January 2, 2019</a></blockquote> 
+<h2 id="prefetch"><a href="#prefetch" aria-label="prefetch permalink"></a>prefetch</h2>
+<p><code>&lt;link rel="prefetch"&gt;</code> asks the browser to download and cache a resource (like, a script or a stylesheet) in the background. The download happens with a low priority, so it doesn’t interfere with more important resources. It’s helpful when you know you’ll need that resource on a subsequent page, and you want to cache it ahead of time.</p>
+<p>The browser doesn’t do anything with the resource after downloading it. Scripts aren’t executed, stylesheets aren’t applied. It’s just cached – so that when something else needs it, it’s available immediately.</p>
+<h2 id="example-1"><a href="#example-1" aria-label="example 1 permalink"></a>Example</h2>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>prefetch<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/style.css<span>"</span></span> <span>as</span><span><span>=</span><span>"</span>style<span>"</span></span> <span>/&gt;</span></span></code></pre></div>
+<p><code>href</code> points to the resource you want to download.</p>
+<p><code>as</code> can be anything you can download in a browser:</p>
+<ul>
+<li><code>style</code> for stylesheets,</li>
+<li><code>script</code> for scripts,</li>
+<li><code>font</code> for fonts,</li>
+<li><code>fetch</code> for resources downloaded with <code>fetch()</code> or <code>XMLHttpRequest</code>,</li>
+<li>other values – see the full list <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#What_types_of_content_can_be_preloaded">on MDN</a></li>
+</ul>
+<p>It’s important to specify the <code>as</code> attribute – it helps the browser to prioritize and schedule the download properly.</p>
+<h2 id="when-to-use-1"><a href="#when-to-use-1" aria-label="when to use 1 permalink"></a>When to use</h2>
+<p><strong>Use it for resources from other pages.</strong> <code>&lt;link rel="prefetch"&gt;</code> will help if you need a resource on a different page, and you want to preload it and speed up rendering of that page. For example:</p>
+<ul>
+<li>
+<p>You have an e-commerce site, and 40% of your users go from the home page to a product page. Use <code>&lt;link rel="prefetch"&gt;</code> to download CSS and JS files responsible for rendering product pages</p>
+</li>
+<li>
+<p>You have a single-page app, and you code-split it so that different pages load different bundles. When a user visits some page, ask your router what other pages it links to, and use <code>&lt;link rel="prefetch"&gt;</code> to preload bundles for those pages</p>
+</li>
+</ul>
+<p><strong>It’s probably safe to use it as much as you want.</strong> Browsers usually schedule prefetches with the lowest priority, so they don’t interfere with other resources. This means it’s probably safe to prefetch a lot of stuff. Keep in mind though that this will still use the user’s data – and there’s a chance that’ll cost them money!</p>
+<p><strong>Don’t use for urgent resources.</strong> Don’t use <code>&lt;link rel="prefetch"&gt;</code> when you’ll need a resource in a few seconds. In this case, use <code>&lt;link rel="preload"&gt;</code> instead.</p>
+<h2 id="more-details-1"><a href="#more-details-1" aria-label="more details 1 permalink"></a>More details</h2>
+<p><strong>Not mandatory.</strong> The browser is <em>not</em> required to follow the <code>&lt;link rel="prefetch"&gt;</code> instruction. This means it can decide not to fetch the resource – e.g. if the connection is slow.</p>
+<p><strong>Priorities in Chrome.</strong> In Chrome, <code>&lt;link rel="prefetch"&gt;</code> downloads are usually prioritized with the lowest priority (<a href="https://docs.google.com/document/d/1bCDuq9H1ih9iNjgzyAL0gpwNFiEP4TZS-YLRp_RuMlc/edit">full table of priorities</a>). This means they are usually scheduled after everything else got loaded.</p>
+<p><strong><code>&lt;link rel="next"&gt;</code> in Firefox.</strong> In Firefox, <code>&lt;link rel="next"&gt;</code> <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ#what_are_the_prefetching_hints.3f">behaves just like <code>&lt;link rel="prefetch" as="document"&gt;</code></a> – it prefetches the linked HTML document. This is somewhat weird, and <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=175418">there’s a bug from 2002</a> arguing that this should be disabled to avoid unnecessary server requests. Thankfully, <a href="https://stackoverflow.com/a/12312885/1192426">there’s a way to disable this</a> on a per-page basis. (Thanks to <a href="https://twitter.com/mikeyhaz">Mike Harris</a> for letting me know about this!)</p>
+<h2 id="preconnect"><a href="#preconnect" aria-label="preconnect permalink"></a>preconnect</h2>
+<p><code>&lt;link rel="preconnect"&gt;</code> asks the browser to perform a connection to a domain in advance. It’s helpful when you know you’ll download something from that domain soon, but you don’t know what exactly, and you want to speed up the initial connection.</p>
+<p>A browser has to set up a connection when it retrieves something from a new third-party domain. (A third-party domain is a domain that’s different from the one your app is hosted on.) This may happen when a site uses a font from Google Fonts, loads React from a CDN, or requests a JSON response from an API server.</p>
+<p>Setting up a new connection typically takes several hundred milliseconds. It’s only needed once per domain, but it still takes time. If you set up a connection in advance, you’ll save that time and load resources from that domain faster.</p>
+<h2 id="example-2"><a href="#example-2" aria-label="example 2 permalink"></a>Example</h2>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>preconnect<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>https://api.my-app.com<span>"</span></span> <span>/&gt;</span></span></code></pre></div>
+<p><code>href</code> points to the server you want to connect to.</p>
+<h2 id="when-to-use-2"><a href="#when-to-use-2" aria-label="when to use 2 permalink"></a>When to use</h2>
+<p><strong>Use it for domains you’ll need shortly.</strong> <code>&lt;link rel="preconnect" /&gt;</code> will help you when you have an important style, script, or image on a third-party domain, but you don’t know the resource URL yet. For example:</p>
+<ul>
+<li>
+<p>Your app is hosted at <code>my-app.com</code>, and it makes AJAX requests to <code>api.my-app.com</code>. You don’t know what specific requests you’ll be making to that domain – because you make them dynamically from JS.</p>
+<p>Use <code>&lt;link rel="preconnect"&gt;</code> to connect to <code>api.my-app.com</code> in advance and make the first data request faster</p>
+</li>
+<li>
+<p>Your app is hosted at <code>my-app.com</code>, and it uses Google Fonts. Google Fonts load fonts in two stages: first, a CSS file is downloaded from <code>fonts.googleapis.com</code>; then, that CSS file requests fonts from <code>fonts.gstatic.com</code>.</p>
+<p>You can’t know what specific font files from <code>fonts.gstatic.com</code> you’ll need until you download the CSS file from <code>fonts.googleapis.com</code>. Use <code>&lt;link rel="preconnect"&gt;</code> to set up a connection in advance</p>
+</li>
+</ul>
+<p><strong>Use it to slightly speed up some third-party script or style.</strong> If you have a third-party resource in the page that you really need to load sooner, add <code>&lt;link rel="preconnect" /&gt;</code> for that domain. It will instruct the browser to setup connection for that domain sooner.</p>
+<p><strong>Don’t overuse it.</strong> Setting up and keeping a connection open is costly – both for a client and a server. The simple rule of thumb is: use this tag for 4-6 domains at most.</p>
+<h2 id="more-details-2"><a href="#more-details-2" aria-label="more details 2 permalink"></a>More details</h2>
+<p><strong>Not mandatory.</strong> The browser is <em>not</em> required to follow a <code>&lt;link rel="preconnect"&gt;</code> instruction. This means it can decide not to set up a new connection – e.g., if there’re already a lot of connections set up, or in some other case.</p>
+<p><strong>What the connection process includes.</strong> To connect to each site, a browser has to perform the following steps:</p>
+<ul>
+<li>
+<p><em>DNS resolution.</em> Find a server’s IP address (<code>216.58.215.78</code>) for a specified domain name (<code>google.com</code>)</p>
+</li>
+<li>
+<p><em>TCP handshake.</em> Perform a roundtrip (a message goes client → server → client) to initiate a TCP connection to a server</p>
+</li>
+<li>
+<p><em>TLS handshake (only for HTTPS sites).</em> Perform two roundtrips (a message goes client → server → client → server → client) to initiate a secure TLS session</p>
+</li>
+</ul>
+<p>Note: this will change with HTTP/3 as it’s going to <a href="https://http3-explained.haxx.se/en/feature-handshakes.html">improve and speed up the connection mechanism</a>. That’s still far ahead though.</p>
+<h2 id="dns-prefetch"><a href="#dns-prefetch" aria-label="dns prefetch permalink"></a>dns-prefetch</h2>
+<p><code>&lt;link rel="dns-prefetch"&gt;</code> asks the browser to perform a DNS resolution of a domain in advance. It’s helpful when you know you’ll connect to that domain soon, and you want to speed up the initial connection.</p>
+<p>A browser has to perform a DNS resolution when it connects to a new third-party domain. (A third-party domain is a domain that’s different from the one your app is hosted on.) This may happen when your site uses a font from Google Fonts, loads React from a CDN, or requests a JSON response from your API server.</p>
+<p>For each new domain, resolving the DNS record usually <a href="https://www.keycdn.com/support/reduce-dns-lookups">takes around 20-120 ms</a>. It only affects the first resource downloaded from that domain, but it still matters. If you perform a DNS resolution in advance, you’ll save that time and load that resource faster.</p>
+<h2 id="example-3"><a href="#example-3" aria-label="example 3 permalink"></a>Example</h2>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>dns-prefetch<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>https://api.my-app.com<span>"</span></span> <span>/&gt;</span></span></code></pre></div>
+<p><code>href</code> points to the domain name you want to resolve. The scheme doesn’t matter – both <code>https://api.my-app.com</code> and <code>//api.my-app.com</code> would work fine.</p>
+<h2 id="when-to-use-3"><a href="#when-to-use-3" aria-label="when to use 3 permalink"></a>When to use</h2>
+<p><strong>Use it for domains you’ll need shortly.</strong> <code>&lt;link rel="dns-prefetch" /&gt;</code> will help you when you have some important resources on third-party domains the browser doesn’t know about in advance. For example:</p>
+<ul>
+<li>
+<p>Your app is hosted at <code>my-app.com</code>, and it makes AJAX requests to <code>api.my-app.com</code>. The browser doesn’t know that you’ll be making requests to that domain – because you make them from JS.</p>
+<p>Use <code>&lt;link rel="dns-prefetch"&gt;</code> to resolve <code>api.my-app.com</code> and make the first data request faster</p>
+</li>
+<li>
+<p>Your app is hosted at <code>my-app.com</code>, and it uses Google Fonts. Google Fonts load fonts in two stages: first, a CSS file is downloaded from <code>fonts.googleapis.com</code>; then, that CSS file requests fonts from <code>fonts.gstatic.com</code>.</p>
+<p>The browser doesn’t know that you’ll load fonts from <code>fonts.gstatic.com</code>, so use <code>&lt;link rel="dns-prefetch"&gt;</code> to resolve it in advance</p>
+</li>
+</ul>
+<p><strong>Use it to slightly speed up some third-party script or style.</strong> If you have a third-party resource in the page that you really need to load sooner, add <code>&lt;link rel="dns-prefetch" /&gt;</code> for that domain. It will instruct the browser to schedule DNS resolution for that domain sooner.</p>
+<blockquote><p><strong>Note on <code>&lt;link rel="dns-prefetch" /&gt;</code> and <code>&lt;link rel="preconnect" /&gt;</code>.</strong> Using both of these tags for the same domain is not really useful – <code>&lt;link rel="preconnect" /&gt;</code> already includes everything <code>&lt;link rel="dns-prefetch" /&gt;</code> does, and more. However, it can still make sense in two cases:</p><ul>
+<li>
+<p><em>You want to support older browsers.</em> <code>&lt;link rel="dns-prefetch" /&gt;</code> is supported <a href="https://caniuse.com/#feat=link-rel-dns-prefetch">starting from IE10 and Safari 5</a>. <code>&lt;link rel="preconnect" /&gt;</code> has been supported in Chrome and Firefox for a while, but was added to Safari only in 11.1, and <a href="https://caniuse.com/#feat=link-rel-preconnect">isn’t supported in IE/non-Chromium Edge</a>. If you need to support those browsers, use <code>&lt;link rel="dns-prefetch" /&gt;</code> as a fallback for <code>&lt;link rel="preconnect" /&gt;</code>.</p>
+</li>
+<li>
+<p><em>You want to speed up more than 4-6 domains</em>. It’s not recommended to use <code>&lt;link rel="preconnect" /&gt;</code> with more than 4-6 domains, as opening and keeping a connection is an expensive operation. <code>&lt;link rel="dns-prefetch" /&gt;</code> is more lightweight, so use it for other third-party domains if you want to speed them up too.</p>
+</li>
+</ul></blockquote>
+<h2 id="more-details-3"><a href="#more-details-3" aria-label="more details 3 permalink"></a>More details</h2>
+<p><strong>Not mandatory.</strong> The browser is <em>not</em> required to follow a <code>&lt;link rel="dns-prefetch"&gt;</code> instruction. This means it can decide not to perform the DNS resolve – e.g., if there's already a lot of them, or in some other case.</p>
+<p><strong>What is DNS.</strong> Each server on the internet is addressed by a unique IP address which looks like <code>216.58.215.78</code>. However, when you visit a site, you don’t type a server’s IP address – you use a site domain (like <code>google.com</code>). This works thanks to DNS (Domain Name System) servers – servers that map a domain (<code>google.com</code>) to a server’s IP address (<code>216.58.215.78</code>).</p>
+<p>To resolve a domain name, the browser has to perform a request to a DNS server. This is what takes those 20-120 ms when you connect to a new third-party domain.</p>
+<p><strong>DNS is cached, though not reliably.</strong> Some operating systems and browsers cache your DNS requests. This would save time if you need to retrieve something from a third-party domain again – but don’t rely on it. Linux typically <a href="https://stackoverflow.com/q/11020027/1192426">doesn’t have DNS caching at all</a>. Chrome has a DNS cache, but <a href="https://unix.stackexchange.com/q/363498/19889">it only lives for a minute</a>. Windows caches DNS responses <a href="https://www.itprotoday.com/cloud-computing/how-can-i-configure-how-long-dns-cache-stores-positive-and-negative-responses">for 5 days</a>.</p>
+<h2 id="prerender"><a href="#prerender" aria-label="prerender permalink"></a>prerender</h2>
+<p><code>&lt;link rel="prerender"&gt;</code> asks the browser to load a URL and render it in an invisible tab. When a user clicks on a link to that URL, the page should be rendered immediately. It’s helpful when you’re really sure a user will visit a specific page next, and you want to render it faster.</p>
+<p>Despite (or because of?) its power, in 2019, <code>&lt;link rel="prerender"&gt;</code> has bad support in major browsers. See <a href="#more-details-4">More details</a> for more.</p>
+<h2 id="example-4"><a href="#example-4" aria-label="example 4 permalink"></a>Example</h2>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>prerender<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>https://my-app.com/pricing<span>"</span></span> <span>/&gt;</span></span></code></pre></div>
+<p><code>href</code> points to the URL you want to render in the background.</p>
+<h2 id="when-to-use-4"><a href="#when-to-use-4" aria-label="when to use 4 permalink"></a>When to use</h2>
+<p><strong>When you’re really sure a user will go to some page next.</strong> If you have a conversion funnel where 70% of visitors go from page A to page B, <code>&lt;link rel="prerender" /&gt;</code> in page A might help to render page B super-quickly.</p>
+<p><strong>Don’t overuse it.</strong> Pre-rendering a page is extremely costly – both in terms of traffic and memory. Don’t use <code>&lt;link rel="prerender" /&gt;</code> for more than one page.</p>
+<h2 id="more-details-4"><a href="#more-details-4" aria-label="more details 4 permalink"></a>More details</h2>
+<p><strong>Not mandatory.</strong> The browser is <em>not</em> required to follow a <code>&lt;link rel="prerender"&gt;</code> instruction. This means it can decide not to perform the prerender – e.g., if the memory is low, or the connection is slow.</p>
+<p><strong>Chrome doesn’t do a full render.</strong> Instead of a full render, Chrome <a href="https://developers.google.com/web/updates/2018/07/nostate-prefetch">makes a <em>NoState Prefetch</em></a> to save memory. This means Chrome downloads the page and all subsequent resources, but doesn’t render it or execute JavaScript.</p>
+<p><strong>Firefox and Safari don’t support this tag at all.</strong> This doesn’t break the specification, as browsers are not required to act on the tag; but this is still quite sad. Firefox has <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=730101">an implementation bug</a> which has been open for 7 years; and there are reports that state <a href="https://twitter.com/bluesmoon/status/1108412360828563456">Safari doesn’t support it too</a>.</p>
+<h2 id="modulepreload"><a href="#modulepreload" aria-label="modulepreload permalink"></a>modulepreload</h2>
+<p><code>&lt;link rel="modulepreload"&gt;</code> tells the browser to download, cache, and compile a JS module script as soon as possible. It’s helpful when you use ES modules in production, and you want to load your app faster.</p>
+<p>Why? Typically, if an app uses ES modules, browsers will load modules in several roundtrips. Imagine your app has a chain of imports:</p>
+<div data-language="js"><pre><code><span>// /static/main.js</span>
+<span>import</span> Header <span>from</span> <span>'/static/Header.js'</span><span>;</span>
+<span>...</span>
+
+<span>// /static/Header.js</span>
+<span>import</span> Logo <span>from</span> <span>'/static/Logo.js'</span><span>;</span>
+<span>import</span> Link <span>from</span> <span>'/static/Link.js'</span><span>;</span>
+<span>...</span>
+
+<span>// /static/Logo.js</span>
+<span>import</span> Img <span>from</span> <span>'/static/Img.js'</span><span>;</span>
+<span>...</span></code></pre></div>
+<p>If you simply add a <code>&lt;script src="/static/main.js" type="module"&gt;</code> onto the page, the browser will discover</p>
+<ul>
+<li>
+<p>that it needs <code>Header.js</code> – only after it downloads <code>main.js</code></p>
+</li>
+<li>
+<p>that it needs <code>Logo.js</code> and <code>Link.js</code> – only after it downloads <code>Header.js</code></p>
+</li>
+<li>
+<p>that it needs <code>Img.js</code> – only after it downloads <code>Logo.js</code></p>
+</li>
+</ul>
+<p>and so on. And because the app can’t start working before all modules are downloaded, this makes the app load longer.</p>
+<p><code>&lt;link rel="modulepreload"&gt;</code> solves this. With this tag, you tell the browser about each module your app has – and the browser discovers and downloads each module right away.</p>
+<h2 id="example-5"><a href="#example-5" aria-label="example 5 permalink"></a>Example</h2>
+<div data-language="html"><pre><code><span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>modulepreload<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/static/Header.js<span>"</span></span> <span>/&gt;</span></span>
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>modulepreload<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/static/Logo.js<span>"</span></span> <span>/&gt;</span></span>
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>modulepreload<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/static/Image.js<span>"</span></span> <span>/&gt;</span></span>
+
+<span>&lt;!-- Or if the module belongs to e.g. a service worker: --&gt;</span>
+<span><span><span>&lt;</span>link</span> <span>rel</span><span><span>=</span><span>"</span>modulepreload<span>"</span></span> <span>href</span><span><span>=</span><span>"</span>/static/Header.js<span>"</span></span> <span>as</span><span><span>=</span><span>"</span>serviceworker<span>"</span></span> <span>/&gt;</span></span></code></pre></div>
+<p><code>href</code> points to the module you want to preload.</p>
+<p><code>as</code> specifies which context the module belongs to:</p>
+<ul>
+<li><code>script</code> – if the module is loaded by a regular <code>&lt;script type="module"&gt;</code> tag</li>
+<li><code>worker</code> – if the module is loaded by a web worker</li>
+<li><code>serviceworker</code> – if the module is loaded by a service worker</li>
+<li><a href="https://fetch.spec.whatwg.org/#request-destination-script-like">and etc.</a></li>
+</ul>
+<p><code>as</code> defaults to <code>script</code>, so, typically, you don’t need to specify it at all.</p>
+<h2 id="when-to-use-5"><a href="#when-to-use-5" aria-label="when to use 5 permalink"></a>When to use</h2>
+<p><strong>Use it to load your ES modules app faster.</strong> As described above, this tag is only useful for preloading ES modules – i.e., modules you’re importing through <code>import ...</code> or <code>&lt;script type="module"&gt;</code>.</p>
+<p>If you want to preload a regular script, use <a href="#preload"><code>&lt;link rel="preload" as="script"&gt;</code></a>.</p>
+<h2 id="more-details-5"><a href="#more-details-5" aria-label="more details 5 permalink"></a>More details</h2>
+<p><strong>Caching <em>and</em> compiling.</strong> <code>&lt;link rel="modulepreload"&gt;</code> not only fetches the module and puts it into the network cache, but also compiles it into bytecode. This means when the module is needed, the browser can start executing it immediately.</p>
+<p>This is unlike <code>&lt;link rel="preload"&gt;</code> which caches a resource but doesn’t process it in any way.</p>
+<p><strong>Why not <code>&lt;link rel="preload" as="module"&gt;</code>?</strong> <code>&lt;link rel="modulepreload"&gt;</code> and <code>&lt;link rel="preload"&gt;</code> seem very similar at first glance. But, it turns out, there are important low-level details that justified introducing a new keyword:</p>
+<ul>
+<li>
+<p><code>&lt;link rel="modulepreload"&gt;</code> handles cross-origin requests (CORS) differently from <code>&lt;link rel="preload"&gt;</code></p>
+</li>
+<li>
+<p><code>&lt;link rel="preload"&gt;</code> re-fetches a resource if you change the <code>as</code> attribute whereas <code>&lt;link rel="modulepreload"&gt;</code> doesn’t</p>
+</li>
+</ul>
+<p>and so on. For more details, see <a href="https://github.com/whatwg/fetch/issues/486#issuecomment-282044172">a discussion in <code>whatwg/fetch</code></a>.</p>
+<p><strong>Optional feature: loading dependencies.</strong> The specification allows browsers to preload not only the module but all its imports as well. However, this is an optional feature; as of Sep 2020, no browsers implement this.</p>
+<p><strong>Chrome only.</strong> As of Sep 2020, <code>&lt;link rel="modulepreload"&gt;</code> is only supported <a href="https://caniuse.com/link-rel-modulepreload">in Chrome and Chromium-based browsers</a>.</p>
+<h2 id="summing-up"><a href="#summing-up" aria-label="summing up permalink"></a>Summing up</h2>
+<p>Preloading is great. It’s easy to enable it, and it gives you solid speed improvements if used right.</p>
+<p>However, <em>right</em> is the key word. If you <code>&lt;link rel="preload"&gt;</code> a resource that’s not needed, you’ll steal bandwidth from other important resources. If you <code>&lt;link rel="preconnect"&gt;</code> too many domains, you’ll occupy the CPU with opening connections – instead of doing other important work. It’s a powerful tool, so it has to be used carefully.</p>
+<p>Preload wisely, stay cautious, and <a href="https://github.com/davidsonfellipe/awesome-wpo#analyzers">test all your performance changes to make sure they actually help</a>.</p>
+<p>More links:</p>
+<ul>
+<li><a href="https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf">Preload, prefetch and priorities in Chrome</a>: Addy Osmani’s deep-dive into how Chrome handles preloading and how it affects performance</li>
+<li><a href="https://css-tricks.com/prefetching-preloading-prebrowsing/">Prefetching, preloading, prebrowsing</a>: Robin Rendle’s overview of all preload-related tags on CSS-Tricks</li>
+</ul></div></article></div>
+  </div>
+</body>
+</html>

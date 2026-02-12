@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Shell Script Best Practices — The Sharat's</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Shell Script Best Practices — The Sharat's</h1>
+    <p><strong>URL:</strong> <a href="https://sharats.me/posts/shell-script-best-practices">https://sharats.me/posts/shell-script-best-practices</a></p>
+    <p><strong>Tags:</strong> bash, linux</p>
+    <p><strong>Bookmark ID:</strong> 876788825</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p>
+<em>
+Thank you for printing from <a href="https://sharats.me/">sharats.me</a>. Do check back regularly for more such
+awesome content. Subscribe at sharats.me/posts/index.xml to stay updated.
+</em>
+</p><article><p>This article is about a few quick thumb rules I use when writing shell scripts that I’ve come to appreciate over the years. Very opinionated.</p>
+<h2 id="things">Things<a href="#things" title="Permanent link">¶</a></h2>
+<ol>
+<li>
+<p>Use <code>bash</code>. Using <code>zsh</code> or <code>fish</code> or any other, will make it hard for others to understand / collaborate. Among all shells, <code>bash</code> strikes a good balance between portability and DX.</p>
+</li>
+<li>
+<p>Just make the first line be <code>#!/usr/bin/env bash</code>, even if you don’t give executable permission to the script file.</p>
+</li>
+<li>
+<p>Use the <code>.sh</code> (or <code>.bash</code>) extension for your file. It may be fancy to not have an extension for your script, but unless your case explicitly depends on it, you’re probably just trying to do clever stuff. Clever stuff are hard to understand.</p>
+</li>
+<li>
+<p>Use <code>set -o errexit</code> at the start of your script.</p>
+<ul>
+<li>So that when a command fails, <code>bash</code> exits instead of continuing with the rest of the script.</li>
+</ul>
+</li>
+<li>
+<p>Prefer to use <code>set -o nounset</code>. You <em>may</em> have a good excuse to not do this, but, my opinion, it’s best to always set it.</p>
+<ul>
+<li>This will make the script fail, when accessing an unset variable. Saves from horrible unintended consequences, with typos in variable names.</li>
+<li>When you want to access a variable that may or may not have been set, use <code>"${VARNAME-}"</code> instead of <code>"$VARNAME"</code>, and you’re good.</li>
+</ul>
+</li>
+<li>
+<p>Use <code>set -o pipefail</code>. Again, you may have good reasons to not do this, but I’d recommend to always set it.</p>
+<ul>
+<li>This will ensure that a pipeline command is treated as failed, even if one command in the pipeline fails.</li>
+</ul>
+</li>
+<li>
+<p>Use <code>set -o xtrace</code>, with a check on <code>$TRACE</code> env variable.</p>
+<ul>
+<li>For copy-paste: <code>if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi</code>.</li>
+<li>This helps in debugging your scripts, a lot. Like, really lot.</li>
+<li>People can now <em>enable</em> debug mode, by running your script as <code>TRACE=1 ./script.sh</code> instead of <code>./script.sh</code>.</li>
+</ul>
+</li>
+<li>
+<p>Use <code>[[ ]]</code> for conditions in <code>if</code> / <code>while</code> statements, instead of <code>[ ]</code> or <code>test</code>.</p>
+<ul>
+<li><code>[[ ]]</code> is a bash <del>builtin</del> keyword, and is more powerful than <code>[ ]</code> or <code>test</code>.</li>
+</ul>
+</li>
+<li>
+<p>Always quote variable accesses with double-quotes.</p>
+<ul>
+<li>One place where it’s <em>okay</em> not to is on the <em>left-hand-side</em> of an <code>[[ ]]</code> condition. But even there I’d recommend quoting.</li>
+<li>When you need the unquoted behaviour, using <code>bash</code> arrays will likely serve you much better.</li>
+</ul>
+</li>
+<li>
+<p>Use <code>local</code> variables in functions.</p>
+</li>
+<li>
+<p>Accept multiple ways that users can ask for help and respond in kind.</p>
+<ul>
+<li>Check if the first arg is <code>-h</code> or <code>--help</code> or <code>help</code> or just <code>h</code> or even <code>-help</code>, and in all these cases, print help text and exit.</li>
+<li>Please. For the sake of your future-self.</li>
+</ul>
+</li>
+<li>
+<p>When printing error messages, please redirect to stderr.</p>
+<ul>
+<li>Use <code>echo 'Something unexpected happened' &gt;&amp;2</code> for this.</li>
+</ul>
+</li>
+<li>
+<p>Use long options, where possible (like <code>--silent</code> instead of <code>-s</code>). These serve to document your commands explicitly.</p>
+<ul>
+<li>Note though, that commands shipped on some systems like macOS don’t always have long options.</li>
+</ul>
+</li>
+<li>
+<p>If appropriate, change to the script’s directory close to the start of the script.</p>
+<ul>
+<li>And it’s usually always appropriate.</li>
+<li>Use <code>cd "$(dirname "$0")"</code>, which works in <em>most</em> cases.</li>
+</ul>
+</li>
+<li>
+<p>Use <code>shellcheck</code>. Heed its warnings.</p>
+</li>
+</ol>
+<h2 id="template">Template<a href="#template" title="Permanent link">¶</a></h2>
+<div><pre><code><span><span>#!/usr/bin/env bash</span>
+</span><span>
+</span><span><span>set</span><span> </span>-o<span> </span>errexit
+</span><span><span>set</span><span> </span>-o<span> </span>nounset
+</span><span><span>set</span><span> </span>-o<span> </span>pipefail
+</span><span><span>if</span><span> </span><span>[[</span><span> </span><span>"</span><span>${</span><span>TRACE</span><span>-0</span><span>}</span><span>"</span><span> </span><span>==</span><span> </span><span>"1"</span><span> </span><span>]]</span><span>;</span><span> </span><span>then</span>
+</span><span><span>    </span><span>set</span><span> </span>-o<span> </span>xtrace
+</span><span><span>fi</span>
+</span><span>
+</span><span><span>if</span><span> </span><span>[[</span><span> </span><span>"</span><span>${</span><span>1</span><span>-</span><span>}</span><span>"</span><span> </span><span>=</span>~<span> </span>^-*h<span>(</span>elp<span>)</span>?$<span> </span><span>]]</span><span>;</span><span> </span><span>then</span>
+</span><span><span>    </span><span>echo</span><span> </span><span>'Usage: ./script.sh arg-one arg-two</span>
+</span><span>
+</span><span><span>This is an awesome bash script to make your life better.</span>
+</span><span>
+</span><span><span>'</span>
+</span><span><span>    </span><span>exit</span>
+</span><span><span>fi</span>
+</span><span>
+</span><span><span>cd</span><span> </span><span>"</span><span>$(</span>dirname<span> </span><span>"</span><span>$0</span><span>"</span><span>)</span><span>"</span>
+</span><span>
+</span><span>main<span>()</span><span> </span><span>{</span>
+</span><span><span>    </span><span>echo</span><span> </span><span>do</span><span> </span>awesome<span> </span>stuff
+</span><span><span>}</span>
+</span><span>
+</span><span>main<span> </span><span>"</span><span>$@</span><span>"</span>
+</span></code></pre></div>
+
+<h2 id="conclusion">Conclusion<a href="#conclusion" title="Permanent link">¶</a></h2>
+<p>I try to follow these rules in my scripts, and they’re known to have made at least my own life better. I’m still not consistent though, unfortunately, in following my own rules. So perhaps writing them down this way will help me improve there as well.</p>
+<p>Do you have anything you think I should add to this? Please share in the comments!</p>
+<p>Edit 1: Included fixes from HN comments at <a href="https://news.ycombinator.com/item?id=33355407" rel="noopener noreferrer" target="_blank">https://news.ycombinator.com/item?id=33355407</a> and <a href="https://news.ycombinator.com/item?id=33355077" rel="noopener noreferrer" target="_blank">https://news.ycombinator.com/item?id=33355077</a>.</p>
+<p>Edit 2: Fix from <a href="https://news.ycombinator.com/item?id=33354759" rel="noopener noreferrer" target="_blank">https://news.ycombinator.com/item?id=33354759</a>.</p></article></div>
+  </div>
+</body>
+</html>

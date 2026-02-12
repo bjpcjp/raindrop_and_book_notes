@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Curves and Surfaces – Bartosz Ciechanowski</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Curves and Surfaces – Bartosz Ciechanowski</h1>
+    <p><strong>URL:</strong> <a href="https://ciechanow.ski/curves-and-surfaces">https://ciechanow.ski/curves-and-surfaces</a></p>
+    <p><strong>Tags:</strong> algorithms-math, geometry, topology</p>
+    <p><strong>Bookmark ID:</strong> 876780026</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>From fonts to animated movies, curves and surfaces constitute fundamental building blocks of many geometrical designs. Over the course of this blog post I’ll explain how this model of a mask can be very smooth despite being described by a limited number of small points <span></span> that you can drag around to change the mask’s shape:</p>
+
+<p>Moreover, we’ll see how surfaces like that are a natural extension of plain two dimensional curves like the one below:</p>
+
+<p>Throughout this article I’ll keep jumping back and forth between curves and surfaces to highlight how the ideas we develop for wiggly lines can be expanded onto three dimensional shells that we can shape.</p>
+<h2 id="defining-the-shape">Defining the Shape<a href="#defining-the-shape" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>Before we build complicated curves and surfaces we first have to decide how we’d like to control their shape. There are many ways to describe and mold these objects, but some of those ways are better than others. In the demonstration below I built a system that lets you change the shape of a <span><strong>curve</strong></span> by controlling its <span><strong>spiral‑ness</strong></span> and <span><strong>size</strong></span>:</p>
+
+
+
+<p>While fun to play with, this system is quite impractical. We can’t control where exactly the curve ends and we also have a very limited influence on <em>how</em> it twists. For instance, it’s impossible to create an S‑shaped curve using these controls.</p>
+<p>Ideally, we’d deal with a system that would let us directly affect where the curve is placed, while also providing a convenient control over its entire shape. These are the features that <em>control points</em> provide. Their visual placement makes it very easy to define the shape of a curve. In the demonstration below you can drag each control point shown as <span></span> to change the <span><strong>curve’s</strong></span> form:</p>
+
+<p>Control points are often visualized with connecting lines that join them to their neighbors. This helps to avoid ambiguities when two different points <a href="#" onclick="control_points_swap();return false;">swap their positions</a> which can make the curve look quite different.</p>
+<p>Notice that all control points seem to affect the shape of the curve in the point’s vicinity. We can visualize the impact of a given point using red color. In the demonstration below you can <span>tap</span><span>click</span> a control point to see how it affects the local shape – the <span><strong>redder</strong></span> the section of the curve the more influenced it is by that control point. <span><strong>Gray</strong></span> sections don’t move at all when the selected point is dragged:</p>
+
+<p>With control points we can easily change where the curve starts, ends, and how it flows in the middle. Moreover, the shape of the lines connecting the control points roughly resembles the shape of the resulting curve. This system of control points is simple, yet very powerful.</p>
+<p>So far I’ve been quite vague about the rules driving the shape of the resulting curve and the extent to which the control points affect it. I’ll try to explain those underlying principles by building this system from a ground up. We’ll also see how those ideas extend to surfaces, but before we construct these more complex elements we’ll start with the simplest curve – a linear segment.</p>
+<h2 id="linear-segment">Linear Segment<a href="#linear-segment" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>In the demonstration below you can drag the control points <strong>A</strong> and <strong>B</strong> around to change their position. The slider controls a virtual <span><strong>red pen</strong></span> that is used to draw a segment between those two points:</p>
+
+
+<p>While this demo is the world’s most primitive drawing application, there are some important observations we can make here already. The <span><strong>slider</strong></span> controls the <em>progress</em> of our drawing – the more advanced the slider is the further into drawing we are. For the <a href="#" onclick="progress_50();return false;">progress of&nbsp;0.5</a> we’re halfway through a drawing, and at the <a href="#" onclick="progress_90();return false;">progress of&nbsp;0.9</a> we’re mostly done.</p>
+<p>Additionally, a point on the segment <a href="#" onclick="progress_99();return false;">very close</a> to point <strong>B</strong>, as shown by the tip of the pen, moves very little when point <strong>A</strong> is dragged, but it moves a lot when point <strong>B</strong> is dragged.</p>
+<p>We can visualize the “weight” of a given control point on the curve using the red tinting we’ve seen before. You can <span>tap</span><span>click</span> the control points to change which one is selected:</p>
+
+<p>For a linear segment like that, weighting function is quite straightforward. The closer to the control point we are the more impactful it is. Let’s try to put some numbers behind these dependencies.</p>
+<p>There are many ways to specify the impact of a control point at a distance, but the simplest approach is to assume that those weights are changing proportionally with that distance. As we <span><strong>progress</strong></span> through the curve using the slider we decrease the weight of the point <strong>A</strong> and increase the weight of the point <strong>B</strong>:</p>
+
+
+<p>This hopefully makes intuitive sense. When we’re <a href="#" onclick="linear_segment_weight_plot_1();return false;">all the way</a> through the curve the weight of the point <strong>A</strong> is 0 and we can move it around all we want without affecting the position of the end of the curve.</p>
+<p>We can describe those little plots using some equations. A word <strong>“progress”</strong> would make the formulas very long so I’ll replace it with the traditionally used letter <strong>t</strong>:</p>
+<p>
+t = progress
+</p>
+<p>The position of any point <strong>P</strong> on the linear segment for given progress <strong>t</strong> is:</p>
+<div>
+<p>P = A × (1 − t) + B × t</p>
+</div>
+<p>We’ll see those <strong>(1 − t)</strong> and <strong>t</strong> terms a lot, so to make them easier to distinguish I’ll <span><strong>mark&nbsp;them</strong></span> and I’ll put little triangles on their right sides to quickly visualize if that section goes up or down with the progress – those triangles match the shapes of the plots we’ve just seen:</p>
+<div><p>P = A × </p><p> + B × </p></div>
+<p>This equation describes <a href="https://en.wikipedia.org/wiki/Linear_interpolation"><em>linear interpolation</em></a> and it will be very important in our further discussions. We can indeed verify that e.g. plugging progress <strong>t</strong> equal to 1 simply returns the point <strong>B</strong>.</p>
+<p>It may not be immediately clear what it means to multiply a point by a number so let’s explore that a little. Ultimately, each point has <strong>x</strong> and <strong>y</strong> coordinates that define its position relative to some origin:</p>
+
+<p>When we multiply a point by some number we’re actually individually multiplying its <strong>x</strong> and <strong>y</strong> coordinates:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    <p>P<sub>x</sub></p>
+    </td>
+    <td>
+    <p> = </p>
+    </td>
+    <td>A<sub>x</sub></td><td>×</td><td></td><td>+</td><td>B<sub>x</sub></td><td>×</td><td></td>
+</tr>
+<tr>
+    <td>
+    <p>P<sub>y</sub></p>
+    </td>
+    <td>
+    <p> = </p>
+    </td>
+    <td>A<sub>y</sub></td><td>×</td><td></td><td>+</td><td>B<sub>y</sub></td><td>×</td><td></td>
+</tr>
+</tbody></table>
+</div>
+<p>We can see that process in a visual form by tracking the coordinates of all three points as the <span><strong>progress</strong></span> changes:</p>
+
+
+<div id="cs_point_coords_equation">
+<table>
+<tbody><tr>
+    <td>
+    <p>P<sub>x</sub></p>
+    </td>
+    <td>
+    <p> = </p>
+    </td>
+    <td>
+        <div>
+            <p>A<sub>x</sub></p>
+        </div>
+    </td>
+    <td>×</td>
+    <td>(1.00 −</td>
+    <td><div>
+            <p>t</p>
+        </div>
+    </td>
+    <td>)</td><td>+</td>
+        <td>
+        <div>
+            <p>B<sub>x</sub></p>
+        </div>
+    </td>
+    <td>×</td>
+      <td><div>
+            <p>t</p>
+        </div>
+    </td>
+    <td>=</td>
+    <td id="linear_segment_coords_px"></td>
+</tr>
+<tr>
+    <td>
+    <p>P<sub>y</sub></p>
+    </td>
+    <td>
+    <p> = </p>
+    </td>
+    <td>
+        <div>
+            <p>A<sub>y</sub></p>
+        </div>
+    </td>
+    <td>×</td>
+    <td>(1.00 −</td>
+    <td><div>
+            <p>t</p>
+        </div>
+    </td>
+    <td>)</td><td>+</td>
+        <td>
+        <div>
+            <p>B<sub>y</sub></p>
+        </div>
+    </td>
+    <td>×</td>
+      <td><div>
+            <p>t</p>
+        </div>
+    </td>
+    <td>=</td>
+    <td id="linear_segment_coords_py"></td>
+</tr>
+</tbody></table>
+</div>
+<p>The entire <span><strong>linear segment</strong></span> itself is ultimately created by infinitely many points constructed from all possible values of <strong>t</strong> between 0 and 1.</p>
+<h2 id="a-step-further">A Step Further<a href="#a-step-further" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>So far we’ve been dealing with flat 2D segments, but nothing prevents us from doing the same operations in a three dimensional space. In the demonstration below you can control the position of points <strong>A</strong> and <strong>B</strong> in a 3D space by dragging them around. You can also change the viewing angle by dragging anywhere else. The <span><strong>slider</strong></span> controls a virtual pen that paints a <span><strong>linear segment</strong></span>:</p>
+
+
+<p>By dragging that point through space we’ve created a simple linear segment placed in three dimensions. However, now we can go a step further by dragging that segment through space to create a <span><strong>red surface</strong></span>:</p>
+
+
+<p>The surface we’ve just made is fairly arbitrary and not very well defined, but the concept is very promising, so let’s try to create a simple surface that we can easily control. The idea is simple – we can place two linear segments in space that will form <span><strong>rails</strong></span> on which another <span><strong>dragged segment</strong></span> slides:</p>
+
+
+<p>Notice that in <a href="#" onclick="linear_patch_f0();return false;">many configurations</a> the <span><strong>dragged segment</strong></span> will change its length as it goes, but that is actually beneficial – it lets us create more varied shapes.</p>
+<p>It’s important to note that we move along the side segments proportionally – when we’re <a href="#" onclick="linear_patch_f1();return false;">halfway through dragging</a> we’re also halfway through the lengths of the <span><strong>rails</strong></span>, even if the <span><strong>rails</strong></span> themselves have <a href="#" onclick="linear_patch_f2();return false;">different lengths</a>. You can think of the <span><strong>blue rails</strong></span> as a sort of interconnected sliders.</p>
+<p>Let’s not forget that the segment we’re dragging is itself made by dragging a point between the segment’s endpoints, so the entire surface consists of points made from all possible values of <em>two</em> different progresses, one <span><strong>along the rails</strong></span> and another <span><strong>along the dragged segment</strong></span>:</p>
+
+
+
+<p>The sliders, and thus the progresses, are independent of each other, so we can think of the choice they offer as a 1×1 square:</p>
+
+<p>One slider controls the progress <strong>t</strong> of the dragged segment and the other slider controls the progress <strong>s</strong> <em>within</em> that segment.</p>
+<p>That arrangement of sliders is a bit cumbersome, so I’ll just keep both of them in a horizontal orientation. I’ll occasionally put a smaller version of this square in the bottom left corner of a demonstration – it will make it easier to analyze how the sliders control the placement of a <span><strong>point</strong></span> on the surface:</p>
+
+
+
+<p>It may also be useful to see how different arrangements of the control points deform that input square in the 3D space. As you deform the surface the lines remain straight, but the distances between them may change:</p>
+
+
+
+<p>Let’s try to express what we’ve built so far in a mathematical manner. Let me show the initial demonstration with different points labeled to makes things easier to reference:</p>
+
+
+
+<p>The end points <strong>P<sub>0</sub></strong> and <strong>P<sub>1</sub></strong> of the <span><strong>dragged segment</strong></span> are just interpolated end points of the <span><strong>rails</strong></span> <strong>AC</strong> and <strong>BD</strong>:</p>
+<div>
+<div><p>P<sub>0</sub> = A × </p><p> + C × </p></div>
+<div><p>P<sub>1</sub> = B × </p><p> + D × </p></div>
+</div>
+<p>Then the position of the point within the segment is just another linear interpolation:</p>
+<div><p>P = P<sub>0</sub> × </p><p> + P<sub>1</sub> × </p></div>
+<p>After plugging the values we can indeed confirm that the final position of a point <strong>P</strong> on this surface depends on <em>two</em> parameters <strong>s</strong> and <strong>t</strong>:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    <p>P</p>
+    </td>
+    <td>
+    <p> = </p>
+    </td>
+    <td>
+    (</td><td>A</td><td>×</td><td></td><td>+</td><td>C</td><td>×</td><td></td><td>)</td><td>×</td><td></td><td>+
+    </td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>
+    (</td><td>B</td><td>×</td><td></td><td>+</td><td>D</td><td>×</td><td></td><td>)</td><td>×</td><td></td><td>
+    </td>
+</tr>
+</tbody></table>
+</div>
+<p>Which we can expand to see the functions driving each point:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>A</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>B</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>C</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>D</td><td>×</td><td></td><td>×</td><td></td><td>
+    </td>
+</tr>
+</tbody></table>
+</div>
+<p>The terms next to the control points may seem a little complicated, but in fact they’re fairly simple once represented visually. They are the 2D equivalents of the 1D weighting functions we’ve already seen. I’m once again using <span><strong>redness</strong></span> <em>and</em> height to visualize how impactful that control point is on different areas of the surface:</p>
+
+
+
+<p>Notice that the weighting functions are symmetrical to each other. As a result, we can create the very same surface by choosing to drag either the <span><strong>yellow</strong></span> <em>or</em> the <span><strong>blue</strong></span> segment through space – they both end up tracing the same surface:</p>
+
+
+
+<p>While we’re effectively just dragging a straight stick through the air, the surface it creates, known as a <a href="https://en.wikipedia.org/wiki/Paraboloid#Hyperbolic_paraboloid"><em>hyperbolic paraboloid</em></a>, at some viewing angles <a href="#" onclick="linear_patch_symmetry_f0();return false;">doesn’t look straight</a> at all – there are some curvy shapes to be found on this surface.</p>
+<p>In general case any point sliding on the surface traces some sort of curve through space. However, a particularly interesting curve appears when a point moves across the diagonal of the input square region – we can easily show the <span><strong>trajectory</strong></span>  of that <span><strong>point</strong></span> by locking the two sliders together:</p>
+
+
+
+<p>Notice that while the <span><strong>point</strong></span> always follows the same straight linear path on the input square, for <a href="#" onclick="linear_patch_quad_curve_f0();return false;">many configurations</a> the <span><strong>path traced</strong></span> on the surface forms a <em>non</em>‑straight <span><strong>curve</strong></span>. Let’s try to write the equation of that <span><strong>curve</strong></span>. To recap, any point on the surface we’ve looked at can be described using the following equations:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>A</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>B</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>C</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>D</td><td>×</td><td></td><td>×</td><td></td><td>
+    </td>
+</tr>
+</tbody></table>
+</div>
+<p>However, because the sliders are locked together, <strong>s</strong> and <strong>t</strong> are the same so we obtain:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>A</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>B</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>C</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>D</td><td>×</td><td></td><td>×</td><td></td><td>
+    </td>
+</tr>
+</tbody></table>
+</div>
+<p>Notice that both B and C points have the same weights so we can tie them together:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>A</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>(B + C)</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>D</td><td>×</td><td></td><td>×</td><td></td><td>
+    </td>
+</tr>
+</tbody></table>
+</div>
+<p>We can simplify things even further if we make points <strong>B</strong> and <strong>C</strong> overlap each other. Observe that this makes the entire surface flat and the curve gets nicely isolated:</p>
+
+
+<p>Since points <strong>B</strong> and <strong>C</strong> are the same, this gives us the final simplified form:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>1</td><td>×</td><td>A</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>2</td><td>×</td><td>B</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>1</td><td>×</td><td>D</td><td>×</td><td></td><td>×</td><td></td><td>
+    </td>
+</tr>
+</tbody></table>
+</div>
+<p>Note that we’re dealing with just three points so from now on I’ll call the third point <strong>C</strong> instead of <strong>D</strong>. The curve we’ve built is known as a <em>quadratic <a href="https://en.wikipedia.org/wiki/B%C3%A9zier_curve">Bézier curve</a></em>. Here it is being drawn in just two dimensions:</p>
+
+
+<p>I think it’s very gratifying that we’ve found this smooth curve hiding on the surface obtained by dragging a <em>straight</em> segment through space.</p>
+<p>Let’s look at how much each point affects the shape of the curve as we <span><strong>advance</strong></span> through it. You can <span>tap</span><span>click</span> a control point to select it:</p>
+
+
+<p>There are a few interesting observations to be made here:</p>
+<ul>
+<li>When the <span><strong>progress</strong></span> is <a href="#" onclick="quad_curve_plot_f0();return false;">equal to 0</a> the weight function of control point <strong>A</strong> reaches 1 and all the other disappear, so the curve is guaranteed to start at point <strong>A</strong></li>
+<li>Similarly, when the <span><strong>progress</strong></span> is <a href="#" onclick="quad_curve_plot_f1();return false;">equal to 1</a> the weight function of control point <strong>C</strong> reaches 1 and all the other disappear, so the curve is guaranteed to <em>end</em> at point <strong>C</strong></li>
+<li>When <span><strong>progress</strong></span> is <a href="#" onclick="quad_curve_plot_f2();return false;">between</a> those two extrema the position of the points on the curve is affected by all 3 control points</li>
+</ul>
+<p>It’s also worth pointing out that the “speed” of travel along the curve is no longer constant like it was for a linear segment. We can visualize how uniform steps of <span><strong>progress</strong></span> map to the curve points:</p>
+
+
+<p>For <a href="#" onclick="quad_curve_plot2_f0();return false;">some configurations</a> when the slider is <a href="#" onclick="quad_curve_plot2_f1();return false;">halfway</a> along the progress, the curve is definitely <em>not</em> halfway drawn. In some applications, e.g. when an object is expected to move along a curve with constant velocity, that discrepancy between the “input” progress and actual progress of distance along the curve may be very important, but for our visual use cases it won’t matter.</p>
+<p>Quadratic Bézier curves are unfortunately fairly limited. For instance, it’s impossible to express any sort of loop with a plain curve like that. To get better control over the shape of the curve we need to somehow introduce additional control points that would give us finer tunability of the curve’s form.</p>
+<p>Looking at the equations and weighting functions it may be a bit hard to figure out how we could generalize the curve to introduce more points. Let’s look the at that equation again:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>1</td><td>×</td><td>A</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>2</td><td>×</td><td>B</td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>1</td><td>×</td><td>C</td><td>×</td><td></td><td>×</td><td></td><td>
+    </td>
+</tr>
+</tbody></table>
+</div>
+<p>We can split the doubled <strong>B</strong> part and rearrange things a little to get:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>(</td><td>A</td><td>×</td><td></td><td>+</td><td>B</td><td>×</td><td></td><td>)</td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td>
+    </td>
+    <td>
+    </td>
+    <td>(</td><td>B</td><td>×</td><td></td><td>+</td><td>C</td><td>×</td><td></td><td>)</td><td>×</td><td></td><td></td>
+</tr>
+</tbody></table>
+</div>
+<p>It may seem that we only made things worse, but in fact we simplified things greatly. Notice that the values in the parentheses are just linear interpolations between points <strong>A</strong> and <strong>B</strong> as well as <strong>B</strong> and <strong>C</strong>. We can call these new points <strong>AB</strong> and <strong>BC</strong>:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    AB
+    </td>
+    <td>
+     = 
+    </td>
+    <td>A</td><td>×</td><td></td><td>+</td><td>B</td><td>×</td><td></td>
+</tr>
+<tr>
+    <td>
+    BC
+    </td>
+    <td>
+     = 
+    </td>
+    <td>B</td><td>×</td><td></td><td>+</td><td>C</td><td>×</td><td></td>
+</tr>
+</tbody></table>
+</div>
+<p>And then the final point <strong>P</strong> is just a linear interpolation of the two:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>AB</td><td>×</td><td></td><td>+</td><td>BC</td><td>×</td><td></td>
+</tr>
+</tbody></table>
+</div>
+<p>Let’s look at what we’ve derived using some visuals:</p>
+
+
+<p>We essentially interpolate points on the edges that we have, to create a new edge on which we then interpolate again to get the <span><strong>point</strong></span> on the <span><strong>curve</strong></span>. Now, if we introduce another control point we can just repeat this idea by doing repeated interpolations. Notice that at every step we have one fewer point and one fewer edge:</p>
+
+
+<p>This curve is known as a <em>cubic</em> Bézier curve. If we tally up all the interpolations we do we end up with the following compact form:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>1</td><td>×</td><td>A</td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>3</td><td>×</td><td>B</td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>3</td><td>×</td><td>C</td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+    <td></td><td></td>
+    <td>1</td><td>×</td><td>D</td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td></td>
+</tr>
+</tbody></table>
+</div>
+<p>Observe how <span><strong>(1 − t)</strong></span> sections convert to <span><strong>t</strong></span> sections for the subsequent points. All those multiplications of triangular functions end up creating the following set of weights for the control points:</p>
+
+
+<p>The ideas behind two dimensional cubic Bézier curves naturally extend to the third dimension – the curve can twist and turn as it goes through space:</p>
+
+<p>We’re not just here to talk about curves, so let’s try to see how we can extend Bézier curves into surfaces.</p>
+<h2 id="bézier-patches">Bézier Patches<a href="#b%C3%A9zier-patches" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>When we were creating a simple surface we were sliding a straight segment along some other two linear segments. We can expand this idea to slide a <span><strong>straight segment</strong></span> along two <span><strong>cubic Bézier curves</strong></span>:</p>
+
+
+<p>While the surface itself is now more varied on the <span><strong>purple edges</strong></span>, it’s hard to hide the straightness of the <span><strong>yellow segment</strong></span>. To make things more varied we could replace that segment with a single cubic Bézier curve that we would stretch as we go, but by building up on the previous ideas we can do something much more interesting.</p>
+<p>Firstly, we’ll introduce a set of <em>four</em> cubic Bézier curves in the 3D space. Then we can use those <span><strong>four curves</strong></span> as rails on which <span><strong>four control points</strong></span> can slide. Those <span><strong>control points</strong></span> in turn define a  <span><strong>new Bézier curve</strong></span> which in turn traces the final surface as it travels through space:</p>
+
+
+<p>Notice that the <span><strong>four black control points</strong></span> aren’t directly controllable –  they change their positions as they slide on the <span><strong>purple rails</strong></span> which in turn keeps changing the <span><strong>dragged Bézier curve</strong></span>. This process forms a cubic Bézier surface, or a cubic Bézier <em>patch</em>. That new surface is all together defined by 16 control points which can be arranged in a connected 4×4 grid:</p>
+
+<p>As we’ve already seen, every point on that surface is first defined by evaluation across the set of <span><strong>four Bézier curves</strong></span> followed by interpolation on the resulting <span><strong>new curve</strong></span>:</p>
+
+
+
+<p>Each point of the input square corresponds to some <span><strong>point</strong></span> on the surface. The surface distorts the straight lines on the input square into cubic Bézier curves in the 3D space:</p>
+
+
+
+<p>The equation driving that surface is so massive that I’ll just represent the <span></span> <span></span> <span></span> <span></span> parts using their triangular symbols:</p>
+<div>
+<table>
+<tbody><tr>
+    <td>
+    P
+    </td>
+    <td>
+     = 
+    </td>
+    <td>P<sub>11</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>12</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>13</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>14</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>21</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>22</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>23</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>24</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>31</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>32</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>33</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>34</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>41</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>42</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>43</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>+</td>
+</tr>
+<tr>
+<td></td><td></td>
+    <td>P<sub>44</sub></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td>×</td><td></td><td></td>
+</tr>
+</tbody></table>
+</div>
+<p>The result of all of those 16 sets of triangular multiplications are 16 weighting functions that define how important the given control point is to the shape of the surface in the point’s vicinity:</p>
+
+
+
+<p>Notice the symmetry in all those functions – ultimately there are only three unique shapes here, the others are their reflections and rotations.</p>
+<h2 id="beyond-cubic">Beyond Cubic<a href="#beyond-cubic" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>While relatively flexible, simple cubic curves and surfaces have their limitations. For example, a <span><strong>cubic Bézier curve</strong></span> can have at most two “bends” – it’s impossible to make it fit the <span><strong>gray curve</strong></span>:</p>
+
+<p>One approach to solve this problem is to build more complicated Bézier curves by increasing the number of control points. Thankfully, our method of linearly interpolating the linear interpolations that we used to upgrade quadratic Bézier curves to cubic ones allows us to add arbitrary number of control points. In the demonstration below you can see how a Bézier curve with <em>eight</em> control points is built:</p>
+
+
+<p>On every interpolation step we reduce the number of intermediate points by one and after the 7<sup>th</sup> step we’re down to our final point that defines the path. With a single Bézier curve with that many control points we can finally try to fit the shape:</p>
+
+<p>Bézier curves with more control points provide better flexibility, but unfortunately they come with their own problems. Firstly, notice that to <a href="#" onclick="septic_fit_f0();return false;">fit the shape</a> the control points of the <span><strong>curve</strong></span> have to be put quite far apart making them slightly less convenient to use.</p>
+<p>Moreover, changes to any of the control points causes the <em>entire</em> curve to move. In the demonstration below I’ve enlarged a small section in the beginning of a <span><strong>curve</strong></span>. When you move the <span><strong>selected</strong></span> 6<sup>th</sup> point, the section of the <span><strong>curve</strong></span> near the <em>2<sup>nd</sup></em> control point changes as well:</p>
+
+<p>When we look at the plot of the weight that each point has as we <span><strong>progress</strong></span> through the curve we can notice that, to some extent, they all contribute almost the entire curve:</p>
+
+
+<p>Single Bézier curves with many control points lack the property of <em>local control</em>, making them not as useful for expressing more complicated shapes, so for better or for worse we have to rethink our approach to designing complicated shapes.</p>
+<h2 id="splines">Splines<a href="#splines" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>Instead of using a single curve with many control points, we can use multiple curves with few control points. In the demonstration below I put three <span><strong>cubic</strong></span> <span><strong>Bézier</strong></span> <span><strong>curves</strong></span> that we can arrange to create more complex shapes:</p>
+
+<p>While flexible, this setup is a bit cumbersome to use, as these three curves have gaps unless we <a href="#" onclick="cubic_spline_f0();return false;">connect their end points</a>. We can automate this connection process by having the last control point of the previous curve always match the first point of the next curve:</p>
+
+<p>This solves the problem of gaps but if we’re aiming for nice, smooth shapes then we still have some sharp corners to account for. To remove the kinks we have to ensure that the <em>tangency</em> of neighboring curves is continuous as well.</p>
+<p>I’ve <a href="https://ciechanow.ski/gears/#tangent--normal">discussed</a> tangency on this blog before, but, as a quick recap, a tangent is a local “straight ahead” direction. It can be easily found by sliding <span><strong>two beads</strong></span> on a <span><strong>curve</strong></span>. As the <span><strong>beads</strong></span> get closer, the line spanned through their centers approaches the tangent direction:</p>
+
+
+
+<p>To ensure that the tangency of neighboring cubic Bézier curves is consistent the next <em>and</em> previous neighbors of the joining control point have to lie on the same straight line. Many design tools tie the control points of neighboring curves together giving a single control axis that maintains the tangency. That entire utility is usually known as a <em>pen</em> or <em>vector</em> tool:</p>
+
+<p>The curves we’ve built in this section are known as <a href="https://en.wikipedia.org/wiki/Spline_(mathematics)"><em>splines</em></a> which are piecewise polynomial curves – they’re constructed from different pieces, each one described by a polynomial function.</p>
+<p>When it comes to designing complex surfaces, we can employ the same idea of using multiple cubic Bézier patches to form more complicated shapes. With the most basic setup those have the same continuity problems that individual curves had:</p>
+
+<p>Notice how much work it is to have the two surfaces without any gaps. Thankfully, just like we did for curves, the edge points of neighboring patches can be tied together to make the seam water tight.</p>
+<p>When it comes to tangency, the concept of a <em>single</em> tangent direction doesn’t make that much sense for surfaces – at a given point the surface “goes” in many directions. To account for that we define an entire tangent <em>plane</em>. Similarly to what we did for curves we can take <span><strong>three beads</strong></span> and <span><strong>three straight wires</strong></span> attached to them and then slide those <span><strong>beads</strong></span> close to the <span><strong>point</strong></span> on the surface:</p>
+
+
+
+
+<p>As the <span><strong>beads</strong></span> come to the target <span><strong>point</strong></span> infinitely close the three wires define the <span><strong>tangent plane</strong></span>. That plane also has a perpendicular direction which we call a <em>normal</em> direction of the surface at that <span><strong>point</strong></span> – I’ve marked that direction with a <span><strong>red arrow</strong></span>:</p>
+
+
+
+<p>For two surfaces to be connected without a sharp edge we need the normals at the joining edge to be aligned in the same direction:</p>
+
+<p>Note that even when the surfaces don’t have any gaps it still requires a <a href="#" onclick="two_cubic_patches_normals_f0();return false;">lot of adjustments</a> to keep them connected and free of sharp edges. But that’s not even the end of the difficulties that joined patches create.</p>
+<h2 id="curved-mirror-on-the-wall">Curved Mirror on The Wall<a href="#curved-mirror-on-the-wall" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>It would be reasonable to think that removal of sharp edges is all it takes to create pretty surfaces, but when the surfaces are <em>reflective</em> we still have some work to do. In the demonstration below you can see a mirror-polished surface reflecting a <span><strong>red sphere</strong></span>. By dragging the slider you can bend that surface into an arc of a circle, the <span><strong>black curve</strong></span> below shows a cross section of the mirror’s shape:</p>
+
+
+<p>Notice that as the mirror pulls away from the flat shape the reflection of the sphere gets narrower. To get an intuitive understanding of why this happens we have to look at this situation from the side. The <span><strong>black line</strong></span> represents the mirror and the <span><strong>red line</strong></span> shows a reflection of the sphere in that mirror:</p>
+
+
+<p>When the surface curves, its <span><strong>normal directions</strong></span> spread out. In simple terms, a curved mirror “sees” more of its environment but since the mirror’s area stays the same, the reflection of the sphere has to shrink to fit in.</p>
+<p>When we bend the surface we’re actually changing the <a href="https://en.wikipedia.org/wiki/Curvature"><em>curvature</em></a> of the profile of the surface. Roughly speaking, curvature defines how quickly a curve changes its direction.</p>
+<p>In the demonstration below I’ve marked curvy sections of the curve with different colors – the higher the curvature the more intense the color. Notice that this curve can bend in two different directions, so I’m using <span><strong>orange</strong></span> and <span><strong>blue</strong></span> to distinguish these cases. By dragging the <span><strong>slider</strong></span> you can witness how quickly the local direction of the curve, shown as a <span><strong>black arrow</strong></span>, changes in the areas of large curvature:</p>
+
+
+<p>A <a href="#" onclick="cubic_curve_curvature_f0();return false;">straight line</a> has no curvature and the arrow never turns, while a <a href="#" onclick="cubic_curve_curvature_f1();return false;">tight turn</a> has a high curvature and the arrow turns very rapidly when passing through it. To show a more precise measure of a curvature we can use an <a href="https://en.wikipedia.org/wiki/Osculating_circle"><em>osculating circle</em></a> which conceptually is a circle that locally “fits” into the curve:</p>
+
+
+<p>Curvature <strong>κ</strong> is the inverse of the radius <strong>R</strong> of that circle:</p>
+<p><span><span>κ</span></span> = <span><span>1</span>
+    <span>/</span>
+    <span>R</span>
+</span>
+</p>
+<p>That radius <strong>R</strong> is also known as the <em>radius of curvature</em>. Note that the inverse relation makes sense – a <em>small</em> curvature implies a <em>not</em> very curvy region which in turn implies <em>large</em> radius of curvature. A curvature of a curve is also often visualized using a <em>curvature comb</em>:</p>
+
+<p>Comb’s teeth are protruding in the normal direction of the curve and the higher a tooth’s length, the larger the curvature in that region.</p>
+<p>Let’s look at <em>two</em> reflective surfaces next to each other. I made their backs have different colors so that it’s easier to see where they join. The <span><strong>top slider</strong></span> controls the position of the sphere and the <span><strong>bottom one</strong></span> controls how closely the curvatures of the two surfaces match:</p>
+
+
+
+<p>Notice that the connection doesn’t have any sharp edges. However, for different values of the <span><strong>curvature match</strong></span> the reflection of the sphere at the connection can look <a href="#" onclick="two_cubic_patches_mirror_f0();return false;">weirdly deformed</a> into an UFO‑like shape, or it can be <a href="#" onclick="two_cubic_patches_mirror_f1();return false;">quite smooth</a>. If we analyze the situation from a side profile with a curvature comb visible we can get a clearer picture of what’s going on:</p>
+
+
+
+<p>This view explains why in <a href="#" onclick="two_cubic_patches_side_f0();return false;">some cases</a> the transition between the arched and the flat part of the surface has a visible jump in the sphere’s reflection – there is a <em>sudden</em> transition between the area where the curvature is zero and the reflected image is not squeezed at all, and the area of non-zero curvature where the image is squeezed a lot. When we <a href="#" onclick="two_cubic_patches_side_f1();return false;">fix that sudden jump</a>, the reflected image becomes <em>gradually</em> squeezed as it enters the curved part.</p>
+<p>When curvatures between connected surfaces don’t match, the reflections may look very weird. <em>Curvature continuity</em> is critical for achieving <a href="https://en.wikipedia.org/wiki/Class_A_surface">high quality</a> reflective surfaces which are very commonly used e.g. on cars.</p>
+<p>Even when surfaces are very far from being mirror-polished a rapid change in curvature may be observable:</p>
+
+
+<p>Notice that in <a href="#" onclick="two_cubic_patches_lambert_f0();return false;">some orientations</a> you can see a fairly sharp falloff in the shading on the surface. That transition gets much smoother if we <a href="#" onclick="two_cubic_patches_lambert_f1();return false;">make the curvatures vary more smoothly</a>.</p>
+<p>Even though we were looking at light reflected off surfaces, we’ve actually been talking about the curvature of the <em>curve</em> defining the profile of those surfaces. The notion of the curvature of a surface itself is a bit more complex, but in many cases it involves analyzing curvatures of curves living on that surface. Let’s try to look for some of those curves.</p>
+<p>For every point on a surface we can take a <span><strong>normal direction</strong></span> and use it as pivot on which a <span><strong>new plane</strong></span> can rotate:</p>
+
+
+
+
+<p>Notice that this <span><strong>plane</strong></span> slices the surface creating a curve at the cross section. We can then find the curvature of that curve at that <span><strong>point</strong></span>  and show the osculating circle, or at least a part of it:</p>
+
+
+
+
+<p>These curvatures are known as <em>normal curvatures</em>. Notice that at a given <span><strong>point</strong></span> a surface will have many curvatures, one for every direction of slicing. However, at every point there is a direction for which that curvature takes the <span><strong>maximum</strong></span> value, and a direction for which the curvature takes the <span><strong>minimum</strong></span> value. Note that the minimum value can be the <em>most negative</em>. Those two maxima are known as <a href="https://en.wikipedia.org/wiki/Principal_curvature"><em>principal curvatures</em></a>. I’ve shown them in the demonstration below:</p>
+
+
+
+<p>For some <a href="#" onclick="cubic_patch_curvature_circle_principal_f0();return false;">cylindrical shapes</a>, one of the curvatures will always be 0, but for <a href="#" onclick="cubic_patch_curvature_circle_principal_f1();return false;">saddle-like surfaces</a> one will be positive and one negative. Moreover, the directions of two principal curvatures are always perpendicular to each other, but the reason for that is a bit <a href="https://math.stackexchange.com/questions/71854/is-there-a-geometric-explanation-for-why-principal-curvature-directions-are-orth">complicated</a>. The product of the two principal curvatures is known as <a href="https://en.wikipedia.org/wiki/Gaussian_curvature"><em>Gaussian curvature</em></a>.</p>
+<p>While the curvature discontinuity was easy to see on reflective surfaces, it’s quite hard to notice on regular 2D curves. However, in some cases we can actually feel it.</p>
+<p>Trains and subway carts ride on railroads that can’t go on straight forever – at some point they have to change direction. One could naively think that a turn of a train’s track consists of an <span><strong>arc of a circle</strong></span> joining two <span><strong>straight segments</strong></span>. In the demonstration below I put a <span><strong>little train</strong></span> riding on that track. You can control the time using the slider:</p>
+
+
+<p>The <span><strong>red arrow</strong></span> shows a <a href="https://en.wikipedia.org/wiki/Centripetal_force"><em>centripetal force</em></a> that makes the train and thus its passengers change direction. That <span><strong>force</strong></span> <strong>F</strong> depends on the mass <strong>m</strong> of the object, a square of its velocity <strong>V</strong>, and the radius of curvature <strong>R</strong> of the traveled path:</p>
+<p><span><span>F</span></span> = <span><span>m × V<sup>2</sup></span>
+    <span>/</span>
+    <span>R</span>
+</span>
+</p>
+<p>On the straight part the radius of curvature is infinite so the force is 0, but when the train enters the circular part of our simple track the centripetal force suddenly appears leading to a very unpleasant jerk. That jerk is caused by the track’s curvature suddenly changing from a zero to a non-zero value. Real train tracks use <a href="https://en.wikipedia.org/wiki/Track_transition_curve"><em>transition curves</em></a> that smoothly vary the curvature between the straight and circular parts to avoid a sudden increase in forces which makes the ride much smoother.</p>
+<p>Let’s sum up the different classes of continuities that we’ve discussed so far:</p>
+<div>
+<p><span>G0</span> position continuity</p>
+<p><span>G1</span> tangency continuity</p>
+<p><span>G2</span> curvature continuity</p><br>
+</div>
+<p>We can visualize them on two Bézier curves with curvature combs visible. Notice that as you enable higher degrees of continuity the movement of some of the control points becomes restricted:</p>
+
+
+<p>While different tricks and affordances can be employed to maintain these continuities, we should look for a better way to design complex curves and surfaces – a method that has all these continuities built-in.</p>
+<h2 id="building-the-basis">Building the Basis<a href="#building-the-basis" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>Let’s take a step back and look at the weights of the single Bézier curve with eight control points that we’ve already dismissed:</p>
+
+
+<p>The problem with that approach was that the weight of each control point had a very far reaching range – it spans the entire progress of the curve. Let’s try to minimize how far reaching the impact of each point is by replacing it with simple triangular functions:</p>
+
+
+<p>The weight of a control point is now non-zero only in a small range of the entire progress of the curve – each point has a minimized reach. Unfortunately, the resulting curve is not very impressive. While it doesn’t have any gaps, it forms just a plain polyline. The beauty of this approach, however, is that we can try using <em>better</em> base functions with limited range.</p>
+<p>One could be tempted to use an arbitrary shape for the individual weighting functions, for example, some smoother parabolas:</p>
+
+
+<p>The results are completely janky. We’ve not only created some weird arcs, but also their shape and “sidedness” depends on where on screen the control points are.</p>
+<p>To understand why this happens we have to look at the <em>sum</em> of all the weighting functions over the entire range, I’ve visualized it using a thick <span><strong>yellow line</strong></span> on top of the plot:</p>
+
+
+<p>Notice the resulting curve behaves weirdly in the regions where the weighting functions add up to more than 1.0, I’ve depicted that 1.0 margin with a <span>dashed</span> line. In those faulty ranges we no longer take a proper weighted average of some points, causing the broken behavior.</p>
+<p>In fact, all the curves we’ve discussed so far had the property that all their weighting functions added up to 1 within the defined range forming a so called <em>partition of unity</em>. That concept is critical for the design of the weighting functions, as it makes the resulting curve behave as expected when all the control points are moved around as a group.</p>
+<p>We could try to normalize the janky parabolas to make them nice, but in practice we’ll use so called <a href="https://en.wikipedia.org/wiki/B-spline"><em>B‑spline</em></a> functions that are very well behaved. The most primitive B‑spline function of order 1 has a value of 1.0 in a small range and 0.0 everywhere else as seen below. Higher orders of B‑spline functions are generated from two lower order functions, with a simple procedure that you can witness by dragging the slider:</p>
+
+
+<p>In fact, our triangular function is a B‑spline function of <a href="#" onclick="bspline_creation_f0();return false;">order 2</a>. The <a href="#" onclick="bspline_creation_f1();return false;">next order</a> forms a <em>quadratic</em> B‑spline. Here’s a curve built using quadratic B‑splines as base functions:</p>
+
+
+<p>The curve no longer has any unpredictable behavior and doesn’t have any sharp corners. In fact it has both position (G0), and tangency (G1) continuity. The fourth order B‑spline, known as a <em>cubic</em> B‑spline, is even better – its curvature is also continuous making the entire curve G2 continuous:</p>
+
+
+<p>The weighting functions of B‑splines have limited range so every control point only modifies the curve locally which solves the problems we’ve seen with complicated Bézier curves. However, you’ve probably noticed that for both quadratic and cubic B‑splines the curve no longer reaches the first and last control points. In some cases it’s not a problem, e.g. when the control points form a closed loop:</p>
+
+
+<p>To solve the problem for open curves we can’t just allow the <span><strong>progress</strong></span> to go out of range since the weighting functions don’t add up to 1.0 there and we’ve already seen the problems that would cause. Instead, we have to modify the functions <em>inside</em> that valid range.</p>
+<p>Firstly, notice that the functions we’ve built were designed over a repeating, <em>uniform</em> interval that I’ve been marking using small triangles <span></span> at the bottom. Those triangles represent so called <em>knots</em> on which the individual weighting functions are built.</p>
+<p>However, nothing prevents us from adjusting those intervals as we please, making their distribution <em>non-uniform</em>. In the demonstration below you can witness how the B‑spline rules create different functions when the <span><strong>distance between knots</strong></span> changes:</p>
+
+
+
+<p>We no longer can simply shift the base function to the right and instead we have to build the individual functions all the way up from order 1 because each function may be defined over different interval of knots. With those rules in place, you can witness what happens to the end points of the curve as we adjust the <span><strong>position of the knots</strong></span>:</p>
+
+
+
+<p>When the first four and last four knots overlap, a cubic B‑spline curve extends all the way to the boundary control points as desired. Additionally, the position of all the other knots can be adjusted too. In the demonstration below you can see what happens to the curve as we <span><strong>perturb</strong></span> the position of the <em>interior</em> knots as well:</p>
+
+
+
+<p>By moving three knots of a cubic B‑spline curve into a single location, we can achieve a sharp corner reigned by just a single control point. With uniformly distributed knots we’d need to overlap <em>three</em> consecutive control points to get a sharp corner.</p>
+<p>The curves we’ve been playing with are known as a <em>non-uniform</em> B‑splines. However, the world of B‑splines has one more trick up its sleeve.</p>
+
+<p>So far each of the weighting functions was equally important, but we can easily break that assumption by making some functions more important than others by changing their <em>relative</em> weights. For example, witness what happens to the curve as we modify the <span><strong>weight</strong></span> of the 4<sup>th</sup> control point that I’ve marked with a letter <strong>D</strong>:</p>
+
+
+
+<p>As we change the weight of that function the shapes of all the others are adjusted as well. This ensures that all the weighting functions add up to 1 over the entire valid range which maintains the partition of unity. By combining the non-uniform knot distribution with arbitrary weights we create non-uniform <em>rational</em> B‑splines, also known as <a href="https://en.wikipedia.org/wiki/Non-uniform_rational_B-spline"><em>NURBS</em></a>. Notice that the weight of an individual function actually affects the <em>ratio</em> of weights, thus the <em>rational</em> name.</p>
+<p>Interestingly enough, only rational B‑splines can represent an arc of a circle <em>exactly</em>. Plain B‑spline and Bézier curves can only approximate them.</p>
+<p>The ideas behind the B‑spline curves naturally extend to surfaces as well. For example, here’s the simplest uniform and non-rational B‑spline surface defined by a mesh of 4×4 control points:</p>
+
+<p>We can also build more complicated shapes by creating bigger rectangular grids of control points. When we tweak the position of the knots, we can make the surface go all the way to the edges of the control mesh:</p>
+
+<p>While I’m not going to demonstrate it here, one can also adjust the weights of individual weighting functions which fully exploits all the features that NURBS surfaces offer.</p>
+<p>NURBS curves and surfaces are very powerful and they have a lot of flexibility, but they still have their limitations when it comes to modeling shapes. Firstly, it’s quite difficult to cut holes in NURBS surfaces. One approach is to simply ignore some parts of the input square. In the demonstration below you can control the radius of the <span><strong>red circle</strong></span> that defines the region where we’re <em>not</em> drawing the surface:</p>
+
+
+
+
+<p>This operation is a bit cumbersome because achieving the desired shape of the hole on the surface requires tweaking the hole’s shape on the input square so that it looks right <em>after</em> it’s deformed by the surface.</p>
+<p>You may have also noticed that all the meshes of control points we’ve been dealing with were rectangular in nature. This heavily limits the types of surfaces we can create. For example, it’s impossible to express a surface like the one below using a single B‑spline surface without having to somehow manually stitch it at the edges:</p>
+
+<p>However, the entire point of using B‑spline curves and surfaces was to ensure automatic continuity and smoothness in the first place. Let’s go back to the drawing board for the last time to devise a scheme that will help to solve all these problems.</p>
+<h2 id="cutting-corners">Cutting Corners<a href="#cutting-corners" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>Instead of an actual drawing board let’s start with a clean sheet of paper instead. Those usually come in rectangular shapes, but if we wanted a piece of paper to have a nice rounded corner we’d have to do some work. One of the easiest way to do it is to repeatedly <span><strong>cut off</strong></span> the sharp corners:</p>
+
+
+<p>After just three iterations the corner is quite round already. We can use this corner cutting idea to chip away at the control polygon of a curve as well. In the demonstration below you can control <span><strong>how many times</strong></span> we did the corner cutting procedure and the <span><strong>relative distance</strong></span> at which the cut happens:</p>
+
+
+
+<p>If we cut the corners <a href="#" onclick="chaikin_f0();return false;">too little</a> or <a href="#" onclick="chaikin_f1();return false;">too much</a> the final curve will still look quite jaggy, but for <a href="#" onclick="chaikin_f2();return false;">intermediate values</a> the resulting polyline starts to look very smooth – even the sharpest corners are chiseled down after a few iterations. This concept of corner cutting was originally devised by George Chaikin and the resulting curves are known as <em>subdivision curves</em>.</p>
+<p>A particularly interesting curve is generated when the cut <a href="#" onclick="chaikin_f3();return false;">happens</a> 1/4 of the way into the straight segments. As it was later discovered, that scheme actually converges to a <span><strong>curve</strong></span> that is equivalent to <span><strong>quadratic B‑spline curve</strong></span> defined by the same initial control points:</p>
+
+
+<p>After just a few steps, the <span><strong>subdivision curve</strong></span> matches the <span><strong>B‑spline curve</strong></span> in the background. This is a fantastic news, as it gives us yet another way to think about simple quadratic B‑spline curves – they’re obtained by repeatedly cutting off corners of their control polygon.</p>
+<p>The cutting scheme we’ve used so far placed two new points on an existing edge, but that’s not the only choice we have. For instance, we can place a <span><strong>new point</strong></span> on an existing edge <em>and</em> place another <span><strong>new point</strong></span> as a refinement of the existing vertex:</p>
+
+
+
+<p>In this scheme the new edge point <span><strong>E<sub>new</sub></strong></span> lands right in the center of the edge, and the new vertex point <span><strong>V<sub>new</sub></strong></span> is a weighted average of the original vertex <strong>V</strong> and its previous and next neighbors <strong>V<sub>prev</sub></strong> and <strong>V<sub>next</sub></strong>. We can express that dependence using equations:</p>
+<div>
+<p><span>V<sub>new</sub></span> = <span id="chw0"></span> × V<sub>prev</sub> + <span id="chw1"></span> × V + <span id="chw2"></span> × V<sub>next</sub></p>
+<p><span>E<sub>new</sub></span> = 0.5 × V<sub>prev</sub> + 0.5 × V<sub>next</sub></p>
+</div>
+<p>In some sense we’re still cutting corners, but our method is a bit more sophisticated now. Once again, there exists a <a href="#" onclick="cubic_chaikin_weights();return false;">set of weights</a> that’s particularly important. The <span><strong>curve</strong></span> it generates in limit is a <span><strong>cubic B‑spline curve</strong></span>:</p>
+
+
+<p>However, the beauty of subdivision curves doesn’t end here. Firstly, we can modify the subdivision rules for the “tail” control points so that their new vertex points don’t move at all – this makes the curve stick to its end points. Moreover, observe that we’re making the new vertex position be a weighted average of the positions of the old vertex and its two neighbors, but we can easily extend that scheme to include <em>all</em> its neighbors. This allows us to handle branches and loops very easily:</p>
+
+
+<p>In the vicinity of those branchy points the curve is no longer a B‑spline curve, as those can’t fork, but in the “regular” areas we still use the same subdivision rules that gave us the well-behaved cubic B‑splines functions. The subdivision curves <em>extend</em> the power of B‑splines curves into more arbitrary connectivity. The real magic starts when we employ subdivision rules for surfaces.</p>
+<h2 id="subdivision-surfaces">Subdivision Surfaces<a href="#subdivision-surfaces" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>Inspired by Chaikin’s original work for corner cutting in a quadratic B‑spline, <a href="https://en.wikipedia.org/wiki/Edwin_Catmull">Ed&nbsp;Catmull</a> and <a href="https://en.wikipedia.org/wiki/James_H._Clark">James Clark</a> have <a href="https://people.eecs.berkeley.edu/~sequin/CS284/PAPERS/CatmullClark_SDSurf.pdf">extended</a> these ideas to surfaces by creating <a href="https://en.wikipedia.org/wiki/Catmull%E2%80%93Clark_subdivision_surface">Catmull–Clark subdivision surfaces</a>. First, let’s see them in action starting with a simple mesh of 4×4 vertices and 9 quadrilateral faces:</p>
+
+
+<p>After a few iterations the surface looks awfully familiar to the simplest cubic B‑spline patch we’ve seen before. In fact, after infinitely many subdivisions that surface <em>does</em> turn into a cubic B‑spline surface.</p>
+<p>The brilliance of Catmull and Clark was to come up with a subdivision scheme of a simple grid that in limit approaches the well defined B‑spline surfaces. Let’s try to understand the gist of their method.</p>
+<p>Starting with a single cubic B‑spline patch defined by a 4x4 control grid, they wanted to find an equivalent 5×5 control grid that would define <em>the same</em> surface. In other words, given the 16 control points <span></span> defining the <span><strong>gray surface</strong></span>, we’re looking for positions of the 25 <span><strong>new</strong></span> <span><strong>control</strong></span> <span><strong>points</strong></span> that would define a surface with the same shape:</p>
+
+<p>The arithmetical procedures needed to be done aren’t particularly important here, but ultimately the new control points can be classified into three distinct groups that end up corresponding to original <span><strong>faces</strong></span>, <span><strong>edges</strong></span>, and <span><strong>vertices</strong></span>. Their exact creation rules are as follows:</p>
+<div id="cc_list">
+<ul>
+<li><span><span><strong>new face points</strong></span> – average of the <span><strong>vertices</strong></span> forming the face</span></li>
+<li><span><span><strong>new edge points</strong></span> – average of the two <span><strong>new face points</strong></span> from neighboring faces and two <span><strong>existing end points</strong></span></span></li>
+<li><span><span><strong>new vertex points</strong></span> – weighted average of: the <span><strong>existing vertex</strong></span>, midpoints of all the edges touching that vertex, and all the newly created <span><strong>face points</strong></span> from faces touching that <span><strong>existing vertex</strong></span></span></li>
+</ul>
+</div>
+<p>On those new points new faces are created and we once again have a set of vertices and faces, but this time they’re more refined. If we repeat that scheme over and over again the created faces of the control mesh will actually create a cubic B‑spline surface that the original control points defined:</p>
+
+
+<p>The crucial invention here is that nothing about the rules for creating the new subdivided control mesh relied on how the mesh itself is connected! If you recall, NURBS surfaces were limited to rectangular grids. Catmull-Clark subdivision scheme also works when the vertices of the initial mesh have different number of neighbors – in the mesh below each vertex has 3, 4, or 5 neighbors:</p>
+
+
+<p>Moreover, the initial faces also don’t necessarily have to be four-sided, the subdivision rules also work for meshes whose faces are triangles or more complicated polygons:</p>
+
+
+<p>To express holes in a subdivision surface all we need to do is to <em>not</em> create faces in some regions of its defining mesh, like in this mask from the very first demonstration in this article:</p>
+
+
+<p>This example also has modified the subdivision rules on the edges to use cubic Chaikin subdivision rules. This ensures that the surface doesn’t recede from the edges of the initial control mesh like we’ve seen happen for a simple subdivided patch.</p>
+<p>Subdivision surfaces make it very convenient to describe perfectly smooth surfaces using relatively simple meshes. To achieve sharper edges one can either move the points closer together, or use <a href="https://graphics.pixar.com/library/Geri/paper.pdf">extensions</a> of Catmull-Clark subdivision scheme that allow specifying edge sharpness.</p>
+<h2 id="further-watching-and-reading">Further Watching and Reading<a href="#further-watching-and-reading" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p><a href="https://pomax.github.io/bezierinfo/">A Primer on Bézier Curves</a> by Mike Kamermans is probably the best resource on the web dedicated to Bézier curves. Over the course of the extremely detailed article the author goes over a myriad of topics related to the curves, some <a href="https://pomax.github.io/bezierinfo/#matrix">very theoretical</a> and some <a href="https://pomax.github.io/bezierinfo/#arclengthapprox">very pragmatic</a>. The site truly is one of the internet’s gems.</p>
+<p>For a more advanced set of videos on topics related to curves and surfaces I recommend Keenan Crane’s series on <a href="https://www.youtube.com/playlist?list=PL9_jI1bdZmz0hIrNCMQW1YmZysAiIYSSS">Discrete Differential Geometry</a>. Keenan is a <a href="https://www.cs.cmu.edu/~kmcrane/">professor</a> at Carnegie Mellon University and over the course of his lectures he does an excellent job of explaining the concepts with well made visual cues, while avoiding bogging the viewer down with <em>too</em> much formalism.</p>
+<p>Finally, <a href="http://www.farinhansford.com/books/cagd/">Curves and Surfaces for CAGD</a> by Gerald Farin is a very good textbook on all the topics I’ve discussed here any many more. The author does a much deeper dive into the underlying mathematics and the formulas are accompanied by well written explanations.</p>
+<h2 id="final-words">Final Words<a href="#final-words" arialabel="Anchor"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAcdJREFUSA3FVUFKw0AUdcb0CBYEXbjtIk2lxVUP4MKdiPYA3qAbwZXgJjfwABXErXiArsTQJF1060YQ4hFCE98b8stY2pI2SgOT//PnzXsz/89k1I715Hmux+PxBWwPrY2uOtquBTFuq9VS8zF+h2GYL4hPEUuUUgHawHXdJ9hMcDOiOI6PIPqMdiydy+yaE/hFA/ER2nmz2fxgh+aL4lmWvZURJ77KQw1qUZM8CgGNj3dbHDMcovm1Wi1oNBpfVQQnk8l+mqZt8PfRusLFTCALHQXxS8zoUTpg7z3PuwVgVierb2OXC42i6A4EN0Kitb7S6OhJgCv/D3Hyc0EF91D0qO3gxd1uHoD8RSvHyThFlh6APRDsKguOT6zuGjv+1caRGxn3wWNKQW1uQh4187Dm4tt2HXGO40Q5xuYQf06jbk6BdG7DcgKJCHO3im9bppNptWOrfCnBIsycRuIAHCBlZwTD8qi8sFb24KKWh3ZsEx/cPPJ9GUttjddAAgB0eVQIlNhfWXIW3Pa/YLD9HxFXiLSYXzHcvTIrrnIXFPzf2FcnvA9Mqo2DAMoxKjOBKhhqiDh5HCHjJFCnTpnrWMaUtFPgll7HPzOHDhTVlyEKAAAAAElFTkSuQmCC" width="16px" height="8px"></a> </h2>
+<p>Ed Catmull later co-founded Pixar, and ever since the short film <a href="https://en.wikipedia.org/wiki/Geri%27s_Game">Geri’s Game</a>, subdivision surfaces have been used in all of Pixar’s movies. Catmull and Clark’s invention made it easier for great storytellers to express themselves through computer graphics.</p>
+<p>I find it fascinating that simple rules of repeated linear interpolations of straight segments end up creating delightful Bézier curves. Every letter you read on this website was crafted using Bézier curves, the primary building blocks of fonts.</p>
+<p>Designers who shape exteriors of everyday objects or tweak the shapes used in 2D graphics focus on the visual form of their creations, but their creative freedom is unlocked by carefully composed mathematical formulas that power various design tools. I think it’s charming that simple and unassuming equations end up creating beautiful curves and surfaces.</p>
+
+    </div></div>
+  </div>
+</body>
+</html>

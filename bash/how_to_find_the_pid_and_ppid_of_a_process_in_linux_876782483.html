@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Find the PID and PPID of a Process in Linux</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Find the PID and PPID of a Process in Linux</h1>
+    <p><strong>URL:</strong> <a href="https://linuxhandbook.com/find-process-id">https://linuxhandbook.com/find-process-id</a></p>
+    <p><strong>Tags:</strong> bash, linux</p>
+    <p><strong>Bookmark ID:</strong> 876782483</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p>Knowing the PID and PPID of a process can be helpful if you need to manage or interact with a process running on your system. </p><p>There are numerous ways to get the PID (Process ID) and PPID (Parent Process ID) of a given process in Linux.</p><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pidof process_name</td>
+<td>Works with exact process name</td>
+</tr>
+<tr>
+<td>pgrep process_name</td>
+<td>Returns PID of all matches</td>
+</tr>
+<tr>
+<td>ps -o ppid= -p PID</td>
+<td>Get the PPID from PID</td>
+</tr>
+<tr>
+<td>$$</td>
+<td>PID of current process/shell</td>
+</tr>
+<tr>
+<td>${PPID}</td>
+<td>PID of current process's parent</td>
+</tr>
+</tbody>
+</table>
+<p>I'll explain these commands in detail but before that a quick recap of process, PID and PPID.</p><h2 id="linux-process-basics">Linux process basics</h2><p>Everything that runs on your system is ran via something known as a process, with that simply being the running instance of a program.</p><p>All the processes that run on your system are assigned identifiers. These can be helpful if you want to monitor the process (for example, such as to see how much memory or CPU it is using), or maybe if you want to end it if it starts to hang or just act a bit funky.<span data-ez-ph-id="117"></span></p><p>The identifiers that get attached to all these processes are known as PIDs and PPIDs.</p><h3 id="what-is-a-pid">What is a PID?</h3><p>PID stands for "process ID". Again, this is simply the identifier that gets attached to a program when it starts running, and can be helpful if you need to interact with the process in one way or another.</p><h3 id="what-is-a-ppid">What is a PPID?</h3><p>PPID is quite closely related to a PID. PPID stands for "parent process ID", and if you didn't get it already, it simply stands for the process that <em>created</em> the process you are checking.</p><p>For example, let's say that we have two processes. One is named "spawner", and has a process ID (or PID) of 7234. Our second process, "email client", has a process ID of 7456 when we create it. Our spawner program starts our email client, resulting in our email client having a PID of 7456, and a PPID of 7234, since the spawner (which had the PID of 7234) is what spawned the email client.</p><p>Now that you have brushed up your basic, let's see how to get the process ID in Linux.</p><h2 id="getting-the-pid-of-a-process">Getting the PID of a process</h2><p>The important thing here is to <span data-ez-ph-id="110"></span><a href="https://linuxhandbook.com/process-name-from-pid/">know the name of the process</a> whose PID you want to find.</p><p><strong>If you know the exact process name</strong>, you can get its process ID using the <code>pidof</code> command:</p><pre><code>pidof exact_process_name</code></pre><p>Easier said than done because you may not always know the exact process name. Good thing here is that <code>pidof</code> command works with <a href="https://linuxhandbook.com/enable-tab-completion/">tab completion</a> so if you know the starting few letters of the process name, you can hit tab to get matching suggestions.</p><figure><img src="data:application/octet-stream;base64," alt="Example of pidof command which is used for finding PID of a process in Linux" loading="lazy" width="1446" height="582" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1446w" sizes="(min-width: 720px) 720px"><figcaption>pidof command works with tab completion</figcaption></figure><p>However, that may not always work if the process name doesn't match to what you think it is called. For example, the process for Edge browser on Linux is called <code>msedge</code>. It doesn't start with 'edge' and the tab completion won't work if you focus on 'edge'.</p><p>So, what you can do is to resort to the <span data-ez-ph-id="113"></span><a href="https://linuxhandbook.com/ps-command/">ps command in Linux</a> to list all the running processes from all users and then <a href="https://linuxhandbook.com/grep-command-examples/">use grep</a> on the output to filter the result.</p><pre><code>ps aux | grep -i partial_process_name</code></pre><p>There is a dedicated command that combines the features ps and grep command and it is unsurprisingly called <a href="https://linuxhandbook.com/pgrep/">pgrep</a>:</p><pre><code>pgrep partial_or_exact_process_name</code></pre><figure><img src="data:application/octet-stream;base64," alt="pgrep command" loading="lazy" width="620" height="295" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 620w"></figure><p>The default output shows only the PIDs without any information on the process. This could be troublesome if there is more than one process IDs returned for your searched term.</p><p>Hence, I suggest using the listing feature to make sure that you are getting the PID of the desired process.</p><pre><code>pgrep -l partial_or_exact_process_name</code></pre><figure><img src="data:application/octet-stream;base64," alt="pgrep command example" loading="lazy" width="1446" height="544" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1446w" sizes="(min-width: 720px) 720px"></figure><p>You may also <a href="https://linuxhandbook.com/top-command/">use the top command</a> to get the process information but it cannot be used in scripts.</p><div><p>💡</p><p>You can use the pstree command to get the PIDs of all running process on your Linux system: <code>pstree -p -a</code></p></div><h2 id="getting-ppid-from-a-child-processs-pid">Getting PPID from a child process's PID</h2><p>Once you know the PID of a process, it is effortless to find the PPID for that process.</p><p>You can simply run the following command, replacing <code>PID</code> with the current process (child) ID:</p><pre><code>ps -o ppid= -p PID</code></pre><p>In a shell, the above command and <code>${PPID}</code> should both return the same output:</p><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy" width="953" height="331" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 953w" sizes="(min-width: 720px) 720px"></figure><p>And that's about everything there is to finding PIDs and PPIDs!</p><h2 id="checking-the-pid-and-ppid-of-the-currently-running-process">Checking the PID and PPID of the currently running process</h2><p>If you're in a shell such as Bash, it's extremely easy to find the PID and PPID of the calling process (which will usually be the shell).</p><p>Bash stores the PID's value under the <code>$$</code> variable, and the PPID under the <code>${PPID}</code> variable:<span data-ez-ph-id="114"></span></p><figure><pre><code># Prints the PID.
+echo "$$"
+
+# Prints the PPID.
+echo "${PPID}"</code></pre><figcaption>Commands to find the PID and PPID of the current process.</figcaption></figure><p>This way, you can get the process ID of shell and <a href="https://linuxhandbook.com/subshell/">subshell</a>.</p><figure><img src="data:application/octet-stream;base64," alt="PID and PPID of current shell" loading="lazy" width="620" height="349" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 620w"></figure><p>And it's that easy! Finding the PIDs and PPIDs of other processes isn't much harder either.</p><h2 id="wrapping-up">Wrapping up</h2><p>You should now know everything you need to find both PIDs and PPIDs for running processes on your system.</p><p>If you need any help getting something working, or just got some remaining questions, feel free to leave that and anything else in the comments below.</p>
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Understanding the Landscape of Ampere GPU Memory Errors</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Understanding the Landscape of Ampere GPU Memory Errors</h1>
+    <p><strong>URL:</strong> <a href="https://arxiv.org/html/2508.03513v1">https://arxiv.org/html/2508.03513v1</a></p>
+    <p><strong>Tags:</strong> gpus, quality, arxiv, sram</p>
+    <p><strong>Bookmark ID:</strong> 1294108862</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+<article>
+
+<p>
+<span>,&nbsp;</span><span>
+<span>Yu Sun
+</span><span>
+<span><span>George Mason University</span><span>USA</span>
+</span>
+<span><a href="mailto:ysun23@gmu.edu">ysun23@gmu.edu</a>
+</span></span></span>
+<span>,&nbsp;</span><span>
+<span>Dhatri Parakal
+</span><span>
+<span><span>University of Illinois Urbana-Champaign</span><span>USA</span>
+</span>
+<span><a href="mailto:dhatrip2@illinois.edu">dhatrip2@illinois.edu</a>
+</span></span></span>
+<span>,&nbsp;</span><span>
+<span>Bo Fang
+</span><span>
+<span><span>Pacific Northwest National Laboratory / University of Texas, Arlington</span><span>USA</span>
+</span>
+<span><a href="mailto:bo.fang@pnnl.gov">bo.fang@pnnl.gov</a>
+</span></span></span>
+<span>,&nbsp;</span><span>
+<span>Steven Farrell
+</span><span>
+<span><span>National Energy Research Scientific Computing Center</span><span>USA</span>
+</span>
+<span><a href="mailto:sfarrell@lbl.gov">sfarrell@lbl.gov</a>
+</span></span></span>
+<span>,&nbsp;</span><span>
+<span>Gregory H. Bauer
+</span><span>
+<span><span>National Center for Supercomputing Applications</span><span>USA</span>
+</span>
+<span><a href="mailto:gbauer@illinois.edu">gbauer@illinois.edu</a>
+</span></span></span>
+<span>,&nbsp;</span><span>
+<span>Brett Bode
+</span><span>
+<span><span>National Center for Supercomputing Applications</span><span>USA</span>
+</span>
+<span><a href="mailto:brett@illinois.edu">brett@illinois.edu</a>
+</span></span></span>
+<span>,&nbsp;</span><span>
+<span>Ian T. Foster
+</span><span>
+<span><span>University of Chicago / Argonne National Laboratory</span><span>USA</span>
+</span>
+<span><a href="mailto:foster@cs.uchicago.edu">foster@cs.uchicago.edu</a>
+</span></span></span>
+<span>,&nbsp;</span><span>
+<span>Michael E. Papka
+</span><span>
+<span><span>Argonne National Laboratory /
+University of Illinois Chicago</span><span>USA</span>
+</span>
+<span><a href="mailto:papka@anl.gov">papka@anl.gov</a>
+</span></span></span>
+<span>,&nbsp;</span><span>
+<span>William Gropp
+</span><span>
+<span><span>University of Illinois Urbana-Champaign</span><span>USA</span>
+</span>
+<span><a href="mailto:wgropp@illinois.edu">wgropp@illinois.edu</a>
+</span></span></span>
+<span>,&nbsp;</span><span>
+<span>Zhao Zhang
+</span><span>
+<span><span>Rutgers University</span><span>USA</span>
+</span>
+<span><a href="mailto:zhao.zhang@rutgers.edu">zhao.zhang@rutgers.edu</a>
+</span></span></span>
+<span>&nbsp;and&nbsp;</span><span>
+<span>Lishan Yang
+</span><span>
+<span><span>George Mason University</span><span>USA</span>
+</span>
+<span><a href="mailto:lyang28@gmu.edu">lyang28@gmu.edu</a>
+</span></span></span>
+</p>
+<div>
+<h6>Abstract.</h6>
+<p>Graphics Processing Units (GPUs) have become a de facto solution for accelerating
+high-performance computing (HPC) applications. Understanding their memory error behavior is an essential step toward achieving efficient and reliable HPC systems.
+In this work, we present a large-scale cross-supercomputer study to characterize GPU memory reliability, covering three supercomputers – Delta, Polaris, and Perlmutter – all equipped with NVIDIA A100 GPUs.
+We examine error logs spanning 67.77 million GPU device-hours across 10,693 GPUs.
+We compare error rates and mean-time-between-errors (MTBE) and highlight both shared and distinct error characteristics among these three systems.
+Based on these observations and analyses, we discuss the implications and lessons learned, focusing on the reliable operation of supercomputers, the choice of checkpointing
+interval, and the comparison of reliability characteristics with those of previous-generation GPUs.
+Our characterization study provides valuable insights into fault-tolerant HPC system design and operation, enabling more efficient execution of HPC applications.</p>
+</div>
+<span><sup>†</sup><span><span><sup>†</sup><span>copyright: </span>none</span></span></span>
+<section id="S1">
+<h2>
+<span>1. </span>Introduction</h2>
+<p>Graphics Processing Units (GPUs) are widely deployed in modern supercomputers to accelerate high-performance computing (HPC) applications. These HPC systems operate at massive scales, with tens of thousands of GPUs in a single supercomputer.
+A range of workloads is supported, from conventional HPC workloads such as fluid simulation&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib1" title="">chen2021gpu, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib2" title="">liu2004real, </a>)</cite> and molecular dynamics&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib3" title="">glaser2015strong, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib4" title="">boku2024improving, </a>)</cite>, to emerging tasks including transformer-based large language models (LLMs)&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib5" title="">radford2018improving, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib6" title="">zhang2022opt, </a>)</cite> and scientific foundation models&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib7" title="">zvyagin2022genslm, </a>)</cite>.
+However, the high-density transistor arrays in GPUs increase their susceptibility to hardware faults and memory errors due to cosmic radiation&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib8" title="">DBLP:conf/dsn/FratinOLSRR18, </a>)</cite> and shrinking transistors&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib9" title="">killi, </a>)</cite>, leading to silent data corruptions, exceptions, and crashes&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib10" title="">sullivan2021characterizing, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib11" title="">opt175logbook, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib12" title="">dixit2021silent, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib13" title="">he2023understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib14" title="">zhang2019quantifying, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib15" title="">li2017understanding, </a>)</cite>.
+Even just one single memory error on one GPU can jeopardize the entire application execution, which involve up to <math alttext="O(10^{5})" display="inline" id="S1.p1.m1"><semantics><mrow><mi>O</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msup><mn>10</mn><mn>5</mn></msup><mo stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">O(10^{5})</annotation></semantics></math> of GPUs
+over weeks to months&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib11" title="">opt175logbook, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib16" title="">tr176Blogbook, </a>)</cite>.
+For example, during Meta’s OPT-175B training, hardware errors are reported on 18 out of 55 days&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib11" title="">opt175logbook, </a>)</cite>.
+These errors can delay the training process and, in the worst case, compromise model convergence&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib13" title="">he2023understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib14" title="">zhang2019quantifying, </a>)</cite>.
+Therefore, understanding error behavior in large-scale systems is the key first step towards designing error mitigation techniques and avoiding the aforementioned severe consequences of GPU errors.</p>
+<div id="S1.p2">
+<p><span>Limitation of state-of-art approaches.</span>
+Existing supercomputer reliability analyses do not meet the practical needs for recent large foundation model (LFM) training and scientific applications.
+Many studies focus on CPUs&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib17" title="">levy2018lessons, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib18" title="">bautista2016unprotected, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib19" title="">ferreira2021understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib20" title="">sridharan2013feng, </a>)</cite> and DRAMs (Dynamic Random Access Memories)&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib21" title="">beigi2023systematic, </a>)</cite>.
+GPU error studies primarily reveal the error characteristics of earlier GPU generations including NVIDIA K20X&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib22" title="">di2014lessons, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib23" title="">debardeleben2014gpu, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib24" title="">tiwari2015understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib26" title="">nie2017characterizing, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib27" title="">ostrouchov2020gpu, </a>)</cite> and V100&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib28" title="">oles2024understanding, </a>)</cite>.
+Moreover, past GPU error characterization studies typically focus on a single supercomputer&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib28" title="">oles2024understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib26" title="">nie2017characterizing, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib24" title="">tiwari2015understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib29" title="">cui2025characterizing, </a>)</cite>.
+This lack of a cross-supercomputer perspective may result in observations biased by the studied system and thus not generalizable to other HPC systems.</p>
+</div>
+<p><span>Motivation and Challenges.</span>
+To address the growing computing demands for the new LFM paradigm, academia and industrial stakeholders have built new supercomputers with massive numbers of GPUs.
+This widespread deployment and growing popularity highlights the necessity of revisiting GPU error characteristics in production supercomputers, with the goal of deriving effective operation suggestions for HPC users and system administrators to preserve high execution efficiency and machine utilization.</p>
+<p>As we demonstrate in the paper, a <span>cross-supercomputer</span> perspective is essential in such error behavior study.
+While clusters with the same GPU generation have common reliability traits,
+their unique hardware settings and workloads may introduce unknown biases.
+Performing a cross-supercomputer study helps remove these biases to uncover the natural behavior of GPU errors.
+However, such study is challenging:
+1) the differences in supercomputer configurations complicate the analysis;
+2) the heterogeneity of error data across systems renders data discovery and fair comparisons difficult.</p>
+<div id="S1.p5">
+<p><span>Key insights and contributions.</span>
+We perform a cross-institute collaboration on a comprehensive error characterization study across <math alttext="10693" display="inline" id="S1.p5.m1"><semantics><mn>10693</mn><annotation encoding="application/x-tex">10693</annotation></semantics></math> NVIDIA Ampere GPUs in three heavily utilized, in-production supercomputers: Delta&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib30" title="">delta, </a>)</cite>, Polaris&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib31" title="">polaris, </a>)</cite>, and Perlmutter&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib32" title="">perlmutter, </a>)</cite>.
+We monitor and record ECC-reported errors of GPUs to form the error log, i.e., a GPU memory error dataset, resulting in a total of 67.77 million GPU device-hours.
+Our key observations are summarized as follows:</p>
+<ul id="S1.I1">
+<li id="S1.I1.i1">
+<span>•</span>
+<p>The observed error rates on different clusters can vary by over three orders of magnitude. Trusting the results from one single cluster may introduce significant biases in error behavior characterization.</p>
+</li>
+<li id="S1.I1.i2">
+<span>•</span>
+<p>Errors are not uniformly distributed over time.
+Burstiness is generally observed in all three clusters, while their severeness varies.</p>
+</li>
+<li id="S1.I1.i3">
+<span>•</span>
+<p>Both bursty error patterns and supercomputer scale can affect the characteristics of error interarrival times. Using a single number, the mean-time-between-error (MTBE), may introduce bias. Instead, the distribution of interarrival times should be considered.</p>
+</li>
+<li id="S1.I1.i4">
+<span>•</span>
+<p>There is no observable periodicity of errors.</p>
+</li>
+<li id="S1.I1.i5">
+<span>•</span>
+<p>For environmental factors such as temperature, power, and GPU utilization, we do not observe any strong correlation with errors.</p>
+</li>
+<li id="S1.I1.i6">
+<span>•</span>
+<p>Erroneous nodes vary over time.</p>
+</li>
+</ul>
+</div>
+<div id="S1.p6">
+<p>Based on these observations and analyses, we further discuss the implications and lessons learned from this study, focusing on the reliable operation of supercomputers, the choice of checkpointing interval, and the comparison of reliability characteristics with those of previous-generation GPUs.
+Our key take-away messages are:</p>
+<ul id="S1.I2">
+<li id="S1.I2.i1">
+<span>•</span>
+<p>NVIDIA V100 and A100 GPUs both use
+HBM2 and have similar memory error characteristics.</p>
+</li>
+<li id="S1.I2.i2">
+<span>•</span>
+<p>Coarser-level error monitoring
+does not necessarily lead to much information loss, yet monitoring
+errors at a finer level enables faster responses to errors.</p>
+</li>
+<li id="S1.I2.i3">
+<span>•</span>
+<p>Dynamic node monitoring and
+erroneous GPU prediction strategies are needed for the
+efficient and reliable operation of supercomputers.</p>
+</li>
+<li id="S1.I2.i4">
+<span>•</span>
+<p>Dynamic checkpointing is suggested to accommodate the bursty error patterns observed in all three supercomputers. GPU error monitoring could be used to guide the frequency of dynamic checkpointing.</p>
+</li>
+</ul>
+</div>
+</section>
+<section id="S2">
+<h2>
+<span>2. </span>Background and Data Collection Method</h2>
+<p>We first describe the architecture and organization of the studied supercomputers and their constituent GPUs. Then, we discuss our data collection method and the basic information contained in our datasets. Last but not least, we discuss the scope and limitations of this work.</p>
+<section id="S2.SS1">
+<h3>
+<span>2.1. </span>Supercomputer Organizations</h3>
+<p>We focus on three highly utilized, in-production supercomputers in this error characterization study.
+Below we briefly describe the architecture of each supercomputer.</p>
+<p><span>Delta&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib30" title="">delta, </a>)</cite></span> is a supercomputer
+designed by Hewlett Packard Enterprise (HPE) and National Center for Supercomputing Applications (NCSA).
+There are three types of NVIDIA GPU nodes, with 849 GPUs in total: Delta has 100 four-way NVIDIA A40 GPU compute nodes, each equipped with a single 2.45 GHz AMD Milan 64-core CPU.
+The four A40 GPUs are connected via PCIe.
+Another 100 four-way GPU compute nodes have NVIDIA A100s connected via NVLink, with all other configurations identical to the A40 nodes.
+There also exist six eight-way NVIDIA A100 GPU compute nodes, each with two 2.45 GHz AMD Milan 64-core CPU sockets.
+The eight A100 GPUs are connected via NVLink.</p>
+<p><span>Polaris&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib31" title="">polaris, </a>)</cite></span>
+is a 560-node HPE Apollo 6500 Gen 10+ based system operated by Argonne Leadership Computing Facility (ALCF). There are 40 racks organized in three rows with 16, 12, and 12 racks, respectively. In each rack, there are seven chassis, each containing two nodes. Each node is equipped with a single 2.8 GHz AMD EPYC Milan 7543P 32-core CPU and four NVIDIA A100 GPUs in HGX platform connected via NVLink, two local 1.6TB of SSDs in RAID0 and two Slingshot 11 network adapters. Polaris has <math alttext="2240" display="inline" id="S2.SS1.p3.m1"><semantics><mn>2240</mn><annotation encoding="application/x-tex">2240</annotation></semantics></math> GPUs in total.</p>
+<p><span>Perlmutter&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib32" title="">perlmutter, </a>)</cite></span>
+is a HPE Cray EX supercomputer with AMD EPYC CPUs and NVIDIA A100 GPUs operated by the National Energy Research Scientific Computing Center (NERSC). Initially, Perlmutter has 14 GPU compute cabinets in total, each segmented into eight chassis. Each chassis contains eight compute blades, each with two nodes. There are <math alttext="1536" display="inline" id="S2.SS1.p4.m1"><semantics><mn>1536</mn><annotation encoding="application/x-tex">1536</annotation></semantics></math> NVIDIA A100 GPUs (40G) nodes and 256 NVIDIA A100 GPUs (80G) nodes.
+Each node contains a single AMD EPYC Milan 7763 64-core CPU and four NVIDIA A100 GPUs connected via PCIe, along with four HPE Slingshot 11 NICs.
+More GPUs are added to the cluster and at the time of error log collection, Perlmutter has 7604 GPUs in total.</p>
+</section>
+<section id="S2.SS2">
+<h3>
+<span>2.2. </span>GPU Architecture</h3>
+<p>All three supercomputers are equipped with NVIDIA Ampere GPUs which are released in 2020.
+All of the GPUs in Perlmutter and Polaris are NVIDIA A100, while Delta has 400 A40 GPUs and 449 A100 GPUs.</p>
+<p><span>NVIDIA A100&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib33" title="">nvidia2020ampere, </a>)</cite>.</span>
+The NVIDIA Ampere architecture A100 GPU contains seven Graphics Processing Clusters (GPCs), each with seven or eight Texture Processing Clusters (TPCs), and each TPC has two Streaming Multiprocessors (SMs), which is a total of 108 SMs sharing the 40 MB L2 cache. Each SM contains 64 FP32 CUDA Cores and four Tensor Cores, resulting in a total of <math alttext="6912" display="inline" id="S2.SS2.p2.m1"><semantics><mn>6912</mn><annotation encoding="application/x-tex">6912</annotation></semantics></math> FP32 CUDA Cores and 432 Tensor Cores per GPU. The A100 GPU includes 40&nbsp;GB of fast HBM2 DRAM memory on its SXM4-style circuit board, which is organized as five active HBM2 stacks with eight memory dies per stack.
+The A100 HBM2 memory subsystem supports single-error correction double-error detection (SECDED) error-correcting code (ECC) to protect data. Other key memory structures in A100 are also protected by SECDED ECC, including aches and register files.</p>
+<p><span>NVIDIA A40&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib33" title="">nvidia2020ampere, </a>)</cite>.</span>
+The NVIDIA Ampere architecture A40 GPU contains 84 SMs, each containing 128 CUDA Cores, four Tensor Cores, and one RT Core, which is <math alttext="10752" display="inline" id="S2.SS2.p3.m1"><semantics><mn>10752</mn><annotation encoding="application/x-tex">10752</annotation></semantics></math> FP32 CUDA Cores, 432 Tensor Cores, and 84 RT Cores per GPU. The A40 GPU includes 48&nbsp;GB of GDDR6 DRAM memory with ECC protection.</p>
+</section>
+<section id="S2.SS3">
+<h3>
+<span>2.3. </span>Data Collection Method and Datasets</h3>
+<p>There are various types of GPU-related errors, to name a few, Dynamic Random Access Memory (DRAM) Single-Bit Errors (SBEs) and Double-Bit Errors (DBEs) reported by Error Correction Codes (ECC), NVLink errors, and Dynamic Page Retirement errors.
+Our focus is primarily on memory errors in the DRAM identified and reported by ECC.
+We use Data Center GPU Manager (DCGM)&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib34" title="">dcgm, </a>)</cite>, a suite of tools to manage and monitor GPUs developed by NVIDIA in data centers to monitor SBEs and DBEs in GPU memory.
+DCGM regularly updates the aggregated counts of ECC-reported SBEs and DBEs for each GPU, i.e., tracks the historical records of error count.
+New errors are identified by observing increases in this error count.
+The collected dates and frequency of the error logs studied in this work are summarized in Table&nbsp;<a href="https://arxiv.org/html/2508.03513v1#S2.T1" title="Table 1 ‣ 2.3. Data Collection Method and Datasets ‣ 2. Background and Data Collection Method ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>1</span></a>.</p>
+<p>It is essential to distinguish between two terms: <span>error occurrence event</span> and <span>error count</span>.
+In one error occurrence event where there is an increased error count, multiple (single- or double-bit) errors may be observed in this single error occurrence event.
+Distinguishing these two terms is necessary, especially when dealing with DBEs that are detectable but uncorrectable.
+When a DBE event happens, upon the detection of DBE(s), ECC would throw an exception and trigger the termination of the GPU application, irrespective of the quantity of DBEs identified.
+Therefore, while analyzing the number of detected DBEs can shed light on the severity of such errors, the number of error occurrence events affects the overall cost of addressing DBEs.
+The interarrival time between error occurrence events can be averaged to calculate the Mean-Time-Between-Errors (MTBE), an important metric when accessing system resilience.</p>
+<p><span>Delta Cluster Error Dataset.</span> This dataset has rich information covering a period of more than one year with 849 GPUs, which equates to over 7.32 million GPU device-hours of data.
+Each recorded error occurrence event includes event type (i.e., SBE or DBE), timestamp, associated node, and GPU involved in the event.
+Note that within Delta, there are 400 NVIDIA A40 GPUs and 449 NVIDIA A100 GPUs, but we do not have the exact mapping of the GPU IDs to their GPU type. We acknowledge this as a limitation of our current study.</p>
+<p><span>Polaris Cluster Error Dataset.</span>
+We record and analyze Polaris errors across 259 days with <math alttext="2240" display="inline" id="S2.SS3.p4.m1"><semantics><mn>2240</mn><annotation encoding="application/x-tex">2240</annotation></semantics></math> GPUs in the cluster.
+The missing data from 12/15/2023 to 06/30/2024 is due to lack of access to the database.
+This results in a total of more than 14.66 million GPU device-hours of data.
+On Polaris, only DBEs are recorded. There is no information about SBEs.</p>
+<p><span>Perlmutter Cluster Error Dataset.</span>
+The Perlmutter dataset contains the GMU memory error information across 326 days with <math alttext="7604" display="inline" id="S2.SS3.p5.m1"><semantics><mn>7604</mn><annotation encoding="application/x-tex">7604</annotation></semantics></math> GPUs, resulting in a total of more than 45.79 million GPU device-hours of data.
+Several months of data are permanently lost due to database failures.
+Of the three studied clusters, Perlmutter is the largest.</p>
+<figure id="S2.T1">
+<figcaption><span>Table 1. </span>Basic characteristics of the three supercomputers studied in this work.</figcaption>
+<table>
+<tbody><tr>
+<td>Cluster</td>
+<td>Delta</td>
+<td>Polaris</td>
+<td>Perlmutter</td>
+</tr>
+<tr>
+<td>Node Count</td>
+<td>207</td>
+<td>560</td>
+<td>1901</td>
+</tr>
+<tr>
+<td>GPU Count</td>
+<td>849</td>
+<td>2240</td>
+<td>7604</td>
+</tr>
+<tr>
+<td rowspan="3">
+<table>
+<tbody><tr>
+<td>Log Collection</td>
+</tr>
+<tr>
+<td>Dates</td>
+</tr>
+</tbody></table> </td>
+<td rowspan="3">12/16/2022 – 01/07/2024</td>
+<td rowspan="3">
+<table>
+<tbody><tr>
+<td>10/01/2023 – 12/14/2023</td>
+</tr>
+<tr>
+<td>07/01/2024– 12/31/2024</td>
+</tr>
+</tbody></table> </td>
+<td>07/01/2023 – 09/30/2023</td>
+</tr>
+<tr>
+<td>11/01/2023– 12/20/2023</td>
+</tr>
+<tr>
+<td>08/01/2024– 01/31/2025</td>
+</tr>
+<tr>
+<td>Log Length</td>
+<td>388 days</td>
+<td>259 days</td>
+<td>326 days</td>
+</tr>
+<tr>
+<td>Log Frequency</td>
+<td>Every minute</td>
+<td>Every 4 seconds</td>
+<td>Every hour</td>
+</tr>
+<tr>
+<td>GPU Hours</td>
+<td>7.32 million</td>
+<td>14.66 million</td>
+<td>45.79 million</td>
+</tr>
+</tbody></table>
+</figure>
+</section>
+<section id="S2.SS4">
+<h3>
+<span>2.4. </span>Limitations and Scope</h3>
+<p>Despite our thorough data collection and analysis efforts, our study is subject to certain limitations.
+In this section, we discuss these constraints and clarify the scope of this study.</p>
+<p>Firstly, we only have error information on the recorded SBE and DBE errors, thus this study exclusively focuses on the error occurrences in supercomputers.
+Due to privacy concerns, the workload and job scheduling information is not available. Hence, the correlation between hardware failures and software applications cannot be studied in this work.
+We partially compensate this limitation by analyzing the correlation of errors with GPU power consumption, temperature, and utilization, which can reflect the workload patterns.
+Limited data availability restricts our capacity to explore further insights into the systems.
+SBEs are not recorded on Polaris, which limits the SBE behavior study to Delta and Perlmutter.</p>
+<p>Moreover, due to the limited time of data collection, it is possible that our conclusions might not fully capture the behavior of GPU errors outside this period.
+There are 4 days of missing data in Delta, due to possible system failure or maintenance.
+For Polaris, we only have access to the 259 days listed in <a href="https://arxiv.org/html/2508.03513v1#S2.T1" title="Table 1 ‣ 2.3. Data Collection Method and Datasets ‣ 2. Background and Data Collection Method ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;1</span></a>.
+For Pulmutter, there are several months of data missing due to database storage error.
+Despite the missing data, each cluster still contains several hundred days of logged data, totaling 67.77 million GPU device-hours. Therefore, this study holds statistical significance.</p>
+<p>We focus on NVIDIA Ampere GPUs, because they are still one of the main accelerators used in top-100 supercomputers&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib35" title="">top500, </a>)</cite> and the three supercomputers still have over 50% utilization.
+Although NVIDIA Hopper GPUs are becoming popular in supercomputers, we do not consider them, as they are still in its early stage of deployment where the utilization is low (around 20%)&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib29" title="">cui2025characterizing, </a>)</cite>. We do not have access to obtain the error logs of Hopper GPUs.</p>
+<p>The primary focus of this work is error behavior characterization. We aim to derive insightful observations and take-away messages to share with the community. The prediction and mitigation of errors fall outside the scope of this study and are subject to future work.</p>
+</section>
+</section>
+<section id="S3">
+<h2>
+<span>3. </span>Cross-Supercomputer Error Characterization</h2>
+<p>In this section, we present a detailed characterization study of GPU memory errors across three supercomputers, all equipped with NVIDIA Ampere GPUs.
+We focus on the following aspects:</p>
+<div id="S3.p2">
+<ol id="S3.I1">
+<li id="S3.I1.i1">
+<span>(1)</span>
+<p><span>Overall error behavior</span> (<a href="https://arxiv.org/html/2508.03513v1#S3.SS1" title="3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Section&nbsp;3.1</span></a>).
+We start with presenting an overview of memory error severity through an analysis of overall error rates and daily error occurrences.
+The observed error rates on different clusters can vary by over three orders of magnitude and we observe burty errors in all three clusters.</p>
+</li>
+<li id="S3.I1.i2">
+<span>(2)</span>
+<p><span>Interarrival Time of Errors</span> (<a href="https://arxiv.org/html/2508.03513v1#S3.SS2" title="3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Section&nbsp;3.2</span></a>).
+We quantify the mean-time-between-errors (MTBE) of clusters to assess the frequency of users encountering such errors.
+We analyze the distribution of error interarrival times to provide further insights into the burstiness of errors.
+Our in-depth study reveals that both bursty error patterns and supercomputer scale can affect the characteristics of error interarrival times.</p>
+</li>
+<li id="S3.I1.i3">
+<span>(3)</span>
+<p><span>Correlation with environmental factors</span> (<a href="https://arxiv.org/html/2508.03513v1#S3.SS3" title="3.3. Correlation with Environmental Factors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Section&nbsp;3.3</span></a>). We analyze the correlation between potential contributing factors including temperature, power, GPU utilization, and the cooling mechanisms. For most environmental factors,
+we observe weak correlations with errors. No strong correlation is observed.</p>
+</li>
+<li id="S3.I1.i4">
+<span>(4)</span>
+<p><span>Spatial and temporal analysis</span> (<a href="https://arxiv.org/html/2508.03513v1#S3.SS4" title="3.4. Spatial and Temporal Behaviour ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Section&nbsp;3.4</span></a>). We analyze the spatial and temporal characteristics of errors from a supercomputer management and maintenance perspective to identify GPUs that may pose reliability concerns.
+Our analysis reveals that GPU memory errors exhibit spatial and temporal correlation, and the set of erroneous GPUs changes over time.</p>
+</li>
+</ol>
+</div>
+<section id="S3.SS1">
+<h3>
+<span>3.1. </span>Overview of Errors</h3>
+<p>The overall numbers of SBEs and DBEs observed in the three clusters during the study period are shown in&nbsp;<a href="https://arxiv.org/html/2508.03513v1#S3.T2" title="Table 2 ‣ 3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;2</span></a>.
+The three clusters are presented in ascending order of scale: Delta, Polaris, and Perlmutter, with <math alttext="849" display="inline" id="S3.SS1.p1.m1"><semantics><mn>849</mn><annotation encoding="application/x-tex">849</annotation></semantics></math>, <math alttext="2240" display="inline" id="S3.SS1.p1.m2"><semantics><mn>2240</mn><annotation encoding="application/x-tex">2240</annotation></semantics></math>, and <math alttext="7604" display="inline" id="S3.SS1.p1.m3"><semantics><mn>7604</mn><annotation encoding="application/x-tex">7604</annotation></semantics></math> GPUs, respectively.
+Comparing the error rates, Perlmutter exhibits a higher SBE rate (5.34<math alttext="\times" display="inline" id="S3.SS1.p1.m4"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> higher than that of Delta).
+The DBE rate of Polaris is notably higher than on the other two clusters: 2555.56<math alttext="\times" display="inline" id="S3.SS1.p1.m5"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> higher than that of Delta, and 8.41<math alttext="\times" display="inline" id="S3.SS1.p1.m6"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> higher than that of Perlmutter.
+In general, Delta is the most reliable one.
+The difference highlights the necessity of a cross-supercomputer study: analyzing one cluster can introduce over-estimation or under-estimation of the error severity.</p>
+<div id="S3.SS1.p2">
+
+<p>
+<span>
+<span><span>Observation 1</span>: Observed error rates on different clusters can vary by over three orders of magnitude. Delta is more reliable than Polaris and Perlmutter supercomputers.</span>
+</span></p>
+</div>
+<figure id="S3.T2">
+<figcaption><span>Table 2. </span>Overview of errors in the studied clusters. </figcaption><div>
+<div>
+<table>
+<tbody><tr>
+<td>&nbsp;&nbsp;&nbsp;Cluster Name</td>
+<td>&nbsp;&nbsp;&nbsp;Delta</td>
+<td>&nbsp;&nbsp;&nbsp;Polaris<sup>∗</sup>
+</td>
+<td>&nbsp;&nbsp;&nbsp;Perlmutter</td>
+</tr>
+<tr>
+<td># SBEs</td>
+<td>173936</td>
+<td>N/A</td>
+<td>7010888</td>
+</tr>
+<tr>
+<td># SBE Events</td>
+<td>3324</td>
+<td>N/A</td>
+<td>2016</td>
+</tr>
+<tr>
+<td><span>SBE Rate</span></td>
+<td rowspan="2"><span>0.53</span></td>
+<td rowspan="2">N/A</td>
+<td rowspan="2"><span>2.83</span></td>
+</tr>
+<tr>
+<td>(Per GPU Per Day)</td>
+</tr>
+<tr>
+<td>SBE-occuring GPUs</td>
+<td>43 (5.06%)</td>
+<td>N/A</td>
+<td>344 (4.52%)</td>
+</tr>
+<tr>
+<td># DBEs</td>
+<td>9</td>
+<td>39837</td>
+<td>17926</td>
+</tr>
+<tr>
+<td># DBE Events</td>
+<td>2</td>
+<td>44</td>
+<td>77</td>
+</tr>
+<tr>
+<td><span>DBE Rate</span></td>
+<td rowspan="2"><span>0.000027</span></td>
+<td rowspan="2"><span>0.069</span></td>
+<td rowspan="2"><span>0.0082</span></td>
+</tr>
+<tr>
+<td>(Per GPU Per Day)</td>
+</tr>
+<tr>
+<td>DBE-occuring GPUs</td>
+<td>2 (0.24%)</td>
+<td>68 (0.030%)</td>
+<td>35 (0.46%)</td>
+</tr>
+<tr>
+<td>GPUs w/ SBE+DBE</td>
+<td>1</td>
+<td>N/A</td>
+<td>29</td>
+</tr>
+</tbody></table>
+</div>
+
+<p><sup>∗</sup>As SBEs are not recorded in Polaris, those SBE entries are “N/A”.</p>
+</div>
+</figure>
+<figure id="S3.F1">
+<div>
+<div>
+<p><img alt="Refer to caption" height="460" id="S3.F1.g1" src="https://arxiv.org/html/2508.03513v1/x1.png" width="830"></p><p><span>(a) Delta (log scale)</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="465" id="S3.F1.g2" src="https://arxiv.org/html/2508.03513v1/x2.png" width="830"></p><p><span>(b) Polaris (log scale)</span></p>
+</div>
+
+<div>
+<p><img alt="Refer to caption" height="480" id="S3.F1.g3" src="https://arxiv.org/html/2508.03513v1/x3.png" width="830"></p><p><span>(c) Perlmutter (log scale)</span></p>
+</div>
+</div>
+<figcaption><span>Figure 1. </span>Daily SBEs and DBEs in the three studied clusters. Instances of bursty errors are observed in all three clusters.</figcaption>
+</figure>
+<p>In addition to the error rate numbers, we
+present the daily error counts for the three clusters in <a href="https://arxiv.org/html/2508.03513v1#S3.F1" title="Figure 1 ‣ 3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;1</span></a>.
+Instances of bursty errors are observed in all three clusters, for example, <math alttext="112656" display="inline" id="S3.SS1.p3.m1"><semantics><mn>112656</mn><annotation encoding="application/x-tex">112656</annotation></semantics></math> SBEs on 08/14/2023 in Delta, <math alttext="39144" display="inline" id="S3.SS1.p3.m2"><semantics><mn>39144</mn><annotation encoding="application/x-tex">39144</annotation></semantics></math> DBEs on 10/26/2023 in Polaris, <math alttext="1405332" display="inline" id="S3.SS1.p3.m3"><semantics><mn>1405332</mn><annotation encoding="application/x-tex">1405332</annotation></semantics></math> SBEs and 08/06/2023 in Perlmutter. The existence of bursty errors is also observed in another GPU study of the Titan supercomputer&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>)</cite>.</p>
+<p>For a comprehensive understanding of these bursty error patterns, we calculate and plot the empirical cumulative distribution functions (CDFs) of SBEs in the Delta and Perlmutter clusters, see <a href="https://arxiv.org/html/2508.03513v1#S3.F2" title="Figure 2 ‣ 3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;2</span></a>.
+In Delta,
+70.88% of days experience no SBEs, indicating that the majority of days are SBE-free.
+17.78% of the monitored days in Delta have less than 10 daily errors.
+Additionally, there are outliers: 1.55% of the days experience more than <math alttext="1000" display="inline" id="S3.SS1.p4.m1"><semantics><mn>1000</mn><annotation encoding="application/x-tex">1000</annotation></semantics></math> SBEs, highlighting the bursty nature of error occurrences.
+The highest SBE count is recorded on August 14, 2023, with <math alttext="112656" display="inline" id="S3.SS1.p4.m2"><semantics><mn>112656</mn><annotation encoding="application/x-tex">112656</annotation></semantics></math> SBEs.
+In Perlmutter,
+27.61% of days are SBE-free, which is much less tha the percentage of SBE-free days in Delta 70.88%.
+The majority, 41.10% of days, have less than 100 SBEs.
+The number of days exceeding 1000 SBEs in Perlmutter is 19.02%, which is much higher than Delta.
+The largest daily SBE count in Perlmutter is <math alttext="1405332" display="inline" id="S3.SS1.p4.m3"><semantics><mn>1405332</mn><annotation encoding="application/x-tex">1405332</annotation></semantics></math>.
+The high SBE days observed in these clusters confirm the existence of bursty errors.
+Moreover, these two distinct daily SBE count distributions emphasize the importance of our cross-supercomputer perspective to quantitatively understand potential biases in single-supercomputer studies and identify common error characteristics of GPUs.</p>
+<figure id="S3.F2">
+<div>
+<div>
+<p><img alt="Refer to caption" height="358" id="S3.F2.g1" src="https://arxiv.org/html/2508.03513v1/x4.png" width="830"></p><p><span>(a) Delta</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="373" id="S3.F2.g2" src="https://arxiv.org/html/2508.03513v1/x5.png" width="830"></p><p><span>(b) Perlmutter</span></p>
+</div>
+</div>
+<figcaption><span>Figure 2. </span>CDFs (cumulative distribution functions) of daily SBE count. Both clusters suffer from bursty errors, while Delta exhibits much more severe burstiness.</figcaption>
+</figure>
+<p>Similar bursty error patterns of DBEs are observed in Polaris and Perlmutter, as shown in <a href="https://arxiv.org/html/2508.03513v1#S3.F3" title="Figure 3 ‣ 3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;3</span></a>.
+The DBE-free days are 66.02% and 84.97% for Polaris and Perlmutter, respectively.
+4.55% of days in Polaris and 9.32% in Perlmutter experience bursty DBEs (more than 1000 errors per day).</p>
+<div id="S3.SS1.p6">
+
+<p>
+<span>
+<span><span>Observation 2</span>: Errors are not uniformly distributed over time. Burstiness is generally observed in all three clusters, while their severeness varies.</span>
+</span></p>
+</div>
+<figure id="S3.F3">
+<div>
+<div>
+<p><img alt="Refer to caption" height="367" id="S3.F3.g1" src="https://arxiv.org/html/2508.03513v1/x6.png" width="830"></p><p><span>(a) Polaris</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="367" id="S3.F3.g2" src="https://arxiv.org/html/2508.03513v1/x7.png" width="830"></p><p><span>(b) Perlmutter</span></p>
+</div>
+</div>
+<figcaption><span>Figure 3. </span>CDF of daily DBE count. Burstiness is observed when considering DBEs.
+</figcaption>
+</figure>
+<p>Note that while the number of errors and error events are a lot, the actual number of GPUs suffering from errors is not huge, as we show in <a href="https://arxiv.org/html/2508.03513v1#S3.T2" title="Table 2 ‣ 3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;2</span></a>. Around 4.70% of the GPUs in both Delta and Perlmutter suffer from SBEs.
+In all three clusters, DBE-occuring GPUs are less than 0.53%.
+Recall that DBEs are detected but cannot be corrected by ECC, it is useful to dig out whether SBE occurrence can indicate DBE occurrence.</p>
+<p>In Delta cluster, there are only two DBE events observed throughout the year, each on distinct GPUs belonging to different nodes.
+Following its DBE event, one GPU encounters 2 SBEs concurrently.
+The other GPU, however, has no SBEs across the whole year.
+Compared to the days with over 1000 SBEs, these two DBE events are not happening on the days that experiencing bursty errors.</p>
+<p>For Perlmutter supercomputer, there are 29 GPUs encountering both SBEs and DBEs (see the last row in <a href="https://arxiv.org/html/2508.03513v1#S3.T2" title="Table 2 ‣ 3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;2</span></a>).
+Their time-wise distribution of SBEs and DBEs are shown in <a href="https://arxiv.org/html/2508.03513v1#S3.F4" title="Figure 4 ‣ 3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;4</span></a>.
+We observe that for most of the DBE events, there are SBEs occurring on the same GPU on the same day.
+Although the data points are too few to calculate meaningful correlation for each GPU, it is clear that SBEs and DBEs are correlated.
+SBEs can be used as an indicator of possible future DBE occurrence.
+This also highlihgts the necessity of studying SBEs despite that it can be protected fully by ECC.</p>
+<figure id="S3.F4"><img alt="Refer to caption" height="345" id="S3.F4.g1" src="https://arxiv.org/html/2508.03513v1/x8.png" width="830">
+<figcaption><span>Figure 4. </span>Timeline of GPUs that encounter both SBEs and DBEs in Perlmutter supercomputer. SBEs and DBEs are often correlated.</figcaption>
+</figure>
+<div id="S3.SS1.p10">
+
+<p>
+<span>
+<span><span>Observation 3</span>: We observe correlation of SBEs and DBEs on the Perlmutter supercomputer.</span>
+</span></p>
+</div>
+</section>
+<section id="S3.SS2">
+<h3>
+<span>3.2. </span>Interarrival Time of Errors</h3>
+<p>We next analyze the error frequency by measuring the interarrival time of errors, i.e., Time Between Errors.
+We measure the error interarrival time in the system by calculating the elapsed time between two error-occurring events.
+Mean-Time-Between-Errors (MTBE) is then calculated by averaging the interarrival time values and reported in&nbsp;<a href="https://arxiv.org/html/2508.03513v1#S3.T3" title="Table 3 ‣ 3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;3</span></a>.
+To ensure a fair comparison of the interarrival time and MTBE across clusters, we maintain a consistent granularity across all datasets by aggregating error-occurring events into one-hour intervals, matching the log collection frequency of Perlmutter supercomputer (the longest one).
+We separately report the MTBE of SBEs and DBEs due to their distinct error rates and consequences, considering that
+SBEs are correctable, whereas DBEs would cause program crashes.
+We do not calculate the double-bit MTBE for Delta, because there are only two such events.
+We also report the standard deviation of MTBE to indicate the distribution of interarrival times.
+As shown in <a href="https://arxiv.org/html/2508.03513v1#S3.T3" title="Table 3 ‣ 3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;3</span></a>, Perlmutter exhibits a shorter per-cluster MTBE than Delta (for SBEs) and Polaris (for DBEs), which is consistent with their respective system scales.</p>
+<figure id="S3.T3">
+<figcaption><span>Table 3. </span>MTBE of the studied clusters.</figcaption><div>
+<div>
+<table>
+<tbody><tr>
+<td><span>Cluster Name</span></td>
+<td><span>Delta</span></td>
+<td><span>Polaris</span></td>
+<td><span>Perlmutter</span></td>
+</tr>
+<tr>
+<td>MTBE (SBE)</td>
+<td>24.84 <math alttext="\pm 67.85" display="inline" id="S3.T3.m1"><semantics><mrow><mo>±</mo><mn>67.85</mn></mrow><annotation encoding="application/x-tex">\pm 67.85</annotation></semantics></math>
+</td>
+<td>N/A<sup>∗</sup>
+</td>
+<td>7.08 <math alttext="\pm 27.31" display="inline" id="S3.T3.m3"><semantics><mrow><mo>±</mo><mn>27.31</mn></mrow><annotation encoding="application/x-tex">\pm 27.31</annotation></semantics></math>
+</td>
+</tr>
+<tr>
+<td>MTBE (DBE)</td>
+<td>N/A<sup>†</sup>
+</td>
+<td><math alttext="228.23\pm 298.27" display="inline" id="S3.T3.m5"><semantics><mrow><mn>228.23</mn><mo>±</mo><mn>298.27</mn></mrow><annotation encoding="application/x-tex">228.23\pm 298.27</annotation></semantics></math></td>
+<td>109.97<math alttext="\pm 199.47" display="inline" id="S3.T3.m6"><semantics><mrow><mo>±</mo><mn>199.47</mn></mrow><annotation encoding="application/x-tex">\pm 199.47</annotation></semantics></math>
+</td>
+</tr>
+</tbody></table>
+</div>
+
+<p><sup>∗</sup>Polaris logs do not record SBEs.</p>
+
+<p><sup>†</sup>Double-bit MTBE is not computed as Delta logs record only two DBEs.</p>
+</div>
+</figure>
+<div id="S3.SS2.p2">
+
+<p>
+<span>
+<span><span>Observation 4</span>: MTBE is affected by the cluster scale. As the largest cluster, Perlmutter has the lowest MTBE.</span>
+</span></p>
+</div>
+<p>Similar to the overall error rates, one single number of MTBE is not sufficient to represent the overall resilience of a cluster.
+The bursty error patterns are reflected in the large standard deviation values in&nbsp;<a href="https://arxiv.org/html/2508.03513v1#S3.T3" title="Table 3 ‣ 3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;3</span></a>.
+We investigate the distributions of interarrival times in clusters, as we show in <a href="https://arxiv.org/html/2508.03513v1#S3.F5" title="Figure 5 ‣ 3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;5</span></a>.</p>
+<p><a href="https://arxiv.org/html/2508.03513v1#S3.F5" title="Figure 5 ‣ 3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;5</span></a>(a) shows the CDF of SBE interarrival times in Delta cluster.
+94.31% of the interarrival times are less than one hour, indicating the bursty error patterns.
+Meanwhile, we observe a long tail in the distribution: 0.81% of the SBE interarrival times exceed 120 hours, extending up to 851 hours (35 days).
+This long tail further underscores the bursty error patterns in Delta.</p>
+<figure id="S3.F5">
+<div>
+<div>
+<p><img alt="Refer to caption" height="352" id="S3.F5.g1" src="https://arxiv.org/html/2508.03513v1/x9.png" width="830"></p><p><span>(a) Delta</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="352" id="S3.F5.g2" src="https://arxiv.org/html/2508.03513v1/x10.png" width="830"></p><p><span>(b) Perlmutter</span></p>
+</div>
+</div>
+<figcaption><span>Figure 5. </span>CDF of SBE interarrival times. Bursty errors are observed and Delta experience more severe burstiness than Perlmutter.</figcaption>
+</figure>
+<p>The SBE interarrival times of Perlmutter are presented in <a href="https://arxiv.org/html/2508.03513v1#S3.F5" title="Figure 5 ‣ 3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;5</span></a>(b).
+Among the SBE interarrival times in Perlmutter, 51.42% fall below one hour, which is significantly less than the Delta case where the majority (94.31%) are below one hour, indicating that Delta exhibits more severe bursty patterns than Perlmutter.
+The maximum SBE interarrival time in Perlmutter is around 5 days, which is much shorter compared to the one observed in Delta (35 days).
+This disparity is related to the scales of the two supercomputers.
+For a simplified illustration example, Perlmutter is about 8.96<math alttext="\times" display="inline" id="S3.SS2.p5.m1"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> larger than Delta; even assuming the same GPU error rate, this scale difference implies that encountering an SBE in Perlmutter is approximately 8.96<math alttext="\times" display="inline" id="S3.SS2.p5.m2"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> more likely than in Delta.
+Therefore, the observed difference of the longest interarrival time is reasonable and aligns with the expectations set by their scales.
+Moreover, these numbers do not reveal a linear relationship between the scale of the cluster and the error interarrival times, likely due to the complex nature of the cluster environment.</p>
+<figure id="S3.F6">
+<div>
+<div>
+<p><img alt="Refer to caption" height="470" id="S3.F6.g1" src="https://arxiv.org/html/2508.03513v1/x11.png" width="746"></p><p><span>(a) Polaris</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="470" id="S3.F6.g2" src="https://arxiv.org/html/2508.03513v1/x12.png" width="746"></p><p><span>(b) Perlmutter</span></p>
+</div>
+</div>
+<figcaption><span>Figure 6. </span>CDF of interarrival times of DBEs. Cluster scale affects error characteristics.</figcaption>
+</figure>
+<p><a href="https://arxiv.org/html/2508.03513v1#S3.F6" title="Figure 6 ‣ 3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;6</span></a> shows the CDF of interarrival times of DBEs.
+Given that the DBE rate is significantly lower than the SBE rate, the CDFs of DBE interarrival times are more sparse than the SBE ones and their characteristics are distinct.
+In Polaris, 27.27% of DBE interarrival times are less than one day, while in Perlmutter, the proportion is 51.56%.
+For the distribution tail which indicates long interarrival times, the longest DBE interarrival time in Polaris is 42 days, while the longest one in Perlmutter is 23 days.
+All these characteristics are intrinsically linked to the scale and the level of error burstiness of the two clusters.</p>
+<div id="S3.SS2.p7">
+
+<p>
+<span>
+<span><span>Observation 5</span>: Both bursty error patterns and supercomputer scale can affect the characteristics of error interarrival times. Relying on a single number, MTBE, may introduce bias into resilience estimation. It is necessary to consider the distribution of error interarrival times to obtain an accurate and holistic resilience assessment.</span>
+</span></p>
+</div>
+<p>We explore the potential temporal correlation and periodicity of errors leveraging the autocorrelation function of error interarrival times.
+Autocorrelation evaluates the similarity between a time series and its lagged version and is always in the range of <math alttext="[-1,1]" display="inline" id="S3.SS2.p8.m1"><semantics><mrow><mo stretchy="false">[</mo><mrow><mo>−</mo><mn>1</mn></mrow><mo>,</mo><mn>1</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[-1,1]</annotation></semantics></math>&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib36" title="">leemis2006discrete, </a>)</cite>.
+A higher positive number refers to a stronger correlation, suggesting a higher level of periodicity with a certain period length, i.e., the lag.
+Zero values indicate the absence of correlation at the given lag and negative autocorrelation numbers point to the opposite relationship with its lagged series.
+We vary lags by hour to compute the autocorrelation values and explore possible periodicity.
+<a href="https://arxiv.org/html/2508.03513v1#S3.F7" title="Figure 7 ‣ 3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;7</span></a> shows the autocorrelation of error interarrival times.
+High autocorrelations are observed with lags of less than 24 hours, which confirms the large body of bursty errors in all clusters.
+With lags increasing, we do not observe any notable correlation.
+We conclude that burstiness is severe in all clusters but no periodicity is observed.</p>
+<div id="S3.SS2.p9">
+
+<p>
+<span>
+<span><span>Observation 6</span>: No periodicity of errors is observed in clusters.</span>
+</span></p>
+</div>
+<figure id="S3.F7">
+<div>
+<div>
+<p><img alt="Refer to caption" height="482" id="S3.F7.g1" src="https://arxiv.org/html/2508.03513v1/x13.png" width="830"></p><p><span>(a) Delta, SBE</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="482" id="S3.F7.g2" src="https://arxiv.org/html/2508.03513v1/x14.png" width="830"></p><p><span>(b) Perlmutter, SBE</span></p>
+</div>
+
+<div>
+<p><img alt="Refer to caption" height="482" id="S3.F7.g3" src="https://arxiv.org/html/2508.03513v1/x15.png" width="830"></p><p><span>(c) Polaris, DBE</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="482" id="S3.F7.g4" src="https://arxiv.org/html/2508.03513v1/x16.png" width="830"></p><p><span>(d) Perlmutter, DBE</span></p>
+</div>
+</div>
+<figcaption><span>Figure 7. </span>Autocorrelation of the DBE interarrival times. The high autocorrelation within a short lag indicates the bursty error patterns. There is no periodicity of errors observed.</figcaption>
+</figure>
+<figure id="S3.T4">
+<figcaption><span>Table 4. </span>Correlation of errors and environmental factors. No strong correlation is observed.
+</figcaption><div>
+<div>
+<table>
+<tbody><tr>
+<td colspan="2"></td>
+<td>Temperature</td>
+<td>Power</td>
+<td>GPU Utilization</td>
+</tr>
+<tr>
+<td>Delta</td>
+<td>SBE</td>
+<td>0.14</td>
+<td>0.14</td>
+<td>0.20</td>
+</tr>
+<tr>
+<td>Polaris</td>
+<td>DBE</td>
+<td>0.089</td>
+<td>0.17</td>
+<td>0.18</td>
+</tr>
+<tr>
+<td rowspan="2">Perlmutter</td>
+<td>SBE</td>
+<td>0.011</td>
+<td>0.23</td>
+<td>N/A<sup>∗</sup>
+</td>
+</tr>
+<tr>
+<td>DBE</td>
+<td>0.19</td>
+<td>0.32</td>
+<td>N/A<sup>∗</sup>
+</td>
+</tr>
+</tbody></table>
+</div>
+
+<p><sup>∗</sup> Perlmutter logs do not record GPU utilization data.</p>
+</div>
+</figure>
+</section>
+<section id="S3.SS3">
+<h3>
+<span>3.3. </span>Correlation with Environmental Factors</h3>
+<p>In this section, we examine the correlation of SBE/DBE occurrences with environmental factors that may be related to error behavior.
+Specifically, we consider temperature, power consumption, and GPU utilization.
+Additionally, we also discuss the liquid cooling systems used in the three supercomputers and their impact on GPU error behavior.</p>
+<p><a href="https://arxiv.org/html/2508.03513v1#S3.T4" title="Table 4 ‣ 3.2. Interarrival Time of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;4</span></a> summarizes the correlation of SBEs and DBEs with these factors across the three clusters.
+While we do not have access to the detailed workload information (due to privacy issues), these environmental factors can serve as indirect indicators of workload patterns.
+Overall, we do not observe strong correlations.
+While weak – but not entirely negligible – correlations are present in most of the cases,
+except that the DBEs in Polaris and the SBEs in Perlmutter show no observable correlation with temperature.
+It is inherently complex to design and build a supercomputer, thus the sources and contributing factors of memory errors are also complicated,
+including, chip manufacturing variability, physical node placement, and other hardware-level influences.
+As such, we are not able to draw definitive conclusions regarding the influence of environmental factors.
+Nonetheless, we suggest prioritizing GPUs that consistently exhibit high temperature, power consumption, and GPU utilization for proactive reliability management.</p>
+<figure id="S3.F8"><img alt="Refer to caption" height="302" id="S3.F8.g1" src="https://arxiv.org/html/2508.03513v1/x17.png" width="581">
+<figcaption><span>Figure 8. </span>The liquid cooling flow of one Perlmutter blade. Each blade contains two nodes. Two GPUs share one cooling loop. The other two systems, Delta and Polaris, have a similar direct liquid cooling system. </figcaption>
+</figure>
+<figure id="S3.T5">
+<figcaption><span>Table 5. </span>Average temperature in 3 clusters.</figcaption><div>
+<div>
+<table>
+<tbody><tr>
+<td>GPU ID</td>
+<td>Delta</td>
+<td>Polaris</td>
+<td>Perlmutter</td>
+</tr>
+<tr>
+<td>0</td>
+<td rowspan="4">N/A<sup>†</sup>
+</td>
+<td>36.43</td>
+<td>29.56</td>
+</tr>
+<tr>
+<td>1</td>
+<td>39.88</td>
+<td>28.48</td>
+</tr>
+<tr>
+<td>2</td>
+<td>36.38</td>
+<td>29.57</td>
+</tr>
+<tr>
+<td>3</td>
+<td>41.18</td>
+<td>28.49</td>
+</tr>
+<tr>
+<td>Average</td>
+<td>35.66</td>
+<td>38.47</td>
+<td>29.03</td>
+</tr>
+</tbody></table>
+</div>
+
+<p><sup>†</sup> We do not have information concerning GPU ID mapping in Delta.</p>
+</div>
+</figure>
+<p>All three supercomputers leverage direct liquid cooling systems with similar configurations.
+For brevity, here we present the liquid cooling flow of a single Perlmutter blade as an example, see <a href="https://arxiv.org/html/2508.03513v1#S3.F8" title="Figure 8 ‣ 3.3. Correlation with Environmental Factors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;8</span></a>.
+Each blade hosts two nodes, each with one CPU and four GPUs.
+Within each node, two GPUs share one cooling loop.
+Additionally, we calculate the average temperature of GPUs, shown in <a href="https://arxiv.org/html/2508.03513v1#S3.T5" title="Table 5 ‣ 3.3. Correlation with Environmental Factors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;5</span></a>.
+On average, Perlmutter shows the lowest temperatures, followed by Delta, while Polaris exhibits the highest.
+On both Polaris and Perlmutter, GPUs 0 and 1 share one cooling loop and GPUs 2 and 3 share the other.
+For Polaris, the loop starts with the lower-numbered GPU, whereas in Perlmutter, the loop begins with the higher-numbered GPU.
+This is confirmed by the temperature values in <a href="https://arxiv.org/html/2508.03513v1#S3.T5" title="Table 5 ‣ 3.3. Correlation with Environmental Factors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;5</span></a>.
+Recall the error rate statistics in <a href="https://arxiv.org/html/2508.03513v1#S3.T2" title="Table 2 ‣ 3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;2</span></a>, Delta is the most reliable system, although here the average temperature of Delta is much higher than Perlmutter.
+Still, we cannot draw any conclusive relationship between temperature, cooling system design, and error characteristics.</p>
+<div id="S3.SS3.p4">
+
+<p>
+<span>
+<span><span>Observation 7</span>: For most environmental factors,
+we observe weak correlations with errors. No strong correlation is observed.</span>
+</span></p>
+</div>
+</section>
+<section id="S3.SS4">
+<h3>
+<span>3.4. </span>Spatial and Temporal Behaviour</h3>
+<p>From a supercomputer management and maintenance perspective, the spatial and temporal reliability characteristics of different GPUs are of interest to cluster administrators.
+We start with characterizing the transition of spatial error behavior across time in clusters, then we further investigate the severity of GPU errors over time.</p>
+<figure id="S3.F9"><img alt="Refer to caption" height="163" id="S3.F9.g1" src="https://arxiv.org/html/2508.03513v1/Figures/delta/delta_arch.png" width="419">
+<figcaption><span>Figure 9. </span>Physical location of nodes in Delta. </figcaption>
+</figure>
+<p>We first investigate the spatial correlation of errors: in particular, whether GPUs within the same cabinet exhibit similar error characteristics.
+At the time of writing this paper, we only have the full machine topology for Delta, shown in <a href="https://arxiv.org/html/2508.03513v1#S3.F9" title="Figure 9 ‣ 3.4. Spatial and Temporal Behaviour ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;9</span></a>.
+In Delta, 207 GPU nodes with a total of 849 GPUs are organized in eight cabinets.
+We leverage this architectural information to determine the
+spatial distribution of SBEs in Delta.
+Given that bursty errors are commonly observed in Delta, instead of presenting the number of SBEs in each cabinet, we calculate the number of days that a cabinet encounters errors (<a href="https://arxiv.org/html/2508.03513v1#S3.F11" title="Figure 11 ‣ 3.4. Spatial and Temporal Behaviour ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;11</span></a>) and the number of SBE-occurring GPUs within a cabinet (<a href="https://arxiv.org/html/2508.03513v1#S3.F11" title="Figure 11 ‣ 3.4. Spatial and Temporal Behaviour ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;11</span></a>).
+For brevity, we select three time windows (in February, June, and August) to present the dynamics of the physical distribution of errors.
+We observe that hotspots of SBEs vary across different months.
+This trend is consistent considering the two metrics, error-occurring days and error-occurring GPUs.
+This variation indicates physical correlations among errors, with the SBE-occurring cabinets changing over time.</p>
+<div id="S3.SS4.p3">
+
+<p>
+<span>
+<span><span>Observation 8</span>: GPU memory errors are spatially and temporally correlated in the Delta supercomputer.</span>
+</span></p>
+</div>
+<figure id="S3.F11">
+<div>
+
+<div>
+<p><img alt="Refer to caption" height="41" id="S3.F11.g1" src="https://arxiv.org/html/2508.03513v1/x18.png" width="190">
+</p>
+</div>
+
+<div>
+<p><img alt="Refer to caption" height="275" id="S3.F11.g2" src="https://arxiv.org/html/2508.03513v1/x19.png" width="581"></p><p><span>(a) Monthly Avg.</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="275" id="S3.F11.g3" src="https://arxiv.org/html/2508.03513v1/x20.png" width="581"></p><p><span>(b) January</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="275" id="S3.F11.g4" src="https://arxiv.org/html/2508.03513v1/x21.png" width="581"></p><p><span>(c) August</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="277" id="S3.F11.g5" src="https://arxiv.org/html/2508.03513v1/x22.png" width="581"></p><p><span>(d) September</span></p>
+</div>
+</div>
+<figcaption><span>Figure 10. </span>Number of error-occurring days within each cabinet over time. Hotspots vary over time.</figcaption><div>
+
+<div>
+<p><img alt="Refer to caption" height="40" id="S3.F11.g6" src="https://arxiv.org/html/2508.03513v1/x23.png" width="190">
+</p>
+</div>
+
+<div>
+<p><img alt="Refer to caption" height="270" id="S3.F11.g7" src="https://arxiv.org/html/2508.03513v1/x24.png" width="581"></p><p><span>(a) Monthly Avg.</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="270" id="S3.F11.g8" src="https://arxiv.org/html/2508.03513v1/x25.png" width="581"></p><p><span>(b) January</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="270" id="S3.F11.g9" src="https://arxiv.org/html/2508.03513v1/x26.png" width="581"></p><p><span>(c) August</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="272" id="S3.F11.g10" src="https://arxiv.org/html/2508.03513v1/x27.png" width="581"></p><p><span>(d) September</span></p>
+</div>
+</div>
+<figcaption><span>Figure 11. </span>Number of SBE-occurring GPUs within each cabinet over time. Although the heatmap pattern changes slightly comparing to the characteristics when considering the number of error-occurring days shown in <a href="https://arxiv.org/html/2508.03513v1#S3.F11" title="Figure 11 ‣ 3.4. Spatial and Temporal Behaviour ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;11</span></a>, the same observation preserves: hotspots vary over time.</figcaption>
+</figure>
+<figure id="S3.F12"><img alt="Refer to caption" height="353" id="S3.F12.g1" src="https://arxiv.org/html/2508.03513v1/x28.png" width="540">
+<figcaption><span>Figure 12. </span>Number of SBEs observed on SBE-occuring GPUs over time in Delta. Most of the GPUs encounter SBEs for only 1–3 weeks. There is no GPU that continually encounters SBEs throughout the whole year.</figcaption>
+</figure>
+<p>We further investigate the severity of GPU errors over time.
+<a href="https://arxiv.org/html/2508.03513v1#S3.F12" title="Figure 12 ‣ 3.4. Spatial and Temporal Behaviour ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;12</span></a> shows the number of SBEs over time observed in SBE-occurring GPUs in Delta. For ease of reading, we present the weekly SBE count, with darker colors indicating more errors observed in a GPU (x-axis) during a certain week (y-axis).
+Most of the GPUs suffer from SBEs for only 1–3 weeks.
+We do not observe any GPU that continually encounters SBEs throughout the whole year.
+Similar observations are drawn from the other SBE and DBE datasets, as depicted in <a href="https://arxiv.org/html/2508.03513v1#S3.F13" title="Figure 13 ‣ 3.4. Spatial and Temporal Behaviour ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;13</span></a> (SBEs in Perlmutter) and <a href="https://arxiv.org/html/2508.03513v1#S3.F14" title="Figure 14 ‣ 3.4. Spatial and Temporal Behaviour ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;14</span></a> (DBEs in Polaris and Perlmutter clusters).
+In general, GPUs with high error counts tend to vary over time, suggesting that
+for system monitoring and maintenance, focusing on GPUs with historically high error counts may not be a good strategy.</p>
+<div id="S3.SS4.p5">
+
+<p>
+<span>
+<span><span>Observation 9</span>: Erroneous GPUs vary over time. For the management of supercomputers, focusing on GPUs with historically high SBE counts may not be a good strategy.</span>
+</span></p>
+</div>
+<figure id="S3.F13">
+<p><img alt="Refer to caption" height="270" id="S3.F13.g1" src="https://arxiv.org/html/2508.03513v1/x29.png" width="830">
+</p>
+<figcaption><span>Figure 13. </span>Per-GPU SBE counts over time in Perlmutter. Here we show all the SBE-occurring GPUs. Erroneous GPUs vary over time.</figcaption>
+</figure>
+<figure id="S3.F14">
+<div>
+<div>
+<p><img alt="Refer to caption" height="481" id="S3.F14.g1" src="https://arxiv.org/html/2508.03513v1/x30.png" width="789"></p><p><span>(a) Polaris</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="473" id="S3.F14.g2" src="https://arxiv.org/html/2508.03513v1/x31.png" width="830"></p><p><span>(b) Perlmutter</span></p>
+</div>
+</div>
+<figcaption><span>Figure 14. </span>Per-GPU DBE counts observed over time on Polaris and Perlmutter. There are less DBE-occurring GPUs than the case of SBEs. The same observation can be derived: DBE-encountering GPUs vary over time.
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="S4">
+<h2>
+<span>4. </span>Discussions and Lessons Learned</h2>
+<p>In this section, we discuss the opportunities for efficient machine health management and large-scale application checkpointing in HPC systems.
+These opportunities are enabled by our GPU memory error characterization study presented in <a href="https://arxiv.org/html/2508.03513v1#S3" title="3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Section&nbsp;3</span></a>.
+We also compare the Ampere GPU error statistics with previous generations to observe the trend of GPU reliability.
+Specifically, we present quantitative comparisons to the Summit supercomputer with NVIDIA V100 GPUs.</p>
+<section id="S4.SS1">
+<h3>
+<span>4.1. </span>Compared to Previous GPU Generations</h3>
+<p>Large-scale GPU memory error log analyses for supercomputers mainly focus on three systems:
+Summit, with V100 GPUs (the predecessor of A100)&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib28" title="">oles2024understanding, </a>)</cite>,
+Titan, with K20X GPUs&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib24" title="">tiwari2015understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib26" title="">nie2017characterizing, </a>)</cite>, and Blue Waters, with K20X GPUs&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib22" title="">di2014lessons, </a>)</cite>.
+We briefly compare observations derived from our A100 GPU datasets with those of previous GPU generations, to seek similarities and differences.
+First, the bursty patterns are confirmed in the Titan supercomputer&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>)</cite>.
+Second, notable periodicity is observed in Titan&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>)</cite>, however, we do not observe any periodicity in Delta or Perlmutter.</p>
+<p>Furthermore, we quantitatively compare the characteristics of DBEs<span id="footnote1"><sup>1</sup><span><span><sup>1</sup><span>1</span>The Summit public dataset&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib28" title="">oles2024understanding, </a>)</cite> of V100 GPU errors does not contain SBE information.</span></span></span> between V100 (in the Summit supercomputer&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib28" title="">oles2024understanding, </a>)</cite>) and A100 GPUs.
+Both generations of GPUs are equipped with HBM2 (High Bandwidth Memory 2).
+Note that consecutive DBEs are grouped and considered as one single DBE event in&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib28" title="">oles2024understanding, </a>)</cite>.
+Here we do not cluster consecutive errors because grouping consecutive errors together filters out the lasting time of these errors which are meaningful to show the level of severeness of the error consequences.
+By processing these datasets through the same way and the same granularity (per hour), we still ensure a fair and meaningful comparison.</p>
+<p><a href="https://arxiv.org/html/2508.03513v1#S4.F15" title="Figure 15 ‣ 4.1. Compared to Previous GPU Generations ‣ 4. Discussions and Lessons Learned ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;15</span></a> shows the daily DBE count in Summit, confirming a moderate level of error burstiness. Comparing to the daily DBE count of the three A100 supercomputers (<a href="https://arxiv.org/html/2508.03513v1#S3.F3" title="Figure 3 ‣ 3.1. Overview of Errors ‣ 3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;3</span></a>) where we sometimes observe more than 1000 errors per day, the maximum daily error count in Summit is 138.
+This indicates that the Summit supercomputer experiences bursty errors, but not as much as the supercomputers accelerated by A100 GPUs.</p>
+<p>Furthermore, we calculate the DBE rate and MTBE values and present the statistics in <a href="https://arxiv.org/html/2508.03513v1#S4.T6" title="Table 6 ‣ 4.1. Compared to Previous GPU Generations ‣ 4. Discussions and Lessons Learned ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Table&nbsp;6</span></a>.
+The DBE rate of Summit is higher than Delta but lower than that of Polaris and Perlmutter.
+There are more DBE-occurring GPUs in Summit, both in terms of raw numbers and the normalized percentage.
+The MTBE of Summit is slightly longer than Perlmutter but lower than Polaris.
+The standard deviation of Summit MTBE is much smaller than the A100 clusters, confirming that Summit suffers less from bursty errors.
+In general, we cannot clearly conclude the reliability ranking of these clusters. Given that all four clusters use HBM2 memory, it is reasonable that they share similar memory error characteristics.</p>
+<figure id="S4.F15"><img alt="Refer to caption" height="235" id="S4.F15.g1" src="https://arxiv.org/html/2508.03513v1/x32.png" width="415">
+<figcaption><span>Figure 15. </span>Daily DBE count (log scale) in the Summit supercomputer, equipped with NVIDIA V100 GPUs. Bursty patterns are observed, but not as severe as the A100 GPUs.</figcaption>
+</figure>
+<figure id="S4.T6">
+<figcaption><span>Table 6. </span>Error statistics in the Summit Supercomputer.</figcaption>
+<table>
+<tbody><tr>
+<td><span>&nbsp;&nbsp;&nbsp;Cluster Name</span></td>
+<td><span>&nbsp;&nbsp;&nbsp;Summit</span></td>
+</tr>
+<tr>
+<td># GPUs</td>
+<td>28471</td>
+</tr>
+<tr>
+<td># Logged Days</td>
+<td>1026</td>
+</tr>
+<tr>
+<td># DBEs</td>
+<td>1088</td>
+</tr>
+<tr>
+<td># DBE Events</td>
+<td>1008</td>
+</tr>
+<tr>
+<td>DBE Rate (Per GPU Per Day)</td>
+<td>0.00022</td>
+</tr>
+<tr>
+<td>DBE-occuring GPUs</td>
+<td>124 (2.6%)</td>
+</tr>
+<tr>
+<td>MTBE</td>
+<td>122.62 <math alttext="\pm" display="inline" id="S4.T6.m1"><semantics><mo>±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math>81.64</td>
+</tr>
+</tbody></table>
+</figure>
+<div id="S4.SS1.p5">
+
+<p>
+<span>
+<span><span>Take-away Message 1</span>: NVIDIA V100 and A100 GPUs both use HBM2 and share similar memory error characteristics.</span>
+</span></p>
+</div>
+</section>
+<section id="S4.SS2">
+<h3>
+<span>4.2. </span>Reliable Operation of Supercomputers</h3>
+<p>We discuss the insights derived from our characterization study from two major observations. Firstly, the observation of bursty error patterns suggests GPU ECC monitoring frequency. Secondly, our spatial and temporal analysis provides insights for cluster management and maintenance.</p>
+<section id="S4.SS2.SSS1">
+<h4>
+<span>4.2.1. </span>GPU ECC Monitoring Frequency</h4>
+<p>Among the three clusters we studied, GPU ECC errors are monitored at different frequencies.
+Polaris error logs are recorded every four seconds, while Delta errors are recorded every minute, and we retrieve Perlmutter errors using a frequency of every hour.
+This variation motivates a discussion of the trade-off between the overhead of error monitoring and the ability to promptly identify and react to errors.
+Ideally, monitoring should be performed as infrequently as possible while still capturing sufficient information to detect abnormal GPU behaviors, especially bursty errors.</p>
+<p>Taking Delta as an example,
+we observe a series of consecutive error occurrence events: there are around 300 SBEs per minute over an eight-hour duration, as shown in <a href="https://arxiv.org/html/2508.03513v1#S4.F16" title="Figure 16 ‣ 4.2.1. GPU ECC Monitoring Frequency ‣ 4.2. Reliable Operation of Supercomputers ‣ 4. Discussions and Lessons Learned ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;16</span></a>(a).
+We plot the error count in <a href="https://arxiv.org/html/2508.03513v1#S4.F16" title="Figure 16 ‣ 4.2.1. GPU ECC Monitoring Frequency ‣ 4.2. Reliable Operation of Supercomputers ‣ 4. Discussions and Lessons Learned ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;16</span></a>(a) using the original error logging frequency of one minute, then present an aggregated hourly error count in <a href="https://arxiv.org/html/2508.03513v1#S4.F16" title="Figure 16 ‣ 4.2.1. GPU ECC Monitoring Frequency ‣ 4.2. Reliable Operation of Supercomputers ‣ 4. Discussions and Lessons Learned ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;16</span></a>(b).
+With the hour-by-hour error logging, the bursty error pattern is still captured with hourly error counts of around 18,000.
+The timespan of the bursty error pattern (up to 8 hours in this case) is sufficiently long, thus the erroneous GPUs are still captured even with the logging frequency of an hour.
+Another example is shown in <a href="https://arxiv.org/html/2508.03513v1#S4.F17" title="Figure 17 ‣ 4.2.1. GPU ECC Monitoring Frequency ‣ 4.2. Reliable Operation of Supercomputers ‣ 4. Discussions and Lessons Learned ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Figure&nbsp;17</span></a>. Although the hourly error counts capture the errors and indicate some level of burstiness, the bursty error patterns are not as clear as minute-by-minute error logging.
+Additionally, error log with higher frequency enables sooner erroneous GPU identification, so that system administrators can take action immediately.</p>
+<figure id="S4.F16">
+<div>
+<div>
+<p><img alt="Refer to caption" height="473" id="S4.F16.g1" src="https://arxiv.org/html/2508.03513v1/x33.png" width="830"></p><p><span>(a) Per Minute</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="470" id="S4.F16.g2" src="https://arxiv.org/html/2508.03513v1/x34.png" width="830"></p><p><span>(b) Per Hour</span></p>
+</div>
+</div>
+<figcaption><span>Figure 16. </span>Example of Delta bursty patterns under different monitoring frequencies from 08/14/2023 to 08/15/2023. Changing monitoring frequency can lead to information change, but no significant information loss is noted.</figcaption>
+</figure>
+<figure id="S4.F17">
+<div>
+<div>
+<p><img alt="Refer to caption" height="485" id="S4.F17.g1" src="https://arxiv.org/html/2508.03513v1/x35.png" width="831"></p><p><span>(a) Per Minute</span></p>
+</div>
+<div>
+<p><img alt="Refer to caption" height="470" id="S4.F17.g2" src="https://arxiv.org/html/2508.03513v1/x36.png" width="830"></p><p><span>(b) Per Hour</span></p>
+</div>
+</div>
+<figcaption><span>Figure 17. </span>Another example of Delta bursty patterns shown in different monitoring frequencies on 02/01/2023.</figcaption>
+</figure>
+<div id="S4.SS2.SSS1.p3">
+
+<p>
+<span>
+<span><span>Take-away Message 2</span>: Coarser-level error monitoring does not suffer much information loss, yet monitoring errors at a finer level enables faster responses to errors.</span>
+</span></p>
+</div>
+</section>
+<section id="S4.SS2.SSS2">
+<h4>
+<span>4.2.2. </span>Lessons for GPU Management</h4>
+<p>The characterization of spatial and temporal reliability behavior motivates two general key observations that summarize the dynamics of erroneous GPUs: 1) SBEs can be used as an indicator of future DBE occurrence and 2) erroneous GPUs vary over time.
+These observations motivate the need for a smart and flexible approach to efficient and low-cost management of supercomputers.
+Developing proactive and dynamic GPU monitoring strategies based on erroneous GPU prediction is a potential solution and is subject to our future work.</p>
+<div id="S4.SS2.SSS2.p2">
+
+<p>
+<span>
+<span><span>Take-away Message 3</span>: Dynamic GPU monitoring and erroneous GPU prediction strategies are needed for efficient and reliable operation of supercomputers.</span>
+</span></p>
+</div>
+</section>
+</section>
+<section id="S4.SS3">
+<h3>
+<span>4.3. </span>Determining Checkpoint Intervals</h3>
+<p>A standard and common practice for handling fail-stop failures is checkpointing, where copies of application state are stored persistently during execution and these copies enable applications to be re-executed from the checkpointed state.
+Checkpointing can require application and system knowledge to accurately capture the application state. Prior studies&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib37" title="">young1974first, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib38" title="">daly2006higher, </a>)</cite> have shown that an optimal checkpoint interval can be determined based on two factors: the time to save a checkpoint into persistent storage, and the mean-time-between-failure of a system.
+Taking LFM training as an example, pre-training a model with hundreds of billions of parameters takes thousands of GPUs for months.
+One DBE could result in a hardware exception and cause the whole program
+to stop without terminating the batch job (e.g., a SLURM job).
+The allocated computing resources can be wasted if monitoring and restart are not performed in a timely manner.
+This problem is exacerbated as state-of-the-art LFM training exceeds <math alttext="O" display="inline" id="S4.SS3.p1.m1"><semantics><mi>O</mi><annotation encoding="application/x-tex">O</annotation></semantics></math>(10<sup>4</sup>) GPUs&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib39" title="">jiang2024megascale, </a>)</cite>.
+The insights from our study can be used as a reference for determining the checkpointing interval of LFM training and general scientific application execution. However, considering the bursty patterns observed in this study, simply computing an optimal but static checkpoint interval might lead to sub-optimal performance and utilization.</p>
+<p>An alternative approach is to use dynamic checkpointing based on frequent memory error monitoring.
+This dynamic checkpointing strategy should be intelligent enough to tell the period within bursty errors and between bursty errors,
+so that the strategy can adjust the checkpoint interval based on the error-free time length as well as upon the observation of SBEs and DBEs.
+In this way, we will be able to minimize the checkpoint overhead while minimizing the failure loss upon uncorrectable memory errors.</p>
+<div id="S4.SS3.p3">
+
+<p>
+<span>
+<span><span>Take-away Message 4</span>: The current practice of popular HPC applications for checkpointing is based on a fixed frequency that either fails to meet the reliability requirement or causes high overhead. Dynamic checkpointing is suggested to accommodate bursty error patterns observed in supercomputers.</span>
+</span></p>
+</div>
+</section>
+</section>
+<section id="S5">
+<h2>
+<span>5. </span>Related Work</h2>
+<div id="S5.p1">
+<p>There exist numerous studies of failures for different components in clusters, data centers, and supercomputers&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib40" title="">han2021depth, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib41" title="">wang2023understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib42" title="">roy2021operating, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib43" title="">di2019characterizing, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib44" title="">gao2023empirical, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib45" title="">das2021systemic, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib46" title="">rojas2019analyzing, </a>)</cite>.
+Many works focus on the characterization and analysis of failures in supercomputers&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib43" title="">di2019characterizing, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib44" title="">gao2023empirical, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib45" title="">das2021systemic, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib46" title="">rojas2019analyzing, </a>)</cite>.
+Roy et al.&nbsp;perform reliability analysis on the Mira Supercomputer from the perspective of the cooling system&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib42" title="">roy2021operating, </a>)</cite>.
+Several works delve into silent data corruption (SDC) in data centers, raising awareness within the community of the need for SDC mitigations&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib12" title="">dixit2021silent, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib41" title="">wang2023understanding, </a>)</cite>.
+There have been many studies of the impact of memory errors on large machines&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib18" title="">bautista2016unprotected, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib24" title="">tiwari2015understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib26" title="">nie2017characterizing, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib19" title="">ferreira2021understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib20" title="">sridharan2013feng, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib17" title="">levy2018lessons, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib21" title="">beigi2023systematic, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib47" title="">zivanovic2019dram, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib48" title="">liu2018large, </a>)</cite>.
+Researchers have examined how correctable errors affect HPC application performance via simulation&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib19" title="">ferreira2021understanding, </a>)</cite>.
+Bautista et al.&nbsp;study the raw DRAM error rate without ECC protection on CPU memory&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib18" title="">bautista2016unprotected, </a>)</cite>.
+Feng Shui&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib20" title="">sridharan2013feng, </a>)</cite> studied the spatial distribution of DRAM and SRAM faults on legacy Cielo and Jaguar supercomputers, confirming that the DRAM and SRAM of Cielo exhibit no aging effects or noticeable increase in the five-year lifetime&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib17" title="">levy2018lessons, </a>)</cite>.
+Recently, Beigi et al. performed a detailed study on DDR4 DRAM faults&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib21" title="">beigi2023systematic, </a>)</cite>, highlighting concerns regarding multi-bit errors.</p>
+</div>
+<div id="S5.p2">
+<p>On the GPU side, the majority of the studies focus on GPU failures&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib49" title="">taherin2021examining, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib50" title="">liu2023predicting, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib29" title="">cui2025characterizing, </a>)</cite> and memory errors&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib23" title="">debardeleben2014gpu, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib24" title="">tiwari2015understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib26" title="">nie2017characterizing, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib27" title="">ostrouchov2020gpu, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib51" title="">vazhkudai2017guide, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib22" title="">di2014lessons, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib28" title="">oles2024understanding, </a>)</cite>.
+Taherin et al. characterize GPU failures and repairs on Tsubame-2 and Tsubame-3 based on system maintenance log, focusing on
+fatal errors such as GPU driver-related problems, kernel panic, and software bugs, but no GPU memory errors were reported by ECC&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib49" title="">taherin2021examining, </a>)</cite>.
+GPU failure logs are used to perform error prediction using machine learning models&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib50" title="">liu2023predicting, </a>)</cite>.
+Most prior GPU memory error studies have been performed on the Titan supercomputer equipped with K20X GPUs&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib24" title="">tiwari2015understanding, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib26" title="">nie2017characterizing, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib27" title="">ostrouchov2020gpu, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib51" title="">vazhkudai2017guide, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib52" title="">tiwari2015reliability, </a>)</cite>.
+Periodicity of memory errors is observed in the Titan supercomputer&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>)</cite>.
+Di et al. study error behavior of the Blue Waters supercomputer with K20X GPUs&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib22" title="">di2014lessons, </a>)</cite> but with a focus on CPU-GPU comparison.
+The temperature effect is found to be related to GPU memory errors&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib25" title="">nie2016large, </a>; <a href="https://arxiv.org/html/2508.03513v1#bib.bib26" title="">nie2017characterizing, </a>)</cite>.
+Debardeleben et al. perform experiments on NVIDIA Tesla M2090 GPUs (using Fermi 2.0 architecture) in Moonlight&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib23" title="">debardeleben2014gpu, </a>)</cite> and report the rate of DBEs.
+These studies mostly focus on earlier generations of GPU architecture.
+Most of the machines in these works have been decommissioned at the time of study.</p>
+</div>
+<p>There are two recent studies on the resilience characterization of GPU-accelerated supercomputers.
+Oles et al.&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib28" title="">oles2024understanding, </a>)</cite> perform a case study of GPU memory errors on the Summit supercomputer, equipped with NVIDIA V100 GPUs, focusing on double-bit errors (DBEs) but not single-bit errors (SBEs).
+Their analysis explored potential causes of DBEs, such as GPU placement and workload characteristics.
+The latest study of GPU reliability is performed on the Delta supercomputer&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib29" title="">cui2025characterizing, </a>)</cite> where both NVIDIA A100 and H100 GPUs are considered, focusing on GPU hardware failures and interconnect errors but not memory errors.
+While we acknowledge that studies based on a single supercomputer can still produce valuable insights, we argue that conclusions drawn from a single system may not generalize to broader GPU deployments, given the varying reliability characteristics across the three supercomputers examined in this work.</p>
+<p>In short, our study provides a large-scale, cross-supercomputer analysis of GPU memory errors on machines currently in production.
+As detailed in <a href="https://arxiv.org/html/2508.03513v1#S3" title="3. Cross-Supercomputer Error Characterization ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Section&nbsp;3</span></a> and <a href="https://arxiv.org/html/2508.03513v1#S4" title="4. Discussions and Lessons Learned ‣ Understanding the Landscape of Ampere GPU Memory Errors"><span>Section&nbsp;4</span></a>, our findings from a cross-supercomputer perspective offer timely and practical insights into the reliability of modern GPU-based systems, filling an important gap in the existing literature.</p>
+</section>
+<section id="S6">
+<h2>
+<span>6. </span>Conclusions and Future Work</h2>
+<p>We have presented an in-depth quantitative error analysis of memory errors in Ampere GPUs across three heavily utilized, in-production supercomputers of varying scales: Delta&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib30" title="">delta, </a>)</cite>, Polaris&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib31" title="">polaris, </a>)</cite>, and Perlmutter&nbsp;<cite>(<a href="https://arxiv.org/html/2508.03513v1#bib.bib32" title="">perlmutter, </a>)</cite>.
+We collect and analyze GPU memory ECC (Error Correction Codes) error logs, resulting in a total of 67.77 million GPU device-hours of data covering 10,693 NVIDIA Ampere GPUs.</p>
+<p>We quantitatively measure the error rate and Mean-Time-Between-Errors (MTBE) in these clusters.
+The burstiness, periodicity, spatial and temporal relation of errors, and environmental factors in these clusters are also explored in detail.
+The key observations include 1) Bursty error patterns have a significant impact on the characteristics of error rate and MTBE;
+2) Cluster scale also affects MTBE but the relationship is not linear;
+3) Errors have spatial correlation but exhibit no periodical
+patterns;
+4) No strong correlation of errors is observed with environmental factors such as temperature, power, and GPU utilization; and
+5) GPU errors are spatially and temporally correlated.</p>
+<p>Furthermore, we summarize the lessons learned from this study. We also compare the
+Ampere GPU error statistics with previous generations to
+observe the trend of GPU reliability and understand the nature of GPU errors.
+We discuss the opportunities for efficient
+machine health management and large-scale application checkpointing.
+We bring up the possibility of dynamic checkpointing strategies informed by memory error monitoring.
+Our observations and analyses motivate the future studies to explore the possibility of designing error prediction models and dynamic checkpointing algorithms based.</p>
+</section>
+<section id="Sx1">
+<h2>Acknowledgments</h2>
+<p>This material is based upon work supported by the National
+Science Foundation (NSF) grants (#2402940 and #2410856) and the Commonwealth Cyber Initiative (CCI) grant (#HC‐3Q24‐047). The platforms used for evaluation in this work are
+supported by the U.S. DOE Office of Science, Office of Advanced Scientific Computing Research, under award 66150:
+”CENATE - Center for Advanced Architecture Evaluation”.
+The Pacific Northwest National Laboratory is operated by
+Battelle for the U.S. Department of Energy under Contract
+DE-AC05-76RL01830.
+This project is supported by resources provided by the Office of Research Computing at George Mason University (URL: https://orc.gmu.edu) and funded in part by grants from the National Science Foundation (Award Number 2018631).
+This research used both the DeltaAI advanced computing and data resource, which is supported by the National Science Foundation (award OAC 2320345) and the State of Illinois, and the Delta advanced computing and data resource which is supported by the National Science Foundation (award OAC 2005572) and the State of Illinois.. Delta and DeltaAI are joint efforts of the University of Illinois Urbana-Champaign and its National Center for Supercomputing Applications.
+This research used resources of the Argonne Leadership Computing Facility, a U.S. Department of Energy (DOE) Office of Science user facility at Argonne National Laboratory and is based on research supported by the U.S. DOE Office of Science-Advanced Scientific Computing Research Program, under Contract No. DE-AC02-06CH11357.
+This research used resources of the National Energy Research Scientific Computing Center (NERSC), a Department
+of Energy Office of Science User Facility using NERSC
+award DDR-ERCAP0032037.</p>
+</section>
+<section id="bib">
+<h2>References</h2>
+<ul>
+<li id="bib.bib1">
+<span>(1)</span>
+<span>
+Y.&nbsp;Chen, W.&nbsp;Li, R.&nbsp;Fan, and X.&nbsp;Liu, “Gpu optimization for high-quality kinetic fluid simulation,” <span>IEEE Transactions on Visualization and Computer Graphics</span>, vol.&nbsp;28, no.&nbsp;9, pp.&nbsp;3235–3251, 2021.
+
+</span>
+</li>
+<li id="bib.bib2">
+<span>(2)</span>
+<span>
+Y.&nbsp;Liu, X.&nbsp;Liu, and E.&nbsp;Wu, “Real-time 3d fluid simulation on gpu with complex obstacles,” in <span>12th Pacific Conference on Computer Graphics and Applications, 2004. PG 2004. Proceedings.</span>, pp.&nbsp;247–256, IEEE, 2004.
+
+</span>
+</li>
+<li id="bib.bib3">
+<span>(3)</span>
+<span>
+J.&nbsp;Glaser, T.&nbsp;D. Nguyen, J.&nbsp;A. Anderson, P.&nbsp;Lui, F.&nbsp;Spiga, J.&nbsp;A. Millan, D.&nbsp;C. Morse, and S.&nbsp;C. Glotzer, “Strong scaling of general-purpose molecular dynamics simulations on gpus,” <span>Computer Physics Communications</span>, vol.&nbsp;192, pp.&nbsp;97–107, 2015.
+
+</span>
+</li>
+<li id="bib.bib4">
+<span>(4)</span>
+<span>
+T.&nbsp;Boku, M.&nbsp;Sugita, R.&nbsp;Kobayashi, S.&nbsp;Furuya, T.&nbsp;Fujie, M.&nbsp;Ohue, and Y.&nbsp;Akiyama, “Improving performance on replica-exchange molecular dynamics simulations by optimizing gpu core utilization,” in <span>Proceedings of the 53rd International Conference on Parallel Processing</span>, pp.&nbsp;1082–1091, 2024.
+
+</span>
+</li>
+<li id="bib.bib5">
+<span>(5)</span>
+<span>
+A.&nbsp;Radford, K.&nbsp;Narasimhan, T.&nbsp;Salimans, and I.&nbsp;Sutskever, “Improving language understanding with unsupervised learning,” 2018.
+
+</span>
+<span>Technical report, OpenAI. <a href="https://openai.com/index/language-unsupervised/" title="">https://openai.com/index/language-unsupervised/</a>.
+
+</span>
+</li>
+<li id="bib.bib6">
+<span>(6)</span>
+<span>
+S.&nbsp;Zhang, S.&nbsp;Roller, N.&nbsp;Goyal, M.&nbsp;Artetxe, M.&nbsp;Chen, S.&nbsp;Chen, C.&nbsp;Dewan, M.&nbsp;Diab, X.&nbsp;Li, X.&nbsp;V. Lin, T.&nbsp;Mihaylov, M.&nbsp;Ott, S.&nbsp;Shleifer, K.&nbsp;Shuster, D.&nbsp;Simig, P.&nbsp;S. Koura, A.&nbsp;Sridhar, T.&nbsp;Wang, and L.&nbsp;Zettlemoyer, “OPT: Open pre-trained transformer language models,” <span>Preprint arXiv:2205.01068</span>, 2022.
+
+</span>
+</li>
+<li id="bib.bib7">
+<span>(7)</span>
+<span>
+M.&nbsp;Zvyagin, A.&nbsp;Brace, K.&nbsp;Hippe, Y.&nbsp;Deng, B.&nbsp;Zhang, C.&nbsp;Orozco&nbsp;Bohorquez, A.&nbsp;Clyde, B.&nbsp;Kale, D.&nbsp;Perez-Rivera, H.&nbsp;Ma, C.&nbsp;M. Mann, M.&nbsp;Irvin, J.&nbsp;G. Pauloski, L.&nbsp;Ward, V.&nbsp;Hayot, M.&nbsp;Emani, S.&nbsp;Foreman, Z.&nbsp;Xie, D.&nbsp;Lin, M.&nbsp;Shukla, W.&nbsp;Nie, J.&nbsp;Romero, C.&nbsp;Dallago, A.&nbsp;Vahdat, C.&nbsp;Xiao, T.&nbsp;Gibbs, I.&nbsp;Foster, J.&nbsp;J. Davis, M.&nbsp;E. Papka, T.&nbsp;Brettin, R.&nbsp;Stevens, A.&nbsp;Anandkumar, V.&nbsp;Vishwanath, and A.&nbsp;Ramanathan, “GenSLMs: Genome-scale language models reveal SARS-CoV-2 evolutionary dynamics,” <span>The International Journal of High Performance Computing Applications</span>, vol.&nbsp;37, no.&nbsp;6, pp.&nbsp;683–705, 2023.
+
+</span>
+</li>
+<li id="bib.bib8">
+<span>(8)</span>
+<span>
+V.&nbsp;Fratin, D.&nbsp;A.&nbsp;G. de&nbsp;Oliveira, C.&nbsp;B. Lunardi, F.&nbsp;Santos, G.&nbsp;Rodrigues, and P.&nbsp;Rech, “Code-dependent and architecture-dependent reliability behaviors,” in <span>DSN</span>, pp.&nbsp;13–26, 2018.
+
+</span>
+</li>
+<li id="bib.bib9">
+<span>(9)</span>
+<span>
+S.&nbsp;Ganapathy, J.&nbsp;Kalamatianos, B.&nbsp;M. Beckmann, S.&nbsp;Raasch, and L.&nbsp;G. Szafaryn, “Killi: Runtime fault classification to deploy low voltage caches without MBIST,” in <span>25th IEEE International Symposium on High Performance Computer Architecture</span>, pp.&nbsp;304–316, IEEE, 2019.
+
+</span>
+</li>
+<li id="bib.bib10">
+<span>(10)</span>
+<span>
+M.&nbsp;B. Sullivan, N.&nbsp;Saxena, M.&nbsp;O’Connor, D.&nbsp;Lee, P.&nbsp;Racunas, S.&nbsp;Hukerikar, T.&nbsp;Tsai, S.&nbsp;K.&nbsp;S. Hari, and S.&nbsp;W. Keckler, “Characterizing and mitigating soft errors in GPU dram,” in <span>MICRO-54: 54th Annual IEEE/ACM International Symposium on Microarchitecture</span>, pp.&nbsp;641–653, 2021.
+
+</span>
+</li>
+<li id="bib.bib11">
+<span>(11)</span>
+<span>
+MetaSeq, “OPT-175B Baselines logbook,” 2022.
+
+</span>
+<span><a href="https://github.com/facebookresearch/metaseq/blob/main/projects/OPT/chronicles/OPT175B_Logbook.pdf" title="">https://github.com/facebookresearch/metaseq/blob/main/projects/OPT/chronicles/OPT175B_Logbook.pdf</a>.
+
+</span>
+</li>
+<li id="bib.bib12">
+<span>(12)</span>
+<span>
+H.&nbsp;D. Dixit, S.&nbsp;Pendharkar, M.&nbsp;Beadon, C.&nbsp;Mason, T.&nbsp;Chakravarthy, B.&nbsp;Muthiah, and S.&nbsp;Sankar, “Silent data corruptions at scale,” <span>Preprint arXiv:2102.11245</span>, 2021.
+
+</span>
+</li>
+<li id="bib.bib13">
+<span>(13)</span>
+<span>
+Y.&nbsp;He, M.&nbsp;Hutton, S.&nbsp;Chan, R.&nbsp;De&nbsp;Gruijl, R.&nbsp;Govindaraju, N.&nbsp;Patil, and Y.&nbsp;Li, “Understanding and mitigating hardware failures in deep learning training systems,” in <span>50th Annual International Symposium on Computer Architecture</span>, pp.&nbsp;1–16, 2023.
+
+</span>
+</li>
+<li id="bib.bib14">
+<span>(14)</span>
+<span>
+Z.&nbsp;Zhang, L.&nbsp;Huang, R.&nbsp;Huang, W.&nbsp;Xu, and D.&nbsp;S. Katz, “Quantifying the impact of memory errors in deep learning,” in <span>IEEE International Conference on Cluster Computing</span>, pp.&nbsp;1–12, IEEE, 2019.
+
+</span>
+</li>
+<li id="bib.bib15">
+<span>(15)</span>
+<span>
+G.&nbsp;Li, S.&nbsp;K.&nbsp;S. Hari, M.&nbsp;Sullivan, T.&nbsp;Tsai, K.&nbsp;Pattabiraman, J.&nbsp;Emer, and S.&nbsp;W. Keckler, “Understanding error propagation in deep learning neural network (DNN) accelerators and applications,” in <span>International Conference for High Performance Computing, Networking, Storage and Analysis</span>, pp.&nbsp;1–12, 2017.
+
+</span>
+</li>
+<li id="bib.bib16">
+<span>(16)</span>
+<span>
+BigScience, “TR11-176B Training Logbook,” 2022.
+
+</span>
+<span><a href="https://github.com/bigscience-workshop/bigscience/blob/master/train/tr11-176B-ml/chronicles.md" title="">https://github.com/bigscience-workshop/bigscience/blob/master/train/tr11-176B-ml/chronicles.md</a>.
+
+</span>
+</li>
+<li id="bib.bib17">
+<span>(17)</span>
+<span>
+S.&nbsp;Levy, K.&nbsp;B. Ferreira, N.&nbsp;DeBardeleben, T.&nbsp;Siddiqua, V.&nbsp;Sridharan, and E.&nbsp;Baseman, “Lessons learned from memory errors observed over the lifetime of Cielo,” in <span>SC18: International Conference for High Performance Computing, Networking, Storage and Analysis</span>, pp.&nbsp;554–565, IEEE, 2018.
+
+</span>
+</li>
+<li id="bib.bib18">
+<span>(18)</span>
+<span>
+L.&nbsp;Bautista-Gomez, F.&nbsp;Zyulkyarov, O.&nbsp;Unsal, and S.&nbsp;McIntosh-Smith, “Unprotected computing: A large-scale study of DRAM raw error rate on a supercomputer,” in <span>SC’16: International Conference for High Performance Computing, Networking, Storage and Analysis</span>, pp.&nbsp;645–655, IEEE, 2016.
+
+</span>
+</li>
+<li id="bib.bib19">
+<span>(19)</span>
+<span>
+K.&nbsp;B. Ferreira, S.&nbsp;Levy, V.&nbsp;Kuhns, N.&nbsp;DeBardeleben, and S.&nbsp;Blanchard, “Understanding the effects of DRAM correctable error logging at scale,” in <span>IEEE International Conference on Cluster Computing</span>, pp.&nbsp;421–432, IEEE, 2021.
+
+</span>
+</li>
+<li id="bib.bib20">
+<span>(20)</span>
+<span>
+V.&nbsp;Sridharan, J.&nbsp;Stearley, N.&nbsp;DeBardeleben, S.&nbsp;Blanchard, and S.&nbsp;Gurumurthi, “Feng Shui of supercomputer memory: Positional effects in DRAM and SRAM faults,” in <span>International Conference on High Performance Computing, Networking, Storage and Analysis</span>, pp.&nbsp;1–11, 2013.
+
+</span>
+</li>
+<li id="bib.bib21">
+<span>(21)</span>
+<span>
+M.&nbsp;V. Beigi, Y.&nbsp;Cao, S.&nbsp;Gurumurthi, C.&nbsp;Recchia, A.&nbsp;Walton, and V.&nbsp;Sridharan, “A systematic study of DDR4 DRAM faults in the field,” in <span>IEEE International Symposium on High-Performance Computer Architecture</span>, pp.&nbsp;991–1002, IEEE, 2023.
+
+</span>
+</li>
+<li id="bib.bib22">
+<span>(22)</span>
+<span>
+C.&nbsp;Di&nbsp;Martino, Z.&nbsp;Kalbarczyk, R.&nbsp;K. Iyer, F.&nbsp;Baccanico, J.&nbsp;Fullop, and W.&nbsp;Kramer, “Lessons learned from the analysis of system failures at petascale: The case of Blue Waters,” in <span>44th Annual IEEE/IFIP International Conference on Dependable Systems and Networks</span>, pp.&nbsp;610–621, IEEE, 2014.
+
+</span>
+</li>
+<li id="bib.bib23">
+<span>(23)</span>
+<span>
+N.&nbsp;DeBardeleben, S.&nbsp;Blanchard, L.&nbsp;Monroe, P.&nbsp;Romero, D.&nbsp;Grunau, C.&nbsp;Idler, and C.&nbsp;Wright, “GPU behavior on a large HPC cluster,” in <span>Euro-Par Workshops 2013</span>, pp.&nbsp;680–689, Springer, 2014.
+
+</span>
+</li>
+<li id="bib.bib24">
+<span>(24)</span>
+<span>
+D.&nbsp;Tiwari, S.&nbsp;Gupta, J.&nbsp;Rogers, D.&nbsp;Maxwell, P.&nbsp;Rech, S.&nbsp;Vazhkudai, D.&nbsp;Oliveira, D.&nbsp;Londo, N.&nbsp;DeBardeleben, P.&nbsp;Navaux, L.&nbsp;Carrot, and A.&nbsp;Bland, “Understanding GPU errors on large-scale HPC systems and the implications for system design and operation,” in <span>IEEE 21st International Symposium on High Performance Computer Architecture</span>, pp.&nbsp;331–342, IEEE, 2015.
+
+</span>
+</li>
+<li id="bib.bib25">
+<span>(25)</span>
+<span>
+B.&nbsp;Nie, D.&nbsp;Tiwari, S.&nbsp;Gupta, E.&nbsp;Smirni, and J.&nbsp;H. Rogers, “A large-scale study of soft-errors on GPUs in the field,” in <span>IEEE International Symposium on High Performance Computer Architecture</span>, pp.&nbsp;519–530, IEEE, 2016.
+
+</span>
+</li>
+<li id="bib.bib26">
+<span>(26)</span>
+<span>
+B.&nbsp;Nie, J.&nbsp;Xue, S.&nbsp;Gupta, C.&nbsp;Engelmann, E.&nbsp;Smirni, and D.&nbsp;Tiwari, “Characterizing temperature, power, and soft-error behaviors in data center systems: Insights, challenges, and opportunities,” in <span>IEEE 25th International Symposium on Modeling, Analysis, and Simulation of Computer and Telecommunication Systems</span>, pp.&nbsp;22–31, IEEE, 2017.
+
+</span>
+</li>
+<li id="bib.bib27">
+<span>(27)</span>
+<span>
+G.&nbsp;Ostrouchov, D.&nbsp;Maxwell, R.&nbsp;A. Ashraf, C.&nbsp;Engelmann, M.&nbsp;Shankar, and J.&nbsp;H. Rogers, “GPU lifetimes on Titan supercomputer: Survival analysis and reliability,” in <span>SC20: International Conference for High Performance Computing, Networking, Storage and Analysis</span>, pp.&nbsp;1–14, IEEE, 2020.
+
+</span>
+</li>
+<li id="bib.bib28">
+<span>(28)</span>
+<span>
+V.&nbsp;Oles, A.&nbsp;Schmedding, G.&nbsp;Ostrouchov, W.&nbsp;Shin, E.&nbsp;Smirni, and C.&nbsp;Engelmann, “Understanding gpu memory corruption at extreme scale: The summit case study,” in <span>Proceedings of the 38th ACM International Conference on Supercomputing</span>, pp.&nbsp;188–200, 2024.
+
+</span>
+</li>
+<li id="bib.bib29">
+<span>(29)</span>
+<span>
+S.&nbsp;Cui, A.&nbsp;Patke, Z.&nbsp;Chen, A.&nbsp;Ranjan, H.&nbsp;Nguyen, P.&nbsp;Cao, S.&nbsp;Jha, B.&nbsp;Bode, G.&nbsp;Bauer, C.&nbsp;Narayanaswami, <span>et&nbsp;al.</span>, “Characterizing gpu resilience and impact on ai/hpc systems,” <span>arXiv preprint arXiv:2503.11901</span>, 2025.
+
+</span>
+</li>
+<li id="bib.bib30">
+<span>(30)</span>
+<span>
+National Center for Supercomputing Applications, “Delta.”
+
+</span>
+<span><a href="https://www.ncsa.illinois.edu/research/project-highlights/delta/" title="">https://www.ncsa.illinois.edu/research/project-highlights/delta/</a>.
+
+</span>
+</li>
+<li id="bib.bib31">
+<span>(31)</span>
+<span>
+Argonne National Laboratory, “Polaris.”
+
+</span>
+<span><a href="https://www.alcf.anl.gov/polaris" title="">https://www.alcf.anl.gov/polaris</a>.
+
+</span>
+</li>
+<li id="bib.bib32">
+<span>(32)</span>
+<span>
+National Energy Research Scientific Computing Center, “Perlmutter.”
+
+</span>
+<span><a href="https://docs.nersc.gov/systems/perlmutter/architecture/" title="">https://docs.nersc.gov/systems/perlmutter/architecture/</a>.
+
+</span>
+</li>
+<li id="bib.bib33">
+<span>(33)</span>
+<span>
+NVIDIA Corporation, “NVIDIA Ampere Architecture Whitepaper.”
+
+</span>
+<span><a href="https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf" title="">https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf</a>.
+
+</span>
+</li>
+<li id="bib.bib34">
+<span>(34)</span>
+<span>
+NVIDIA Corporation, “NVIDIA Data Center GPU Manager (DCGM).”
+
+</span>
+<span><a href="https://docs.nvidia.com/data-center-gpu-manager-dcgm/index.html" title="">https://docs.nvidia.com/data-center-gpu-manager-dcgm/index.html</a>.
+
+</span>
+</li>
+<li id="bib.bib35">
+<span>(35)</span>
+<span>
+Top500, “NOVEMBER 2023 Top500 Supercomputers.”
+
+</span>
+<span><a href="https://www.top500.org/lists/top500/2023/11/" title="">https://www.top500.org/lists/top500/2023/11/</a>.
+
+</span>
+</li>
+<li id="bib.bib36">
+<span>(36)</span>
+<span>
+L.&nbsp;M. Leemis and S.&nbsp;K. Park, <span>Discrete-event simulation: A first course</span>.
+
+</span>
+<span>Pearson Prentice Hall Upper Saddle River, 2006.
+
+</span>
+</li>
+<li id="bib.bib37">
+<span>(37)</span>
+<span>
+J.&nbsp;W. Young, “A first order approximation to the optimum checkpoint interval,” <span>Communications of the ACM</span>, vol.&nbsp;17, no.&nbsp;9, pp.&nbsp;530–531, 1974.
+
+</span>
+</li>
+<li id="bib.bib38">
+<span>(38)</span>
+<span>
+J.&nbsp;T. Daly, “A higher order estimate of the optimum checkpoint interval for restart dumps,” <span>Future Generation Computer Systems</span>, vol.&nbsp;22, no.&nbsp;3, pp.&nbsp;303–312, 2006.
+
+</span>
+</li>
+<li id="bib.bib39">
+<span>(39)</span>
+<span>
+Z.&nbsp;Jiang, H.&nbsp;Lin, Y.&nbsp;Zhong, Q.&nbsp;Huang, Y.&nbsp;Chen, Z.&nbsp;Zhang, Y.&nbsp;Peng, X.&nbsp;Li, C.&nbsp;Xie, S.&nbsp;Nong, Y.&nbsp;Jia, S.&nbsp;He, H.&nbsp;Chen, Z.&nbsp;Bai, Q.&nbsp;Hou, S.&nbsp;Yan, D.&nbsp;Zhou, Y.&nbsp;Sheng, Z.&nbsp;Jiang, H.&nbsp;Xu, H.&nbsp;Wei, Z.&nbsp;Zhang, P.&nbsp;Nie, L.&nbsp;Zou, S.&nbsp;Zhao, L.&nbsp;Xiang, Z.&nbsp;Liu, Z.&nbsp;Li, X.&nbsp;Jia, J.&nbsp;Ye, X.&nbsp;Jin, and X.&nbsp;Liu, “MegaScale: Scaling large language model training to more than 10,000 GPUs,” <span>Preprint arXiv:2402.15627</span>, 2024.
+
+</span>
+</li>
+<li id="bib.bib40">
+<span>(40)</span>
+<span>
+S.&nbsp;Han, P.&nbsp;P. Lee, F.&nbsp;Xu, Y.&nbsp;Liu, C.&nbsp;He, and J.&nbsp;Liu, “An in-depth study of correlated failures in production SSD-Based data centers,” in <span>19th USENIX Conference on File and Storage Technologies</span>, pp.&nbsp;417–429, 2021.
+
+</span>
+</li>
+<li id="bib.bib41">
+<span>(41)</span>
+<span>
+S.&nbsp;Wang, G.&nbsp;Zhang, J.&nbsp;Wei, Y.&nbsp;Wang, J.&nbsp;Wu, and Q.&nbsp;Luo, “Understanding silent data corruptions in a large production CPU population,” in <span>29th Symposium on Operating Systems Principles</span>, pp.&nbsp;216–230, 2023.
+
+</span>
+</li>
+<li id="bib.bib42">
+<span>(42)</span>
+<span>
+R.&nbsp;B. Roy, T.&nbsp;Patel, R.&nbsp;Kettimuthu, W.&nbsp;Allcock, P.&nbsp;Rich, A.&nbsp;Scovel, and D.&nbsp;Tiwari, “Operating liquid-cooled large-scale systems: Long-term monitoring, reliability analysis, and efficiency measures,” in <span>IEEE International Symposium on High-Performance Computer Architecture</span>, pp.&nbsp;881–893, IEEE, 2021.
+
+</span>
+</li>
+<li id="bib.bib43">
+<span>(43)</span>
+<span>
+S.&nbsp;Di, H.&nbsp;Guo, E.&nbsp;Pershey, M.&nbsp;Snir, and F.&nbsp;Cappello, “Characterizing and understanding HPC job failures over the 2K-day life of IBM BlueGene/A system,” in <span>49th Annual IEEE/IFIP International Conference on Dependable Systems and Networks</span>, pp.&nbsp;473–484, IEEE, 2019.
+
+</span>
+</li>
+<li id="bib.bib44">
+<span>(44)</span>
+<span>
+Y.&nbsp;Gao, X.&nbsp;Shi, H.&nbsp;Lin, H.&nbsp;Zhang, H.&nbsp;Wu, R.&nbsp;Li, and M.&nbsp;Yang, “An empirical study on quality issues of deep learning platform,” in <span>IEEE/ACM 45th International Conference on Software Engineering: Software Engineering in Practice</span>, pp.&nbsp;455–466, IEEE, 2023.
+
+</span>
+</li>
+<li id="bib.bib45">
+<span>(45)</span>
+<span>
+A.&nbsp;Das, F.&nbsp;Mueller, and B.&nbsp;Rountree, “Systemic assessment of node failures in HPC production platforms,” in <span>IEEE International Parallel and Distributed Processing Symposium</span>, pp.&nbsp;267–276, IEEE, 2021.
+
+</span>
+</li>
+<li id="bib.bib46">
+<span>(46)</span>
+<span>
+E.&nbsp;Rojas, E.&nbsp;Meneses, T.&nbsp;Jones, and D.&nbsp;Maxwell, “Analyzing a five-year failure record of a leadership-class supercomputer,” in <span>31st International Symposium on Computer Architecture and High Performance Computing</span>, pp.&nbsp;196–203, IEEE, 2019.
+
+</span>
+</li>
+<li id="bib.bib47">
+<span>(47)</span>
+<span>
+D.&nbsp;Zivanovic, P.&nbsp;E. Dokht, S.&nbsp;Moré, J.&nbsp;Bartolome, P.&nbsp;M. Carpenter, P.&nbsp;Radojković, and E.&nbsp;Ayguadé, “DRAM errors in the field: A statistical approach,” in <span>International Symposium on Memory Systems</span>, pp.&nbsp;69–84, 2019.
+
+</span>
+</li>
+<li id="bib.bib48">
+<span>(48)</span>
+<span>
+R.-T. Liu and Z.-N. Chen, “A large-scale study of failures on petascale supercomputers,” <span>Journal of Computer Science and Technology</span>, vol.&nbsp;33, no.&nbsp;1, pp.&nbsp;24–41, 2018.
+
+</span>
+</li>
+<li id="bib.bib49">
+<span>(49)</span>
+<span>
+A.&nbsp;Taherin, T.&nbsp;Patel, G.&nbsp;Georgakoudis, I.&nbsp;Laguna, and D.&nbsp;Tiwari, “Examining failures and repairs on supercomputers with multi-GPU compute nodes,” in <span>51st Annual IEEE/IFIP International Conference on Dependable Systems and Networks</span>, pp.&nbsp;305–313, IEEE, 2021.
+
+</span>
+</li>
+<li id="bib.bib50">
+<span>(50)</span>
+<span>
+H.&nbsp;Liu, Z.&nbsp;Li, C.&nbsp;Tan, R.&nbsp;Yang, G.&nbsp;Cao, Z.&nbsp;Liu, and C.&nbsp;Guo, “Predicting GPU failures with high precision under deep learning workloads,” in <span>16th ACM International Conference on Systems and Storage</span>, pp.&nbsp;124–135, 2023.
+
+</span>
+</li>
+<li id="bib.bib51">
+<span>(51)</span>
+<span>
+S.&nbsp;S. Vazhkudai, R.&nbsp;Miller, D.&nbsp;Tiwari, C.&nbsp;Zimmer, F.&nbsp;Wang, S.&nbsp;Oral, R.&nbsp;Gunasekaran, and D.&nbsp;Steinert, “GUIDE: a scalable information directory service to collect, federate, and analyze logs for operational insights into a leadership HPC facility,” in <span>International Conference for High Performance Computing, Networking, Storage and Analysis</span>, pp.&nbsp;1–12, 2017.
+
+</span>
+</li>
+<li id="bib.bib52">
+<span>(52)</span>
+<span>
+D.&nbsp;Tiwari, S.&nbsp;Gupta, G.&nbsp;Gallarno, J.&nbsp;Rogers, and D.&nbsp;Maxwell, “Reliability lessons learned from GPU experience with the Titan supercomputer at Oak ridge Leadership Computing Facility,” in <span>International Conference for High Performance Computing, Networking, Storage and Analysis</span>, pp.&nbsp;1–12, 2015.
+
+</span>
+</li>
+</ul>
+</section>
+</article>
+</div></div>
+  </div>
+</body>
+</html>

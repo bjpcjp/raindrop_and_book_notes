@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ruby one-liners</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Ruby one-liners</h1>
+    <p><strong>URL:</strong> <a href="https://benoithamelin.tumblr.com/ruby1line">https://benoithamelin.tumblr.com/ruby1line</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876777215</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="posts">
+                        
+                                <article>
+                                    <div><p>This is a translation of Eric Pement’s <a href="http://www.pement.org/awk/awk1line.txt">collection of Awk one-liners</a> as Ruby one-liners. These so-called <em>one-liners</em> are small programs that hold on a single (sometimes longish) line of code, so it may be run from the command line, typically for text processing purposes. So, all problems solved by Awk one-liners on the page linked above are solved here in Ruby, sorted along the same categories as Pement’s work. In some cases, multiple solutions are proposed, as they outline nice features or idiosyncrasies of the Ruby language and conventions.</p><p>Note that this is not the first collection of Ruby one-liners: googling “Ruby one-liner” yields multiple hits. However, I have put up this collection by myself, without looking at other solutions, for the sake of practice.  I have posted about what generalities I have learned throughout this exercise <a href="http://benoithamelin.tumblr.com/post/10945200630/text-processing-1liners-ruby-vs-awk">here</a>.</p><h2>File spacing</h2><p>Double-space a file.</p><pre><code>ruby -ne 'print; puts'
+ruby -ne 'BEGIN{$\="\n"}; print'
+ruby -pe 'BEGIN{$\="\n"};'
+</code></pre><p>Double-space only non-blank lines.</p><pre><code>ruby -ne 'print; puts unless $_.chomp.empty?'
+ruby -ne 'print; puts unless ~/^$/'
+ruby -ne 'print $_ + ((~/^$) ? "" : "\n")'
+</code></pre><p>Triple-space a file.</p><pre><code>ruby -ne 'print; 2.times{puts}'
+ruby -pe 'BEGIN{$\="\n\n"};'
+</code></pre><h2>Numbering and calculations.</h2><p>Precede each line by its file-specific line number (left-aligned). Using a tab instead of space will preserve margins.</p><pre><code>ruby -pe 'print $&lt;.file.lineno, "\t"'
+</code></pre><p>Precede each line by its overall line number, with tab.</p><pre><code>ruby -pe 'print $., "\t"'
+</code></pre><p>Number each line of a file (at left, right-aligned).</p><pre><code>ruby -ne 'printf "%5d: %s", $., $_'
+</code></pre><p>Number non-blank lines.</p><pre><code>ruby -ne 'BEGIN{$n=0}; if ~/^$/; print; else \
+    $n += 1; printf "%5d: %s", $n, $_; end'
+</code></pre><p>Count lines (emulates <code>wc -l</code>).</p><pre><code>ruby -ne 'END{printf "%8d %s\n", $., $FILENAME}'
+</code></pre><p>Print the sums of the fields of every line (expects fields to be integers).</p><pre><code>ruby -ane 'puts $F.reduce(0){|sum,x| sum+x.to_i}'
+</code></pre><p>Print the sum of all integers present on all lines.</p><pre><code>ruby -ane 'BEGIN{$sum=0}; $sum+=$F.reduce(0){|s,x| s+x.to_i}; \
+    END{puts $sum}'
+ruby -ane 'BEGIN{$a=[]}; $a+=$F.map{|x| x.to_i}; \
+    END{puts $a.reduce(0){|s,x| s+x}}'
+ruby -e 'puts readlines.map{|r| r.split.map{|x| x.to_i}}.flatten\
+    .reduce(0){|s,x| s+x}'
+</code></pre><p>Replace each integer field with its absolute value. All spacing is reduced to a single space.</p><pre><code>ruby -ane '$F.map!{|x| x.to_i.abs}; puts $F.join(" ")'
+</code></pre><p>Print the total number of words (fields) over all text. Word separators are any sequence of whitespace.</p><pre><code>ruby -ane 'BEGIN{$t=0}; $t+=$F.size; END{puts $t}'
+</code></pre><p>Print the total number of lines that contain “Beth”.</p><pre><code>ruby -ne 'BEGIN{$t=0}; $t+=1 if ~/Beth/; END{puts $t}'
+</code></pre><p>Print the largest first field and the line that contains it.</p><pre><code>ruby -ane 'BEGIN{$,="\t"; $max=0; $maxline=""}; \
+    $n = $F[0].to_i; if $n &gt; $max; $max = $n; $maxline = $_; end; \
+    END{print $max, $maxline}'
+ruby -e '$,="\t"; print readlines.map{|r| s=r.split; [s[0].to_i,r]}\
+    .max{|a,b| a[0]&lt;=&gt;b[0]}'
+</code></pre><p>Print the number of fields on each line, followed by the line.</p><pre><code>ruby -ane 'BEGIN{$,="\t"}; print $F.size, $_'
+ruby -ane 'printf "%3d %s", $F.size, $_'
+</code></pre><p>Print the last field of each line.</p><pre><code>ruby -ane 'puts $F.last'
+</code></pre><p>Print the last field of the last line. [Update 5-Dec-2011] The second, better solution was contributed by Florian Hanke (@hanke):</p><pre><code>ruby -ane '$f = $F.last; END{puts $f}'
+ruby -ane 'END{puts $F.last}'
+</code></pre><p>Print every line with more than 4 fields.</p><pre><code>ruby -ane 'print if $F.size &gt; 4'
+</code></pre><p>Print every line for which the value of the last field is &gt; 4.</p><pre><code>ruby -ane 'print if $F.last.to_i &gt; 4'
+</code></pre><h2>String creation</h2><p>Create a string of a specific length (e.g. generate 513 spaces).</p><pre><code>ruby -e 'puts " "*513'
+</code></pre><p>Insert a string of specific length at a certain character position. For example, insert 49 spaces after column 6 of each input line.</p><pre><code>ruby -pe 'sub! /^.{6}/, "\\&amp;" + " "*49'
+</code></pre><h2>Array creation</h2><p>The following are useful bits of Ruby code to easily make up arrays and hashes (associative arrays that may be indexed by any soft of object, yet often indexed by strings).</p><p>Create an array of token strings named $month.</p><pre><code>$month = %w{Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec}
+</code></pre><p>Create the reverse hashtable of the $month array, which given the month index for the given month name.</p><pre><code>$mdigit = {}; $month.each_with_index{|m,i| $mdigit[m] = i}
+</code></pre><p>More generally, create a hash $h that indexes the contents of array $v with keys from array $k of the same size.</p><pre><code>$h = {}; $k.zip($v).each{|k,v| $h[k] = v}
+</code></pre><p>[Update 5-Dec-2011] A better solution was contributed by Florian Hanke (@hanke):</p><pre><code>$h = Hash[$k.zip($v)]
+</code></pre><h2>Text conversion and substitution</h2><p>In a UNIX environment, convert DOS/Windows newlines (CR+LF) to Unix (LF).</p><pre><code>ruby -pe 'sub! /\r\n$/, "\n"'
+</code></pre><p>In a UNIX environment, convert Unix newlines (LF) to DOS/Windows (CR+LF).</p><pre><code>ruby -pe 'BEGIN{$; = "\r\n"}; chomp!'
+</code></pre><p>In a Windows environment (forget DOS, I don’t care whether Ruby runs there), convert DOS/Windows newlines (CR+LF) to Unix (LF).</p><pre><code>ruby -pe 'BEGIN{$; = "\n"}; chomp!'
+</code></pre><p>In a Windows environment, convert Unix newlines (LF) to DOS/Windows (CR+LF).</p><pre><code>ruby -pe 'sub! /\n$/, "\r\n"'
+</code></pre><p>Delete leading whitespace from the front of each line, thereby aligning all text flush left.</p><pre><code>ruby -pe 'sub! /^\s*/, ""'
+</code></pre><p>Delete trailing whitespace from the end of each line.</p><pre><code>ruby -pe 'sub! /\s*$/, ""'
+</code></pre><p>Delete both leading and trailing whitespace from each line.</p><pre><code>ruby -pe 'gsub! /^\s*|\s*$/, ""'
+</code></pre><p>Insert 5 blank spaces at the beginning of each line.</p><pre><code>ruby -pe 'sub! /^/, " "*5'
+</code></pre><p>Align all text flush right on a 79-column width.</p><pre><code>ruby -ne 'printf "%79s", $_'
+</code></pre><p>Center all text on a 79-character width.</p><pre><code>ruby -ne 'print " "*((79-$_.chomp.size)/2), $_'
+ruby -ne '$l = $_.chomp.size; if $l &gt; 79; print; \
+    else print " "*((79-$l)/2),$_; end'
+</code></pre><p>The first of these one-liners is a faithful Ruby translation of the equivalent Awk one-liner from Eric Pement’s <code>awk1line.txt</code>. The second takes into account the edge case by which a line could not be properly centered within 79 characters.</p><p>Substitute “foo” with “bar” one each line.</p><pre><code>ruby -pe 'sub! /foo/, "bar"'   # Only 1st instance.
+ruby -pe 'gsub! /foo/, "bar"'  # All instances.
+</code></pre><p>Substitute “foo” with “bar” only on lines that contain “baz”.</p><pre><code>ruby -pe 'gsub! /foo/, "bar" if ~/baz/'
+</code></pre><p>Substitute “foo” with “bar” except on lines that contain “baz”.</p><pre><code>ruby -pe 'gsub! /foo/, "bar" unless ~/baz/'
+</code></pre><p>Replace “scarlet” or “ruby” or “puce” with “red”.</p><pre><code>ruby -pe 'gsub! /scarlet|ruby|puce/, "red"'
+</code></pre><p>Reverse order of lines (emulates <code>tac</code>).</p><pre><code>ruby -e 'readlines.reverse.each{|r| print r}'
+</code></pre><p>If a line ends with a backslash, append the next line to it, removing the backslash.</p><pre><code>ruby -pe 'while ~/\\$/; chomp; chop; $_+=gets.to_s; end'
+ruby -pe 'sub! /\\\s*\n$/, ""'
+</code></pre><p>The first of these two one-liners is a rather faithful translation of Pement’s equivalent one-line. Contrary to the latter, this one does work with sequences of multiple backslash-ending lines. It even works with the edge case of having the last line terminated with a backslash. In this case, <code>gets</code> returns <code>nil</code>, which does not match the regular expression, thereby breaking the loop. A problem would however arise as the <code>nil</code> value cannot be concatenated to the current line: this is why we call method <code>to_s</code> of whatever <code>gets</code> returns. If it is a string, <code>to_s</code> acts as identity; if it is <code>nil</code>, its string value is the empty string, yielding a non-breaking last output line.</p><p>The second one-liner is a much simpler solution to the problem that uses explicit line ending modifications to obtain merges between backslash-enders and other lines. This is more awkward to pull off in Awk (haha, its Awkward), since line ending is determined by the contents of variable ORS, the value of which persist between lines. It does still yield a shorter solution than the first equivalent Ruby one-liner, though</p><pre><code>awk '{ORS="\n"} /\\$/ {sub(/\\$/,""); ORS=""} 1'
+</code></pre><p>Print and sort the login names of all users.</p><pre><code>ruby -F: -ane 'BEGIN{$s=open("|sort","w")}; \
+    $s.puts $F[0] unless /^#/; END{$s.close}' /etc/passwd
+ruby -F: -ane '$s.puts $F[0] unless /^#/' /etc/passwd | sort
+ruby -e 'readlines.map{|r| r.split(":")[0]}.sort.each{|n| puts n}' /etc/passwd
+</code></pre><p>While longer, the last of these one-liners does not require the standard Unix <code>sort</code> utility.</p><p>Print the first 2 fields of every line in opposite order (spacing is normalized).</p><pre><code>ruby -ane 'BEGIN{$,=" ";$\="\n"}; print $F[1],$F[0]'
+ruby -ane 'puts $F[0..1].reverse.join(" ")'
+ruby -ane 'puts $F[0...2].reverse.join(" ")'
+ruby -ane 'printf "%s %s\n", $F[1], $F[0]'
+</code></pre><p>Switch the first 2 fields of every line (spacing is normalized).</p><pre><code>ruby -ane '$F[0],$F[1]=$F[1],$F[0]; puts $F.join(" ")'
+ruby -ane 'if $F.size &lt; 2; print; else \
+    $F[0],$F[1]=$F[1],$F[0]; puts $F.join(" "); end'
+</code></pre><p>The first version is a faithful translation of Pement’s equivalent Awk one-liner, while the second handles the case where lines may not all have at least two fields.</p><p>Delete the second field off every line (spacing is normalized).</p><pre><code>ruby -ane 'BEGIN{$,=" ";$\="\n"}; $F.delete_at 1; print *$F'
+ruby -ane '$F.delete_at 1; puts $F.join(" ")'
+</code></pre><p>Print in reverse order the fields of each line (spacing is normalized).</p><pre><code>ruby -ane 'BEGIN{$,=" ";$\="\n"}; print *$F.reverse'
+ruby -ane 'puts $F.reverse.join(" ")'
+</code></pre><p>Concatenate every group of 5 lines of input, using a comma separator between concatenated lines.</p><pre><code>ruby -pe 'chomp; $\ = ($.%5==0 ? "\n" : ",")'
+ruby -pe 'chomp; $\ = if $. % 5 == 0; "\n"; else ","; end'
+</code></pre><h2>Selective printing of certain lines</h2><p>Print first 10 lines of file (emulates behavior of <code>head</code>).</p><pre><code>ruby -pe 'exit if $. &gt; 10'
+ruby -ne 'print if $. &lt;= 10'
+</code></pre><p>Print first line of file (emulates <code>head -1</code>).</p><pre><code>ruby -pe 'exit if $. &gt; 1'
+</code></pre><p>Print the last two lines of a file (emulates <code>tail -2</code>).</p><pre><code>ruby -ne 'BEGIN{$tail=["",""]}; $tail.shift; $tail&lt;&lt;$_; \
+    END{puts $tail.join("")}'
+</code></pre><p>This is very inefficient. The <code>tail</code> utility does it much better.</p><p>Print the last line of a file (emulates <code>tail -1</code>).</p><pre><code>ruby -ne 'END{print}'
+</code></pre><p>Print only lines that match some regular expression (emulates <code>grep</code>).</p><pre><code>ruby -ne 'print if ~/regex/'
+</code></pre><p>Print only lines that do NOT match some regular expression (emulates <code>grep -v</code>).</p><pre><code>ruby -ne 'print unless ~/regex/'
+</code></pre><p>Print lines for which field #5 is equal to “abc123”.</p><pre><code>ruby -ane 'print if $F[4] == "abc123"'
+</code></pre><p>Print lines for which field #5 is not equal to “abc123”.</p><pre><code>ruby -ane 'print if $F[4] != "abc123"'
+</code></pre><p>Same as above, but avoid printing a line if it does not have at least five fields.</p><pre><code>ruby -ane 'print if $F.size &gt;= 5 &amp;&amp; $F[4] != "abc123"'
+</code></pre><p>Print lines for which the 7th field matches (respectively doesn’t match) a regular expression.</p><pre><code>ruby -ane 'print if $F[6] =~ /^[a-f]/'
+ruby -ane 'print unless $F[6] =~ /^[a-f]/'
+</code></pre><p>Print the line immediately before a regular expression, but not the line that matches it.</p><pre><code>ruby -ne 'print $r.to_s if ~/regex/; $r = $_'
+</code></pre><p>Print the line immediately after a regular expression, but not the line that matches it.</p><pre><code>ruby -ne 'while ~/regex/; break unless gets; print; end'
+ruby -ne 'while ~/regex/; gets; print $_.to_s; end'
+</code></pre><p>Grep for AAA, BBB and CCC in any order on the same line.</p><pre><code>ruby -ne 'print if ~/AAA/ &amp;&amp; ~/BBB/ &amp;&amp; ~/CCC/'
+</code></pre><p>Grep for AAA, BBB, and CCC in this order.</p><pre><code>ruby -ne 'print if ~/AAA.*BBB.*CCC/'
+</code></pre><p>Print only lines of 65 characters or longer.</p><pre><code>ruby -ne 'print if $_.size &gt; 64'
+</code></pre><p>Print only lines shorter than 65 characters.</p><pre><code>ruby -ne 'print if $_.size &lt; 65'
+</code></pre><p>Print section of file from regular expression to end of file.</p><pre><code>ruby -ne 'print $_,*readlines if ~/regex/'
+</code></pre><p>Print section of file comprised between numbered lines (e.g. lines 8-12, inclusive).</p><pre><code>ruby -ne 'print if (8..12)===$.'
+ruby -ne 'print if (8..12).include?($.)'
+</code></pre><p>Print line 52.</p><pre><code>ruby -ne 'print if $.==52'
+</code></pre><p>Print section of file between two regular expressions (inclusive).</p><pre><code>ruby -ne 'if $in; print; $in = !(~/Montana/); else; \
+    $in = ~/Iowa/; print if $in; end'
+</code></pre><h2>Selective deletion of certain lines</h2><p>Delete all blank lines from a file (same as <code>grep '.'</code>).</p><pre><code>ruby -ne 'print unless ~/^$/'
+ruby -ne 'print if ~/./'
+ruby -ne 'print if $_.chomp.size &gt; 0'
+</code></pre><p>Remove consecutive duplicate lines (emulates <code>uniq</code>).</p><pre><code>ruby -ne 'print if $_ != $prev; $prev = $_'
+</code></pre><p>Remove nonconsecutive duplicate lines.</p><pre><code>ruby -ne 'BEGIN{$h={}}; print unless $h[$_]; $h[$_] = $_'
+ruby -e 'print *readlines.uniq'
+</code></pre></div>
+                                </article>
+                        
+                        
+
+                        
+                            
+                                
+                            
+                        
+
+                        
+                            
+                        
+                    </div></div>
+  </div>
+</body>
+</html>

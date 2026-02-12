@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Generate random points inside a sphere</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Generate random points inside a sphere</h1>
+    <p><strong>URL:</strong> <a href="https://www.johndcook.com/blog/2025/10/11/ball-rng/">https://www.johndcook.com/blog/2025/10/11/ball-rng/</a></p>
+    <p><strong>Tags:</strong> algorithms-math, geometry</p>
+    <p><strong>Bookmark ID:</strong> 1384571998</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+		<p>For reasons I don’t understand, it’s more common, at least in my experience, to see references on how to generate points&nbsp;<strong>on</strong> a sphere than&nbsp;<strong>in</strong> a sphere. But the latter is easily obtained from the former.</p>
+<p>The customary way to generate points <strong>on</strong> a sphere in&nbsp;<em>n</em> dimensions is to generate points from an&nbsp;<em>n</em>-dimensional normal (Gaussian) distribution and normalize by dividing by the length. And the way to generate samples from an <em>n</em>-dimensional normal is simply to generate a list of <em>n</em> one-dimensional normals [1].</p>
+<p>The way to generate points&nbsp;<strong>in</strong> a sphere is to generate a point&nbsp;<em>S</em> on the sphere then randomly adjust its radius <em>r</em>. If you generate a uniform random point in [0, 1] and set&nbsp;<em>r</em> =&nbsp;<em>u</em> then you’ll over-sample points near the origin. Instead, the thing to do is to set</p>
+<p><em>r</em> =&nbsp;<em>u</em><sup>1/<em>n</em></sup></p>
+<p>That’s because volume is proportional to <em>r</em><sup><em>n</em></sup>. Taking the <em>n</em>th root of <em>u</em> mades the volume inside a sphere of radius <em>r</em> uniformly distributed.</p>
+<h2>Demonstration</h2>
+<p>To illustrate this, I’ll use the same technique as the post on <a href="https://www.johndcook.com/blog/2025/10/11/random-samples-from-a-tetrahedron/">sampling from a tetrahedron</a>: generate random points in a sphere and see whether the right proportion fall inside a (hyper)cube inside the sphere.</p>
+<p>We’ll work in <em>n</em> = 4 dimensions and use a sphere of radius <em>R</em> = 5. Our test cube will be the cube with all vertex coordinates equal to 1 or 2. We’ll have to use a lot of sample points. (This is why naive Monte Carlo breaks down in high dimensions: it may be that few if any points land in the region of interest.)</p>
+<p>Here’s the code to do the sampling.</p>
+<pre>import numpy as np
+from scipy.stats import norm
+
+def incube(v):
+    retval = True
+    for x in v:
+        retval = retval and 1 &lt;= x &lt;= 2
+    return retval
+
+def sample(R, n):
+    x = norm.rvs(size=n)
+    x /= np.linalg.norm(x)
+    u = np.random.random()
+    x *= R*u**(1/n)
+    return x
+
+R = 5
+n = 4
+N = 100_000_000
+V = R**n * np.pi**(n/2) / gamma(n/2 + 1)
+print(V)
+
+count = 0
+
+for _ in range(N):
+    v = sample(R, n)
+    if incube(v):
+        count += 1        
+
+print(count/N, 1/V)
+
+</pre>
+<p>This prints</p>
+<pre>0.0003252 0.000324</pre>
+<p>The two results agree to four decimal places, which is about what we’d expect given 1/√<em>N</em> = 0.0001.</p>
+<p>[1] If you’re porting the sampler above to an environment where you don’t have a function like <code>norm.rvs</code> for generating normal random samples, you can roll your own using the Box-Muller transformation. For example, here is a <a href="https://www.johndcook.com/SimpleRNG.cpp">C++</a> implementation from scratch.</p>
+			</div></div>
+  </div>
+</body>
+</html>

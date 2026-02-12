@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Creating Custom Rails Generators</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Creating Custom Rails Generators</h1>
+    <p><strong>URL:</strong> <a href="https://garrettdimon.com/journal/posts/creating-custom-rails-generators">https://garrettdimon.com/journal/posts/creating-custom-rails-generators</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876792006</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="articleBody">
+        <nav id="toc" aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+<li>
+<a href="#a-little-preparation">A Little Preparation</a>
+</li>
+<li>
+<a href="#generating-a-generator">Generating a Generator</a>
+<ul>
+<li>
+<a href="#the-generator-file">The Generator File</a>
+</li>
+<li>
+<a href="#the-usage-file">The Usage File</a>
+</li>
+<li>
+<a href="#the-templates-folder">The Templates Folder</a>
+</li>
+<li>
+<a href="#the-tests">The Tests</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#connecting-everything">Connecting Everything</a>
+<ul>
+<li>
+<a href="#the-templates">The Templates</a>
+</li>
+<li>
+<a href="#the-tests">The Tests</a>
+</li>
+<li>
+<a href="#the-generator">The Generator</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#enhancing-our-generator">Enhancing Our Generator</a>
+<ul>
+<li>
+<a href="#command-line-arguments">Command Line Arguments</a>
+</li>
+<li>
+<a href="#command-line-options-flags">Command Line Options/Flags</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#the-finished-generator">The Finished Generator</a>
+</li>
+</ul>
+
+</nav>
+
+
+
+        <p>Rails <a href="https://guides.rubyonrails.org/generators.html">Generators</a> help streamline spinning up new code. Whether it’s a new model, controller, resource, migration, job, or something else, generators remove a lot of the tedious leg work of bootstrapping new functionality. While anybody that’s used Rails has likely run one of the built-in generators at once or twice, there’s some real power in creating custom generators.</p>
+
+<p>I’ve been spending more time creating custom generators, but the more I have, the more I’ve collected notes on the rough edges to make it a little easier every time. So if you had no idea you could create your own generators, we’ll explore how it works by getting into some of the lower-level details for a basic generator.</p>
+
+<p>On the other hand, if you already knew and you’ve even created some custom generators yourself but stumbled enough that you don’t turn to them unless you really need to, hopefully some of these notes and references can help.</p>
+
+
+
+<h2 id="a-little-preparation">A Little Preparation</h2>
+
+<p>We’re not going to go super-deep in customizing the generators to support different test suites, <abbr title="Object Relational Mapper">ORMs</abbr>, or any of that. We’ll keep things simple and focus on building a smaller generator to dial in the basics. Then you can create generators to help with small repetitive tasks in your project or use this as a stepping stone towards more advanced generators. Before we get started, here’s a few links to keep handy for additional reference:</p>
+
+<ol>
+<li><a href="https://guides.rubyonrails.org/generators.html">The Rails Generators Guide</a></li>
+<li><a href="https://api.rubyonrails.org/classes/Rails/Generators.html">Rails::Generators Docs</a></li>
+<li><a href="https://api.rubyonrails.org/classes/Rails/Generators/TestCase.html">Rails::Generators::TestCase Docs</a></li>
+<li><a href="https://github.com/rails/thor/wiki">The Thor Wiki</a> - <a href="http://whatisthor.com/">Thor</a> is the underlying toolkit that powers Rails’ generators.</li>
+<li><a href="https://github.com/rails/rails/tree/main/railties/lib/rails/generators/rails">The Source for the Built-in Rails Generators</a> - These can be fairly complex because they’re some of the more advanced examples you can find, but some like the <a href="https://github.com/rails/rails/tree/main/railties/lib/rails/generators/rails/task">task generator</a> provide good self-contained examples to learn from.</li>
+<li><a href="https://github.com/rails/rails/tree/main/railties/test/generators">The Rails Tests for its own Generators</a> - Like the generators themselves, the tests can be a bit overwhelming at first for the more complex generators, and some of the testing functionality has been extracted into shared modules. Again, some like the <a href="https://github.com/rails/rails/blob/main/railties/test/generators/task_generator_test.rb">task generator tests</a> are a good starting point that’s less overwhelming.</li>
+</ol>
+
+<p>It’s definitely worth it to spend at least a little time perusing some of those links before diving in. I’ll do my best to provide everything you need right here, but coming into the process with more context would likely help before going much further.</p>
+
+<div>
+      <p><img alt="Get the two free quick reference sheets and a short email course!" width="300" height="225" src="data:application/octet-stream;base64,">
+
+      <strong>Get the two free quick reference sheets and a short email course!</strong></p><p>Download the two quick reference PDF files now, and start learning how powerful custom geenrators can be. Or learn more about how <a href="https://generators.dev/">Frictionless Generators</a> can help save time for you and your&nbsp;team.</p>
+    </div>
+
+<p>In the interest of keeping things simple, we’ll create a generator that makes it easier to spin up a <abbr title="Plain Old Ruby Object">PORO</abbr> and a corresponding test file to go with it. For now, the generated code isn’t the critical part. We’re going to focus purely on the generation portion of the process and keep the generated code as boring as possible.</p>
+
+<h2 id="generating-a-generator">Generating a Generator</h2>
+
+
+
+<p>Not to get too meta, but <a href="https://guides.rubyonrails.org/generators.html#creating-generators-with-generators">Rails provides a built-in generator for generating generators</a>. We’ll use that and jump right in, but remember that you can append the <code>--pretend</code> option if you prefer to see a preview of the files it will generate ahead of time.</p>
+
+<figure id="figure-1-generator-command">
+  
+    
+    <code data-line-numbers="false" data-lang="shell"><span id="generator-command-line-1" data-line-number="1">bin/rails generate generator Plain</span></code>  <figcaption><strong>Figure 1</strong>
+    <p>An example of using a generator to generator a&nbsp;generator.</p>
+      <a title="Back to Figure 1 Reference" href="#figure-1-generator-command-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>You should end up seeing results that look like this:</p>
+
+<figure id="figure-2-generator-output">
+  
+    
+    <code data-line-numbers="false" data-lang="text"><span id="generator-output-line-1" data-line-number="1">create  lib/generators/plain</span><span id="generator-output-line-2" data-line-number="2">create  lib/generators/plain/plain_generator.rb</span><span id="generator-output-line-3" data-line-number="3">create  lib/generators/plain/USAGE</span><span id="generator-output-line-4" data-line-number="4">create  lib/generators/plain/templates</span><span id="generator-output-line-5" data-line-number="5">invoke  test_unit</span><span id="generator-output-line-6" data-line-number="6">create    test/lib/generators/plain_generator_test.rb</span></code>  <figcaption><strong>Figure 2</strong>
+    <p>The generator creates a skeleton with the directories and test placeholder for your new generator command. Rails provides some great tooling for testing the&nbsp;generators.</p>
+      <a title="Back to Figure 2 Reference" href="#figure-2-generator-output-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>The generator provides a few things for us inside of the <code>lib/generators/plain</code>. It adds the generator itself, a file for explaining the usage, a  folder for the templates that we’ll use to generate our actual files, and the test file for the generator. So far so good. Let’s look at how the generator starts off for each of these.</p>
+
+<h3 id="the-generator-file">The Generator File</h3>
+
+<p>The generator itself starts fairly simply, but don’t let that fool you. <span><span>(</span>Figure <a id="figure-3-initial-generator-ref" href="#figure-3-initial-generator">3</a><span>)</span></span>
+ There’s some pretty great functionality exposed to your generator through its parent class, so let’s zoom in on the parent class: <a href="https://api.rubyonrails.org/classes/Rails/Generators/NamedBase.html">Rails::Generators::NamedBase</a>. The parent class is interesting both for what it provides directly and what it exposes from the grandparent class, <a href="https://api.rubyonrails.org/classes/Rails/Generators/NamedBase.html">Rails::Generators::Base</a>, which which provides a plethora of convenience methods for the types of file system work you’ll likely want to perform in your generator. </p>
+
+<p>While Rails::Generators::NamedBase is the default parent used in a new generator, it’s not strictly necessary to use it. In some cases, you may want to use Rails::Generator::Base directly instead , but we’ll get to that in detail later.</p>
+
+<figure id="figure-3-initial-generator">
+  
+    <span>lib/generators/plain/plain_generator.rb</span>
+    <code data-line-numbers="false" data-lang="ruby"><span id="initial-generator-line-1" data-line-number="1"><span>class</span> <span>ObjGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span></span><span id="initial-generator-line-2" data-line-number="2">  <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span></span><span id="initial-generator-line-3" data-line-number="3"><span>end</span></span></code>  <figcaption><strong>Figure 3</strong>
+    <p>We have two key things to note here. The generator inherits from Rails::Generators::NamedBase, and it sets the source root so the generator knows where to look for any templates/files. This is usually the ‘templates’ directory in the generator’s directory, but you can change it if you have a reason&nbsp;to.</p>
+      <a title="Back to Figure 3 Reference" href="#figure-3-initial-generator-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>For the most part, <code>NamedBase</code> adds convenience methods related to the name passed to the generator, but it also makes a key assumption about arguments in that the first value passed to it gets parsed as the <code>name</code> upon which many of the additional convenience methods act. So with <code>NamedBased</code> your generator command restricts you a bit with that first argument. <span><span>(</span>Figure <a id="figure-4-initial-generator-command-ref" href="#figure-4-initial-generator-command">4</a><span>)</span></span></p>
+
+<figure id="figure-4-initial-generator-command">
+  
+    
+    <code data-line-numbers="false" data-lang="shell"><span id="initial-generator-command-line-1" data-line-number="1">bin/rails generate generator &lt;name&gt;</span></code>  <figcaption><strong>Figure 4</strong>
+    <p>With Rails::Generators::NamedBase, the first argument represents the <code>name</code> attribute for the generator, so if you want a different type of argument for the first value, you’ll likely want to use the Rails::Generators::Base class&nbsp;instead.</p>
+      <a title="Back to Figure 4 Reference" href="#figure-4-initial-generator-command-ref">↩︎</a>  </figcaption>
+</figure>
+
+
+
+<p>In most cases, using <code>NamedBase</code> is what you want, but in some simple cases, I’ve found it handier to use <code>Base</code> instead. With the former, the first command line argument will be captured as the <code>name</code>, but with the latter, there are no pre-defined arguments so you have complete control over that first argument.</p>
+
+<p>For example, I use a generator to start to new blog posts. When I start a new post, the generator really only needs a title in quotes, but with <code>NamedBase</code>, the command “swallows” the initial portion of the title string up to the first space. So it would require passing an argument before the title in order to fulfill the <code>name</code> argument’s position. For this context, however, I don’t have a use for the <code>name</code> argument. So by inheriting from <code>Base</code> instead, I’m able to skip passing an otherwise unused <code>name</code> value. <span><span>(</span>Figure <a id="figure-5-named-base-vs-base-ref" href="#figure-5-named-base-vs-base">5</a><span>)</span></span></p>
+
+<figure id="figure-5-named-base-vs-base">
+  
+    
+    <code data-line-numbers="false" data-lang="shell"><span id="named-base-vs-base-line-1" data-line-number="1">bin/rails generate entry &lt;name&gt; <span>"Blog Post Title"</span></span><span id="named-base-vs-base-line-2" data-line-number="2">bin/rails generate entry <span>"Blog Post Title"</span></span></code>  <figcaption><strong>Figure 5</strong>
+    <p>Using the <code>Base</code> version instead of <code>NamedBase</code> means you don’t get the name helpers, but you can skip the pre-defined <code>&lt;name&gt;</code> argument and control how you use that first&nbsp;argument.</p>
+      <a title="Back to Figure 5 Reference" href="#figure-5-named-base-vs-base-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>So while you likely want the default <code>NamedBase</code> in most cases, don’t forget you can also use <code>Base</code> for simpler cases. We’ll use <code>NamedBase</code> for our example here, but I wanted to make sure and draw attention to this detail because it’s not explicitly discussed in the guides or documentation. It wasn’t until reading through the source code that I found out why the arguments I was passing in my tests were’t captured the way I expected them to be. Once you know, you know, but knowing ahead of time would have saved me some time when I first started digging into generators.</p>
+
+<h3 id="the-usage-file">The Usage File</h3>
+
+
+
+<p>The <code>USAGE</code> file provides a home for the help content displayed when you run <code>bin/rails generate plain --help</code>.  <span><span>(</span>Figure <a id="figure-6-plain-usage-ref" href="#figure-6-plain-usage">6</a><span>)</span></span>
+ (Remember <code>plain</code> is the name for the generator we’re building.) Depending on the complexity of your generator, the usage file may not be critical, but even with a single argument, it’s worth having the ability to surface quick reminders for yourself or your teammates. </p>
+
+<figure id="figure-6-plain-usage">
+  
+    <span>lib/generators/plain/USAGE</span>
+    <code data-line-numbers="true" data-lang="text"><span id="plain-usage-line-1" data-line-number="1">Description:</span><span id="plain-usage-line-2" data-line-number="2">    Generates a plain Ruby class with the given NAME</span><span id="plain-usage-line-3" data-line-number="3"></span><span id="plain-usage-line-4" data-line-number="4">Example:</span><span id="plain-usage-line-5" data-line-number="5">    bin/rails generate plain NAME</span><span id="plain-usage-line-6" data-line-number="6"></span><span id="plain-usage-line-7" data-line-number="7">    This will create:</span><span id="plain-usage-line-8" data-line-number="8">        app/models/name.rb</span><span id="plain-usage-line-9" data-line-number="9">        test/models/name_test.rb</span></code>  <figcaption><strong>Figure 6</strong>
+    <p>The usage file for our PORO generator is pretty simple, but it’s still worth taking the time to fill it in based on our initial&nbsp;plans.</p>
+      <a title="Back to Figure 6 Reference" href="#figure-6-plain-usage-ref">↩︎</a>  </figcaption>
+</figure>
+
+
+
+<p>It’s also worth noting that the <code>--help</code> flag is optional. If you run the a generator without arguments, it will display the help by default. So the more info or examples in the usage file, the easier people will be able to use it. In addition to your usage file, Rails will automatically include the details about arguments and parameters based on the values defined in your generator by using the value you define in the <code>banner</code> option. So you can think of the <code>USAGE</code> file as the bonus content for you to provide a friendly description as well as specific examples of the way the command could be used with various options.</p>
+
+<p>At this point, we don’t have any additional arguments, but it could be handy to support passing a list of attribute names similar to how the ActiveRecord <code>model</code> generator does. We’ll save that for later, though. For now, we’ll stay focused on the basics with the default generator.</p>
+
+<h3 id="the-templates-folder">The Templates Folder</h3>
+
+
+
+<p>It’s initially empty, but the <code>templates</code> folder serves as the home for the file templates that we’ll use to generate our files. If you take a look at the <a href="https://github.com/rails/rails/blob/7c70791470fc517deb7c640bead9f1b47efb5539/railties/lib/rails/generators/rails/task/templates/task.rb.tt">templates folder for the task generator</a>, you’ll see the basic structure of a rake task with some ERb. You may also notice that the templates use the <code>tt</code> extension which stands for “Thor Template”.</p>
+
+<h3 id="the-tests">The Tests</h3>
+
+<p>Finally, the generator also provides the test files for ensuring our generator does what we expect.  <span><span>(</span>Figure <a id="figure-7-plain-generator-test-ref" href="#figure-7-plain-generator-test">7</a><span>)</span></span>
+   While tests are always important, with generators, the automated tests go far beyond that because manually testing and cleaning up any incorrectly-generated files is tedious and error-prone with even the simplest generators.</p>
+
+
+
+<p>Let’s look at the starting point for our test file:</p>
+
+<figure id="figure-7-plain-generator-test">
+  
+    <span>test/lib/generators/plain_generator_test.rb</span>
+    <code data-line-numbers="true" data-lang="ruby"><span id="plain-generator-test-line-1" data-line-number="1"><span>require</span> <span>"test_helper"</span></span><span id="plain-generator-test-line-2" data-line-number="2"><span>require</span> <span>"generators/plain/plain_generator"</span></span><span id="plain-generator-test-line-3" data-line-number="3"></span><span id="plain-generator-test-line-4" data-line-number="4"><span>class</span> <span>ObjGeneratorTest</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>TestCase</span></span><span id="plain-generator-test-line-5" data-line-number="5">  <span>tests</span> <span>ObjGenerator</span></span><span id="plain-generator-test-line-6" data-line-number="6">  <span>destination</span> <span>Rails</span><span>.</span><span>root</span><span>.</span><span>join</span><span>(</span><span>"tmp/generators"</span><span>)</span></span><span id="plain-generator-test-line-7" data-line-number="7">  <span>setup</span> <span>:prepare_destination</span></span><span id="plain-generator-test-line-8" data-line-number="8"></span><span id="plain-generator-test-line-9" data-line-number="9">  <span># test "generator runs without errors" do</span></span><span id="plain-generator-test-line-10" data-line-number="10">  <span>#   assert_nothing_raised do</span></span><span id="plain-generator-test-line-11" data-line-number="11">  <span>#     run_generator ["arguments"]</span></span><span id="plain-generator-test-line-12" data-line-number="12">  <span>#   end</span></span><span id="plain-generator-test-line-13" data-line-number="13">  <span># end</span></span><span id="plain-generator-test-line-14" data-line-number="14"><span>end</span></span></code>  <figcaption><strong>Figure 7</strong>
+    <p>The default test file includes the critical setup bits by default, and those lines help ensure testing your generator doesn’t unintentionally leave behind some remnants of manual&nbsp;testing.</p>
+      <a title="Back to Figure 7 Reference" href="#figure-7-plain-generator-test-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>Lines five through seven are where the magic happens for testing generators. The <code>tests</code> line lets it know what generator to run when you call <code>run_generator</code> in the test. The <code>destination</code> line ensures that files generated by the test don’t end up in your actual codebase where they could accidentally be committed to your repo. Instead, it puts them in the <code>tmp/generators</code> folder where they won’t interfere. </p>
+
+<p>And finally, the <code>setup</code> line ensures that the destination folder is clean before each test. A <code>teardown</code> method is also provided, but as long as the destination is prepared in the setup step, you shouldn’t need the teardown unless your tests generate some additional files that need to be cleaned up or your project isn’t setup to ignore the <code>tmp</code> directory. If you don’t tear down the resulting files, it’s also easier to manually inspect the results after running a single test since the generated files will be untouched.</p>
+
+<p>The safety and automated cleanup you get from these makes it much easier to build and test new generators without worrying about unintended consequences. As long as your generator uses the <code>destination_root</code> method when specifying paths, your tests should only generate files in the specified test directory. For the most part, it’s as simple as using <code>Rails.root.join(destination_root, ...)</code> any time you need to reference a folder. That will ensure that your generator uses the currently defined destination, and since your test specified that to be <code>tmp/generators</code>, you’ll be all set both when testing and when running the command.</p>
+
+<p>Rails also provides some <a href="https://api.rubyonrails.org/classes/Rails/Generators/Testing/Assertions.html">generator-specific assertions</a> to help make generator tests a little easier to create as well as easier to read after the fact. If you’re using RSpec, you’ll likely have to build some tooling to ensure a smooth test-writing experience.  </p>
+
+<h2 id="connecting-everything">Connecting Everything</h2>
+
+<p>Now that we’ve set the table with the default files and context, we’re ready to make the generator actually do something. Ultimately, we’re going to generate two files: the model file and the model test file. So we’ll start by creating the templates for those files. And remember, <a href="https://api.rubyonrails.org/classes/Rails/Generators/NamedBase.html">the <code>NamedBase</code> class provides quite a few convenience methods</a>.</p>
+
+<h3 id="the-templates">The Templates</h3>
+
+
+
+<p>Before we can have the generator do stuff, we have to provide the template files that serve as the source material for generating our final files. We’ll put all of these in the <code>lib/generators/plain/templates</code> folder and tack on a <code>.tt</code> (Thor Template) extension. The templates can use ERb and have access to all of the methods that <code>NamedBase</code> provides.  <span><span>(</span>Figures <a id="figure-8-model-file-template-ref" href="#figure-8-model-file-template">8</a> &amp; <a id="figure-9-model-test-file-template-ref" href="#figure-9-model-test-file-template">9</a><span>)</span></span></p>
+
+<figure id="figure-8-model-file-template">
+  
+    <span>lib/generators/templates/model.rb.tt</span>
+    <code data-line-numbers="true" data-lang="text"><span id="model-file-template-line-1" data-line-number="1">class &lt;%= class_name %&gt;</span><span id="model-file-template-line-2" data-line-number="2"></span><span id="model-file-template-line-3" data-line-number="3">end</span></code>  <figcaption><strong>Figure 8</strong>
+    <p>We’ll create a basic model file that’s little more than a placeholder. The <code>class_name</code> method is available via <code>NamedBase</code>.  It’s not much right now, but in the future, it could have an include statement for ActiveModel or add attributes that could be passed via the command&nbsp;line.</p>
+      <a title="Back to Figure 8 Reference" href="#figure-8-model-file-template-ref">↩︎</a>  </figcaption>
+</figure>
+
+<figure id="figure-9-model-test-file-template">
+  
+    <span>lib/generators/templates/model_test.rb.tt</span>
+    <code data-line-numbers="true" data-lang="text"><span id="model-test-file-template-line-1" data-line-number="1">require "test_helper"</span><span id="model-test-file-template-line-2" data-line-number="2"></span><span id="model-test-file-template-line-3" data-line-number="3">class &lt;%= class_name %&gt;Test &lt; ActiveSupport::TestCase</span><span id="model-test-file-template-line-4" data-line-number="4">  setup do</span><span id="model-test-file-template-line-5" data-line-number="5">    @&lt;%= singular_name %&gt; = &lt;%= class_name %&gt;.new</span><span id="model-test-file-template-line-6" data-line-number="6">  end</span><span id="model-test-file-template-line-7" data-line-number="7">  </span><span id="model-test-file-template-line-8" data-line-number="8">  test "the truth" do</span><span id="model-test-file-template-line-9" data-line-number="9">    assert_predicate @&lt;%= singular_name %&gt;, present?</span><span id="model-test-file-template-line-10" data-line-number="10">  end</span><span id="model-test-file-template-line-11" data-line-number="11">end</span></code>  <figcaption><strong>Figure 9</strong>
+    <p>The test file has a little more going, and like the model file, the <code>class_name</code> and <code>singular_name</code> methods are available via the <code>NamedBase</code> parent&nbsp;class.</p>
+      <a title="Back to Figure 9 Reference" href="#figure-9-model-test-file-template-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>Now we have some bare bones templates. They don’t do much at this point, but that’s alright. We’ll enhance them later.</p>
+
+<h3 id="the-tests">The Tests</h3>
+
+<p>Automated tests are great, but automated tests for generators really help save time. So before we implement the generator, let’s add some tests based on our expected results from running the generator.</p>
+
+<figure id="figure-10-model-file-tests">
+  
+    <span>test/lib/generators/plain_generator_test.rb</span>
+    <code data-line-numbers="true" data-lang="ruby"><span id="model-file-tests-line-1" data-line-number="1"><span>require</span> <span>"test_helper"</span></span><span id="model-file-tests-line-2" data-line-number="2"><span>require</span> <span>"generators/plain/plain_generator"</span></span><span id="model-file-tests-line-3" data-line-number="3"></span><span id="model-file-tests-line-4" data-line-number="4"><span>class</span> <span>ObjGeneratorTest</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>TestCase</span></span><span id="model-file-tests-line-5" data-line-number="5">  <span>tests</span> <span>ObjGenerator</span></span><span id="model-file-tests-line-6" data-line-number="6">  <span>destination</span> <span>Rails</span><span>.</span><span>root</span><span>.</span><span>join</span><span>(</span><span>"tmp/generators"</span><span>)</span></span><span id="model-file-tests-line-7" data-line-number="7">  <span>setup</span> <span>:prepare_destination</span></span><span id="model-file-tests-line-8" data-line-number="8"></span><span id="model-file-tests-line-9" data-line-number="9">  <span>test</span> <span>"generates the model file"</span> <span>do</span></span><span id="model-file-tests-line-10" data-line-number="10">    <span>run_generator</span> <span>[</span><span>"Point"</span><span>]</span> <span>do</span></span><span id="model-file-tests-line-11" data-line-number="11">      <span># Let's make sure the model file exists...</span></span><span id="model-file-tests-line-12" data-line-number="12">      <span>assert_file</span> <span>"app/models/Point.rb"</span> <span>do</span> <span>|</span><span>content</span><span>|</span></span><span id="model-file-tests-line-13" data-line-number="13">        <span># ...and that it includes the class declaration...</span></span><span id="model-file-tests-line-14" data-line-number="14">        <span>assert_match</span><span>(</span><span>/class Point/</span><span>,</span> <span>content</span><span>)</span></span><span id="model-file-tests-line-15" data-line-number="15">      <span>end</span></span><span id="model-file-tests-line-16" data-line-number="16">    <span>end</span></span><span id="model-file-tests-line-17" data-line-number="17">  <span>end</span></span><span id="model-file-tests-line-18" data-line-number="18"></span><span id="model-file-tests-line-19" data-line-number="19">  <span>test</span> <span>"generates the model test file"</span> <span>do</span></span><span id="model-file-tests-line-20" data-line-number="20">    <span>run_generator</span> <span>[</span><span>"Point"</span><span>]</span></span><span id="model-file-tests-line-21" data-line-number="21"></span><span id="model-file-tests-line-22" data-line-number="22">    <span># Let's make sure the model's test file exists...</span></span><span id="model-file-tests-line-23" data-line-number="23">    <span>assert_file</span> <span>"test/models/point_test.rb"</span> <span>do</span> <span>|</span><span>content</span><span>|</span></span><span id="model-file-tests-line-24" data-line-number="24">      <span># ...and that it includes the test class declaration...</span></span><span id="model-file-tests-line-25" data-line-number="25">      <span>assert_match</span><span>(</span><span>/class Point &lt; ActiveSupport::TestCase/</span><span>,</span> <span>content</span><span>)</span></span><span id="model-file-tests-line-26" data-line-number="26">    <span>end</span></span><span id="model-file-tests-line-27" data-line-number="27">  <span>end</span></span><span id="model-file-tests-line-28" data-line-number="28"><span>end</span></span></code>  <figcaption><strong>Figure 10</strong>
+    <p>We’ll add two tests—one for each file we expect the generator to create. Each test runs the generator, asserts that the expected file exists, and then asserts that the file contains the content we&nbsp;want.</p>
+      <a title="Back to Figure 10 Reference" href="#figure-10-model-file-tests-ref">↩︎</a>  </figcaption>
+</figure>
+
+<h3 id="the-generator">The Generator</h3>
+
+<p>So far, it’s probably felt like a whole lotta setup, and you’re ready for something more substantial, and that’s what we’ll do next. Fortunately, at this point, the generator is fairly straightforward, and we’re creating a fairly simple generator. Before we do, though, there’s one more thing to know about generators: they will call all of the public methods in the generator in the order they’re defined.</p>
+
+<p>Since the <code>source_root</code> method establishes the generator’s local <code>templates</code> directory as the source for the template files, we can use the <a href="https://www.rubydoc.info/gems/thor/Thor/Actions#template-instance_method">template command from the Thor::Actions</a>. With everything prepared, the <code>template</code> method only needs two arguments to work: the name of the source file in the templates folder (without the <code>.tt</code> extension) and the file path for the file you want generated after the ERb is parsed in the template.  <span><span>(</span>Figure <a id="figure-11-generator-body-ref" href="#figure-11-generator-body">11</a><span>)</span></span></p>
+
+<figure id="figure-11-generator-body">
+  
+    <span>lib/generators/plain/plain_generator.rb</span>
+    <code data-line-numbers="true" data-lang="ruby"><span id="generator-body-line-1" data-line-number="1"><span>class</span> <span>ObjGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span></span><span id="generator-body-line-2" data-line-number="2">  <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span></span><span id="generator-body-line-3" data-line-number="3"></span><span id="generator-body-line-4" data-line-number="4">  <span>def</span> <span>create_model_file</span></span><span id="generator-body-line-5" data-line-number="5">    <span>template</span> <span>"model.rb"</span><span>,</span> <span>File</span><span>.</span><span>join</span><span>(</span></span><span id="generator-body-line-6" data-line-number="6">      <span>"app/models"</span><span>,</span> </span><span id="generator-body-line-7" data-line-number="7">      <span>"</span><span>#{</span><span>file_name</span><span>}</span><span>.rb"</span></span><span id="generator-body-line-8" data-line-number="8">    <span>)</span></span><span id="generator-body-line-9" data-line-number="9">  <span>end</span></span><span id="generator-body-line-10" data-line-number="10"></span><span id="generator-body-line-11" data-line-number="11">  <span>def</span> <span>create_model_test_file</span></span><span id="generator-body-line-12" data-line-number="12">    <span>template</span> <span>"model_test.rb"</span><span>,</span> <span>File</span><span>.</span><span>join</span><span>(</span></span><span id="generator-body-line-13" data-line-number="13">      <span>"test/models"</span><span>,</span></span><span id="generator-body-line-14" data-line-number="14">      <span>"</span><span>#{</span><span>file_name</span><span>}</span><span>_test.rb"</span></span><span id="generator-body-line-15" data-line-number="15">    <span>)</span></span><span id="generator-body-line-16" data-line-number="16">  <span>end</span></span><span id="generator-body-line-17" data-line-number="17"><span>end</span></span></code>  <figcaption><strong>Figure 11</strong>
+    <p>Our generator does precisely two things: it generates the model file and it generates the model test file. They can do plenty more, but keeping it simple and concise works better for easing into the power of&nbsp;generators.</p>
+      <a title="Back to Figure 11 Reference" href="#figure-11-generator-body-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>With everything else in place, you may want to take a moment to familiarize yourself with the available methods via the inheritance chain. We won’t use any of the others in our example, but even skimming the available methods can help reveal the capabilities of generators. I’ll include a few interesting methods from each right here, but it’s still worth reading the documentation to know all of your options. I’ve found that keeping these links handy helps when I want to make sure there’s not already a built-in way to do something where I might otherwise reach for <code>FileUtils</code>.</p>
+
+<ul>
+<li><a href="https://garrettdimon.com/journal/posts/rails-generator-actions">Unified Summary of Rails and Thor Actions</a> where I explored all of the actions available to Generators via both Thor and Rails </li>
+<li><a href="https://www.rubydoc.info/gems/thor/Thor/Base">Thor::Base</a></li>
+<li><a href="https://api.rubyonrails.org/classes/Rails/Generators/Base.html">Rails::Generators::Base</a> which includes:</li>
+<li><a href="https://api.rubyonrails.org/classes/Rails/Generators/NamedBase.html">Rails::Generators::NamedBase</a> which provides convenient access to all of the standard Rails-based string inflection options like <code>class_name</code>, <code>human_name</code>, <code>plural_name</code>, <code>plural_file_name</code>, etc.</li>
+<li><a href="https://www.rubydoc.info/gems/thor/Thor/Actions">Thor::Actions</a></li>
+<li><a href="https://api.rubyonrails.org/classes/Rails/Generators/Actions.html">Rails::Generators::Actions</a></li>
+</ul>
+
+<p>With all of the tools and methods available through these options, you can perform some pretty robust manipulation of files and directories with concise, readable, and predictable commands. But let’s look at one more feature of generators that can help save time and then use that feature to make a minor enhancement to our generator.</p>
+
+<h2 id="enhancing-our-generator">Enhancing Our Generator</h2>
+
+<p>So far, we’ve kept our generator relatively simple so we could focus on how generators work rather than being distracted by what they’re generating, but where’s the fun in that? Passing arguments and options to generators is where things start to get really interesting. </p>
+
+<h3 id="command-line-arguments">Command Line Arguments</h3>
+
+<p>Our generator can receive a name via the command line, but it would be nice if it could accept some additional arguments or options and generate a few extra bits on our PORO. I’ve got two ideas in particular that be nice conveniences and give us an opportunity to see how to add arguments and options/flags.</p>
+
+<p>First, we’ll update the generator to support an arbitrary number of arguments for attributes that we would like to have on our PORO. We’d like to be able to run something like this to add attributes onto our object:</p>
+
+<figure id="figure-12-generator-with-args">
+  
+    
+    <code data-line-numbers="false" data-lang="text"><span id="generator-with-args-line-1" data-line-number="1">bin/rails g plain Point x y</span></code>  <figcaption><strong>Figure 12</strong>
+    <p>An example of the new command supporting positional arguments from the command&nbsp;line.</p>
+      <a title="Back to Figure 12 Reference" href="#figure-12-generator-with-args-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>So we need to specify that we’d like to capture the additional arguments that follow the <code>name</code> argument. You can take a peek at <a href="https://github.com/rails/rails/blob/7c70791470fc517deb7c640bead9f1b47efb5539/railties/lib/rails/generators/rails/model/model_generator.rb#L10">the built-in Rails model generator</a> to see how it handles the array of attribute fields.  <span><span>(</span>Figure <a id="figure-13-array-arguments-example-ref" href="#figure-13-array-arguments-example">13</a><span>)</span></span>
+ We want something fairly similar, but since our PORO isn’t database-backed, so we can skip the <code>type</code> and <code>index</code> options used with standard model generator.</p>
+
+<figure id="figure-13-array-arguments-example">
+  
+    
+    <code data-line-numbers="false" data-lang="ruby"><span id="array-arguments-example-line-1" data-line-number="1"><span># The built-in model generator accepts field type and index </span></span><span id="array-arguments-example-line-2" data-line-number="2"><span>#   details</span></span><span id="array-arguments-example-line-3" data-line-number="3"><span>argument</span> <span>:attributes</span><span>,</span> <span>type: :array</span><span>,</span> <span>default: </span><span>[],</span> </span><span id="array-arguments-example-line-4" data-line-number="4">    <span>banner: </span><span>"field[:type][:index] field[:type][:index]"</span></span><span id="array-arguments-example-line-5" data-line-number="5"></span><span id="array-arguments-example-line-6" data-line-number="6"><span># We can use a simplified version since our PORO doesn't  </span></span><span id="array-arguments-example-line-7" data-line-number="7"><span>#   correlate to database columns</span></span><span id="array-arguments-example-line-8" data-line-number="8"><span>argument</span> <span>:attributes</span><span>,</span> <span>type: :array</span><span>,</span> <span>default: </span><span>[],</span> </span><span id="array-arguments-example-line-9" data-line-number="9">    <span>banner: </span><span>"attribute attribute"</span></span><span id="array-arguments-example-line-10" data-line-number="10"></span><span id="array-arguments-example-line-11" data-line-number="11"><span># Instead of providing a default value, you can also make </span></span><span id="array-arguments-example-line-12" data-line-number="12"><span>#   arguments required, but that's not what we want here</span></span><span id="array-arguments-example-line-13" data-line-number="13"><span>argument</span> <span>:attributes</span><span>,</span> <span>type: :array</span><span>,</span> <span>required: </span><span>true</span><span>,</span></span><span id="array-arguments-example-line-14" data-line-number="14">    <span>banner: </span><span>"attribute attribute"</span></span></code>  <figcaption><strong>Figure 13</strong>
+    <p>You can see how the default Rails model generator handles accepting an arbitrary number of attributes, so we’ll follow Rails’ lead but simplify our arguments. Most of the parameters should be self-explanatory, but the <code>banner</code> portion is somewhat special as it represents the string displayed for help so you know how to pass arguments to the&nbsp;generator.</p>
+      <a title="Back to Figure 13 Reference" href="#figure-13-array-arguments-example-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>Seems straightforward enough, so let’s add the argument declaration to our generator. <span><span>(</span>Figure <a id="figure-14-generator-with-attribute-arguments-ref" href="#figure-14-generator-with-attribute-arguments">14</a><span>)</span></span>
+ Once that’s taken care of, our generator can capture the additional arguments, but it won’t yet be doing anything with them. Let’s see where we’re at, and then we’ll have the generator put the additional info to use.</p>
+
+<figure id="figure-14-generator-with-attribute-arguments">
+  
+    <span>lib/generators/plain/plain_generator.rb</span>
+    <code data-line-numbers="true" data-lang="ruby"><span id="generator-with-attribute-arguments-line-1" data-line-number="1"><span>class</span> <span>ObjGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span></span><span id="generator-with-attribute-arguments-line-2" data-line-number="2">  <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span></span><span id="generator-with-attribute-arguments-line-3" data-line-number="3"></span><span id="generator-with-attribute-arguments-line-4" data-line-number="4">  <span># Remember that NamedBase defines the `name` argument for us, </span></span><span id="generator-with-attribute-arguments-line-5" data-line-number="5">  <span># so anything we declare here will be passed in addition to </span></span><span id="generator-with-attribute-arguments-line-6" data-line-number="6">  <span># the `name` argument.</span></span><span id="generator-with-attribute-arguments-line-7" data-line-number="7">  <span>argument</span> <span>:attributes</span><span>,</span> <span>type: :array</span><span>,</span> <span>default: </span><span>[],</span></span><span id="generator-with-attribute-arguments-line-8" data-line-number="8">    <span>banner: </span><span>"attribute attribute"</span></span><span id="generator-with-attribute-arguments-line-9" data-line-number="9"></span><span id="generator-with-attribute-arguments-line-10" data-line-number="10">  <span>def</span> <span>create_model_file</span></span><span id="generator-with-attribute-arguments-line-11" data-line-number="11">    <span>template</span> <span>"model.rb"</span><span>,</span> <span>File</span><span>.</span><span>join</span><span>(</span></span><span id="generator-with-attribute-arguments-line-12" data-line-number="12">       <span>"app/models"</span><span>,</span> <span>"</span><span>#{</span><span>file_name</span><span>}</span><span>.rb"</span></span><span id="generator-with-attribute-arguments-line-13" data-line-number="13">    <span>)</span></span><span id="generator-with-attribute-arguments-line-14" data-line-number="14">  <span>end</span></span><span id="generator-with-attribute-arguments-line-15" data-line-number="15"></span><span id="generator-with-attribute-arguments-line-16" data-line-number="16">  <span>def</span> <span>create_model_test_file</span></span><span id="generator-with-attribute-arguments-line-17" data-line-number="17">    <span>template</span> <span>"model_test.rb"</span><span>,</span> <span>File</span><span>.</span><span>join</span><span>(</span></span><span id="generator-with-attribute-arguments-line-18" data-line-number="18">      <span>"test/models"</span><span>,</span> <span>"</span><span>#{</span><span>file_name</span><span>}</span><span>_test.rb"</span></span><span id="generator-with-attribute-arguments-line-19" data-line-number="19">    <span>)</span></span><span id="generator-with-attribute-arguments-line-20" data-line-number="20">  <span>end</span></span><span id="generator-with-attribute-arguments-line-21" data-line-number="21"><span>end</span></span></code>  <figcaption><strong>Figure 14</strong>
+    <p>With the additional of a single line, our PORO generator can accept an arbitrary number of attribute names as&nbsp;arguments.</p>
+      <a title="Back to Figure 14 Reference" href="#figure-14-generator-with-attribute-arguments-ref">↩︎</a>  </figcaption>
+</figure>
+
+
+
+<p>Now that we can accept the arguments, what do we do with them? We head over to the model template file and iterate over the array of attributes to add the <code>attr_accessor</code> declaration to our PORO, but before we do, let’s go ahead and update our tests so have a failing test prior to updating the template.</p>
+
+<p>For the most part, we’ll be able to reuse our existing test for the model file, but now we need the test to run the generator with the attribute name arguments. <span><span>(</span>Figure <a id="figure-15-attr-accessor-test-ref" href="#figure-15-attr-accessor-test">15</a><span>)</span></span>
+ Fortunately, that only requires adding additional values to the array passed to the <code>run_generator</code> method. Then we need to update the content match assertion to expect our file to have the correct <code>attr_accessor</code> declaration. </p>
+
+<figure id="figure-15-attr-accessor-test">
+  
+    
+    <code data-line-numbers="true" data-lang="ruby"><span id="attr-accessor-test-line-1" data-line-number="1"><span>test</span> <span>"supports specifying attr_accessor fields for the model"</span> <span>do</span></span><span id="attr-accessor-test-line-2" data-line-number="2">  <span>run_generator</span> <span>[</span><span>'Point'</span><span>,</span> <span>'x'</span><span>,</span> <span>'y'</span><span>]</span> <span># %w[Point x y] works too!</span></span><span id="attr-accessor-test-line-3" data-line-number="3"></span><span id="attr-accessor-test-line-4" data-line-number="4">  <span>assert_file</span> <span>"app/models/point.rb"</span> <span>do</span> <span>|</span><span>content</span><span>|</span></span><span id="attr-accessor-test-line-5" data-line-number="5">    <span>assert_match</span><span>(</span><span>/attr_accessor :x, :y/</span><span>,</span> <span>content</span><span>)</span></span><span id="attr-accessor-test-line-6" data-line-number="6">  <span>end</span></span><span id="attr-accessor-test-line-7" data-line-number="7"><span>end</span></span></code>  <figcaption><strong>Figure 15</strong>
+    <p>We add a test to verify that when we pass arguments to the generator, they captured and converted to an <code>attr_accessor</code> declaration in our generated model file. You’ll notice that we’re now passing three values to the <code>run_generator</code> command so that it has additional attributes to parse into the <code>attributes</code>&nbsp;array.</p>
+      <a title="Back to Figure 15 Reference" href="#figure-15-attr-accessor-test-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>Now we just need our model template to do the work and add the declaration, but since attributes are optional, we’ll need to remember to only add them if the generator parse any from the command line. While the argument name is <code>attributes</code>, that provides a collection of <code>Rails::Generators::GeneratedAttribute</code> values. While the instances of <code>GeneratedAttribute</code> can be used via the <code>attributes</code>, we’ll use the <code>attributes_names</code> method that returns simply the names of the attributes passed to the generator. <span><span>(</span>Figure <a id="figure-16-attr-accessors-generated-ref" href="#figure-16-attr-accessors-generated">16</a><span>)</span></span></p>
+
+<figure id="figure-16-attr-accessors-generated">
+  
+    <span>lib/generators/plain/plain_generator.rb</span>
+    <code data-line-numbers="true" data-lang="ruby"><span id="attr-accessors-generated-line-1" data-line-number="1"><span>class</span> <span>&lt;</span><span>%= class_name %&gt;</span></span><span id="attr-accessors-generated-line-2" data-line-number="2"><span>&lt;% if attributes_names.any? -%&gt;</span></span><span id="attr-accessors-generated-line-3" data-line-number="3"><span>  attr_accessor &lt;%=</span> <span>attributes_names</span><span>.</span><span>map</span> <span>{</span> <span>|</span><span>name</span><span>|</span> <span>":</span><span>#{</span><span>name</span><span>}</span><span>"</span> <span>}.</span><span>join</span><span>(</span><span>', '</span><span>)</span> <span>%&gt;</span></span><span id="attr-accessors-generated-line-4" data-line-number="4"><span>&lt;</span><span>% end </span><span>-</span><span>%&gt;</span></span><span id="attr-accessors-generated-line-5" data-line-number="5"><span>end</span></span></code>  <figcaption><strong>Figure 16</strong>
+    <p>We check to make sure the generator has attributes to fill in, and if it does we generate the <code>attr_accessor</code>&nbsp;line.</p>
+      <a title="Back to Figure 16 Reference" href="#figure-16-attr-accessors-generated-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>Now if you run your tests, they should be passing no problem. Our generator is still pretty basic though, and we need to touch on how to pass options/flags to it. So that’s what we’ll dig into next.</p>
+
+<h3 id="command-line-options-flags">Command Line Options/Flags</h3>
+
+<p>In addition to arguments, Rails generators support options specified via flags thanks to <a href="https://www.rubydoc.info/gems/thor/Thor/Base/ClassMethods#class_options-instance_method">Thor’s <code>class_options</code> declaration</a>. Values passed via class options can be of type string, hash, array, numeric, or boolean. </p>
+
+<p>For our generator, we’ll keep it simple and use a boolean to support an <code>--active-model</code>/<code>--no-active-model</code> flag that will optionally auto-include ActiveModel.<span><sup id="note-ref-1"><a href="#note-1" title="Footnote 1">1</a></sup><small id="note-1" role="note"><sup><a href="#note-ref-1" title="Back to Footnote 1 Reference">1</a></sup><span>One could extend this to support any subset of the <a href="https://guides.rubyonrails.org/active_model_basics.html">Active Model modules</a>, but we’ll keep it simple to focus purely on adding a single option to the&nbsp;generator.</span></small></span> With that, we’d be able to automatically insert the <code>include ActiveModel::Model</code> statement by default but support skipping it if our scenario doesn’t need it.</p>
+
+<p>If all goes well, we could run something like the following:</p>
+
+<figure id="figure-12-generator-with-args">
+  
+    
+    <code data-line-numbers="false" data-lang="shell"><span id="generator-with-args-line-1" data-line-number="1">bin/rails g Plain Point x y</span><span id="generator-with-args-line-2" data-line-number="2">bin/rails g Plain Point x y <span>--active-model</span></span><span id="generator-with-args-line-3" data-line-number="3">bin/rails g Plain Point x y <span>--no-active-model</span></span></code>  <figcaption><strong>Figure 12</strong>
+    <p>An example of the new command supporting positional arguments from the command&nbsp;line.</p>
+      <a title="Back to Figure 12 Reference" href="#figure-12-generator-with-args-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>But before we implement it, let’s go add tests to ensure we get it right. First, since we want to add ActiveModel as the default we’ll update the original test to verify that the include statement is present. <span><span>(</span>Figure <a id="figure-17-include-active-model-test-ref" href="#figure-17-include-active-model-test">17</a><span>)</span></span></p>
+
+<figure id="figure-17-include-active-model-test">
+  
+    <span>test/lib/generators/plain_generator_test.rb</span>
+    <code data-line-numbers="true" data-lang="ruby"><span id="include-active-model-test-line-1" data-line-number="1"><span>test</span> <span>"generates the model file"</span> <span>do</span></span><span id="include-active-model-test-line-2" data-line-number="2">  <span>run_generator</span> <span>[</span><span>"Point"</span><span>]</span></span><span id="include-active-model-test-line-3" data-line-number="3"></span><span id="include-active-model-test-line-4" data-line-number="4">  <span>assert_file</span> <span>"app/models/point.rb"</span> <span>do</span> <span>|</span><span>content</span><span>|</span></span><span id="include-active-model-test-line-5" data-line-number="5">    <span>assert_match</span><span>(</span><span>/class Point/</span><span>,</span> <span>content</span><span>)</span></span><span id="include-active-model-test-line-6" data-line-number="6">    <span>assert_match</span><span>(</span><span>/include ActiveModel::Model/</span><span>,</span> <span>content</span><span>)</span></span><span id="include-active-model-test-line-7" data-line-number="7">  <span>end</span></span><span id="include-active-model-test-line-8" data-line-number="8"><span>end</span></span></code>  <figcaption><strong>Figure 17</strong>
+    <p>We add an assertion to verify that our default includes&nbsp;ActiveModel.</p>
+      <a title="Back to Figure 17 Reference" href="#figure-17-include-active-model-test-ref">↩︎</a>  </figcaption>
+</figure>
+
+<p>We’re almost there. With the addition of one more line, we should have our first generator wrapped up. <span><span>(</span>Figure <a id="figure-18-finished-generator-ref" href="#figure-18-finished-generator">18</a><span>)</span></span></p>
+
+<figure id="figure-18-finished-generator">
+  
+    <span>lib/generators/plain/plain_generator.rb</span>
+    <code data-line-numbers="true" data-lang="ruby"><span id="finished-generator-line-1" data-line-number="1"><span>class</span> <span>ObjGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span></span><span id="finished-generator-line-2" data-line-number="2">  <span># Remember that NamedBase defines the `name` argument for us, </span></span><span id="finished-generator-line-3" data-line-number="3">  <span># so anything we declare here will be passed in addition to</span></span><span id="finished-generator-line-4" data-line-number="4">  <span># the `name` argument.</span></span><span id="finished-generator-line-5" data-line-number="5">  <span>argument</span> <span>:attributes</span><span>,</span> <span>type: :array</span><span>,</span> <span>default: </span><span>[],</span> </span><span id="finished-generator-line-6" data-line-number="6">    <span>banner: </span><span>"attribute attribute"</span></span><span id="finished-generator-line-7" data-line-number="7">  <span>class_option</span> <span>:active_model</span><span>,</span> <span>type: :boolean</span><span>,</span> <span>default: </span><span>true</span></span><span id="finished-generator-line-8" data-line-number="8"></span><span id="finished-generator-line-9" data-line-number="9">  <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span></span><span id="finished-generator-line-10" data-line-number="10"></span><span id="finished-generator-line-11" data-line-number="11">  <span>def</span> <span>create_model_file</span></span><span id="finished-generator-line-12" data-line-number="12">    <span>template</span> <span>"model.rb"</span><span>,</span></span><span id="finished-generator-line-13" data-line-number="13">        <span>File</span><span>.</span><span>join</span><span>(</span><span>"app/models"</span><span>,</span> <span>"</span><span>#{</span><span>file_name</span><span>}</span><span>.rb"</span><span>)</span></span><span id="finished-generator-line-14" data-line-number="14">  <span>end</span></span><span id="finished-generator-line-15" data-line-number="15"></span><span id="finished-generator-line-16" data-line-number="16">  <span>def</span> <span>create_model_test_file</span></span><span id="finished-generator-line-17" data-line-number="17">    <span>template</span> <span>"model_test.rb"</span><span>,</span> </span><span id="finished-generator-line-18" data-line-number="18">        <span>File</span><span>.</span><span>join</span><span>(</span><span>"test/models"</span><span>,</span> <span>"</span><span>#{</span><span>file_name</span><span>}</span><span>_test.rb"</span><span>)</span></span><span id="finished-generator-line-19" data-line-number="19">  <span>end</span></span><span id="finished-generator-line-20" data-line-number="20"></span><span id="finished-generator-line-21" data-line-number="21">  <span>private</span></span><span id="finished-generator-line-22" data-line-number="22"></span><span id="finished-generator-line-23" data-line-number="23">  <span>def</span> <span>active_model?</span></span><span id="finished-generator-line-24" data-line-number="24">    <span>options</span><span>[</span><span>:active_model</span><span>]</span></span><span id="finished-generator-line-25" data-line-number="25">  <span>end</span></span><span id="finished-generator-line-26" data-line-number="26"><span>end</span></span></code>  <figcaption><strong>Figure 18</strong>
+    <p>Add a boolean <code>class_option</code> for including ActiveModel is our final step. You can add additional class options to have your generator adjust its output in endless&nbsp;ways.</p>
+      <a title="Back to Figure 18 Reference" href="#figure-18-finished-generator-ref">↩︎</a>  </figcaption>
+</figure>
+
+<h2 id="the-finished-generator">The Finished Generator</h2>
+
+<p>Now we have a generator for table-less plain old Ruby objects with some attributes and the ability to automatically include ActiveModel. It’s not the most advanced generator, but it certainly makes it easier to spin up simpler objects so we’re less tempted to bolt functionality onto ActiveRecord models.</p>
+
+<p>I’ve made all the files available as <a href="https://gist.github.com/garrettdimon/f933c23ffe1b92e6305bd1f78bc7c6e4">a public Gist</a>. If you notice any mistakes, opportunities for improvements, or suggestions for better approaches for creating custom Rails generators, I’d love to hear about it.</p>
+
+      </div></div>
+  </div>
+</body>
+</html>

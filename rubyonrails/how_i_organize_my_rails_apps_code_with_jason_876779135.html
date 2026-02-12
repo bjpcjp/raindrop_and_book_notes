@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How I organize my Rails apps - Code with Jason</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How I organize my Rails apps - Code with Jason</h1>
+    <p><strong>URL:</strong> <a href="https://www.codewithjason.com/organize-rails-apps">https://www.codewithjason.com/organize-rails-apps</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876779135</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+			<h2>Overview</h2>
+<p>Influenced by the experiences I’ve had last over many years of building and maintaining Rails applications, combined with my experiences using other technologies, I’ve developed some ways of structuring Rails applications that have worked out pretty well for me.</p>
+<p>Some of my organizational tactics follow conventional wisdom, like keeping controllers thin. Other of my tactics are ones I haven’t really seen in others’ applications but wish I would.</p>
+<p>Here’s an overview of the topics I touch on in this post.</p>
+<ul>
+<li>Controllers</li>
+<li>Namespaces</li>
+<li>Models</li>
+<li>ViewComponents</li>
+<li>The lib folder</li>
+<li>Concerns</li>
+<li>Background jobs</li>
+<li>JavaScript</li>
+<li>Tests</li>
+<li>Service objects</li>
+<li>How I think about Rails code organization in general</li>
+</ul>
+<p>Let’s start with controllers.</p>
+<h2>Controllers</h2>
+<p>The most common type of controller in most Rails applications is a controller that’s based on an Active Record resource. For example, if there’s a <code>customers</code> database table then there will also be a <code>Customer</code> model class and a controller called <code>CustomersController</code>.</p>
+<h3>The problem</h3>
+<p>Controllers can start to get nasty when there get to be too many “custom” actions beyond the seven RESTful actions of <code>index</code>, <code>new</code>, <code>create</code>, <code>edit</code>, <code>update</code>, <code>show</code> and <code>destroy</code>.</p>
+<p>Let’s say we have a <code>CustomersController</code> that, among other things, allows the user to send messages about a customer (by creating instances of a <code>Message</code>, let’s say). The relevant actions might be called <code>new_message</code> and <code>create_message</code>. This is maybe not that bad, but it clutters up the controller a little, and if you have enough custom actions on a controller then the controller can get pretty messy and hard to comprehend.</p>
+<h3>The solution</h3>
+<p>What I like to do in these scenarios is create a “custom” controller called e.g. <code>CustomerMessagesController</code>. There’s no database table called <code>customer_messages</code> or class called <code>CustomerMessage</code>. The concept of a “customer message” is just something I made up. But now that this idea exists, my <code>CustomersController#new_message</code> and <code>CustomersController#create_message</code> actions can become <code>CustomerMessagesController#new</code> and <code>CustomerMessagesController#create</code>. I find this much tidier.</p>
+<p>And as long as I’m at it, I’ll even create a PORO (plain old Ruby object) called <code>CustomerMessage</code> where I can handle the business of creating a new customer message as not to clutter up either <code>Customer</code> or <code>Message</code> with this stuff which is really not all that relevant to either of those classes. I might put a <code>create</code> or <code>create!</code> method on <code>CustomerMessage</code> which creates the appropriate <code>Message</code> for me.</p>
+<p>Furthermore, I’ll also often put <code>include ActiveModel::Model</code> into my PORO so that I can bind the PORO to a form as though it were a regular old Active Record model.</p>
+<h2>Namespaces</h2>
+<p>Pieces of code are easier to understand when they don’t require you to also understand other pieces of code as a prerequisite. To use an extreme example to illustrate the point, it would obviously be impossible to understand a program so tangled with dependencies that understanding <i>any</i> of it required understanding <i>all</i> of it.</p>
+<p>So, anything we can do to allow small chunks of our programs understandable in isolation is typically going to make our program easier to work with.</p>
+<p>Namespaces serve as a signal that certain parts of the application are more related to each other than they are to anything else. For example, in the application I work on at work, I have a namespace called <code>Billing</code>. I have another namespace called <code>Schedule</code>. A developer who’s new to the codebase could look at the <code>Billing</code> and <code>Schedule</code> namespaces and rightly assume that when they’re thinking about one, they can mostly ignore the other.</p>
+<h3>Contexts</h3>
+<p>Some of my models are sufficiently fundamental that it doesn’t make sense to put them into any particular namespace. I have a model called <code>Appointment</code> that’s like this. An <code>Appointment</code> is obviously a scheduling concern a lot of the time, but just as often it’s a clinical concern or a billing concern. An appointment can’t justifiably be “owned” by any one namespace.</p>
+<p>This doesn’t mean I can’t still benefit from namespaces though. I have a controller called <code>Billing::AppointmentsController</code> which views appointments through a billing lens. I have another controller called <code>Chart::AppointmentsController</code> which views appointments through a clinical lens. For scheduling, we have two calendar views, one that shows one day at a time and one that shows one month at a time. So I have two controllers for that: <code>Schedule::ByDayCalendar::AppointmentsController</code> and <code>Schedule::ByMonthCalendar::AppointmentsController</code>. Imagine trying to cram all this stuff into a single <code>AppointmentsController</code>. This idea of having namespaced contexts for broad models has been very useful.</p>
+<h2>Models</h2>
+<p>I of course keep my models in <code>app/models</code> just like everybody else. What’s maybe a little less common is the way I <a href="https://www.codewithjason.com/what-is-a-rails-model/">conceive of models</a>. I don’t just think of models as classes that inherit from <code>ApplicationRecord</code>. To me, a model is anything that models something.</p>
+<p>So a lot of the models I keep in <code>app/models</code> are just POROs. According to a count I did while writing this post, I have 115 models in <code>app/models</code> that inherit from <code>ApplicationRecord</code> and 439 that don’t. So that’s about 20% Active Record models and 80% POROs.</p>
+<h2>ViewComponents</h2>
+<p>Thanks to the structural devices that Rails provides natively (controllers, models, views, concerns, etc.) combined with the structural devices I’ve imposed myself (namespaces, a custom model structure), I’ve found that most code in my Rails apps can easily be placed in a fitting home.</p>
+<p>One exception to this for a long time for me was view-related logic. View-related logic is often too voluminous and detail-oriented to comfortably live in the view, but too tightly coupled with the DOM or other particulars of the view to comfortably live in a model, or anywhere else. The view-related code created a disturbance wherever it lived.</p>
+<p>The solution I ultimately settled on for this problem is <a href="https://www.codewithjason.com/the-problem-that-viewcomponent-solves-for-me/">ViewComponents</a>. In my experience, ViewComponents can provide a tidy way to package up a piece of non-trivial view-related logic in a way that allows me to maintain a consistent <a href="https://www.codewithjason.com/abstraction-in-rails/">level of abstraction</a> in both my views and my models.</p>
+<h2>The lib folder</h2>
+<p>I have a rough rule of thumb is that if a piece of code could conceivably be extracted into a gem and used in any application, I put it in <code>lib</code>. Things that end up in <code>lib</code> for me include custom form builders, custom API wrappers, custom generators and very general utility classes.</p>
+<h2>Concerns</h2>
+<p>In <a href="https://signalvnoise.com/posts/3372-put-chubby-models-on-a-diet-with-concerns">a post of DHH’s regarding concerns</a>, he says “Concerns are also a helpful way of extracting a slice of model that doesn’t seem part of its essence”. I think that’s a great way to put it and that’s how I use concerns as well.</p>
+<p>Like any programming device, concerns can be abused or used poorly. I sometimes come across criticisms of concerns, but to me what’s being criticized is not exactly concerns but <i>bad</i> concerns. If you’re interested in what those criticisms are and how I write concerns, I wrote a post about it <a href="https://www.codewithjason.com/used-intelligently-rails-concerns-great/">here</a>.</p>
+<h2>Background jobs</h2>
+<p>I <a href="https://www.codewithjason.com/code-smell-long-procedural-background-jobs-fix/">keep my background job workers very thin</a>, just like controllers. It’s my belief that workers shouldn’t <i>do</i> things, they should only <i>call</i> things. Background job workers are a mechanical device, not a code organization device.</p>
+<h2>JavaScript</h2>
+<p>I use JavaScript as little as possible. Not because I particularly have anything against JavaScript, but because the less “dynamic” an application is, and the fewer technologies it involves, the easier I find it to understand.</p>
+<p>When I do write JavaScript, I use a lot of POJOs (plain old JavaScript objects). I use <a href="https://stimulus.hotwire.dev/">Stimulus</a> to help keep things organized. To <a href="https://www.codewithjason.com/test-javascript-heavy-rails-applications/">test my JavaScript code</a>, I exercise it using system specs. The way I see it, it’s immaterial from a testing perspective whether I implement my features using JavaScript or Ruby. System specs can exercise it all just fine.</p>
+<h2>Tests</h2>
+<p>Being “the Rails testing guy”, I of course write a lot of tests. <a href="https://www.codewithjason.com/test-framework-learn-rspec-minitest/">I use RSpec</a> not because I necessarily think it’s the best testing framework from a technical perspective but rather just to swim with the current. I practice TDD a lot of the time but <a href="https://www.codewithjason.com/when-i-do-tdd-and-when-i-dont/">not all the time</a>. Most of my tests are <a href="https://www.codewithjason.com/rails-model-spec-tutorial/">model specs</a> and <a href="https://www.codewithjason.com/repeatable-step-step-process-writing-rails-integration-tests-capybara/">system specs</a>.</p>
+<p>If you’re curious to learn more about how I do testing, you can read <a href="https://www.codewithjason.com/articles/">my many Rails testing articles</a> or check out my <a href="https://www.codewithjason.com/complete-guide-to-rails-testing/">Rails testing book</a>.</p>
+<h2>Service objects</h2>
+<p>Since service objects are apparently so popular these days, I feel compelled to mention that I don’t use service objects. Instead, I use regular old OOP. What a lot of people might model as procedural service object code, I model as declarative objects. I write more about this <a href="https://www.codewithjason.com/code-without-service-objects/">here</a>.</p>
+<h2>How I think about Rails code organization in general</h2>
+<p>I see Rails as an amazingly powerful tool to save me from repetitive work via its conventions. Rails also provides really nice ways of organizing certain aspects of code: controllers, views, ORM, database connections, migrations, and many other things.</p>
+<p>At the same time, the benefits that Rails provides have a limit. One you find yourself past that limit (which inevitably does happen if you have a non-trivial application) you either need to provide some structure of your own or you’re likely going to end up with a mess. Specifically, once your model layer grows fairly large, Rails is no longer going to help you very much.</p>
+<p>The way I’ve chosen to organize my model code is to use OOP. Object-oriented programming is obviously a huge topic and so I won’t try to convey here what I think OOP is all about. But I think if a Rails developer learns good OOP principles, and applies them to their Rails codebase, specifically in the model layer, then it can go a long way toward keeping a Rails app organized, perhaps more than anything else.</p>
+					</div></div>
+  </div>
+</body>
+</html>

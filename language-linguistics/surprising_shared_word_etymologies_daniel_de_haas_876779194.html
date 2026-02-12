@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Surprising shared word etymologies - Daniel de Haas</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Surprising shared word etymologies - Daniel de Haas</h1>
+    <p><strong>URL:</strong> <a href="https://www.danielde.dev/blog/surprising-shared-word-etymologies">https://www.danielde.dev/blog/surprising-shared-word-etymologies</a></p>
+    <p><strong>Tags:</strong> language-linguistics</p>
+    <p><strong>Bookmark ID:</strong> 876779194</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article data-allows-copy-to-clipboard="false"> <p>I find word etymologies <em>fascinating</em>. Every word we speak or write sits unassumingly on the surface of a rich history, sometimes spanning millenia.</p>
+<p>A little while ago I bought a book called <a href="https://www.amazon.com/Dictionary-Word-Origins-Histories-English-Language/dp/1559702141">Dictionary of Word Origins</a> which details the history of thousands of words, and in reading it I’m always delighted to learn about the various historical <em>connections</em> between words, especially when the modern forms of the words have little to do with each other. The book even mentions a few particularly surprising examples of this in its introduction, and to this day I use one of those examples (“bacteria” and “imbecile” are etymologically related!) as a go-to fun fact when the need arises. I’m <em>great</em> at parties.</p>
+<p>Recently I realized that with the use of a few publicly available datasets I might be able to write a program that would <em>automatically</em> identify surprising shared word etymologies. After a bit of trial, error, and data-massaging, I was able to produce some results. If you’re interested in the journey there, keep reading. If you just want to see the results, you can <a href="#the-results">jump to the results</a>.</p>
+<h2 id="defining-surprising">Defining “surprising”</h2>
+<p>My definition of “surprising” was a pair of words that have orthogonal definitions but a shared etymological history. “Orthogonal definitions” here means they relate to two very different things (like “bacteria” and “imbecile”), not just that they have opposite meanings (like “anything” and “nothing”). Another way of phrasing this is that the two words are <em>semantically</em> very different.</p>
+<h2 id="the-datasets">The datasets</h2>
+<p>The first couple datasets I needed were a <a href="https://gist.github.com/h3xx/1976236">list of common English words</a> and a <a href="http://etym.org/">database of word etymologies</a> from which I could construct an ancestral tree (see example below). In this tree a word that is derived from another word is indented beneath it, like how “airplane” is indented beneath “plane”. If two words are etymologically related then they’ll have a common ancestor in this tree.</p>
+<pre tabindex="0"><code><span><span>Greek: πλάνος</span></span>
+<span><span>  Latin: planus</span></span>
+<span><span>    Italian: piano</span></span>
+<span><span>      English: pianoforte</span></span>
+<span><span>      Italian: pianista</span></span>
+<span><span>        fra: pianiste</span></span>
+<span><span>          English: pianist</span></span>
+<span><span>    Latin: planum</span></span>
+<span><span>      English: plane</span></span>
+<span><span>        English: airplane</span></span>
+<span><span>          English: airplanelike</span></span>
+<span><span>        English: antiplane</span></span>
+<span><span>        English: deplane</span></span>
+<span><span>        English: spyplane</span></span>
+<span><span>        English: warplane</span></span>
+<span><span>      Old French: plain</span></span>
+<span><span>        English: plain</span></span>
+<span><span>          English: plainclothed</span></span>
+<span><span>          English: plainly</span></span>
+<span><span>          English: plainspoken</span></span>
+<span><span>      Latin: planarius</span></span>
+<span><span>        English: planar</span></span>
+<span><span></span></span></code></pre>
+<p>The key dataset that made this project possible was produced by <a href="https://nlp.stanford.edu/projects/glove/">GloVe</a> - Global Vectors for Word Representation. GloVe is an algorithm that attempts to learn the <em>meaning</em> of each word in a large body of text (all of the English Wikipedia in this case). GloVe’s output is a mapping from each word in the text to a vector (i.e. a list) of numbers. Here’s a truncated version of the output in which each word corresponds to a vector of 50 numbers:</p>
+<pre tabindex="0"><code><span><span>queen:  0.37854 1.8233 -1.2648 -0.1043 0.35829 0.60029 -0.17538 0.83767 -0.056798 -0.75795 0.22681 0.98587 0.60587 -0.31419 0.28877 0.56013 -0.77456 0.071421 -0.5741 0.21342 0.57674 0.3868 -0.12574 0.28012 0.28135 -1.8053 -1.0421 -0.19255 -0.55375 -0.054526 1.5574 0.39296 -0.2475 0.34251 0.45365 0.16237 0.52464 -0.070272 -0.83744 -1.0326 0.45946 0.25302 -0.17837 -0.73398 -0.20025 0.2347 -0.56095 -2.2839 0.0092753 -0.60284</span></span>
+<span><span>king:   0.50451 0.68607 -0.59517 -0.022801 0.60046 -0.13498 -0.08813 0.47377 -0.61798 -0.31012 -0.076666 1.493 -0.034189 -0.98173 0.68229 0.81722 -0.51874 -0.31503 -0.55809 0.66421 0.1961 -0.13495 -0.11476 -0.30344 0.41177 -2.223 -1.0756 -1.0783 -0.34354 0.33505 1.9927 -0.04234 -0.64319 0.71125 0.49159 0.16754 0.34344 -0.25663 -0.8523 0.1661 0.40102 1.1685 -1.0137 -0.21585 -0.15155 0.78321 -0.91241 -1.6106 -0.64426 -0.51042</span></span>
+<span><span>rabbit: 0.53049 -0.63657 -0.53314 -0.37542 0.28821 1.2374 -0.47467 -1.2037 0.58209 -0.55149 -0.2719 0.70193 0.74694 0.34327 0.65301 0.54077 0.66454 0.47677 -1.0837 0.12478 -0.15093 -0.66961 0.55866 0.60741 0.70239 -0.91675 -0.92081 0.59262 0.0070694 -0.95443 0.69853 -0.13292 -0.061585 1.206 -0.58842 0.43482 -0.19392 -0.19351 -0.07301 -0.85527 0.32885 0.57285 -0.57111 0.10893 1.0902 -0.028394 0.78458 -0.97332 0.36124 -0.056677</span></span>
+<span><span>wheel:  -0.096431 0.33246 0.8273 -0.22238 -0.36477 1.0267 0.027535 -0.75243 0.41674 -0.85088 0.32921 0.29503 -1.4781 0.93187 -0.4263 0.68609 -0.38269 1.2805 -0.19902 -2.1501 0.081088 -0.1337 -0.68121 0.73649 0.75513 -0.88687 -0.56006 0.71562 0.58291 0.15116 2.1771 0.23935 -0.27441 1.1731 0.60639 0.27858 0.62137 0.065271 -0.059935 0.19949 0.32832 0.096803 -0.62466 0.38014 -0.43297 0.031017 0.98628 -0.92416 0.34418 -0.71711</span></span>
+<span><span></span></span></code></pre>
+<p>But what do these numbers mean? Well, not much on their own. Where they become interesting is when you <em>compare</em> the vectors for two words. If we treat each vector like a point in 50-dimensional space we can then measure the distance between those vectors. And what we’ll find is that GloVe has constructed these vectors such that the distance between semantically similar words is smaller than the distance between semantically dissimilar words. For example, the distance between the vectors for “king” and “queen” is 3.47, whereas the distance between “king” and “wheel” is 6.58.</p>
+<h2 id="bringing-it-together">Bringing it together</h2>
+<p>With these datasets we have everything we need to identify surprising shared etymologies. A pair of words has a surprising shared etymology if (1) the two words are etymologically related and (2) they have a large semantic distance from each other. So our final algorithm looks something like this:</p>
+<ol>
+<li>Generate a list of pairs of etymologically related words.</li>
+<li>For each pair, calculate their semantic distance from each other using GloVe.</li>
+<li>Sort the list of pairs by the calculated semantic distance.</li>
+</ol>
+<p>The pairs with the highest semantic distance from each other should, in theory, be the most surprising.</p>
+<p>In practice this wasn’t necessarily the case. There were all sorts of results that weren’t interesting for various reasons, so I had to apply a few additional filtering steps:</p>
+<ul>
+<li>I ignored words that began with common prefixes like “un” or “re”.</li>
+<li>I ignored pairs of words that had the same first 3 letters (like “flying” and “flycatching”).</li>
+<li>I ignored pairs of words that had any common substring of at least 4 letters (like “bookish” and “daybook”).</li>
+<li>I ignored various words I didn’t know or that seemed uninteresting (like “een”, “poisonwood”, and “localhost”).</li>
+</ul>
+<p>What I was left with was a list of <em>mostly</em> interesting and surprising shared word etymologies!</p>
+<h2 id="the-results">The results</h2>
+<p>What follows is a hand-picked list of what I found to be the most interesting pairs (or triplets) of words my program produced, along with a brief bit about the actual history that I researched separately.</p>
+<h3 id="piano--plainclothed">”piano” &amp; “plainclothed"</h3>
+<p>"Piano” is a shortened form of the Italian word “pianoforte”, which means “soft-loud”. The “piano” part comes from Latin “planus”, meaning “level, flat, even”, and which is also the source of the word “plain” and eventually “plainclothed”.</p>
+<h3 id="potable--poison">“potable” &amp; “poison”</h3>
+<p>One of many of the pairs of words in these results that seem obvious once pointed out, “potable” and “poison” both ultimately come from Latin “potare”, meaning “to drink”. “Potare” also gives English the word “potion”, a close cousin of “poison”.</p>
+<h3 id="actor--coagulate">“actor” &amp; “coagulate”</h3>
+<p>Both of these words derive ultimately from the Latin “ago”, meaning “act”, “do”, “make”, and <a href="https://en.wiktionary.org/wiki/ago#Latin">a bunch of other things</a>.</p>
+<p>English “actor” is a short hop away from “ago”, but “coagulate” takes a longer path: “ago” ➔ “cogo” (“collect”) ➔ “coagulum” (“a clot”) ➔ “coagulo” (“to clot”).</p>
+<h3 id="estate--contrast">“estate” &amp; “contrast”</h3>
+<p>Both “estate” and “contrast” ultimately derive from Latin “stare”, meaning (among other things) “stand”.</p>
+<p>”Contrast” is a shortened form of the Latin “contrastare” (“contra-” meaning “against”, so “stand against”, which is a literal description of what you do when you compare things).</p>
+<p>”Estate” comes to English via the Latin “stare” ➔ “status” (“position, place”), which then gives the English “state” and eventually “estate”.</p>
+<h3 id="pay--peace">“pay” &amp; “peace"</h3>
+<p>"Pay” and “peace” are descended from the Latin “pax”, meaning “peace”.</p>
+<p>”Pay” takes a slightly longer journey than “peace”, coming from Latin “pacare”, meaning “appease”, as in “appeasing a creditor”. So etymologically, to “pay” someone means to “create peace by settling a debt”.</p>
+<h3 id="cancer--cancel--chancellor">“cancer” &amp; “cancel” &amp; “chancellor”</h3>
+<p>These words all descend from the Greek “karkinos”, meaning “crab”, which became “cancer” in Latin.</p>
+<p>”Cancer” was applied to tumors because the swollen veins around a tumor were said to look like a crab.</p>
+<p>”Cancer” had an alternative meaning, “enclosure” (which is, historically, where the meaning “crab” was derived, because of the way a crab’s pincers form a circle). This alternative meaning helped the word evolve into the Latin “cancellus” - a barrier dividing two parts of a building. Applied metaphorically, this eventually became the English “cancel”.</p>
+<p>”Chancellor” comes from the Latin “cancellarius”, originally a court official who, wanting to be separated from the public, stood on one side of a cancellus.</p>
+<p>I find etymologies like this that have clear <em>physical</em> roots especially fascinating.</p>
+<h3 id="fantastic--phenotype">”fantastic” &amp; “phenotype"</h3>
+<p>"Fantastic” and “phenotype” both descend from the Greek “phainein”, meaning “show”.</p>
+<p>The path from “phainein” to “phenotype” is fairly plain, but “fantastic” takes a longer path via Greek “phantos” (“visible”) ➔ Greek “phantazesthai” (“have visions, imagine”) ➔ Greek “phantastikos” (“imaginary, fantastic”) ➔ Old French “fantastique” (“fantastic”).</p>
+<p>The leap from a word meaning “imaginary” to a word meaning “fantastic” struck me as odd initially, but apparently it comes from the sense of the word “imaginary” as “unreal”.</p>
+<h3 id="college--legalize">“college” &amp; “legalize”</h3>
+<p>Both words ultimately descend from Latin “lex”, meaning “law”.</p>
+<p>”Legal” takes a short hop from the Latin “legalis”.</p>
+<p>The history of “college” is more complicated - “lex” became Latin “lego” (“choose, appoint”) ➔ Latin “collega” (“partner”, or “one chosen to work with another”) ➔ Latin “collegium” (“group of colleagues”). So a “college” is, etymologically speaking, a group of people chosen to work together.</p>
+<p>Historically, this word was often used to refer to a corporation, and only became associated with universities in the past couple hundred years.</p>
+<h3 id="lien--ligament">”lien” &amp; “ligament"</h3>
+<p>"Lien” and “ligament” are descended from the Latin “ligare”, meaning “tie”. Both words have taken relatively short paths to their current English forms.</p>
+<p>This is another case that I find so delightful in which a word with a physical meaning (“ligare”) has taken a metaphorical leap to become a modern word (“lien”).</p>
+<h3 id="journal--journey">“journal” &amp; “journey”</h3>
+<p>While it seems like “journal” and “journey” should be close cousins, their nearest common ancestor is in fact quite old - the Latin “diurnus”, meaning “daily”.</p>
+<p>A “journal” is a book written in to record the day.</p>
+<p>A “journey” was historically the distance that could be traveled in a single day. The “in a single day” bit of that has since been lost, leaving “journey” to just mean “travel”.</p>
+<h3 id="educate--subdue">“educate” &amp; “subdue”</h3>
+<p>I never would have picked those two words out of a lineup as having a shared etymological root, but sure enough it sits right there - the “du” in the middle of each word, which ultimately derives from Latin “duco”, meaning “lead”.</p>
+<p>”Educate” comes from the Latin “eductus”, meaning to “lead or bring out”, and then the Latin “educare” (“raise, train, mould”). I love the image of education as the process of extruding a refined person out of a base of unrefined material.</p>
+<p>”Subdue” comes from the latin “subduco”, meaning “lead under”. Again, a very clear <em>physical</em> description of what the word means - to put beneath you, or bring under control.</p>
+<h2 id="further-reading">Further reading</h2>
+<p>If this stuff interested you, then here are a few more recommendations for things you might enjoy (I’m not associated with these in any way, I just like them):</p>
+<ul>
+<li><a href="https://www.amazon.com/Unfolding-Language-Evolutionary-Mankinds-Invention/dp/0805080120/ref=sr_1_1?dchild=1&amp;keywords=the+unfolding+of+language&amp;qid=1623351283&amp;sr=8-1">The Unfolding of Language</a>: This is a <em>fascinating</em> book that explores how language originated and evolved. It also inevitably spends a lot of time discussing etymology, and in particular making the case for how <em>all</em> words we use today can be traced back to roots in physical space.</li>
+<li><a href="https://historyofenglishpodcast.com/">The History of English Podcast</a>: I’ve only listened to a few episodes of this podcast so far (the ones on the <a href="https://historyofenglishpodcast.com/2020/09/24/episode-141-the-great-vowel-shift-part-1/">Great</a> <a href="https://historyofenglishpodcast.com/2020/10/22/episode-142-the-great-vowel-shift-part-2/">Vowel</a> <a href="https://historyofenglishpodcast.com/2020/11/24/episode-143-the-great-vowel-shift-part-3/">Shift</a>), but have enjoyed it immensely. As an audio medium, a podcast is uniquely suited for exploring how the <em>sounds</em> of many words have evolved over time.</li>
+<li><a href="https://www.amazon.com/Dictionary-Word-Origins-Histories-English-Language/dp/1559702141">Dictionary of Word Origins</a>: This is the book I mentioned above in the intro. It’s great as a coffee table book - it never fails to produce an audible “no kidding!” from me when I flip to a random page.</li>
+</ul>
+<p>If you’re into code you can read the rough, hacked-together Ruby I wrote for this project <a href="https://gist.github.com/DanielDe/77a96f6cfb9b401ffa9a3f8e661f4715">here</a>.</p>
+<p>And finally, if you’ve got any thoughts or comments I’d love to hear them - <a href="https://twitter.com/DehaasDe">Twitter</a> or email (me@ this domain) are the best ways to reach me.</p>
+<h4 id="edit-61121">Edit 6/11/21</h4>
+<p>Lots of fun discussion on <a href="https://news.ycombinator.com/item?id=27475193">Hacker News</a> of more surprising shared etymologies!</p> </article></div>
+  </div>
+</body>
+</html>

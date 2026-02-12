@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A Comprehensive Guide to Font Loading Strategies—zachleat.com</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A Comprehensive Guide to Font Loading Strategies—zachleat.com</h1>
+    <p><strong>URL:</strong> <a href="https://www.zachleat.com/web/comprehensive-webfonts">https://www.zachleat.com/web/comprehensive-webfonts</a></p>
+    <p><strong>Tags:</strong> fonts-typography, webdev</p>
+    <p><strong>Bookmark ID:</strong> 876780884</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-role="main" id="skiplink-content">
+	<article>
+	
+
+	
+	<div>
+		<heading-anchors selector="h2,h3">
+			<p><em>This guide is not intended for use with font icons, which have different loading priorities and use cases. Also, SVG is probably a better long term choice.</em></p>
+<p><strong>Updated July 27, 2017</strong> with new information on <code>font-display</code>.
+<strong>Updated August 14, 2017</strong> with a link to a <a href="https://www.zachleat.com/web/webfont-glossary/">glossary page</a>.</p>
+<h2 id="jump-to">Jump to:</h2>
+<ul>
+<li><a href="#font-face">Unceremonious @font-face</a></li>
+<li><a href="#font-display"><code>font-display</code></a></li>
+<li><a href="#preload"><code>preload</code></a></li>
+<li><a href="#abstain">Don’t use web fonts</a></li>
+<li><a href="#inline-data-uri">Inline Data URI</a></li>
+<li><a href="#async-data-uri">Asynchronous Data URI</a></li>
+<li><a href="#fout-class">FOUT with a Class</a></li>
+<li><a href="#foft">FOFT, or FOUT with Two Stage Render</a></li>
+<li><a href="#critical-foft">Critical FOFT</a></li>
+<li><a href="#critical-foft-data-uri">Critical FOFT with Data URI</a></li>
+<li><a href="#critical-foft-preload">Critical FOFT with <code>preload</code></a></li>
+</ul>
+
+<img src="data:application/octet-stream;base64," alt="A diagram describing the relationship between the font loading strategies" id="webfont-strategies-chart">
+<h2 id="glossary">Glossary</h2>
+<p>If you run into a term that you don’t know, please consult the <a href="https://www.zachleat.com/web/webfont-glossary/">glossary of web font loading terms</a> I’ve prepared. If a term is missing in the glossary, please <a href="https://twitter.com/zachleat">let me know on Twitter @zachleat</a> or in the comments.</p>
+<h2 id="quick-guide">Quick Guide</h2>
+<p>If you’re looking for a specific approach, I’ve prepared some handy links that will take you to the section you need. Let’s say you want an approach that:</p>
+<ul>
+<li>
+<p><strong>is the most well rounded approach that will be <em>good enough</em> for most use cases</strong>: <a href="#fout-class">FOUT with a Class</a>.</p>
+</li>
+<li>
+<p><strong>is the easiest possible thing to implement</strong>: I’ve learned a lot about web fonts and at time of writing this article the current browser support is lacking for the easiest methods for effective/robust web font implementation. It is with that in mind that I will admit—if you’re looking for the easy way out already, you should consider <a href="#abstain">not using web fonts</a>. If you don’t know what web fonts are doing to improve your design, they may not be right for you. Don’t get me wrong, web fonts are <strong>great</strong>. But educate yourself on the benefit first. (<a href="https://robinrendle.com/notes/in-defense-of-webfonts/#the-value-of-a-webfont">In Defense of Web Fonts, <em>The Value of a Web Font</em> by Robin Rendle</a> is a good start. If you have others, please leave a comment below!)</p>
+</li>
+<li>
+<p><strong>is the best performance-oriented approach</strong>: Use one of the Critical FOFT approaches. Personally, at time of writing my preference is <a href="#critical-foft-data-uri">Critical FOFT with Data URI</a> but will shift toward <a href="#critical-foft-preload">Critical FOFT with <code>preload</code></a> as browser support for <code>preload</code> increases.</p>
+</li>
+<li>
+<p><strong>will work well with a large number of web fonts</strong>: If you’re web font obsessed (anything more than 4 or 5 web fonts or a total file size of more than 100KB) this one is kind of tricky. I’d first recommend trying to pare your web font usage down, but if that isn’t possible stick with a standard <a href="#foft">FOFT, or FOUT with Two Stage Render</a> approach. Use separate FOFT approaches for each typeface (grouping of roman, bold, italic, et cetera).</p>
+</li>
+<li>
+<p><strong>will work with my existing cloud/web font hosting solution</strong>: FOFT approaches generally require self hosting, so stick with the tried and true <a href="#fout-class">FOUT with a Class</a> approach.</p>
+</li>
+</ul>
+<h2 id="criteria">Criteria</h2>
+<ol>
+<li><strong>Ease of Implementation</strong>: sometimes, simple is what makes the deadline.</li>
+<li><strong>Rendering Performance</strong>: FOUT is a feature that will allow you to render fallback fonts immediately and render the web font when it loads. We can take additional steps to reduce amount of time a fallback font is shown and reduce the impact of FOUT or even eliminate it altogether.</li>
+<li><strong>Scalability</strong>: some font loading approaches encourage serial loading of web fonts. We want the requests to happen in parallel. We’ll evaluate how well each approach works with a growing web font budget.</li>
+<li><strong>Future Friendly</strong>: will it require additional research and maintenance if a new font format comes out or will it be easily adaptable?</li>
+<li><strong>Browser Support</strong>: is it sufficient to work with a wide enough base to meet most projects’ browser support requirements?</li>
+<li><strong>Flexibility</strong>: does the approach easily facilitate grouping web font requests and their repaints and reflows? We want control over which fonts load and when.</li>
+<li><strong>Robustness</strong>: What happens if a web font request hangs? Will the text be readable or will the web font be a single point of failure (SPOF)?</li>
+<li><strong>Hosting</strong>: does the approach require self hosting or is it adaptable to work with various web font loaders provided by cloud providers/font foundries?</li>
+<li><strong>Subsetting</strong>: some font licenses don’t allow subsetting. Some approaches below require subsetting for optimal performance.</li>
+</ol>
+<h2 id="unceremonious-font-face"><span id="font-face">Unceremonious @font-face</span></h2>
+<p>Throw a naked @font-face block on your page and hope for the best. This is the default approach recommended by <a href="https://fonts.google.com/">Google Fonts</a>.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/unceremonious-font-face.html">Demo: Unceremonious <code>@font-face</code></a></strong></li>
+</ul>
+<h4 id="pros">Pros</h4>
+<ul>
+<li>Very simple: add a CSS <code>@font-face</code> block with WOFF and WOFF2 formats (maybe even an OpenType format too, if you want better Android &lt; 4.4 support—Compare <a href="http://caniuse.com/#feat=woff">WOFF</a> with <a href="http://caniuse.com/#feat=ttf">TTF/OTF</a> on Can I Use).</li>
+<li>Very future friendly: this is the default web font behavior. You’re in the web font mainstream here. Adding additional font formats is as simple as including another URL in your <code>@font-face</code> comma separated <code>src</code> attribute.</li>
+<li>Good rendering performance in Internet Explorer and Edge: no FOIT, no hidden or invisible text. I fully support this by-design decision made my Microsoft.</li>
+<li>Does not require modification of the fonts (through subsetting or otherwise). Very license friendly.</li>
+</ul>
+<h4 id="cons">Cons</h4>
+<ul>
+<li>Bad rendering performance everywhere else: Maximum three second FOIT in most modern browsers, switches to FOUT if load takes longer. While requests may finish earlier, we know how unreliable the network can be—three seconds is a long time for invisible unreadable content.</li>
+<li>Not very robust, yet: Some WebKits have no maximum FOIT timeout (although WebKit has very recently fixed this and I believe it will be included with Safari version 10), which means web font requests may be a single point of failure for your content (if the request hangs, content will never display).</li>
+<li>No easy way to group requests or repaints together. Each web font will incur a separate repaint/reflow step and its own FOIT/FOUT timeouts. This can create undesirable situations like the <a href="https://www.zachleat.com/web/mitt-romney-webfont-problem/">Mitt Romney Web Font Problem</a>.</li>
+</ul>
+<h4 id="verdict-do-not-use">Verdict: Do not use.</h4>
+<h2 id="font-display-2"><span id="font-display">font-display</span></h2>
+<p>Add a new <code>font-display: swap</code> descriptor to your <code>@font-face</code> block to opt-in to FOUT on browsers that support it. Optionally, <code>font-display: fallback</code> or <code>font-display: optional</code> can be used if you consider web fonts to be unnecessary to the design. <s>At time of writing, this feature is not available in any stable web browsers.</s> <em>Update: on July 25, 2017 Chrome 60 was released on the Chrome stable release channel which includes support for <code>font-display</code>.</em></p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/font-display.html">Demo: <code>font-display</code></a></strong>: note browser support for this is very limited.</li>
+<li>Read more: <a href="https://tabatkins.github.io/specs/css-font-display/"><code>font-display</code> Specification</a></li>
+</ul>
+<h4 id="pros-2">Pros</h4>
+<ul>
+<li>Very Simple: Only a single CSS descriptor added to your <code>@font-face</code> block.</li>
+<li>Good rendering performance: if this approach had ubiquitous browser support, this would give us FOUT without any JavaScript. A CSS-only approach would be ideal.</li>
+<li>Super future friendly: is orthogonal to web font formats. No other changes are required if you add new formats to your stack.</li>
+<li>Very robust: a FOUT approach will show your fallback text in supported browsers even if the web font request hangs. Even better—your web fonts are not dependent on a JavaScript polyfill—which means if the JavaScript fails, users are still eligible for the web fonts.</li>
+<li>Does not require modification of the fonts (through subsetting or otherwise). Very license friendly.</li>
+</ul>
+<h4 id="cons-2">Cons</h4>
+<ul>
+<li>Only available on Chrome (version 60+ on Desktop and Android, see <a href="https://www.chromestatus.com/feature/4799947908055040">Chrome Platform Status</a>). In progress and behind a flag on <a href="https://platform-status.mozilla.org/#css-font-display">Firefox Platform Status</a> but not yet documented at all on <a href="https://developer.microsoft.com/en-us/microsoft-edge/platform/status/">Edge Platform Status</a>. Until support is ubiquitous across A-grade browsers, developers will need to pair this with a JavaScript approach.</li>
+<li>In fact, pairing this with a JavaScript approach doesn’t really buy you all that much on an empty-cache load, given that the JavaScript FOUT approaches documented on this page usually require modification of your CSS to avoid using any web fonts prior to font loading classes added by JavaScript. When the two approaches are paired together and the JavaScript fails you won’t get web fonts even though <code>font-display</code> is a CSS-only approach. It’ll help for repeat view optimizations though.</li>
+<li>Limited flexibility: No way to group requests or repaints. This isn’t as bad as it sounds—if you FOUT everything you’ll avoid the Mitt Romney Web Font problem but grouping can be useful for other reasons—we’ll go into that later.</li>
+<li>~Hosting: No control of this property on any known web font host. It’s not included in the Google Fonts CSS, for example. This will probably change when browser support improves.~ <em>Update: in May 2019 Google Fonts added the ability to set a <code>font-display</code> property, related blog post <a href="https://www.zachleat.com/web/google-fonts-display/">can be read here</a>.</em></li>
+</ul>
+<h4 id="verdict-definitely-add-it-to-your-font-face-blocks-but-by-itself-it-s-not-sufficient">Verdict: Definitely add it to your <code>@font-face</code> blocks, but by itself it’s not sufficient.</h4>
+<h2 id="preload-2"><span id="preload">Preload</span></h2>
+<p>Add <code>&lt;link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin&gt;</code> to fetch your font sooner. Pairs nicely with an unceremonious <code>@font-face</code> block and feel free to also throw in the <code>font-display</code> descriptor as well for bonus points.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/preload.html">Demo: <code>preload</code></a></strong></li>
+<li>Read more: <a href="https://www.smashingmagazine.com/2016/02/preload-what-is-it-good-for/">Preload: What is it Good For?</a></li>
+<li>Read more: <a href="https://www.zachleat.com/web/preload/">The Web Fonts: Preloaded</a> <em>(the first half)</em></li>
+</ul>
+<p>Keep in mind: The pros and cons for this approach are heavily dependent on the font loading strategy you pair it with, whether it be <a href="#font-face">Unceremonious <code>@font-face</code></a> or <a href="#font-display"><code>font-display</code></a>.</p>
+<h3 id="pros-3">Pros</h3>
+<ul>
+<li>Super easy to implement, one <code>&lt;link&gt;</code> and you’re off.</li>
+<li>Better rendering performance than a <code>@font-face</code> block. Web fonts are requested higher up in the waterfall.</li>
+<li>Future friendly if you use the <code>type</code> attribute to specify the font format. At this point it’s still possible (although it looks unlikely) that a web browser will implement <a href="http://caniuse.com/#feat=link-rel-preload">preload</a> before <a href="http://caniuse.com/#feat=woff2">WOFF2</a> for example, and without this attribute you could be looking at a wasted request. So, make sure you include <code>type</code>.</li>
+<li>Does not require modification of the fonts (through subsetting or otherwise). Very license friendly.</li>
+</ul>
+<h3 id="cons-3">Cons</h3>
+<ul>
+<li>Scalability: The more you preload, the more you can block initial render (note data for this comparison was gathered on a site that was using Critical CSS). Try to limit usage to the most important one or two web fonts.</li>
+<li>Limited browser support—only Blink support right now, but more coming soon.</li>
+<li>Flexibility: no way to group repaints/reflows.</li>
+<li>You probably wouldn’t be able to use this with a third party host. You’d need to know at markup render the URL of the web font you’re requesting. Google Fonts, for example, generates these in the CSS request you make to their CDN.</li>
+</ul>
+<h4 id="verdict-not-sufficient-by-itself">Verdict: Not sufficient by itself.</h4>
+<h2 id="don-t-use-web-fonts"><span id="abstain">Don’t use Web Fonts</span></h2>
+<p>I won’t go into this approach too much because, well, it isn’t technically a font loading strategy. <em>But I will say that it’s better than using web fonts incorrectly.</em> You are missing out on many new typographic features and improvements in readability that a web font can give you, but it is your option to opt-out.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/dont.html">Demo: Don’t use Web Fonts</a></strong>: yeah, I included this. The title says comprehensive, remember?</li>
+</ul>
+<h4 id="pros-4">Pros</h4>
+<ul>
+<li>Not sure it could be simpler: just use <code>font-family</code> without <code>@font-face</code>.</li>
+<li>Near instant rendering performance: No worries about FOUT or FOIT.</li>
+</ul>
+<h4 id="cons-4">Cons</h4>
+<ul>
+<li>Limited availability. Very few system fonts are available cross platform. Check <a href="http://fontfamily.io/">fontfamily.io</a> to see if a system font has acceptable browser support for your needs.</li>
+</ul>
+<h4 id="verdict-sure-i-guess-but-i-wouldn-t-be-excited-about-it">Verdict: Sure, I guess, but I wouldn’t be excited about it.</h4>
+<h2 id="inline-data-uri-2"><span id="inline-data-uri">Inline Data URI</span></h2>
+<p>There are typically two kinds of inlining covered by this method: in a blocking <code>&lt;link rel="stylesheet"&gt;</code> request or in a <code>&lt;style&gt;</code> element in the server rendered markup. Both <a href="http://www.alibaba.com/">alibaba.com</a> (two web fonts embedded in a blocking CSS request) and <a href="https://medium.com/">medium.com</a> (seven web fonts) use this approach.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/inline-data-uri.html">Demo: Inline Data URI</a></strong></li>
+<li>Read more: <a href="https://www.zachleat.com/web/web-font-data-uris/">Web Font Anti-Pattern: Data URIs</a> <em>(the first half)</em></li>
+</ul>
+<h4 id="pros-5">Pros</h4>
+<ul>
+<li>Seemingly great rendering performance: this approach has <em>no FOUT or FOIT</em>. This is a big deal.</li>
+<li>Flexibility: Don’t need to worry about grouping repaints/reflows—this approach has no FOUT or FOIT.</li>
+<li>Robustness: inlining puts all your eggs into your initial server request basket.</li>
+</ul>
+<h4 id="cons-5">Cons</h4>
+<ul>
+<li>A catch with rendering performance: while this approach doesn’t FOUT, it can significantly delay initial render time. On the other hand it will render “finished.” But keep in mind that even a single WOFF2 web font is probably going to be around 10KB—15KB and inlining just one as a Data URI will likely take you over the HTTP/1 recommendation of only having 14KB or less in the critical rendering path.</li>
+<li>Browser support: Doesn’t take advantage of the comma separated format list in <code>@font-face</code> blocks: this approach only embeds one format type. Usually in the wild this has meant WOFF, so using this method forces you to choose between ubiquity (WOFF) and much narrower user agent support but smaller file sizes (WOFF2).</li>
+<li>Bad scalability: Requests don’t happen in parallel. They load serially.</li>
+<li>Self hosting: Required, of course.</li>
+</ul>
+<h4 id="verdict-only-use-this-method-if-you-really-despise-fout-i-wouldn-t-recommend-it">Verdict: Only use this method if you really despise FOUT—I wouldn’t recommend it.</h4>
+<h2 id="asynchronous-data-uri-stylesheet"><span id="async-data-uri">Asynchronous Data URI Stylesheet</span></h2>
+<p>Use a tool like <a href="https://github.com/filamentgroup/loadCSS/"><code>loadCSS</code></a> to fetch a stylesheet with all of the fonts embedded as Data URIs. Often you’ll see this coupled with a localStorage method of storing the stylesheet on the user agent for repeat views.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/async-data-uri.html">Demo: Asynchronous Data URI Stylesheet</a></strong></li>
+<li>Read more: <a href="https://www.filamentgroup.com/lab/font-loading.html">How we use web fonts responsibly, or, avoiding a @font-face-palm on the Filament Group Lab</a></li>
+</ul>
+<h4 id="pros-6">Pros</h4>
+<ul>
+<li>Rendering performance: <em>Mostly eliminates FOIT</em> (see note in the Cons)</li>
+<li>Flexibility: Easy to group requests into a single repaint (put multiple Data URIs in one stylesheet).</li>
+<li>Ease: Does not require any additional CSS changes to use. This is a big benefit. However, implementation isn’t all candy and roses.</li>
+<li>Robust: If the asynchronous request fails, fallback text continues to be shown.</li>
+</ul>
+<h4 id="cons-6">Cons</h4>
+<ul>
+<li>Rendering performance: Has a very noticeable, but short FOIT while the stylesheet and Data URIs are being parsed. It’s quite distracting. I see this method often enough that I can recognize the approach without looking into the source code.</li>
+<li>Flexibility and Scalability: Grouped requests and repaints are coupled together. If you group multiple Data URIs together (which will cause loading to occur in serial and not in parallel), they will repaint together. With this method, you can’t load in parallel and group your repaints.</li>
+<li>Not maintenance friendly. Requires you to have your own method to determine font format support. Your JavaScript loader will need to determine which font format is supported (WOFF2 or WOFF) before fetching the Data URI stylesheet. This means if a new font format comes out, you’ll need to develop a feature test for it.</li>
+<li>Browser support: You can bypass the maintenance of the loader step and hard-code to WOFF2 or WOFF but this will either incur larger than necessary or potentially throwaway requests (the same drawback we talked about for Inline Data URIs).</li>
+<li>Self Hosting: Required.</li>
+</ul>
+<h4 id="verdict-it-s-ok-but-we-can-do-better">Verdict: It’s OK but we can do better.</h4>
+<h2 id="fout-with-a-class"><span id="fout-class">FOUT with a Class</span></h2>
+<p>Use the CSS Font Loading API with a polyfill to detect when a specific font has loaded and only apply that web font in your CSS after it has loaded successfully. Usually this means toggling a class on your <code>&lt;html&gt;</code> element. Use with SASS or LESS mixins for easier maintenance.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/fout-with-class-polyfill.html">Demo: FOUT with a Class</a></strong> (includes sessionStorage trick for repeat view optimization)</li>
+<li>Read more: <a href="https://dev.opera.com/articles/better-font-face/">Better @font-face with Font Load Events on Dev.Opera</a> and <a href="https://www.filamentgroup.com/lab/font-events.html">Font Loading Revisited with Font Events on the Filament Group Lab</a></li>
+</ul>
+<h3 id="pros-7">Pros</h3>
+<ul>
+<li>Rendering performance: Eliminates FOIT. This method is tried and tested. It’s <a href="https://helpx.adobe.com/fonts/user-guide.html/fonts/using/embed-codes.ug.html#JavaScriptembedcode">one of the approaches recommended by TypeKit</a>.</li>
+<li>Flexibility: Easy to group requests into a single repaint (use one class for multiple web font loads)</li>
+<li>Scalability: Requests happen in parallel</li>
+<li>Robust: if the request fails, fallback text is still shown.</li>
+<li>Hosting: Works independent of font loader (easy to implement with third party hosts or with existing <code>@font-face</code> blocks)</li>
+<li>Great browser support, polyfills typically work everywhere that web fonts are supported.</li>
+<li>Future friendly: polyfills aren’t coupled to font formats and should work with existing <code>@font-face</code> blocks. That means when a new format comes out, you can just change your <code>@font-face</code> as normal.</li>
+<li>Does not require modification of the fonts (through subsetting or otherwise). Very license friendly.</li>
+</ul>
+<h3 id="cons-7">Cons</h3>
+<ul>
+<li>Requires strict maintenance/control of your CSS. A single use of a web font font-family in your CSS without the guarding <code>loaded</code> class will likely trigger a FOIT.</li>
+<li>Typically requires you to hard code which web fonts you want to load on the page. This can mean that you end up loading more web font content than a page needs. Remember that with unceremonious <code>@font-face</code> usage, newer browsers only download web fonts that are actually used on your page. This is given to you for free. This is why the <a href="https://twitter.com/zachleat/status/746732627319623689">New York Times can get away with 100 different <code>@font-face</code> blocks on their home page</a>—the browser only downloads a fraction of those. With this approach, you must tell the browser which fonts to download independent of usage.</li>
+</ul>
+<h3 id="verdict-this-is-the-baseline-standard-this-will-work-for-most-use-cases">Verdict: This is the baseline standard. This will work for most use cases.</h3>
+<h2 id="foft-or-fout-with-two-stage-render"><span id="foft">FOFT, or FOUT with Two Stage Render</span></h2>
+<p>This approach builds on the <a href="#fout-class">FOUT with a Class</a> method and is useful when you’re loading multiple weights or styles of the same typeface, <em>e.g.</em> roman, bold, italic, bold italic, book, heavy, and others. We split those web fonts into two stages: the roman first, which will then also immediately render faux-bold and faux-italic content (using <a href="https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/">font synthesis</a>) while the real web fonts for heavier weights and alternative styles are loading.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/foft.html">Demo: FOFT, or FOUT with Two Stage Render</a></strong> (includes sessionStorage trick for repeat view optimization)</li>
+<li><a href="https://gist.github.com/zachleat/3b9414a4be8565999a5d483039cf82d1/revisions?diff=split#diff-0">Compare source code for FOFT against FOUT with a Class</a></li>
+<li>Read more: <a href="https://www.zachleat.com/web/foft/">Flash of Faux Text—Still More on Font Loading</a></li>
+</ul>
+<h3 id="pros-8">Pros</h3>
+<ul>
+<li><em>All the existing Pros of the <a href="#fout-class">FOUT with a Class</a> approach.</em></li>
+<li>Rendering performance: Greatly reduces the amount of content jumping that occurs when the web font has loaded. Given that we divide our web font loads into two stages, this allows the first stage (the roman font—the one that will incur the most reflow) much quicker than if we had grouped all our fonts together into a single repaint.</li>
+</ul>
+<h3 id="cons-8">Cons</h3>
+<ul>
+<li><em>All the existing Cons of the <a href="#fout-class">FOUT with a Class</a> approach.</em></li>
+<li>Some designers are highly allergic to font synthesis. Objectively, synthesized variations are less useful than their real counterparts but that isn’t a fair comparison. Keeping in mind that the synthesized versions are only a temporary placeholder, the question we need to ask is: are they more or less useful than the fallback font? More. The answer is more.</li>
+</ul>
+
+<h2 id="critical-foft-2"><span id="critical-foft">Critical FOFT</span></h2>
+<p>The only difference between this method and standard FOFT approach is that instead of the full roman web font in the first stage, we use a subset roman web font (usually only containing A-Z and optionally 0-9 and/or punctuation). The full roman web font is instead loaded in the second stage with the other weights and styles.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/critical-foft-polyfill.html">Demo: Critical FOFT</a></strong> (includes sessionStorage trick for repeat view optimization)</li>
+<li><a href="https://gist.github.com/zachleat/1c2ee3c30ded23922cf4a9720283edfe/revisions?diff=split#diff-0">Compare source code for Critical FOFT against FOFT</a></li>
+<li>Read more: <a href="https://www.zachleat.com/web/critical-webfonts/">Critical Web Fonts</a></li>
+</ul>
+<h3 id="pros-9">Pros</h3>
+<ul>
+<li><em>All the existing Pros of the <a href="#foft">FOFT</a> approach</em></li>
+<li>Rendering performance: The first stage loads even faster (more noticeable on slower connections) further minimizing the time to first stage web font repaint, making your most used web font reflow occur sooner rather than later.</li>
+</ul>
+<h3 id="cons-9">Cons</h3>
+<ul>
+<li><em>All the existing Cons of the <a href="#foft">FOFT</a> approach.</em></li>
+<li>Introduces a small amount overhead in that the subset roman font loaded in the first stage is duplicated by the full roman web font loaded in the second stage. This is the price we’re paying to minimize reflow.</li>
+<li>License restriction: Requires subsetting.</li>
+</ul>
+<h3 id="verdict-use-one-of-the-improved-critical-foft-variations-below">Verdict: Use one of the improved Critical FOFT variations below.</h3>
+<h2 id="critical-foft-with-data-uri"><span id="critical-foft-data-uri">Critical FOFT with Data URI</span></h2>
+<p>This variation of the Critical FOFT approach simply changes the mechanism through which we load the first stage.  Instead of using our normal font loading JavaScript API to initiate a download, we simply embed the web font as a inline Data URI directly in the markup. As previously discussed, this will block initial render but since we’re only embedding a very small subset roman web font this is a small price to pay to mostly eliminate FOUT.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/critical-foft-data-uri-polyfill.html">Demo: Critical FOFT with Data URI</a></strong> (includes sessionStorage trick for repeat view optimization)</li>
+<li><a href="https://gist.github.com/zachleat/b57b7fce3e1eb6d8c301221607d53c34/revisions?diff=split#diff-0">Compare source code for Critical FOFT with Data URI against Critical FOFT</a></li>
+<li>Read more: <a href="https://www.zachleat.com/web/web-font-data-uris/#but-wait">Web Font Anti-Pattern: Data URIs—<em>But Wait</em></a></li>
+</ul>
+<h3 id="pros-10">Pros</h3>
+<ul>
+<li><em>All the existing Pros of the <a href="#critical-foft">Critical FOFT</a> approach.</em></li>
+<li>Eliminates FOIT and greatly reduces FOUT for the roman font. A small reflow will occur for additional characters loaded in the second stage and when the other weights and styles are loaded, but it will have a much smaller impact.</li>
+</ul>
+<h3 id="cons-10">Cons</h3>
+<ul>
+<li><em>All the existing Cons of the <a href="#critical-foft">Critical FOFT</a> approach.</em></li>
+<li>The small inlined Data URI will marginally block initial render. We’re trading this for highly reduced FOUT.</li>
+<li>Self hosting: Required.</li>
+</ul>
+<h3 id="verdict-this-is-the-current-gold-standard-in-my-opinion">Verdict: This is the current gold standard, in my opinion.</h3>
+<h2 id="critical-foft-with-preload"><span id="critical-foft-preload">Critical FOFT with <code>preload</code></span></h2>
+<p>This variation of the Critical FOFT approach simply changes the mechanism through which we load the first stage. Instead of using our normal font loading JavaScript API to initiate a download, we use the new <code>preload</code> web standard as described above in the <a href="#preload"><code>preload</code> method</a>. This should trigger the download sooner than previously possible.</p>
+<ul>
+<li><strong><a href="https://www.zachleat.com/web-fonts/demos/critical-foft-preload-polyfill.html">Demo: Critical FOFT with <code>preload</code></a></strong> (includes sessionStorage trick for repeat view optimization)</li>
+<li><a href="https://gist.github.com/zachleat/b651f6bdbc47c563affbfbed16d2d922/revisions?diff=split#diff-0">Compare source code for Critical FOFT with preload against Critical FOFT</a></li>
+<li>Read more: <a href="https://www.zachleat.com/web/preload/#use-with-a-font-loading-strategy">The Web Fonts: Preloaded, Use With a Font Loading Strategy section</a></li>
+</ul>
+<h3 id="pros-11">Pros</h3>
+<ul>
+<li><em>All the existing Pros of the <a href="#critical-foft">Critical FOFT</a> approach.</em></li>
+<li>Rendering performance: Downloads should trigger higher up in the waterfall than with previous methods. I’d guess this is even more dramatic with HTTP headers but haven’t yet confirmed this hunch. This method is better than <a href="#critical-foft-data-uri">Critical FOFT with Data URI</a> in that it can use the browser cache for repeat requests, rather than re-requesting the same web font data with every server markup request.</li>
+</ul>
+<h3 id="cons-11">Cons</h3>
+<ul>
+<li><em>All the existing Cons of the <a href="#critical-foft">Critical FOFT</a> approach.</em></li>
+<li>Use only with a single web font format.</li>
+<li>As stated above, <a href="http://caniuse.com/#feat=link-rel-preload">browser support is limited</a>—only Blink at time of writing.</li>
+<li><code>preload</code> can marginally delay initial render (note data for this comparison was gathered on a site that was using Critical CSS)</li>
+<li>Self hosting: Probably required.</li>
+</ul>
+<h3 id="verdict-this-will-be-the-new-gold-standard-when-browser-support-improves">Verdict: This will be the new gold standard when browser support improves.</h3>
+
+		</heading-anchors>
+	</div>
+
+</article>
+
+<hr>
+<article>
+	<p>
+		<em><a href="https://www.zachleat.com/web/best-of/" data-icon="🔥" data-icon-skip-shadow="">#1 Popular</a></em>
+		<em><a href="https://www.zachleat.com/web/best-of/total-views/" data-icon="☀️" data-icon-skip-shadow="">#1</a></em>
+	
+		<em data-icon="👀">200,809 Views</em>
+	</p>
+</article>
+
+<article data-pagefind-ignore="">
+	
+	
+
+	<dl>
+		<dt>
+			<span>&lt; Newer</span>
+		</dt>
+		<dd>
+			<a href="https://www.zachleat.com/web/beyond-code-interview/">
+				<picture><source type="image/webp" srcset="data:application/octet-stream;base64, 375w, data:application/octet-stream;base64, 650w" sizes="(min-width: 64em) 50vw, 100vw"><img alt="Beyond Code #4 at NEJS CONF 2015" loading="lazy" decoding="async" src="data:application/octet-stream;base64," width="650" height="341" srcset="data:application/octet-stream;base64, 375w, data:application/octet-stream;base64, 650w" sizes="(min-width: 64em) 50vw, 100vw"></picture>
+			</a></dd>
+		<dt>
+			<span>Older &gt;</span>
+		</dt>
+		<dd>
+			<a href="https://www.zachleat.com/web/css-position-sticky/">
+				<picture><source type="image/webp" srcset="data:application/octet-stream;base64, 375w, data:application/octet-stream;base64, 650w" sizes="(min-width: 64em) 50vw, 100vw"><img alt="CSS Position Sticky" loading="lazy" decoding="async" src="data:application/octet-stream;base64," width="650" height="341" srcset="data:application/octet-stream;base64, 375w, data:application/octet-stream;base64, 650w" sizes="(min-width: 64em) 50vw, 100vw"></picture>
+			</a></dd>
+	</dl>
+</article>
+
+<article data-pagefind-ignore="">
+	
+</article>
+
+<div id="webmentions" data-pagefind-ignore="">
+  
+  
+  
+
+  
+  
+  
+  <div>
+    <h3 id="1-bookmark">1 Bookmark</h3><p><a href="https://barryfrost.com/2020/02/a-comprehensive-guide-to-font-loading" target="_blank" rel="noopener noreferrer">
+  <img alt="IndieWeb Avatar for https://barryfrost.com" loading="lazy" decoding="async" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAIAAAC1nk4lAAAACXBIWXMAAAsTAAALEwEAmpwYAAAU7UlEQVR4nM2aCVBT2ZrHb1hExb1F0IdKIxCS3Cw3O/saAZF9C/tiQlgkbLKvAhJZBMIaEAVEdllkUSAsEnYaZGvBbm1nel5XzdTMm1fz3pu1ujVTuUetVzOvahrUmfnXrVS45Ob+7pf/Oec73zmQPBz6XMc79HjL//AGfZV/gQP6vMQKygjoP3jQz3yMXKDgfsv/fwn9Lhz6BSX7Yyjm98GYH/yUBq4eXPdR+1OY0h94KvJI6C0f83nRP/X69x6IhH6JwNTaHs23Oh1ojve1ofva0GPMzgstdP7KX0UeAb0VfE7uTyWWC6A/hUKLHqq+iCYWR0BodLaJuZUtx8be0ZZzmURlGFGJt698/fswZXkE9Asf838M/TZc4drfhSgnc/QIOENtPZyZqSnH1pZGpdKoCINOY7PZFubm1ja2RCMrXyvKT8EH5FEKr396yD8hxpHQmwAVFxaWxDC+fNnO1dmJw7E1NzcnEAgXL17EYrE0Gk1bWxtBKNYWZjCVZUzUG3E+LI+A3gk+tXXuP8aLPsesGCQcmWphZspmsVhstqWlpampKYlEwqMiEokGBgYaGhr6+vrWlhY0ltE5Xewt6zN/vKaEts7/RWhFsxNA/xiM8bOmkhgmluambDabQqEgCEKlUtlstomJiZmZmZGREQ0VnU7X19fX0tIi4HHGbBbdzNaGhlv2UJZH7Z97X2EOh8RXL+CpbBM2y9zc3MTEhM1mk8lkAoEAwzCCIEwmk0KhGBgY4PF4BEGMjY0JBIImKn1dHRLDCDHU3fFFe5V9ce+VWBHmH4MOcEzoVDqTzWIxmUwWi0Wj0RAEIRAIJBKJSCSSSCQcDqerq6unp4fFYg1QXbx48dSpUydPnjx75rS2ATGAeV4u2OeQuUdoPkYeARVe1TegMMkwAYfDIQgC/GBpaWmDytbW1t7e3srKikajmZqa2tnZGRkZwTCMxWIvXLigpaWloaFx+qtTWBx+xVttf+bes5v/EKbMMUJ09PR1dC4yGIyrV686OTlxudzo6OjY2FihUBgbG5uSkpKBKgdVZmZmUlJSRESEp6entbU1gQCfOX3q+FmdDHMNedT70fRLQStCEglt+B268LXub86dYzKZ165du379elpaWnl5eU1NjUQiaWlp6evrGxkZGRsbm5qampycHB0dHULV19fX1NQkFotTU1NNTYyPn9Y0x2n/G0/pfTi+ELQiJFFQg/2Jw6e0dC6e9/f3z83NLS0t7ejoGBgYGBsbm5mZWVhYWPygubm5+fn5paWllZWVNVSLi4tSqXRgYEAkEiEIRfPsb9a4h/fhkL14A311Y3yt8RsdFpORn59fX1/f3d09Ojo6OTk5MzMjk8kWFxeXl5cXFxeXlpbA6/Ly8tLS0nNUq6urc3NzY2Njw8PDSYnxB09pVXJO7sMhe/PGkOsxLEzGGuh7e3vfu3fv0aNHQ0NDY2NjUql0ampqZmZmenpaJpPNzs7KZLL5+flvvvkGPMPz58/X1taWlpYWFhZmZmaePXvW0nRfD6bymZr76LD3NgrmXta5BNOM2Uw/P7/m5uanT5+OjIxIpdJnz57JZLK5ubnZ2VnANIVKJpMBe6yurq6vr6+uri4vL8/Pz8tkso72drurLg50/X/n79nWv97QGHkkVO54AWaaGrOY9vb2jY2NUqkUWBk4YW1tbWtra319fXZ29tmzZ9PT0zMzMxsbGy9fvvzuu+92dnY2NzdXVlYWFhbm5uaam5tdXd3oDPqu/8G9jjJ7iXQE1OymbWRtTyTgnZycGhoaRkdHx8fHp6enFxcX19bWVldXt7a2Njc3FxcXp6enJycnZ2dnnz9/vrOz89133+3u7n777bdra2sg0i0tLW4uzjDDpMsZ2BrzBSKN2mPS/5yR1WUyEQ4KCqqvr+/v7/9oj/n5+dnZ2QlUk6jAe6lUOjMzMzs7u7y8DBwyNzcnlUofPnzo6+NNM7aM4eC/pD0ioHn/08aWtgiFLBAImpqaHj16NIJqAFV/f39zc3NjY2Nra+ujR496eno6OztbW1ubm5s7OjpGRkYmJiaePn0KTNXd3S0I57NNzX3szf8pTGVPQ/reoKd9TzNMreg0al5eXnd3d1tbW1lZWW5u7o0bN8LCwnx9fQMDAyMjI5OTk8VicWNjo0gkSkhIiIyMDAwMDA4Ovn79Ohgmm5qa+vv709PSrK2tvX24u8HH0Vkw5nN7GkTa7ysCwrAwN5NIJN3d3bdv305KSoqPjw8PD/f19XV1dfXw8HBzcwsODq6rq+vs7ExKSnJB5ejoeOXKFS8vr+jo6JSUlPT0dPSB71hbWQWG8tZCtT7mj58XWlEb2Ak8CsOwvYNDW9vDtra24uJikUiUmZkpFAp9fHzs7OxcXV0vX74cFhY2MjKytLQkEonMzc0dHBw4HI6dnZ2fn19CQkJ2dnZaWtqDBw/aHj68Ym/nFRg2eQ37ZaDRbGnHT50Aw1wud2BgoKurq6SkJDY2lsvl2tnZEYlEMzOzy5cvczic+Pj4ra2tH3/8sbW11dra2sTEhMPhwDBMIpE8PT1DQkLi4+Pb29sHBwe9PT3c/EKkoTg570tA8yD59QP3AyiGZJognD88PNzf3y+RSCorKysqKkpLSwsLC2/fvp2dnZ2cnCyRSLa3t9+8eTM5OZmbm5uQkAD+W1paWlVV1djY2NnZOTk5OT4+FhYa4h98bVxy8+foI3JFV/2ruH8V8TuBkjwM+ibHKa2w/Iq9nVAofPLkyfT09MLCwvz8/NjYWGdnZ0NDg1gsrqiouHv3bkdHx/Ly8uvXr6empvr6+mpraysrKxsaGjo7O2dmZl68eLG7u7u1tTU1NRUbGxsTFSm4kbUeS0KDrfT5oNHEo5h/1SsgLDgwIDExcWxsbH5+fmVlZR3VwsKCVCp9+vTp+Pj44OBgb2/v+vr6Dz/8sLS0BAZzKdrNzc3NbW9vv379emdnZ2NjY2pqKjk5OSMthW5q3R/O+PUdyK+HVioIc4xNSruZk5OVlTU2NjaLam1t7cWLF9vb2yAxGh0dBSn18vLy7u7u5uamTCbr6+uTyWSbm5vb29svX7589eoV+NezZ8/S09Pv1tcFR8UPRpugLefzRRpkS/XXnfNKK5vu3a2srBwaGgKpxcrKygaq5eVlqVRaVVU1PDwslUqfPHkyj2ptbU0qlVZXVz958gSke+Ah19bWZDLZrVsFt24VVlSU/zX/K3RcxHxWaD60Ha1fc7epsKCgvr6+t7d3eHj46dOnExMT09PTUql0ZGSkuro6Ly+vubm5tLQUNMoEVPX19UlJSampqa2trUNDQxMTE+Pj40+ePJmYmGiQ1GXdKp4Q35CHQXLB5+495OGYd2GQVJJbVFFzt6G+vb29t7e354NaWlrAQCORSEJDQxEE4XA4NjY2MAyfPn06MTFxcHAwNTUVdCwdHR3Nzc0KF/X29nR1dg6ObWTby0PR5v55oRXfGAq9yLXvHBxtabp3//79np6etra2hoaGysrK9PT06Ojourq63t7evLw8V1dXU1NTOp2uKOdZWKSlpbW0tNTX1wuFwuTk5DpUd+7cefjwYUdbW9uj/t8mwfJrXwI6HCPnQf8g1O5ob2tuabl7t6GxsbGqqqq8vDw3Nzc+Pj41NVUkEqWmpvL5fJBpgGlvSkpKVFRUXFycUCiMiopKSEgoKSm5c+dOTk5OXW1tW0fn5FDvP0cdkyvWDz6/PRTHL9egua66tu7emqrK6urqwsJCkUiUn5+fm5vL4/FcXFxcXV3Dw8OTk5Ozs7Nzc3MLUSUmJvr4+LBYLA8Pj/j4eLFYLBKJcnNz6+tqHvYNLzQXykMg+a8O8x7rHgIleQi0XcQtudsmqa2pqakB966srMzLy7OxsdHX13d2dk5ISLh582ZxcXFhYWFpaWl5eXlBQQGXy9XR0bG0tExKSqoFqqmpqqysrZO8TKTIedC78C8EDYIdrtwbzsrOK6iurqqoqCgrK5NIJMXFxc7Ozjwer729HfQPAwMDHR0dIOGempoaHh7OzMx0dnbOysoqLCysra1tbWkuqZJ0p/nJQ/bg5v3YA3D/8ZpqUWaiqLhUVFiYl5d369at5ORkJycnsVj8+PHj2tra3Nzc2NhYAaq4uDiRSNTb29vX1xcSEgKy6vLy8npJXWb+7Vk+Vs7fQ6q0H+j3gxYPGkiwyygoSUtJio2NjYqK8vLy8vb2FovF7e3tDQ0NGRkZoaGhLi4uAQEBcXFxd+7c6evr6+joEAgEDg4Ovr6+sUJhXMKN9Bj+34Wo7qMMuWdo0Mb/hv9VVnZ2XHx8YGCgh4eHt7d3dHR0RkZGbW1tZ2fnvXv3UlJSkpOTs7Kyqqure3t76+vrCwoKBAKBm5ubp6enl4e7m39oZZAp6uY9L8TsGfo9Nx9qjnOLvpEm4PP4fH5ERERgYCCfz8/Pz6+trRWLxSUlJeXl5cXFxWVlZSUlJdnZ2WAW4+np6eri4uLmHsT1+D5kb7OsT4JWOOQatHLD5Hpylh/XJwaVra2tl5dXZmbmzZs3MzIybt26BYKdiSorK4vP57PZbHd3d3MzU1Pry5KsKHnEPhe79gWN9n0vs2yKquqjIgRcLjcgIIDD4bi6ukZFRSUmJsbExCQlJfn7+7u7u8fGxvJ4PKFQ6Ovra21tbWxsTCYR/UL5IzV5b8P2c/d920MxZVx6UHT3QXt6aoqfn5+zs7O7u7uHh0dAQEBMTExwcDCXy71y5QqbzXZ1dQUTRFdXVxaLBcOwt5dXcWnZeH/Hv8ZpoaP3F7bHu3DoZ9Qbc0L6mGy5q6MdZBQODg4sVGZmZjAMGxoaYrFYXV3dC6h0dHSwWCwMwxQKxcfHJzMz835jQ+/o9PbdpHch0FuB8heEfstHl+ljMKuuUGyU4PtXPzx6pCjHFBUVBQUFsdlsY2NjMzMzLBarp6enra199uzZc+fO6enp6aMik8leXl5paWlisbirq3NkZLijp++p21GwIvo5ocFi/S+KZVbMuwhFFWHK6zhicDE1M+eH16/Gx8clEkldXR3I8uzs7MCyC5vNxuFwLBaLSCSSyWQGg2FhYeHp6ZmYmFhRUdHU1NTT0zPQ3/9kfMKEbPi3oQfkkdDPPMwnVZiAZQGoXKCYHb6LUuD+FKQqNNO+hCdrntNOT0sF1cSxsTGQYxQXF6empoaEhDg4OFhYWFhaWrJRWVtbOzo6BgQEpKenV1ZWNjY2dnV11dTUrK6uPuru+urseX9z/E9Bqoq7KFZyMYr7/k+lvb/Eik6uFKCRit0Qa9xDjQ4nBcbnmWT8eQOYCBPOa2t7e3vv7OxIpdLvv/9+enoa9MQg44uIiHB0dLSxsbGwsOBwOFevXg0ODr5x40ZpaWljY+ODBw+qqqrGx8dfvXo1NzfHoFF1cURjKvzY7dS/hCmKWO8iFQWWt+Hv6f8y9EcDgP0l8ijFNT8FqfS6nIg3PWtJ1sPi4fNY4nkDgj7WkIAzxOPxYOkblPUnJyffvHnz/PnzxsbGuLi4+Pj49PT069evBwQEeHp6crncwMDAmJiYnJycsrKyurq6srKyhYUF8CtNTEzg8QQSTCCQKIYkmj2blG5zftTj+N+HoPVIQP8h9v8t0hGKoMrDod8GqvS6nIw0/5pJIeoSKBcNSV/rK/oBAs6QSMATCIoVbxwOp6end+TIEWdn583NzeHh4fn5+deoamtrfX19AwIChEIhj8fzQxUaGhofH5+Tk5OXl1dVVbW0tLSxsTEyMrK1tRUWFnbs2DEEQcgkEplEhClULMKE6cbWbOQGR/+x28nfhSg2XPw5/Xvo/+BhvvU/1OqiyTfTZZAJBmTGJQIFTyASCXgSTMDjDIlEIoFAMDRUxBiPxxMIhEuXLh0/fhyCICcnp5mZmcHBwY2NjYyMjOjoaLFYHB4e7uLiEhoaCuYvoOKYkZFRUFAwNDS0u7vb1dW1vr7e19enqal55swZEolEIBDIJBJCoTBoCJ2KkKk0HMLCUVmWTHKy7aURz68UsUe7AdQXGMjdGE+iIPpkpiGFARNJCFlxUMhkQ0NDAhpbLBYLVo6JRCIOFRaLPXnypIqKCgRB5ubm/f39Dx48cHR0LCoq6unpefz48c2bN729vXk8Hphf5eXl1dfXV1RUeHp6trS0zM7Ozs3NmZqaYjCYc+fOkUgkMioqlUqn00kKEWkI2YjFpNKZRKYJgcbmmDDSL19a5h5VrINFQhCORFVcQFEcCIWCXqPgw2KxgPjo0aPHjx/X1dX9OGpcunTpxIkTGAzm8OHDEARhsdiCgoKoqKiGhobW1laxWHz//v3k5GQ/Pz+hUJifny8SiXJyclJSUnx9fcEUwcrKSllZWVVVVUtLC0CTSCQEQRgMBoVCIRKJCIIodjDQqGwmg0GjIjQGzDChs01DLAxH3I5DCIVCo9HIZDKRSKRQKOB6GIaJRCKAxmKxZ86cOX36NBEVDofD4/EaGhoQBB04cABwnzx50sTEJDs7+/79+xKJBJT+Q0JC8vLyysvLk5KSioqKampq4uLi0tPTSSQSBEFHjhxRUlLS0NAA9wWUOBxOS0sLj8czGAw2m40gCJ1OZzAYDDpdse2CRoPpbCKdDdHpdLBVA4ZhhbfIZBiGP6KDwIM/FS0S3RwBw7CmpiYEQUpKSmpqaurq6sAqhw4dQhDE3d09KCgoIiIiLCyMx+O5u7v7+vo6Ozuz2ewLFy5gMBgVFZVjx46pq6tDEKSpqUkmkwExHo8/deqUgYGBommiJ4GoqJioWAy6EZsFIQgCAgzIACIF9QkejweIoK0Ai+PxeDKZfPbsWQwGc+DAARUVFTU1tUOHDqmpqSkpKUEfhMFg1NTUlJWVMRjMfzmprq5+9OjRw4cPKykpnTt3jkKhUKkKi4L7UqlUBoMBQKlUKvgRgHOYTCYdFUSlUj9u0gCs4KNgBAY+IRKJHw0D9vno6OgAT6urqwN0VVVVQH/wg8AZ8P4w+kk1NTVVVdUDBw6oq6ufOHFCRUXl/PnzYK8IIGYymSCITCYTbMyhUqk0Gg08zMeQQwD0o8CTAcqPJ8E3UigUEGwikairq4vBYA4dOgSa6ZEjRw4ePKiioqKsrKzyQaqowEkgVVVVcMkJVCoqKjo6OoDP2NiYRqMxGAyACPYR/XngwUnwGP8JrPpK3vzGeB0AAAAASUVORK5CYII=" width="60" height="60" onerror="this.parentNode.classList.add('error')"></a></p></div>
+  
+  
+  
+  
+
+  <details>
+    <summary><strong>Shamelessly plug your related post</strong></summary>
+
+    <p>These are <a href="https://indieweb.org/Webmention">webmentions</a> via the <a href="https://indieweb.org/">IndieWeb</a> and <a href="https://webmention.io/">webmention.io</a>.</p>
+
+    
+  </details>
+</div>
+
+
+
+
+	
+
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RISC-V from scratch 2: Hardware layouts, linker scripts, and C runtimes</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>RISC-V from scratch 2: Hardware layouts, linker scripts, and C runtimes</h1>
+    <p><strong>URL:</strong> <a href="https://twilco.github.io/riscv-from-scratch/2019/04/27/riscv-from-scratch-2.html">https://twilco.github.io/riscv-from-scratch/2019/04/27/riscv-from-scratch-2.html</a></p>
+    <p><strong>Tags:</strong> cpus, riscv, semiconductors</p>
+    <p><strong>Bookmark ID:</strong> 876771844</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+  
+
+  <article>
+    <p>Table of contents</p>
+<ol id="markdown-toc">
+  <li><a href="#introduction" id="markdown-toc-introduction">Introduction</a></li>
+  <li><a href="#setup" id="markdown-toc-setup">Setup</a></li>
+  <li><a href="#the-naive-approach" id="markdown-toc-the-naive-approach">The naive approach</a></li>
+  <li><a href="#lifting-the--veil" id="markdown-toc-lifting-the--veil">Lifting the <code>-v</code>eil</a></li>
+  <li><a href="#finding-our-stack" id="markdown-toc-finding-our-stack">Finding our stack</a></li>
+  <li><a href="#link-it-up" id="markdown-toc-link-it-up">Link it up</a></li>
+  <li><a href="#stop--hammertime-runtime" id="markdown-toc-stop--hammertime-runtime">Stop!  <s>Hammertime</s> Runtime!</a></li>
+  <li><a href="#debugging-but-for-real-this-time" id="markdown-toc-debugging-but-for-real-this-time">Debugging, but for real this time</a></li>
+  <li><a href="#whats-next" id="markdown-toc-whats-next">What’s next</a></li>
+  <li><a href="#extra-credit" id="markdown-toc-extra-credit">Extra credit</a></li>
+</ol>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Welcome to the second post in the <em>RISC-V from scratch</em> series!  As a quick recap, throughout <em>RISC-V from scratch</em> we will explore various low-level concepts (compilation and linking, primitive runtimes, assembly, and more), typically through the lens of RISC-V and its ecosystem.  In <a href="https://twilco.github.io/riscv-from-scratch/2019/03/10/riscv-from-scratch-1.html">the first post of this series</a>, we introduced RISC-V, explained why it’s important, set up the full GNU RISC-V toolchain, and built and ran a simple program on an emulated version of a RISC-V processor with the help of <a href="https://github.com/sifive/freedom-e-sdk">SiFive’s freedom-e-sdk</a>.</p>
+
+<p>The <code>freedom-e-sdk</code> made it trivial for us to compile, debug, and run any C program on an emulated or physical RISC-V processor.  We didn’t have to worry about setting up any linker scripts or writing a runtime that sets up our stack, calls into <code>main</code>, and more.  This is great if you’re looking to quickly become productive, but these details are exactly the sort of thing we want to learn about!</p>
+
+<p>In this post, we’ll break free from the <code>freedom-e-sdk</code>.  We’ll write and attempt to debug a simple C program of our own, unveil the magic hidden behind <code>main</code>, and examine the hardware layout of a <code>qemu</code> virtual machine.  We’ll then examine and modify a linker script, write our own C runtime to get our program set up and running, and finally invoke GDB and step through our program.</p>
+
+<h2 id="setup">Setup</h2>
+
+<p>If you missed the previous post in this series and don’t have <code>riscv-qemu</code> and the RISC-V toolchain installed and were hoping to follow along, jump to the <a href="https://twilco.github.io/riscv-from-scratch/2019/03/10/riscv-from-scratch-1.html#qemu-and-risc-v-toolchain-setup">“QEMU and RISC-V toolchain setup”</a> section (or in RISC-V assembly, <code>jal x0, qemu_and_toolchain_setup</code>) and complete that before moving on.</p>
+
+<p>Next, let’s set up a workspace for the code we will write today (and in future posts).</p>
+
+<figure><pre><code data-lang="bash">git clone git@github.com:twilco/riscv-from-scratch.git
+<span># or `git clone https://github.com/twilco/riscv-from-scratch.git` to clone</span>
+<span># via HTTPS rather than SSH</span>
+<span># alternatively, if you are a GitHub user, you can fork this repo.</span>
+<span># https://help.github.com/en/articles/fork-a-repo</span>
+<span>cd </span>riscv-from-scratch/work</code></pre></figure>
+
+<p>As the name suggests, the <code>work</code> directory will serve as our working directory for this and future posts.</p>
+
+<h2 id="the-naive-approach">The naive approach</h2>
+
+<p>Let’s start our journey by using the text editor of your choice to create a simple C program called <code>add.c</code> that infinitely adds two numbers together.</p>
+
+<figure><pre><code data-lang="c"><span>// file: riscv-from-scratch/work/add.c</span>
+
+<span>int</span> <span>main</span><span>()</span> <span>{</span>
+    <span>int</span> <span>a</span> <span>=</span> <span>4</span><span>;</span>
+    <span>int</span> <span>b</span> <span>=</span> <span>12</span><span>;</span>
+    <span>while</span> <span>(</span><span>1</span><span>)</span> <span>{</span>
+        <span>int</span> <span>c</span> <span>=</span> <span>a</span> <span>+</span> <span>b</span><span>;</span>
+    <span>}</span>
+    <span>return</span> <span>0</span><span>;</span>
+<span>}</span></code></pre></figure>
+
+<p>We want to run this program, and the first step on that path is compiling it into something executable by our RISC-V CPU.</p>
+
+<figure><pre><code data-lang="bash"><span># -O0 to disable all optimizations. Without this, GCC might optimize </span>
+<span># away our infinite addition since the result 'c' is never used.</span>
+<span># -g to tell GCC to preserve debug info in our executable.</span>
+riscv64-unknown-elf-gcc add.c <span>-O0</span> <span>-g</span></code></pre></figure>
+
+<p>This produces a file called <code>a.out</code>, which is the default name <code>gcc</code> gives executables when we don’t tell it what we want them to be called.  We can now run this brand new executable inside <code>qemu</code>:</p>
+
+<figure><pre><code data-lang="bash"><span># -machine tells QEMU which among our list of available machines we want to</span>
+<span># run our executable against.  Run qemu-system-riscv64 -machine help to list</span>
+<span># all available machines.</span>
+<span># -m is the amount of memory to allocate to our virtual machine.</span>
+<span># -gdb tcp::1234 tells QEMU to also start a GDB server on localhost:1234 where</span>
+<span># TCP is the means of communication.</span>
+<span># -kernel tells QEMU what we're looking to run, even if our executable isn't </span>
+<span># exactly a "kernel".</span>
+qemu-system-riscv64 <span>-machine</span> virt <span>-m</span> 128M <span>-gdb</span> tcp::1234 <span>-kernel</span> a.out</code></pre></figure>
+
+<p>We’ve chosen the <code>virt</code> RISC-V machine, which is one <code>riscv-qemu</code> <a href="https://github.com/riscv/riscv-qemu/wiki#machines">comes with out of the box</a>.</p>
+
+<p>Now that our program is running inside QEMU with a GDB server on host <code>localhost</code> and port <code>1234</code>, let’s connect to it with our RISC-V GDB client from a separate terminal:</p>
+
+<figure><pre><code data-lang="bash"><span># --tui gives us a (t)extual (ui) for our GDB session.</span>
+<span># While we can start GDB without any arguments, specifying 'a.out' tells GDB </span>
+<span># to load debug symbols from that file for the newly created session.</span>
+riscv64-unknown-elf-gdb <span>--tui</span> a.out</code></pre></figure>
+
+<p>And we should now find ourselves inside GDB!</p>
+
+<figure><pre><code data-lang="bash">This GDB was configured as <span>"--host=x86_64-apple-darwin17.7.0 --target=riscv64-unknown-elf"</span><span>.</span>           │
+Type <span>"show configuration"</span> <span>for </span>configuration details.                                                  │
+For bug reporting instructions, please see:                                                           │
+&lt;http://www.gnu.org/software/gdb/bugs/&gt;.                                                              │
+Find the GDB manual and other documentation resources online at:                                      │
+    &lt;http://www.gnu.org/software/gdb/documentation/&gt;.                                                 │
+                                                                                                      │
+For <span>help</span>, <span>type</span> <span>"help"</span><span>.</span>                                                                                │
+Type <span>"apropos word"</span> to search <span>for </span>commands related to <span>"word"</span>...                                       │
+Reading symbols from a.out...                                                                         │
+<span>(</span>gdb<span>)</span> </code></pre></figure>
+
+<p>While we could now try to tell GDB to <code>run</code> or <code>start</code> the <code>a.out</code> executable it’s currently pointed at, this won’t work, and for good reason.  We used <code>riscv64-unknown-elf-gcc</code> to compile our program, so unless our host machine is running a <code>riscv64</code> CPU it won’t know what to do with a program compiled for that target.</p>
+
+<p>All is lost, right?  Of course not!  This situation is one major reason for GDB’s client-server model.  We can take our <code>riscv64-unknown-elf-gdb</code> executable which knows how to debug <code>riscv64</code> targets and point it at some remote target (a GDB server) instead of running the program on our host machine.  As you may recall, we just started <code>riscv-qemu</code> and told it to start a GDB server on host <code>localhost</code> and port <code>1234</code>. Connecting to this server is as easy this:</p>
+
+<figure><pre><code data-lang="bash"><span>(</span>gdb<span>)</span> target remote :1234                                                                             │
+Remote debugging using :1234</code></pre></figure>
+
+<p>And now we should be able to set some breakpoints:</p>
+
+<figure><pre><code data-lang="bash"><span>(</span>gdb<span>)</span> b main
+Breakpoint 1 at 0x1018e: file add.c, line 2.
+<span>(</span>gdb<span>)</span> b 5 <span># this is the line within the forever-while loop. int c = a + b;</span>
+Breakpoint 2 at 0x1019a: file add.c, line 5.</code></pre></figure>
+
+<p>And finally tell GDB to <code>continue</code> with shorthand <code>c</code> until we hit a breakpoint:</p>
+
+<figure><pre><code data-lang="bash"><span>(</span>gdb<span>)</span> c
+        Continuing.</code></pre></figure>
+
+<p>You’ll quickly notice that we just keep continuing, and continuing, and continuing…shouldn’t we hit our <code>b 5</code> breakpoint instantly, since we’re simply looping indefinitely on that line?  What’s going wrong?</p>
+
+<p>Let’s take a look at our interface, which for me looked like:</p>
+
+<p><a href="https://twilco.github.io/assets/img/naive_gdb.png"><img src="data:application/octet-stream;base64," alt="gdb interface displaying various red flags"></a></p>
+
+<p>There are several red flags here:</p>
+
+<ol>
+  <li>GDB’s TUI is unable to find a source.  This should be displaying our code and any nearby breakpoints.</li>
+  <li>GDB doesn’t know the current line of execution (<code>L??</code>), and lists a program counter of 0x0 (<code>PC: 0x0</code>).</li>
+  <li>Some clobbered text in our prompt area that looks like this in its full form: <code>0x0000000000000000 in ?? ()</code></li>
+</ol>
+
+<p>These indicators, in combination with the fact that we never hit a breakpoint, signals we have done <em>something</em> wrong.  But what is it?</p>
+
+<h2 id="lifting-the--veil">Lifting the <code>-v</code>eil</h2>
+
+<p>To figure out what’s going on here, we need to take a detour and talk about how our simple C program actually works underneath the surface.  We have a function called <code>main</code> that does our simple addition, but what <em>is</em> <code>main</code>, really?  Why must it be called <code>main</code> and not <code>origin</code>, or <code>begin</code>, or <code>entry</code>?  Conventionally we know that all executables start running at <code>main</code>, but what magic occurs to make this happen?</p>
+
+<p>To answer these questions, let’s re-run our GCC command with the <code>-v</code> flag to get a more verbose output of what it is actually doing.</p>
+
+<figure><pre><code data-lang="bash"><span># In the `riscv-from-scratch/work` directory...</span>
+riscv64-unknown-elf-gcc add.c <span>-O0</span> <span>-g</span> <span>-v</span></code></pre></figure>
+
+<p>There’s quite a lot we get back so we won’t look through it all.  The first important thing of note is that even though GCC stands for “GNU C Compiler”, <code>gcc</code> <em>also</em> by default links our code in addition to compiling and assembling it (<code>-c</code> tells GCC only to compile and assemble).  Why is this relevant?  Well, take a look at this snippet pulled from our verbose <code>gcc</code> command:</p>
+
+<figure><pre><code data-lang="bash"><span># The actual `gcc -v` command outputs full paths, but those are quite</span>
+<span># long, so pretend these variables exist.</span>
+<span># $RV_GCC_BIN_PATH = /Users/twilcock/usys/riscv/riscv64-unknown-elf-gcc-&lt;date&gt;-&lt;version&gt;/bin/</span>
+<span># $RV_GCC_LIB_PATH = $RV_GCC_BIN_PATH/../lib/gcc/riscv64-unknown-elf/8.2.0</span>
+
+<span>$RV_GCC_BIN_PATH</span>/../libexec/gcc/riscv64-unknown-elf/8.2.0/collect2 <span>\</span>
+  ...truncated... 
+  <span>$RV_GCC_LIB_PATH</span>/../../../../riscv64-unknown-elf/lib/rv64imafdc/lp64d/crt0.o <span>\ </span>
+  <span>$RV_GCC_LIB_PATH</span>/riscv64-unknown-elf/8.2.0/rv64imafdc/lp64d/crtbegin.o <span>\</span>
+  <span>-lgcc</span> <span>--start-group</span> <span>-lc</span> <span>-lgloss</span> <span>--end-group</span> <span>-lgcc</span> <span>\ </span>
+  <span>$RV_GCC_LIB_PATH</span>/rv64imafdc/lp64d/crtend.o
+  ...truncated...
+<span>COLLECT_GCC_OPTIONS</span><span>=</span><span>'-O0'</span> <span>'-g'</span> <span>'-v'</span> <span>'-march=rv64imafdc'</span> <span>'-mabi=lp64d'</span></code></pre></figure>
+
+<p>I realize that even in a shortened form this is still a lot to look at, so let me explain what’s going on here.  On our first line, <code>gcc</code> is executing a program called <code>collect2</code>, passing along arguments such as <code>crt0.o</code>, <code>crtbegin.o</code>, and <code>crtend.o</code>, and flags like <code>-lgcc</code> and <code>--start-group</code>.  We can read about <a href="https://gcc.gnu.org/onlinedocs/gccint/Collect2.html">what collect2 is here</a> - in short, <code>collect2</code> arranges various initialization functions at start time by making one or more linking passes.</p>
+
+<p>Knowing this, we see that GCC is linking multiple different <code>crt</code> object files with the code we wrote.  As you might guess, <code>crt</code> stands for “C runtime”.  You <a href="https://stackoverflow.com/a/27786892/2421349">can read in detail what each crt is for here</a>, but in our case we care the most about <code>crt0</code>, which has one very important job:</p>
+
+<blockquote>
+  <p>This object [crt0] is expected to contain the <code>_start</code> symbol, which takes care of bootstrapping the initial execution of the program.</p>
+</blockquote>
+
+<p>What exactly this bootstrapping of initial execution is depends on the platform in question, but generally it includes important tasks such as setting up the stack frame, passing along command line arguments, and calling into <code>main</code>.  Yes, we have <em>finally</em> answered the question posed at the beginning of this section - it is <code>_start</code> who calls into our <code>main</code> function!</p>
+
+<h2 id="finding-our-stack">Finding our stack</h2>
+
+<p>We’ve solved one mystery, but you might be wondering how this gets us any closer to our original goal of being able to step through our simple C program with <code>gdb</code>.  There are a few problems we have left to address, but the first we have has to do with the way <code>crt0</code> is setting up our stack.</p>
+
+<p>As we saw above, <code>gcc</code> links a default <code>crt0</code> unless told to do otherwise.  This default <code>crt0</code> is selected based on several factors, namely:</p>
+
+<ul>
+  <li><a href="https://wiki.osdev.org/Target_Triplet">Target triplet</a>, which follows the structure of <code>machine-vendor-operatingsystem</code>.  For us, this is <code>riscv64-unknown-elf</code></li>
+  <li>Target ISA, <code>rv64imafdc</code></li>
+  <li>Target ABI, <code>lp64d</code></li>
+</ul>
+
+<p>This may work fine in a general case, but is undoubtedly not going to work for every RISC-V processor.  As mentioned previously, one of <code>crt0</code>s jobs is to set up the stack, but how can it do that if it doesn’t know <em>where</em> the stack should be for the CPU (<code>-machine</code>) we’re running against?  Answer: it can’t, at least not without us giving it a bit of assistance.</p>
+
+<p>Circling back to the <code>qemu</code> command we ran at the beginning of this post (<code>qemu-system-riscv64 -machine virt -m 128M -gdb tcp::1234 -kernel a.out</code>), recall we were using the <code>virt</code> machine.  Fortunately for us, <code>qemu</code> exposes a simple way to dump information about a machine in <code>dtb</code> (devicetree blob) format.</p>
+
+<figure><pre><code data-lang="bash"><span># In the `riscv-from-scratch/work` directory...</span>
+
+<span># Use qemu to dump info about the 'virt' machine in dtb (devicetree blob) </span>
+<span># format.</span>
+<span># The data in this file represents hardware components of a given </span>
+<span># machine / device / board.</span>
+qemu-system-riscv64 <span>-machine</span> virt <span>-machine</span> <span>dumpdtb</span><span>=</span>riscv64-virt.dtb</code></pre></figure>
+
+<p>Data in <code>dtb</code> format is difficult to read considering it’s mostly binary, but there is a command-line tool called <code>dtc</code> (devicetree compiler) that can convert it into something more human-readable.</p>
+
+<figure><pre><code data-lang="bash"><span># I'm running MacOS, so I use Homebrew to install this. If you're</span>
+<span># running another OS you may need to do something else.</span>
+brew <span>install </span>dtc
+<span># Convert our .dtb into a human-readable .dts (devicetree source) file.</span>
+dtc <span>-I</span> dtb <span>-O</span> dts <span>-o</span> riscv64-virt.dts riscv64-virt.dtb</code></pre></figure>
+
+<p>This gives us a file called <code>riscv64-virt.dts</code>, which has lots of interesting information about <code>virt</code> such as the number of available CPU cores, the memory location of various peripherals such as the UART, and the memory location of the onboard memory (RAM).  We want our stack to live inside this memory, so let’s <code>grep</code> for it:</p>
+
+<figure><pre><code data-lang="bash"><span>grep </span>memory riscv64-virt.dts <span>-A</span> 3
+        memory@80000000 <span>{</span>
+                device_type <span>=</span> <span>"memory"</span><span>;</span>
+                reg <span>=</span> &lt;0x00 0x80000000 0x00 0x8000000&gt;<span>;</span>
+        <span>}</span><span>;</span></code></pre></figure>
+
+<p>We see that the <code>device_type</code> for this node is “memory”, which means we’ve probably found what we’re looking for.  Using the values inside <code>reg = &lt;...&gt;;</code>, we can also determine where this memory bank starts and how long it is.</p>
+
+<p>Referencing <a href="https://buildmedia.readthedocs.org/media/pdf/devicetree-specification/latest/devicetree-specification.pdf">the devicetree specification</a>, we see that the syntax for <code>reg</code> is an arbitrary number of <code>(base_address, length)</code> pairs.  However, there are four values inside <code>reg</code> - shouldn’t there only be two necessary to define our singular memory bank?</p>
+
+<p>Again referencing the <a href="https://buildmedia.readthedocs.org/media/pdf/devicetree-specification/latest/devicetree-specification.pdf">devicetree specification</a> (search for “Property name: reg”), we learn that the number of <code>&lt;u32&gt;</code> cells required to specify the address and length is determined by the <code>#address-cells</code> and <code>#size-cells</code> properties in the parent of node (or in the node itself).  These values aren’t specified in our <code>memory</code> node, and the parent of the <code>memory</code> node is simply the root portion of the file, so let’s look there for these values:</p>
+
+<figure><pre><code data-lang="bash"><span>head</span> <span>-n8</span> riscv64-virt.dts
+/dts-v1/<span>;</span>
+
+/ <span>{</span>
+        <span>#address-cells = &lt;0x02&gt;;</span>
+        <span>#size-cells = &lt;0x02&gt;;</span>
+        compatible <span>=</span> <span>"riscv-virtio"</span><span>;</span>
+        model <span>=</span> <span>"riscv-virtio,qemu"</span><span>;</span></code></pre></figure>
+
+<p>And there we have it - it takes two 32-bit values (cells) to specify an address, and two 32-bit values to specify length.  This means, given <code>reg = &lt;0x00 0x80000000 0x00 0x8000000&gt;;</code>, our memory begins at <code>0x00 + 0x80000000</code> (<code>0x80000000</code>) and extends <code>0x00</code> + <code>0x8000000</code> (<code>0x8000000</code>) bytes, meaning it ends at <code>0x88000000</code>.  In more human-friendly terms, we can use a hexadecimal calculator to determine that our length of <code>0x8000000</code> bytes is 128 megabytes.</p>
+
+<h2 id="link-it-up">Link it up</h2>
+
+<p>Using <code>qemu</code> and <code>dtc</code>, we’ve successfully discovered where the RAM lives and how long it extends in our <code>virt</code> virtual machine.  We also know that <code>gcc</code> is linking a default <code>crt0</code> that isn’t setting up our stack the way we need it to.  But what exactly do we do with this information, and how does it get us any closer to getting a running, debuggable program?</p>
+
+<p>Well, since the default <code>crt0</code> isn’t doing what we need it to, we have one obvious choice: writing our own, and then linking it with the object file created from compiling our simple addition program.  Our <code>crt0</code> will need to know where the top of the stack starts in order to properly initialize it.  We could hardcode this value to <code>0x80000000</code> directly in our <code>crt0</code>, but that isn’t a very maintainable solution.  What happens when we want to use a different <code>qemu</code>-lated CPU, such as the <code>sifive_e</code>, that has different memory properties?</p>
+
+<p>Fortunately for us, we are far from the first to ask this question, and a good solution exists.  GNU’s linking program, <code>ld</code>, <a href="https://web.archive.org/web/20190525173911/https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/4/html/Using_ld_the_GNU_Linker/assignments.html">provides a way for us to define a symbol</a> which would be accessible from our <code>crt0</code>.  We can use this, among other functions provided by <code>ld</code>, to create a <code>__stack_top</code> symbol definition that is reasonably flexible across multiple different CPUs.</p>
+
+<p>Rather than writing our own linker file from scratch, it is going to make more sense to take the default linker script that <code>ld</code> uses and modify it slightly to expose any additional symbols we want. What is a linker script, you might be wondering?  This snippet from a <a href="https://scgberlin.de/content/media/http/informatik/gcc_docs/ld_3.html">now dead link</a> summarizes it well:</p>
+
+<blockquote>
+  <p>The main purpose of the linker script is to describe how the sections in the input files should be mapped into the output file, and to control the memory layout of the output file.</p>
+</blockquote>
+
+<p>Knowing this, let’s copy the default linker script <code>riscv64-unknown-elf-ld</code> uses into a new file:</p>
+
+<figure><pre><code data-lang="bash"><span># In the `riscv-from-scratch/work` directory...</span>
+<span># Copy the default linker script into riscv64-virt.ld</span>
+riscv64-unknown-elf-ld <span>--verbose</span> <span>&gt;</span> riscv64-virt.ld</code></pre></figure>
+
+<p>There’s <em>a lot</em> of interesting information in this file, much more than we can review in this post.  The <code>--verbose</code> output of the command we just ran includes information about the version number of <code>ld</code>, supported architectures, and more.  This is all good to know, but not valid linker script syntax, so let’s remove it.  Using the text editor of your choice, edit <code>riscv64-virt.ld</code> and remove everything above and including the line of equals signs.</p>
+
+<figure><pre><code data-lang="bash">vim riscv64-virt.ld
+
+<span># Remove everything above and including the ============ line</span>
+GNU ld <span>(</span>GNU Binutils<span>)</span> 2.32
+  Supported emulations:
+   elf64lriscv
+   elf32lriscv
+using internal linker script:
+<span>==================================================</span>
+/<span>*</span> Script <span>for</span> <span>-z</span> combreloc: combine and <span>sort </span>reloc sections <span>*</span>/
+/<span>*</span> Copyright <span>(</span>C<span>)</span> 2014-2019 Free Software Foundation, Inc.
+   Copying and distribution of this script, with or without modification,
+   are permitted <span>in </span>any medium without royalty provided the copyright
+   notice and this notice are preserved.  <span>*</span>/
+OUTPUT_FORMAT<span>(</span><span>"elf64-littleriscv"</span>, <span>"elf64-littleriscv"</span>,
+	      <span>"elf64-littleriscv"</span><span>)</span>
+...rest of the linker script...</code></pre></figure>
+
+<p>With that out of the way, the first thing we’ll want to do is make use of the <a href="https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_node/ld_16.html">MEMORY</a> command to tell the linker we want to take manual control of the memory layout.  This paves the way for us to be able to correctly define where <code>__stack_top</code> should be.  Search for the line that starts with <code>OUTPUT_ARCH(riscv)</code>, which should be towards the top of the file, and below it add our <code>MEMORY</code> command:</p>
+
+<figure><pre><code data-lang="bash">OUTPUT_ARCH<span>(</span>riscv<span>)</span>
+/<span>*</span> <span>&gt;&gt;&gt;</span> Our addition. <span>&lt;&lt;&lt;</span> <span>*</span>/
+MEMORY
+<span>{</span>
+   /<span>*</span> qemu-system-risc64 virt machine <span>*</span>/
+   RAM <span>(</span>rwx<span>)</span>  : ORIGIN <span>=</span> 0x80000000, LENGTH <span>=</span> 128M 
+<span>}</span>
+/<span>*</span> <span>&gt;&gt;&gt;</span> End of our addition. <span>&lt;&lt;&lt;</span> <span>*</span>/
+ENTRY<span>(</span>_start<span>)</span></code></pre></figure>
+
+<p>With this, we’ve created a block of memory called <code>RAM</code> that is readable (<code>r</code>), writable (<code>w</code>), and capable of containing executable code (<code>x</code>).</p>
+
+<p>Great, so we’ve defined a memory layout to match the specifications of our <code>virt</code> RISC-V machine.  But this RAM memory block isn’t much use unless we actually <em>do</em> something with it.  We want our stack to live in RAM, so let’s use this RAM definition to create <code>__stack_top</code>.</p>
+
+<p>Defining this symbol is easy.  Open the custom linker script (<code>riscv64-virt.ld</code>) back up in the editor of your choice and make the following addition:</p>
+
+<figure><pre><code data-lang="bash">SECTIONS
+<span>{</span>
+  /<span>*</span> Read-only sections, merged into text segment: <span>*</span>/
+  PROVIDE <span>(</span>__executable_start <span>=</span> SEGMENT_START<span>(</span><span>"text-segment"</span>, 0x10000<span>))</span><span>;</span>
+  <span>.</span> <span>=</span> SEGMENT_START<span>(</span><span>"text-segment"</span>, 0x10000<span>)</span> + SIZEOF_HEADERS<span>;</span>
+  /<span>*</span> <span>&gt;&gt;&gt;</span> Our addition. <span>&lt;&lt;&lt;</span> <span>*</span>/
+  PROVIDE<span>(</span>__stack_top <span>=</span> ORIGIN<span>(</span>RAM<span>)</span> + LENGTH<span>(</span>RAM<span>))</span><span>;</span>
+  /<span>*</span> <span>&gt;&gt;&gt;</span> End of our addition. <span>&lt;&lt;&lt;</span> <span>*</span>/
+  .interp         : <span>{</span> <span>*</span><span>(</span>.interp<span>)</span> <span>}</span>
+  .note.gnu.build-id  : <span>{</span> <span>*</span><span>(</span>.note.gnu.build-id<span>)</span> <span>}</span></code></pre></figure>
+
+<p>As you can see, we use the <a href="https://web.archive.org/web/20190525173911/https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/4/html/Using_ld_the_GNU_Linker/assignments.html#PROVIDE">PROVIDE command</a> to define a symbol called <code>__stack_top</code>.  <code>__stack_top</code> will be accessible from any program linked with this script (assuming the program itself does not also define something named <code>__stack_top</code>).  We set the value of <code>__stack_top</code> to be <code>ORIGIN(RAM)</code>, which we know is <code>0x80000000</code>, plus <code>LENGTH(RAM)</code>, which we know is 128 megabytes (<code>0x8000000</code> bytes).  This means our <code>__stack_top</code> is set to <code>0x88000000</code>.</p>
+
+<h2 id="stop--hammertime-runtime">Stop!  <s>Hammertime</s> Runtime!</h2>
+
+
+<p>We finally have all we need to create a custom C runtime that works for us, so let’s get started.  Create a file called <code>crt0.s</code> in the <code>riscv-from-scratch/work/</code> directory and insert the following:</p>
+
+<figure><pre><code data-lang="nasm"><span>.section</span> <span>.init</span><span>,</span> <span>"ax"</span>
+<span>.global</span> <span>_start</span>
+<span>_start:</span>
+    <span>.cfi_startproc</span>
+    <span>.cfi_undefined</span> <span>ra</span>
+    <span>.option</span> <span>push</span>
+    <span>.option</span> <span>norelax</span>
+    <span>la</span> <span>gp</span><span>,</span> <span>__global_pointer$</span>
+    <span>.option</span> <span>pop</span>
+    <span>la</span> <span>sp</span><span>,</span> <span>__stack_top</span>
+    <span>add</span> <span>s0</span><span>,</span> <span>sp</span><span>,</span> <span>zero</span>
+    <span>jal</span> <span>zero</span><span>,</span> <span>main</span>
+    <span>.cfi_endproc</span>
+    <span>.end</span></code></pre></figure>
+
+<p>The first thing you may notice is that there are a lot of lines that begin with a <code>.</code>.  This is an assembly file, meaning the program that will be looking at this is the assembler, which in the GNU world is the <code>as</code> executable.  The lines that begin with <code>.</code>s are called <a href="https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_7.html">assembler directives</a>, which provide information to the assembler rather than acting as executable code like our RISC-V assembly instructions, such as <code>jal</code> and <code>add</code>.</p>
+
+<p>With this knowledge in mind, let’s run through this file line-by-line.  We’ll be working with various RISC-V standard registers, so <a href="https://github.com/riscv/riscv-asm-manual/blob/master/riscv-asm.md#general-registers">check out this table</a> for a good overview of each of them and their purpose.</p>
+
+<figure><pre><code data-lang="nasm"><span>.section</span> <span>.init</span><span>,</span> <span>"ax"</span></code></pre></figure>
+
+<p>Referencing the <a href="https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_7.html">GNU ‘as’ manual</a>, this line tells the assembler that we want the following code to go into a section named <code>.init</code> that is <code>a</code>llocatable and e<code>x</code>ecutable.  The <code>.init</code> section is <a href="https://web.archive.org/web/20190104080351/http://l4u-00.jinr.ru/usoft/WWW/www_debian.org/Documentation/elf/node3.html">another commonly followed convention</a> for running your code within the confines of an operating system.  We’re running on bare metal with no OS, so this may not be totally necessary in our case, but it’s good practice regardless.</p>
+
+<figure><pre><code data-lang="nasm"><span>.global</span> <span>_start</span>
+<span>_start:</span></code></pre></figure>
+
+<p><code>.global</code> is important because it makes the symbol following it available to <code>ld</code>.  Without this, linking would fail because we told it via the <code>ENTRY(_start)</code> command in our linker script that it should look for the <code>_start</code> symbol when establishing the entry point to our executable.  <code>_start:</code> tells the assembler we are beginning the definition of a symbol called <code>_start</code>.</p>
+
+<figure><pre><code data-lang="nasm"><span>_start:</span>
+  <span>.cfi_startproc</span>
+  <span>.cfi_undefined</span> <span>ra</span>
+  <span>...other</span> <span>stuff...</span>
+  <span>.cfi_endproc</span></code></pre></figure>
+
+<p>These <code>.cfi</code> directives <a href="https://stackoverflow.com/a/33732119/2421349">inform tools</a>, such as the assembler or exception unwinder, about the structure of the frame and how to unwind it.  <code>.cfi_startproc</code> and <code>.cfi_endproc</code> signal the start and end of a function, and <code>.cfi_undefined ra</code> <a href="https://sourceware.org/binutils/docs/as/CFI-directives.html">tells the assembler that register <code>ra</code> should not be restored</a> to whatever value it contained before <code>_start</code> ran.</p>
+
+<figure><pre><code data-lang="nasm"><span>.option</span> <span>push</span>
+<span>.option</span> <span>norelax</span>
+<span>la</span> <span>gp</span><span>,</span> <span>__global_pointer$</span>
+<span>.option</span> <span>pop</span></code></pre></figure>
+
+<p>These <code>.option</code> directives modify assembler behavior inline with assembly code, which is useful when particular instruction sequences must be assembled with a specific set of options.  <a href="https://embarc.org/man-pages/as/RISC_002dV_002dDirectives.html">This link</a> describes in good detail why this is important for the code segment above, so I’ll quote it directly:</p>
+
+<blockquote>
+  <p>…since we relax addressing sequences to shorter GP-relative sequences when possible, the initial load of GP must not be relaxed and should be emitted as something like:</p>
+</blockquote>
+
+<figure><pre><code data-lang="nasm"><span>.option</span> <span>push</span>
+<span>.option</span> <span>norelax</span>
+<span>la</span> <span>gp</span><span>,</span> <span>__global_pointer$</span>
+<span>.option</span> <span>pop</span></code></pre></figure>
+
+<blockquote>
+  <p>in order to produce, after linker relaxation, the expected:</p>
+</blockquote>
+
+<figure><pre><code data-lang="nasm"><span>auipc</span> <span>gp</span><span>,</span> <span>%</span><span>pcrel_hi</span><span>(</span><span>__global_pointer$</span><span>)</span>
+<span>addi</span> <span>gp</span><span>,</span> <span>gp</span><span>,</span> <span>%</span><span>pcrel_lo</span><span>(</span><span>__global_pointer$</span><span>)</span></code></pre></figure>
+
+<blockquote>
+  <p>instead of just:</p>
+</blockquote>
+
+<figure><pre><code data-lang="nasm"><span>addi</span> <span>gp</span><span>,</span> <span>gp</span><span>,</span> <span>0</span></code></pre></figure>
+
+<p>And now for the last portion of our <code>crt0.s</code>:</p>
+
+<figure><pre><code data-lang="nasm"><span>_start:</span>
+  <span>...other</span> <span>stuff...</span>
+  <span>la</span> <span>sp</span><span>,</span> <span>__stack_top</span>
+  <span>add</span> <span>s0</span><span>,</span> <span>sp</span><span>,</span> <span>zero</span>
+  <span>jal</span> <span>zero</span><span>,</span> <span>main</span>
+  <span>.cfi_endproc</span>
+  <span>.end</span></code></pre></figure>
+
+<p>Here we finally make use the <code>__stack_top</code> symbol we worked so tirelessly to create.  <code>la</code>, or the “load address” <a href="https://cseweb.ucsd.edu/classes/fa12/cse141/project/pseudo.html">pseudoinstruction</a> (which will be further explained below), loads the value of <code>__stack_top</code> into the <code>sp</code> (stack pointer) register, setting it up to be used for the remainder of our program.</p>
+
+<p>Next, <code>add s0, sp, zero</code> adds together the value of the <code>sp</code> register with the value of the <code>zero</code> register (which is actually the <code>x0</code> register, hardwired to 0), and finally places it into the <code>s0</code> register.  <code>s0</code> is a <a href="https://github.com/riscv/riscv-asm-manual/blob/master/riscv-asm.md#general-registers">special register</a> in a few ways.  First, it is what is known as a “saved register” meaning it is preserved across function calls.  Second, <code>s0</code> sometimes acts as the frame pointer, which enables each function invocation to maintain it’s own little space on the stack for storing parameters passed into that function.  How function calls work with the stack and frame pointers is a very interesting subject and could easily be a full-length post on it’s own, but for now just know that initializing our frame pointer <code>s0</code> is an important task for our runtime.</p>
+
+<p>The next instruction we see is <code>jal zero, main</code>.  <code>jal</code> stands for “<code>j</code>ump <code>a</code>nd <code>l</code>ink”, and expects operands in the form of <code>jal rd (destination register), offset_address</code>.  Functionally, <code>jal</code> writes the value of the next instruction (the <code>pc</code> register plus four) to the <code>rd</code>, and then sets the <code>pc</code> register to the current value of <code>pc</code> plus the <a href="https://en.wikipedia.org/wiki/Sign_extension">sign-extended</a> offset address, effectively “calling” that address.</p>
+
+<p>As mentioned above, <code>x0</code> is hardwired to the literal value of <code>0</code>, and writes to it have no effect.  With this in mind, you may think it’s odd that we’re using the <code>zero</code> register, which RISC-V assemblers interpret as the <code>x0</code> register, as our destination register, since this effectively creates an unconditional and side-effect free jump to <code>offset_address</code>.  Why do it this way, you may wonder…don’t other ISAs have an explicit unconditional jump instruction?</p>
+
+<p>This odd <code>jal zero, offset_address</code> pattern is actually a clever optimization enabled by the dedication of one whole register to a hard-wired zero.  Each supported instruction means a larger, and therefore more expensive, processor, so the simpler the ISA the better.  Rather than polluting the instruction space with both <code>jal</code> and <code>unconditional jump</code> instructions, the RISC-V ISA only calls for <code>jal</code>, but through <code>jal zero, main</code> supports unconditional jumps.</p>
+
+<p>There are many, many similar optimizations in RISC-V, most taking the form of what are known as <a href="https://cseweb.ucsd.edu/classes/fa12/cse141/project/pseudo.html">pseudoinstructions</a>.  Pseudoinstructions are instructions that assemblers know how to translate to other actual hardware-implemented instructions.  For example, there is an unconditional jump pseudoinstruction <code>j offset_address</code>, which RISC-V assemblers translate to <code>jal zero, offset_address</code>.  For a full list of officially supported pseudoinstructions, search for pseudoinstruction <a href="https://content.riscv.org/wp-content/uploads/2017/05/riscv-spec-v2.2.pdf">here in v2.2 of the RISC-V spec.</a></p>
+
+<figure><pre><code data-lang="nasm"><span>_start:</span>
+  <span>...other</span> <span>stuff...</span>
+  <span>jal</span> <span>zero</span><span>,</span> <span>main</span>
+  <span>.cfi_endproc</span>
+  <span>.end</span></code></pre></figure>
+
+<p>Our very last line is an assembler directive, <code>.end</code>, which simply marks the end of the assembly file.</p>
+
+<h2 id="debugging-but-for-real-this-time">Debugging, but for real this time</h2>
+
+<p>To recap, we’ve worked through many problems in our quest of debugging a simple C program on a RISC-V processor.  We first used <code>qemu</code> and <code>dtc</code> to find where our memory was located in the <code>virt</code> virtual RISC-V machine.  We then used this information to take manual control of the memory layout in our customized version of the default <code>riscv64-unknown-elf-ld</code> linker script, which then enabled us to accurately define a <code>__stack_top</code> symbol.  We finished by using this symbol in our own custom <code>crt0.s</code> that set up our stack and global pointers and finally called the <code>main</code> function.  Let’s make use of all this work to complete our original goal of debugging our simple C program in GDB.</p>
+
+<p>As a reminder, here was our <code>add.c</code> program:</p>
+
+<figure><pre><code data-lang="c"><span>int</span> <span>main</span><span>()</span> <span>{</span>
+    <span>int</span> <span>a</span> <span>=</span> <span>4</span><span>;</span>
+    <span>int</span> <span>b</span> <span>=</span> <span>12</span><span>;</span>
+    <span>while</span> <span>(</span><span>1</span><span>)</span> <span>{</span>
+        <span>int</span> <span>c</span> <span>=</span> <span>a</span> <span>+</span> <span>b</span><span>;</span>
+    <span>}</span>
+    <span>return</span> <span>0</span><span>;</span>
+<span>}</span></code></pre></figure>
+
+<p>And now to compile and link:</p>
+
+<figure><pre><code data-lang="bash">riscv64-unknown-elf-gcc <span>-g</span> <span>-ffreestanding</span> <span>-O0</span> <span>-Wl</span>,--gc-sections <span>\</span>
+    <span>-nostartfiles</span> <span>-nostdlib</span> <span>-nodefaultlibs</span> <span>-Wl</span>,-T,riscv64-virt.ld <span>\</span>
+    crt0.s add.c</code></pre></figure>
+
+<p>You’ll notice we have specified <em>a lot</em> more flags than we did last time, so let’s walk through all the ones we didn’t cover in the first section.</p>
+
+<p><code>-ffreestanding</code> <a href="https://stackoverflow.com/questions/17692428/what-is-ffreestanding-option-in-gcc#17692510">tells the compiler that the standard library may not exist</a>, and therefore not to make assumptions that it will be there.  This option isn’t necessary when running your application in a hosted environment (within an OS), but we aren’t doing that, so it’s important to tell the compiler that information.</p>
+
+<p><code>-Wl</code> is a comma-separated list of flags to pass on to the linker (<code>ld</code>).  <code>--gc-sections</code> stands for “garbage collect sections”, and tells <code>ld</code> to remove unused sections post-link. <code>-nostartfiles</code>, <code>-nostdlib</code>, and <code>-nodefaultlibs</code> respectively tell the linker not to link in any standard system startup files (such as the default <code>crt0</code>), any standard system stdlib implementation, or any standard system default linkable libraries.  We are providing our own <code>crt0</code> and linker script, so it’s important to pass these flags to inform the compiler we don’t want any of these defaults to avoid conflict with our custom setup.</p>
+
+<p><code>-T</code> allows you to specify the path to your linker script, which in our case is simply <code>riscv64-virt.ld</code>. Finally, we specify the files we wish to compile, assemble, and link: <code>crt0.s</code> and <code>add.c</code>.  As with before, this all results in a fully-fledged and ready-to-run executable called <code>a.out</code>.</p>
+
+<p>We’ll now start our shiny new executable in <code>qemu</code>:</p>
+
+<figure><pre><code data-lang="bash"><span># -S freezes execution of our executable (-kernel) until we explicitly tell </span>
+<span># it to start with a 'continue' or 'c' from our gdb client</span>
+qemu-system-riscv64 <span>-machine</span> virt <span>-m</span> 128M <span>-gdb</span> tcp::1234 <span>-S</span> <span>-kernel</span> a.out</code></pre></figure>
+
+<p>And then start <code>gdb</code>, making sure to load the debug symbols for <code>a.out</code> by specifying it as our last argument:</p>
+
+<figure><pre><code data-lang="bash">riscv64-unknown-elf-gdb <span>--tui</span> a.out
+
+GNU gdb <span>(</span>GDB<span>)</span> 8.2.90.20190228-git
+Copyright <span>(</span>C<span>)</span> 2019 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type <span>"show copying"</span> and <span>"show warranty"</span> <span>for </span>details.
+This GDB was configured as <span>"--host=x86_64-apple-darwin17.7.0 --target=riscv64-unknown-elf"</span><span>.</span>
+Type <span>"show configuration"</span> <span>for </span>configuration details.
+For bug reporting instructions, please see:
+&lt;http://www.gnu.org/software/gdb/bugs/&gt;.
+Find the GDB manual and other documentation resources online at:
+    &lt;http://www.gnu.org/software/gdb/documentation/&gt;.
+
+For <span>help</span>, <span>type</span> <span>"help"</span><span>.</span>
+Type <span>"apropos word"</span> to search <span>for </span>commands related to <span>"word"</span>...
+Reading symbols from a.out...
+<span>(</span>gdb<span>)</span></code></pre></figure>
+
+<p>Next, we’ll connect our <code>gdb</code> client to the <code>gdb</code> server we started as part of our <code>qemu</code> command:</p>
+
+<figure><pre><code data-lang="bash"><span>(</span>gdb<span>)</span> target remote :1234                                                                             │
+Remote debugging using :1234</code></pre></figure>
+
+<p>Set a breakpoint in <code>main</code>:</p>
+
+<figure><pre><code data-lang="bash"><span>(</span>gdb<span>)</span> b main
+Breakpoint 1 at 0x8000001e: file add.c, line 2.</code></pre></figure>
+
+<p>And start execution of the program:</p>
+
+<figure><pre><code data-lang="bash"><span>(</span>gdb<span>)</span> c
+Continuing.
+
+Breakpoint 1, main <span>()</span> at add.c:2</code></pre></figure>
+
+<p>You’ll notice from the above output that we have successfully hit a breakpoint on line 2!  Our text interface also shows this via the <code>B+&gt;</code> gutter annotation, and we finally have a proper line <code>L</code> and <code>PC:</code> value - <code>L2</code> and <code>PC: 0x8000001e</code>.  If you’ve been following along, yours might look something like this:</p>
+
+<p><a href="https://twilco.github.io/assets/img/working_gdb.png"><img src="data:application/octet-stream;base64," alt="add.c with breakpoint triggered on line 2"></a></p>
+
+<p>From here we can use <code>gdb</code> as normal - <code>s</code> to step to the next instruction, <code>info all-registers</code> to inspect the values inside our registers as our program executes, so on and so forth.  Experiment to your hearts content…we certainly worked hard enough to get here!</p>
+
+<h2 id="whats-next">What’s next</h2>
+
+<p>In our next post, we’ll continue to build on our knowledge of RISC-V assembly by beginning implementation of a driver for the UART onboard the <code>virt</code> QEMU machine.  Expect to learn about what a UART is and how it works, additional devicetree properties, the basic building blocks required to implement an NS16550A-compatible UART driver, and more.</p>
+
+<p>Sound interesting?  This post has been released - <a href="https://twilco.github.io/riscv-from-scratch/2019/07/08/riscv-from-scratch-3.html">click here to check it out</a>.  If you have any questions, comments, or corrections, feel free to <a href="https://github.com/twilco/twilco.github.io/issues">open up an issue</a> or leave a comment below via <a href="https://github.com/utterance/utterances">utterances</a>.</p>
+
+<p>Thanks for reading!</p>
+
+
+
+<p>If you enjoyed this post and want event more, <a href="https://www.youtube.com/watch?v=dOfucXtyEsU">Matt Godbolt gave a presentation titled “The Bits Between the Bits: How We Get to main()”</a> at CppCon2018 that approaches this subject from a few different angles than we took here in this post.  If you’ve worked through the entirety of this post you will definitely recognize some of the things he covers.  It’s a good talk, so check it out!</p>
+
+  </article>
+
+  
+
+</div></div>
+  </div>
+</body>
+</html>

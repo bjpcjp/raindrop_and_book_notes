@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Polymorphic associations in Active Record</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Polymorphic associations in Active Record</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/mattishida/polymorphic-associations-in-active-record-2pjk">https://dev.to/mattishida/polymorphic-associations-in-active-record-2pjk</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876790753</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1369179" id="article-body">
+            <p>As a software developer, one of the best feelings has to be thinking up a great feature for your project, wondering anxiously if it can done, then finding it's a built-in feature of the library you're already working with. Read the docs--it pays!</p>
+
+<p>In this blog post, I'll go over setting up polymorphic database relations in Active Record. Not only is it possible, it's surprisingly painless and useful.</p>
+
+<h2>
+  <a name="polymorphic" href="#polymorphic">
+  </a>
+  Polymorphic???
+</h2>
+
+<p>The word "polymorphic" can be a bit of stumbling block. Let's quickly try to demystify it.</p>
+
+<p>Normally, we think of a database relationships as modeled on something concrete and specific. If we have a table of episodes and a table of TV shows, how should the two tables be related?</p>
+
+<p>To answer that question, we think about the real-world relationship of episodes and shows. An episode is, by definition, part of series linked together by a running theme and a core group of personnel behind the scenes. It's an expression of a piece intellectual property that can be thought of as a single entity, namely a show. </p>
+
+<p>Thinking through that relation, it's clear that there is a unique show for each episode, whereas a show can (and ideally should) have many episodes.</p>
+
+<p>This guides how we set up our Active Record migrations and models.<br>
+</p>
+
+<div>
+<pre><code>class Episode &lt; ActiveRecord::Base
+  belongs_to :show
+end
+
+class Show &lt; ActiveRecord::Base
+  has_many :episodes
+end
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Episodes and shows are a very concrete relationship. So are ingredients and recipes, or employees and managers, or even Amazon users and orders.</p>
+
+<p>But what about relations that are less concrete? </p>
+
+<p>What about the relation of liking? I can like all sorts of things, almost anything at all, in fact, whether concrete or abstract. I can like strawberry ice cream or going to the movies or my last vacation or my neighbor's dog. I can like the show, or particular episodes, or the actors in the show, or even moments within the show.</p>
+
+<p>If you tell me you have a sibling relation to some entity X, I know what kind of thing X is, namely a human being. If you tell me you like some entity X, I have no way of knowing what that is. At most, I can say it is the kind of thing that can be liked, which isn't much at all.</p>
+
+<p>Liking is <strong>polymorphic</strong>. It's not particular about the kinds of things it relates.</p>
+
+<h2>
+  <a name="use-cases" href="#use-cases">
+  </a>
+  Use cases
+</h2>
+
+<p>Some use cases for polymorphic relations should now be obvious.</p>
+
+<p>A lot of Web 2.0 functionality naturally comes to mind. Likes, follows, comments, reactions, etc. </p>
+
+<ul>
+<li>On a photo-sharing website, I want to be able to like photos but also comments on photos and maybe other users. </li>
+<li>On movie review site, I should be able to like movies but also reviews of movies as well as directors and actors. </li>
+<li>On a news website, I should be able to follow reporters but also topics.</li>
+</ul>
+
+<p>The possibilities are endless. </p>
+
+<p>In general: if you have a website about subject matter X, you will naturally want to enable user interactions with anything in that domain, and also with other users, and also with those other users' interactions. </p>
+
+<p>Each user will have interactions with lots of different kinds of things.</p>
+
+<h2>
+  <a name="conceptual-foundations" href="#conceptual-foundations">
+  </a>
+  Conceptual foundations
+</h2>
+
+<p>Fortunately, Active Record makes this surprisingly simple.</p>
+
+<p>Before we get there, though, let's think about what we're asking for. </p>
+
+<p>In our hypothetical likes table, each row or like-instance belongs to exactly one likable, or thing that is liked. </p>
+
+<p>So we will need a column that tells us the id of the likable. Then we would also need some way of telling what kind of thing the likable is.  </p>
+
+<p>At this point, we could implement a separate likes table for reach kind of liked thing. Instead of just plain likes, we could have episodeLikes and showLikes and so on. </p>
+
+<p>That would allow us to use vanilla has-many and belongs-to relations. But at the cost of multiplying the number of tables, and therefore of migrations and models as well. Whenever we wanted to enable likes on a new kind of thing, we would have to create a whole new table for its likes as well. </p>
+
+<p>Not good. </p>
+
+<p>Alternatively, we could try map particular ids to particular things, so that odd-numbered foreign keys indicated shows and even-numbered indicated episodes.</p>
+
+<p>But this would meaning altering the logic by which ids are assigned. It would also make it difficult to add other likables without carefully rearranging the whole id-assignment logic.</p>
+
+<p>Or we could somehow tell the database to look for the likable using an additional column, something that indicated the type of the likable. That way, Active Record would know which of many tables look in as well as the record within that table.</p>
+
+<p>1) What kind of thing do you want?<br>
+2) What is its id?</p>
+
+<p>Instead of a normal single-column foreign key, what we need conceptually is something like this:<br>
+</p>
+
+<div>
+<pre><code>likable_type
+likable_id
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The idea is that both columns together function like a normal foreign key in pointing us to a particular record that the like belongs to.</p>
+
+<h2>
+  <a name="implementation" href="#implementation">
+  </a>
+  Implementation
+</h2>
+
+<p>Without further ado, let's start setting up a polymorphic association from likes to shows and episodes.</p>
+
+<h2>
+  <a name="1-add-in-a-type-column-to-the-raw-belongsto-endraw-table" href="#1-add-in-a-type-column-to-the-raw-belongsto-endraw-table">
+  </a>
+  1. Add in a type column to the <code>belongs_to</code> table
+</h2>
+
+<p>As mentioned, likes needs an additional column beyond just foreign key. So we'll need to modify the db migration to add that in. Our migration will look like this:<br>
+</p>
+
+<div>
+<pre><code>class CreateLikes &lt; ActiveRecord::Migration[6.1]
+  def change
+    create_table :likes do |t|
+      t.integer :user_id
+      t.integer :likable_id
+      t.string :likable_type
+    end
+  end
+end
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>If likes were only for shows, we could have include a <code>show_id</code> foreign key. But since we are abstracting likes to be free from any particular liked thing, we refer to the foreign key as <code>likable_id</code>. And since we still need to track what kind of thing is being liked, we add in a string column <code>likable_type</code>. </p>
+
+<h2>
+  <a name="2-use-the-raw-polymorphic-endraw-option-for-raw-belongsto-endraw-" href="#2-use-the-raw-polymorphic-endraw-option-for-raw-belongsto-endraw-">
+  </a>
+  2. Use the <code>:polymorphic</code> option for <code>belongs_to</code>
+</h2>
+
+<p>Each like still belongs to exactly one likable, whether an episode or show. However, we need to tell Active Record that likables can be drawn from different tables. </p>
+
+<p>To do this we simply add in an option in when we specify the <code>belongs_to</code> relation in our Like model.<br>
+</p>
+
+<div>
+<pre><code>class Like &lt; ActiveRecord::Base
+    belongs_to :user
+    belongs_to :likable, polymorphic: true
+end
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="3-use-the-raw-as-endraw-option-for-raw-hasmany-endraw-" href="#3-use-the-raw-as-endraw-option-for-raw-hasmany-endraw-">
+  </a>
+  3. Use the <code>:as</code> option for <code>has_many</code>
+</h2>
+
+<p>Shows and episodes both have many likes. That part hasn't changed. We just need to specify that the likes for a particular show or episode should be found by looking in the <code>likable_id</code> and <code>likable_type</code> columns, as opposed to <code>show_id</code> or <code>episode_id</code> as in a typical association. </p>
+
+<p>Active Record makes this easy to do with the <code>:as</code> option for <code>has_many</code>, where we simply pass in the abstract type <code>:likable</code>.<br>
+</p>
+
+<div>
+<pre><code>class Show &lt; ActiveRecord::Base
+    has_many :likes, as: :likable
+end
+
+class Episode &lt; ActiveRecord::Base
+    has_many :likes, as: :likable
+end
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>That's it! With a few simple options, we've implemented a polymorphic association in ActiveRecord. A like now belongs to exactly one likable, but that likable can be a show, an episode, or anything else we might need. </p>
+
+<h2>
+  <a name="working-with-polymorphic-associations" href="#working-with-polymorphic-associations">
+  </a>
+  Working with polymorphic associations
+</h2>
+
+<p>Let's take a quick look at how easy it is to work with polymorphic associations.</p>
+
+<h2>
+  <a name="creating-instances" href="#creating-instances">
+  </a>
+  Creating instances
+</h2>
+
+<p>We can test-drive our polymorphic association by creating some seed data. </p>
+
+<p>The nice thing about Active Record is that it lets us pass in a hash of a user and likable.<br>
+</p>
+
+<div>
+<pre><code>Like.create(user: User.first, likable: Episode.first)
+#=&gt;#&lt;Like:0x00007fdd89fc46d0 id: 1, user_id: 1, likable_id: 1, likable_type: "Episode"&gt;
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The <code>likable_type</code> column is filled in automatically with the appropriate string, along with the integer id.</p>
+
+<p>The cool thing is that we can do this, even though we didn't create a separate model for Likable.</p>
+
+<h2>
+  <a name="instance-methods" href="#instance-methods">
+  </a>
+  Instance methods
+</h2>
+
+<p>We can also call a <code>#likes</code> instance method on a user to see an array of likes.<br>
+</p>
+
+<div>
+<pre><code>User.first.likes
+#=&gt; [#&lt;Like:0x00007fdd89f7e450 id: 1, user_id: 1, likable_id: 1, likable_type: "Episode"&gt;, #&lt;Like:0x00007fdd89f7e0e0 id: 2, user_id: 1, likable_id: 1, likable_type: "Show"&gt;]
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>What about going in the other direction from a likable, like an episode to an array of users who have liked it?</p>
+
+<p>We can do that by adding a <code>has_many</code> and passing <code>:likes</code> to the <code>:through</code> option<br>
+</p>
+
+<div>
+<pre><code>class Episode &lt; ActiveRecord::Base
+    has_many :likes, as: :likable
+    has_many :users, through: :likes
+end
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Now we can call a <code>#users</code> method on an episode instance and see an array of users who have liked the episode.<br>
+</p>
+
+<div>
+<pre><code>Episode.first.users
+#=&gt; [#&lt;User:0x00007fdd89f2e2e8 id: 1, name: "Marion Batz", email: "reba@hand.co"&gt;]
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Finally, what if we wanted to get likables of a particular type for each user? </p>
+
+<p>We can do this quickly by adding one more line to our User model.<br>
+</p>
+
+<div>
+<pre><code>class User &lt; ActiveRecord::Base
+    has_many :likes
+    has_many :liked_episodes, through: :likes, source: :likable, source_type: "Episode"
+end
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Now we can call <code>#liked_episodes</code> and Active Record will focus only on those likes with the specified <code>likable_type</code> of "Episode".<br>
+</p>
+
+<div>
+<pre><code>User.first.liked_episodes
+#=&gt;[#&lt;Episode:0x00007fdd9080c008 id: 1, num: 1, show_id: 1&gt;]
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>So without defining any new models, methods, or tables, we can establish polymorphic many-to-many relationships, with only a few optional parameters. Pretty cool!  </p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

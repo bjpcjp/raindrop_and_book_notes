@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>On MLA</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>On MLA</h1>
+    <p><strong>URL:</strong> <a href="https://planetbanatt.net/articles/mla.html">https://planetbanatt.net/articles/mla.html</a></p>
+    <p><strong>Tags:</strong> transformers, llms, attention, attention-llms</p>
+    <p><strong>Bookmark ID:</strong> 957143721</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="content">
+
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgfeefd85">Understanding Multi-Head Latent Attention</a>
+<ul>
+<li><a href="#orge7c8cef">Why Low-Rank Factorization?</a>
+<ul>
+<li><a href="#org8f21af5">Aside: Perturbations in Low-Rank Decomposition</a></li>
+</ul>
+</li>
+<li><a href="#org8a45379">Related Work</a>
+<ul>
+<li><a href="#org6952b25">KV Cache</a></li>
+<li><a href="#org3997496">MHA Variants</a></li>
+<li><a href="#orgdfd79ce">Rotary Position Embeddings (RoPE)</a></li>
+</ul>
+</li>
+<li><a href="#orgafa7123">Experiments</a>
+<ul>
+<li><a href="#org8d4c686">Experiment 1</a></li>
+<li><a href="#org383698e">Experiment 2</a></li>
+<li><a href="#org3e2f7fa">Experiment 3</a></li>
+</ul>
+</li>
+<li><a href="#orgeb2a52f">Results</a>
+<ul>
+<li><a href="#org20000d6">Modeling Results</a></li>
+<li><a href="#org8b20688">Inference Time Experiments</a></li>
+</ul>
+</li>
+<li><a href="#orgea841f6">Discussion</a></li>
+<li><a href="#org854a880">Appendix: Other Learnings</a>
+<ul>
+<li><a href="#orgeb88080">Extra Experiments</a></li>
+<li><a href="#orga498fa4">Interesting Pytorch Things</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgfeefd85">
+<h2 id="orgfeefd85">Understanding Multi-Head Latent Attention</h2>
+<div id="text-orgfeefd85">
+<p>
+  <video controls="" autoplay="" loop="" muted="">
+    <source src="https://planetbanatt.net/images/mla/mla.mp4" type="video/mp4">
+    Your browser does not support videos
+  </video>
+</p>
+
+
+<p>
+Multi-head Latent Attention (MLA) is a variant of multi-head attention which was introduced in the DeepSeek-V2 paper<sup><a id="fnr.1" href="#fn.1" role="doc-backlink">1</a></sup>. There are several variants of multi-head attention whose purpose is primarily to reduce the KV-cache size, which is a memory bottleneck that emerges from scaling large models. These methods, which include <a href="https://arxiv.org/pdf/2305.13245">Group-Query Attention</a> and <a href="https://arxiv.org/pdf/1911.02150">Multi-Query Attention</a>, are primarily considered <i>performance tradeoffs</i>, i.e. the performance is worse, but you get to scale them much further by reducing the memory overhead.
+</p>
+
+<p>
+In comparison, MLA accomplishes this by using a low-rank factorized projection matrix, operating a bit like multi-query attention where instead of repeating a single head several times, you decompress a latent vector to yield a unique, appropriate corresponding K and V head for each Q head. DeepSeek claims this not only helps the memory overhead, but also <i>improves</i> the model rather than suffering for its inclusion. The basic idea is as follows:
+</p>
+
+<ol>
+<li>Replace the QKV computation by using low rank factorization to turn one matrix of dim \((in, out)\) to two matrices of \((in, rank)\) and \((rank, out)\)</li>
+<li>Project the compressed KV latent vector for each head to get the full K and V head corresponding to each Q head.</li>
+<li>Cache the compressed latent KV vector instead of each of the KV heads, and compute the KV heads on the fly from the latent vector.</li>
+</ol>
+
+<p>
+There is also an additional component of MLA which outlines <i>decoupled RoPE</i>. In this component, they make MLA compatible with RoPE by extracting two types of "sub-heads" for Q and K from the compressed latent vectors: one which will not contain position encoding information, and one whose purpose is to carry RoPE. They stitch these "sub-heads" together to create full-sized heads, allowing a finer degree of control over how much of each head is responsible for position encoding information. For simplicity's sake, we start with a version which only uses the low-rank factorization, and then add this decoupled RoPE back in later. Code for this project can be found on <a href="https://github.com/ambisinister/mla-experiments">github</a>.
+</p>
+</div>
+
+<div id="outline-container-orge7c8cef">
+<h2 id="orge7c8cef">Why Low-Rank Factorization?</h2>
+<div id="text-orge7c8cef">
+<p>
+Using two matrices instead of one, in theory, has some tradeoffs. The practice of factorizing a matrix (in this case the Q and KV matrices) into a product of matrices (in this case the compression and decompression matrices) is called <i>matrix decomposition</i>. The case here, where we are decomposing a matrix \((a, b)\) into two matrices \((a, r)\), \((r, b)\), is called <i>rank factorization</i>. A matrix of any shape can be decomposed into two matrices this way, but the lower the value of \(r\) the smaller the space of possible matrices that can be perfectly reconstructed<sup><a id="fnr.2" href="#fn.2" role="doc-backlink">2</a></sup>.
+</p>
+
+<p>
+  <video controls="" autoplay="" loop="" muted="">
+    <source src="https://planetbanatt.net/images/mla/LowRankDecomposition.mp4" type="video/mp4">
+    Your browser does not support videos
+  </video>
+</p>
+
+<p>
+When using low-rank factorization for layers in a neural network, the good things are that the compressed matrices use fewer parameters<sup><a id="fnr.3" href="#fn.3" role="doc-backlink">3</a></sup>, and are somewhat more expressive (by virtue of having two layers sometimes separated by a nonlinearity like a layernorm or activation). They can end up roughly approximate or equivalent to one larger matrix, so in theory you could multiply the weights of these matrices together to retrieve an approximation of your original matrix.
+</p>
+
+<p>
+The weaknesses of doing this are that we now have to perform 2 operations for every time we use this (i.e. we double the total matmuls for each layer we compress and decompress, in exchange for making them small), and will obviously lose some of the original representation power of the original matrix, via limiting them to only possibly being rank \(r\) or lower. You can think of low-rank decomposition as trading memory costs for computation costs – variants of this are popular for things like finetuning and here for kv-cache reduction, since those things are gated by total memory cost rather than computational overhead or inference speed. 
+</p>
+
+<p>
+In our case, we are hoping that we can preserve the functionality of \(W_{qkv}\) as much as possible while reducing the size of the cache by as much as we can. This should, in theory, allow us to enjoy the performance of normal multi-head attention while keeping the kv cache overhead minimal.
+</p>
+</div>
+
+<div id="outline-container-org8f21af5">
+<h3 id="org8f21af5">Aside: Perturbations in Low-Rank Decomposition</h3>
+<div id="text-org8f21af5">
+<p>
+When we apply gradient updates to these decomposed matrices, it's mathematically a little different from perturbing the full size matrix. Specifically, when you apply a gradient update perturbation to the decomposed matrix, their composition will remain of rank \(r\) no matter what – you are only able to travel from rank \(r\) matrix to rank \(r\) matrix, and this is immutable because of the shape of the matrices. This contrasts with a regular, non-decomposed matrix, where our perturbation can move us in any direction, even if that increases the rank. To be a little more precise, if you have a rank \(r\) \((n, n)\) matrix, and you assume a uniform distribution of possible perturbation directions, applying a randomly sampled perturbation will turn your matrix from rank \(r\) to rank \(n\) with probability 1<sup><a id="fnr.4" href="#fn.4" role="doc-backlink">4</a></sup>. This is really different behavior! It's useful to spend some time thinking about what perturbations inside the low-rank decomposition space actually do. 
+</p>
+
+<p>
+In this case, are creating a <i>manifold</i> inside the space of all matrices. It's a subspace defined by the columns of one matrix and the rows of the other matrix. When we make perturbations in these matrices, we move along this manifold in the full space. If there's a point on this manifold which minimizes the loss, it's all good – if there's a point off this manifold which minimizes the loss, the best we can do is a projection onto this manifold. 
+</p>
+
+<p>
+<img src="https://planetbanatt.net/images/mla/manifold_perturbation.png" alt="manifold_perturbation.png"><sup><a id="fnr.5" href="#fn.5" role="doc-backlink">5</a></sup>
+</p>
+
+<p>
+Using this in the attention mechanism is interesting – it can be thought of as restricting the space of the possible \(W_{QKV}\) matrices to only ones which are below a certain rank (that is, \(r\)). The bet with multi-head latent attention is that this does not harm downstream performance too much. If obtaining Q, K, and V from the hidden states is possible with a low-rank matrix (alternatively, if the matrix you would get training normally can be closely approximated by a low-rank matrix), then we can compress substantially for theoretically minimal performance loss.
+</p>
+
+<p>
+There's an interesting paper called <a href="https://arxiv.org/pdf/1906.05392">Generalization Guarantees for Neural Networks via Harnessing the Low-rank Structure of the Jacobian</a>, which set out to answer why it's possible for neural networks to both be overparameterized (i.e. have more parameters than data) and to still generalize to unseen test data<sup><a id="fnr.6" href="#fn.6" role="doc-backlink">6</a></sup>. In their experiments, they trained a linear model on noisy training data, and found that the model quickly learned to classify the data before proceeding to start memorizing noisy training examples<sup><a id="fnr.7" href="#fn.7" role="doc-backlink">7</a></sup>. What they found afterwards was that the neural network's <a href="https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant">Jacobian</a> had a small number of very large singular values, and a lot of very small ones, and that the initial fast learning was largely confined to these large singular values (<i>information space</i>) and the slow memorization was mostly confined to these small singular values (<i>nuisance space</i>)<sup><a id="fnr.8" href="#fn.8" role="doc-backlink">8</a></sup>.
+</p>
+
+<p>
+This has really interesting implications for why MLA might be a useful architecture for neural networks: by limiting the weights to only perturbations of rank \(r\), we are essentially ignoring the nuisance space. We <i>only</i> want to learn things which are <i>likely generalizable</i>, and we want to limit the amount of resources we waste on just memorizing specific examples in nuisance space. 
+</p>
+
+<p>
+For more information on this particular rabbit hole, I've spun this off into its own post <a href="https://planetbanatt.net/articles/lora_perturbations.html">here</a>.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8a45379">
+<h2 id="org8a45379">Related Work</h2>
+
+<div id="outline-container-org6952b25">
+<h3 id="org6952b25">KV Cache</h3>
+<div id="text-org6952b25">
+<p>
+The core problem being tackled by Multi-head Latent Attention is the KV caching problem. In autoregressive generation, you predict the next token given some context of previous tokens, and then add that token back into the context repeatedly. Naively, this means you have to recompute the same K and V computations over and over again, since you have to do the full attention computation on N tokens, then N+1 tokens, then N+2 tokens, etc. 
+</p>
+
+<p>
+It would be much preferable if we could just input the most recent token and then predict the next token from there. However, we need the entire context's worth of K and V values to complete the attention computation. Luckily, because each word in the sentence can only attend to previous words in the sentence, the K and V values for the N-1 tokens are the exact same in every subsequent computation. This means you can store the values of K and V, only calculate the new K and V for the newly added token, and then just concatenate them with the previous stored K and V to get the same full K and V vector. This speeds up autoregressive generation an extremely significant amount, especially at larger model sizes, but there's a catch – now you are bottlenecked by memory rather than computation. 
+</p>
+
+<p>
+<img src="https://planetbanatt.net/images/mla/kv_cache.png" alt="kv_cache.png"><sup><a id="fnr.9" href="#fn.9" role="doc-backlink">9</a></sup>
+</p>
+
+<p>
+Scaling these models to very large sizes with very large context windows means that the subsequent KV cache will be prohibitively large, making scaling while maintaining this KV caching strategy prohibitively expensive. To tackle this newly emerged problem, many have proposed variants to the original multi-head attention formulation.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3997496">
+<h3 id="org3997496">MHA Variants</h3>
+<div id="text-org3997496">
+<p>
+There are many MHA variants which use fewer K and V heads in an attempt to reduce the size of the KV cache. The most prominent of these are Multi-Query Attention<sup><a id="fnr.10" href="#fn.10" role="doc-backlink">10</a></sup> (MQA), which uses a single shared K head and V head for each attention computation, and Grouped-Query Attention<sup><a id="fnr.11" href="#fn.11" role="doc-backlink">11</a></sup> (GQA), which uses a number of heads greater than 1 and less than the number of Q heads, and makes adjacent Q heads share the same K and V heads. Both of these reduce the KV cache burden by explicitly reducing the amount of performed computation altogether, which makes them common staples in architecture design. However, all of these explicitly underperform regular multi-head attention, and their use in large language models can be thought of as acknowledging an explicit performance tradeoff in exchange for their inference speed and caching benefits.
+</p>
+
+<p>
+In comparison, Multi-head Latent Attention<sup><a id="fnr.12" href="#fn.12" role="doc-backlink">12</a></sup> (MLA) is an attention variant introduced by the <a href="https://arxiv.org/pdf/2405.04434">DeepSeek-V2 paper</a>. Rather than reducing the number of heads, MLA will instead replace the \(W_{KV}\) matrix with a low-rank matrix decomposition which first compresses down to a latent KV vector, caches that instead, and then decompresses back up to a full-size K and V. This allows it, in theory, to enjoy the benefits of the full expressive power of distinct K and V heads for each Q head, while compressing the KV cache to a similar degree as MQA. 
+</p>
+
+<p>
+MLA is comparatively very understudied. Some work exists for exploring the properties of MLA, but a lot of it is Chinese-language blogs<sup><a id="fnr.13" href="#fn.13" role="doc-backlink">13</a></sup>. The hope with this work is a straightforward, <a href="https://github.com/ambisinister/mla-experiments/blob/main/modeling/attention/mla.py">pedagogical implementation of MLA</a> to aid in understanding the costs and benefits.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgdfd79ce">
+<h3 id="orgdfd79ce">Rotary Position Embeddings (RoPE)</h3>
+<div id="text-orgdfd79ce">
+<p>
+RoPE is largely considered the de facto standard for position embeddings in modern LLMs. It works by breaking a vector up into chunks of two and performing a rotation upon adjacent pairs of values in the complex plane.
+</p>
+
+<p>
+Similar to using non-learned position encodings, RoPE requires you to create a 2d tensor whose rows correspond to position in the sequence; in this case, this is the outer product between the position and the <i>frequency</i>. However, <i>unlike</i> standard position encodings, these vectors are not added to the input, but are instead used to apply a rotation.
+</p>
+
+<div>
+<pre><span>freqs</span> = 1.0 / (rope_theta ** (torch.arange(0, <span>self</span>.dh, 2).<span>float</span>() / <span>self</span>.dh))
+<span>emb</span> = torch.outer(torch.arange(<span>self</span>.max_seq_len).<span>float</span>(), freqs)
+</pre>
+</div>
+
+<p>
+Sine and cosine are applied to this position embedding tensor, indexed by position, and then applied to the query and key heads before the attention computation is performed. The code for applying RoPE is a fairly light lift, even if the mechanism is somewhat difficult to follow.
+</p>
+
+<div>
+<pre><span>def</span> <span>rotate_half</span>(x):
+    <span>x1</span>, <span>x2</span> = x.chunk(2, dim=-1)
+    <span>return</span> torch.cat((-x2, x1), dim=-1)
+
+<span>def</span> <span>apply_rope</span>(q, k, cos, sin):
+    q = (q * cos) + (rotate_half(q) * sin)
+    k = (k * cos) + (rotate_half(k) * sin)
+    <span>return</span> q, k
+</pre>
+</div>
+
+<p>
+Where q and k are the q and k heads of shape \((B, n_{heads}, S, dim_{head})\), and cos and sin are cosine and sine vectors corresponding to the current position of the sequence. The rotate half function lets us perform this rotation without explicitly dealing with complex numbers – x * cos + rotate<sub>half</sub>(x) * sin will give us \((a * cos - b * sin, b * cos + a * sin)\), which is equivalent to a multiplication by \(e^{i\theta}\) in the complex plane.
+</p>
+
+<p>
+Compared to standard position encodings, RoPE is extremely powerful. However, in MLA our KV vector is compressed, which means our K heads are inaccessible at the time we would want to apply RoPE to them<sup><a id="fnr.14" href="#fn.14" role="doc-backlink">14</a></sup>. Because RoPE is <i>so powerful</i>, we need to take extra steps to figure out a way to make it compatible with the otherwise straightforward MLA mechanism, otherwise even outperforming normal MHA will be of minimal benefit.
+</p>
+
+<p>
+  <video controls="" autoplay="" loop="" muted="">
+    <source src="https://planetbanatt.net/images/mla/mla.mp4" type="video/mp4">
+    Your browser does not support videos
+  </video>
+</p>
+
+<p>
+Luckily, MLA uniquely offers us an interesting trick. In the RoPE-less case, we just compress down and decompress back up from and to full size. However, theoretically this need not be the case. For example, consider the case where you have a head dimension of 128. You can project up such that your "heads" are instead a head dimension of 64. Simultaneously, you can extract a chunk of Q and K from the compressed vectors whose purpose is to carry the RoPE position encodings, also of size 64, and apply RoPE just to those "heads". Then you can concatenate these two types of heads together in order to arrive back at our original head dimension of 128, with a specific part of each head designated for positioning vs non-positioning information. In this case, we save some parameters decompressing up to a smaller size, and we can reuse the same position-encoded RoPE K for each head, saving some redundant computation<sup><a id="fnr.15" href="#fn.15" role="doc-backlink">15</a></sup>.
+</p>
+
+<p>
+In principle, it is possible to do this type of decoupling for vanilla multi-head attention as well. This would allow us a similar degree of control over which parts of the heads are responsible for RoPE, although it lacks the advantage of extracting this component from the full compressed vectors, so it's likely that this would underperform compared to using this same strategy in MLA.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgafa7123">
+<h2 id="orgafa7123">Experiments</h2>
+<div id="text-orgafa7123">
+<p>
+MLA has two components which make it different from standard multi-head attention. First, it has compression and uncompression matrices. Second, it splits the Q and K heads such that a specific section of each head's purpose is to carry RoPE position embeddings, which is abnormal practice for RoPE embeddings which are normally applied to the full Q and K vectors.
+</p>
+
+<p>
+It's not immediately clear which of these practices contribute to MLA's viability, assuming DeepSeek's claimed improved performance is true. For example, it's possible the low-rank factorization adds a lot, and the RoPE extension salvages some of the lost capability from the effectiveness of RoPE.  It's also possible that a dedicated part of the vector whose purpose is to carry RoPE information is the more beneficial component, and the low-rank steps are a marginal benefit which mostly just saves KV cache space. Likewise, it's also possible both of these by themselves are insufficient to see substantial gains, but together they synergize to perform well. Finally, it's possible that MLA is not inherently superior to MHA at all, but the ability to reduce the burden upon the KV cache makes it worthwhile to use anyways. We need to do some experiments to try to get at this question.
+</p>
+</div>
+
+<div id="outline-container-org8d4c686">
+<h3 id="org8d4c686">Experiment 1</h3>
+<div id="text-org8d4c686">
+<p>
+To investigate this, we implement a variant of Multi-head Latent Attention which does not include RoPE. We instead use standard learned position encodings, and compare this to vanilla Multi-Head Attention using standard position encodings. This way, we can decouple the pros and cons of the RoPE components of MLA, as an ablation study. We also <a href="https://github.com/ambisinister/mla-experiments/blob/main/modeling/attention/mqa.py">implement a baseline multi-query</a> attention implementation, as a point of comparison.
+</p>
+
+<p>
+Architecturally, we have full control over the lora dimension that we plan on projecting both Q and KV down to, before subsequently decompressing them back to full size.
+</p>
+
+<p>
+Naively, the easiest point of comparison is where we "compress" Q and KV such that the number of parameters used is the same, and no real compression actually occurs. That is, in the case where we substitute the Q projection \((d_{model}, d_{model})\) with two layers \((d_{model}, d_{model}/2)\) and \((d_{model}/2, d_{model})\) and substitute the KV projection \((d_{model}, 2*d_{model})\) with two layers \((d_{model},(2*d_{model})/3)\), \(((2*d_{model}/3), 2*d_{model})\), we arrive at an architecture which uses the same number of parameters.
+</p>
+
+<p>
+The tradeoff in this experiment is very easy to understand. The parameter count is roughly identical, the MHA network has a larger KV cache size (due to needing to store full K and V), and the MLA network has a smaller KV cache size (by virtue of storing the intermediate decomposition) but requires more matrix multiplications to complete a forward pass, and is limited to only representing Q, K, and V matrices of a lower rank due to the matrix decompositions. We can compress the KV and Q projection dimensions even further to save more memory (presumably in exchange for decreased performance), but as a pure point of comparison between MLA and MHA this seems the most direct.
+</p>
+
+<p>
+We use a sequence length of 1024, and a batch size of 12. For all models we train for 100M tokens on the Wikitext dataset.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org383698e">
+<h3 id="org383698e">Experiment 2</h3>
+<div id="text-org383698e">
+<p>
+With experiment 1 in mind, we re-introduce Rotary Position Embeddings (RoPE) for MLA, MQA, and MHA. RoPE yields substantial performance gains in most language modeling tasks, and the important ablation from experiment 1 will tell us a substantial degree about why MLA performs the way it does. 
+</p>
+
+<p>
+In addition, we <a href="https://github.com/ambisinister/mla-experiments/blob/main/modeling/attention/mha.py#L130">implement a variant of MHA which uses a decoupled RoPE strategy</a>, similar in spirit to the strategy used by MLA. Hopefully, we can use this as evidence to determine if the decoupled RoPE strategy is a completely superior strategy for applying RoPE to attention mechanisms, or if the usefulness of this strategy depends on the vectors being compressed first.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3e2f7fa">
+<h3 id="org3e2f7fa">Experiment 3</h3>
+<div id="text-org3e2f7fa">
+<p>
+We also want to test inference speed with the new KV caching method, and how the additional matmuls affect the throughput. For this experiment, we use a fixed prompt of 100 tokens and measure the time to generate between 20 and 100 tokens, to observe how the token count affects the speed of autoregressive output. For an intermediate point of comparison, we also implement a version of MLA which uses full KV caching, which would be expected to have higher throughput than the compressed caching variant, but lower throughput than the original MHA model which has fewer total matrix multiplications.
+</p>
+
+<p>
+Likewise, we invert the previous test and use a variable prompt of between 20 and 100 tokens and measure the time to generate 100 tokens. This is largely identical stratified by model (i.e. a single model will always be faster than another model, and the latency values of both models are about the same in both cases no matter how long the input prompt is) but it remains a useful point of comparison.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgeb2a52f">
+<h2 id="orgeb2a52f">Results</h2>
+
+<div id="outline-container-org20000d6">
+<h3 id="org20000d6">Modeling Results</h3>
+<div id="text-org20000d6">
+<table>
+
+
+<colgroup>
+<col>
+
+<col>
+
+<col>
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Model</th>
+<th scope="col">Training Perplexity</th>
+<th scope="col">KV Cache / Token / Layer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><b>MHA 35M RoPE</b></td>
+<td><b>94.31</b></td>
+<td>8192</td>
+</tr>
+
+<tr>
+<td>MLA 35M RoPE</td>
+<td>96.70</td>
+<td>2856</td>
+</tr>
+
+<tr>
+<td>MHA 35M Decoupled RoPE</td>
+<td>98.76</td>
+<td>8192</td>
+</tr>
+
+<tr>
+<td>MQA 32M RoPE</td>
+<td>102.18</td>
+<td>512</td>
+</tr>
+
+<tr>
+<td><b>MLA 35M no RoPE</b></td>
+<td><b>142.77</b></td>
+<td>2728</td>
+</tr>
+
+<tr>
+<td>MHA 35M no RoPE</td>
+<td>147.83</td>
+<td>8192</td>
+</tr>
+
+<tr>
+<td>MQA 32M no RoPE</td>
+<td>155.44</td>
+<td>512</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+In the above table we see training perplexity results for experiments 1 and 2 (lower is better). Specifically, we see slightly better results for MLA in the case where no RoPE embeddings are used. In the case where we use RoPE, MHA outperforms MLA<sup><a id="fnr.16" href="#fn.16" role="doc-backlink">16</a></sup>. However, the results are pretty similar to MHA despite MLA's substantial KV cache reduction. Notably, we see MHA decoupled RoPE underperforming MLA (and MHA with normal RoPE), which suggests that the combination of matrix decompositions and decoupling RoPE has an advantage over simply decoupling RoPE.
+</p>
+
+<p>
+We also see below our training curves for each of these experiments, which seem reasonable based on our results above.
+</p>
+
+
+<p><img src="https://planetbanatt.net/images/mla/mha_rope_training_curve.png" alt="mha_rope_training_curve.png">
+</p>
+
+
+<p><img src="https://planetbanatt.net/images/mla/mla_rope_training_curve.png" alt="mla_rope_training_curve.png">
+</p>
+
+
+<p><img src="https://planetbanatt.net/images/mla/mha_decoupled_rope_training_curve.png" alt="mha_decoupled_rope_training_curve.png">
+</p>
+
+
+<p><img src="https://planetbanatt.net/images/mla/mqa_rope_training_curve.png" alt="mqa_rope_training_curve.png">
+</p>
+
+
+<p><img src="https://planetbanatt.net/images/mla/mla_training_curve.png" alt="mla_training_curve.png">
+</p>
+
+
+<p><img src="https://planetbanatt.net/images/mla/mha_training_curve.png" alt="mha_training_curve.png">
+</p>
+
+
+<p><img src="https://planetbanatt.net/images/mla/mqa_training_curve.png" alt="mqa_training_curve.png">
+</p>
+
+<p>
+Below we scale the above experiment to a ~300M parameter model<sup><a id="fnr.17" href="#fn.17" role="doc-backlink">17</a></sup>.
+</p>
+
+<table>
+
+
+<colgroup>
+<col>
+
+<col>
+
+<col>
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Model Description</th>
+<th scope="col">Training Perplexity</th>
+<th scope="col">KV Cache / Token / Layer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MHA 324M no RoPE</td>
+<td>35.91</td>
+<td>49152</td>
+</tr>
+
+<tr>
+<td>MLA 323M no RoPE</td>
+<td>36.99</td>
+<td>16368</td>
+</tr>
+
+<tr>
+<td>MQA 277M no RoPE</td>
+<td>37.91</td>
+<td>3072</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+An interesting artifact of storing the intermediate KV vector is that this will reduce the KV cache burden even if this operation does not necessarily constitute compression. With no RoPE, at a kv<sub>proj</sub><sub>dim</sub> \(r = \frac{2}{3d_{model}}\), two layers \((X, r) \rightarrow (r, 2X)\) have the same number of parameters as one layer \((X, 2X)\), and likewise \(r = 0.5 d_{model}\) for q<sub>proj</sub><sub>dim</sub>. What this means is that these two models will have equal parameter counts, and these two matrices can be multiplied together to yield a matrix which is the same size as the original \(W_{kv}\) matrix. <i>Despite that</i>, you can still store the intermediate vector of \((B, len_k, 0.33 d_{model})\) instead of the resulting vector of \((B, len_k, d_{model})\), which constitutes a 66% reduction in KV cache burden without the need for any compression<sup><a id="fnr.18" href="#fn.18" role="doc-backlink">18</a></sup>.
+</p>
+
+<p>
+Overall we can see MLA remain competitive with MHA and outperforming MQA despite a substantial reduction in KV cache size. 
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8b20688">
+<h3 id="org8b20688">Inference Time Experiments</h3>
+<div id="text-org8b20688">
+<p>
+Contrary to what they describe in the DeepSeek-V2 paper, the modeling code for the open-sourced DeepSeek-V2 weights just uses regular full KV caching, rather than compressing KV and caching that. 
+</p>
+
+<p>
+This is because it's slower if you have to do the decompression layer to retrieve KV from compressed KV, and if you have extra space, it's faster to just store those values directly.  It takes more memory to do full KV caching, so it's really important to implement compression caching if you want to do batched inference and serve to customers. It's also important to recognize that these operations are (roughly) equivalent – the only major difference is that we cache earlier or later along the inference logic flow, not that we are ending up with substantially different values one way or the other.
+</p>
+
+<p>
+You may ask: how different is the performance between compressed caching and full KV caching? We will implement two versions of ropeless MLA to see how much different it is: one using a compressed KV cache and one using the standard full KV cache similar to their open source modeling code. We further train two models using MLA: one which is identical to the reference model except substituting MLA for MHA, and one which adds an additional layer after reducing the parameter count via compression in each transformer block.
+</p>
+
+
+<p><img src="https://planetbanatt.net/images/mla/inference_100_in.png" alt="inference_100_in.png">
+</p>
+
+
+<p><img src="https://planetbanatt.net/images/mla/inference_100_out.png" alt="inference_100_out.png">
+</p>
+
+<p>
+The above plots follow fairly nicely from the architectures they represent. The reference MHA implementation with full KV caching is faster than all the other models, since it performs fewer matmuls (due to not doing compression -&gt; decompression operations). The default MLA model is faster than the one with the extra layer, and for both models full KV caching is faster than compressed KV caching (due to using fewer matmuls to uncompress K and V).
+</p>
+
+<p>
+In all cases, we substantially see improved autoregressive generation time compared to not using a KV cache, and in the compressed KV case we see the memory requirements slashed a very large amount. 
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgea841f6">
+<h2 id="orgea841f6">Discussion</h2>
+<div id="text-orgea841f6">
+<p>
+In both cases, the network performed admirably. Likewise, in both cases, we substantially address the KV cache problem of scaling the model to very large sizes – that the KV cache burden can be reduced substantially with not too much loss in performance is significant. In addition, the memory saved will grow with the size of the network: whereas Multi-Head Attention uses \((2 * n_{heads} * d_{heads} * layers)\) KV cache per token, in comparison the ropeless MLA uses \((d_{compression} * layer)\) or roughly \((4 * d_{heads} * layers)\) per the original paper's hyperparameters. At large model size with many heads, this is extremely, extremely large. <a href="https://github.com/madsys-dev/deepseekv2-profile/blob/924174cb5dc11fad24bdaad3fd820ebf87506368/workspace/blog/optimizing-mla.md">Madsys-dev</a> with a larger model saw a reduction from 81.92 kB cache per token to 1.15 kB per token, a reduction of 98.6% in size. To bring the KV cache from a major architectural bottleneck to a relative non-issue is certainly extremely noteworthy, even if the claimed superiority may not be a blanket case.
+</p>
+
+<p>
+From our experiments, we have some weak evidence that the matrix decomposition component of the MLA mechanism could be a primary driving factor in it's increased performance, and the decoupled RoPE allows us to recapture the benefits of using such a superior positional encoding. However, the results are somewhat within noise and the thing we have primarily demonstrated is its similar performance to MHA, rather than its superiority. In the grand scheme of things, 100 million tokens is not that much, and we don't do any sophisticated examination upon our training curves to see if any of the models are "on pace" to perform better after an additional several billion tokens – larger training runs remain needed.
+</p>
+
+<p>
+As mentioned a earlier, <a href="https://arxiv.org/pdf/1906.05392">Oymak et al 2019</a> would suggest to us that this architecture would be explicitly more likely to learn a more generalizable model and less generally able to memorize training examples, so the metric of training perplexity is perhaps a still yet unflattering one. With this metric, the model is directly punished for being less able to memorize training examples, and further experiments with a validation set would likely illuminate MLA's advantages even more than what we've already performed above<sup><a id="fnr.19" href="#fn.19" role="doc-backlink">19</a></sup>. Even still, MLA does not lag far behind vanilla MHA, perhaps as an artifact of only using a single epoch for training<sup><a id="fnr.20" href="#fn.20" role="doc-backlink">20</a></sup>.
+</p>
+
+<p>
+However, it does seem to have lower throughput compared to normal attention – both compressing + adding additional layers and the addition of two matrices to replace one in every attention block adds some subtle but relatively noticable cost to inference time. You can use full KV caching to speed this up, but then you lose out on the largest benefit of the architecture in the first place (the very small KV cache), while still remaining slower than regular MHA. It's important to point this out relative to variants like multi-query attention, which are worse-performing than MLA, but are expressly <i>faster</i> than regular multi-head attention due to reducing the total computation performed. This likely can be addressed somewhat by merging adjacent matrix multiplications as alluded to in the paper – these were not implemented here since optimizing the implementation was somewhat outside the scope of this project.  
+</p>
+
+<p>
+Overall, MLA's claimed equivalent-or-superior performance over MHA from the DeepSeek-V2 paper is surprisingly plausible, but remains still somewhat unclear from our experiments here. We were not able to see clearly superior performance despite arriving at very competitive results with vanilla multi-headed attention, which could be for a variety of reasons:
+</p>
+
+<ol>
+<li>The introduction of additional projection dimensions introduces architecture hyperparameters which increases the burden of effective hyperparameter search, and it's possible with different values we could have observed clearly better results.</li>
+<li>The superior performance of MLA could potentially shine at larger scales, where both the model and the input sequences are much larger. It's possible our modest toy model experiments are a poor environment for illustrating the gap between these methods.</li>
+<li>MHA and MLA could perform differently when dealing with actual measured capabilities, rather than simply training data perplexity – it could be that perplexity values do not capture how well the representations learned by these models could be transformed into downstream capabilities, which are all that was reported in the original DeepSeek-V2 paper.</li>
+<li>MLA may be extra synergistic with DeepSeek-V2's <a href="https://arxiv.org/abs/2401.06066">Mixture-of-Experts</a> architecture, rather than being a general improvement.</li>
+<li>Small implementation details could be affecting performance. Neural networks want to work<sup><a id="fnr.21" href="#fn.21" role="doc-backlink">21</a></sup>, and often fail silently by working slightly less well – the close performance between MLA and MHA could be more impressive than it seems.</li>
+</ol>
+
+<p>
+Future work here could include:
+</p>
+<ul>
+<li>Using a much larger model on a bigger dataset to measure capability directly</li>
+<li>Implementing the matrix absorptions at inference time to reduce this throughput problem</li>
+<li>Optimizing the implementation further beyond this toy pedagogical implementation</li>
+</ul>
+
+<p>
+MLA has demonstrated it's usefulness here for scaling up very large models. However, it remains to be seen if the claimed benefits extend to smaller models.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org854a880">
+<h2 id="org854a880">Appendix: Other Learnings</h2>
+<p>
+This section holds some very brief things I had to learn to enable me to write this writeup / code up the experiments. These are not that relevant to the main body of work, this is mostly just a log for me to hold adjacent things I had to learn while doing this project. 
+</p>
+
+<div id="outline-container-orgeb88080">
+<h3 id="orgeb88080">Extra Experiments</h3>
+<p>
+Designating specific Q and K heads in MLA as "RoPE heads" does much much worse. This was originally performed because I misunderstood the design of MLA's decoupled RoPE, and thought that it was designating specific heads as purposed ones to carry position information. This still outperforms using learned position encoding (RoPE is very powerful), but does worse than MQA with RoPE so overall it's not recommended.
+</p>
+</div>
+
+<div id="outline-container-orga498fa4">
+<h3 id="orga498fa4">Interesting Pytorch Things</h3>
+<div id="text-orga498fa4">
+<p>
+Efficient training was done using <a href="https://pytorch.org/docs/stable/notes/amp_examples.html">torch's mixed precision training</a> functions. I wrote everything from scratch rather than defaulting to something like a huggingface model / the huggingface trainer because I wanted to design a fair experiment and also specifically ensure I understood all the components very well. Things performed to enable this include gradient scaling, gradient accumulation, autocast to fp16, and some other minor things.
+</p>
+
+<p>
+I used the <a href="https://pytorch.org/docs/stable/profiler.html">torch profiler</a> in this project to figure out where my bottlenecks were, because my forward passes were taking upwards of 15 seconds at first for some reason. I used this to discover that the reshape operations were really expensive (likely because <a href="https://stackoverflow.com/questions/49643225/whats-the-difference-between-reshape-and-view-in-pytorch">a reshaped tensor may or not be a copy</a> of the original tensor). The profiler was kind of finicky in general, but it was helpful to figure out why things were going wrong.
+</p>
+
+<p>
+Fighting through understanding RoPE led me to learn about <a href="https://discuss.pytorch.org/t/what-pytorch-means-by-buffers/120266">buffers</a>, which are just "things saved in the state dict which are not parameters". This was important for saving the cosine and sine components of RoPE. I had to read a lot about <a href="https://rockt.github.io/2018/04/30/einsum">einsum notation</a> to understand the various implementations of RoPE floating around but I ended up not using them in my own implementation because I think it would have been too confusing debugging something this involved with notation I didn't already understand very well.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<h2>Footnotes: </h2>
+<div id="text-footnotes">
+
+
+
+<div><p><sup><a id="fn.2" href="#fnr.2" role="doc-backlink">2</a></sup></p><p>
+More clearly: a matrix can be perfectly decomposed / reconstructed from a low-rank factorization of rank \(r\) if the <a href="https://en.wikipedia.org/wiki/Rank_(linear_algebra)">rank</a> of the matrix is \(r\) or lower. This is an alternative definition for the concept of rank, called <a href="https://en.wikipedia.org/wiki/Rank_(linear_algebra)#Decomposition_rank">decomposition rank</a>. 
+</p></div>
+
+<div><p><sup><a id="fn.3" href="#fnr.3" role="doc-backlink">3</a></sup></p><p>
+In practice, that is. The comparison here is just \(ar + br &lt; ab\) which is true for any value of \(r\) such that \(r &lt; \frac{ab}{a+b}\), which is most cases you would be using this in a neural network.
+</p></div>
+
+<div><p><sup><a id="fn.4" href="#fnr.4" role="doc-backlink">4</a></sup></p><p>
+Because rank \(r\) matrices form a <a href="https://en.wikipedia.org/wiki/Null_set">measure zero subset</a> for each \(r\), so picking a matrix "at random" will be rank \(n\) with probability 1. If you have a large enough (non-infinitesimal) perturbation these are pretty much the same.
+</p></div>
+
+
+
+<div><p><sup><a id="fn.6" href="#fnr.6" role="doc-backlink">6</a></sup></p><p>
+A long, dense, and intense paper. Definitely worth a more detailed fight-through later, but the high level empirical finding is the most important thing within the scope of this post.
+</p></div>
+
+<div><p><sup><a id="fn.7" href="#fnr.7" role="doc-backlink">7</a></sup></p><p>
+That is, the test loss fell sharply and then began rising as the network began memorizing instead of learning.
+</p></div>
+
+<div><p><sup><a id="fn.8" href="#fnr.8" role="doc-backlink">8</a></sup></p><p>
+The definition here is sort of arbitrary, they just pick some hyperparameter \(\alpha\) which defines the proportion of big singular values. In their experiments they just take the top 50 and call that "information space", probably similar in spirit to something like the <a href="https://en.wikipedia.org/wiki/Elbow_method_(clustering)">elbow method</a>.
+</p></div>
+
+
+
+
+
+
+
+
+
+
+
+<div><p><sup><a id="fn.14" href="#fnr.14" role="doc-backlink">14</a></sup></p><p>
+Based on our implementation, you might ask why we can't just uncompress the KV vector to full size and then apply RoPE to it. The reason is because during inference, DeepSeek-V2 absorbs the uncompression matrix into the matrix which follows it, because there's no intermediate nonlinearity preventing us from doing so. This is a speedup, but it motivates the need for RoPE applied from the compressed vectors.
+</p></div>
+
+<div><p><sup><a id="fn.15" href="#fnr.15" role="doc-backlink">15</a></sup></p><p>
+Subtle but worth noting here is that each Q head gets it's own little section to apply RoPE to, but the RoPE part of the K heads is just a single sub-head which is copied and concatenated to every K head, MQA-style. 
+</p></div>
+
+<div><p><sup><a id="fn.16" href="#fnr.16" role="doc-backlink">16</a></sup></p><p>
+This may be related to the fact that this introduces a number of hyperparameters in the model which are less straightforward to tune – the relative weight of the RoPE and non-RoPE parts is controllable and we use the default 50-50 split used in DeepSeek-V2's config.json file, which may not be the most optimal for a smaller model as we are using here.
+</p></div>
+
+<div><p><sup><a id="fn.17" href="#fnr.17" role="doc-backlink">17</a></sup></p><p>
+I don't have the compute to do these experiments justice; ideally we would train on a much larger dataset for much longer, but I am limited by my single 3090, so hopefully this serves as a sanity check that MLA and MHA perform roughly similar to each other in the RoPE-less case even with larger model size.
+</p></div>
+
+<div><p><sup><a id="fn.18" href="#fnr.18" role="doc-backlink">18</a></sup></p><p>
+It's possible that you could compress this much, much further and see minimal loss in performance, but this was satisfactory for me as far as this post goes, to demonstrate that it works fairly well.
+</p></div>
+
+<div><p><sup><a id="fn.19" href="#fnr.19" role="doc-backlink">19</a></sup></p><p>
+This may be why the deepseek-v2 paper only reports downstream llm benchmark metrics in their paper, rather than even anything like validation perplexity: it might be even better than it appears here.
+</p></div>
+
+<div><p><sup><a id="fn.20" href="#fnr.20" role="doc-backlink">20</a></sup></p><p>
+An interesting note here is that MLA, being more resistant to memorization, might be better suited for a training regime with more than one epoch compared to MHA, which would itself be an interesting result.
+</p></div>
+
+
+
+
+</div>
+</div></div></div>
+  </div>
+</body>
+</html>

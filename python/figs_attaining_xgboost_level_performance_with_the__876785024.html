@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FIGS: Attaining XGBoost-level performance with the interpretability and spe</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>FIGS: Attaining XGBoost-level performance with the interpretability and spe</h1>
+    <p><strong>URL:</strong> <a href="http://bair.berkeley.edu/blog/2022/06/30/figs">http://bair.berkeley.edu/blog/2022/06/30/figs</a></p>
+    <p><strong>Tags:</strong> machine-learning, python</p>
+    <p><strong>Bookmark ID:</strong> 876785024</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+  <!-- twitter -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p>
+    <a href="https://arxiv.org/abs/2201.11931"><img src="data:application/octet-stream;base64," width="90%"></a>
+<br>
+<b>FIGS (Fast Interpretable Greedy-tree Sums): </b><i>A method for building interpretable models by simultaneously growing an ensemble of decision trees in competition with one another.</i>
+</p>
+
+<p>Recent machine-learning advances have led to increasingly complex predictive models, often at the cost of interpretability. We often need interpretability, particularly in high-stakes applications such as in clinical decision-making; interpretable models help with all kinds of things, such as identifying errors, leveraging domain knowledge, and making speedy predictions.</p>
+
+<p>In this blog post we’ll cover <a href="https://arxiv.org/abs/2201.11931">FIGS</a>, a new method for fitting an <em>interpretable model</em> that takes the form of a sum of trees. Real-world experiments and theoretical results show that FIGS can effectively adapt to a wide range of structure in data, achieving state-of-the-art performance in several settings, all without sacrificing interpretability.
+<!--more--></p>
+
+<h2 id="how-does-figs-work">How does FIGS work?</h2>
+
+<p>Intuitively, FIGS works by extending CART, a typical greedy algorithm for growing a decision tree, to consider growing a <em>sum</em> of trees <em>simultaneously</em> (see Fig 1). At each iteration, FIGS may grow any existing tree it has already started or start a new tree; it greedily selects whichever rule reduces the total unexplained variance (or an alternative splitting criterion) the most. To keep the trees in sync with one another, each tree is made to predict the <em>residuals</em> remaining after summing the predictions of all other trees (see <a href="https://arxiv.org/abs/2201.11931">the paper</a> for more details).</p>
+
+<p>FIGS is intuitively similar to ensemble approaches such as gradient boosting / random forest, but importantly since all trees are grown to compete with each other the model can adapt more to the underlying structure in the data. The number of trees and size/shape of each tree emerge automatically from the data rather than being manually specified.</p>
+
+<p>
+    <a href="https://github.com/csinva/imodels"><img src="data:application/octet-stream;base64," width="90%"></a>
+<br>
+<b>Fig 1. </b><i>High-level intuition for how FIGS fits a model.</i>
+</p>
+
+<h2 id="an-example-using-figs">An example using <code>FIGS</code></h2>
+
+<p>Using FIGS is extremely simple. It is easily installable through the <a href="https://github.com/csinva/imodels">imodels package</a> (<code>pip install imodels</code>) and then can be used in the same way as standard scikit-learn models: simply import a classifier or regressor and use the <code>fit</code> and <code>predict</code> methods. Here’s a full example of using it on a sample clinical dataset in which the target is risk of cervical spine injury (CSI).</p>
+
+<div><pre><code><span>from</span> <span>imodels</span> <span>import</span> <span>FIGSClassifier</span><span>,</span> <span>get_clean_dataset</span>
+<span>from</span> <span>sklearn.model_selection</span> <span>import</span> <span>train_test_split</span>
+
+<span># prepare data (in this a sample clinical dataset)
+</span><span>X</span><span>,</span> <span>y</span><span>,</span> <span>feat_names</span> <span>=</span> <span>get_clean_dataset</span><span>(</span><span>'csi_pecarn_pred'</span><span>)</span>
+<span>X_train</span><span>,</span> <span>X_test</span><span>,</span> <span>y_train</span><span>,</span> <span>y_test</span> <span>=</span> <span>train_test_split</span><span>(</span>
+    <span>X</span><span>,</span> <span>y</span><span>,</span> <span>test_size</span><span>=</span><span>0.33</span><span>,</span> <span>random_state</span><span>=</span><span>42</span><span>)</span>
+
+<span># fit the model
+</span><span>model</span> <span>=</span> <span>FIGSClassifier</span><span>(</span><span>max_rules</span><span>=</span><span>4</span><span>)</span>  <span># initialize a model
+</span><span>model</span><span>.</span><span>fit</span><span>(</span><span>X_train</span><span>,</span> <span>y_train</span><span>)</span>   <span># fit model
+</span><span>preds</span> <span>=</span> <span>model</span><span>.</span><span>predict</span><span>(</span><span>X_test</span><span>)</span> <span># discrete predictions: shape is (n_test, 1)
+</span><span>preds_proba</span> <span>=</span> <span>model</span><span>.</span><span>predict_proba</span><span>(</span><span>X_test</span><span>)</span> <span># predicted probabilities: shape is (n_test, n_classes)
+</span>
+<span># visualize the model
+</span><span>model</span><span>.</span><span>plot</span><span>(</span><span>feature_names</span><span>=</span><span>feat_names</span><span>,</span> <span>filename</span><span>=</span><span>'out.svg'</span><span>,</span> <span>dpi</span><span>=</span><span>300</span><span>)</span>
+</code></pre></div>
+
+<p>This results in a simple model – it contains only 4 splits (since we specified that the model should have no more than 4 splits (<code>max_rules=4</code>). Predictions are made by dropping a sample down every tree, and <i>summing</i> the risk adjustment values obtained from the resulting leaves of each tree. This model is extremely interpretable, as a physician can now (i) easily make predictions using the 4 relevant features and (ii) vet the model to ensure it matches their domain expertise. Note that this model is just for illustration purposes, and achieves ~84\% accuracy.</p>
+
+<p>
+    <a href="https://github.com/csinva/imodels"><img src="data:application/octet-stream;base64," width="85%"></a>
+<br>
+<i><b>Fig 2.</b> Simple model learned by FIGS for predicting risk of cervical spinal injury. </i>
+</p>
+
+<p>If we want a more flexible model, we can also remove the constraint on the number of rules (changing the code to <code>model = FIGSClassifier()</code>), resulting in a larger model (see Fig 3). Note that the number of trees and how balanced they are emerges from the structure of the data – only the total number of rules may be specified.</p>
+
+<p>
+    <a href="https://github.com/csinva/imodels"><img src="data:application/octet-stream;base64," width="100%"></a>
+<br>
+<i><b>Fig 3.</b> Slightly larger model learned by FIGS for predicting risk of cervical spinal injury. </i>
+</p>
+
+<h2 id="how-well-does-figs-perform">How well does FIGS perform?</h2>
+
+<p>In many cases when interpretability is desired, such as <a href="https://arxiv.org/abs/2205.15135">clinical-decision-rule modeling</a>, FIGS is able to achieve state-of-the-art performance. For example, Fig 4 shows different datasets where FIGS achieves excellent performance, particularly when limited to using very few total splits.</p>
+
+<p>
+    <a href="https://github.com/csinva/imodels"><img src="data:application/octet-stream;base64," width="100%"></a>
+<br>
+<i><b>Fig 4.</b> FIGS predicts well with very few splits. </i>
+</p>
+
+<h2 id="why-does-figs-perform-well">Why does FIGS perform well?</h2>
+
+<p>FIGS is motivated by the observation that single decision trees often have splits that are repeated in different branches, which may occur when there is <a href="https://proceedings.mlr.press/v151/shuo-tan22a/shuo-tan22a.pdf">additive structure</a> in the data. Having multiple trees helps to avoid this by disentangling the additive components into separate trees.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Overall, interpretable modeling offers an alternative to common black-box modeling, and in many cases can offer massive improvements in terms of efficiency and transparency without suffering from a loss in performance.</p>
+
+<hr>
+
+<p><em>This post is based on two papers: <a href="https://arxiv.org/abs/2201.11931">FIGS</a> and <a href="https://arxiv.org/abs/2205.15135">G-FIGS</a> – all code is available through the <a href="https://github.com/csinva/imodels">imodels package</a>. This is joint work with <a href="https://www.linkedin.com/in/nasseri/">Keyan Nasseri</a>, <a href="https://www.linkedin.com/in/abhineet-agarwal-126171185/">Abhineet Agarwal</a>, <a href="https://www.linkedin.com/in/james-pc-duncan/">James Duncan</a>, <a href="https://www.linkedin.com/in/omer-ronen-48ba9412a/?originalSubdomain=il">Omer Ronen</a>, and <a href="https://profiles.ucsf.edu/aaron.kornblith">Aaron Kornblith</a>.</em></p>
+
+</article></div>
+  </div>
+</body>
+</html>

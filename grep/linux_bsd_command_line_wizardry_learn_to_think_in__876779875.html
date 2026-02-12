@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Linux/BSD Command Line wizardry: Learn to think in sed, awk, and grep</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Linux/BSD Command Line wizardry: Learn to think in sed, awk, and grep</h1>
+    <p><strong>URL:</strong> <a href="https://arstechnica.com/gadgets/2021/08/linux-bsd-command-line-101-using-awk-sed-and-grep-in-the-terminal">https://arstechnica.com/gadgets/2021/08/linux-bsd-command-line-101-using-awk-sed-and-grep-in-the-terminal</a></p>
+    <p><strong>Tags:</strong> awk, grep, sed</p>
+    <p><strong>Bookmark ID:</strong> 876779875</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main">
+            <article data-id="1788916">
+  
+  <header>
+  <div>
+    <div>
+      <p><span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><clipPath id="section-gadgets_svg__a"><path fill="none" d="M0 0h40v40H0z"></path></clipPath><clipPath id="section-gadgets_svg__b"><path fill="none" d="M0 0h40v40H0z"></path></clipPath></defs><g clip-path="url(#section-gadgets_svg__a)"><g fill="currentColor" clip-path="url(#section-gadgets_svg__b)"><path d="M38 22c1.1 0 2-.9 2-2s-.9-2-2-2h-2v-6h2c1.1 0 2-.9 2-2s-.9-2-2-2h-2V4h-4V2c0-1.1-.9-2-2-2s-2 .9-2 2v2h-6V2c0-1.1-.9-2-2-2s-2 .9-2 2v2h-6V2c0-1.1-.9-2-2-2S8 .9 8 2v2H4v4H2c-1.1 0-2 .9-2 2s.9 2 2 2h2v6H2c-1.1 0-2 .9-2 2s.9 2 2 2h2v6H2c-1.1 0-2 .9-2 2s.9 2 2 2h2v4h4v2c0 1.1.9 2 2 2s2-.9 2-2v-2h6v2c0 1.1.9 2 2 2s2-.9 2-2v-2h6v2c0 1.1.9 2 2 2s2-.9 2-2v-2h4v-4h2c1.1 0 2-.9 2-2s-.9-2-2-2h-2v-6zm-6 10H8V8h24z"></path><path d="M24.7 17.3 20 12h-7.1c-.6 0-1 .4-1 1s.4 1 1 1h6.3l4.1 4.7L20 22h8v-8z"></path><path d="m15.2 22.7 4.7 5.3H27c.6 0 1-.4 1-1s-.4-1-1-1h-6.3l-4.1-4.7 3.3-3.3h-8v8z"></path></g></g></svg>
+  </span>
+  <span>
+    kal vas flam
+  </span>
+</p>
+    </div>
+
+    
+
+    <p>
+      "Do people <em>really</em> write these long, convoluted commands?" In a word: yes.
+    </p>
+
+    
+
+    <div>
+            <p><a data-pswp-width="1499" data-pswp-height="1999" data-pswp-srcset="https://cdn.arstechnica.net/wp-content/uploads/2021/08/GettyImages-950753248.jpg 1499w, https://cdn.arstechnica.net/wp-content/uploads/2021/08/GettyImages-950753248-300x400.jpg 300w, https://cdn.arstechnica.net/wp-content/uploads/2021/08/GettyImages-950753248-640x853.jpg 640w, https://cdn.arstechnica.net/wp-content/uploads/2021/08/GettyImages-950753248-768x1024.jpg 768w, https://cdn.arstechnica.net/wp-content/uploads/2021/08/GettyImages-950753248-1152x1536.jpg 1152w, https://cdn.arstechnica.net/wp-content/uploads/2021/08/GettyImages-950753248-980x1307.jpg 980w, https://cdn.arstechnica.net/wp-content/uploads/2021/08/GettyImages-950753248-1440x1920.jpg 1440w" data-cropped="false" href="https://cdn.arstechnica.net/wp-content/uploads/2021/08/GettyImages-950753248.jpg" target="_blank">
+              <img width="1499" height="1999" src="data:application/octet-stream;base64," alt="IT programmer as genius or wizard sitting behind computer." loading="eager" decoding="async" fetchpriority="high" srcset="data:application/octet-stream;base64, 1499w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 640w, data:application/octet-stream;base64, 768w, data:application/octet-stream;base64, 1152w, data:application/octet-stream;base64, 980w, data:application/octet-stream;base64, 1440w" sizes="(max-width: 1499px) 100vw, 1499px">
+            </a></p>
+          </div>
+
+    
+  </div>
+</header>
+
+  
+
+  
+      
+    
+    <div>
+                      
+                      
+          
+<p>As a relatively isolated junior sysadmin, I remember seeing answers on Experts Exchange and later Stack Exchange that baffled me. Authors and commenters might chain 10 commands together with pipes and angle brackets—something I never did in day-to-day system administration. Honestly, I doubted the real-world value of that. Surely, this was just an exercise in e-braggadocio, right?</p>
+<p>Trying to read the man pages for the utilities most frequently seen in these extended command chains didn't make them seem more approachable, either. For example, the <a href="https://man7.org/linux/man-pages/man1/sed.1.html">sed man page</a>&nbsp;weighs in at around 1,800 words alone without ever really explaining how <a href="https://cheatography.com/davechild/cheat-sheets/regular-expressions/">regular expressions</a> work or the most common uses of sed itself.</p>
+<p>If you find yourself in the same boat, grab a beverage and buckle in. Instead of giving you encyclopedic listings of every possible argument and use case for each of these ubiquitous commands, we're going to teach you how to think&nbsp;<em>about</em> them—and how to easily, productively incorporate them in your own daily command-line use.</p>
+<h2>Redirection 101</h2>
+<p>Before we can talk about <code>sed</code>, <code>awk</code>, and <code>grep</code>, we need to talk about something a bit more basic—command-line redirection. Again, we're going to keep this very simple:</p>
+<div><table>
+<tbody>
+<tr>
+<td><strong>Operator</strong></td>
+<td><strong>Function</strong></td>
+<td><strong>Example</strong></td>
+</tr>
+<tr>
+<td>;</td>
+<td>Process the command on the right after you're done processing the command on the left.</td>
+<td>echo one <strong>;</strong> echo two</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>Place the output of the thing on the left in the&nbsp;<strong>empty</strong> file named on the right.</td>
+<td>ls /home/me &gt; myfilesonce.txt ; ls /home/me <strong>&gt;</strong> myfilesonce.txt</td>
+</tr>
+<tr>
+<td>&gt;&gt;</td>
+<td><strong>Append</strong> the output of the thing on the left to the end of the&nbsp;<strong>existing&nbsp;</strong>file on the right.</td>
+<td>ls /home/me &gt; myfilestwice.txt ; ls /home/me <strong>&gt;&gt;</strong> myfilestwice.txt</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>Use the file on the right as the standard input of the command on the left.</td>
+<td>cat <strong>&lt;</strong> sourcefile &gt; targetfile</td>
+</tr>
+<tr>
+<td>|</td>
+<td>Pipe the standard output of the thing on the left into the standard input of the thing on the right.</td>
+<td>echo "test123" <strong>|</strong> mail -s "subjectline" emailaddress</td>
+</tr>
+</tbody>
+</table></div>
+<p>Understanding these redirection operators is crucial to understanding the kinds of wizardly command lines you're presumably here to learn. They make it possible to treat individual, simple utilities as part of a greater whole.</p>
+<p>And that last concept—breaking one complex task into several simpler tasks—is equally necessary to learning to&nbsp;<em>think</em> in complex command-line invocations in the first place!</p>
+<h2>Grep finds strings</h2>
+<p>When first learning about tools like <code>grep</code>, I find it helps to think of them as far simpler than they truly are. In that vein, <code>grep</code>&nbsp;is the tool you use to find lines that contain a particular <code>string</code>&nbsp;of text.</p>
+
+          
+                      
+                  </div>
+                    
+        
+          
+    
+    <div>
+          
+          
+<p>For example, let's say you're interested in finding which ports the <code>apache</code>&nbsp;web server has open on your system. Many utilities can accomplish this goal; <code>netstat</code>&nbsp;is one of the older and better-known options. Typically, we'd invoke&nbsp;<code>netstat</code>&nbsp;using the <code>-anp</code>&nbsp;arguments—for <code>all</code>&nbsp;sockets, <code>numeric</code>&nbsp;display, and displaying the owning <code>pid</code>&nbsp;of each socket.</p>
+<p>Unfortunately, this produces a&nbsp;<em>lot</em> of output—frequently, several tens of pages. You could just pipe all that output to a pager, so you can read it one page at a time, with&nbsp;<code>netstat -anp | less</code>. Or, you might instead redirect it to a file to be opened with a text editor: <code>netstat -anp &gt; netstat.txt</code>.</p>
+<p>But there's a <em>better</em> option. Instead, we can use <code>grep</code>&nbsp;to return only the lines we really want. In this case, what we want to know about is the <code>apache</code>&nbsp;webserver. So:</p>
+<pre><code>me@banshee:~$ sudo netstat -anp | head -n5
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 192.168.188.1:53        0.0.0.0:*               LISTEN      5128/dnsmasq        
+tcp        0      0 192.168.254.1:53        0.0.0.0:*               LISTEN      5057/dnsmasq        
+tcp        0      0 192.168.122.1:53        0.0.0.0:*               LISTEN      4893/dnsmasq        
+
+me@banshee:~$ sudo netstat -anp | wc -l
+1694
+
+me@banshee:~$ sudo netstat -anp | grep apache
+tcp6       0      0 :::80                   :::*                    LISTEN      4011/apache2  
+
+me@banshee:~$ sudo netstat -anp | head -n2 ; sudo netstat -anp | grep apache
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp6       0      0 :::80                   :::*                    LISTEN      4011/apache2  </code></pre>
+<p>We introduced some new commands above: <code>head</code>, which limits output to the first&nbsp;<em>n</em> lines and then truncates it. There's also&nbsp;<code>wc</code>, which, with the argument <code>-l</code>, tells you how many lines of text hit its standard input.</p>
+<p>So we can translate the four commands above into plain English:</p>
+<ol>
+<li><code>sudo netstat -anp | head -n5</code>&nbsp;: "Find all the open network sockets, but limit output to the first five lines."</li>
+<li><code>sudo netstat -anp | wc -l</code>&nbsp;: "Find all the open network sockets, then tell me how many total lines of text you'd have used to tell me."</li>
+<li><code>sudo netstat -anp | grep apache</code>&nbsp;: "Find all the open network sockets, but only show me the results that include the word 'apache.'"</li>
+<li><code>sudo netstat -anp | head -n2 ; sudo netstat -anp | grep apache</code>&nbsp;: "Find all the open network sockets, but only show me the two header lines—then do it again, but only show me the 'apache' results."</li>
+</ol>
+<p>By thinking of <code>grep</code>&nbsp;as something much simpler than it actually is, we can jump immediately to finding productive ways to use it—and we can chain these simple uses together to easily describe more complex tasks!</p>
+<p>Once you're comfortable with using <code>grep</code>&nbsp;to find simple strings as seen above, it can do far more complex tasks. These include but are not limited to: case-insensitive use, more complex patterns (including full regular expressions), exclusion (only show me lines that&nbsp;<em>don't</em> include the pattern), and much, much more. But don't worry about that until&nbsp;<em>after</em> you're familiar with simple <code>grep</code> uses. Once you start, it's truly hard to imagine life without <code>grep</code>&nbsp;anymore!</p>
+
+          
+                  </div>
+                    
+        
+          
+    
+    <div>
+          
+          
+
+<h2>Sed&nbsp;<em>replaces</em> strings</h2>
+<p>Now that you know how to limit output to matching (or nonmatching) lines, the next step is learning how to change that output on the fly. For this, <code>sed</code>—the Stream EDitor—will be your tool of choice.</p>
+<p>In order to use <code>sed</code>, you need to understand at least a little about regular expressions (regexes). We are once again going to ignore the vast majority of what regular expressions can do and focus on the most immediately intuitive and useful: simple pattern replacement.</p>
+<p>Let's say that you want to change all instances of <code>dog</code>&nbsp;to <code>snake</code>&nbsp;in a bunch of text:</p>
+<pre><code>me@banshee:~$ echo "I love my dog, dogs are great!"
+I love my dog, dogs are great!
+
+me@banshee:~$ echo "I love my dog, dogs are great!" | sed 's/dog/snake/'
+I love my snake, dogs are great!
+
+me@banshee:~$ echo "I love my dog, dogs are great!" | sed 's/dog/snake/g'
+I love my snake, snakes are great!
+</code></pre>
+<p>We can translate these three commands into plain English:</p>
+<ol>
+<li>say "I love my dog, dogs are great!"</li>
+<li>say "I love my dog, dogs are great!" but change the&nbsp;<strong>first</strong> instance of <code>dog</code> to <code>snake</code>.</li>
+<li>say "I love my dog, dogs are great!" but change&nbsp;<strong>all</strong> instances of <code>dog</code>&nbsp;to <code>snake</code>.</li>
+</ol>
+<p>Although we're really just working with plain text, <code>sed</code>&nbsp;actually thinks in regular expressions. Let's unpack the regex <code>s/dog/snake/g</code>: it means to&nbsp;<strong>search</strong>&nbsp;<code>sed</code>'s input for instances of <code>dog</code>&nbsp;and replace them with <code>snake</code>&nbsp;and do so <code>globally</code>. Without the <code>g</code>&nbsp;on the end, <code>sed</code>&nbsp;only makes a single replacement per line of text, as we see in command #2.</p>
+<p>Alright, now that we understand the simplest possible regular expressions, what might we use <code>sed</code>&nbsp;for on a real-world command line? Let's return to our first example, in which we looked for open network sockets belonging to <code>apache</code>. This time, let's say we want to know <em>which</em> program opened a socket on port 80:</p>
+<pre><code>me@banshee:~$ sudo netstat -anp | grep ::80
+tcp6       0      0 :::80                   :::*                    LISTEN      4011/apache2  
+
+me@banshee:~$ sudo netstat -anp | grep ::80 | sed 's/.*LISTEN *//'
+4011/apache2  </code></pre>
+<p>In the first command, we look for any line containing the string <code>::80</code>, which limits us to the program running on the standard HTTP port. In the second, we do the same thing—but we discard all the information prior to the PID and mutex (display name) of the process that owns that socket.</p>
+
+          
+                  </div>
+                    
+        
+          
+    
+    <div>
+          
+          
+<p>In regex language, <code>.</code>&nbsp;is a special character that matches any single character, and <code>*</code>&nbsp;is a special character that matches any&nbsp;<em>sequence</em> of the preceeding characters. So <code>.*</code>&nbsp;means "match any number of any characters," and <code> *</code> (a space followed by an asterisk)&nbsp;means "match any number of spaces."</p>
+<p>This kind of preliminary processing can make reading a text file full of&nbsp;<em>tons</em> of output much easier later—or it can serve to parse "human friendly" command output down to something that can be passed to another utility as an argument later.</p>
+<p>Again, there is far,&nbsp;<em>far</em> more to both <code>sed</code>&nbsp;and regular expressions than we see here—but just like <code>grep</code>, I recommend getting comfortable with the most basic use of <code>sed</code>&nbsp;until it feels natural. Wait to go man-page diving until after you're solid on basic use. Only then should you try to slowly, steadily expand your repertoire!</p>
+<h2>Awk finds&nbsp;<em>columns</em></h2>
+<p>Once you get comfortable with <code>sed</code>&nbsp;and <code>grep</code>, you'll start to feel like a superhero—until you realize how hard it is to get only the relevant information out of a single column in the middle of a line. That's where <code>awk</code>&nbsp;comes in. It's worth noting that <code>awk</code>&nbsp;is even more potentially complex (and capable) than either <code>sed</code>&nbsp;or <code>grep</code>&nbsp;were—in fact, if you're enough of an <code>awk</code>&nbsp;wizard, you could technically replace both <code>sed</code>&nbsp;<em>and</em> <code>grep</code>&nbsp;in most use cases.</p>
+<p>That's because <code>awk</code>&nbsp;is actually an entire scripting language, not just a tool—but that's not how we're going to use it, or think of it, as relative newbies. Instead, we're just going to think of <code>awk</code>&nbsp;as a column extractor. Once again, we'll return to our <code>netstat</code>&nbsp;example. What if we want to find out&nbsp;<em>which</em> port Apache is running on?</p>
+<pre><code>me@banshee:~$ sudo netstat -anp | grep apache
+tcp6       0      0 :::80                   :::*                    LISTEN      4011/apache2    
+
+me@banshee:~$ sudo netstat -anp | grep apache | awk '{print $4}'
+:::80
+
+me@banshee:~$ sudo netstat -anp | grep apache | awk '{print $4, $7}'    
+:::80 4011/apache2</code></pre>
+<p>Once again, we'll translate our examples into plain English:</p>
+<ol>
+<li>Find all open sockets and the programs that own them, but limit output to the ones with the text 'apache' in them.</li>
+<li>Find all open sockets and the programs that own them, but limit output to the ones with the text 'apache' in them—and limit&nbsp;<em>that</em> output to the fourth tabular column only.</li>
+<li>Find all open sockets and the programs that own them, but limit output to the ones with the text 'apache' in them—and limit&nbsp;<em>that</em> output to the fourth and seventh tabular columns.</li>
+</ol>
+
+          
+                  </div>
+                    
+        
+          
+    
+    <div>
+        
+        
+        
+        <div>
+          
+          
+<p>Since <code>awk</code>&nbsp;is an entire language, its syntax may feel slightly tortured. You need to encapsulate its command arguments in single quotes, then in curly brackets, and you have to use the keyword <code>print</code>&nbsp;in addition to your column numbers. But that syntax will feel like second nature before you know it—and the seemingly overcomplex syntax makes it possible later to use <code>awk</code>&nbsp;for more complex tasks, like calculating running sums and even averages:</p>
+<pre><code>me@banshee:~$ cat awktext.txt
+1 2 3
+4 5 6
+7 8 9
+
+me@banshee:~$ cat awktext.txt | awk '{SUM+=$2}END{print SUM}'
+15
+
+me@banshee:~$ cat awktext.txt | awk '{SUM+=$2}END{print SUM/NR}'
+5</code></pre>
+<p>In the above examples, we add the value of the specified column—the second column, specified with <code>$2</code>—to a variable we name <code>SUM</code>. After adding the value of column 2 in each row to <code>SUM</code>, we can either output <code>SUM</code> directly, or we can divide it by a predefined special variable, <code>NR</code>, which means "Number of Rows."</p>
+<p>And yes, if you're wondering, <code>awk</code>&nbsp;handles decimals fine, as well as varying amounts of whitespace in between columns:</p>
+<pre><code>me@banshee:~$ cat awktext.txt
+1.0 2.1 3.2 4.3
+5.4 6.5 7.6 8.7
+9.8 0.9 1.0 2.1
+
+me@banshee:~$ cat awktext.txt | awk '{SUM+=$2}END{print SUM/NR}'
+3.16667
+
+me@banshee:~$ cat awktext.txt
+1.0     2.1  3.2  4.3
+5.4 6.5      7.6       8.7
+9.8 0.9 1.0 2.1
+
+me@banshee:~$ cat awktext.txt | awk '{SUM+=$2}END{print SUM/NR}'
+3.16667
+</code></pre>
+<p>As always, I&nbsp;<em>strongly</em> encourage you to get comfortable with the most basic use of <code>awk</code>—finding data by which column it's in rather than trying to hunt for it by identifying text before and after it—before worrying about its fancier, more complex uses.</p>
+<h2>Conclusion</h2>
+<p>With any luck, now that you've seen the most common and least complex uses of these three iconic tools, you'll be ready to begin&nbsp;<em>thinking</em> in them. Now that you know, you'll quickly realize their utility comes up time and time again in the real world!</p>
+<p>Before learning to think in <code>sed</code>, <code>awk</code>, and <code>grep</code>,&nbsp;I generally accomplished the same tasks by hand-editing large volumes of command output in a text editor, then writing simple shell or perl scripts to process the hand-edited output. Learning these tools increased my productivity enormously—and it can increase yours, too.</p>
+
+
+          
+                  </div>
+
+                  
+          
+
+
+
+
+  <div>
+  <div>
+          <p><a href="https://arstechnica.com/author/jimsalter/"><img src="data:application/octet-stream;base64," alt="Photo of Jim Salter"></a></p>
+  </div>
+
+  <div>
+    
+
+    <p>
+      Jim is an author, <a href="https://2.5admins.com/">podcaster</a>, mercenary sysadmin, <a href="http://sanoid.net/">coder</a>, and father of three—not necessarily in that order.
+    </p>
+  </div>
+</div>
+
+
+  
+
+
+  
+
+
+  
+              </div>
+  </article>
+
+
+<div>
+    <header>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 26"><defs><clipPath id="most-read_svg__a"><path fill="none" d="M0 0h40v26H0z"></path></clipPath><clipPath id="most-read_svg__b"><path fill="none" d="M0 0h40v26H0z"></path></clipPath></defs><g clip-path="url(#most-read_svg__a)"><g fill="none" clip-path="url(#most-read_svg__b)"><path fill="currentColor" d="M20 2h.8q1.5 0 3 .6c.6.2 1.1.4 1.7.6 1.3.5 2.6 1.3 3.9 2.1.6.4 1.2.8 1.8 1.3 2.9 2.3 5.1 4.9 6.3 6.4-1.1 1.5-3.4 4-6.3 6.4-.6.5-1.2.9-1.8 1.3q-1.95 1.35-3.9 2.1c-.6.2-1.1.4-1.7.6q-1.5.45-3 .6h-1.6q-1.5 0-3-.6c-.6-.2-1.1-.4-1.7-.6-1.3-.5-2.6-1.3-3.9-2.1-.6-.4-1.2-.8-1.8-1.3-2.9-2.3-5.1-4.9-6.3-6.4 1.1-1.5 3.4-4 6.3-6.4.6-.5 1.2-.9 1.8-1.3q1.95-1.35 3.9-2.1c.6-.2 1.1-.4 1.7-.6q1.5-.45 3-.6zm0-2h-1c-1.2 0-2.3.3-3.4.6-.6.2-1.3.4-1.9.7-1.5.6-2.9 1.4-4.3 2.3-.7.5-1.3.9-1.9 1.4C2.9 8.7 0 13 0 13s2.9 4.3 7.5 7.9c.6.5 1.3 1 1.9 1.4 1.3.9 2.7 1.7 4.3 2.3.6.3 1.3.5 1.9.7 1.1.3 2.3.6 3.4.6h2c1.2 0 2.3-.3 3.4-.6.6-.2 1.3-.4 1.9-.7 1.5-.6 2.9-1.4 4.3-2.3.7-.5 1.3-.9 1.9-1.4C37.1 17.3 40 13 40 13s-2.9-4.3-7.5-7.9c-.6-.5-1.3-1-1.9-1.4-1.3-.9-2.8-1.7-4.3-2.3-.6-.3-1.3-.5-1.9-.7C23.3.4 22.1.1 21 .1h-1"></path><path fill="#ff4e00" d="M20 5c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8m0 11c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3"></path></g></g></svg>
+      
+    </header>
+    <ol>
+              <li>
+                      <img src="data:application/octet-stream;base64," alt="Listing image for first story in Most Read: Routine dental X-rays are not backed by evidence—experts want it to stop" decoding="async" loading="lazy">
+                    
+        </li>
+                    <li>
+                    
+        </li>
+                    <li>
+                    
+        </li>
+                    <li>
+                    
+        </li>
+                    <li>
+                    
+        </li>
+                  </ol>
+</div>
+
+
+  
+
+  </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Optimizers Explained - Adam, Momentum and Stochastic Gradient Descent</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Optimizers Explained - Adam, Momentum and Stochastic Gradient Descent</h1>
+    <p><strong>URL:</strong> <a href="https://mlfromscratch.com/optimizers-explained">https://mlfromscratch.com/optimizers-explained</a></p>
+    <p><strong>Tags:</strong> algorithms-math</p>
+    <p><strong>Bookmark ID:</strong> 876772816</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="site-main">
+
+        <article>
+
+            
+
+
+                <figure>
+                    <img srcset="https://mlfromscratch.com/web/20220817070144im_/https://mlfromscratch.com/content/images/size/w300/2019/12/optimizers-header.png 300w, https://mlfromscratch.com/web/20220817070144im_/https://mlfromscratch.com/content/images/size/w600/2019/12/optimizers-header.png 600w, https://mlfromscratch.com/web/20220817070144im_/https://mlfromscratch.com/content/images/size/w1200/2019/12/optimizers-header.png 1000w, https://mlfromscratch.com/web/20220817070144im_/https://mlfromscratch.com/content/images/size/w2000/2019/12/optimizers-header.png 2000w" sizes="(max-width: 800px) 400px,
+                            (max-width: 1170px) 1170px,
+                                2000px" src="https://mlfromscratch.com/web/20220817070144im_/https://mlfromscratch.com/content/images/size/w2000/2019/12/optimizers-header.png" alt="Optimizers Explained - Adam, Momentum and Stochastic Gradient Descent">
+                </figure>
+                <div>
+                        <p>Picking the right optimizer with the right parameters, can help you squeeze the last bit of accuracy out of your neural network model. In this article, optimizers are explained from the classical to the newer approaches.</p><p>This post could be seen as a part three of how neural networks learn; in the previous posts, we have proposed the <em>update rule</em> as the one in gradient descent. Now we are exploring better and newer optimizers. If you want to know how we do a forward and backwards pass in a neural network, you would have to read the <a href="http://web.archive.org/web/20220817070144/https://machine-learning.ghost.io/neural-networks-explained/">first part</a> – especially how we calculate the gradient is covered in great detail.</p><p>If you are new to neural networks, you probably won't understand this post, if you don't read the first part.</p><figure><a href="http://web.archive.org/web/20220817070144/https://mlfromscratch.com/neural-networks-explained/"><div><p>Neural Networks: Feedforward and Backpropagation Explained</p><p>What is neural networks? Developers should understand backpropagation, to figure out why their code sometimes does not work. Visual and down to earth explanation of the math of backpropagation.</p><p><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/favicon.png"><span>Machine Learning From Scratch</span></p></div><p><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/nn2.png"></p></a></figure><p>I want to add, before explaining the different optimizers, that you really should read Sebastian Ruder's paper <a href="http://web.archive.org/web/20220817070144/https://arxiv.org/pdf/1609.04747.pdf">An overview of gradient descent optimization algorithms</a>. It's a great resource that briefly describes many of the optimizers available today.</p><!--kg-card-begin: markdown--><h2 id="tableofcontentsclicktoscroll">Table of Contents (Click To Scroll)</h2>
+<ol>
+<li><a href="#stochastic-gradient-descent">Stochastic Gradient Descent</a>
+<ul>
+<li><a href="#classical-algorithm-and-code">Classical Algorithm and Code</a></li>
+</ul>
+</li>
+<li><a href="#momentum">Momentum Algorithm</a>
+<ul>
+<li><a href="#motivation-for-momentum">Motivation (important)</a></li>
+<li><a href="#adding-time-steps-t-">Adding Time to SGD</a></li>
+<li><a href="#momentum-term">The Momentum Term</a></li>
+<li><a href="#different-notation-a-second-explanation">Different Notation: A Second Explanation</a></li>
+</ul>
+</li>
+<li><a href="#adam">Adam: Adaptive Moment Estimation</a>
+<ul>
+<li><a href="#adaptive-learning-rate">Adaptive Learning Rate</a>
+<ul>
+<li><a href="#adagrad-parameters-gets-different-learning-rates">AdaGrad: Sum of Gradients</a></li>
+<li><a href="#rmsprop">RMSprop: Decaying Average</a></li>
+</ul>
+</li>
+<li><a href="#actually-explaining-adam">Actually Explaining Adam</a></li>
+</ul>
+</li>
+<li><a href="#further-reading">Further Readings</a></li>
+</ol>
+<!--kg-card-end: markdown--><p>This is the basic algorithm responsible for having neural networks converge, i.e. we shift towards the optimum of the cost function. Multiple gradient descent algorithms exists, and I have mixed them together in previous posts. Here, I am not talking about batch (vanilla) gradient descent or mini-batch gradient descent.</p><p>The basic difference between batch gradient descent (BGD) and stochastic gradient descent (SGD), is that we only calculate the cost of one example for each step in SGD, but in BGD, we have to calculate the cost for all training examples in the dataset. Trivially, this speeds up neural networks greatly. Exactly this is the motivation behind SGD.</p><p>The equation for SGD is used to update parameters in a neural network – we use the equation to update parameters in a backwards pass, using backpropagation to calculate the gradient $\nabla$:</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta = \theta - \eta \cdot 
+    \overbrace{\nabla_\theta J(\theta; \, x, \, y)}^{\text{Backpropagation}}
+    $$
+</p><!--kg-card-end: markdown--><p>This is how the equation is presented formally, and here is what each symbol means:</p><ul><li>$\theta$ is a parameter (theta), e.g. your weights, biases and activations. Notice that we only update a single parameter for the neural network here, i.e. we could update a single weight.</li><li>$\eta$ is the learning rate (eta), but also sometimes alpha $\alpha$ or gamma $\gamma$ is used.</li><li>$\nabla$ is the gradient (nabla), which is taken of $J$. Gradient calculations is already explained extremely well in <a href="http://web.archive.org/web/20220817070144/https://machine-learning.ghost.io/neural-networks-explained/">my other post</a>.</li><li>$J$ is formally known as objective function, but most often it's called cost function or loss function. </li></ul><blockquote>We take each parameter theta $\theta$ and update it by taking the original parameter $\theta$ and subtract the learning rate $\eta$ times the <em>ratio</em> of change $\nabla J(\theta)$. </blockquote><p>$J(\theta;\, x, \, y)$ just means that we input our parameter theta $\theta$ along with a training example and label (e.g. a class). The semicolon is used to indicate that the parameter theta $\theta$ is different from the training example and label, which are separated by a comma.</p><p>Note that moving forward, the subscript $\theta$ in $\nabla_\theta$ will be left out for simplicity.</p><p>We can visualize what happens to a single weight $w$ in a cost function $C(w)$ (same as $J$). Naturally, what happens is that we find the derivative of the parameter $\theta$, which is $w$ in this case, and we update the parameter accordingly to the equation above.</p><figure><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/gradient-descent-optimized--1-.gif" alt="If the gradient $\nabla$ of the partial derivatives is positive, we step left, else we step right when negative. "><figcaption>If the gradient $\nabla$ of the partial derivatives is positive, we step left, else we step right when negative. GIF'ed from <a href="http://web.archive.org/web/20220817070144/https://www.youtube.com/watch?v=IHZwWFHWa-w">3blue1brown video</a> and added captions.</figcaption></figure><p>Okay, we got some value theta $\theta$ and eta $\eta$ to work with. But what is that last thing in the equation, what does it mean? Let's expand into the equation from the <a href="http://web.archive.org/web/20220817070144/https://machine-learning.ghost.io/neural-networks-explained">prior post</a> (which you should have read).</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta = \theta - \eta \cdot \nabla J(\theta; \, x, \, y)
+    \Leftrightarrow
+    \theta = \theta - \eta \cdot \frac{\partial C}{\partial \theta}
+    $$
+</p><!--kg-card-end: markdown--><p>Well this is now just a partial derivative, i.e. we find the cost function $C$, and inside that function, we find the derivative of theta $\theta$, but keep the rest of the function constant (we don't touch the rest). The assumption here is that our training example with a label is provided, which is why it was removed on the right side.</p><p>We could even replace some of the terms to make it more readable. Say we wanted to update a weight $w$, with the learning rate $0.3$ and a cost function C:</p><!--kg-card-begin: markdown--><p>
+    $$
+    w = w - 0.3 \cdot \frac{\partial C}{\partial w}
+    $$
+</p><!--kg-card-end: markdown--><p>Well, we assume that we know $w$, so the only thing stopping us from calculating the equation is the last term. But I won't go into that, since that was part of my <a href="http://web.archive.org/web/20220817070144/https://machine-learning.ghost.io/neural-networks-explained/">last post</a>.</p><p>Moving forward, note and remember that</p><!--kg-card-begin: markdown--><p>
+    $$
+    \nabla J(\theta)
+    =
+    \frac{\partial C}{\partial \theta}
+    $$
+</p><!--kg-card-end: markdown--><p>If you don't know what this means, perhaps you should <a href="http://web.archive.org/web/20220817070144/https://machine-learning.ghost.io/neural-networks-explained/">visit neural networks post</a>, which in detail will explain backpropgation, and what gradients and partial derivatives means.</p><h3 id="classical-algorithm-and-code">Classical Algorithm and Code</h3><p>For each parameter theta $\theta$, from $1$ to $j$, we update according to this equation.</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta_j = \theta_j - \eta \cdot 
+    \overbrace{\frac{\partial C}{\partial \theta_j}}^{\text{Backprop}}
+    $$
+</p><!--kg-card-end: markdown--><p>Usually, this is equation is wrapped in a <em>repeat until convergence</em>, i.e. we update each parameter, for each training example, until we reach a local minimum. </p><figure><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/image-12.png" alt="This is a local minima."><figcaption>This is a local minima.</figcaption></figure><p>Running through the dataset multiple times is usually done, and is called an <em>epoch</em>, and for each epoch, we should randomly select a subset of the data – this is the stochasticity of the algorithm.</p><p>Say we want to translate this to some pseudo code. This is relatively easy, except for we will leave the function for calculating gradients left out.</p><!--kg-card-begin: markdown--><pre><code>for i in range(n_epochs):
+    shuffled_data = np.random.shuffle(data)
+    for x,y in shuffled_data:
+            # Using backpropagation to calculate gradients (change)
+            change = compute_gradient(cost_func, x, y, param)
+            param = param - l_rate * change
+</code></pre>
+<!--kg-card-end: markdown--><hr><p>Ending the walkthrough of SGD, it is only right to propose some pros and cons of the optimizer. Clearly, it is one of the older algorithms for optimization in neural networks, but nevertheless, it is also comparatively the easiest to learn. The cons are mostly with regards to newer and better optimizers, and is perhaps hard to explain at this point. The reason for the cons will become clear, once I present the next optimizers.</p><p>Pros</p><ul><li>Relatively fast compared to the older gradient descent approaches</li><li>SGD is comparatively easy to learn for beginners, since it is not as math heavy as the newer approaches to optimizers</li></ul><p>Cons</p><ul><li>Converges slower than newer algorithms</li><li>Has more problems with being stuck in a local minimum than newer approaches</li><li>Newer approaches outperform SGD in terms of optimizing the cost function</li></ul><h2 id="momentum">Momentum</h2><p>Simply put, the <a href="http://web.archive.org/web/20220817070144/http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.57.5612&amp;rep=rep1&amp;type=pdf">momentum</a> algorithm helps us progress faster in the neural network, negatively or positively, to the ball analogy. This helps us get to a local minimum faster.</p><h3 id="motivation-for-momentum">Motivation for momentum</h3><p>For each time we roll the ball down the hill (for each epoch), the ball rolls faster towards the local minima in the next iteration. This makes us more likely to reach a better local minima (or perhaps global minima) than we could have with SGD.</p><figure><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/ball-1.gif" alt="When optimizing the cost function for a weight, we might imagine a ball rolling down a hill amongst many hills. We hope that we get to some form of optimum."><figcaption>When optimizing the cost function for a weight, we might imagine a ball rolling down a hill amongst many hills. We hope that we get to some form of optimum.</figcaption></figure><p>The slope of the cost function is not actually such a smooth curve, but it's easier to plot to show the concept of the ball rolling down the hill. The function will often be much more complex, hence we might actually get stuck in a local minimum or significantly slowed down. Obviously, this is not desirable. The terrain is not smooth, it has obstacles and weird shapes in very high-dimensional space – for instance, the concept would look like this in 2D:</p><figure><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/image-17.png" alt="Ball stuck on a hilly 2D curve. "><figcaption>Ball stuck on a hilly 2D curve. Tweaked image from <a href="http://web.archive.org/web/20220817070144/https://www.quora.com/profile/Shehroz-Khan-2">Quora user</a></figcaption></figure><p>In the above case, we are stuck at a local minimum, and the motivation is clear – &nbsp;we need a method to handle these situations, perhaps to never get stuck in the first place.</p><p>Now we know why we should use momentum, let's introduce more specifically what it means, by explaining the mathematics behind it.</p><h3 id="explanation-of-momentum">Explanation of momentum</h3><p>Momentum is where we add a temporal element into our equation for updating the parameters of a neural network – that is, an element of time.</p><p>This time element increases the momentum of the ball by some amount. This amount is called gamma $\gamma$, which is usually initialized to $0.9$. But we also multiply that by the <strong>previous update </strong>$v_t$.</p><p>What I want you to realize is that our function for momentum is basically the same as SGD, with an extra term:</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta = \theta - \eta\nabla J(\theta) + \gamma v_{t}
+    $$
+</p><!--kg-card-end: markdown--><p>Let's just make this $100\%$ clear:</p><ul><li>Theta $\theta$ is a parameter, e.g. your weights, biases or activations</li><li>Eta $\eta$ is your learning rate, also sometimes written as alpha $\alpha$ or epsilon $\epsilon$.</li><li>Objective function $J$, i.e. the function which we are trying to optimize. Also called cost function or loss function (<a href="http://web.archive.org/web/20220817070144/https://stats.stackexchange.com/a/179027/246891">although they have different meanings</a>). </li><li>Gamma $\gamma$, a constant term. Also called the momentum, and rho $\rho$ is also used instead of $\gamma$ sometimes.</li><li>Last change (last update) to $\theta$ is called $v_t$.</li></ul><p>Although it's very similar to SGD, I have left out some elements for simplicity, because we can easily get confused by the indexing and notational burden that comes with adding temporal elements.</p><p>Let's add those elements now. <strong>First</strong> the temporal element, <strong>then</strong> the explanation of $v_t$.</p><p>If you want to play with momentum and learning rate, I recommend visiting distill's page for <a href="http://web.archive.org/web/20220817070144/https://distill.pub/2017/momentum/">Why Momentum Really Works</a>.</p><h3 id="adding-time-steps-t-">Adding Time Steps $t$</h3><figure><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/increasing-momentum.gif" alt="We clearly see, that as we increase momentum, we get to the local minimum faster, but we might also overshoot and then it takes longer."><figcaption>We clearly see, that as we increase momentum, we get to the local minimum faster, but we might also overshoot and then it takes longer.</figcaption></figure><p>Adding the notion of time; say we want to update the current parameter $\theta$, how would we go about that? Well, we would first have to define which parameter $\theta$ we want to update at a given time. And how do we do that?</p><p>One way to track where we are in time, is to assign a variable of time $t$ to $\theta$. The variable $t$ would work like a counter; we increase $t$ by one for each update of a certain parameter.</p><p>How might this look in a mathematical sense? Well, we just subscript every variable that are subject to change over time. That is, the values for our parameter $\theta$ will definitely change over time, but the variable for the learning rate $\eta$ remains fixed.</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta_t = \theta_{t} - \eta\nabla J(\theta_{t}) + \gamma v_{t}
+    $$
+</p><!--kg-card-end: markdown--><p>This reads:</p><blockquote>Theta $\theta$ at time step $t$ equals $\theta_t$ minus the learning rate, times the gradient of the objective function $J$ with respect to the parameter $\theta_t$, plus a momentum term gamma $\gamma$, times the change to $\theta$ at the last time step $t-1$.</blockquote><p>There it is, we added the temporal element. But we are not done, what does $v_t$ mean? I explained it as the previous update, but what does that entail?</p><h3 id="momentum-term">Momentum Term</h3><p>I told you about the ball rolling faster and faster down the hill, as it accumulates more speed for each epoch, and this term helps us do exactly that.</p><p>What helps us accumulate more speed for each epoch is the momentum term, which consists of a constant $\gamma$ and the previous update $\gamma v_{t}$ to $\theta$. But the previous update to $\theta$ also includes the second last update to $\theta$ and so on.</p><!--kg-card-begin: markdown--><p>
+    $$
+    v_{t} = \eta\nabla J(\theta_{t-1}) + v_{t-1}
+    $$
+</p><!--kg-card-end: markdown--><p>Essentially, we store the calculations of the gradients (the updates) for use in all the next updates to a parameter $\theta$. This exact property causes the ball to roll faster down the hill, i.e. we converge faster because now we move forward faster.</p><p>Instead of writing $v_{t-1}$, which includes $v_{t-2}$ in it's equation and so on, we could use summation, which might be more clear. We can summarize at tau $\tau$ equal to $1$, all the way up to the current time step $t$.</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta_t = \theta_{t} - \eta\nabla J(\theta_{t}) + \gamma \sum_{\tau=1}^{t}
+    \eta\nabla J(\theta_{\tau})
+    $$
+</p><!--kg-card-end: markdown--><p>The intuition of why momentum works (besides the theory) can effectively be shown with a contour plot – which is a long and narrow valley in this case. </p><figure><div><p><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/no-momentum.gif" width="1464" height="823"></p><p><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/momentum.gif" width="1466" height="823"></p></div><figcaption>This gist of momentum is that we get to local minima faster, because we don't oscillate up and down the y-axis. The time to convergence is faster when using momentum, but the animation is made equally long for a comparison of steps needed.</figcaption></figure><p>We can think of optimizing a cost function with SGD as oscillating up and down along the y-axis, and the bigger the oscillation up and down the y-axis, the slower we progress along the x-axis. Intuitively, it then makes sense to add <em>something</em> (momentum) to help us oscillate less, thus moving faster along the x-axis towards the local minima.</p><!--kg-card-begin: markdown--><p>
+    $$
+    \updownarrow \text{slower convergence}\\
+    \leftrightarrow \text{faster convergence}
+    $$
+</p><!--kg-card-end: markdown--><p>The next notation for the notion of change might be more explainable and easier to understand. You may skip the next header, but I think it's a good alternative way of thinking about momentum. You will learn a different notation, which can enable you to understand other papers using similar notation.</p><h3 id="different-notation-a-second-explanation">Different Notation: A second explanation</h3><p>In that paper that I <a href="http://web.archive.org/web/20220817070144/http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.57.5612&amp;rep=rep1&amp;type=pdf">linked at the start</a> momentum, it's described in a similar way but with different notation, so let's just cover that as well. They defined it for a weight instead of a parameter $\theta$, and they use $E$ for error function, which is the same as $J$ for objective or cost function. They also use the Delta symbol $\Delta$ to indicate change:</p><!--kg-card-begin: markdown--><p>
+    $$
+    \Delta w_t = \epsilon \nabla E(w) + \rho \Delta w_{t-1}
+    $$
+</p><!--kg-card-end: markdown--><p>This is pretty straight forward, so let's replace the parameters of the equation with the parameters of what I just explained.</p><ul><li>$w_t$ becomes $\theta_t$</li><li>$E(w)$ becomes $J(\theta_{t-1})$</li><li>Rho $\rho$ becomes $\gamma$</li></ul><p>Rewriting the parameters, we get almost the same exact equation as presented in the last notation, except we now have a Delta $\Delta$ term at the start and end of the equation. Intuitively, the delta symbol has always meant <em>change</em> when studying physics – and it has the same meaning here, it's just some rate of change for a parameter over a function $J$.</p><!--kg-card-begin: markdown--><p>
+    $$
+    \Delta \theta_t = \eta \nabla J(\theta_t) + \gamma \Delta \theta_{t-1}
+    $$
+</p><!--kg-card-end: markdown--><p>All the triangle delta means can be specified as a function $\text{change}(\theta_t)$, which just specifies how much a parameter $\theta$ should change by. So when I tell you that I want you to add $\Delta \theta_{t-1}$ at the end of the equation, it just means to take the last change to $\theta$, i.e. at the last time step $t-1$.</p><p>Now $\Delta \theta_t$ becomes our update, and we update our parameter accordingly:</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta_t = \theta_t - \Delta \theta_t
+    $$
+</p><!--kg-card-end: markdown--><p>It's really that simple.</p><hr><p>There is not much to say for pros and cons of the algorithm – perhaps there is not too much theory on the subject of the good and bad of momentum.</p><p>Pros</p><ul><li>Faster convergence than traditional SGD</li></ul><p>Cons</p><ul><li>As the ball accelerates down the hill, how do we know that we don't miss the local minima? If the momentum is too much, we will most likely miss the local minima, rolling past it, but then rolling backwards, missing it again. If the momentum is too much, we could just swing back and forward between the local minima.</li></ul><h2 id="adam">Adam</h2><p>Adaptive Moment Estimation (Adam) is the next optimizer, and probably also the optimizer that performs the best on average. Taking a big step forward from the SGD algorithm to explain Adam does require some explanation of some clever techniques from other algorithms adopted in Adam, as well as the unique approaches Adam brings.</p><p>Adam uses Momentum and Adaptive Learning Rates to converge faster. We have already explored what Momentum means, now we are going to explore what adaptive learning rates means.</p><figure><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/saddle.gif" alt="Animation of how the newer optimizers compare in terms of convergence."><figcaption>Comparison of many optimizers. Credits to <a href="http://web.archive.org/web/20220817070144/https://rnrahman.com/blog/visualising-stochastic-optimisers/">Ridlo Rahman</a></figcaption></figure><h3 id="adaptive-learning-rate">Adaptive Learning Rate</h3><p>An adaptive learning rate can be observed in AdaGrad, AdaDelta, RMSprop and Adam, but I will only go into AdaGrad and RMSprop, as they seem to be the relevant one's (although AdaDelta has the same update rule as RMSprop). The adaptive learning rate property is also known as Learning Rate Schedules, which I found an insightful <a href="http://web.archive.org/web/20220817070144/https://towardsdatascience.com/learning-rate-schedules-and-adaptive-learning-rate-methods-for-deep-learning-2c8f433990d1">Medium post</a> for.</p><p>So, what is it? I found that the best way is explaining a property from AdaGrad first, and then adding a property from RMSprop. This will be sufficient to show you what adaptive learning rate means and provides.</p><p>Part of the intuition for adaptive learning rates, is that we start off with big steps and finish with small steps – almost like mini-golf. We are then allowed to move faster initially. As the learning rate decays, we take smaller and smaller steps, allowing us to converge faster, since we don't overstep the local minimum with as big steps.</p><h4 id="adagrad-parameters-gets-different-learning-rates">AdaGrad: Parameters Gets Different Learning Rates </h4><p>Adaptive Gradients (AdaGrad) provides us with a simple approach, for changing the learning rate over time. This is important for adapting to the differences in datasets, since we can get small or large updates, according to how the learning rate is defined.</p><p>Let's go for a top to bottom approach; here is the equation:</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta_{t+1,i} = \theta_{t,i}
+    -\frac{\eta}
+    {
+        \sqrt
+        {
+            \epsilon +
+            \sum_{\tau=1}^{t}
+            \left( \nabla J(\theta_{\tau,i}) \right) ^2
+        }
+    } \nabla J(\theta_{t,i})
+    $$
+</p><!--kg-card-end: markdown--><p>All we added here is division of the learning rate eta $\eta$. Although I told you that $\epsilon$ sometimes is the learning rate, in this algorithm it is not. In fact, it's just a small value that ensures that we don't divide by zero.</p><p>What needs explaining here is the term $\sqrt{\sum_{\tau=1}^{t}\left( \nabla J(\theta_{\tau,i}) \right) ^2}$, i.e. the square root of the summation $\sum$ over all gradients squared. We sum over all the gradients, from time step $\tau=1$ all the way to the current time step $t$.</p><p>If $t=3$, then we would sum over the gradient at $t=1$, $t=2$ and $t=3$, and this just scales as $t$ becomes larger. Eventually, though, the gradients might be so small, that the momentum becomes <em>stale</em>, i.e. it updates with very small values. </p><p>Let me just make an example here, denoting the gradient by $g$ under the square root, i.e. $g(\theta_{3,i})^2 = (\nabla J(\theta_{3,i}))^2$</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta_{4,i} = \theta_{3,i}
+    \, -\frac{\eta}
+    {
+        \sqrt
+        {
+            \epsilon + 
+            g(\theta_{1,i})^2 +
+            g(\theta_{2,i})^2 +
+            g(\theta_{3,i})^2
+        }
+    } \,\nabla J(\theta_{3,i})
+    $$
+</p><!--kg-card-end: markdown--><p>What effect does this has on the learning rate $\eta$? Well, division by bigger and bigger numbers means that the learning rate is decreasing over time – hence the term <em>adaptive</em> learning rate.</p><p>We could in simple terms say, that the sum $\sum$ increases over time, as we add more gradients over time:</p><figure><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/sum-gradients.png" alt="Overview of how the sum grows, as $t$ gets larger."><figcaption>Overview of how the sum grows, as $t$ gets larger.</figcaption></figure><h4 id="rmsprop">RMSprop</h4><p>Root Mean Squared Propagation (RMSprop) is very close to Adagrad, except for it does not provide the sum of the gradients, but instead an <em>exponentially decaying average</em>. This decaying average is realized through combining the Momentum algorithm and Adagrad algorithm, with a new term.</p><p>An important property of RMSprop is that we are not restricted to just the sum of the past gradients, but instead we are more restricted to gradients for the recent time steps. This means that RMSprop changes the learning rate slower than Adagrad, but still reaps the benefits of converging relatively fast – as has been shown (and we won't go into those details here).</p><p>Doing the top to bottom approach again, let's start out with the equation. By now, you should only be suspect of the expectation of the gradient $E[g^2]$:</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta_{t+1,i} = \theta_{t,i}
+    -\frac{\eta}
+    {
+        \sqrt
+        {
+            \epsilon + E[g^2]_t
+        }
+    } \nabla J(\theta_{t,i})
+    $$
+</p><!--kg-card-end: markdown--><p>This exact term is what causes the decaying average (also called running average or moving average). Let's examine it, with relation to the momentum algorithm presented earlier. </p><!--kg-card-begin: markdown--><p><strong>Momentum:</strong>
+    $$
+    \theta_t = \theta_t - \eta \nabla J(\theta_t) + \gamma v_t
+    \\ \text{where}
+    \\ v_t = \eta \nabla J(\theta_t)_t+v_{t-1}
+    $$
+    <strong>New Term $E$:</strong>
+    $$
+    E[g^2]_t=(1-\gamma)g^2 + \gamma E[g^2]_{t-1}
+    \\ \text{where}
+    \\ g = \nabla J(\theta_{t,i})
+    $$
+</p><!--kg-card-end: markdown--><p>We still have our momentum term $\gamma=0.9$. We can immediately see that the new term $E$ is similar to $v_t$ from Momentum; the differences is that $E$ has no learning rate in the equation, while it has added a new term $(1-\gamma)$ in front of the gradient $g$. Note that summation $\sum$ is not used here, since it would involve a more complex equation. I tried to convert it, but got stuck because of the new term, hence I found it's not worth it to try and express it with a summation sign.</p><p>With the AdaGrad algorithm, the learning rate $\eta$ was monotonously decreasing, while in RMSprop, $\eta$ can adapt up and down in value, as we step further down the hill for each epoch. This concludes adaptive learning rate, where we explored two ways of making the learning rate adapt over time. This property of adaptive learning rate is also in the Adam optimizer, and you will probably find that Adam is easy to understand now, given the prior explanations of other algorithms in this post.</p><p>Andrew Ng compares Momentum to RMSprop in a <a href="http://web.archive.org/web/20220817070144/https://youtu.be/_e-LFe_igno?t=256">brilliant video on YouTube</a></p><figure><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/rmsprop.gif" alt="Momentum and RMSprop convergence. We see that RMSprop is faster."><figcaption>Momentum (blue) and RMSprop (green) convergence. We see that RMSprop is faster.</figcaption></figure><h3 id="actually-explaining-adam">Actually Explaining Adam</h3><p>Now we have learned all these other algorithms, and for what? Well, to be able able to explain <a href="http://web.archive.org/web/20220817070144/https://arxiv.org/pdf/1412.6980v9.pdf">Adam</a>, such that it's easier to understand. By now, you should know what Momentum and Adaptive Learning Rate means.</p><p>There are a lot of terms to watch out for in the original paper, and it might seem confusing at first.</p><figure><img src="http://web.archive.org/web/20220817070144im_/https://mlfromscratch.com/content/images/2019/12/image-2--1-.png" alt="Adam algorithm in one picture in pseudo code."><figcaption>Adam algorithm in one picture in pseudo code. Taken from the original <a href="http://web.archive.org/web/20220817070144/https://arxiv.org/pdf/1412.6980v9.pdf">Adam paper</a>.</figcaption></figure><p>But let's just paint it in a simplistic way; here is the update rule for Adam</p><!--kg-card-begin: markdown--><p>
+    $$
+    \theta_{t+1} = \theta_t - 
+    \frac{\eta \cdot \hat{m_t}}
+    {
+        \sqrt{\hat{v_t}} + \epsilon
+    } 
+    \\ \text{where} \\\\
+    \hat{m_t} = \frac{m_t}{1-\beta_1^t}
+    \\
+    \hat{v_t} = \frac{v_t}{1-\beta_2^t}
+    \\ \text{and where} \\
+    m_t = (1-\beta_1)g_t + \beta_1 m_{t-1}
+    \\
+    v_t = (1-\beta_2)g_t^2 + \beta_2 v_{t-1}
+    $$
+</p><!--kg-card-end: markdown--><p>Immediately, we can see that there are a bunch of numbers and things to keep track of. Most of these have already been explained, but for the sake of clarity, let's state each term here:</p><ul><li>Epsilon $\epsilon$, which is just a small term preventing division by zero. This term is usually $10^{-8}$.</li><li>Learning rate $\eta$ (although it's $\alpha$) in the paper. They explain that a good default setting is $\eta=0.001$, which is also the default learning rate in Keras.</li><li>The gradient $g$, which is still the same thing as before: $g = \nabla J(\theta_{t,i})$</li></ul><p>We also have two decay terms, also called the exponential decay rates in the paper. The terms are close to $\gamma$ in RMSprop and Momentum, but instead of 1 term, we have two terms called beta 1 and beta 2:</p><ul><li>First momentum term $\beta_1=0.9$</li><li>Second momentum term $\beta_2=0.999$</li></ul><p>Although these terms are without the time step $t$, we would just take the value of $t$ and put it in the exponent, i.e. if $t=5$, then $\beta_1^{t=5}=0.9^5=0.59049$.</p><h2 id="a-final-note">A Final Note</h2><p>The likes of <a href="http://web.archive.org/web/20220817070144/https://arxiv.org/pdf/1908.03265v1.pdf">RAdam</a> and <a href="http://web.archive.org/web/20220817070144/https://arxiv.org/pdf/1907.08610.pdf">Lookahead</a> were considered, along with a combination of the two, called <a href="http://web.archive.org/web/20220817070144/https://github.com/lessw2020/Ranger-Deep-Learning-Optimizer">Ranger</a>, but ultimately left out. They are acclaimed SOTA optimizers by a bunch of Medium posts, though they stand unproven. A future post could include these "SOTA" optimizers, to explain the difference from Adam, and why that might be useful.</p><p>Anyone getting into deep learning will probably get the best and most consistent results using Adam, as that has already been out there and shown that it performs the best.</p><p>If you want to visualize optimizers, I found <a href="http://web.archive.org/web/20220817070144/https://nbviewer.jupyter.org/github/ilguyi/optimizers.numpy/blob/master/optimizer.tf.all.opt.plot.ipynb">this notebook</a> to be a great resource, using optimizers from TensorFlow. </p><h2 id="further-reading">Further Reading</h2><p>Here are the further readings for this post. Currently, it's only the papers being referenced here.</p><h3 id="papers">Papers</h3><ul><li><a href="http://web.archive.org/web/20220817070144/https://arxiv.org/pdf/1412.6980.pdf">Adam</a></li><li><a href="http://web.archive.org/web/20220817070144/https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf">RMSprop</a></li><li><a href="http://web.archive.org/web/20220817070144/http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf">AdaGrad</a></li><li><a href="http://web.archive.org/web/20220817070144/http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.57.5612&amp;rep=rep1&amp;type=pdf">Momentum</a></li><li><a href="http://web.archive.org/web/20220817070144/https://pdfs.semanticscholar.org/34dd/d8865569c2c32dec9bf7ffc817ff42faaa01.pdf">Stochastic Gradient Descent</a></li></ul>
+                    </div>
+
+                
+
+        </article>
+
+    </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Built-in magic commands — IPython 8.5.0 documentation</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Built-in magic commands — IPython 8.5.0 documentation</h1>
+    <p><strong>URL:</strong> <a href="https://ipython.readthedocs.io/en/stable/interactive/magics.html">https://ipython.readthedocs.io/en/stable/interactive/magics.html</a></p>
+    <p><strong>Tags:</strong> jupyter, python</p>
+    <p><strong>Bookmark ID:</strong> 876788590</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section id="built-in-magic-commands" itemprop="articleBody" role="main" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+<div>
+<p>Note</p>
+<p>To Jupyter users: Magics are specific to and provided by the IPython kernel.
+Whether Magics are available on a kernel is a decision that is made by
+the kernel developer on a per-kernel basis. To work properly, Magics must
+use a syntax element which is not valid in the underlying language. For
+example, the IPython kernel uses the <code><span>%</span></code> syntax element for Magics as <code><span>%</span></code>
+is not a valid unary operator in Python. However, <code><span>%</span></code> might have meaning in
+other languages.</p>
+</div>
+<p>Here is the help auto-generated from the docstrings of all the available Magics
+functions that IPython ships with.</p>
+<p>You can create and register your own Magics with IPython. You can find many user
+defined Magics on <a href="https://pypi.org/">PyPI</a>. Feel free to publish your own and
+use the <code><span>Framework</span> <span>::</span> <span>IPython</span></code> trove classifier.</p>
+<section id="line-magics">
+<h2>Line magics<a href="#line-magics" title="Link to this heading"></a></h2>
+<dl>
+<dt id="magic-alias">
+<span><span>%alias</span></span><a href="#magic-alias" title="Link to this definition"></a></dt>
+<dd><p>Define an alias for a system command.</p>
+<p>‘%alias alias_name cmd’ defines ‘alias_name’ as an alias for ‘cmd’</p>
+<p>Then, typing ‘alias_name params’ will execute the system command ‘cmd
+params’ (from your underlying operating system).</p>
+<p>Aliases have lower precedence than magic functions and Python normal
+variables, so if ‘foo’ is both a Python variable and an alias, the
+alias can not be executed until ‘del foo’ removes the Python variable.</p>
+<p>You can use the %l specifier in an alias definition to represent the
+whole line when the alias is called.  For example:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>2</span><span>]:</span> <span>alias</span> <span>bracket</span> <span>echo</span> <span>"Input in brackets: &lt;%l&gt;"</span>
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>bracket</span> <span>hello</span> <span>world</span>
+<span>Input</span> <span>in</span> <span>brackets</span><span>:</span> <span>&lt;</span><span>hello</span> <span>world</span><span>&gt;</span>
+</pre></div>
+<p>You can also define aliases with parameters using %s specifiers (one
+per parameter):</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>alias</span> <span>parts</span> <span>echo</span> <span>first</span> <span>%</span><span>s</span> <span>second</span> <span>%</span><span>s</span>
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>%</span><span>parts</span> <span>A</span> <span>B</span>
+<span>first</span> <span>A</span> <span>second</span> <span>B</span>
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>%</span><span>parts</span> <span>A</span>
+<span>Incorrect</span> <span>number</span> <span>of</span> <span>arguments</span><span>:</span> <span>2</span> <span>expected</span><span>.</span>
+<span>parts</span> <span>is</span> <span>an</span> <span>alias</span> <span>to</span><span>:</span> <span>'echo first </span><span>%s</span><span> second </span><span>%s</span><span>'</span>
+</pre></div>
+<p>Note that %l and %s are mutually exclusive.  You can only use one or
+the other in your aliases.</p>
+<p>Aliases expand Python variables just like system calls using ! or !!
+do: all expressions prefixed with ‘$’ get expanded.  For details of
+the semantic rules, see PEP-215:
+<a href="https://peps.python.org/pep-0215/">https://peps.python.org/pep-0215/</a>.  This is the library used by
+IPython for variable expansion.  If you want to access a true shell
+variable, an extra $ is necessary to prevent its expansion by
+IPython:</p>
+<div><pre><span></span>In [6]: alias show echo
+In [7]: PATH='A Python string'
+In [8]: show $PATH
+A Python string
+In [9]: show $$PATH
+/usr/local/lf9560/bin:/usr/local/intel/compiler70/ia32/bin:...
+</pre></div>
+<p>You can use the alias facility to access all of $PATH.  See the %rehashx
+function, which automatically creates aliases for the contents of your
+$PATH.</p>
+<p>If called with no parameters, %alias prints the current alias table
+for your system.  For posix systems, the default aliases are ‘cat’,
+‘cp’, ‘mv’, ‘rm’, ‘rmdir’, and ‘mkdir’, and other platform-specific
+aliases are added.  For windows-based systems, the default aliases are
+‘copy’, ‘ddir’, ‘echo’, ‘ls’, ‘ldir’, ‘mkdir’, ‘ren’, and ‘rmdir’.</p>
+<p>You can see the definition of alias by adding a question mark in the
+end:</p>
+<div><pre><span></span>In [1]: cat?
+Repr: &lt;alias cat for 'cat'&gt;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-alias_magic">
+<span><span>%alias_magic</span></span><a href="#magic-alias_magic" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>alias_magic</span> <span>[</span><span>-</span><span>l</span><span>]</span> <span>[</span><span>-</span><span>c</span><span>]</span> <span>[</span><span>-</span><span>p</span> <span>PARAMS</span><span>]</span> <span>name</span> <span>target</span>
+</pre></div>
+<p>Create an alias for an existing line or cell magic.</p>
+<p>Examples</p>
+<div><pre><span></span>In [1]: %alias_magic t timeit
+Created `%t` as an alias for `%timeit`.
+Created `%%t` as an alias for `%%timeit`.
+
+In [2]: %t -n1 pass
+107 ns ± 43.6 ns per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+In [3]: %%t -n1
+   ...: pass
+   ...:
+107 ns ± 58.3 ns per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+In [4]: %alias_magic --cell whereami pwd
+UsageError: Cell magic function `%%pwd` not found.
+In [5]: %alias_magic --line whereami pwd
+Created `%whereami` as an alias for `%pwd`.
+
+In [6]: %whereami
+Out[6]: '/home/testuser'
+
+In [7]: %alias_magic h history -p "-l 30" --line
+Created `%h` as an alias for `%history -l 30`.
+</pre></div>
+<dl>
+<dt>positional arguments:</dt><dd><p>name                  Name of the magic to be created.
+target                Name of the existing line or cell magic.</p>
+</dd>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>-l</span>, <span>--line</span></kbd></dt>
+<dd><p>Create a line magic alias.</p>
+</dd>
+<dt><kbd><span>-c</span>, <span>--cell</span></kbd></dt>
+<dd><p>Create a cell magic alias.</p>
+</dd>
+<dt><kbd><span>-p <var>PARAMS</var></span>, <span>--params <var>PARAMS</var></span></kbd></dt>
+<dd><p>Parameters passed to the magic function.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-autoawait">
+<span><span>%autoawait</span></span><a href="#magic-autoawait" title="Link to this definition"></a></dt>
+<dd><p>Allow to change the status of the autoawait option.</p>
+<p>This allow you to set a specific asynchronous code runner.</p>
+<p>If no value is passed, print the currently used asynchronous integration
+and whether it is activated.</p>
+<p>It can take a number of value evaluated in the following order:</p>
+<ul>
+<li><p>False/false/off deactivate autoawait integration</p></li>
+<li><p>True/true/on activate autoawait integration using configured default
+loop</p></li>
+<li><p>asyncio/curio/trio activate autoawait integration and use integration
+with said library.</p></li>
+<li><p><code><span>sync</span></code> turn on the pseudo-sync integration (mostly used for
+<code><span>IPython.embed()</span></code> which does not run IPython with a real eventloop and
+deactivate running asynchronous code. Turning on Asynchronous code with
+the pseudo sync loop is undefined behavior and may lead IPython to crash.</p></li>
+</ul>
+<p>If the passed parameter does not match any of the above and is a python
+identifier, get said object from user namespace and set it as the
+runner, and activate autoawait.</p>
+<p>If the object is a fully qualified object name, attempt to import it and
+set it as the runner, and activate autoawait.</p>
+<p>The exact behavior of autoawait is experimental and subject to change
+across version of IPython and Python.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-autocall">
+<span><span>%autocall</span></span><a href="#magic-autocall" title="Link to this definition"></a></dt>
+<dd><p>Make functions callable without having to type parentheses.</p>
+<p>Usage:</p>
+<blockquote>
+<p>%autocall [mode]</p></blockquote>
+<p>The mode can be one of: 0-&gt;Off, 1-&gt;Smart, 2-&gt;Full.  If not given, the
+value is toggled on and off (remembering the previous state).</p>
+<p>In more detail, these values mean:</p>
+<p>0 -&gt; fully disabled</p>
+<p>1 -&gt; active, but do not apply if there are no arguments on the line.</p>
+<p>In this mode, you get:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>callable</span>
+<span>Out</span><span>[</span><span>1</span><span>]:</span> <span>&lt;</span><span>built</span><span>-</span><span>in</span> <span>function</span> <span>callable</span><span>&gt;</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>callable</span> <span>'hello'</span>
+<span>------&gt;</span> <span>callable</span><span>(</span><span>'hello'</span><span>)</span>
+<span>Out</span><span>[</span><span>2</span><span>]:</span> <span>False</span>
+</pre></div>
+<p>2 -&gt; Active always.  Even if no arguments are present, the callable
+object is called:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>2</span><span>]:</span> <span>float</span>
+<span>------&gt;</span> <span>float</span><span>()</span>
+<span>Out</span><span>[</span><span>2</span><span>]:</span> <span>0.0</span>
+</pre></div>
+<p>Note that even with autocall off, you can still use ‘/’ at the start of
+a line to treat the first argument on the command line as a function
+and add parentheses to it:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>8</span><span>]:</span> <span>/</span><span>str</span> <span>43</span>
+<span>------&gt;</span> <span>str</span><span>(</span><span>43</span><span>)</span>
+<span>Out</span><span>[</span><span>8</span><span>]:</span> <span>'43'</span>
+</pre></div>
+<p># all-random (note for auto-testing)</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-automagic">
+<span><span>%automagic</span></span><a href="#magic-automagic" title="Link to this definition"></a></dt>
+<dd><p>Make magic functions callable without having to type the initial %.</p>
+<p>Without arguments toggles on/off (when off, you must call it as
+%automagic, of course).  With arguments it sets the value, and you can
+use any of (case insensitive):</p>
+<blockquote>
+<div><ul>
+<li><p>on, 1, True: to activate</p></li>
+<li><p>off, 0, False: to deactivate.</p></li>
+</ul>
+</div></blockquote>
+<p>Note that magic functions have lowest priority, so if there’s a
+variable whose name collides with that of a magic fn, automagic won’t
+work for that function (you get the variable instead). However, if you
+delete the variable (del var), the previously shadowed magic function
+becomes visible to automagic again.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-bookmark">
+<span><span>%bookmark</span></span><a href="#magic-bookmark" title="Link to this definition"></a></dt>
+<dd><p>Manage IPython’s bookmark system.</p>
+<p>%bookmark &lt;name&gt;       - set bookmark to current dir
+%bookmark &lt;name&gt; &lt;dir&gt; - set bookmark to &lt;dir&gt;
+%bookmark -l           - list all bookmarks
+%bookmark -d &lt;name&gt;    - remove bookmark
+%bookmark -r           - remove all bookmarks</p>
+<p>You can later on access a bookmarked folder with:</p>
+<div><pre><span></span><span>%</span><span>cd</span> <span>-</span><span>b</span> <span>&lt;</span><span>name</span><span>&gt;</span>
+</pre></div>
+<p>or simply ‘%cd &lt;name&gt;’ if there is no directory called &lt;name&gt; AND
+there is such a bookmark defined.</p>
+<p>Your bookmarks persist through IPython sessions, but they are
+associated with each profile.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-cd">
+<span><span>%cd</span></span><a href="#magic-cd" title="Link to this definition"></a></dt>
+<dd><p>Change the current working directory.</p>
+<p>This command automatically maintains an internal list of directories
+you visit during your IPython session, in the variable <code><span>_dh</span></code>. The
+command <a href="#magic-dhist"><code><span>%dhist</span></code></a> shows this history nicely formatted. You can
+also do <code><span>cd</span> <span>-&lt;tab&gt;</span></code> to see directory history conveniently.
+Usage:</p>
+<blockquote>
+<div><ul>
+<li><p><code><span>cd</span> <span>'dir'</span></code>: changes to directory ‘dir’.</p></li>
+<li><p><code><span>cd</span> <span>-</span></code>: changes to the last visited directory.</p></li>
+<li><p><code><span>cd</span> <span>-&lt;n&gt;</span></code>: changes to the n-th directory in the directory history.</p></li>
+<li><p><code><span>cd</span> <span>--foo</span></code>: change to directory that matches ‘foo’ in history</p></li>
+<li><p><code><span>cd</span> <span>-b</span> <span>&lt;bookmark_name&gt;</span></code>: jump to a bookmark set by %bookmark</p></li>
+<li><p>Hitting a tab key after <code><span>cd</span> <span>-b</span></code> allows you to tab-complete
+bookmark names.</p></li>
+</ul>
+<div>
+<p>Note</p>
+<p><code><span>cd</span> <span>&lt;bookmark_name&gt;</span></code> is enough if there is no directory
+<code><span>&lt;bookmark_name&gt;</span></code>, but a bookmark with the name exists.</p>
+</div>
+</div></blockquote>
+<p>Options:</p>
+<dl>
+<dt><kbd><span>-q</span></kbd></dt>
+<dd><p>Be quiet. Do not print the working directory after the
+cd command is executed. By default IPython’s cd
+command does print this directory, since the default
+prompts do not display path information.</p>
+</dd>
+</dl>
+<div>
+<p>Note</p>
+<p>Note that <code><span>!cd</span></code> doesn’t work for this purpose because the shell
+where <code><span>!command</span></code> runs is immediately discarded after executing
+‘command’.</p>
+</div>
+<p>Examples</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>10</span><span>]:</span> <span>cd</span> <span>parent</span><span>/</span><span>child</span>
+<span>/</span><span>home</span><span>/</span><span>tsuser</span><span>/</span><span>parent</span><span>/</span><span>child</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-code_wrap">
+<span><span>%code_wrap</span></span><a href="#magic-code_wrap" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>code_wrap</span> <span>[</span><span>--</span><span>remove</span><span>]</span> <span>[</span><span>--</span><span>list</span><span>]</span> <span>[</span><span>--</span><span>list</span><span>-</span><span>all</span><span>]</span> <span>[</span><span>name</span><span>]</span>
+</pre></div>
+<p>Simple magic to quickly define a code transformer for all IPython’s future input.</p>
+<p><code><span>__code__</span></code> and <code><span>__ret__</span></code> are special variable that represent the code to run
+and the value of the last expression of <code><span>__code__</span></code> respectively.</p>
+<p>Examples</p>
+<div><pre><span></span><span>In [1]: </span><span>%%</span><span>code_wrap</span> before_after
+<span>   ...: </span>print('before')
+<span>   ...: </span>__code__
+<span>   ...: </span>print('after')
+<span>   ...: </span>__ret__
+<span>   ...: </span>
+
+<span>In [2]: </span><span>1</span>
+<span>before</span>
+<span>after</span>
+<span>Out[2]: </span><span>1</span>
+
+<span>In [3]: </span><span>%</span><span>code_wrap</span> --list
+<span>before</span>
+<span>before_after</span>
+<span>after</span>
+
+<span>In [4]: </span><span>%</span><span>code_wrap</span> --list-all
+<span>before</span>
+<span>before_after :</span>
+<span>    print('before')</span>
+<span>    __code__</span>
+<span>    print('after')</span>
+<span>    __ret__</span>
+
+<span>after</span>
+
+<span>In [5]: </span><span>%</span><span>code_wrap</span> --remove before_after
+<span>before</span>
+<span>after</span>
+</pre></div>
+<dl>
+<dt>positional arguments:</dt><dd><p>name</p>
+</dd>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>--remove</span></kbd></dt>
+<dd><p>remove the current transformer</p>
+</dd>
+<dt><kbd><span>--list</span></kbd></dt>
+<dd><p>list existing transformers name</p>
+</dd>
+<dt><kbd><span>--list-all</span></kbd></dt>
+<dd><p>list existing transformers name and code template</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-colors">
+<span><span>%colors</span></span><a href="#magic-colors" title="Link to this definition"></a></dt>
+<dd><p>Switch color scheme/theme globally for IPython</p>
+<p>Examples</p>
+<p>To get a plain black and white terminal:</p>
+<div><pre><span></span><span>%</span><span>colors</span> <span>nocolor</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-conda">
+<span><span>%conda</span></span><a href="#magic-conda" title="Link to this definition"></a></dt>
+<dd><p>Run the conda package manager within the current kernel.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%conda install [pkgs]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-config">
+<span><span>%config</span></span><a href="#magic-config" title="Link to this definition"></a></dt>
+<dd><p>configure IPython</p>
+<blockquote>
+<p>%config Class[.trait=value]</p></blockquote>
+<p>This magic exposes most of the IPython config system. Any
+Configurable class should be able to be configured with the simple
+line:</p>
+<div><pre><span></span><span>%</span><span>config</span> <span>Class</span><span>.</span><span>trait</span><span>=</span><span>value</span>
+</pre></div>
+<p>Where <code><span>value</span></code> will be resolved in the user’s namespace, if it is an
+expression or variable name.</p>
+<p>Examples</p>
+<p>To see what classes are available for config, pass no arguments:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>%</span><span>config</span>
+<span>Available</span> <span>objects</span> <span>for</span> <span>config</span><span>:</span>
+    <span>AliasManager</span>
+    <span>DisplayFormatter</span>
+    <span>HistoryManager</span>
+    <span>IPCompleter</span>
+    <span>LoggingMagics</span>
+    <span>MagicsManager</span>
+    <span>OSMagics</span>
+    <span>PrefilterManager</span>
+    <span>ScriptMagics</span>
+    <span>TerminalInteractiveShell</span>
+</pre></div>
+<p>To view what is configurable on a given class, just pass the class
+name:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>2</span><span>]:</span> <span>%</span><span>config</span> <span>LoggingMagics</span>
+<span>LoggingMagics</span><span>(</span><span>Magics</span><span>)</span> <span>options</span>
+
+<span>LoggingMagics</span><span>.</span><span>quiet</span><span>=&lt;</span><span>Bool</span><span>&gt;</span>
+    <span>Suppress</span> <span>output</span> <span>of</span> <span>log</span> <span>state</span> <span>when</span> <span>logging</span> <span>is</span> <span>enabled</span>
+    <span>Current</span><span>:</span> <span>False</span>
+</pre></div>
+<p>but the real use is in setting values:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>3</span><span>]:</span> <span>%</span><span>config</span> <span>LoggingMagics</span><span>.</span><span>quiet</span> <span>=</span> <span>True</span>
+</pre></div>
+<p>and these values are read from the user_ns if they are variables:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>4</span><span>]:</span> <span>feeling_quiet</span><span>=</span><span>False</span>
+
+<span>In</span> <span>[</span><span>5</span><span>]:</span> <span>%</span><span>config</span> <span>LoggingMagics</span><span>.</span><span>quiet</span> <span>=</span> <span>feeling_quiet</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-debug">
+<span><span>%debug</span></span><a href="#magic-debug" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>debug</span> <span>[</span><span>--</span><span>breakpoint</span> <span>FILE</span><span>:</span><span>LINE</span><span>]</span>
+</pre></div>
+<p>Activate the interactive debugger.</p>
+<p>This magic command support two ways of activating debugger.
+One is to activate debugger before executing code. This way, you
+can set a break point, to step through the code from the point.
+You can use this mode by giving statements to execute and optionally
+a breakpoint.</p>
+<p>The other one is to activate debugger in post-mortem mode. You can
+activate this mode simply running %debug without any argument.
+If an exception has just occurred, this lets you inspect its stack
+frames interactively.  Note that this will always work only on the last
+traceback that occurred, so you must call this quickly after an
+exception that you wish to inspect has fired, because if another one
+occurs, it clobbers the previous one.</p>
+<p>If you want IPython to automatically do this on every exception, see
+the %pdb magic for more details.</p>
+<p><span>Changed in version 7.3: </span>When running code, user variables are no longer expanded,
+the magic line is always left unmodified.</p>
+<dl>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>--breakpoint <var>&lt;FILE:LINE&gt;</var></span>, <span>-b <var>&lt;FILE:LINE&gt;</var></span></kbd></dt>
+<dd><p>Set break point at LINE in FILE.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Any remaining arguments will be treated as code to run in the debugger.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-dhist">
+<span><span>%dhist</span></span><a href="#magic-dhist" title="Link to this definition"></a></dt>
+<dd><p>Print your history of visited directories.</p>
+<p>%dhist       -&gt; print full history%dhist n     -&gt; print last n entries only%dhist n1 n2 -&gt; print entries between n1 and n2 (n2 not included)</p>
+<p>This history is automatically maintained by the %cd command, and
+always available as the global list variable _dh. You can use %cd -&lt;n&gt;
+to go to directory number &lt;n&gt;.</p>
+<p>Note that most of time, you should view directory history by entering
+cd -&lt;TAB&gt;.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-dirs">
+<span><span>%dirs</span></span><a href="#magic-dirs" title="Link to this definition"></a></dt>
+<dd><p>Return the current directory stack.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-doctest_mode">
+<span><span>%doctest_mode</span></span><a href="#magic-doctest_mode" title="Link to this definition"></a></dt>
+<dd><p>Toggle doctest mode on and off.</p>
+<p>This mode is intended to make IPython behave as much as possible like a
+plain Python shell, from the perspective of how its prompts, exceptions
+and output look.  This makes it easy to copy and paste parts of a
+session into doctests.  It does so by:</p>
+<ul>
+<li><p>Changing the prompts to the classic <code><span>&gt;&gt;&gt;</span></code> ones.</p></li>
+<li><p>Changing the exception reporting mode to ‘Plain’.</p></li>
+<li><p>Disabling pretty-printing of output.</p></li>
+</ul>
+<p>Note that IPython also supports the pasting of code snippets that have
+leading ‘&gt;&gt;&gt;’ and ‘…’ prompts in them.  This means that you can paste
+doctests from files or docstrings (even if they have leading
+whitespace), and the code will execute correctly.  You can then use
+‘%history -t’ to see the translated history; this will give you the
+input after removal of all the leading prompts and whitespace, which
+can be pasted back into an editor.</p>
+<p>With these features, you can switch into this mode easily whenever you
+need to do testing and changes to doctests, without having to leave
+your existing IPython session.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-edit">
+<span><span>%edit</span></span><a href="#magic-edit" title="Link to this definition"></a></dt>
+<dd><p>Bring up an editor and execute the resulting code.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%edit [options] [args]</p>
+</dd>
+</dl>
+<p>%edit runs IPython’s editor hook. The default version of this hook is
+set to call the editor specified by your $EDITOR environment variable.
+If this isn’t found, it will default to vi under Linux/Unix and to
+notepad under Windows. See the end of this docstring for how to change
+the editor hook.</p>
+<p>You can also set the value of this editor via the
+<code><span>TerminalInteractiveShell.editor</span></code> option in your configuration file.
+This is useful if you wish to use a different editor from your typical
+default with IPython (and for Windows users who typically don’t set
+environment variables).</p>
+<p>This command allows you to conveniently edit multi-line code right in
+your IPython session.</p>
+<p>If called without arguments, %edit opens up an empty editor with a
+temporary file and will execute the contents of this file when you
+close it (don’t forget to save it!).</p>
+<p>Options:</p>
+<p>-n &lt;number&gt;: open the editor at a specified line number.  By default,
+the IPython editor hook uses the unix syntax ‘editor +N filename’, but
+you can configure this by providing your own modified hook if your
+favorite editor supports line-number specifications with a different
+syntax.</p>
+<p>-p: this will call the editor with the same data as the previous time
+it was used, regardless of how long ago (in your current session) it
+was.</p>
+<p>-r: use ‘raw’ input.  This option only applies to input taken from the
+user’s history.  By default, the ‘processed’ history is used, so that
+magics are loaded in their transformed version to valid Python.  If
+this option is given, the raw input as typed as the command line is
+used instead.  When you exit the editor, it will be executed by
+IPython’s own processor.</p>
+<p>-x: do not execute the edited code immediately upon exit. This is
+mainly useful if you are editing programs which need to be called with
+command line arguments, which you can then do using %run.</p>
+<p>Arguments:</p>
+<p>If arguments are given, the following possibilities exist:</p>
+<ul>
+<li><p>If the argument is a filename, IPython will load that into the
+editor. It will execute its contents with execfile() when you exit,
+loading any code in the file into your interactive namespace.</p></li>
+<li><p>The arguments are ranges of input history,  e.g. “7 ~1/4-6”.
+The syntax is the same as in the %history magic.</p></li>
+<li><p>If the argument is a string variable, its contents are loaded
+into the editor. You can thus edit any string which contains
+python code (including the result of previous edits).</p></li>
+<li><p>If the argument is the name of an object (other than a string),
+IPython will try to locate the file where it was defined and open the
+editor at the point where it is defined. You can use <code><span>%edit</span> <span>function</span></code>
+to load an editor exactly at the point where ‘function’ is defined,
+edit it and have the file be executed automatically.</p></li>
+<li><p>If the object is a macro (see %macro for details), this opens up your
+specified editor with a temporary file containing the macro’s data.
+Upon exit, the macro is reloaded with the contents of the file.</p></li>
+</ul>
+<p>Note: opening at an exact line is only supported under Unix, and some
+editors (like kedit and gedit up to Gnome 2.8) do not understand the
+‘+NUMBER’ parameter necessary for this feature. Good editors like
+(X)Emacs, vi, jed, pico and joe all do.</p>
+<p>After executing your code, %edit will return as output the code you
+typed in the editor (except when it was an existing file). This way
+you can reload the code in further invocations of %edit as a variable,
+via _&lt;NUMBER&gt; or Out[&lt;NUMBER&gt;], where &lt;NUMBER&gt; is the prompt number of
+the output.</p>
+<p>Note that %edit is also available through the alias %ed.</p>
+<p>This is an example of creating a simple function inside the editor and
+then modifying it. First, start up the editor:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>edit</span>
+<span>Editing</span><span>...</span> <span>done</span><span>.</span> <span>Executing</span> <span>edited</span> <span>code</span><span>...</span>
+<span>Out</span><span>[</span><span>1</span><span>]:</span> <span>'def foo():</span><span>\n</span><span>    print("foo() was defined in an editing</span>
+<span>session</span><span>")</span><span>\n</span><span>'</span>
+</pre></div>
+<p>We can then call the function foo():</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>2</span><span>]:</span> <span>foo</span><span>()</span>
+<span>foo</span><span>()</span> <span>was</span> <span>defined</span> <span>in</span> <span>an</span> <span>editing</span> <span>session</span>
+</pre></div>
+<p>Now we edit foo.  IPython automatically loads the editor with the
+(temporary) file where foo() was previously defined:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>3</span><span>]:</span> <span>edit</span> <span>foo</span>
+<span>Editing</span><span>...</span> <span>done</span><span>.</span> <span>Executing</span> <span>edited</span> <span>code</span><span>...</span>
+</pre></div>
+<p>And if we call foo() again we get the modified version:</p>
+<div><pre><span></span>In [4]: foo()
+foo() has now been changed!
+</pre></div>
+<p>Here is an example of how to edit a code snippet successive
+times. First we call the editor:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>5</span><span>]:</span> <span>edit</span>
+<span>Editing</span><span>...</span> <span>done</span><span>.</span> <span>Executing</span> <span>edited</span> <span>code</span><span>...</span>
+<span>hello</span>
+<span>Out</span><span>[</span><span>5</span><span>]:</span> <span>"print('hello')</span><span>\n</span><span>"</span>
+</pre></div>
+<p>Now we call it again with the previous output (stored in _):</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>6</span><span>]:</span> <span>edit</span> <span>_</span>
+<span>Editing</span><span>...</span> <span>done</span><span>.</span> <span>Executing</span> <span>edited</span> <span>code</span><span>...</span>
+<span>hello</span> <span>world</span>
+<span>Out</span><span>[</span><span>6</span><span>]:</span> <span>"print('hello world')</span><span>\n</span><span>"</span>
+</pre></div>
+<p>Now we call it with the output #8 (stored in _8, also as Out[8]):</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>7</span><span>]:</span> <span>edit</span> <span>_8</span>
+<span>Editing</span><span>...</span> <span>done</span><span>.</span> <span>Executing</span> <span>edited</span> <span>code</span><span>...</span>
+<span>hello</span> <span>again</span>
+<span>Out</span><span>[</span><span>7</span><span>]:</span> <span>"print('hello again')</span><span>\n</span><span>"</span>
+</pre></div>
+<p>Changing the default editor hook:</p>
+<p>If you wish to write your own editor hook, you can put it in a
+configuration file which you load at startup time.  The default hook
+is defined in the IPython.core.hooks module, and you can use that as a
+starting example for further modifications.  That file also has
+general instructions on how to set a new hook for use once you’ve
+defined it.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-env">
+<span><span>%env</span></span><a href="#magic-env" title="Link to this definition"></a></dt>
+<dd><p>Get, set, or list environment variables.</p>
+<p>Usage:</p>
+<blockquote>
+<div><dl>
+<dt><code><span>%env</span></code><span>:</span></dt>
+<dd><p>lists all environment variables/values</p>
+</dd>
+<dt><code><span>%env</span> <span>var</span></code><span>:</span></dt>
+<dd><p>get value for var</p>
+</dd>
+<dt><code><span>%env</span> <span>var</span> <span>val</span></code><span>:</span></dt>
+<dd><p>set value for var</p>
+</dd>
+<dt><code><span>%env</span> <span>var=val</span></code><span>:</span></dt>
+<dd><p>set value for var</p>
+</dd>
+<dt><code><span>%env</span> <span>var=$val</span></code><span>:</span></dt>
+<dd><p>set value for var, using python expansion if possible</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl>
+<dt id="magic-gui">
+<span><span>%gui</span></span><a href="#magic-gui" title="Link to this definition"></a></dt>
+<dd><p>Enable or disable IPython GUI event loop integration.</p>
+<p>%gui [GUINAME]</p>
+<p>This magic replaces IPython’s threaded shells that were activated
+using the (pylab/wthread/etc.) command line flags.  GUI toolkits
+can now be enabled at runtime and keyboard
+interrupts should work without any problems.  The following toolkits
+are supported:  wxPython, PyQt4, PyGTK, Tk and Cocoa (OSX):</p>
+<div><pre><span></span><span>%</span><span>gui</span> <span>wx</span>      <span># enable wxPython event loop integration</span>
+<span>%</span><span>gui</span> <span>qt</span>      <span># enable PyQt/PySide event loop integration</span>
+             <span># with the latest version available.</span>
+<span>%</span><span>gui</span> <span>qt6</span>     <span># enable PyQt6/PySide6 event loop integration</span>
+<span>%</span><span>gui</span> <span>qt5</span>     <span># enable PyQt5/PySide2 event loop integration</span>
+<span>%</span><span>gui</span> <span>gtk</span>     <span># enable PyGTK event loop integration</span>
+<span>%</span><span>gui</span> <span>gtk3</span>    <span># enable Gtk3 event loop integration</span>
+<span>%</span><span>gui</span> <span>gtk4</span>    <span># enable Gtk4 event loop integration</span>
+<span>%</span><span>gui</span> <span>tk</span>      <span># enable Tk event loop integration</span>
+<span>%</span><span>gui</span> <span>osx</span>     <span># enable Cocoa event loop integration</span>
+             <span># (requires %matplotlib 1.1)</span>
+<span>%</span><span>gui</span>         <span># disable all event loop integration</span>
+</pre></div>
+<p>WARNING:  after any of these has been called you can simply create
+an application object, but DO NOT start the event loop yourself, as
+we have already handled that.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-history">
+<span><span>%history</span></span><a href="#magic-history" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>history</span> <span>[</span><span>-</span><span>n</span><span>]</span> <span>[</span><span>-</span><span>o</span><span>]</span> <span>[</span><span>-</span><span>p</span><span>]</span> <span>[</span><span>-</span><span>t</span><span>]</span> <span>[</span><span>-</span><span>f</span> <span>FILENAME</span><span>]</span> <span>[</span><span>-</span><span>y</span><span>]</span> <span>[</span><span>-</span><span>g</span> <span>[</span><span>PATTERN</span> <span>...</span><span>]]</span>
+             <span>[</span><span>-</span><span>l</span> <span>[</span><span>LIMIT</span><span>]]</span> <span>[</span><span>-</span><span>u</span><span>]</span>
+             <span>[</span><span>range</span> <span>...</span><span>]</span>
+</pre></div>
+<p>Print input history (_i&lt;n&gt; variables), with most recent last.</p>
+<p>By default, input history is printed without line numbers so it can be
+directly pasted into an editor. Use -n to show them.</p>
+<p>By default, all input history from the current session is displayed.
+Ranges of history can be indicated using the syntax:</p>
+<dl>
+<dt><code><span>4</span></code></dt><dd><p>Line 4, current session</p>
+</dd>
+<dt><code><span>4-6</span></code></dt><dd><p>Lines 4-6, current session</p>
+</dd>
+<dt><code><span>4-</span></code></dt><dd><p>Lines 4 onward (to end), current session</p>
+</dd>
+<dt><code><span>243/1-5</span></code></dt><dd><p>Lines 1-5, session 243</p>
+</dd>
+<dt><code><span>~2/</span></code></dt><dd><p>All lines of session 2 before current</p>
+</dd>
+<dt><code><span>~4/4-</span></code></dt><dd><p>Lines 4 onward (to end), session 4 before current</p>
+</dd>
+<dt><code><span>~2/7</span></code></dt><dd><p>Line 7, session 2 before current</p>
+</dd>
+<dt><code><span>~8/1-~6/5</span></code></dt><dd><p>From the first line of 8 sessions ago, to the fifth line of 6
+sessions ago.</p>
+</dd>
+</dl>
+<p>Multiple ranges can be entered, separated by spaces</p>
+<p>The same syntax is used by %macro, %save, %edit, %rerun</p>
+<p>Examples</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>6</span><span>]:</span> <span>%</span><span>history</span> <span>-</span><span>n</span> <span>4</span><span>-</span><span>6</span>
+<span>4</span><span>:</span><span>a</span> <span>=</span> <span>12</span>
+<span>5</span><span>:</span><span>print</span><span>(</span><span>a</span><span>**</span><span>2</span><span>)</span>
+<span>6</span><span>:</span><span>%</span><span>history</span> <span>-</span><span>n</span> <span>4</span><span>-</span><span>6</span>
+</pre></div>
+<dl>
+<dt>positional arguments:</dt><dd><p>range</p>
+</dd>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>-n</span></kbd></dt>
+<dd><p>print line numbers for each input. This feature is only
+available if numbered prompts are in use.</p>
+</dd>
+<dt><kbd><span>-o</span></kbd></dt>
+<dd><p>also print outputs for each input.</p>
+</dd>
+<dt><kbd><span>-p</span></kbd></dt>
+<dd><p>print classic ‘&gt;&gt;&gt;’ python prompts before each input.
+This is useful for making documentation, and in
+conjunction with -o, for producing doctest-ready output.</p>
+</dd>
+<dt><kbd><span>-t</span></kbd></dt>
+<dd><p>print the ‘translated’ history, as IPython understands
+it. IPython filters your input and converts it all into
+valid Python source before executing it (things like
+magics or aliases are turned into function calls, for
+example). With this option, you’ll see the native
+history instead of the user-entered version: ‘%cd /’
+will be seen as ‘get_ipython().run_line_magic(“cd”,
+“/”)’ instead of ‘%cd /’.</p>
+</dd>
+<dt><kbd><span>-f <var>FILENAME</var></span></kbd></dt>
+<dd><p>FILENAME: instead of printing the output to the screen,
+redirect it to the given file. The file is always
+overwritten, though <em>when it can</em>, IPython asks for
+confirmation first. In particular, running the command
+‘history -f FILENAME’ from the IPython Notebook
+interface will replace FILENAME even if it already
+exists <em>without</em> confirmation.</p>
+</dd>
+<dt><kbd><span>-y</span></kbd></dt>
+<dd><p>yes, overwrite filename even if exists</p>
+</dd>
+<dt><kbd><span>-g <var>&lt;[PATTERN …]&gt;</var></span></kbd></dt>
+<dd><p>treat the arg as a glob pattern to search for in (full)
+history. This includes the saved history (almost all
+commands ever written). The pattern may contain ‘?’ to
+match one unknown character and ‘*’ to match any number
+of unknown characters. Use ‘%hist -g’ to show full saved
+history (may be very long).</p>
+</dd>
+<dt><kbd><span>-l <var>&lt;[LIMIT]&gt;</var></span></kbd></dt>
+<dd><p>get the last n lines from all sessions. Specify n as a
+single arg, or the default is the last 10 lines.</p>
+</dd>
+<dt><kbd><span>-u</span></kbd></dt>
+<dd><p>when searching history using <code><span>-g</span></code>, show only unique
+history.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-killbgscripts">
+<span><span>%killbgscripts</span></span><a href="#magic-killbgscripts" title="Link to this definition"></a></dt>
+<dd><p>Kill all BG processes started by %%script and its family.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-load">
+<span><span>%load</span></span><a href="#magic-load" title="Link to this definition"></a></dt>
+<dd><p>Load code into the current frontend.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%load [options] source</p>
+<p>where source can be a filename, URL, input history range, macro, or
+element in the user namespace</p>
+</dd>
+</dl>
+<p>If no arguments are given, loads the history of this session up to this
+point.</p>
+<p>Options:</p>
+<blockquote>
+<div><p>-r &lt;lines&gt;: Specify lines or ranges of lines to load from the source.
+Ranges could be specified as x-y (x..y) or in python-style x:y
+(x..(y-1)). Both limits x and y can be left blank (meaning the
+beginning and end of the file, respectively).</p>
+<p>-s &lt;symbols&gt;: Specify function or classes to load from python source.</p>
+<p>-y : Don’t ask confirmation for loading source above 200 000 characters.</p>
+<p>-n : Include the user’s namespace when searching for source code.</p>
+</div></blockquote>
+<p>This magic command can either take a local filename, a URL, an history
+range (see %history) or a macro as argument, it will prompt for
+confirmation before loading source with more than 200 000 characters, unless
+-y flag is passed or if the frontend does not support raw_input:</p>
+<div><pre><span></span><span>%</span><span>load</span>
+<span>%</span><span>load</span> <span>myscript</span><span>.</span><span>py</span>
+<span>%</span><span>load</span> <span>7</span><span>-</span><span>27</span>
+<span>%</span><span>load</span> <span>myMacro</span>
+<span>%</span><span>load</span> <span>http</span><span>:</span><span>//</span><span>www</span><span>.</span><span>example</span><span>.</span><span>com</span><span>/</span><span>myscript</span><span>.</span><span>py</span>
+<span>%</span><span>load</span> <span>-</span><span>r</span> <span>5</span><span>-</span><span>10</span> <span>myscript</span><span>.</span><span>py</span>
+<span>%</span><span>load</span> <span>-</span><span>r</span> <span>10</span><span>-</span><span>20</span><span>,</span><span>30</span><span>,</span><span>40</span><span>:</span> <span>foo</span><span>.</span><span>py</span>
+<span>%</span><span>load</span> <span>-</span><span>s</span> <span>MyClass</span><span>,</span><span>wonder_function</span> <span>myscript</span><span>.</span><span>py</span>
+<span>%</span><span>load</span> <span>-</span><span>n</span> <span>MyClass</span>
+<span>%</span><span>load</span> <span>-</span><span>n</span> <span>my_module</span><span>.</span><span>wonder_function</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-load_ext">
+<span><span>%load_ext</span></span><a href="#magic-load_ext" title="Link to this definition"></a></dt>
+<dd><p>Load an IPython extension by its module name.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-loadpy">
+<span><span>%loadpy</span></span><a href="#magic-loadpy" title="Link to this definition"></a></dt>
+<dd><p>Alias of <code><span>%load</span></code></p>
+<p><code><span>%loadpy</span></code> has gained some flexibility and dropped the requirement of a <code><span>.py</span></code>
+extension. So it has been renamed simply into %load. You can look at
+<code><span>%load</span></code>’s docstring for more info.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-logoff">
+<span><span>%logoff</span></span><a href="#magic-logoff" title="Link to this definition"></a></dt>
+<dd><p>Temporarily stop logging.</p>
+<p>You must have previously started logging.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-logon">
+<span><span>%logon</span></span><a href="#magic-logon" title="Link to this definition"></a></dt>
+<dd><p>Restart logging.</p>
+<p>This function is for restarting logging which you’ve temporarily
+stopped with %logoff. For starting logging for the first time, you
+must use the %logstart function, which allows you to specify an
+optional log filename.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-logstart">
+<span><span>%logstart</span></span><a href="#magic-logstart" title="Link to this definition"></a></dt>
+<dd><p>Start logging anywhere in a session.</p>
+<p>%logstart [-o|-r|-t|-q] [log_name [log_mode]]</p>
+<p>If no name is given, it defaults to a file named ‘ipython_log.py’ in your
+current directory, in ‘rotate’ mode (see below).</p>
+<p>‘%logstart name’ saves to file ‘name’ in ‘backup’ mode.  It saves your
+history up to that point and then continues logging.</p>
+<p>%logstart takes a second optional parameter: logging mode. This can be one
+of (note that the modes are given unquoted):</p>
+<dl>
+<dt>append</dt><dd><p>Keep logging at the end of any existing file.</p>
+</dd>
+<dt>backup</dt><dd><p>Rename any existing file to name~ and start name.</p>
+</dd>
+<dt>global</dt><dd><p>Append to  a single logfile in your home directory.</p>
+</dd>
+<dt>over</dt><dd><p>Overwrite any existing log.</p>
+</dd>
+<dt>rotate</dt><dd><p>Create rotating logs: name.1~, name.2~, etc.</p>
+</dd>
+</dl>
+<p>Options:</p>
+<blockquote>
+<div><dl>
+<dt><kbd><span>-o</span></kbd></dt>
+<dd><p>log also IPython’s output. In this mode, all commands which
+generate an Out[NN] prompt are recorded to the logfile, right after
+their corresponding input line. The output lines are always
+prepended with a ‘#[Out]# ‘ marker, so that the log remains valid
+Python code.</p>
+</dd>
+</dl>
+<p>Since this marker is always the same, filtering only the output from
+a log is very easy, using for example a simple awk call:</p>
+<div><pre><span></span><span>awk</span> <span>-</span><span>F</span><span>'#\[Out\]# '</span> <span>'{if($2) {print $2}}'</span> <span>ipython_log</span><span>.</span><span>py</span>
+</pre></div>
+<dl>
+<dt><kbd><span>-r</span></kbd></dt>
+<dd><p>log ‘raw’ input.  Normally, IPython’s logs contain the processed
+input, so that user lines are logged in their final form, converted
+into valid Python.  For example, %Exit is logged as
+_ip.run_line_magic(“Exit”).  If the -r flag is given, all input is logged
+exactly as typed, with no transformations applied.</p>
+</dd>
+<dt><kbd><span>-t</span></kbd></dt>
+<dd><p>put timestamps before each input line logged (these are put in
+comments).</p>
+</dd>
+<dt><kbd><span>-q</span></kbd></dt>
+<dd><p>suppress output of logstate message when logging is invoked</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl>
+<dt id="magic-logstate">
+<span><span>%logstate</span></span><a href="#magic-logstate" title="Link to this definition"></a></dt>
+<dd><p>Print the status of the logging system.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-logstop">
+<span><span>%logstop</span></span><a href="#magic-logstop" title="Link to this definition"></a></dt>
+<dd><p>Fully stop logging and close log file.</p>
+<p>In order to start logging again, a new %logstart call needs to be made,
+possibly (though not necessarily) with a new filename, mode and other
+options.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-lsmagic">
+<span><span>%lsmagic</span></span><a href="#magic-lsmagic" title="Link to this definition"></a></dt>
+<dd><p>List currently available magic functions.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-macro">
+<span><span>%macro</span></span><a href="#magic-macro" title="Link to this definition"></a></dt>
+<dd><p>Define a macro for future re-execution. It accepts ranges of history,
+filenames or string objects.</p>
+<p>Usage:</p>
+<div><pre><span></span><span>%</span><span>macro</span> <span>[</span><span>options</span><span>]</span> <span>name</span> <span>n1</span><span>-</span><span>n2</span> <span>n3</span><span>-</span><span>n4</span> <span>...</span> <span>n5</span> <span>..</span> <span>n6</span> <span>...</span>
+</pre></div>
+<p>Options:</p>
+<dl>
+<dt><kbd><span>-r</span></kbd></dt>
+<dd><p>Use ‘raw’ input.  By default, the ‘processed’ history is used,
+so that magics are loaded in their transformed version to valid
+Python.  If this option is given, the raw input as typed at the
+command line is used instead.</p>
+</dd>
+<dt><kbd><span>-q</span></kbd></dt>
+<dd><p>Quiet macro definition.  By default, a tag line is printed
+to indicate the macro has been created, and then the contents of
+the macro are printed.  If this option is given, then no printout
+is produced once the macro is created.</p>
+</dd>
+</dl>
+<p>This will define a global variable called <code><span>name</span></code> which is a string
+made of joining the slices and lines you specify (n1,n2,… numbers
+above) from your input history into a single string. This variable
+acts like an automatic function which re-executes those lines as if
+you had typed them. You just type ‘name’ at the prompt and the code
+executes.</p>
+<p>The syntax for indicating input ranges is described in %history.</p>
+<p>Note: as a ‘hidden’ feature, you can also use traditional python slice
+notation, where N:M means numbers N through M-1.</p>
+<p>For example, if your history contains (print using %hist -n ):</p>
+<div><pre><span></span><span>44</span><span>:</span> <span>x</span><span>=</span><span>1</span>
+<span>45</span><span>:</span> <span>y</span><span>=</span><span>3</span>
+<span>46</span><span>:</span> <span>z</span><span>=</span><span>x</span><span>+</span><span>y</span>
+<span>47</span><span>:</span> <span>print</span><span>(</span><span>x</span><span>)</span>
+<span>48</span><span>:</span> <span>a</span><span>=</span><span>5</span>
+<span>49</span><span>:</span> <span>print</span><span>(</span><span>'x'</span><span>,</span><span>x</span><span>,</span><span>'y'</span><span>,</span><span>y</span><span>)</span>
+</pre></div>
+<p>you can create a macro with lines 44 through 47 (included) and line 49
+called my_macro with:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>55</span><span>]:</span> <span>%</span><span>macro</span> <span>my_macro</span> <span>44</span><span>-</span><span>47</span> <span>49</span>
+</pre></div>
+<p>Now, typing <code><span>my_macro</span></code> (without quotes) will re-execute all this code
+in one pass.</p>
+<p>You don’t need to give the line-numbers in order, and any given line
+number can appear multiple times. You can assemble macros with any
+lines from your input history in any order.</p>
+<p>The macro is a simple object which holds its value in an attribute,
+but IPython’s display system checks for macros and executes them as
+code instead of printing them when you type their name.</p>
+<p>You can view a macro’s contents by explicitly printing it with:</p>
+<div><pre><span></span><span>print</span><span>(</span><span>macro_name</span><span>)</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-magic">
+<span><span>%magic</span></span><a href="#magic-magic" title="Link to this definition"></a></dt>
+<dd><p>Print information about the magic function system.</p>
+<p>Supported formats: -latex, -brief, -rest</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-mamba">
+<span><span>%mamba</span></span><a href="#magic-mamba" title="Link to this definition"></a></dt>
+<dd><p>Run the mamba package manager within the current kernel.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%mamba install [pkgs]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-matplotlib">
+<span><span>%matplotlib</span></span><a href="#magic-matplotlib" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>matplotlib</span> <span>[</span><span>-</span><span>l</span><span>]</span> <span>[</span><span>gui</span><span>]</span>
+</pre></div>
+<p>Set up matplotlib to work interactively.</p>
+<p>This function lets you activate matplotlib interactive support
+at any point during an IPython session. It does not import anything
+into the interactive namespace.</p>
+<p>If you are using the inline matplotlib backend in the IPython Notebook
+you can set which figure formats are enabled using the following:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>from</span><span> </span><span>matplotlib_inline.backend_inline</span><span> </span><span>import</span> <span>set_matplotlib_formats</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>set_matplotlib_formats</span><span>(</span><span>'pdf'</span><span>,</span> <span>'svg'</span><span>)</span>
+</pre></div>
+<p>The default for inline figures sets <code><span>bbox_inches</span></code> to ‘tight’. This can
+cause discrepancies between the displayed image and the identical
+image created using <code><span>savefig</span></code>. This behavior can be disabled using the
+<code><span>%config</span></code> magic:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>3</span><span>]:</span> <span>%</span><span>config</span> <span>InlineBackend</span><span>.</span><span>print_figure_kwargs</span> <span>=</span> <span>{</span><span>'bbox_inches'</span><span>:</span><span>None</span><span>}</span>
+</pre></div>
+<p>In addition, see the docstrings of
+<code><span>matplotlib_inline.backend_inline.set_matplotlib_formats</span></code> and
+<code><span>matplotlib_inline.backend_inline.set_matplotlib_close</span></code> for more information on
+changing additional behaviors of the inline backend.</p>
+<p>Examples</p>
+<p>To enable the inline backend for usage with the IPython Notebook:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>%</span><span>matplotlib</span> <span>inline</span>
+</pre></div>
+<p>In this case, where the matplotlib default is TkAgg:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>2</span><span>]:</span> <span>%</span><span>matplotlib</span>
+<span>Using</span> <span>matplotlib</span> <span>backend</span><span>:</span> <span>TkAgg</span>
+</pre></div>
+<p>But you can explicitly request a different GUI backend:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>3</span><span>]:</span> <span>%</span><span>matplotlib</span> <span>qt</span>
+</pre></div>
+<p>You can list the available backends using the -l/–list option:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>4</span><span>]:</span> <span>%</span><span>matplotlib</span> <span>--</span><span>list</span>
+<span>Available</span> <span>matplotlib</span> <span>backends</span><span>:</span> <span>[</span><span>'osx'</span><span>,</span> <span>'qt4'</span><span>,</span> <span>'qt5'</span><span>,</span> <span>'gtk3'</span><span>,</span> <span>'gtk4'</span><span>,</span> <span>'notebook'</span><span>,</span> <span>'wx'</span><span>,</span> <span>'qt'</span><span>,</span> <span>'nbagg'</span><span>,</span>
+<span>'gtk'</span><span>,</span> <span>'tk'</span><span>,</span> <span>'inline'</span><span>]</span>
+</pre></div>
+<dl>
+<dt>positional arguments:</dt><dd><dl>
+<dt>gui         Name of the matplotlib backend to use such as ‘qt’ or ‘widget’.</dt><dd><p>If given, the corresponding matplotlib backend is used,
+otherwise it will be matplotlib’s default (which you can set in
+your matplotlib config file).</p>
+</dd>
+</dl>
+</dd>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>-l</span>, <span>--list</span></kbd></dt>
+<dd><p>Show available matplotlib backends</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-micromamba">
+<span><span>%micromamba</span></span><a href="#magic-micromamba" title="Link to this definition"></a></dt>
+<dd><p>Run the conda package manager within the current kernel.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%micromamba install [pkgs]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-notebook">
+<span><span>%notebook</span></span><a href="#magic-notebook" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>notebook</span> <span>filename</span>
+</pre></div>
+<p>Export and convert IPython notebooks.</p>
+<p>This function can export the current IPython history to a notebook file.
+For example, to export the history to “foo.ipynb” do “%notebook foo.ipynb”.</p>
+<dl>
+<dt>positional arguments:</dt><dd><p>filename  Notebook name or filename</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-page">
+<span><span>%page</span></span><a href="#magic-page" title="Link to this definition"></a></dt>
+<dd><p>Pretty print the object and display it through a pager.</p>
+<p>%page [options] OBJECT</p>
+<p>If no object is given, use _ (last output).</p>
+<p>Options:</p>
+<blockquote>
+<p>-r: page str(object), don’t pretty-print it.</p></blockquote>
+</dd></dl>
+
+<dl>
+<dt id="magic-pastebin">
+<span><span>%pastebin</span></span><a href="#magic-pastebin" title="Link to this definition"></a></dt>
+<dd><p>Upload code to dpaste.com, returning the URL.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%pastebin [-d “Custom description”][-e 24] 1-7</p>
+</dd>
+</dl>
+<p>The argument can be an input history range, a filename, or the name of a
+string or macro.</p>
+<p>If no arguments are given, uploads the history of this session up to
+this point.</p>
+<p>Options:</p>
+<blockquote>
+<div><dl>
+<dt>-d: Pass a custom description. The default will say</dt><dd><p>“Pasted from IPython”.</p>
+</dd>
+<dt>-e: Pass number of days for the link to be expired.</dt><dd><p>The default will be 7 days.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl>
+<dt id="magic-pdb">
+<span><span>%pdb</span></span><a href="#magic-pdb" title="Link to this definition"></a></dt>
+<dd><p>Control the automatic calling of the pdb interactive debugger.</p>
+<p>Call as ‘%pdb on’, ‘%pdb 1’, ‘%pdb off’ or ‘%pdb 0’. If called without
+argument it works as a toggle.</p>
+<p>When an exception is triggered, IPython can optionally call the
+interactive pdb debugger after the traceback printout. %pdb toggles
+this feature on and off.</p>
+<p>The initial state of this feature is set in your configuration
+file (the option is <code><span>InteractiveShell.pdb</span></code>).</p>
+<p>If you want to just activate the debugger AFTER an exception has fired,
+without having to type ‘%pdb on’ and rerunning your code, you can use
+the %debug magic.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-pdef">
+<span><span>%pdef</span></span><a href="#magic-pdef" title="Link to this definition"></a></dt>
+<dd><p>Print the call signature for any callable object.</p>
+<p>If the object is a class, print the constructor information.</p>
+<p>Examples</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>3</span><span>]:</span> <span>%</span><span>pdef</span> <span>urllib</span><span>.</span><span>urlopen</span>
+<span>urllib</span><span>.</span><span>urlopen</span><span>(</span><span>url</span><span>,</span> <span>data</span><span>=</span><span>None</span><span>,</span> <span>proxies</span><span>=</span><span>None</span><span>)</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-pdoc">
+<span><span>%pdoc</span></span><a href="#magic-pdoc" title="Link to this definition"></a></dt>
+<dd><p>Print the docstring for an object.</p>
+<p>If the given object is a class, it will print both the class and the
+constructor docstrings.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-pfile">
+<span><span>%pfile</span></span><a href="#magic-pfile" title="Link to this definition"></a></dt>
+<dd><p>Print (or run through pager) the file where an object is defined.</p>
+<p>The file opens at the line where the object definition begins. IPython
+will honor the environment variable PAGER if set, and otherwise will
+do its best to print the file in a convenient form.</p>
+<p>If the given argument is not an object currently defined, IPython will
+try to interpret it as a filename (automatically adding a .py extension
+if needed). You can thus use %pfile as a syntax highlighting code
+viewer.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-pinfo">
+<span><span>%pinfo</span></span><a href="#magic-pinfo" title="Link to this definition"></a></dt>
+<dd><p>Provide detailed information about an object.</p>
+<p>‘%pinfo object’ is just a synonym for object? or ?object.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-pinfo2">
+<span><span>%pinfo2</span></span><a href="#magic-pinfo2" title="Link to this definition"></a></dt>
+<dd><p>Provide extra detailed information about an object.</p>
+<p>‘%pinfo2 object’ is just a synonym for object?? or ??object.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-pip">
+<span><span>%pip</span></span><a href="#magic-pip" title="Link to this definition"></a></dt>
+<dd><p>Run the pip package manager within the current kernel.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%pip install [pkgs]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-popd">
+<span><span>%popd</span></span><a href="#magic-popd" title="Link to this definition"></a></dt>
+<dd><p>Change to directory popped off the top of the stack.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-pprint">
+<span><span>%pprint</span></span><a href="#magic-pprint" title="Link to this definition"></a></dt>
+<dd><p>Toggle pretty printing on/off.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-precision">
+<span><span>%precision</span></span><a href="#magic-precision" title="Link to this definition"></a></dt>
+<dd><p>Set floating point precision for pretty printing.</p>
+<p>Can set either integer precision or a format string.</p>
+<p>If numpy has been imported and precision is an int,
+numpy display precision will also be set, via <code><span>numpy.set_printoptions</span></code>.</p>
+<p>If no argument is given, defaults will be restored.</p>
+<p>Examples</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>from</span><span> </span><span>math</span><span> </span><span>import</span> <span>pi</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>%</span><span>precision</span> <span>3</span>
+<span>Out</span><span>[</span><span>2</span><span>]:</span> <span>'</span><span>%.3f</span><span>'</span>
+
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>pi</span>
+<span>Out</span><span>[</span><span>3</span><span>]:</span> <span>3.142</span>
+
+<span>In</span> <span>[</span><span>4</span><span>]:</span> <span>%</span><span>precision</span> <span>%</span><span>i</span>
+<span>Out</span><span>[</span><span>4</span><span>]:</span> <span>'</span><span>%i</span><span>'</span>
+
+<span>In</span> <span>[</span><span>5</span><span>]:</span> <span>pi</span>
+<span>Out</span><span>[</span><span>5</span><span>]:</span> <span>3</span>
+
+<span>In</span> <span>[</span><span>6</span><span>]:</span> <span>%</span><span>precision</span> <span>%</span><span>e</span>
+<span>Out</span><span>[</span><span>6</span><span>]:</span> <span>'</span><span>%e</span><span>'</span>
+
+<span>In</span> <span>[</span><span>7</span><span>]:</span> <span>pi</span><span>**</span><span>10</span>
+<span>Out</span><span>[</span><span>7</span><span>]:</span> <span>9.364805e+04</span>
+
+<span>In</span> <span>[</span><span>8</span><span>]:</span> <span>%</span><span>precision</span>
+<span>Out</span><span>[</span><span>8</span><span>]:</span> <span>'</span><span>%r</span><span>'</span>
+
+<span>In</span> <span>[</span><span>9</span><span>]:</span> <span>pi</span><span>**</span><span>10</span>
+<span>Out</span><span>[</span><span>9</span><span>]:</span> <span>93648.047476082982</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-prun">
+<span><span>%prun</span></span><a href="#magic-prun" title="Link to this definition"></a></dt>
+<dd><p>Run a statement through the python code profiler.</p>
+<p><strong>Usage, in line mode</strong>:</p>
+<div><pre><span></span><span>%</span><span>prun</span> <span>[</span><span>options</span><span>]</span> <span>statement</span>
+</pre></div>
+<p><strong>Usage, in cell mode</strong>:</p>
+<div><pre><span></span><span>%%</span><span>prun</span> <span>[</span><span>options</span><span>]</span> <span>[</span><span>statement</span><span>]</span>
+<span>code</span><span>...</span>
+<span>code</span><span>...</span>
+</pre></div>
+<p>In cell mode, the additional code lines are appended to the (possibly
+empty) statement in the first line.  Cell mode allows you to easily
+profile multiline blocks without having to put them in a separate
+function.</p>
+<p>The given statement (which doesn’t require quote marks) is run via the
+python profiler in a manner similar to the profile.run() function.
+Namespaces are internally managed to work correctly; profile.run
+cannot be used in IPython because it makes certain assumptions about
+namespaces which do not hold under IPython.</p>
+<p>Options:</p>
+<dl>
+<dt><kbd><span>-l <var>&lt;limit&gt;</var></span></kbd></dt>
+<dd><p>you can place restrictions on what or how much of the
+profile gets printed. The limit value can be:</p>
+<blockquote>
+<div><ul>
+<li><p>A string: only information for function names containing this string
+is printed.</p></li>
+<li><p>An integer: only these many lines are printed.</p></li>
+<li><p>A float (between 0 and 1): this fraction of the report is printed
+(for example, use a limit of 0.4 to see the topmost 40% only).</p></li>
+</ul>
+</div></blockquote>
+<p>You can combine several limits with repeated use of the option. For
+example, <code><span>-l</span> <span>__init__</span> <span>-l</span> <span>5</span></code> will print only the topmost 5 lines of
+information about class constructors.</p>
+</dd>
+<dt><kbd><span>-r</span></kbd></dt>
+<dd><p>return the pstats.Stats object generated by the profiling. This
+object has all the information about the profile in it, and you can
+later use it for further analysis or in other functions.</p>
+</dd>
+<dt><kbd><span>-s <var>&lt;key&gt;</var></span></kbd></dt>
+<dd><p>sort profile by given key. You can provide more than one key
+by using the option several times: ‘-s key1 -s key2 -s key3…’. The
+default sorting key is ‘time’.</p>
+<p>The following is copied verbatim from the profile documentation
+referenced below:</p>
+<p>When more than one key is provided, additional keys are used as
+secondary criteria when the there is equality in all keys selected
+before them.</p>
+<p>Abbreviations can be used for any key names, as long as the
+abbreviation is unambiguous.  The following are the keys currently
+defined:</p>
+<table>
+<thead>
+<tr><th><p>Valid Arg</p></th>
+<th><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr><td><p>“calls”</p></td>
+<td><p>call count</p></td>
+</tr>
+<tr><td><p>“cumulative”</p></td>
+<td><p>cumulative time</p></td>
+</tr>
+<tr><td><p>“file”</p></td>
+<td><p>file name</p></td>
+</tr>
+<tr><td><p>“module”</p></td>
+<td><p>file name</p></td>
+</tr>
+<tr><td><p>“pcalls”</p></td>
+<td><p>primitive call count</p></td>
+</tr>
+<tr><td><p>“line”</p></td>
+<td><p>line number</p></td>
+</tr>
+<tr><td><p>“name”</p></td>
+<td><p>function name</p></td>
+</tr>
+<tr><td><p>“nfl”</p></td>
+<td><p>name/file/line</p></td>
+</tr>
+<tr><td><p>“stdname”</p></td>
+<td><p>standard name</p></td>
+</tr>
+<tr><td><p>“time”</p></td>
+<td><p>internal time</p></td>
+</tr>
+</tbody>
+</table>
+<p>Note that all sorts on statistics are in descending order (placing
+most time consuming items first), where as name, file, and line number
+searches are in ascending order (i.e., alphabetical). The subtle
+distinction between “nfl” and “stdname” is that the standard name is a
+sort of the name as printed, which means that the embedded line
+numbers get compared in an odd way.  For example, lines 3, 20, and 40
+would (if the file names were the same) appear in the string order
+“20” “3” and “40”.  In contrast, “nfl” does a numeric compare of the
+line numbers.  In fact, sort_stats(“nfl”) is the same as
+sort_stats(“name”, “file”, “line”).</p>
+</dd>
+<dt><kbd><span>-T <var>&lt;filename&gt;</var></span></kbd></dt>
+<dd><p>save profile results as shown on screen to a text
+file. The profile is still shown on screen.</p>
+</dd>
+<dt><kbd><span>-D <var>&lt;filename&gt;</var></span></kbd></dt>
+<dd><p>save (via dump_stats) profile statistics to given
+filename. This data is in a format understood by the pstats module, and
+is generated by a call to the dump_stats() method of profile
+objects. The profile is still shown on screen.</p>
+</dd>
+<dt><kbd><span>-q</span></kbd></dt>
+<dd><p>suppress output to the pager.  Best used with -T and/or -D above.</p>
+</dd>
+</dl>
+<p>If you want to run complete programs under the profiler’s control, use
+<code><span>%run</span> <span>-p</span> <span>[prof_opts]</span> <span>filename.py</span> <span>[args</span> <span>to</span> <span>program]</span></code> where prof_opts
+contains profiler specific options as described here.</p>
+<p>You can read the complete documentation for the profile module with:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>import</span><span> </span><span>profile</span><span>;</span> <span>profile</span><span>.</span><span>help</span><span>()</span>
+</pre></div>
+<p><span>Changed in version 7.3: </span>User variables are no longer expanded,
+the magic line is always left unmodified.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-psearch">
+<span><span>%psearch</span></span><a href="#magic-psearch" title="Link to this definition"></a></dt>
+<dd><p>Search for object in namespaces by wildcard.</p>
+<p>%psearch [options] PATTERN [OBJECT TYPE]</p>
+<p>Note: ? can be used as a synonym for %psearch, at the beginning or at
+the end: both a*? and ?a* are equivalent to ‘%psearch a*’.  Still, the
+rest of the command line must be unchanged (options come first), so
+for example the following forms are equivalent</p>
+<p>%psearch -i a* function
+-i a* function?
+?-i a* function</p>
+<p>Arguments:</p>
+<blockquote>
+<div><p>PATTERN</p>
+<p>where PATTERN is a string containing * as a wildcard similar to its
+use in a shell.  The pattern is matched in all namespaces on the
+search path. By default objects starting with a single _ are not
+matched, many IPython generated objects have a single
+underscore. The default is case insensitive matching. Matching is
+also done on the attributes of objects and not only on the objects
+in a module.</p>
+<p>[OBJECT TYPE]</p>
+<p>Is the name of a python type from the types module. The name is
+given in lowercase without the ending type, ex. StringType is
+written string. By adding a type here only objects matching the
+given type are matched. Using all here makes the pattern match all
+types (this is the default).</p>
+</div></blockquote>
+<p>Options:</p>
+<blockquote>
+<div><p>-a: makes the pattern match even objects whose names start with a
+single underscore.  These names are normally omitted from the
+search.</p>
+<p>-i/-c: make the pattern case insensitive/sensitive.  If neither of
+these options are given, the default is read from your configuration
+file, with the option <code><span>InteractiveShell.wildcards_case_sensitive</span></code>.
+If this option is not specified in your configuration file, IPython’s
+internal default is to do a case sensitive search.</p>
+<p>-e/-s NAMESPACE: exclude/search a given namespace.  The pattern you
+specify can be searched in any of the following namespaces:
+‘builtin’, ‘user’, ‘user_global’,’internal’, ‘alias’, where
+‘builtin’ and ‘user’ are the search defaults.  Note that you should
+not use quotes when specifying namespaces.</p>
+<p>-l: List all available object types for object matching. This function
+can be used without arguments.</p>
+<p>‘Builtin’ contains the python module builtin, ‘user’ contains all
+user data, ‘alias’ only contain the shell aliases and no python
+objects, ‘internal’ contains objects used by IPython.  The
+‘user_global’ namespace is only used by embedded IPython instances,
+and it contains module-level globals.  You can add namespaces to the
+search with -s or exclude them with -e (these options can be given
+more than once).</p>
+</div></blockquote>
+<p>Examples</p>
+<div><pre><span></span><span>%</span><span>psearch</span> <span>a</span><span>*</span>            <span>-&gt;</span> <span>objects</span> <span>beginning</span> <span>with</span> <span>an</span> <span>a</span>
+<span>%</span><span>psearch</span> <span>-</span><span>e</span> <span>builtin</span> <span>a</span><span>*</span> <span>-&gt;</span> <span>objects</span> <span>NOT</span> <span>in</span> <span>the</span> <span>builtin</span> <span>space</span> <span>starting</span> <span>in</span> <span>a</span>
+<span>%</span><span>psearch</span> <span>a</span><span>*</span> <span>function</span>   <span>-&gt;</span> <span>all</span> <span>functions</span> <span>beginning</span> <span>with</span> <span>an</span> <span>a</span>
+<span>%</span><span>psearch</span> <span>re</span><span>.</span><span>e</span><span>*</span>         <span>-&gt;</span> <span>objects</span> <span>beginning</span> <span>with</span> <span>an</span> <span>e</span> <span>in</span> <span>module</span> <span>re</span>
+<span>%</span><span>psearch</span> <span>r</span><span>*.</span><span>e</span><span>*</span>         <span>-&gt;</span> <span>objects</span> <span>that</span> <span>start</span> <span>with</span> <span>e</span> <span>in</span> <span>modules</span> <span>starting</span> <span>in</span> <span>r</span>
+<span>%</span><span>psearch</span> <span>r</span><span>*.*</span> <span>string</span>   <span>-&gt;</span> <span>all</span> <span>strings</span> <span>in</span> <span>modules</span> <span>beginning</span> <span>with</span> <span>r</span>
+</pre></div>
+<p>Case sensitive search:</p>
+<div><pre><span></span><span>%</span><span>psearch</span> <span>-</span><span>c</span> <span>a</span><span>*</span>         <span>list</span> <span>all</span> <span>object</span> <span>beginning</span> <span>with</span> <span>lower</span> <span>case</span> <span>a</span>
+</pre></div>
+<p>Show objects beginning with a single _:</p>
+<div><pre><span></span><span>%</span><span>psearch</span> <span>-</span><span>a</span> <span>_</span><span>*</span>         <span>list</span> <span>objects</span> <span>beginning</span> <span>with</span> <span>a</span> <span>single</span> <span>underscore</span>
+</pre></div>
+<p>List available objects:</p>
+<div><pre><span></span><span>%</span><span>psearch</span> <span>-</span><span>l</span>            <span>list</span> <span>all</span> <span>available</span> <span>object</span> <span>types</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-psource">
+<span><span>%psource</span></span><a href="#magic-psource" title="Link to this definition"></a></dt>
+<dd><p>Print (or run through pager) the source code for an object.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-pushd">
+<span><span>%pushd</span></span><a href="#magic-pushd" title="Link to this definition"></a></dt>
+<dd><p>Place the current dir on stack and change directory.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%pushd [‘dirname’]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-pwd">
+<span><span>%pwd</span></span><a href="#magic-pwd" title="Link to this definition"></a></dt>
+<dd><p>Return the current working directory path.</p>
+<p>Examples</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>9</span><span>]:</span> <span>pwd</span>
+<span>Out</span><span>[</span><span>9</span><span>]:</span> <span>'/home/tsuser/sprint/ipython'</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-pycat">
+<span><span>%pycat</span></span><a href="#magic-pycat" title="Link to this definition"></a></dt>
+<dd><p>Show a syntax-highlighted file through a pager.</p>
+<p>This magic is similar to the cat utility, but it will assume the file
+to be Python source and will show it with syntax highlighting.</p>
+<p>This magic command can either take a local filename, an url,
+an history range (see %history) or a macro as argument.</p>
+<p>If no parameter is given, prints out history of current session up to
+this point.</p>
+<div><pre><span></span><span>%</span><span>pycat</span> <span>myscript</span><span>.</span><span>py</span>
+<span>%</span><span>pycat</span> <span>7</span><span>-</span><span>27</span>
+<span>%</span><span>pycat</span> <span>myMacro</span>
+<span>%</span><span>pycat</span> <span>http</span><span>:</span><span>//</span><span>www</span><span>.</span><span>example</span><span>.</span><span>com</span><span>/</span><span>myscript</span><span>.</span><span>py</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-pylab">
+<span><span>%pylab</span></span><a href="#magic-pylab" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>pylab</span> <span>[</span><span>--</span><span>no</span><span>-</span><span>import</span><span>-</span><span>all</span><span>]</span> <span>[</span><span>gui</span><span>]</span>
+</pre></div>
+<p>Load numpy and matplotlib to work interactively.</p>
+<p>This function lets you activate pylab (matplotlib, numpy and
+interactive support) at any point during an IPython session.</p>
+<p>%pylab makes the following imports:</p>
+<div><pre><span></span><span>import</span><span> </span><span>numpy</span>
+<span>import</span><span> </span><span>matplotlib</span>
+<span>from</span><span> </span><span>matplotlib</span><span> </span><span>import</span> <span>pylab</span><span>,</span> <span>mlab</span><span>,</span> <span>pyplot</span>
+<span>np</span> <span>=</span> <span>numpy</span>
+<span>plt</span> <span>=</span> <span>pyplot</span>
+
+<span>from</span><span> </span><span>IPython.display</span><span> </span><span>import</span> <span>display</span>
+<span>from</span><span> </span><span>IPython.core.pylabtools</span><span> </span><span>import</span> <span>figsize</span><span>,</span> <span>getfigs</span>
+
+<span>from</span><span> </span><span>pylab</span><span> </span><span>import</span> <span>*</span>
+<span>from</span><span> </span><span>numpy</span><span> </span><span>import</span> <span>*</span>
+</pre></div>
+<p>If you pass <code><span>--no-import-all</span></code>, the last two <code><span>*</span></code> imports will be excluded.</p>
+<p>See the %matplotlib magic for more details about activating matplotlib
+without affecting the interactive namespace.</p>
+<dl>
+<dt>positional arguments:</dt><dd><dl>
+<dt>gui              Name of the matplotlib backend to use such as ‘qt’ or</dt><dd><p>‘widget’. If given, the corresponding matplotlib backend is
+used, otherwise it will be matplotlib’s default (which you
+can set in your matplotlib config file).</p>
+</dd>
+</dl>
+</dd>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>--no-import-all</span></kbd></dt>
+<dd><p>Prevent IPython from performing <code><span>import</span> <span>*</span></code> into the
+interactive namespace. You can govern the default behavior
+of this flag with the InteractiveShellApp.pylab_import_all
+configurable.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-quickref">
+<span><span>%quickref</span></span><a href="#magic-quickref" title="Link to this definition"></a></dt>
+<dd><p>Show a quick reference sheet</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-recall">
+<span><span>%recall</span></span><a href="#magic-recall" title="Link to this definition"></a></dt>
+<dd><p>Repeat a command, or get command to input line for editing.</p>
+<p>%recall and %rep are equivalent.</p>
+<ul>
+<li><p>%recall (no arguments):</p></li>
+</ul>
+<p>Place a string version of last computation result (stored in the
+special ‘_’ variable) to the next input prompt. Allows you to create
+elaborate command lines without using copy-paste:</p>
+<div><pre><span></span> <span>In</span><span>[</span><span>1</span><span>]:</span> <span>l</span> <span>=</span> <span>[</span><span>"hei"</span><span>,</span> <span>"vaan"</span><span>]</span>
+ <span>In</span><span>[</span><span>2</span><span>]:</span> <span>""</span><span>.</span><span>join</span><span>(</span><span>l</span><span>)</span>
+<span>Out</span><span>[</span><span>2</span><span>]:</span> <span>heivaan</span>
+ <span>In</span><span>[</span><span>3</span><span>]:</span> <span>%</span><span>recall</span>
+ <span>In</span><span>[</span><span>4</span><span>]:</span> <span>heivaan_</span> <span>&lt;==</span> <span>cursor</span> <span>blinking</span>
+</pre></div>
+<p>%recall 45</p>
+<p>Place history line 45 on the next input prompt. Use %hist to find
+out the number.</p>
+<p>%recall 1-4</p>
+<p>Combine the specified lines into one cell, and place it on the next
+input prompt. See %history for the slice syntax.</p>
+<p>%recall foo+bar</p>
+<p>If foo+bar can be evaluated in the user namespace, the result is
+placed at the next input prompt. Otherwise, the history is searched
+for lines which contain that substring, and the most recent one is
+placed at the next input prompt.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-rehashx">
+<span><span>%rehashx</span></span><a href="#magic-rehashx" title="Link to this definition"></a></dt>
+<dd><p>Update the alias table with all executable files in $PATH.</p>
+<p>rehashx explicitly checks that every entry in $PATH is a file
+with execute access (os.X_OK).</p>
+<p>Under Windows, it checks executability as a match against a
+‘|’-separated string of extensions, stored in the IPython config
+variable win_exec_ext.  This defaults to ‘exe|com|bat’.</p>
+<p>This function also resets the root module cache of module completer,
+used on slow filesystems.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-reload_ext">
+<span><span>%reload_ext</span></span><a href="#magic-reload_ext" title="Link to this definition"></a></dt>
+<dd><p>Reload an IPython extension by its module name.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-rerun">
+<span><span>%rerun</span></span><a href="#magic-rerun" title="Link to this definition"></a></dt>
+<dd><p>Re-run previous input</p>
+<p>By default, you can specify ranges of input history to be repeated
+(as with %history). With no arguments, it will repeat the last line.</p>
+<p>Options:</p>
+<blockquote>
+<div><p>-l &lt;n&gt; : Repeat the last n lines of input, not including the
+current command.</p>
+<p>-g foo : Repeat the most recent line which contains foo</p>
+</div></blockquote>
+</dd></dl>
+
+<dl>
+<dt id="magic-reset">
+<span><span>%reset</span></span><a href="#magic-reset" title="Link to this definition"></a></dt>
+<dd><p>Resets the namespace by removing all names defined by the user, if
+called without arguments, or by removing some types of objects, such
+as everything currently in IPython’s In[] and Out[] containers (see
+the parameters for details).</p>
+<p>Parameters</p>
+<dl>
+<dt><kbd><span>-f</span></kbd></dt>
+<dd><p>force reset without asking for confirmation.</p>
+</dd>
+<dt><kbd><span>-s</span></kbd></dt>
+<dd><p>‘Soft’ reset: Only clears your namespace, leaving history intact.
+References to objects may be kept. By default (without this option),
+we do a ‘hard’ reset, giving you a new session and removing all
+references to objects from the current session.</p>
+</dd>
+<dt><kbd><span>--aggressive</span></kbd></dt>
+<dd><p>Try to aggressively remove modules from sys.modules ; this
+may allow you to reimport Python modules that have been updated and
+pick up changes, but can have unintended consequences.</p>
+</dd>
+</dl>
+<dl>
+<dt>in</dt><dd><p>reset input history</p>
+</dd>
+<dt>out</dt><dd><p>reset output history</p>
+</dd>
+<dt>dhist</dt><dd><p>reset directory history</p>
+</dd>
+<dt>array</dt><dd><p>reset only variables that are NumPy arrays</p>
+</dd>
+</dl>
+<p>See Also</p>
+<p>reset_selective : invoked as <code><span>%reset_selective</span></code></p>
+<p>Examples</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>6</span><span>]:</span> <span>a</span> <span>=</span> <span>1</span>
+
+<span>In</span> <span>[</span><span>7</span><span>]:</span> <span>a</span>
+<span>Out</span><span>[</span><span>7</span><span>]:</span> <span>1</span>
+
+<span>In</span> <span>[</span><span>8</span><span>]:</span> <span>'a'</span> <span>in</span> <span>get_ipython</span><span>()</span><span>.</span><span>user_ns</span>
+<span>Out</span><span>[</span><span>8</span><span>]:</span> <span>True</span>
+
+<span>In</span> <span>[</span><span>9</span><span>]:</span> <span>%</span><span>reset</span> <span>-</span><span>f</span>
+
+<span>In</span> <span>[</span><span>1</span><span>]:</span> <span>'a'</span> <span>in</span> <span>get_ipython</span><span>()</span><span>.</span><span>user_ns</span>
+<span>Out</span><span>[</span><span>1</span><span>]:</span> <span>False</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>%</span><span>reset</span> <span>-</span><span>f</span> <span>in</span>
+<span>Flushing</span> <span>input</span> <span>history</span>
+
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>%</span><span>reset</span> <span>-</span><span>f</span> <span>dhist</span> <span>in</span>
+<span>Flushing</span> <span>directory</span> <span>history</span>
+<span>Flushing</span> <span>input</span> <span>history</span>
+</pre></div>
+<p>Notes</p>
+<p>Calling this magic from clients that do not implement standard input,
+such as the ipython notebook interface, will reset the namespace
+without confirmation.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-reset_selective">
+<span><span>%reset_selective</span></span><a href="#magic-reset_selective" title="Link to this definition"></a></dt>
+<dd><p>Resets the namespace by removing names defined by the user.</p>
+<p>Input/Output history are left around in case you need them.</p>
+<p>%reset_selective [-f] regex</p>
+<p>No action is taken if regex is not included</p>
+<dl>
+<dt>Options</dt><dd><p>-f : force reset without asking for confirmation.</p>
+</dd>
+</dl>
+<p>See Also</p>
+<p>reset : invoked as <code><span>%reset</span></code></p>
+<p>Examples</p>
+<p>We first fully reset the namespace so your output looks identical to
+this example for pedagogical reasons; in practice you do not need a
+full reset:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>%</span><span>reset</span> <span>-</span><span>f</span>
+</pre></div>
+<p>Now, with a clean namespace we can make a few variables and use
+<code><span>%reset_selective</span></code> to only delete names that match our regexp:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>2</span><span>]:</span> <span>a</span><span>=</span><span>1</span><span>;</span> <span>b</span><span>=</span><span>2</span><span>;</span> <span>c</span><span>=</span><span>3</span><span>;</span> <span>b1m</span><span>=</span><span>4</span><span>;</span> <span>b2m</span><span>=</span><span>5</span><span>;</span> <span>b3m</span><span>=</span><span>6</span><span>;</span> <span>b4m</span><span>=</span><span>7</span><span>;</span> <span>b2s</span><span>=</span><span>8</span>
+
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>who_ls</span>
+<span>Out</span><span>[</span><span>3</span><span>]:</span> <span>[</span><span>'a'</span><span>,</span> <span>'b'</span><span>,</span> <span>'b1m'</span><span>,</span> <span>'b2m'</span><span>,</span> <span>'b2s'</span><span>,</span> <span>'b3m'</span><span>,</span> <span>'b4m'</span><span>,</span> <span>'c'</span><span>]</span>
+
+<span>In</span> <span>[</span><span>4</span><span>]:</span> <span>%</span><span>reset_selective</span> <span>-</span><span>f</span> <span>b</span><span>[</span><span>2</span><span>-</span><span>3</span><span>]</span><span>m</span>
+
+<span>In</span> <span>[</span><span>5</span><span>]:</span> <span>who_ls</span>
+<span>Out</span><span>[</span><span>5</span><span>]:</span> <span>[</span><span>'a'</span><span>,</span> <span>'b'</span><span>,</span> <span>'b1m'</span><span>,</span> <span>'b2s'</span><span>,</span> <span>'b4m'</span><span>,</span> <span>'c'</span><span>]</span>
+
+<span>In</span> <span>[</span><span>6</span><span>]:</span> <span>%</span><span>reset_selective</span> <span>-</span><span>f</span> <span>d</span>
+
+<span>In</span> <span>[</span><span>7</span><span>]:</span> <span>who_ls</span>
+<span>Out</span><span>[</span><span>7</span><span>]:</span> <span>[</span><span>'a'</span><span>,</span> <span>'b'</span><span>,</span> <span>'b1m'</span><span>,</span> <span>'b2s'</span><span>,</span> <span>'b4m'</span><span>,</span> <span>'c'</span><span>]</span>
+
+<span>In</span> <span>[</span><span>8</span><span>]:</span> <span>%</span><span>reset_selective</span> <span>-</span><span>f</span> <span>c</span>
+
+<span>In</span> <span>[</span><span>9</span><span>]:</span> <span>who_ls</span>
+<span>Out</span><span>[</span><span>9</span><span>]:</span> <span>[</span><span>'a'</span><span>,</span> <span>'b'</span><span>,</span> <span>'b1m'</span><span>,</span> <span>'b2s'</span><span>,</span> <span>'b4m'</span><span>]</span>
+
+<span>In</span> <span>[</span><span>10</span><span>]:</span> <span>%</span><span>reset_selective</span> <span>-</span><span>f</span> <span>b</span>
+
+<span>In</span> <span>[</span><span>11</span><span>]:</span> <span>who_ls</span>
+<span>Out</span><span>[</span><span>11</span><span>]:</span> <span>[</span><span>'a'</span><span>]</span>
+</pre></div>
+<p>Notes</p>
+<p>Calling this magic from clients that do not implement standard input,
+such as the ipython notebook interface, will reset the namespace
+without confirmation.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-run">
+<span><span>%run</span></span><a href="#magic-run" title="Link to this definition"></a></dt>
+<dd><p>Run the named file inside IPython as a program.</p>
+<p>Usage:</p>
+<div><pre><span></span><span>%</span><span>run</span> <span>[</span><span>-</span><span>n</span> <span>-</span><span>i</span> <span>-</span><span>e</span> <span>-</span><span>G</span><span>]</span>
+     <span>[(</span> <span>-</span><span>t</span> <span>[</span><span>-</span><span>N</span><span>&lt;</span><span>N</span><span>&gt;</span><span>]</span> <span>|</span> <span>-</span><span>d</span> <span>[</span><span>-</span><span>b</span><span>&lt;</span><span>N</span><span>&gt;</span><span>]</span> <span>|</span> <span>-</span><span>p</span> <span>[</span><span>profile</span> <span>options</span><span>]</span> <span>)]</span>
+     <span>(</span> <span>-</span><span>m</span> <span>mod</span> <span>|</span> <span>filename</span> <span>)</span> <span>[</span><span>args</span><span>]</span>
+</pre></div>
+<p>The filename argument should be either a pure Python script (with
+extension <code><span>.py</span></code>), or a file with custom IPython syntax (such as
+magics). If the latter, the file can be either a script with <code><span>.ipy</span></code>
+extension, or a Jupyter notebook with <code><span>.ipynb</span></code> extension. When running
+a Jupyter notebook, the output from print statements and other
+displayed objects will appear in the terminal (even matplotlib figures
+will open, if a terminal-compliant backend is being used). Note that,
+at the system command line, the <code><span>jupyter</span> <span>run</span></code> command offers similar
+functionality for executing notebooks (albeit currently with some
+differences in supported options).</p>
+<p>Parameters after the filename are passed as command-line arguments to
+the program (put in sys.argv). Then, control returns to IPython’s
+prompt.</p>
+<p>This is similar to running at a system prompt <code><span>python</span> <span>file</span> <span>args</span></code>,
+but with the advantage of giving you IPython’s tracebacks, and of
+loading all variables into your interactive namespace for further use
+(unless -p is used, see below).</p>
+<p>The file is executed in a namespace initially consisting only of
+<code><span>__name__=='__main__'</span></code> and sys.argv constructed as indicated. It thus
+sees its environment as if it were being run as a stand-alone program
+(except for sharing global objects such as previously imported
+modules). But after execution, the IPython interactive namespace gets
+updated with all variables defined in the program (except for <code><span>__name__</span></code>
+and <code><span>sys.argv</span></code>). This allows for very convenient loading of code for
+interactive work, while giving each program a ‘clean sheet’ to run in.</p>
+<p>Arguments are expanded using shell-like glob match.  Patterns
+‘*’, ‘?’, ‘[seq]’ and ‘[!seq]’ can be used.  Additionally,
+tilde ‘~’ will be expanded into user’s home directory.  Unlike
+real shells, quotation does not suppress expansions.  Use
+<em>two</em> back slashes (e.g. <code><span>\\*</span></code>) to suppress expansions.
+To completely disable these expansions, you can use -G flag.</p>
+<p>On Windows systems, the use of single quotes <code><span>'</span></code> when specifying
+a file is not supported. Use double quotes <code><span>"</span></code>.</p>
+<p>Options:</p>
+<dl>
+<dt><kbd><span>-n</span></kbd></dt>
+<dd><p>__name__ is NOT set to ‘__main__’, but to the running file’s name
+without extension (as python does under import).  This allows running
+scripts and reloading the definitions in them without calling code
+protected by an <code><span>if</span> <span>__name__</span> <span>==</span> <span>"__main__"</span></code> clause.</p>
+</dd>
+<dt><kbd><span>-i</span></kbd></dt>
+<dd><p>run the file in IPython’s namespace instead of an empty one. This
+is useful if you are experimenting with code written in a text editor
+which depends on variables defined interactively.</p>
+</dd>
+<dt><kbd><span>-e</span></kbd></dt>
+<dd><p>ignore sys.exit() calls or SystemExit exceptions in the script
+being run.  This is particularly useful if IPython is being used to
+run unittests, which always exit with a sys.exit() call.  In such
+cases you are interested in the output of the test results, not in
+seeing a traceback of the unittest module.</p>
+</dd>
+<dt><kbd><span>-t</span></kbd></dt>
+<dd><p>print timing information at the end of the run.  IPython will give
+you an estimated CPU time consumption for your script, which under
+Unix uses the resource module to avoid the wraparound problems of
+time.clock().  Under Unix, an estimate of time spent on system tasks
+is also given (for Windows platforms this is reported as 0.0).</p>
+<p>If -t is given, an additional <code><span>-N&lt;N&gt;</span></code> option can be given, where &lt;N&gt;
+must be an integer indicating how many times you want the script to
+run.  The final timing report will include total and per run results.</p>
+<p>For example (testing the script myscript.py):</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>run</span> <span>-</span><span>t</span> <span>myscript</span>
+
+<span>IPython</span> <span>CPU</span> <span>timings</span> <span>(</span><span>estimated</span><span>):</span>
+  <span>User</span>  <span>:</span>    <span>0.19597</span> <span>s</span><span>.</span>
+  <span>System</span><span>:</span>        <span>0.0</span> <span>s</span><span>.</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>run</span> <span>-</span><span>t</span> <span>-</span><span>N5</span> <span>myscript</span>
+
+<span>IPython</span> <span>CPU</span> <span>timings</span> <span>(</span><span>estimated</span><span>):</span>
+<span>Total</span> <span>runs</span> <span>performed</span><span>:</span> <span>5</span>
+  <span>Times</span> <span>:</span>      <span>Total</span>       <span>Per</span> <span>run</span>
+  <span>User</span>  <span>:</span>   <span>0.910862</span> <span>s</span><span>,</span>  <span>0.1821724</span> <span>s</span><span>.</span>
+  <span>System</span><span>:</span>        <span>0.0</span> <span>s</span><span>,</span>        <span>0.0</span> <span>s</span><span>.</span>
+</pre></div>
+</dd>
+<dt><kbd><span>-d</span></kbd></dt>
+<dd><p>run your program under the control of pdb, the Python debugger.
+This allows you to execute your program step by step, watch variables,
+etc.  Internally, what IPython does is similar to calling:</p>
+<div><pre><span></span><span>pdb</span><span>.</span><span>run</span><span>(</span><span>'execfile("YOURFILENAME")'</span><span>)</span>
+</pre></div>
+<p>with a breakpoint set on line 1 of your file.  You can change the line
+number for this automatic breakpoint to be &lt;N&gt; by using the -bN option
+(where N must be an integer). For example:</p>
+<div><pre><span></span><span>%</span><span>run</span> <span>-</span><span>d</span> <span>-</span><span>b40</span> <span>myscript</span>
+</pre></div>
+<p>will set the first breakpoint at line 40 in myscript.py.  Note that
+the first breakpoint must be set on a line which actually does
+something (not a comment or docstring) for it to stop execution.</p>
+<p>Or you can specify a breakpoint in a different file:</p>
+<div><pre><span></span><span>%</span><span>run</span> <span>-</span><span>d</span> <span>-</span><span>b</span> <span>myotherfile</span><span>.</span><span>py</span><span>:</span><span>20</span> <span>myscript</span>
+</pre></div>
+<p>When the pdb debugger starts, you will see a (Pdb) prompt.  You must
+first enter ‘c’ (without quotes) to start execution up to the first
+breakpoint.</p>
+<p>Entering ‘help’ gives information about the use of the debugger.  You
+can easily see pdb’s full documentation with “import pdb;pdb.help()”
+at a prompt.</p>
+</dd>
+<dt><kbd><span>-p</span></kbd></dt>
+<dd><p>run program under the control of the Python profiler module (which
+prints a detailed report of execution times, function calls, etc).</p>
+<p>You can pass other options after -p which affect the behavior of the
+profiler itself. See the docs for %prun for details.</p>
+<p>In this mode, the program’s variables do NOT propagate back to the
+IPython interactive namespace (because they remain in the namespace
+where the profiler executes them).</p>
+<p>Internally this triggers a call to %prun, see its documentation for
+details on the options available specifically for profiling.</p>
+</dd>
+</dl>
+<p>There is one special usage for which the text above doesn’t apply:
+if the filename ends with .ipy[nb], the file is run as ipython script,
+just as if the commands were written on IPython prompt.</p>
+<dl>
+<dt><kbd><span>-m</span></kbd></dt>
+<dd><p>specify module name to load instead of script path. Similar to
+the -m option for the python interpreter. Use this option last if you
+want to combine with other %run options. Unlike the python interpreter
+only source modules are allowed no .pyc or .pyo files.
+For example:</p>
+<div><pre><span></span><span>%</span><span>run</span> <span>-</span><span>m</span> <span>example</span>
+</pre></div>
+<p>will run the example module.</p>
+</dd>
+<dt><kbd><span>-G</span></kbd></dt>
+<dd><p>disable shell-like glob expansion of arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-save">
+<span><span>%save</span></span><a href="#magic-save" title="Link to this definition"></a></dt>
+<dd><p>Save a set of lines or a macro to a given filename.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%save [options] filename [history]</p>
+</dd>
+</dl>
+<p>Options:</p>
+<blockquote>
+<div><p>-r: use ‘raw’ input.  By default, the ‘processed’ history is used,
+so that magics are loaded in their transformed version to valid
+Python.  If this option is given, the raw input as typed at the
+command line is used instead.</p>
+<p>-f: force overwrite.  If file exists, %save will prompt for overwrite
+unless -f is given.</p>
+<p>-a: append to the file instead of overwriting it.</p>
+</div></blockquote>
+<p>The history argument uses the same syntax as %history for input ranges,
+then saves the lines to the filename you specify.</p>
+<p>If no ranges are specified, saves history of the current session up to
+this point.</p>
+<p>It adds a ‘.py’ extension to the file if you don’t do so yourself, and
+it asks for confirmation before overwriting existing files.</p>
+<p>If <code><span>-r</span></code> option is used, the default extension is <code><span>.ipy</span></code>.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-sc">
+<span><span>%sc</span></span><a href="#magic-sc" title="Link to this definition"></a></dt>
+<dd><p>Shell capture - run shell command and capture output (DEPRECATED use !).</p>
+<p>DEPRECATED. Suboptimal, retained for backwards compatibility.</p>
+<p>You should use the form ‘var = !command’ instead. Example:</p>
+<blockquote>
+<div><p>“%sc -l myfiles = ls ~” should now be written as</p>
+<p>“myfiles = !ls ~”</p>
+</div></blockquote>
+<p>myfiles.s, myfiles.l and myfiles.n still apply as documented
+below.</p>
+<p>%sc [options] varname=command</p>
+<p>IPython will run the given command using commands.getoutput(), and
+will then update the user’s interactive namespace with a variable
+called varname, containing the value of the call.  Your command can
+contain shell wildcards, pipes, etc.</p>
+<p>The ‘=’ sign in the syntax is mandatory, and the variable name you
+supply must follow Python’s standard conventions for valid names.</p>
+<p>(A special format without variable name exists for internal use)</p>
+<p>Options:</p>
+<blockquote>
+<div><p>-l: list output.  Split the output on newlines into a list before
+assigning it to the given variable.  By default the output is stored
+as a single string.</p>
+<p>-v: verbose.  Print the contents of the variable.</p>
+</div></blockquote>
+<p>In most cases you should not need to split as a list, because the
+returned value is a special type of string which can automatically
+provide its contents either as a list (split on newlines) or as a
+space-separated string.  These are convenient, respectively, either
+for sequential processing or to be passed to a shell command.</p>
+<p>For example:</p>
+<div><pre><span></span># Capture into variable a
+In [1]: sc a=ls *py
+
+# a is a string with embedded newlines
+In [2]: a
+Out[2]: 'setup.py\nwin32_manual_post_install.py'
+
+# which can be seen as a list:
+In [3]: a.l
+Out[3]: ['setup.py', 'win32_manual_post_install.py']
+
+# or as a whitespace-separated string:
+In [4]: a.s
+Out[4]: 'setup.py win32_manual_post_install.py'
+
+# a.s is useful to pass as a single command line:
+In [5]: !wc -l $a.s
+  146 setup.py
+  130 win32_manual_post_install.py
+  276 total
+
+# while the list form is useful to loop over:
+In [6]: for f in a.l:
+   ...:      !wc -l $f
+   ...:
+146 setup.py
+130 win32_manual_post_install.py
+</pre></div>
+<p>Similarly, the lists returned by the -l option are also special, in
+the sense that you can equally invoke the .s attribute on them to
+automatically get a whitespace-separated string from their contents:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>7</span><span>]:</span> <span>sc</span> <span>-</span><span>l</span> <span>b</span><span>=</span><span>ls</span> <span>*</span><span>py</span>
+
+<span>In</span> <span>[</span><span>8</span><span>]:</span> <span>b</span>
+<span>Out</span><span>[</span><span>8</span><span>]:</span> <span>[</span><span>'setup.py'</span><span>,</span> <span>'win32_manual_post_install.py'</span><span>]</span>
+
+<span>In</span> <span>[</span><span>9</span><span>]:</span> <span>b</span><span>.</span><span>s</span>
+<span>Out</span><span>[</span><span>9</span><span>]:</span> <span>'setup.py win32_manual_post_install.py'</span>
+</pre></div>
+<p>In summary, both the lists and strings used for output capture have
+the following special attributes:</p>
+<div><pre><span></span><span>.</span><span>l</span> <span>(</span><span>or</span> <span>.</span><span>list</span><span>)</span> <span>:</span> <span>value</span> <span>as</span> <span>list</span><span>.</span>
+<span>.</span><span>n</span> <span>(</span><span>or</span> <span>.</span><span>nlstr</span><span>):</span> <span>value</span> <span>as</span> <span>newline</span><span>-</span><span>separated</span> <span>string</span><span>.</span>
+<span>.</span><span>s</span> <span>(</span><span>or</span> <span>.</span><span>spstr</span><span>):</span> <span>value</span> <span>as</span> <span>space</span><span>-</span><span>separated</span> <span>string</span><span>.</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-set_env">
+<span><span>%set_env</span></span><a href="#magic-set_env" title="Link to this definition"></a></dt>
+<dd><p>Set environment variables.  Assumptions are that either “val” is a
+name in the user namespace, or val is something that evaluates to a
+string.</p>
+<dl>
+<dt>Usage:</dt><dd><dl>
+<dt><code><span>%set_env</span> <span>var</span> <span>val</span></code><span>:</span></dt>
+<dd><p>set value for var</p>
+</dd>
+<dt><code><span>%set_env</span> <span>var=val</span></code><span>:</span></dt>
+<dd><p>set value for var</p>
+</dd>
+<dt><code><span>%set_env</span> <span>var=$val</span></code><span>:</span></dt>
+<dd><p>set value for var, using python expansion if possible</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-sx">
+<span><span>%sx</span></span><a href="#magic-sx" title="Link to this definition"></a></dt>
+<dd><p>Shell execute - run shell command and capture output (!! is short-hand).</p>
+<p>%sx command</p>
+<p>IPython will run the given command using commands.getoutput(), and
+return the result formatted as a list (split on ‘n’).  Since the
+output is _returned_, it will be stored in ipython’s regular output
+cache Out[N] and in the ‘_N’ automatic variables.</p>
+<p>Notes:</p>
+<p>1) If an input line begins with ‘!!’, then %sx is automatically
+invoked.  That is, while:</p>
+<div><pre><span></span>!ls
+</pre></div>
+<p>causes ipython to simply issue system(‘ls’), typing:</p>
+<div><pre><span></span>!!ls
+</pre></div>
+<p>is a shorthand equivalent to:</p>
+<div><pre><span></span><span>%</span><span>sx</span> <span>ls</span>
+</pre></div>
+<p>2) %sx differs from %sc in that %sx automatically splits into a list,
+like ‘%sc -l’.  The reason for this is to make it as easy as possible
+to process line-oriented shell output via further python commands.
+%sc is meant to provide much finer control, but requires more
+typing.</p>
+<p>3) Just like %sc -l, this is a list with special attributes:</p>
+<div><pre><span></span><span>.</span><span>l</span> <span>(</span><span>or</span> <span>.</span><span>list</span><span>)</span> <span>:</span> <span>value</span> <span>as</span> <span>list</span><span>.</span>
+<span>.</span><span>n</span> <span>(</span><span>or</span> <span>.</span><span>nlstr</span><span>):</span> <span>value</span> <span>as</span> <span>newline</span><span>-</span><span>separated</span> <span>string</span><span>.</span>
+<span>.</span><span>s</span> <span>(</span><span>or</span> <span>.</span><span>spstr</span><span>):</span> <span>value</span> <span>as</span> <span>whitespace</span><span>-</span><span>separated</span> <span>string</span><span>.</span>
+</pre></div>
+<p>This is very useful when trying to use such lists as arguments to
+system commands.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-system">
+<span><span>%system</span></span><a href="#magic-system" title="Link to this definition"></a></dt>
+<dd><p>Shell execute - run shell command and capture output (!! is short-hand).</p>
+<p>%sx command</p>
+<p>IPython will run the given command using commands.getoutput(), and
+return the result formatted as a list (split on ‘n’).  Since the
+output is _returned_, it will be stored in ipython’s regular output
+cache Out[N] and in the ‘_N’ automatic variables.</p>
+<p>Notes:</p>
+<p>1) If an input line begins with ‘!!’, then %sx is automatically
+invoked.  That is, while:</p>
+<div><pre><span></span>!ls
+</pre></div>
+<p>causes ipython to simply issue system(‘ls’), typing:</p>
+<div><pre><span></span>!!ls
+</pre></div>
+<p>is a shorthand equivalent to:</p>
+<div><pre><span></span><span>%</span><span>sx</span> <span>ls</span>
+</pre></div>
+<p>2) %sx differs from %sc in that %sx automatically splits into a list,
+like ‘%sc -l’.  The reason for this is to make it as easy as possible
+to process line-oriented shell output via further python commands.
+%sc is meant to provide much finer control, but requires more
+typing.</p>
+<p>3) Just like %sc -l, this is a list with special attributes:</p>
+<div><pre><span></span><span>.</span><span>l</span> <span>(</span><span>or</span> <span>.</span><span>list</span><span>)</span> <span>:</span> <span>value</span> <span>as</span> <span>list</span><span>.</span>
+<span>.</span><span>n</span> <span>(</span><span>or</span> <span>.</span><span>nlstr</span><span>):</span> <span>value</span> <span>as</span> <span>newline</span><span>-</span><span>separated</span> <span>string</span><span>.</span>
+<span>.</span><span>s</span> <span>(</span><span>or</span> <span>.</span><span>spstr</span><span>):</span> <span>value</span> <span>as</span> <span>whitespace</span><span>-</span><span>separated</span> <span>string</span><span>.</span>
+</pre></div>
+<p>This is very useful when trying to use such lists as arguments to
+system commands.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-tb">
+<span><span>%tb</span></span><a href="#magic-tb" title="Link to this definition"></a></dt>
+<dd><p>Print the last traceback.</p>
+<p>Optionally, specify an exception reporting mode, tuning the
+verbosity of the traceback. By default the currently-active exception
+mode is used. See %xmode for changing exception reporting modes.</p>
+<p>Valid modes: Plain, Context, Verbose, and Minimal.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-time">
+<span><span>%time</span></span><a href="#magic-time" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>time</span> <span>[</span><span>--</span><span>no</span><span>-</span><span>raise</span><span>-</span><span>error</span><span>]</span>
+</pre></div>
+<p>Time execution of a Python statement or expression.</p>
+<p>The CPU and wall clock times are printed, and the value of the
+expression (if any) is returned.  Note that under Win32, system time
+is always reported as 0, since it can not be measured.</p>
+<p>This function can be used both as a line and cell magic:</p>
+<ul>
+<li><p>In line mode you can time a single-line statement (though multiple
+ones can be chained with using semicolons).</p></li>
+<li><p>In cell mode, you can time the cell body (a directly
+following statement raises an error).</p></li>
+</ul>
+<p>This function provides very basic timing functionality. Use the timeit
+magic for more control over the measurement.</p>
+<p><span>Changed in version 7.3: </span>User variables are no longer expanded,
+the magic line is always left unmodified.</p>
+<p><span>Changed in version 8.3: </span>The time magic now correctly propagates system-exiting exceptions
+(such as <code><span>KeyboardInterrupt</span></code> invoked when interrupting execution)
+rather than just printing out the exception traceback.
+The non-system-exception will still be caught as before.</p>
+<p>Examples</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>%</span><span>time</span> <span>2</span><span>**</span><span>128</span>
+<span>CPU</span> <span>times</span><span>:</span> <span>user</span> <span>0.00</span> <span>s</span><span>,</span> <span>sys</span><span>:</span> <span>0.00</span> <span>s</span><span>,</span> <span>total</span><span>:</span> <span>0.00</span> <span>s</span>
+<span>Wall</span> <span>time</span><span>:</span> <span>0.00</span>
+<span>Out</span><span>[</span><span>1</span><span>]:</span> <span>340282366920938463463374607431768211456</span><span>L</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>n</span> <span>=</span> <span>1000000</span>
+
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>%</span><span>time</span> <span>sum</span><span>(</span><span>range</span><span>(</span><span>n</span><span>))</span>
+<span>CPU</span> <span>times</span><span>:</span> <span>user</span> <span>1.20</span> <span>s</span><span>,</span> <span>sys</span><span>:</span> <span>0.05</span> <span>s</span><span>,</span> <span>total</span><span>:</span> <span>1.25</span> <span>s</span>
+<span>Wall</span> <span>time</span><span>:</span> <span>1.37</span>
+<span>Out</span><span>[</span><span>3</span><span>]:</span> <span>499999500000</span><span>L</span>
+
+<span>In</span> <span>[</span><span>4</span><span>]:</span> <span>%</span><span>time</span> <span>print</span><span>(</span><span>'hello world'</span><span>)</span>
+<span>hello</span> <span>world</span>
+<span>CPU</span> <span>times</span><span>:</span> <span>user</span> <span>0.00</span> <span>s</span><span>,</span> <span>sys</span><span>:</span> <span>0.00</span> <span>s</span><span>,</span> <span>total</span><span>:</span> <span>0.00</span> <span>s</span>
+<span>Wall</span> <span>time</span><span>:</span> <span>0.00</span>
+</pre></div>
+<div>
+<p>Note</p>
+<p>The time needed by Python to compile the given expression will be
+reported if it is more than 0.1s.</p>
+<p>In the example below, the actual exponentiation is done by Python
+at compilation time, so while the expression can take a noticeable
+amount of time to compute, that time is purely due to the
+compilation:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>5</span><span>]:</span> <span>%</span><span>time</span> <span>3</span><span>**</span><span>9999</span><span>;</span>
+<span>CPU</span> <span>times</span><span>:</span> <span>user</span> <span>0.00</span> <span>s</span><span>,</span> <span>sys</span><span>:</span> <span>0.00</span> <span>s</span><span>,</span> <span>total</span><span>:</span> <span>0.00</span> <span>s</span>
+<span>Wall</span> <span>time</span><span>:</span> <span>0.00</span> <span>s</span>
+
+<span>In</span> <span>[</span><span>6</span><span>]:</span> <span>%</span><span>time</span> <span>3</span><span>**</span><span>999999</span><span>;</span>
+<span>CPU</span> <span>times</span><span>:</span> <span>user</span> <span>0.00</span> <span>s</span><span>,</span> <span>sys</span><span>:</span> <span>0.00</span> <span>s</span><span>,</span> <span>total</span><span>:</span> <span>0.00</span> <span>s</span>
+<span>Wall</span> <span>time</span><span>:</span> <span>0.00</span> <span>s</span>
+<span>Compiler</span> <span>:</span> <span>0.78</span> <span>s</span>
+</pre></div>
+</div>
+<dl>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>--no-raise-error</span></kbd></dt>
+<dd><p>If given, don’t re-raise exceptions</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Any remaining arguments will be treated as code to run.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-timeit">
+<span><span>%timeit</span></span><a href="#magic-timeit" title="Link to this definition"></a></dt>
+<dd><p>Time execution of a Python statement or expression</p>
+<p><strong>Usage, in line mode</strong>:</p>
+<div><pre><span></span><span>%</span><span>timeit</span> <span>[</span><span>-</span><span>n</span><span>&lt;</span><span>N</span><span>&gt;</span> <span>-</span><span>r</span><span>&lt;</span><span>R</span><span>&gt;</span> <span>[</span><span>-</span><span>t</span><span>|-</span><span>c</span><span>]</span> <span>-</span><span>q</span> <span>-</span><span>p</span><span>&lt;</span><span>P</span><span>&gt;</span> <span>[</span><span>-</span><span>o</span><span>|-</span><span>v</span> <span>&lt;</span><span>V</span><span>&gt;</span><span>]]</span> <span>statement</span>
+</pre></div>
+<p><strong>or in cell mode</strong>:</p>
+<div><pre><span></span><span>%%</span><span>timeit</span> <span>[</span><span>-</span><span>n</span><span>&lt;</span><span>N</span><span>&gt;</span> <span>-</span><span>r</span><span>&lt;</span><span>R</span><span>&gt;</span> <span>[</span><span>-</span><span>t</span><span>|-</span><span>c</span><span>]</span> <span>-</span><span>q</span> <span>-</span><span>p</span><span>&lt;</span><span>P</span><span>&gt;</span> <span>[</span><span>-</span><span>o</span><span>|-</span><span>v</span> <span>&lt;</span><span>V</span><span>&gt;</span><span>]]</span> <span>setup_code</span>
+<span>code</span>
+<span>code</span><span>...</span>
+</pre></div>
+<p>Time execution of a Python statement or expression using the timeit
+module.  This function can be used both as a line and cell magic:</p>
+<ul>
+<li><p>In line mode you can time a single-line statement (though multiple
+ones can be chained with using semicolons).</p></li>
+<li><p>In cell mode, the statement in the first line is used as setup code
+(executed but not timed) and the body of the cell is timed.  The cell
+body has access to any variables created in the setup code.</p></li>
+</ul>
+<p>Options:</p>
+<dl>
+<dt><kbd><span>-n<var>&lt;N&gt;</var></span></kbd></dt>
+<dd><p>Execute the given statement N times in a loop. If N is not
+provided, N is determined so as to get sufficient accuracy.</p>
+</dd>
+<dt><kbd><span>-r<var>&lt;R&gt;</var></span></kbd></dt>
+<dd><p>Number of repeats R, each consisting of N loops, and take the
+average result.
+Default: 7</p>
+</dd>
+<dt><kbd><span>-t</span></kbd></dt>
+<dd><p>Use <code><span>time.time</span></code> to measure the time, which is the default on Unix.
+This function measures wall time.</p>
+</dd>
+<dt><kbd><span>-c</span></kbd></dt>
+<dd><p>Use <code><span>time.clock</span></code> to measure the time, which is the default on
+Windows and measures wall time. On Unix, <code><span>resource.getrusage</span></code> is used
+instead and returns the CPU user time.</p>
+</dd>
+<dt><kbd><span>-p<var>&lt;P&gt;</var></span></kbd></dt>
+<dd><p>Use a precision of P digits to display the timing result.
+Default: 3</p>
+</dd>
+<dt><kbd><span>-q</span></kbd></dt>
+<dd><p>Quiet, do not print result.</p>
+</dd>
+<dt><kbd><span>-o</span></kbd></dt>
+<dd><p>Return a <code><span>TimeitResult</span></code> that can be stored in a variable to inspect
+the result in more details.</p>
+</dd>
+<dt><kbd><span>-v <var>&lt;V&gt;</var></span></kbd></dt>
+<dd><p>Like <code><span>-o</span></code>, but save the <code><span>TimeitResult</span></code> directly to variable &lt;V&gt;.</p>
+</dd>
+</dl>
+<p><span>Changed in version 7.3: </span>User variables are no longer expanded,
+the magic line is always left unmodified.</p>
+<p>Examples</p>
+<div><pre><span></span>In [1]: %timeit pass
+8.26 ns ± 0.12 ns per loop (mean ± std. dev. of 7 runs, 100000000 loops each)
+
+In [2]: u = None
+
+In [3]: %timeit u is None
+29.9 ns ± 0.643 ns per loop (mean ± std. dev. of 7 runs, 10000000 loops each)
+
+In [4]: %timeit -r 4 u == None
+
+In [5]: import time
+
+In [6]: %timeit -n1 time.sleep(2)
+</pre></div>
+<p>The times reported by <code><span>%timeit</span></code> will be slightly higher than those
+reported by the timeit.py script when variables are accessed. This is
+due to the fact that <code><span>%timeit</span></code> executes the statement in the namespace
+of the shell, compared with timeit.py, which uses a single setup
+statement to import function or create variables. Generally, the bias
+does not matter as long as results from timeit.py are not mixed with
+those from <code><span>%timeit</span></code>.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-unalias">
+<span><span>%unalias</span></span><a href="#magic-unalias" title="Link to this definition"></a></dt>
+<dd><p>Remove an alias</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-unload_ext">
+<span><span>%unload_ext</span></span><a href="#magic-unload_ext" title="Link to this definition"></a></dt>
+<dd><p>Unload an IPython extension by its module name.</p>
+<p>Not all extensions can be unloaded, only those which define an
+<code><span>unload_ipython_extension</span></code> function.</p>
+</dd></dl>
+
+<dl>
+<dt id="magic-uv">
+<span><span>%uv</span></span><a href="#magic-uv" title="Link to this definition"></a></dt>
+<dd><p>Run the uv package manager within the current kernel.</p>
+<dl>
+<dt>Usage:</dt><dd><p>%uv pip install [pkgs]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-who">
+<span><span>%who</span></span><a href="#magic-who" title="Link to this definition"></a></dt>
+<dd><p>Print all interactive variables, with some minimal formatting.</p>
+<p>If any arguments are given, only variables whose type matches one of
+these are printed.  For example:</p>
+<div><pre><span></span><span>%</span><span>who</span> <span>function</span> <span>str</span>
+</pre></div>
+<p>will only list functions and strings, excluding all other types of
+variables.  To find the proper type names, simply use type(var) at a
+command line to see how python prints type names.  For example:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>type</span><span>(</span><span>'hello'</span><span>)</span>\
+<span>Out</span><span>[</span><span>1</span><span>]:</span> <span>&lt;</span><span>type</span> <span>'str'</span><span>&gt;</span>
+</pre></div>
+<p>indicates that the type name for strings is ‘str’.</p>
+<p><code><span>%who</span></code> always excludes executed names loaded through your configuration
+file and things which are internal to IPython.</p>
+<p>This is deliberate, as typically you may load many modules and the
+purpose of %who is to show you only what you’ve manually defined.</p>
+<p>Examples</p>
+<p>Define two variables and list them with who:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>alpha</span> <span>=</span> <span>123</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>beta</span> <span>=</span> <span>'test'</span>
+
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>%</span><span>who</span>
+<span>alpha</span>   <span>beta</span>
+
+<span>In</span> <span>[</span><span>4</span><span>]:</span> <span>%</span><span>who</span> <span>int</span>
+<span>alpha</span>
+
+<span>In</span> <span>[</span><span>5</span><span>]:</span> <span>%</span><span>who</span> <span>str</span>
+<span>beta</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-who_ls">
+<span><span>%who_ls</span></span><a href="#magic-who_ls" title="Link to this definition"></a></dt>
+<dd><p>Return a sorted list of all interactive variables.</p>
+<p>If arguments are given, only variables of types matching these
+arguments are returned.</p>
+<p>Examples</p>
+<p>Define two variables and list them with who_ls:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>alpha</span> <span>=</span> <span>123</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>beta</span> <span>=</span> <span>'test'</span>
+
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>%</span><span>who_ls</span>
+<span>Out</span><span>[</span><span>3</span><span>]:</span> <span>[</span><span>'alpha'</span><span>,</span> <span>'beta'</span><span>]</span>
+
+<span>In</span> <span>[</span><span>4</span><span>]:</span> <span>%</span><span>who_ls</span> <span>int</span>
+<span>Out</span><span>[</span><span>4</span><span>]:</span> <span>[</span><span>'alpha'</span><span>]</span>
+
+<span>In</span> <span>[</span><span>5</span><span>]:</span> <span>%</span><span>who_ls</span> <span>str</span>
+<span>Out</span><span>[</span><span>5</span><span>]:</span> <span>[</span><span>'beta'</span><span>]</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-whos">
+<span><span>%whos</span></span><a href="#magic-whos" title="Link to this definition"></a></dt>
+<dd><p>Like %who, but gives some extra information about each variable.</p>
+<p>The same type filtering of %who can be applied here.</p>
+<p>For all variables, the type is printed. Additionally it prints:</p>
+<blockquote>
+<div><ul>
+<li><p>For {},[],(): their length.</p></li>
+<li><p>For numpy arrays, a summary with shape, number of
+elements, typecode and size in memory.</p></li>
+<li><p>For DataFrame and Series types: their shape.</p></li>
+<li><p>Everything else: a string representation, snipping their middle if
+too long.</p></li>
+</ul>
+</div></blockquote>
+<p>Examples</p>
+<p>Define two variables and list them with whos:</p>
+<div><pre><span></span><span>In</span> <span>[</span><span>1</span><span>]:</span> <span>alpha</span> <span>=</span> <span>123</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>beta</span> <span>=</span> <span>'test'</span>
+
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>df</span> <span>=</span> <span>pd</span><span>.</span><span>DataFrame</span><span>({</span><span>"a"</span><span>:</span> <span>range</span><span>(</span><span>10</span><span>),</span> <span>"b"</span><span>:</span> <span>range</span><span>(</span><span>10</span><span>,</span><span>20</span><span>)})</span>
+
+<span>In</span> <span>[</span><span>4</span><span>]:</span> <span>s</span> <span>=</span> <span>df</span><span>[</span><span>"a"</span><span>]</span>
+
+<span>In</span> <span>[</span><span>5</span><span>]:</span> <span>%</span><span>whos</span>
+<span>Variable</span>   <span>Type</span>        <span>Data</span><span>/</span><span>Info</span>
+
+<span>alpha</span>      <span>int</span>         <span>123</span>
+<span>beta</span>       <span>str</span>         <span>test</span>
+<span>df</span>         <span>DataFrame</span>   <span>Shape</span><span>:</span> <span>(</span><span>10</span><span>,</span> <span>2</span><span>)</span>
+<span>s</span>          <span>Series</span>      <span>Shape</span><span>:</span> <span>(</span><span>10</span><span>,</span> <span>)</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="magic-xdel">
+<span><span>%xdel</span></span><a href="#magic-xdel" title="Link to this definition"></a></dt>
+<dd><p>Delete a variable, trying to clear it from anywhere that
+IPython’s machinery has references to it. By default, this uses
+the identity of the named object in the user namespace to remove
+references held under other names. The object is also removed
+from the output history.</p>
+<dl>
+<dt>Options</dt><dd><p>-n : Delete the specified name from all namespaces, without
+checking their identity.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="magic-xmode">
+<span><span>%xmode</span></span><a href="#magic-xmode" title="Link to this definition"></a></dt>
+<dd><p>Switch modes for the exception handlers.</p>
+<p>Valid modes: Plain, Context, Verbose, and Minimal.</p>
+<p>If called without arguments, acts as a toggle.</p>
+<p>When in verbose mode the value <code><span>--show</span></code> (and <code><span>--hide</span></code>)
+will respectively show (or hide) frames with <code><span>__tracebackhide__</span> <span>=</span>
+<span>True</span></code> value set.</p>
+</dd></dl>
+
+</section>
+<section id="cell-magics">
+<h2>Cell magics<a href="#cell-magics" title="Link to this heading"></a></h2>
+<dl>
+<dt id="cellmagic-bash">
+<span><span>%%bash</span></span><a href="#cellmagic-bash" title="Link to this definition"></a></dt>
+<dd><p>%%bash script magic</p>
+<p>Run cells with bash in a subprocess.</p>
+<p>This is a shortcut for <code><span>%%script</span> <span>bash</span></code></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-capture">
+<span><span>%%capture</span></span><a href="#cellmagic-capture" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>capture</span> <span>[</span><span>--</span><span>no</span><span>-</span><span>stderr</span><span>]</span> <span>[</span><span>--</span><span>no</span><span>-</span><span>stdout</span><span>]</span> <span>[</span><span>--</span><span>no</span><span>-</span><span>display</span><span>]</span> <span>[</span><span>output</span><span>]</span>
+</pre></div>
+<p>run the cell, capturing stdout, stderr, and IPython’s rich display() calls.</p>
+<dl>
+<dt>positional arguments:</dt><dd><dl>
+<dt>output        The name of the variable in which to store output. This is a</dt><dd><p><code><span>utils.io.CapturedIO</span></code> object with stdout/err attributes for
+the text of the captured output. CapturedOutput also has a
+<code><span>show()</span></code> method for displaying the output, and <code><span>__call__</span></code>
+as well, so you can use that to quickly display the output. If
+unspecified, captured output is discarded.</p>
+</dd>
+</dl>
+</dd>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>--no-stderr</span></kbd></dt>
+<dd><p>Don’t capture stderr.</p>
+</dd>
+<dt><kbd><span>--no-stdout</span></kbd></dt>
+<dd><p>Don’t capture stdout.</p>
+</dd>
+<dt><kbd><span>--no-display</span></kbd></dt>
+<dd><p>Don’t capture IPython’s rich display.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-html">
+<span><span>%%html</span></span><a href="#cellmagic-html" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>html</span> <span>[</span><span>--</span><span>isolated</span><span>]</span>
+</pre></div>
+<p>Render the cell as a block of HTML</p>
+<dl>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>--isolated</span></kbd></dt>
+<dd><p>Annotate the cell as ‘isolated’. Isolated cells are rendered
+inside their own &lt;iframe&gt; tag</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-javascript">
+<span><span>%%javascript</span></span><a href="#cellmagic-javascript" title="Link to this definition"></a></dt>
+<dd><p>Run the cell block of Javascript code</p>
+<p>Starting with IPython 8.0 %%javascript is pending deprecation to be replaced
+by a more flexible system</p>
+<p>Please See <a href="https://github.com/ipython/ipython/issues/13376">https://github.com/ipython/ipython/issues/13376</a></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-js">
+<span><span>%%js</span></span><a href="#cellmagic-js" title="Link to this definition"></a></dt>
+<dd><p>Run the cell block of Javascript code</p>
+<p>Alias of <code><span>%%javascript</span></code></p>
+<p>Starting with IPython 8.0 %%javascript is pending deprecation to be replaced
+by a more flexible system</p>
+<p>Please See <a href="https://github.com/ipython/ipython/issues/13376">https://github.com/ipython/ipython/issues/13376</a></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-latex">
+<span><span>%%latex</span></span><a href="#cellmagic-latex" title="Link to this definition"></a></dt>
+<dd><p>Render the cell as a block of LaTeX</p>
+<p>The subset of LaTeX which is supported depends on the implementation in
+the client.  In the Jupyter Notebook, this magic only renders the subset
+of LaTeX defined by MathJax
+[here](<a href="https://docs.mathjax.org/en/v2.5-latest/tex.html">https://docs.mathjax.org/en/v2.5-latest/tex.html</a>).</p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-markdown">
+<span><span>%%markdown</span></span><a href="#cellmagic-markdown" title="Link to this definition"></a></dt>
+<dd><p>Render the cell as Markdown text block</p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-perl">
+<span><span>%%perl</span></span><a href="#cellmagic-perl" title="Link to this definition"></a></dt>
+<dd><p>%%perl script magic</p>
+<p>Run cells with perl in a subprocess.</p>
+<p>This is a shortcut for <code><span>%%script</span> <span>perl</span></code></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-pypy">
+<span><span>%%pypy</span></span><a href="#cellmagic-pypy" title="Link to this definition"></a></dt>
+<dd><p>%%pypy script magic</p>
+<p>Run cells with pypy in a subprocess.</p>
+<p>This is a shortcut for <code><span>%%script</span> <span>pypy</span></code></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-python">
+<span><span>%%python</span></span><a href="#cellmagic-python" title="Link to this definition"></a></dt>
+<dd><p>%%python script magic</p>
+<p>Run cells with python in a subprocess.</p>
+<p>This is a shortcut for <code><span>%%script</span> <span>python</span></code></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-python2">
+<span><span>%%python2</span></span><a href="#cellmagic-python2" title="Link to this definition"></a></dt>
+<dd><p>%%python2 script magic</p>
+<p>Run cells with python2 in a subprocess.</p>
+<p>This is a shortcut for <code><span>%%script</span> <span>python2</span></code></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-python3">
+<span><span>%%python3</span></span><a href="#cellmagic-python3" title="Link to this definition"></a></dt>
+<dd><p>%%python3 script magic</p>
+<p>Run cells with python3 in a subprocess.</p>
+<p>This is a shortcut for <code><span>%%script</span> <span>python3</span></code></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-ruby">
+<span><span>%%ruby</span></span><a href="#cellmagic-ruby" title="Link to this definition"></a></dt>
+<dd><p>%%ruby script magic</p>
+<p>Run cells with ruby in a subprocess.</p>
+<p>This is a shortcut for <code><span>%%script</span> <span>ruby</span></code></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-script">
+<span><span>%%script</span></span><a href="#cellmagic-script" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>shebang</span> <span>[</span><span>--</span><span>no</span><span>-</span><span>raise</span><span>-</span><span>error</span><span>]</span> <span>[</span><span>--</span><span>proc</span> <span>PROC</span><span>]</span> <span>[</span><span>--</span><span>bg</span><span>]</span> <span>[</span><span>--</span><span>err</span> <span>ERR</span><span>]</span> <span>[</span><span>--</span><span>out</span> <span>OUT</span><span>]</span>
+</pre></div>
+<p>Run a cell via a shell command</p>
+<p>The <code><span>%%script</span></code> line is like the #! line of script,
+specifying a program (bash, perl, ruby, etc.) with which to run.</p>
+<p>The rest of the cell is run by that program.</p>
+<p><span>Changed in version 9.0: </span>Interrupting the script executed without <code><span>--bg</span></code> will end in
+raising an exception (unless <code><span>--no-raise-error</span></code> is passed).</p>
+<p>Examples</p>
+<div><pre><span></span>In [1]: %%script bash
+   ...: for i in 1 2 3; do
+   ...:   echo $i
+   ...: done
+1
+2
+3
+</pre></div>
+<dl>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>--no-raise-error</span></kbd></dt>
+<dd><p>Whether you should raise an error message in addition to a
+stream on stderr if you get a nonzero exit code.</p>
+</dd>
+<dt><kbd><span>--proc <var>PROC</var></span></kbd></dt>
+<dd><p>The variable in which to store Popen instance. This is
+used only when –bg option is given.</p>
+</dd>
+<dt><kbd><span>--bg</span></kbd></dt>
+<dd><p>Whether to run the script in the background. If given, the
+only way to see the output of the command is with
+–out/err.</p>
+</dd>
+<dt><kbd><span>--err <var>ERR</var></span></kbd></dt>
+<dd><p>The variable in which to store stderr from the script. If
+the script is backgrounded, this will be the stderr
+<em>pipe</em>, instead of the stderr text itself and will not be
+autoclosed.</p>
+</dd>
+<dt><kbd><span>--out <var>OUT</var></span></kbd></dt>
+<dd><p>The variable in which to store stdout from the script. If
+the script is backgrounded, this will be the stdout
+<em>pipe</em>, instead of the stderr text itself and will not be
+auto closed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-sh">
+<span><span>%%sh</span></span><a href="#cellmagic-sh" title="Link to this definition"></a></dt>
+<dd><p>%%sh script magic</p>
+<p>Run cells with sh in a subprocess.</p>
+<p>This is a shortcut for <code><span>%%script</span> <span>sh</span></code></p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-svg">
+<span><span>%%svg</span></span><a href="#cellmagic-svg" title="Link to this definition"></a></dt>
+<dd><p>Render the cell as an SVG literal</p>
+</dd></dl>
+
+<dl>
+<dt id="cellmagic-writefile">
+<span><span>%%writefile</span></span><a href="#cellmagic-writefile" title="Link to this definition"></a></dt>
+<dd><div><pre><span></span><span>%</span><span>writefile</span> <span>[</span><span>-</span><span>a</span><span>]</span> <span>filename</span>
+</pre></div>
+<p>Write the contents of the cell to a file.</p>
+<p>The file will be overwritten unless the -a (–append) flag is specified.</p>
+<dl>
+<dt>positional arguments:</dt><dd><p>filename      file to write</p>
+</dd>
+<dt>options:</dt><dd><dl>
+<dt><kbd><span>-a</span>, <span>--append</span></kbd></dt>
+<dd><p>Append contents of the cell to an existing file. The file will
+be created if it does not exist.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section></div>
+  </div>
+</body>
+</html>

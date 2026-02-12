@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Svelte 3: Rethinking reactivity</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Svelte 3: Rethinking reactivity</h1>
+    <p><strong>URL:</strong> <a href="https://svelte.dev/blog/svelte-3-rethinking-reactivity">https://svelte.dev/blog/svelte-3-rethinking-reactivity</a></p>
+    <p><strong>Tags:</strong> javascript, sveltejs</p>
+    <p><strong>Bookmark ID:</strong> 876773981</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main"><article> <p>It's finally here</p>   <p>After several months of being just days away, we are over the moon to announce the stable release of Svelte 3. This is a huge release representing hundreds of hours of work by many people in the Svelte community, including invaluable feedback from beta testers who have helped shape the design every step of the way.</p>
+<p>We think you're going to love it.</p>
+<h2 id="what-is-svelte">What is Svelte?<a href="#what-is-svelte"><span>permalink</span></a></h2><p>Svelte is a component framework —&nbsp;like React or Vue — but with an important difference. Traditional frameworks allow you to write <em>declarative</em> state-driven code, but there's a penalty: the browser must do extra work to convert those declarative structures into DOM operations, using techniques like <a href="https://svelte.dev/blog/virtual-dom-is-pure-overhead">virtual DOM diffing</a> that eat into your frame budget and tax the garbage collector.</p>
+<p>Instead, Svelte runs at <em>build time</em>, converting your components into highly efficient <em>imperative</em> code that surgically updates the DOM. As a result, you're able to write ambitious applications with excellent performance characteristics.</p>
+<p>The first version of Svelte was all about <a href="https://svelte.dev/blog/frameworks-without-the-framework">testing a hypothesis</a> — that a purpose-built compiler could generate rock-solid code that delivered a great user experience. The second was a small upgrade that tidied things up a bit.</p>
+<p>Version 3 is a significant overhaul. Our focus for the last five or six months has been on delivering an outstanding <em>developer</em> experience. It's now possible to write components with <a href="https://svelte.dev/blog/write-less-code">significantly less boilerplate</a> than you'll find elsewhere. Try the brand new <a href="https://svelte.dev/tutorial">tutorial</a> and see what we mean —&nbsp;if you're familiar with other frameworks we think you'll be pleasantly surprised.</p>
+<p>To make that possible we first needed to rethink the concept at the heart of modern UI frameworks: reactivity.</p>
+
+
+<h2 id="moving-reactivity-into-the-language">Moving reactivity into the language<a href="#moving-reactivity-into-the-language"><span>permalink</span></a></h2><p>In old Svelte, you would tell the computer that some state had changed by calling the <code>this.set</code> method:</p>
+<pre><p>ts</p><p><code><p><span>const</span><span> { </span><span><data-lsp lsp="const count: any">count</data-lsp></span><span> } </span><span>=</span><span> </span><span>this</span><span>.<data-lsp lsp="any">get</data-lsp></span><span>();</span></p><p><span>this</span><span>.<data-lsp lsp="any">set</data-lsp></span><span>({</span></p><p><span>	<data-lsp lsp="(property) count: any">count</data-lsp></span><span>:</span><span> <data-lsp lsp="const count: any">count</data-lsp> </span><span>+</span><span> </span><span>1</span></p><p><span>});</span></p></code></p></pre><p>That would cause the component to <em>react</em>. Speaking of which, <code>this.set</code> is almost identical to the <code>this.setState</code> method used in classical (pre-hooks) React:</p>
+<pre><p>ts</p><p><code><p><span>const</span><span> { </span><span><data-lsp lsp="const count: any">count</data-lsp></span><span> } </span><span>=</span><span> </span><span>this</span><span>.<data-lsp lsp="any">state</data-lsp>;</span></p><p><span>this</span><span>.<data-lsp lsp="any">setState</data-lsp></span><span>({</span></p><p><span>	<data-lsp lsp="(property) count: any">count</data-lsp></span><span>:</span><span> <data-lsp lsp="const count: any">count</data-lsp> </span><span>+</span><span> </span><span>1</span></p><p><span>});</span></p></code></p></pre><p>There are some important technical differences (as I explain in the video above, React is not reactive) but conceptually it's the same thing.</p>
+
+
+<p>That all changed with the advent of <a href="https://reactjs.org/docs/hooks-intro.html">hooks</a>, which handle state in a very different fashion. Many frameworks started experimenting with their own implementations of hooks, but we quickly concluded it wasn't a direction we wanted to go in. Hooks have some intriguing properties, but they also involve some unnatural code and create unnecessary work for the garbage collector. For a framework that's used in <a href="https://mobile.twitter.com/sveltejs/status/1088500539640418304">embedded devices</a> as well as animation-heavy interactives, that's no good.</p>
+<p>So we took a step back and asked ourselves what kind of API would work for us... and realised that the best API is no API at all. We can just <em>use the language</em>. Updating some <code>count</code> value — and all the things that depend on it — should be as simple as this:</p>
+<pre><p>ts</p><p><code><p><span><data-lsp lsp="let count: number">count</data-lsp> </span><span>+=</span><span> </span><span>1</span><span>;</span></p></code></p></pre><p>Since we're a compiler, we can do that by instrumenting assignments behind the scenes:</p>
+<pre><p>ts</p><p><code><p><span><data-lsp lsp="let count: number">count</data-lsp> </span><span>+=</span><span> </span><span>1</span><span>;</span></p><p><span><data-lsp lsp="const $$invalidate: <number>(name: string, value: number) => undefined">$$invalidate</data-lsp></span><span>(</span><span>'count'</span><span>,</span><span> <data-lsp lsp="let count: number">count</data-lsp>);</span></p></code></p></pre><p>Importantly, we can do all this without the overhead and complexity of using proxies or accessors. It's just a variable.</p>
+<h2 id="new-look">New look<a href="#new-look"><span>permalink</span></a></h2><p>Your components aren't the only thing that's getting a facelift. Svelte itself has a completely new look and feel, thanks to the amazing design work of <a href="https://vedam.de/">Achim Vedam</a> who created our new logo and website, which has moved from <a href="https://svelte.technology/">svelte.technology</a> to <a href="https://svelte.dev/">svelte.dev</a>.</p>
+<p>We've also changed our tagline, from 'The magical disappearing UI framework' to 'Cybernetically enhanced web apps'. Svelte has many aspects — outstanding performance, small bundles, accessibility, built-in style encapsulation, declarative transitions, ease of use, the fact that it's a compiler, etc — that focusing on any one of them feels like an injustice to the others. 'Cybernetically enhanced' is designed to instead evoke Svelte's overarching philosophy that our tools should work as intelligent extensions of ourselves — hopefully with a retro, William Gibson-esque twist.</p>
+<h2 id="upgrading-from-version-2">Upgrading from version 2<a href="#upgrading-from-version-2"><span>permalink</span></a></h2><p>If you're an existing Svelte 2 user, I'm afraid there is going to be some manual upgrading involved. In the coming days we'll release a migration guide and an updated version of <a href="https://github.com/sveltejs/svelte-upgrade">svelte-upgrade</a> which will do the best it can to automate the process, but this <em>is</em> a significant change and not everything can be handled automatically.</p>
+<p>We don't take this lightly: hopefully once you've experienced Svelte 3 you'll understand why we felt it was necessary to break with the past.</p>
+<h2 id="still-to-come">Still to come<a href="#still-to-come"><span>permalink</span></a></h2><p>As grueling as this release has been, we're nowhere near finished. We have a ton of ideas for generating smarter, more compact code, and a long feature wish-list. <a href="https://sapper.svelte.dev/">Sapper</a>, our Next.js-style app framework, is still in the middle of being updated to use Svelte 3. The <a href="https://svelte-native.technology/">Svelte Native</a> community project, which allows you to write Android and iOS apps in Svelte, is making solid progress but deserves more complete support from core. We don't yet have the bounty of editor extensions, syntax highlighters, component kits, devtools and so on that other frameworks have, and we should fix that. We <em>really</em> want to add first-class TypeScript support.</p>
+<p>But in the meantime we think Svelte 3 is the best way to build web apps yet. Take an hour to go through the <a href="https://svelte.dev/tutorial">tutorial</a> and we hope to convince you of the same. Either way, we'd love to see you in our <a href="https://svelte.dev/chat">Discord chatroom</a> and on <a href="https://github.com/sveltejs/svelte">GitHub</a> — everyone is welcome, especially you.</p>
+</article></div></div>
+  </div>
+</body>
+</html>

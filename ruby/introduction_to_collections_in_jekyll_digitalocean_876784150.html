@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Introduction to Collections in Jekyll | DigitalOcean</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Introduction to Collections in Jekyll | DigitalOcean</h1>
+    <p><strong>URL:</strong> <a href="https://www.digitalocean.com/community/tutorials/jekyll-collections">https://www.digitalocean.com/community/tutorials/jekyll-collections</a></p>
+    <p><strong>Tags:</strong> jekyll, ruby</p>
+    <p><strong>Bookmark ID:</strong> 876784150</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Collections in Jekyll provide an easy way to create your own taxonomies around content of the same type. This is great for pieces that belong in a group, but that are not really posts and shouldn’t be chronologically organized. A good use case for collections are author pages, as they were implemented on this website for <a href="https://www.digitalocean.com/info#collaborators">content collaborators</a>.</p>
+<p>Let’s setup a simple <mark>animals</mark> collection that will hold content that relates to our favorite animals.</p>
+<h2 id="collection-configuration"><a href="#collection-configuration" onclick="navigator.clipboard.writeText(this.href);">Collection Configuration</a></h2>
+<p>First, setup the collection in your <mark>_config.yml</mark> file:</p>
+<p>_config.yml</p>
+<pre><code>collections:
+  animals:
+    output: true
+</code></pre>
+<p>Setting the <mark>output</mark> option to true will generate a page for each document in our collection.</p>
+<p>Then, in your Jekyll site’s root folder, you’ll create an <mark>_animals</mark> folder and fill it with markdown files for each one of the animals in our collection:</p>
+
+<pre><code>_animals/
+  zebra.md
+  lion.md
+  alligator.md
+  ...
+</code></pre>
+<p>With this, our animals will be accessible by going to, for example, <mark>/animals/zebra</mark>. If desired, you can also define a different permalink structure…</p>
+<p>_config.yml</p>
+<pre><code>collections:
+  animals:
+    output: true
+    <mark>permalink: /my-animal/:name</mark>
+</code></pre>
+<p>…And that will make our animal pages available at URLs like <mark>/my-animal/zebra</mark>.</p>
+<hr>
+<p>You can define default values for attributes on animals. This can be useful if all the documents in the collection will share the same layout for example:</p>
+<p>_config.yml</p>
+<pre><code>collections:
+  animals:
+    output: true
+    permalink: /my-animal/:name
+
+defaults:
+
+</code></pre>
+<p>Don’t forget to restart your local server after you’ve made changes to <mark>_config.yml</mark>.</p>
+<h2 id="collection-documents"><a href="#collection-documents" onclick="navigator.clipboard.writeText(this.href);">Collection Documents</a></h2>
+<p>Here’s an example of the content in one of our collection’s mardown files:</p>
+<p>_animals/zebra.md</p>
+<pre><code><span><span>---</span>
+<span><span>layout</span><span>:</span> animal <span># You can ommit this if you've set it as a default</span>
+<span>title</span><span>:</span> Zebra
+<span>class</span><span>:</span>     Mammalia
+<span>family</span><span>:</span> Equidae
+<span>headline</span><span>:</span> Zebras are the best<span>!</span>
+<span>picture</span><span>:</span> /images/animails/zebra.jpg</span>
+<span>---</span></span>
+
+
+</code></pre>
+<p>Each one of our animals will contain values for these attributes: <mark>title</mark>, <mark>class</mark>, <mark>family</mark>, …, along with some markdown content that will be outputted using <mark>{{ content }}</mark> in the <mark>animal</mark> layout.</p>
+<h2 id="layout"><a href="#layout" onclick="navigator.clipboard.writeText(this.href);">Layout</a></h2>
+<p>Here’s an example of what a simple layout could look like:</p>
+<p>_layouts/animal.html</p>
+<pre><code>---
+layout: default
+---
+<span><span><span>&lt;</span>article</span> <span>class</span><span><span>=</span><span>"</span>animal<span>"</span></span><span>&gt;</span></span>
+
+
+    <span><span><span>&lt;</span>img</span> <span>src</span><span><span>=</span><span>"</span>{{ page.picture }}<span>"</span></span> <span>alt</span><span><span>=</span><span>"</span>Photo of a {{ page.title | downcase }}<span>"</span></span><span>&gt;</span></span>
+
+
+  <span><span><span>&lt;</span>h1</span><span>&gt;</span></span>Animal Profile: {{ page.title }}<span><span><span>&lt;/</span>h1</span><span>&gt;</span></span>
+
+  <span><span><span>&lt;</span>div</span> <span>class</span><span><span>=</span><span>"</span>animal-class {{ page.class | downcase }}<span>"</span></span><span>&gt;</span></span>
+    {{ page.class }}
+  <span><span><span>&lt;/</span>div</span><span>&gt;</span></span>
+
+  <span><span><span>&lt;</span>div</span> <span>class</span><span><span>=</span><span>"</span>animal-family {{ page.family | downcase }}<span>"</span></span><span>&gt;</span></span>
+    {{ page.family }}
+  <span><span><span>&lt;/</span>div</span><span>&gt;</span></span>
+
+  <span><span><span>&lt;</span>div</span><span>&gt;</span></span>
+    {{ content }}
+  <span><span><span>&lt;/</span>div</span><span>&gt;</span></span>
+
+<span><span><span>&lt;/</span>article</span><span>&gt;</span></span>
+</code></pre>
+<p>Here our <strong>animal</strong> layout depends on the <strong>default</strong> layout.</p>
+<h2 id="listing-collection-documents"><a href="#listing-collection-documents" onclick="navigator.clipboard.writeText(this.href);">Listing Collection Documents</a></h2>
+<p>Say you have a page where you’d like to list and link to each animal in the collection. That’s easy to do by accessing our collection though the <mark>site</mark> variable. Note also how the <mark>url</mark> attribute is available automatically and allows to easily link to the document:</p>
+<p>pages/animals.md</p>
+<pre><code>---
+layout: page
+title: "A list of animals"
+permalink: "/animals/"
+---
+
+
+</code></pre>
+<p>Other than the <strong>url</strong>, a few more attributes are automatically available on each document: <mark>content</mark>, <mark>output</mark>, <mark>path</mark>, <mark>relative_path</mark>, <mark>collection</mark> and <mark>date</mark>.</p>
+
+<p>In the case of this website, we retrieve a post’s author with something like this in the layout:</p>
+
+<pre><code>
+
+  <span><span><span>&lt;</span>span</span> <span>class</span><span><span>=</span><span>"</span>author<span>"</span></span><span>&gt;</span></span>
+    <span><span><span>&lt;</span>a</span> <span>href</span><span><span>=</span><span>"</span>{{ author.url }}<span>"</span></span><span>&gt;</span></span>{{ author.title }}<span><span><span>&lt;/</span>a</span><span>&gt;</span></span>
+  <span><span><span>&lt;/</span>span</span><span>&gt;</span></span>
+
+</code></pre>
+<p>Posts with an author define an <mark>author</mark> attribute with a value that correlates to a <mark>slug</mark> attribute in each document of the author collection. Thanks to the power of the liquid templating language, we can retrieve the correct author for each post.</p>
+<p>🦄 Have fun creating collections for your static Jekyll sites! For more details, you can refer to the <a href="https://jekyllrb.com/docs/collections/" rel="ugc nofollow noopener" target="_blank">official documentation</a>.</p>
+</div><div><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0069ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><p>While we believe that this content benefits our community, we have not yet thoroughly reviewed it.<!-- --> <!-- -->If you have any suggestions for improvements, please let us know by clicking the<!-- --> <!-- -->“report an issue“ button at the bottom of the tutorial.</p></div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Three ways to scale your Database (Replication vs Sharding vs Partitioning)</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Three ways to scale your Database (Replication vs Sharding vs Partitioning)</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/amrelmohamady/three-ways-to-scale-your-database-replication-vs-sharding-vs-partitioning-1en7">https://dev.to/amrelmohamady/three-ways-to-scale-your-database-replication-vs-sharding-vs-partitioning-1en7</a></p>
+    <p><strong>Tags:</strong> databases</p>
+    <p><strong>Bookmark ID:</strong> 876788777</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="article-show-container" data-article-id="1225121" data-article-slug="three-ways-to-scale-your-database-replication-vs-sharding-vs-partitioning-1en7" data-author-id="517839" data-author-name="Amr Elmohamady" data-author-username="amrelmohamady" data-co-author-ids="" data-path="/amrelmohamady/three-ways-to-scale-your-database-replication-vs-sharding-vs-partitioning-1en7" data-pin-path="/stories/feed/pinned_article" data-pinned-article-id="" data-published="true" data-scheduled="false" lang="en">
+        <header id="main-title">
+
+          
+        </header>
+
+        <div data-article-id="1225121" id="article-body">
+            <p>Taking your database to the next level regarding scale is often harder than scaling web servers. In web servers, you can start new instances of your app and do horizontal scaling or you can increase server resources (memory/cpu) and do vertical scaling. But, when it comes to the database side your queries will get slower and you might run out of space.</p>
+
+<p>In this article, I will introduce three ways to scale your database:</p>
+
+<ol>
+<li>Replication</li>
+<li>Sharding</li>
+<li>Partitioning</li>
+</ol>
+
+<h3>
+  <a name="replication" href="#replication">
+  </a>
+  Replication
+</h3>
+
+<p>Replicating the database is to create copies of same data for more than one server.<br>
+With multiple copies of data on different database servers, replication provides a level of fault tolerance against the loss of a single database server.</p>
+
+<h4>
+  <a name="the-main-advantages-of-replication-are" href="#the-main-advantages-of-replication-are">
+  </a>
+  The main advantages of replication are:
+</h4>
+
+<ul>
+<li>
+<strong>Load Balancing</strong>: Queries will be distributed across multiple servers (maybe in different data centers in different regions)</li>
+<li>
+<strong>High availability</strong>: If one server is down there are other servers to handle queries</li>
+</ul>
+
+<h4>
+  <a name="there-are-different-types-of-replication" href="#there-are-different-types-of-replication">
+  </a>
+  There are different types of replication:
+</h4>
+
+<ul>
+<li>
+<strong>Single-leader architecture</strong>: One server accepts writes from clients, and replicas get data from there. This is the easiest method.</li>
+<li>
+<strong>Multi-leader architecture</strong>: Multiple servers that accept writes and each replica set get data from their leader. It's used in different data centers so writes from different regions become faster like read queries.</li>
+<li>
+<strong>No-leader architecture</strong>: All servers accepts writes and reads. All replicas get data from each other. This architecture is supported by databases like Cassandra to achieve maximum scalability.</li>
+</ul>
+
+<h3>
+  <a name="sharding" href="#sharding">
+  </a>
+  Sharding
+</h3>
+
+<p>Sharding is a method for <strong>distributing</strong> data across multiple machines. Running queries on a single server with a lot of data will consume a lot of CPU but running queries on a subset of this data will be much faster and will consume less CPU.<br>
+Sharding can be used with replication in which each shard will be replicated.<br>
+Sharding is complex and require some experience because you will need to analyze queries and data structure to determine the sharding key and algorithm.</p>
+
+<blockquote>
+<p><strong>Sharding key</strong>: a specific column value that indicates which shard this row is stored in.<br>
+<strong>Sharding algorithm</strong>: an algorithm to distribute your data to one or more shards.</p>
+</blockquote>
+
+<h4>
+  <a name="the-main-advantages-of-sharding-are" href="#the-main-advantages-of-sharding-are">
+  </a>
+  The main advantages of sharding are:
+</h4>
+
+<ul>
+<li>
+<strong>Faster Queries</strong>: less data -&gt; less CPU/memory usage -&gt; faster queries.</li>
+<li>
+<strong>Storage Capacity</strong>: Servers will not run out of space because data is distributed across multiple servers.</li>
+<li>
+<strong>High Availability</strong>: If one shard is down other data won't be lost.</li>
+</ul>
+
+<blockquote>
+<p>Sharding may not be a good option if most of your queries are JOINs.</p>
+</blockquote>
+
+<h3>
+  <a name="partitioning" href="#partitioning">
+  </a>
+  Partitioning
+</h3>
+
+<p>Partitioning is dividing large tables into multiple tables. By dividing a large table into smaller, individual tables, queries that access only a fraction of the data can run faster and use less CPU because there is less data to scan.<br>
+Unlike Sharding and Replication, Partitioning is vertical scaling because each data partition is in the same server.<br>
+Partitioning should be done when:</p>
+
+<ul>
+<li>You have large tables, like in a <code>users</code> table, you can partition based on country.</li>
+<li>You have historical data that are rarely queried and example would be having tables like <code>jobs_2020</code> and <code>jobs_2021</code> for old jobs but for new ones there is the table <code>jobs</code>.</li>
+</ul>
+
+<h4>
+  <a name="the-main-advantage-of-partitioning-is" href="#the-main-advantage-of-partitioning-is">
+  </a>
+  The main advantage of partitioning is:
+</h4>
+
+<ul>
+<li>
+<strong>Faster Queries</strong>: smaller tables and indexes -&gt; less data to scan -&gt; less CPU/memory usage -&gt; faster queries.</li>
+</ul>
+
+
+<hr>
+
+<p>If you liked the article you can join my <a href="https://amrelmohamady.hashnode.dev/newsletter">newsletter</a> and follow me.</p>
+
+
+          </div>
+          
+  
+
+
+
+      </article></div>
+  </div>
+</body>
+</html>

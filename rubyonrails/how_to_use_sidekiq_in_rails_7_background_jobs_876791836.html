@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to use Sidekiq in Rails 7: Background Jobs</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to use Sidekiq in Rails 7: Background Jobs</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/ahmadraza/how-to-use-sidekiq-in-rails-7-background-jobs-1dmb">https://dev.to/ahmadraza/how-to-use-sidekiq-in-rails-7-background-jobs-1dmb</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876791836</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1444344" id="article-body">
+            <p>In this blog, we'll explore how to use background jobs with <a href="https://github.com/sidekiq/sidekiq">Sidekiq</a> in Rails 7 to handle long-running tasks, including:</p>
+
+<ol>
+<li><a href="#why">What are background jobs and why use them</a></li>
+<li><a href="#setting-up">Setting up Sidekiq in your Rails 7 application</a></li>
+<li><a href="#creating">Creating and running background jobs using Sidekiq</a></li>
+<li><a href="#debugging">Debugging and monitoring background jobs with Sidekiq</a></li>
+</ol>
+
+
+<hr>
+
+<h2 id="why">What are Background Jobs and Why Use Them?</h2>
+
+<p>In Rails, background jobs are used to process long-running tasks asynchronously, such as sending emails, generating reports, or processing large datasets. Rather than blocking the main thread of the application and potentially slowing down the user experience, background jobs allow you to run tasks in the background, freeing up the main thread to handle other requests.</p>
+
+<p>There are several advantages to using background jobs:</p>
+
+<ul>
+<li><p><strong>Improved user experience:</strong> By moving long-running tasks to the background, your users won't be blocked from using your application while the tasks are being processed.</p></li>
+<li><p><strong>Scalability:</strong> Running tasks in the background allows your application to scale more effectively. Since background jobs are typically run on a separate thread, your application can process multiple requests at once.</p></li>
+<li><p><strong>Increased reliability:</strong> Background jobs can be retried automatically in case of failure, ensuring that tasks are completed successfully.</p></li>
+</ul>
+
+
+<hr>
+
+<h2 id="setting-up">Setting up Sidekiq in Your Rails 7 Application</h2>
+
+<p>Sidekiq is a popular background job processing framework for Rails. It uses Redis to manage and process jobs, providing a simple and efficient way to manage background jobs. To use Sidekiq in your Rails 7 application, follow these steps:</p>
+
+<ol>
+<li>Add the <code>sidekiq</code> gem to your Gemfile:
+</li>
+</ol>
+
+<div>
+<pre><code>gem 'sidekiq' 
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<ol>
+<li><p>Run <code>bundle install</code> to install the gem.</p></li>
+<li><p>Update your <code>config/application.rb</code> file to include the Sidekiq middleware:<br>
+</p></li>
+</ol>
+
+<div>
+<pre><code>config.active_job.queue_adapter = :sidekiq
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+
+<hr>
+
+<h2 id="creating">Creating and Running Background Jobs using Sidekiq
+</h2>
+
+<p>To create and run background jobs using Sidekiq in Rails 7, follow these steps:</p>
+
+<ol>
+<li>Create a new job using the <code>rails generate job</code> command:
+</li>
+</ol>
+
+<div>
+<pre><code>rails generate job MyJob
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This will create a new job file in the <code>app/jobs</code> directory.</p>
+
+<ol>
+<li>Edit the job file to define the work to be done:
+</li>
+</ol>
+
+<div>
+<pre><code>class MyJob &lt; ApplicationJob
+  queue_as :default
+
+  def perform(*args)
+    # Add your long-running task here
+  end
+end
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<ol>
+<li>Enqueue the job in your application code:
+</li>
+</ol>
+
+<div>
+<pre><code>MyJob.perform_later(args)
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This will enqueue the job to the <code>default</code> queue.</p>
+
+<ol>
+<li>Start Sidekiq to process the job:
+</li>
+</ol>
+
+<div>
+<pre><code>bundle exec sidekiq
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+
+<hr>
+
+<h2 id="debugging">Debugging and Monitoring Background Jobs with Sidekiq</h2>
+
+<p>While background jobs can make your application more efficient and responsive, they can also introduce new challenges for debugging and monitoring. Fortunately, Sidekiq provides a simple web interface for monitoring and debugging your background jobs.</p>
+
+<p>To access the Sidekiq web interface, add below code in your routes:<br>
+</p>
+
+<div>
+<pre><code>require 'sidekiq/web'
+mount Sidekiq::Web =&gt; '/sidekiq'
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Now, start the Sidekiq server by running <code>bundle exec sidekiq</code> in your Rails application's directory. Then, navigate to <a href="http://localhost:3000/sidekiq">http://localhost:3000/sidekiq</a> in your web browser to view the Sidekiq dashboard.</p>
+
+<p>The dashboard displays information about the Sidekiq server, including the number of currently running and enqueued jobs. You can also view information about individual jobs, such as their status and any errors that occurred.</p>
+
+<p>In addition to the web interface, Sidekiq provides several other tools for monitoring and debugging your background jobs. For example, you can configure Sidekiq to send email notifications when jobs fail, or use the Sidekiq API to retrieve information about your jobs programmatically.</p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>Read more on <a href="https://sidekiq.org/">Sidekiq Official Website</a>.</p>
+
+<p>In this article, we've explored how to use background jobs with Sidekiq in Rails 7. We covered how to install and configure Sidekiq, how to define and enqueue background jobs, and how to monitor and debug your jobs using Sidekiq's web interface and other tools.</p>
+
+<p>By using background jobs with Sidekiq, you can improve the performance and responsiveness of your Rails application, while also making it more robust and fault-tolerant. So if you're not already using background jobs in your Rails applications, give Sidekiq a try!</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

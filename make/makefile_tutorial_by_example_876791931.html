@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Makefile Tutorial by Example</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Makefile Tutorial by Example</h1>
+    <p><strong>URL:</strong> <a href="https://makefiletutorial.com/#top">https://makefiletutorial.com/#top</a></p>
+    <p><strong>Tags:</strong> linux, make</p>
+    <p><strong>Bookmark ID:</strong> 876791931</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="right">
+                                <p><b>I built this guide because I could never quite wrap my head around Makefiles.</b> They seemed awash with hidden rules and esoteric symbols, and asking simple questions didn’t yield simple answers. To solve this, I sat down for several weekends and read everything I could about Makefiles. I've condensed the most critical knowledge into this guide. Each topic has a brief description and a self contained example that you can run yourself.</p>
+<p>If you mostly understand Make, consider checking out the <a href="#makefile-cookbook">Makefile Cookbook</a>, which has a template for medium sized projects with ample comments about what each part of the Makefile is doing.</p>
+<p>Good luck, and I hope you are able to slay the confusing world of Makefiles!</p>
+<h2 id="getting-started">Getting Started</h2>
+<h2 id="why-do-makefiles-exist">Why do Makefiles exist?</h2>
+<p>Makefiles are used to help decide which parts of a large program need to be recompiled. In the vast majority of cases, C or C++ files are compiled. Other languages typically have their own tools that serve a similar purpose as Make. Make can also be used beyond compilation too, when you need a series of instructions to run depending on what files have changed. This tutorial will focus on the C/C++ compilation use case.</p>
+<p>Here's an example dependency graph that you might build with Make. If any file's dependencies changes, then the file will get recompiled:</p>
+<p><img src="data:image/png;base64,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">
+</p>
+
+<h2 id="what-alternatives-are-there-to-make">What alternatives are there to Make?</h2>
+<p>Popular C/C++ alternative build systems are <a href="https://scons.org/">SCons</a>, <a href="https://cmake.org/">CMake</a>, <a href="https://bazel.build/">Bazel</a>, and <a href="https://ninja-build.org/">Ninja</a>. Some code editors like <a href="https://visualstudio.microsoft.com/">Microsoft Visual Studio</a> have their own built in build tools. For Java, there's <a href="https://ant.apache.org/">Ant</a>, <a href="https://maven.apache.org/what-is-maven.html">Maven</a>, and <a href="https://gradle.org/">Gradle</a>. Other languages like Go, Rust, and TypeScript have their own build tools.</p>
+<p>Interpreted languages like Python, Ruby, and raw Javascript don't require an analogue to Makefiles. The goal of Makefiles is to compile whatever files need to be compiled, based on what files have changed. But when files in interpreted languages change, nothing needs to get recompiled. When the program runs, the most recent version of the file is used.</p>
+<h2 id="the-versions-and-types-of-make">The versions and types of Make</h2>
+<p>There are a variety of implementations of Make, but most of this guide will work on whatever version you're using. However, it's specifically written for GNU Make, which is the standard implementation on Linux and MacOS. All the examples work for Make versions 3 and 4, which are nearly equivalent other than some esoteric differences.</p>
+<h2 id="running-the-examples">Running the Examples</h2>
+<p>To run these examples, you'll need a terminal and "make" installed. For each example, put the contents in a file called <code>Makefile</code>, and in that directory run the command <code>make</code>. Let's start with the simplest of Makefiles:</p>
+<pre><code><span>hello:</span>
+	echo <span>"Hello, World"</span></code></pre>
+<blockquote>
+<p>Note: Makefiles <strong>must</strong> be indented using TABs and not spaces or <code>make</code> will fail.</p>
+</blockquote>
+<p>Here is the output of running the above example:</p>
+<pre><code><span>$</span><span> make</span>
+echo "Hello, World"
+Hello, World</code></pre>
+<p>That's it! If you're a bit confused, here's a video that goes through these steps, along with describing the basic structure of Makefiles.</p>
+<p>
+<iframe width="560" height="315" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" sandbox="allow-popups allow-top-navigation allow-top-navigation-by-user-activation allow-scripts allow-same-origin allow-modals allow-popups allow-downloads allow-pointer-lock allow-presentation" srcdoc="<!DOCTYPE html> <html dir=&quot;ltr&quot; lang=&quot;en&quot; subframe><head><meta charset=&quot;utf-8&quot;>
+  
+  <meta name=&quot;color-scheme&quot; content=&quot;light dark&quot;>
+  <meta name=&quot;theme-color&quot; content=&quot;#fff&quot;>
+  <meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0,
+                                 maximum-scale=1.0, user-scalable=no&quot;>
+  <title>www.youtube.com</title>
+  <style>a{color:var(--link-color)}body{--background-color:#fff;--error-code-color:var(--google-gray-700);--google-blue-100:rgb(210,227,252);--google-blue-300:rgb(138,180,248);--google-blue-600:rgb(26,115,232);--google-blue-700:rgb(25,103,210);--google-gray-100:rgb(241,243,244);--google-gray-300:rgb(218,220,224);--google-gray-500:rgb(154,160,166);--google-gray-50:rgb(248,249,250);--google-gray-600:rgb(128,134,139);--google-gray-700:rgb(95,99,104);--google-gray-800:rgb(60,64,67);--google-gray-900:rgb(32,33,36);--heading-color:var(--google-gray-900);--link-color:rgb(88,88,88);--popup-container-background-color:rgba(0,0,0,.65);--primary-button-fill-color-active:var(--google-blue-700);--primary-button-fill-color:var(--google-blue-600);--primary-button-text-color:#fff;--quiet-background-color:rgb(247,247,247);--secondary-button-border-color:var(--google-gray-500);--secondary-button-fill-color:#fff;--secondary-button-hover-border-color:var(--google-gray-600);--secondary-button-hover-fill-color:var(--google-gray-50);--secondary-button-text-color:var(--google-gray-700);--small-link-color:var(--google-gray-700);--text-color:var(--google-gray-700);background:var(--background-color);color:var(--text-color);word-wrap:break-word}.nav-wrapper .secondary-button{background:var(--secondary-button-fill-color);border:1px solid var(--secondary-button-border-color);color:var(--secondary-button-text-color);float:none;margin:0;padding:8px 16px}.hidden{display:none}html{-webkit-text-size-adjust:100%;font-size:125%}.icon{background-repeat:no-repeat;background-size:100%}@media (prefers-color-scheme:dark){body{--background-color:var(--google-gray-900);--error-code-color:var(--google-gray-500);--heading-color:var(--google-gray-500);--link-color:var(--google-blue-300);--primary-button-fill-color-active:rgb(129,162,208);--primary-button-fill-color:var(--google-blue-300);--primary-button-text-color:var(--google-gray-900);--quiet-background-color:var(--background-color);--secondary-button-border-color:var(--google-gray-700);--secondary-button-fill-color:var(--google-gray-900);--secondary-button-hover-fill-color:rgb(48,51,57);--secondary-button-text-color:var(--google-blue-300);--small-link-color:var(--google-blue-300);--text-color:var(--google-gray-500)}}</style>
+  <style>button{border:0;border-radius:20px;box-sizing:border-box;color:var(--primary-button-text-color);cursor:pointer;float:right;font-size:.875em;margin:0;padding:8px 16px;transition:box-shadow 150ms cubic-bezier(0.4,0,0.2,1);user-select:none}[dir=&quot;rtl&quot;] button{float:left}.bad-clock button,.captive-portal button,.https-only button,.insecure-form button,.lookalike-url button,.main-frame-blocked button,.neterror button,.pdf button,.ssl button,.enterprise-block button,.enterprise-warn button,.safe-browsing-billing button,.supervised-user-verify button{background:var(--primary-button-fill-color)}button:active{background:var(--primary-button-fill-color-active);outline:0}#debugging{display:inline;overflow:auto}.debugging-content{line-height:1em;margin-bottom:0;margin-top:1em}.debugging-content-fixed-width{display:block;font-family:monospace;font-size:1.2em;margin-top:0.5em}.debugging-title{font-weight:bold}#details{margin:0 0 50px}#details p:not(:first-of-type){margin-top:20px}.secondary-button:active{border-color:white;box-shadow:0 1px 2px 0 rgba(60,64,67,.3),0 2px 6px 2px rgba(60,64,67,.15)}.secondary-button:hover{background:var(--secondary-button-hover-fill-color);border-color:var(--secondary-button-hover-border-color);text-decoration:none}.error-code{color:var(--error-code-color);font-size:.8em;margin-top:12px;text-transform:uppercase}#error-debugging-info{font-size:0.8em}h1{color:var(--heading-color);font-size:1.6em;font-weight:normal;line-height:1.25em;margin-bottom:16px}h2{font-size:1.2em;font-weight:normal}.icon{height:72px;margin:0 0 40px;width:72px}input[type=checkbox]{opacity:0}input[type=checkbox]:focus~.checkbox::after{outline:-webkit-focus-ring-color auto 5px}.interstitial-wrapper{box-sizing:border-box;font-size:1em;line-height:1.6em;margin:14vh auto 0;max-width:600px;width:100%}#main-message>p{display:inline}#extended-reporting-opt-in{font-size:.875em;margin-top:32px}#extended-reporting-opt-in label{display:grid;grid-template-columns:1.8em 1fr;position:relative}#enhanced-protection-message{border-radius:20px;font-size:1em;margin-top:32px;padding:10px 5px}#enhanced-protection-message a{color:var(--google-red-10)}#enhanced-protection-message label{display:grid;grid-template-columns:2.5em 1fr;position:relative}#enhanced-protection-message div{margin:0.5em}#enhanced-protection-message .icon{height:1.5em;vertical-align:middle;width:1.5em}.nav-wrapper{margin-top:51px}.nav-wrapper::after{clear:both;content:&quot;&quot;;display:table;width:100%}.small-link{color:var(--small-link-color);font-size:.875em}.checkboxes{flex:0 0 24px}.checkbox{--padding:.9em;background:transparent;display:block;height:1em;left:-1em;padding-inline-start:var(--padding);position:absolute;right:0;top:-.5em;width:1em}.checkbox::after{border:1px solid white;border-radius:2px;content:&quot;&quot;;height:1em;left:var(--padding);position:absolute;top:var(--padding);width:1em}.checkbox::before{background:transparent;border:2px solid white;border-inline-end-width:0;border-top-width:0;content:&quot;&quot;;height:.2em;left:calc(.3em + var(--padding));opacity:0;position:absolute;top:calc(.3em + var(--padding));transform:rotate(-45deg);width:.5em}input[type=checkbox]:checked~.checkbox::before{opacity:1}#recurrent-error-message{background:#ededed;border-radius:4px;margin-bottom:16px;margin-top:12px;padding:12px 16px}.showing-recurrent-error-message #extended-reporting-opt-in{margin-top:16px}.showing-recurrent-error-message #enhanced-protection-message{margin-top:16px}@media (max-width:700px){.interstitial-wrapper{padding:0 10%}#error-debugging-info{overflow:auto}}@media (max-width:420px){button,[dir=&quot;rtl&quot;] button,.small-link{float:none;font-size:.825em;font-weight:500;margin:0;width:100%}button{padding:16px 24px}#details{margin:20px 0 20px 0}#details p:not(:first-of-type){margin-top:10px}.secondary-button:not(.hidden){display:block;margin-top:20px;text-align:center;width:100%}.interstitial-wrapper{padding:0 5%}#extended-reporting-opt-in{margin-top:24px}#enhanced-protection-message{margin-top:24px}.nav-wrapper{margin-top:30px}}@media (max-width:420px){.nav-wrapper .secondary-button{border:0;margin:16px 0 0;margin-inline-end:0;padding-bottom:16px;padding-top:16px}}@media (min-width:240px) and (max-width:420px) and (min-height:401px),(min-width:421px) and (min-height:240px) and (max-height:560px){body .nav-wrapper{background:var(--background-color);bottom:0;box-shadow:0-12px 24px var(--background-color);left:0;margin:0 auto;max-width:736px;padding-inline-end:24px;padding-inline-start:24px;position:fixed;right:0;width:100%;z-index:2}.interstitial-wrapper{max-width:736px}#details,#main-content{padding-bottom:40px}#details{padding-top:5.5vh}button.small-link{color:var(--google-blue-600)}}@media (max-width:420px) and (orientation:portrait),(max-height:560px){body{margin:0 auto}button,[dir=&quot;rtl&quot;] button,button.small-link,.nav-wrapper .secondary-button{font-family:Roboto-Regular,Helvetica;font-size:.933em;margin:6px 0;transform:translatez(0)}.nav-wrapper{box-sizing:border-box;padding-bottom:8px;width:100%}#details{box-sizing:border-box;height:auto;margin:0;opacity:1;transition:opacity 250ms cubic-bezier(0.4,0,0.2,1)}#details.hidden,#main-content.hidden{height:0;opacity:0;overflow:hidden;padding-bottom:0;transition:none}h1{font-size:1.5em;margin-bottom:8px}.icon{margin-bottom:5.69vh}.interstitial-wrapper{box-sizing:border-box;margin:7vh auto 12px;padding:0 24px;position:relative}.interstitial-wrapper p{font-size:.95em;line-height:1.61em;margin-top:8px}#main-content{margin:0;transition:opacity 100ms cubic-bezier(0.4,0,0.2,1)}.small-link{border:0}.suggested-left>#control-buttons,.suggested-right>#control-buttons{float:none;margin:0}}@media (min-width:421px) and (min-height:500px) and (max-height:560px){.interstitial-wrapper{margin-top:10vh}}@media (min-height:400px) and (orientation:portrait){.interstitial-wrapper{margin-bottom:145px}}@media (min-height:299px){.nav-wrapper{padding-bottom:16px}}@media (max-height:560px) and (min-height:240px) and (orientation:landscape){.extended-reporting-has-checkbox #details{padding-bottom:80px}}@media (min-height:500px) and (max-height:650px) and (max-width:414px) and (orientation:portrait){.interstitial-wrapper{margin-top:7vh}}@media (min-height:650px) and (max-width:414px) and (orientation:portrait){.interstitial-wrapper{margin-top:10vh}}@media (max-height:400px) and (orientation:portrait),(max-height:239px) and (orientation:landscape),(max-width:419px) and (max-height:399px){.interstitial-wrapper{display:flex;flex-direction:column;margin-bottom:0}#details{flex:1 1 auto;order:0}#main-content{flex:1 1 auto;order:0}.nav-wrapper{flex:0 1 auto;margin-top:8px;order:1;padding-inline-end:0;padding-inline-start:0;position:relative;width:100%}button,.nav-wrapper .secondary-button{padding:16px 24px}button.small-link{color:var(--google-blue-600)}}@media (max-width:239px) and (orientation:portrait){.nav-wrapper{padding-inline-end:0;padding-inline-start:0}}</style>
+  <style>html[subframe] #main-frame-error{display:none}html:not([subframe]) #sub-frame-error{display:none}h1{margin-top:0;word-wrap:break-word}h1 span{font-weight:500}a{text-decoration:none}.icon{-webkit-user-select:none;display:inline-block}.icon-generic{content:image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABIAQMAAABvIyEEAAAABlBMVEUAAABTU1OoaSf/AAAAAXRSTlMAQObYZgAAAENJREFUeF7tzbEJACEQRNGBLeAasBCza2lLEGx0CxFGG9hBMDDxRy/72O9FMnIFapGylsu1fgoBdkXfUHLrQgdfrlJN1BdYBjQQm3UAAAAASUVORK5CYII=)1x,url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQAQMAAADdiHD7AAAABlBMVEUAAABTU1OoaSf/AAAAAXRSTlMAQObYZgAAAFJJREFUeF7t0cENgDAMQ9FwYgxG6WjpaIzCCAxQxVggFuDiCvlLOeRdHR9yzjncHVoq3npu+wQUrUuJHylSTmBaespJyJQoObUeyxDQb3bEm5Au81c0pSCD8HYAAAAASUVORK5CYII=)2x)}.icon-info{content:image-set(url(data:image/png;base64,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)1x,url(data:image/png;base64,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)2x)}.icon-offline{content:image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABIAQMAAABvIyEEAAAABlBMVEUAAABTU1OoaSf/AAAAAXRSTlMAQObYZgAAAGxJREFUeF7tyMEJwkAQRuFf5ipMKxYQiJ3Z2nSwrWwBA0+DQZcdxEOueaePp9+dQZFB7GpUcURSVU66yVNFj6LFICatThZB6r/ko/pbRpUgilY0Cbw5sNmb9txGXUKyuH7eV25x39DtJXUNPQGJtWFV+BT/QAAAAABJRU5ErkJggg==)1x,url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQBAMAAAAVaP+LAAAAGFBMVEUAAABTU1NNTU1TU1NPT09SUlJSUlJTU1O8B7DEAAAAB3RSTlMAoArVKvVgBuEdKgAAAJ1JREFUeF7t1TEOwyAMQNG0Q6/UE+RMXD9d/tC6womIFSL9P+MnAYOXeTIzMzMzMzMzaz8J9Ri6HoITmuHXhISE8nEh9yxDh55aCEUoTGbbQwjqHwIkRAEiIaG0+0AA9VBMaE89Rogeoww936MQrWdBr4GN/z0IAdQ6nQ/FIpRXDwHcA+JIJcQowQAlFUA0MfQpXLlVQfkzR4igS6ENjknm/wiaGhsAAAAASUVORK5CYII=)2x);position:relative}.icon-disabled{content:image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABICAMAAAAZF4G5AAAABlBMVEVMaXFTU1OXUj8tAAAAAXRSTlMAQObYZgAAASZJREFUeAHd11Fq7jAMRGGf/W/6PoWB67YMqv5DybwG/CFjRuR8JBw3+ByiRjgV9W/TJ31P0tBfC6+cj1haUFXKHmVJo5wP98WwQ0ZCbfUc6LQ6VuUBz31ikADkLMkDrfUC4rR6QGW+gF6rx7NaHWCj1Y/W6lf4L7utvgBSt3rBFSS/XBMPUILcJINHCBWYUfpWn4NBi1ZfudIc3rf6/NGEvEA+AsYTJozmXemjXeLZAov+mnkN2HfzXpMSVQDnGw++57qNJ4D1xitA2sJ+VAWMygSEaYf2mYPTjZfk2K8wmP7HLIH5Mg4/pP+PEcDzUvDMvYbs/2NWwPO5vBdMZE4EE5UTQLiBFDaUlTDPBRoJ9HdAYIkIo06og3BNXtCzy7zA1aXk5x+tJARq63eAygAAAABJRU5ErkJggg==)1x,url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAACQAQMAAAArwfVjAAAABlBMVEVMaXFTU1OXUj8tAAAAAXRSTlMAQObYZgAAAYdJREFUeF7F1EFqwzAUBNARAmVj0FZe5QoBH6BX+dn4GlY2PYNzGx/A0CvkCIJuvIraKJKbgBvzf2g62weDGD7CYggpfFReis4J0ey9EGFIiEQQojFSlA9kSIiqd0KkFjKsewgRbStEN19mxUPTtmW9HQ/h6tyqNQ8NlSMZdzyE6qkoE0trVYGFm0n1WYeBhduzwbwBC7voS+vIxfeMjeaiLxsMMtQNwMPtuew+DjzcTHk8YMfDknEcIUOtf2lVfgVH3K4Xv5PRYAXRVMtItIJ3rfaCIVn9DsTH2NxisAVRex2Hh3hX+/mRUR08bAwPEYsI51ZxWH4Q0SpicQRXeyEaIug48FEdegARfMz/tADVsRciwTAxW308ehmC2gLraC+YCbV3QoTZexa+zegAEW5PhhgYfmbvJgcRqngGByOSXdFJcLk2JeDPEN0kxe1JhIt5FiFA+w+ItMELsUyPF2IaJ4aILqb4FbxPwhImwj6JauKgDUCYaxmYIsd4KXdMjIC9ItB5Bn4BNRwsG0XM2nwAAAAASUVORK5CYII=)2x);width:112px}.hidden{display:none}#suggestions-list a{color:var(--google-blue-600)}#suggestions-list p{margin-block-end:0}#suggestions-list ul{margin-top:0}.single-suggestion{list-style-type:none;padding-inline-start:0}#error-information-button{content:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDB6Ii8+PHBhdGggZD0iTTExIDE4aDJ2LTJoLTJ2MnptMS0xNkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6bTAtMTRjLTIuMjEgMC00IDEuNzktNCA0aDJjMC0xLjEuOS0yIDItMnMyIC45IDIgMmMwIDItMyAxLjc1LTMgNWgyYzAtMi4yNSAzLTIuNSAzLTUgMC0yLjIxLTEuNzktNC00LTR6Ii8+PC9zdmc+);height:24px;vertical-align:-.15em;width:24px}.use-popup-container#error-information-popup-container #error-information-popup{align-items:center;background-color:var(--popup-container-background-color);display:flex;height:100%;left:0;position:fixed;top:0;width:100%;z-index:100}.use-popup-container#error-information-popup-container #error-information-popup-content>p{margin-bottom:11px;margin-inline-start:20px}.use-popup-container#error-information-popup-container #suggestions-list ul{margin-inline-start:15px}.use-popup-container#error-information-popup-container #error-information-popup-box{background-color:var(--background-color);left:5%;padding-bottom:15px;padding-top:15px;position:fixed;width:90%;z-index:101}.use-popup-container#error-information-popup-container div.error-code{margin-inline-start:20px}.use-popup-container#error-information-popup-container #suggestions-list p{margin-inline-start:20px}:not(.use-popup-container)#error-information-popup-container #error-information-popup-close{display:none}#error-information-popup-close{margin-bottom:0;margin-inline-end:35px;margin-top:15px;text-align:end}.link-button{color:rgb(66,133,244);display:inline-block;font-weight:bold;text-transform:uppercase}#sub-frame-error-details{color:#8F8F8F;text-shadow:0 1px 0 rgba(255,255,255,0.3)}[jscontent=hostName],[jscontent=failedUrl]{overflow-wrap:break-word}.secondary-button{background:#d9d9d9;color:#696969;margin-inline-end:16px}.snackbar{background:#323232;border-radius:2px;bottom:24px;box-sizing:border-box;color:#fff;font-size:.87em;left:24px;max-width:568px;min-width:288px;opacity:0;padding:16px 24px 12px;position:fixed;transform:translateY(90px);will-change:opacity,transform;z-index:999}.snackbar-show{-webkit-animation:show-snackbar 250ms cubic-bezier(0,0,0.2,1) forwards,hide-snackbar 250ms cubic-bezier(0.4,0,1,1) forwards 5s}@-webkit-keyframes show-snackbar{100%{opacity:1;transform:translateY(0)}}@-webkit-keyframes hide-snackbar{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(90px)}}.suggestions{margin-top:18px}.suggestion-header{font-weight:bold;margin-bottom:4px}.suggestion-body{color:#777}@media (max-width:640px),(max-height:640px){h1{margin:0 0 15px}.suggestions{margin-top:10px}.suggestion-header{margin-bottom:0}}#download-link,#download-link-clicked{margin-bottom:30px;margin-top:30px}#download-link-clicked{color:#BBB}#download-link::before,#download-link-clicked::before{content:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxLjJlbSIgaGVpZ2h0PSIxLjJlbSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSAyMGgxNHYtMkg1bTE0LTloLTRWM0g5djZINWw3IDcgNy03eiIgZmlsbD0iIzQyODVGNCIvPjwvc3ZnPg==);display:inline-block;margin-inline-end:4px;vertical-align:-webkit-baseline-middle}#download-link-clicked::before{opacity:0;width:0}#offline-content-list-visibility-card{border:1px solid white;border-radius:8px;display:flex;font-size:.8em;justify-content:space-between;line-height:1}#offline-content-list.list-hidden #offline-content-list-visibility-card{border-color:rgb(218,220,224)}#offline-content-list-visibility-card>div{padding:1em}#offline-content-list-title{color:var(--google-gray-700)}#offline-content-list-show-text,#offline-content-list-hide-text{color:rgb(66,133,244)}#offline-content-list.list-hidden #offline-content-list-hide-text,#offline-content-list:not(.list-hidden) #offline-content-list-show-text{display:none}#offline-content-suggestions{max-height:27em;transition:max-height 200ms ease-in,visibility 0s 200ms,opacity 200ms 200ms linear}#offline-content-list.list-hidden #offline-content-suggestions{max-height:0;opacity:0;transition:opacity 200ms linear,visibility 0s 200ms,max-height 200ms 200ms ease-out;visibility:hidden}#offline-content-list{margin-inline-start:-5%;width:110%}@media (max-width:420px){#offline-content-list{margin-inline-start:-2.5%;width:105%}}@media (max-width:420px) and (orientation:portrait),(max-height:560px){#offline-content-list{margin-inline-start:-12px;width:calc(100% + 24px)}}.suggestion-with-image .offline-content-suggestion-thumbnail{flex-basis:8.2em;flex-shrink:0}.suggestion-with-image .offline-content-suggestion-thumbnail>img{height:100%;width:100%}.suggestion-with-image #offline-content-list:not(.is-rtl) .offline-content-suggestion-thumbnail>img{border-bottom-right-radius:7px;border-top-right-radius:7px}.suggestion-with-image #offline-content-list.is-rtl .offline-content-suggestion-thumbnail>img{border-bottom-left-radius:7px;border-top-left-radius:7px}.suggestion-with-icon .offline-content-suggestion-thumbnail{align-items:center;display:flex;justify-content:center;min-height:4.2em;min-width:4.2em}.suggestion-with-icon .offline-content-suggestion-thumbnail>div{align-items:center;background-color:rgb(241,243,244);border-radius:50%;display:flex;height:2.3em;justify-content:center;width:2.3em}.suggestion-with-icon .offline-content-suggestion-thumbnail>div>img{height:1.45em;width:1.45em}.offline-content-suggestion-favicon{height:1em;margin-inline-end:0.4em;width:1.4em}.offline-content-suggestion-favicon>img{height:1.4em;width:1.4em}.no-favicon .offline-content-suggestion-favicon{display:none}.image-video{content:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTcgMTAuNVY3YTEgMSAwIDAgMC0xLTFINGExIDEgMCAwIDAtMSAxdjEwYTEgMSAwIDAgMCAxIDFoMTJhMSAxIDAgMCAwIDEtMXYtMy41bDQgNHYtMTFsLTQgNHoiIGZpbGw9IiMzQzQwNDMiLz48L3N2Zz4=)}.image-music-note{content:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgM3Y5LjI2Yy0uNS0uMTctMS0uMjYtMS41LS4yNkM4IDEyIDYgMTQgNiAxNi41UzggMjEgMTAuNSAyMXM0LjUtMiA0LjUtNC41VjZoNFYzaC03eiIgZmlsbD0iIzNDNDA0MyIvPjwvc3ZnPg==)}.image-earth{content:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMmM1LjUyIDAgMTAgNC40OCAxMCAxMHMtNC40OCAxMC0xMCAxMFMyIDE3LjUyIDIgMTIgNi40OCAyIDEyIDJ6TTQgMTJoNC40YzMuNDA3LjAyMiA0LjkyMiAxLjczIDQuNTQzIDUuMTI3SDkuNDg4djIuNDdhOC4wMDQgOC4wMDQgMCAwIDAgMTAuNDk4LTguMDgzQzE5LjMyNyAxMi41MDQgMTguMzMyIDEzIDE3IDEzYy0yLjEzNyAwLTMuMjA2LS45MTYtMy4yMDYtMi43NWgtMy43NDhjLS4yNzQtMi43MjguNjgzLTQuMDkyIDIuODctNC4wOTIgMC0uOTc1LjMyNy0xLjU5Ny44MTEtMS45N0E4LjAwNCA4LjAwNCAwIDAgMCA0IDEyeiIgZmlsbD0iIzNDNDA0MyIvPjwvc3ZnPg==)}.image-file{content:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTMgOVYzLjVMMTguNSA5TTYgMmMtMS4xMSAwLTIgLjg5LTIgMnYxNmEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJWOGwtNi02SDZ6IiBmaWxsPSIjM0M0MDQzIi8+PC9zdmc+)}.offline-content-suggestion-texts{display:flex;flex-direction:column;justify-content:space-between;line-height:1.3;padding:.9em;width:100%}.offline-content-suggestion-title{-webkit-box-orient:vertical;-webkit-line-clamp:3;color:rgb(32,33,36);display:-webkit-box;font-size:1.1em;overflow:hidden;text-overflow:ellipsis}div.offline-content-suggestion{align-items:stretch;border:1px solid rgb(218,220,224);border-radius:8px;display:flex;justify-content:space-between;margin-bottom:.8em}.suggestion-with-image{flex-direction:row;height:8.2em;max-height:8.2em}.suggestion-with-icon{flex-direction:row-reverse;height:4.2em;max-height:4.2em}.suggestion-with-icon .offline-content-suggestion-title{-webkit-line-clamp:1;word-break:break-all}.suggestion-with-icon .offline-content-suggestion-texts{padding-inline-start:0}.offline-content-suggestion-attribution-freshness{color:rgb(95,99,104);display:flex;font-size:.8em;line-height:1.7em}.offline-content-suggestion-attribution{-webkit-box-orient:vertical;-webkit-line-clamp:1;display:-webkit-box;flex-shrink:1;margin-inline-end:0.3em;overflow:hidden;overflow-wrap:break-word;text-overflow:ellipsis;word-break:break-all}.no-attribution .offline-content-suggestion-attribution{display:none}.offline-content-suggestion-freshness::before{content:&quot;-&quot;;display:inline-block;flex-shrink:0;margin-inline-end:.1em;margin-inline-start:.1em}.no-attribution .offline-content-suggestion-freshness::before{display:none}.offline-content-suggestion-freshness{flex-shrink:0}.suggestion-with-image .offline-content-suggestion-pin-spacer{flex-grow:100;flex-shrink:1}.suggestion-with-image .offline-content-suggestion-pin{content:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCI+PGRlZnM+PHBhdGggaWQ9ImEiIGQ9Ik0wIDBoMjR2MjRIMFYweiIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBjbGlwLXBhdGg9InVybCgjYikiIGQ9Ik0xMiAyQzYuNSAyIDIgNi41IDIgMTJzNC41IDEwIDEwIDEwIDEwLTQuNSAxMC0xMFMxNy41IDIgMTIgMnptNSAxNkg3di0yaDEwdjJ6bS02LjctNEw3IDEwLjdsMS40LTEuNCAxLjkgMS45IDUuMy01LjNMMTcgNy4zIDEwLjMgMTR6IiBmaWxsPSIjOUFBMEE2Ii8+PC9zdmc+);flex-shrink:0;height:1.4em;margin-inline-start:.4em;width:1.4em}#offline-content-list-action{text-align:center;transition:visibility 0s 200ms,opacity 200ms 200ms linear}#offline-content-list.list-hidden #offline-content-list-action{opacity:0;transition:opacity 200ms linear,visibility 0s 200ms;visibility:hidden}#cancel-save-page-button{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ij48Y2xpcFBhdGggaWQ9Im1hc2siPjxwYXRoIGQ9Ik0xMiAyQzYuNSAyIDIgNi41IDIgMTJzNC41IDEwIDEwIDEwIDEwLTQuNSAxMC0xMFMxNy41IDIgMTIgMnptNSAxNkg3di0yaDEwdjJ6bS02LjctNEw3IDEwLjdsMS40LTEuNCAxLjkgMS45IDUuMy01LjNMMTcgNy4zIDEwLjMgMTR6IiBmaWxsPSIjOUFBMEE2Ii8+PC9jbGlwUGF0aD48cGF0aCBjbGlwLXBhdGg9InVybCgjbWFzaykiIGZpbGw9IiM5QUEwQTYiIGQ9Ik0wIDBoMjR2MjRIMHoiLz48cGF0aCBjbGlwLXBhdGg9InVybCgjbWFzaykiIGZpbGw9IiMxQTczRTgiIHN0eWxlPSJhbmltYXRpb246b2ZmbGluZUFuaW1hdGlvbiA0cyBpbmZpbml0ZSIgZD0iTTAgMGgyNHYyNEgweiIvPjxzdHlsZT5Aa2V5ZnJhbWVzIG9mZmxpbmVBbmltYXRpb257MCUsMzUle2hlaWdodDowfTYwJXtoZWlnaHQ6MTAwJX05MCV7ZmlsbC1vcGFjaXR5OjF9dG97ZmlsbC1vcGFjaXR5OjB9fTwvc3R5bGU+PC9zdmc+);background-position:right 27px center;background-repeat:no-repeat;border:1px solid var(--google-gray-300);border-radius:5px;color:var(--google-gray-700);margin-bottom:26px;padding-bottom:16px;padding-inline-end:88px;padding-inline-start:16px;padding-top:16px;text-align:start}html[dir=&quot;rtl&quot;] #cancel-save-page-button{background-position:left 27px center}#save-page-for-later-button{display:flex;justify-content:start}#save-page-for-later-button a::before{content:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxLjJlbSIgaGVpZ2h0PSIxLjJlbSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSAyMGgxNHYtMkg1bTE0LTloLTRWM0g5djZINWw3IDcgNy03eiIgZmlsbD0iIzQyODVGNCIvPjwvc3ZnPg==);display:inline-block;margin-inline-end:4px;vertical-align:-webkit-baseline-middle}.hidden#save-page-for-later-button{display:none}html[subframe] body{overflow:hidden}#sub-frame-error{-webkit-align-items:center;-webkit-flex-flow:column;-webkit-justify-content:center;background-color:#DDD;display:-webkit-flex;height:100%;left:0;position:absolute;text-align:center;top:0;transition:background-color 200ms ease-in-out;width:100%}#sub-frame-error:hover{background-color:#EEE}#sub-frame-error .icon-generic{margin:0 0 16px}#sub-frame-error-details{margin:0 10px;text-align:center;opacity:0}#sub-frame-error:hover #sub-frame-error-details{opacity:1}@media (max-width:200px),(max-height:95px){#sub-frame-error-details{display:none}}@media (max-height:100px){#sub-frame-error .icon-generic{height:auto;margin:0;padding-top:0;width:25px}}#details-button{box-shadow:none;min-width:0}.suggested-left>#control-buttons,.suggested-right>#details-button{float:left}.suggested-right>#control-buttons,.suggested-left>#details-button{float:right}.suggested-left .secondary-button{margin-inline-end:0;margin-inline-start:16px}#details-button.singular{float:none}#download-button{padding-bottom:4px;padding-top:4px;position:relative}#download-button::before{background:image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAAO0lEQVQ4y2NgGArgPxIY1YChsOE/LtBAmpYG0mxpIOSDBpKUo2lpIDZxNJCkHKqlYZAla3RAHQ1DFgAARRroHyLNTwwAAAAASUVORK5CYII=)1x,url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAQAAAD9CzEMAAAAZElEQVRYw+3Ruw3AMAwDUY3OzZUmRRD4E9iim9wNwAdbEURHyk4AAAAATiCVK8lLyPsKeT9K3lsownnunfkPxO78hKiYHxBV8x2icr5BVM+/CMf8g3DN34Rzns6ViwHUAUQ/6wIAd5Km7l6c8AAAAABJRU5ErkJggg==)2x) no-repeat;content:&quot;&quot;;display:inline-block;height:24px;margin-inline-end:4px;margin-inline-start:-4px;vertical-align:middle;width:24px}#download-button:disabled{background:rgb(180,206,249);color:rgb(255,255,255)}#buttons::after{clear:both;content:&quot;&quot;;display:block;width:100%}html[dir=&quot;rtl&quot;] .runner-container,html[dir=&quot;rtl&quot;].offline .icon-offline{transform:scaleX(-1)}.offline{transition:filter 1.5s cubic-bezier(0.65,0.05,0.36,1),background-color 1.5s cubic-bezier(0.65,0.05,0.36,1);will-change:filter,background-color}.offline body{transition:background-color 1.5s cubic-bezier(0.65,0.05,0.36,1)}.offline #main-message>p{display:none}.offline.inverted{background-color:#fff;filter:invert(1)}.offline.inverted body{background-color:#fff}.offline .interstitial-wrapper{color:var(--text-color);font-size:1em;line-height:1.55;margin:0 auto;max-width:600px;padding-top:100px;position:relative;width:100%}.offline .runner-container{direction:ltr;height:150px;max-width:600px;overflow:hidden;position:absolute;top:35px;width:44px}.offline .runner-container:focus{outline:none}.offline .runner-container:focus-visible{outline:3px solid var(--google-blue-300)}.offline .runner-canvas{height:150px;max-width:600px;opacity:1;overflow:hidden;position:absolute;top:0;z-index:10}.offline .controller{height:100vh;left:0;position:absolute;top:0;width:100vw;z-index:9}#offline-resources{display:none}#offline-instruction{image-rendering:pixelated;left:0;margin:auto;position:absolute;right:0;top:60px;width:fit-content}.offline-runner-live-region{bottom:0;clip-path:polygon(0 0,0 0,0 0);color:var(--background-color);display:block;font-size:xx-small;overflow:hidden;position:absolute;text-align:center;transition:color 1.5s cubic-bezier(0.65,0.05,0.36,1);user-select:none}.slow-speed-option{align-items:center;background:var(--google-gray-50);border-radius:24px/50%;bottom:0;color:var(--error-code-color);display:inline-flex;font-size:1em;left:0;line-height:1.1em;margin:5px auto;padding:2px 12px 3px 20px;position:absolute;right:0;width:max-content;z-index:999}.slow-speed-option.hidden{display:none}.slow-speed-option [type=checkbox]{opacity:0;pointer-events:none;position:absolute}.slow-speed-option .slow-speed-toggle{cursor:pointer;margin-inline-start:8px;padding:8px 4px;position:relative}.slow-speed-option [type=checkbox]:disabled~.slow-speed-toggle{cursor:default}.slow-speed-option-label [type=checkbox]{opacity:0;pointer-events:none;position:absolute}.slow-speed-option .slow-speed-toggle::before,.slow-speed-option .slow-speed-toggle::after{content:&quot;&quot;;display:block;margin:0 3px;transition:all 100ms cubic-bezier(0.4,0,1,1)}.slow-speed-option .slow-speed-toggle::before{background:rgb(189,193,198);border-radius:0.65em;height:0.9em;width:2em}.slow-speed-option .slow-speed-toggle::after{background:#fff;border-radius:50%;box-shadow:0 1px 3px 0 rgb(0 0 0/40%);height:1.2em;position:absolute;top:51%;transform:translate(-20%,-50%);width:1.1em}.slow-speed-option [type=checkbox]:focus+.slow-speed-toggle{box-shadow:0 0 8px rgb(94,158,214);outline:1px solid rgb(93,157,213)}.slow-speed-option [type=checkbox]:checked+.slow-speed-toggle::before{background:var(--google-blue-600);opacity:0.5}.slow-speed-option [type=checkbox]:checked+.slow-speed-toggle::after{background:var(--google-blue-600);transform:translate(calc(2em - 90%),-50%)}.slow-speed-option [type=checkbox]:checked:disabled+.slow-speed-toggle::before{background:rgb(189,193,198)}.slow-speed-option [type=checkbox]:checked:disabled+.slow-speed-toggle::after{background:var(--google-gray-50)}@media (max-width:420px){#download-button{padding-bottom:12px;padding-top:12px}.suggested-left>#control-buttons,.suggested-right>#control-buttons{float:none}.snackbar{border-radius:0;bottom:0;left:0;width:100%}}@media (max-height:350px){h1{margin:0 0 15px}.icon-offline{margin:0 0 10px}.interstitial-wrapper{margin-top:5%}.nav-wrapper{margin-top:30px}}@media (min-width:420px) and (max-width:736px) and (min-height:240px) and (max-height:420px) and (orientation:landscape){.interstitial-wrapper{margin-bottom:100px}}@media (max-width:360px) and (max-height:480px){.offline .interstitial-wrapper{padding-top:60px}.offline .runner-container{top:8px}}@media (min-height:240px) and (orientation:landscape){.offline .interstitial-wrapper{margin-bottom:90px}.icon-offline{margin-bottom:20px}}@media (max-height:320px) and (orientation:landscape){.icon-offline{margin-bottom:0}.offline .runner-container{top:10px}}@media (max-width:240px){button{padding-inline-end:12px;padding-inline-start:12px}.interstitial-wrapper{overflow:inherit;padding:0 8px}}@media (max-width:120px){button{width:auto}}.arcade-mode,.arcade-mode .runner-container,.arcade-mode .runner-canvas{image-rendering:pixelated;max-width:100%;overflow:hidden}.arcade-mode #buttons,.arcade-mode #main-content{opacity:0;overflow:hidden}.arcade-mode .interstitial-wrapper{height:100vh;max-width:100%;overflow:hidden}.arcade-mode .runner-container{left:0;margin:auto;right:0;transform-origin:top center;transition:transform 250ms cubic-bezier(0.4,0,1,1) 400ms;z-index:2}@media (prefers-color-scheme:dark){.icon{filter:invert(1)}.offline .runner-canvas{filter:invert(1)}.offline.inverted{background-color:var(--background-color);filter:invert(0)}.offline.inverted body{background-color:#fff}.offline.inverted .offline-runner-live-region{color:#fff}#suggestions-list a{color:var(--link-color)}#error-information-button{filter:invert(0.6)}.slow-speed-option{background:var(--google-gray-800);color:var(--google-gray-100)}.slow-speed-option .slow-speed-toggle::before,.slow-speed-option [type=checkbox]:checked:disabled+.slow-speed-toggle::before{background:rgb(189,193,198)}.slow-speed-option [type=checkbox]:checked+.slow-speed-toggle::after,.slow-speed-option [type=checkbox]:checked+.slow-speed-toggle::before{background:var(--google-blue-300)}}</style>
+  
+<meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;><style>img[src=&quot;data:,&quot;],source[src=&quot;data:,&quot;]{display:none!important}</style></head>
+<body class=&quot;neterror&quot; style=&quot;font-family:&amp;quot;sans&amp;quot;,Arial,sans-serif;font-size:75%&quot; jstcache=&quot;0&quot;>
+  <div id=&quot;main-frame-error&quot; class=&quot;interstitial-wrapper&quot; jstcache=&quot;0&quot;>
+    <div id=&quot;main-content&quot; jstcache=&quot;0&quot;>
+      <div class=&quot;icon&quot; jstcache=&quot;0&quot;></div>
+      <div id=&quot;main-message&quot; jstcache=&quot;0&quot;>
+        <h1 jstcache=&quot;0&quot;>
+          <span jsselect=&quot;heading&quot; jsvalues=&quot;.innerHTML:msg&quot; jstcache=&quot;9&quot;>This site can’t be reached</span>
+          <a id=&quot;error-information-button&quot; class=&quot;hidden&quot; onclick=&quot;toggleErrorInformationPopup();&quot; jstcache=&quot;0&quot;></a>
+        </h1>
+        <p jsselect=&quot;summary&quot; jsvalues=&quot;.innerHTML:msg&quot; jstcache=&quot;1&quot;>The webpage at <strong jscontent=&quot;failedUrl&quot; jstcache=&quot;22&quot;>https://www.youtube.com/embed/zeEMISsjO38</strong> might be temporarily down or it may have moved permanently to a new web address.</p>
+        <!--The suggestion list and error code are normally presented inline,
+          in which case error-information-popup-* divs have no effect. When
+          error-information-popup-container has the use-popup-container class, this
+          information is provided in a popup instead.-->
+        <div id=&quot;error-information-popup-container&quot; jstcache=&quot;0&quot;>
+          <div id=&quot;error-information-popup&quot; jstcache=&quot;0&quot;>
+            <div id=&quot;error-information-popup-box&quot; jstcache=&quot;0&quot;>
+              <div id=&quot;error-information-popup-content&quot; jstcache=&quot;0&quot;>
+                <div id=&quot;suggestions-list&quot; style=&quot;display:none&quot; jsdisplay=&quot;(suggestionsSummaryList &amp;amp;&amp;amp; suggestionsSummaryList.length)&quot; jstcache=&quot;16&quot;>
+                  <p jsvalues=&quot;.innerHTML:suggestionsSummaryListHeader&quot; jstcache=&quot;18&quot;></p>
+                  <ul jsvalues=&quot;.className:suggestionsSummaryList.length == 1 ? 'single-suggestion' : ''&quot; jstcache=&quot;19&quot;>
+                    <li jsselect=&quot;suggestionsSummaryList&quot; jsvalues=&quot;.innerHTML:summary&quot; jstcache=&quot;21&quot;></li>
+                  </ul>
+                </div>
+                <div class=&quot;error-code&quot; jscontent=&quot;errorCode&quot; jstcache=&quot;17&quot;>ERR_TUNNEL_CONNECTION_FAILED</div>
+                <p id=&quot;error-information-popup-close&quot; jstcache=&quot;0&quot;>
+                  <a class=&quot;link-button&quot; jscontent=&quot;closeDescriptionPopup&quot; onclick=&quot;toggleErrorInformationPopup();&quot; jstcache=&quot;20&quot;>null</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id=&quot;download-links-wrapper&quot; class=&quot;hidden&quot; jstcache=&quot;0&quot;>
+          <div id=&quot;download-link-wrapper&quot; jstcache=&quot;0&quot;>
+            <a id=&quot;download-link&quot; class=&quot;link-button&quot; onclick=&quot;downloadButtonClick()&quot; jsselect=&quot;downloadButton&quot; jscontent=&quot;msg&quot; jsvalues=&quot;.disabledText:disabledMsg&quot; jstcache=&quot;6&quot; style=&quot;display:none&quot;>
+            </a>
+          </div>
+          <div id=&quot;download-link-clicked-wrapper&quot; class=&quot;hidden&quot; jstcache=&quot;0&quot;>
+            <div id=&quot;download-link-clicked&quot; class=&quot;link-button&quot; jsselect=&quot;downloadButton&quot; jscontent=&quot;disabledMsg&quot; jstcache=&quot;11&quot; style=&quot;display:none&quot;>
+            </div>
+          </div>
+        </div>
+        <div id=&quot;save-page-for-later-button&quot; class=&quot;hidden&quot; jstcache=&quot;0&quot;>
+          <a class=&quot;link-button&quot; onclick=&quot;savePageLaterClick()&quot; jsselect=&quot;savePageLater&quot; jscontent=&quot;savePageMsg&quot; jstcache=&quot;10&quot; style=&quot;display:none&quot;>
+          </a>
+        </div>
+        <div id=&quot;cancel-save-page-button&quot; class=&quot;hidden&quot; onclick=&quot;cancelSavePageClick()&quot; jsselect=&quot;savePageLater&quot; jsvalues=&quot;.innerHTML:cancelMsg&quot; jstcache=&quot;4&quot; style=&quot;display:none&quot;>
+        </div>
+        <div id=&quot;offline-content-list&quot; class=&quot;list-hidden&quot; hidden jstcache=&quot;0&quot;>
+          <div id=&quot;offline-content-list-visibility-card&quot; onclick=&quot;toggleOfflineContentListVisibility(true)&quot; jstcache=&quot;0&quot;>
+            <div id=&quot;offline-content-list-title&quot; jsselect=&quot;offlineContentList&quot; jscontent=&quot;title&quot; jstcache=&quot;12&quot; style=&quot;display:none&quot;>
+            </div>
+            <div jstcache=&quot;0&quot;>
+              <div id=&quot;offline-content-list-show-text&quot; jsselect=&quot;offlineContentList&quot; jscontent=&quot;showText&quot; jstcache=&quot;14&quot; style=&quot;display:none&quot;>
+              </div>
+              <div id=&quot;offline-content-list-hide-text&quot; jsselect=&quot;offlineContentList&quot; jscontent=&quot;hideText&quot; jstcache=&quot;15&quot; style=&quot;display:none&quot;>
+              </div>
+            </div>
+          </div>
+          <div id=&quot;offline-content-suggestions&quot; jstcache=&quot;0&quot;></div>
+          <div id=&quot;offline-content-list-action&quot; jstcache=&quot;0&quot;>
+            <a class=&quot;link-button&quot; onclick=&quot;launchDownloadsPage()&quot; jsselect=&quot;offlineContentList&quot; jscontent=&quot;actionText&quot; jstcache=&quot;13&quot; style=&quot;display:none&quot;>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id=&quot;buttons&quot; class=&quot;nav-wrapper suggested-right&quot; jstcache=&quot;0&quot;>
+      <div id=&quot;control-buttons&quot; hidden jstcache=&quot;0&quot;>
+        <button id=&quot;reload-button&quot; class=&quot;blue-button text-button&quot; onclick=&quot;reloadButtonClick(this.url);&quot; jsselect=&quot;reloadButton&quot; jsvalues=&quot;.url:reloadUrl&quot; jscontent=&quot;msg&quot; jstcache=&quot;5&quot; style=&quot;display:none&quot;></button>
+        <button id=&quot;download-button&quot; class=&quot;blue-button text-button&quot; onclick=&quot;downloadButtonClick()&quot; jsselect=&quot;downloadButton&quot; jscontent=&quot;msg&quot; jsvalues=&quot;.disabledText:disabledMsg&quot; jstcache=&quot;6&quot; style=&quot;display:none&quot;>
+        </button>
+      </div>
+      <button id=&quot;details-button&quot; class=&quot;secondary-button text-button small-link singular&quot; onclick=&quot;detailsButtonClick(); toggleHelpBox()&quot; jscontent=&quot;details&quot; jsdisplay=&quot;(suggestionsDetails &amp;amp;&amp;amp; suggestionsDetails.length > 0) || diagnose&quot; jsvalues=&quot;.detailsText:details; .hideDetailsText:hideDetails;&quot; jstcache=&quot;2&quot; style=&quot;display:none&quot;></button>
+    </div>
+    <div id=&quot;details&quot; class=&quot;hidden&quot; jstcache=&quot;0&quot;>
+      <div class=&quot;suggestions&quot; jsselect=&quot;suggestionsDetails&quot; jstcache=&quot;3&quot; jsinstance=&quot;*0&quot; style=&quot;display:none&quot;>
+        <div class=&quot;suggestion-header&quot; jsvalues=&quot;.innerHTML:header&quot; jstcache=&quot;7&quot;></div>
+        <div class=&quot;suggestion-body&quot; jsvalues=&quot;.innerHTML:body&quot; jstcache=&quot;8&quot;></div>
+      </div>
+    </div>
+  </div>
+  <div id=&quot;sub-frame-error&quot; jstcache=&quot;0&quot;>
+    <!-- Show details when hovering over the icon, in case the details are
+         hidden because they're too large. -->
+    <div class=&quot;icon icon-generic&quot; jstcache=&quot;0&quot;></div>
+    <div id=&quot;sub-frame-error-details&quot; jsselect=&quot;summary&quot; jsvalues=&quot;.innerHTML:msg&quot; jstcache=&quot;1&quot;>The webpage at <strong jscontent=&quot;failedUrl&quot; jstcache=&quot;22&quot;>https://www.youtube.com/embed/zeEMISsjO38</strong> might be temporarily down or it may have moved permanently to a new web address.</div>
+  </div>
+
+  <div id=&quot;offline-resources&quot; jstcache=&quot;0&quot;>
+    <img id=&quot;offline-resources-1x&quot; src=&quot;data:image/png;base64,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&quot; jstcache=&quot;0&quot;>
+    <img id=&quot;offline-resources-2x&quot; src=&quot;data:image/png;base64,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&quot; jstcache=&quot;0&quot;>
+    <template id=&quot;audio-resources&quot; jstcache=&quot;0&quot;>
+      <audio id=&quot;offline-sound-press&quot; src=&quot;data:audio/mpeg;base64,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&quot;></audio>
+      <audio id=&quot;offline-sound-hit&quot; src=&quot;data:audio/mpeg;base64,T2dnUwACAAAAAAAAAABVDxppAAAAABYzHfUBHgF2b3JiaXMAAAAAAkSsAAD/////AHcBAP////+4AU9nZ1MAAAAAAAAAAAAAVQ8aaQEAAAC9PVXbEEf//////////////////+IDdm9yYmlzNwAAAEFPOyBhb1R1ViBiNSBbMjAwNjEwMjRdIChiYXNlZCBvbiBYaXBoLk9yZydzIGxpYlZvcmJpcykAAAAAAQV2b3JiaXMlQkNWAQBAAAAkcxgqRqVzFoQQGkJQGeMcQs5r7BlCTBGCHDJMW8slc5AhpKBCiFsogdCQVQAAQAAAh0F4FISKQQghhCU9WJKDJz0IIYSIOXgUhGlBCCGEEEIIIYQQQgghhEU5aJKDJ0EIHYTjMDgMg+U4+ByERTlYEIMnQegghA9CuJqDrDkIIYQkNUhQgwY56ByEwiwoioLEMLgWhAQ1KIyC5DDI1IMLQoiag0k1+BqEZ0F4FoRpQQghhCRBSJCDBkHIGIRGQViSgwY5uBSEy0GoGoQqOQgfhCA0ZBUAkAAAoKIoiqIoChAasgoAyAAAEEBRFMdxHMmRHMmxHAsIDVkFAAABAAgAAKBIiqRIjuRIkiRZkiVZkiVZkuaJqizLsizLsizLMhAasgoASAAAUFEMRXEUBwgNWQUAZAAACKA4iqVYiqVoiueIjgiEhqwCAIAAAAQAABA0Q1M8R5REz1RV17Zt27Zt27Zt27Zt27ZtW5ZlGQgNWQUAQAAAENJpZqkGiDADGQZCQ1YBAAgAAIARijDEgNCQVQAAQAAAgBhKDqIJrTnfnOOgWQ6aSrE5HZxItXmSm4q5Oeecc87J5pwxzjnnnKKcWQyaCa0555zEoFkKmgmtOeecJ7F50JoqrTnnnHHO6WCcEcY555wmrXmQmo21OeecBa1pjppLsTnnnEi5eVKbS7U555xzzjnnnHPOOeec6sXpHJwTzjnnnKi9uZab0MU555xPxunenBDOOeecc84555xzzjnnnCA0ZBUAAAQAQBCGjWHcKQjS52ggRhFiGjLpQffoMAkag5xC6tHoaKSUOggllXFSSicIDVkFAAACAEAIIYUUUkghhRRSSCGFFGKIIYYYcsopp6CCSiqpqKKMMssss8wyyyyzzDrsrLMOOwwxxBBDK63EUlNtNdZYa+4555qDtFZaa621UkoppZRSCkJDVgEAIAAABEIGGWSQUUghhRRiiCmnnHIKKqiA0JBVAAAgAIAAAAAAT/Ic0REd0REd0REd0REd0fEczxElURIlURIt0zI101NFVXVl15Z1Wbd9W9iFXfd93fd93fh1YViWZVmWZVmWZVmWZVmWZVmWIDRkFQAAAgAAIIQQQkghhRRSSCnGGHPMOegklBAIDVkFAAACAAgAAABwFEdxHMmRHEmyJEvSJM3SLE/zNE8TPVEURdM0VdEVXVE3bVE2ZdM1XVM2XVVWbVeWbVu2dduXZdv3fd/3fd/3fd/3fd/3fV0HQkNWAQASAAA6kiMpkiIpkuM4jiRJQGjIKgBABgBAAACK4iiO4ziSJEmSJWmSZ3mWqJma6ZmeKqpAaMgqAAAQAEAAAAAAAACKpniKqXiKqHiO6IiSaJmWqKmaK8qm7Lqu67qu67qu67qu67qu67qu67qu67qu67qu67qu67qu67quC4SGrAIAJAAAdCRHciRHUiRFUiRHcoDQkFUAgAwAgAAAHMMxJEVyLMvSNE/zNE8TPdETPdNTRVd0gdCQVQAAIACAAAAAAAAADMmwFMvRHE0SJdVSLVVTLdVSRdVTVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTdM0TRMIDVkJAJABAKAQW0utxdwJahxi0nLMJHROYhCqsQgiR7W3yjGlHMWeGoiUURJ7qihjiknMMbTQKSet1lI6hRSkmFMKFVIOWiA0ZIUAEJoB4HAcQLIsQLI0AAAAAAAAAJA0DdA8D7A8DwAAAAAAAAAkTQMsTwM0zwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQNI0QPM8QPM8AAAAAAAAANA8D/BEEfBEEQAAAAAAAAAszwM80QM8UQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwNE0QPM8QPM8AAAAAAAAALA8D/BEEfA8EQAAAAAAAAA0zwM8UQQ8UQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAABDgAAAQYCEUGrIiAIgTADA4DjQNmgbPAziWBc+D50EUAY5lwfPgeRBFAAAAAAAAAAAAADTPg6pCVeGqAM3zYKpQVaguAAAAAAAAAAAAAJbnQVWhqnBdgOV5MFWYKlQVAAAAAAAAAAAAAE8UobpQXbgqwDNFuCpcFaoLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAABhwAAAIMKEMFBqyIgCIEwBwOIplAQCA4ziWBQAAjuNYFgAAWJYligAAYFmaKAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAGHAAAAgwoQwUGrISAIgCADAoimUBy7IsYFmWBTTNsgCWBtA8gOcBRBEACAAAKHAAAAiwQVNicYBCQ1YCAFEAAAZFsSxNE0WapmmaJoo0TdM0TRR5nqZ5nmlC0zzPNCGKnmeaEEXPM02YpiiqKhBFVRUAAFDgAAAQYIOmxOIAhYasBABCAgAMjmJZnieKoiiKpqmqNE3TPE8URdE0VdVVaZqmeZ4oiqJpqqrq8jxNE0XTFEXTVFXXhaaJommaommqquvC80TRNE1TVVXVdeF5omiapqmqruu6EEVRNE3TVFXXdV0giqZpmqrqurIMRNE0VVVVXVeWgSiapqqqquvKMjBN01RV15VdWQaYpqq6rizLMkBVXdd1ZVm2Aarquq4ry7INcF3XlWVZtm0ArivLsmzbAgAADhwAAAKMoJOMKouw0YQLD0ChISsCgCgAAMAYphRTyjAmIaQQGsYkhBJCJiWVlEqqIKRSUikVhFRSKiWjklJqKVUQUikplQpCKqWVVAAA2IEDANiBhVBoyEoAIA8AgCBGKcYYYwwyphRjzjkHlVKKMeeck4wxxphzzkkpGWPMOeeklIw555xzUkrmnHPOOSmlc84555yUUkrnnHNOSiklhM45J6WU0jnnnBMAAFTgAAAQYKPI5gQjQYWGrAQAUgEADI5jWZqmaZ4nipYkaZrneZ4omqZmSZrmeZ4niqbJ8zxPFEXRNFWV53meKIqiaaoq1xVF0zRNVVVVsiyKpmmaquq6ME3TVFXXdWWYpmmqquu6LmzbVFXVdWUZtq2aqiq7sgxcV3Vl17aB67qu7Nq2AADwBAcAoAIbVkc4KRoLLDRkJQCQAQBAGIOMQgghhRBCCiGElFIICQAAGHAAAAgwoQwUGrISAEgFAACQsdZaa6211kBHKaWUUkqpcIxSSimllFJKKaWUUkoppZRKSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoppZRSSimllFJKKaWUUkoFAC5VOADoPtiwOsJJ0VhgoSErAYBUAADAGKWYck5CKRVCjDkmIaUWK4QYc05KSjEWzzkHoZTWWiyecw5CKa3FWFTqnJSUWoqtqBQyKSml1mIQwpSUWmultSCEKqnEllprQQhdU2opltiCELa2klKMMQbhg4+xlVhqDD74IFsrMdVaAABmgwMARIINqyOcFI0FFhqyEgAICQAgjFGKMcYYc8455yRjjDHmnHMQQgihZIwx55xzDkIIIZTOOeeccxBCCCGEUkrHnHMOQgghhFBS6pxzEEIIoYQQSiqdcw5CCCGEUkpJpXMQQgihhFBCSSWl1DkIIYQQQikppZRCCCGEEkIoJaWUUgghhBBCKKGklFIKIYRSQgillJRSSimFEEoIpZSSUkkppRJKCSGEUlJJKaUUQggllFJKKimllEoJoYRSSimlpJRSSiGUUEIpBQAAHDgAAAQYQScZVRZhowkXHoBCQ1YCAGQAAJSyUkoorVVAIqUYpNpCR5mDFHOJLHMMWs2lYg4pBq2GyjGlGLQWMgiZUkxKCSV1TCknLcWYSuecpJhzjaVzEAAAAEEAgICQAAADBAUzAMDgAOFzEHQCBEcbAIAgRGaIRMNCcHhQCRARUwFAYoJCLgBUWFykXVxAlwEu6OKuAyEEIQhBLA6ggAQcnHDDE294wg1O0CkqdSAAAAAAAAwA8AAAkFwAERHRzGFkaGxwdHh8gISIjJAIAAAAAAAYAHwAACQlQERENHMYGRobHB0eHyAhIiMkAQCAAAIAAAAAIIAABAQEAAAAAAACAAAABARPZ2dTAATCMAAAAAAAAFUPGmkCAAAAhlAFnjkoHh4dHx4pKHA1KjEqLzIsNDQqMCveHiYpczUpLS4sLSg3MicsLCsqJTIvJi0sKywkMjbgWVlXWUa00CqtQNVCq7QC1aoNVPXg9Xldx3nn5tixvV6vb7TX+hg7cK21QYgAtNJFphRUtpUuMqWgsqrasj2IhOA1F7LFMdFaWzkAtNBFpisIQgtdZLqCIKjqAAa9WePLkKr1MMG1FlwGtNJFTSkIcitd1JSCIKsCAQWISK0Cyzw147T1tAK00kVNKKjQVrqoCQUVqqr412m+VKtZf9h+TDaaztAAtNJFzVQQhFa6qJkKgqAqUGgtuOa2Se5l6jeXGSqnLM9enqnLs5dn6m7TptWUiVUVN4jhUz9//lzx+Xw+X3x8fCQSiWggDAA83UXF6/vpLipe3zsCULWMBE5PMTBMlsv39/f39/f39524nZ13CDgaRFuLYTbaWgyzq22MzEyKolIpst50Z9PGqqJSq8T2++taLf3+oqg6btyouhEjYlxFjXxex1wCBFxcv+PmzG1uc2bKyJFLLlkizZozZ/ZURpZs2TKiWbNnz5rKyJItS0akWbNnzdrIyJJtxmCczpxOATRRhoPimyjDQfEfIFMprQDU3WFYbXZLZZxMhxrGyRh99Uqel55XEk+9efP7I/FU/8Ojew4JNN/rTq6b73Un1x+AVSsCWD2tNqtpGOM4DOM4GV7n5th453cXNGcfAYQKTFEOguKnKAdB8btRLxNBWUrViLoY1/q1er+Q9xkvZM/IjaoRf30xu3HLnr61fu3UBDRZHZdqsjoutQeAVesAxNMTw2rR66X/Ix6/T5tx80+t/D67ipt/q5XfJzTfa03Wzfdak/UeAEpZawlsbharxTBVO1+c2nm/7/f1XR1dY8XaKWMH3aW9xvEFRFEksXgURRKLn7VamSFRVnYXg0C2Zo2MNE3+57u+e3NFlVev1uufX6nU3Lnf9d1j4wE03+sObprvdQc3ewBYFIArAtjdrRaraRivX7x+8VrbHIofG0n6cFwtNFKYBzxXA2j4uRpAw7dJRkSETBkZV1V1o+N0Op1WhmEyDOn36437RbKvl7zz838wgn295Iv8/Ac8UaRIPFGkSHyAzCItAXY3dzGsNueM6VDDOJkOY3QYX008L6vnfZp/3qf559VQL3Xm1SEFNN2fiMA03Z+IwOwBoKplAKY4TbGIec0111x99dXr9XrjZ/nzdSWXBekAHEsWp4ljyeI0sVs2FEGiLFLj7rjxeqG8Pm+tX/uW90b+DX31bVTF/I+Ut+/sM1IA/MyILvUzI7rUbpNqyIBVjSDGVV/Jo/9H6G/jq+5y3Pzb7P74Znf5ffZtApI5/fN5SAcHjIhB5vTP5yEdHDAiBt4oK/WGeqUMMspeTNsGk/H/PziIgCrG1Rijktfreh2vn4DH78WXa25yZkizZc9oM7JmaYeZM6bJOJkOxmE69Hmp/q/k0fvVRLln3H6fXcXNPt78W638Ptlxsytv/pHyW7Pfp1Xc7L5XfqvZb5MdN7vy5p/u8lut/D6t4mb3vfmnVn6bNt9nV3Hzj1d+q9lv02bc7Mqbf6vZb+N23OzKm73u8lOz3+fY3uwqLv1022+THTepN38yf7XyW1aX8YqjACWfDTiAA+BQALTURU0oCFpLXdSEgqAJpAKxrLtzybNt1Go5VeJAASzRnh75Eu3pke8BYNWiCIBVLdgsXMqlXBJijDGW2Sj5lUqlSJFpPN9fAf08318B/ewBUMUiA3h4YGIaooZrfn5+fn5+fn5+fn6mtQYKcQE8WVg5YfJkYeWEyWqblCIiiqKoVGq1WqxWWa3X6/V6vVoty0zrptXq9/u4ccS4GjWKGxcM6ogaNWpUnoDf73Xd3OQml2xZMhJNM7Nmz54zZ/bsWbNmphVJRpYs2bJly5YtS0YSoWlm1uzZc+bMnj17ZloATNNI4PbTNBK4/W5jlJGglFJWI4hR/levXr06RuJ5+fLly6Ln1atXxxD18uXLKnr+V8cI8/M03+vErpvvdWLXewBYxVoC9bBZDcPU3Bevtc399UWNtZH0p4MJZov7AkxThBmYpggzcNVCJqxIRQwiLpNBxxqUt/NvuCqmb2Poa+RftCr7DO3te16HBjzbulL22daVsnsAqKIFwMXVzbCLYdVe9vGovzx9xP7469mk3L05d1+qjyKuPAY8397G2PPtbYztAWDVQgCH09MwTTG+Us67nX1fG5G+0o3YvspGtK+yfBmqAExTJDHQaYokBnrrZZEZkqoa3BjFDJlmGA17PF+qE/GbJd3xm0V38qoYT/aLuTzh6w/ST/j6g/QHYBVgKYHTxcVqGKY5DOM4DNNRO3OXkM0JmAto6AE01xBa5OYaQou8B4BmRssAUNQ0TfP169fv169fvz6XSIZhGIbJixcvXrzIFP7+/3/9evc/wyMAVFM8EEOvpngghr5by8hIsqiqBjXGXx0T4zCdTCfj8PJl1fy83vv7q1fHvEubn5+fnwc84etOrp/wdSfXewBUsRDA5upqMU1DNl+/GNunkTDUGrWzn0BDIC5UUw7CwKspB2HgVzVFSFZ1R9QxU8MkHXvLGV8jKxtjv6J9G0N/MX1fIysbQzTdOlK26daRsnsAWLUGWFxcTQum8Skv93j2KLpfjSeb3fvFmM3xt3L3/mwCPN/2Rvb5tjeyewBULQGmzdM0DMzS3vEVHVu6MVTZGNn3Fe37WjxU2RjqAUxThJGfpggjv1uLDAlVdeOIGNH/1P9Q5/Jxvf49nmyOj74quveLufGb4zzh685unvB1Zzd7AFQAWAhguLpaTFNk8/1i7Ni+Oq5BxQVcGABEVcgFXo+qkAu8vlurZiaoqiNi3N2Z94sXL168ePEiR4wYMWLEiBEjRowYMWLEiBEjAFRVtGm4qqJNw7ceGRkZrGpQNW58OozDOIzDy5dV8/Pz8/Pz8/Pz8/Pz8/Pz8/NlPN/rDr6f73UH33sAVLGUwHRxsxqGaq72+tcvy5LsLLZ5JdBo0BdUU7Qgr6ZoQb4NqKon4PH6zfFknHYYjOqLT9XaWdkYWvQr2vcV7fuK9n3F9AEs3SZSduk2kbJ7AKhqBeDm7maYaujzKS8/0f/UJ/eL7v2ie7/o3rfHk83xBDzdZlLu6TaTcnsAWLUAYHcz1KqivUt7V/ZQZWPoX7TvK9r3a6iyMVSJ6QNMUaSQnaJIIXvrGSkSVTWIihsZpsmYjKJ/8vTxvC6694sxm+PJ5vhbuXu/ADzf6w5+nu91Bz97AFi1lACHm9UwVHPztbbpkiKHJVsy2SAcDURTFhZc0ZSFBdeqNqiKQXwej8dxXrx48eLFixcvXrx4oY3g8/////////+voo3IF3cCRE/xjoLoKd5RsPUCKVN9jt/v8TruMJ1MJ9PJ6E3z8y9fvnz58uXLly+rSp+Z+V+9ejXv7+8eukl9XpcPJED4YJP6vC4fSIDwgWN7vdDrmfT//4PHDfg98ns9/qDHnBxps2RPkuw5ciYZOXPJmSFrllSSNVumJDNLphgno2E6GQ3jUBmPeOn/KP11zY6bfxvfjCu/TSuv/Datustxs0/Njpt9anbc7Nv4yiu/TSuv/Datustxs0/Njpt9aptx82/jm175bVp55bfZ/e5y3OxT24ybfWqbcfNv08orv00rr/w27dfsuNmnthk3+7SVV36bVl75bVqJnUxPzXazT0294mnq2W+TikmmE5LiQb3pAa94mnpFAGxeSf1/jn9mWTgDBjhUUv+f459ZFs6AAQ4AAAAAAIAH/0EYBHEAB6gDzBkAAUxWjEAQk7nWaBZuuKvBN6iqkoMah7sAhnRZ6lFjmllwEgGCAde2zYBzAB5AAH5J/X+Of81ycQZMHI0uqf/P8a9ZLs6AiaMRAAAAAAIAOPgPw0EUEIddhEaDphAAjAhrrgAUlNDwPZKFEPFz2JKV4FqHl6tIxjaQDfQAiJqgZk1GDQgcBuAAfkn9f45/zXLiDBgwuqT+P8e/ZjlxBgwYAQAAAAAAg/8fDBlCDUeGDICqAJAT585AAALkhkHxIHMR3AF8IwmgWZwQhv0DcpcIMeTjToEGKDQAB0CEACgAfkn9f45/LXLiDCiMxpfU/+f41yInzoDCaAwAAAAEg4P/wyANDgAEhDsAujhQcBgAHEakAKBZjwHgANMYAkIDo+L8wDUrrgHpWnPwBBoJGZqDBmBAUAB1QANeOf1/zn53uYQA9ckctMrp/3P2u8slBKhP5qABAAAAAACAIAyCIAiD8DAMwoADzgECAA0wQFMAiMtgo6AATVGAE0gADAQA&quot;></audio>
+      <audio id=&quot;offline-sound-reached&quot; src=&quot;data:audio/mpeg;base64,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&quot;></audio>
+    </template>
+  </div>
+
+
+</body></html>"></iframe>
+</p>
+
+<h2 id="makefile-syntax">Makefile Syntax</h2>
+<p>A Makefile consists of a set of <em>rules</em>. A rule generally looks like this:</p>
+<pre><code><span>targets: prerequisites</span>
+	command
+	command
+	command</code></pre>
+<ul>
+<li>The <em>targets</em> are file names, separated by spaces. Typically, there is only one per rule.</li>
+<li>The <em>commands</em> are a series of steps typically used to make the target(s). These <em>need to start with a tab character</em>, not spaces.</li>
+<li>The <em>prerequisites</em> are also file names, separated by spaces. These files need to exist before the commands for the target are run. These are also called <em>dependencies</em></li>
+</ul>
+<h2 id="the-essence-of-make">The essence of Make</h2>
+<p>Let's start with a hello world example:</p>
+<pre><code><span>hello:</span>
+	echo <span>"Hello, World"</span>
+	echo <span>"This line will print if the file hello does not exist."</span></code></pre>
+<p>There's already a lot to take in here. Let's break it down:</p>
+<ul>
+<li>We have one <em>target</em> called <code>hello</code></li>
+<li>This target has two <em>commands</em></li>
+<li>This target has no <em>prerequisites</em></li>
+</ul>
+<p>We'll then run <code>make hello</code>. As long as the <code>hello</code> file does not exist, the commands will run. If <code>hello</code> does exist, no commands will run.</p>
+<p>It's important to realize that I'm talking about <code>hello</code> as both a <em>target</em> and a <em>file</em>. That's because the two are directly tied together. Typically, when a target is run (aka when the commands of a target are run), the commands will create a file with the same name as the target. In this case, the <code>hello</code> <em>target</em> does not create the <code>hello</code> <em>file</em>.</p>
+<p>Let's create a more typical Makefile - one that compiles a single C file. But before we do, make a file called <code>blah.c</code> that has the following contents:</p>
+<pre><code><span>// blah.c</span>
+<span><span>int</span> <span>main</span><span>()</span> </span>{ <span>return</span> <span>0</span>; }</code></pre>
+<p>Then create the Makefile (called <code>Makefile</code>, as always):</p>
+<pre><code><span>blah:</span>
+	cc blah.c -o blah</code></pre>
+<p>This time, try simply running <code>make</code>. Since there's no target supplied as an argument to the <code>make</code> command, the first target is run. In this case, there's only one target (<code>blah</code>). The first time you run this, <code>blah</code> will be created. The second time, you'll see <code>make: 'blah' is up to date</code>. That's because the <code>blah</code> file already exists. But there's a problem: if we modify <code>blah.c</code> and then run <code>make</code>, nothing gets recompiled.</p>
+<p>We solve this by adding a prerequisite:</p>
+<pre><code><span>blah: blah.c</span>
+	cc blah.c -o blah</code></pre>
+<p>When we run <code>make</code> again, the following set of steps happens:</p>
+<ul>
+<li>The first target is selected, because the first target is the default target</li>
+<li>This has a prerequisite of <code>blah.c</code></li>
+<li>Make decides if it should run the <code>blah</code> target. It will only run if <code>blah</code> doesn't exist, or <code>blah.c</code> is <em>newer than</em> <code>blah</code></li>
+</ul>
+<p>This last step is critical, and is the <strong>essence of make</strong>. What it's attempting to do is decide if the prerequisites of <code>blah</code> have changed since <code>blah</code> was last compiled. That is, if <code>blah.c</code> is modified, running <code>make</code> should recompile the file. And conversely, if <code>blah.c</code> has not changed, then it should not be recompiled.</p>
+<p>To make this happen, it uses the filesystem timestamps as a proxy to determine if something has changed. This is a reasonable heuristic, because file timestamps typically will only change if the files are
+modified. But it's important to realize that this isn't always the case. You could, for example, modify a file, and then change the modified timestamp of that file to something old. If you did, Make would incorrectly guess that the file hadn't changed and thus could be ignored.</p>
+<p>Whew, what a mouthful. <strong>Make sure that you understand this. It's the crux of Makefiles, and might take you a few minutes to properly understand</strong>. Play around with the above examples or watch the video above if things are still confusing.</p>
+<h2 id="more-quick-examples">More quick examples</h2>
+<p>The following Makefile ultimately runs all three targets. When you run <code>make</code> in the terminal, it will build a program called <code>blah</code> in a series of steps:</p>
+<ul>
+<li>Make selects the target <code>blah</code>, because the first target is the default target</li>
+<li><code>blah</code> requires <code>blah.o</code>, so make searches for the <code>blah.o</code> target</li>
+<li><code>blah.o</code> requires <code>blah.c</code>, so make searches for the <code>blah.c</code> target</li>
+<li><code>blah.c</code> has no dependencies, so the <code>echo</code> command is run</li>
+<li>The <code>cc -c</code> command is then run, because all of the <code>blah.o</code> dependencies are finished</li>
+<li>The top <code>cc</code> command is run, because all the <code>blah</code> dependencies are finished</li>
+<li>That's it: <code>blah</code> is a compiled c program</li>
+</ul>
+<pre><code><span>blah: blah.o</span>
+	cc blah.o -o blah <span># Runs third</span>
+
+<span>blah.o: blah.c</span>
+	cc -c blah.c -o blah.o <span># Runs second</span>
+
+<span># Typically blah.c would already exist, but I want to limit any additional required files</span>
+<span>blah.c:</span>
+	echo <span>"int main() { return 0; }"</span> &gt; blah.c <span># Runs first</span></code></pre>
+<p>If you delete <code>blah.c</code>, all three targets will be rerun. If you edit it (and thus change the timestamp to newer than <code>blah.o</code>), the first two targets will run. If you run <code>touch blah.o</code> (and thus change the timestamp to newer than <code>blah</code>), then only the first target will run. If you change nothing, none of the targets will run. Try it out!</p>
+<p>This next example doesn't do anything new, but is nontheless a good additional example. It will always run both targets, because <code>some_file</code> depends on <code>other_file</code>, which is never created.</p>
+<pre><code><span>some_file: other_file</span>
+	echo <span>"This will always run, and runs second"</span>
+	touch some_file
+
+<span>other_file:</span>
+	echo <span>"This will always run, and runs first"</span></code></pre>
+<h2 id="make-clean">Make clean</h2>
+<p><code>clean</code> is often used as a target that removes the output of other targets, but it is not a special word in Make. You can run <code>make</code> and <code>make clean</code> on this to create and delete <code>some_file</code>.</p>
+<p>Note that <code>clean</code> is doing two new things here:</p>
+<ul>
+<li>It's a target that is not first (the default), and not a prerequisite. That means it'll never run unless you explicitly call <code>make clean</code></li>
+<li>It's not intended to be a filename. If you happen to have a file named <code>clean</code>, this target won't run, which is not what we want. See <code>.PHONY</code> later in this tutorial on how to fix this</li>
+</ul>
+<pre><code><span>some_file: </span>
+	touch some_file
+
+<span>clean:</span>
+	rm -f some_file</code></pre>
+<h2 id="variables">Variables</h2>
+<p>Variables can only be strings. You'll typically want to use <code>:=</code>, but <code>=</code> also works. See <a href="#variables-pt-2">Variables Pt 2</a>.</p>
+<p>Here's an example of using variables:</p>
+<pre><code>files := file1 file2
+<span>some_file: <span>$(files)</span></span>
+	echo <span>"Look at this variable: "</span> <span>$(files)</span>
+	touch some_file
+
+<span>file1:</span>
+	touch file1
+<span>file2:</span>
+	touch file2
+
+<span>clean:</span>
+	rm -f file1 file2 some_file</code></pre>
+<p>Single or double quotes have no meaning to Make. They are simply characters that are assigned to the variable. Quotes <em>are</em> useful to shell/bash, though, and you need them in commands like <code>printf</code>. In this example, the two commands behave the same:</p>
+<pre><code>a := one two<span># a is set to the string "one two"</span>
+b := 'one two' <span># Not recommended. b is set to the string "'one two'"</span>
+<span>all:</span>
+	printf '$a'
+	printf $b</code></pre>
+<p>Reference variables using either <code>${}</code> or <code>$()</code></p>
+<pre><code>x := dude
+
+<span>all:</span>
+	echo <span>$(x)</span>
+	echo ${x}
+
+	<span># Bad practice, but works</span>
+	echo $x </code></pre>
+<h2 id="targets">Targets</h2>
+<h2 id="the-all-target">The all target</h2>
+<!--  (Section 4.4) -->
+<p>Making multiple targets and you want all of them to run? Make an <code>all</code> target.
+Since this is the first rule listed, it will run by default if <code>make</code> is called without specifying a target.</p>
+<pre><code><span>all: one two three</span>
+
+<span>one:</span>
+	touch one
+<span>two:</span>
+	touch two
+<span>three:</span>
+	touch three
+
+<span>clean:</span>
+	rm -f one two three
+</code></pre>
+<h2 id="multiple-targets">Multiple targets</h2>
+<!--  (Section 4.8) -->
+<p>When there are multiple targets for a rule, the commands will be run for each target. <code>$@</code> is an <a href="#automatic-variables">automatic variable</a> that contains the target name.</p>
+<pre><code><span>all: f1.o f2.o</span>
+
+f1.o f2.o:
+	echo <span>$@</span>
+<span># Equivalent to:</span>
+<span># f1.o:</span>
+<span>#	 echo f1.o</span>
+<span># f2.o:</span>
+<span>#	 echo f2.o</span>
+</code></pre>
+<h2 id="automatic-variables-and-wildcards">Automatic Variables and Wildcards</h2>
+<h2 id="-wildcard">* Wildcard</h2>
+<!--  (Section 4.2) -->
+<p>Both <code>*</code> and <code>%</code> are called wildcards in Make, but they mean entirely different things. <code>*</code> searches your filesystem for matching filenames. I suggest that you always wrap it in the <code>wildcard</code> function, because otherwise you may fall into a common pitfall described below.</p>
+<pre><code><span># Print out file information about every .c file</span>
+<span>print: $(wildcard *.c)</span>
+	ls -la  <span>$?</span></code></pre>
+<p><code>*</code> may be used in the target, prerequisites, or in the <code>wildcard</code> function.</p>
+<p>Danger: <code>*</code> may not be directly used in a variable definitions</p>
+<p>Danger: When <code>*</code> matches no files, it is left as it is (unless run in the <code>wildcard</code> function)</p>
+<pre><code>thing_wrong := *.o <span># Don't do this! '*' will not get expanded</span>
+thing_right := <span>$(<span>wildcard</span> *.o)</span>
+
+<span>all: one two three four</span>
+
+<span># Fails, because $(thing_wrong) is the string "*.o"</span>
+<span>one: <span>$(thing_wrong)</span></span>
+
+<span># Stays as *.o if there are no files that match this pattern :(</span>
+<span>two: *.o </span>
+
+<span># Works as you would expect! In this case, it does nothing.</span>
+<span>three: <span>$(thing_right)</span></span>
+
+<span># Same as rule three</span>
+<span>four: $(wildcard *.o)</span></code></pre>
+<h2 id="-wildcard-1">% Wildcard</h2>
+<p><code>%</code> is really useful, but is somewhat confusing because of the variety of situations it can be used in.</p>
+<ul>
+<li>When used in "matching" mode, it matches one or more characters in a string. This match is called the stem.</li>
+<li>When used in "replacing" mode, it takes the stem that was matched and replaces that in a string.</li>
+<li><code>%</code> is most often used in rule definitions and in some specific functions.</li>
+</ul>
+<p>See these sections on examples of it being used:</p>
+<ul>
+<li><a href="#static-pattern-rules">Static Pattern Rules</a></li>
+<li><a href="#pattern-rules">Pattern Rules</a></li>
+<li><a href="#string-substitution">String Substitution</a></li>
+<li><a href="#the-vpath-directive">The vpath Directive</a></li>
+</ul>
+<h2 id="automatic-variables">Automatic Variables</h2>
+<!--  (Section 10.5) -->
+<p>There are many <a href="https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html">automatic variables</a>, but often only a few show up:</p>
+<pre><code><span>hey: one two</span>
+	<span># Outputs "hey", since this is the target name</span>
+	echo <span>$@</span>
+
+	<span># Outputs all prerequisites newer than the target</span>
+	echo <span>$?</span>
+
+	<span># Outputs all prerequisites</span>
+	echo <span>$^</span>
+
+	<span># Outputs the first prerequisite</span>
+	echo <span>$&lt;</span>
+
+	touch hey
+
+<span>one:</span>
+	touch one
+
+<span>two:</span>
+	touch two
+
+<span>clean:</span>
+	rm -f hey one two
+</code></pre>
+<h2 id="fancy-rules">Fancy Rules</h2>
+<h2 id="implicit-rules">Implicit Rules</h2>
+<!--  (Section 10) -->
+<p>Make loves c compilation. And every time it expresses its love, things get confusing. Perhaps the most confusing part of Make is the magic/automatic rules that are made. Make calls these "implicit" rules. I don't personally agree with this design decision, and I don't recommend using them, but they're often used and are thus useful to know. Here's a list of implicit rules:</p>
+<ul>
+<li>Compiling a C program: <code>n.o</code> is made automatically from <code>n.c</code> with a command of the form <code>$(CC) -c $(CPPFLAGS) $(CFLAGS) $^ -o $@</code></li>
+<li>Compiling a C++ program: <code>n.o</code> is made automatically from <code>n.cc</code> or <code>n.cpp</code> with a command of the form <code>$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $^ -o $@</code></li>
+<li>Linking a single object file: <code>n</code> is made automatically from <code>n.o</code> by running the command <code>$(CC) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) -o $@</code></li>
+</ul>
+<p>The important variables used by implicit rules are:</p>
+<ul>
+<li><code>CC</code>: Program for compiling C programs; default <code>cc</code></li>
+<li><code>CXX</code>: Program for compiling C++ programs; default <code>g++</code></li>
+<li><code>CFLAGS</code>: Extra flags to give to the C compiler</li>
+<li><code>CXXFLAGS</code>: Extra flags to give to the C++ compiler</li>
+<li><code>CPPFLAGS</code>: Extra flags to give to the C preprocessor</li>
+<li><code>LDFLAGS</code>: Extra flags to give to compilers when they are supposed to invoke the linker</li>
+</ul>
+<p>Let's see how we can now build a C program without ever explicitly telling Make how to do the compilation:</p>
+<pre><code>CC = gcc <span># Flag for implicit rules</span>
+CFLAGS = -g <span># Flag for implicit rules. Turn on debug info</span>
+
+<span># Implicit rule #1: blah is built via the C linker implicit rule</span>
+<span># Implicit rule #2: blah.o is built via the C compilation implicit rule, because blah.c exists</span>
+<span>blah: blah.o</span>
+
+<span>blah.c:</span>
+	echo <span>"int main() { return 0; }"</span> &gt; blah.c
+
+<span>clean:</span>
+	rm -f blah*</code></pre>
+<h2 id="static-pattern-rules">Static Pattern Rules</h2>
+<!--  (Section 4.10) -->
+<p>Static pattern rules are another way to write less in a Makefile. Here's their syntax:</p>
+<pre><code><span>targets...: target-pattern: prereq-patterns ...</span>
+   commands</code></pre>
+<p>The essence is that the given <code>target</code> is matched by the <code>target-pattern</code> (via a <code>%</code> wildcard). Whatever was matched is called the <em>stem</em>. The stem is then substituted into the <code>prereq-pattern</code>, to generate the target's prereqs.</p>
+<p>A typical use case is to compile <code>.c</code> files into <code>.o</code> files. Here's the <em>manual way</em>:</p>
+<pre><code>objects = foo.o bar.o all.o
+<span>all: <span>$(objects)</span></span>
+	<span>$(CC)</span> <span>$^</span> -o all
+
+<span>foo.o: foo.c</span>
+	<span>$(CC)</span> -c foo.c -o foo.o
+
+<span>bar.o: bar.c</span>
+	<span>$(CC)</span> -c bar.c -o bar.o
+
+<span>all.o: all.c</span>
+	<span>$(CC)</span> -c all.c -o all.o
+
+<span>all.c:</span>
+	echo <span>"int main() { return 0; }"</span> &gt; all.c
+
+<span># Note: all.c does not use this rule because Make prioritizes more specific matches when there is more than one match.</span>
+<span>%.c:</span>
+	touch <span>$@</span>
+
+<span>clean:</span>
+	rm -f *.c *.o all</code></pre>
+<p>Here's the more <em>efficient way</em>, using a static pattern rule:</p>
+<pre><code>objects = foo.o bar.o all.o
+<span>all: <span>$(objects)</span></span>
+	<span>$(CC)</span> <span>$^</span> -o all
+
+<span># Syntax - targets ...: target-pattern: prereq-patterns ...</span>
+<span># In the case of the first target, foo.o, the target-pattern matches foo.o and sets the "stem" to be "foo".</span>
+<span># It then replaces the '%' in prereq-patterns with that stem</span>
+<span>$(objects)</span>: %.o: %.c
+	<span>$(CC)</span> -c <span>$^</span> -o <span>$@</span>
+
+<span>all.c:</span>
+	echo <span>"int main() { return 0; }"</span> &gt; all.c
+
+<span># Note: all.c does not use this rule because Make prioritizes more specific matches when there is more than one match.</span>
+<span>%.c:</span>
+	touch <span>$@</span>
+
+<span>clean:</span>
+	rm -f *.c *.o all</code></pre>
+<h2 id="static-pattern-rules-and-filter">Static Pattern Rules and Filter</h2>
+<!--  (Section 4.10) -->
+<p>While I introduce the <a href="#the-filter-function">filter function</a> later on, it's common to use in static pattern rules, so I'll mention that here. The <code>filter</code> function can be used in Static pattern rules to match the correct files. In this example, I made up the <code>.raw</code> and <code>.result</code> extensions.</p>
+<pre><code>obj_files = foo.result bar.o lose.o
+src_files = foo.raw bar.c lose.c
+
+<span>all: <span>$(obj_files)</span></span>
+<span># Note: PHONY is important here. Without it, implicit rules will try to build the executable "all", since the prereqs are ".o" files.</span>
+<span><span>.PHONY</span>: all </span>
+
+<span># Ex 1: .o files depend on .c files. Though we don't actually make the .o file.</span>
+<span>$(<span>filter</span> %.o,<span>$(obj_files)</span>)</span>: %.o: %.c
+	echo <span>"target: <span>$@</span> prereq: <span>$&lt;</span>"</span>
+
+<span># Ex 2: .result files depend on .raw files. Though we don't actually make the .result file.</span>
+<span>$(<span>filter</span> %.result,<span>$(obj_files)</span>)</span>: %.result: %.raw
+	echo <span>"target: <span>$@</span> prereq: <span>$&lt;</span>"</span> 
+
+%.c %.raw:
+	touch <span>$@</span>
+
+<span>clean:</span>
+	rm -f <span>$(src_files)</span></code></pre>
+<h2 id="pattern-rules">Pattern Rules</h2>
+<p>Pattern rules are often used but quite confusing. You can look at them as two ways:</p>
+<ul>
+<li>A way to define your own implicit rules</li>
+<li>A simpler form of static pattern rules</li>
+</ul>
+<p>Let's start with an example first:</p>
+<pre><code><span># Define a pattern rule that compiles every .c file into a .o file</span>
+%.o : %.c
+		<span>$(CC)</span> -c <span>$(CFLAGS)</span> <span>$(CPPFLAGS)</span> <span>$&lt;</span> -o <span>$@</span></code></pre>
+<p>Pattern rules contain a '%' in the target. This '%' matches any nonempty string, and the other characters match themselves. ‘%’ in a prerequisite of a pattern rule stands for the same stem that was matched by the ‘%’ in the target.</p>
+<p>Here's another example:</p>
+<pre><code><span># Define a pattern rule that has no pattern in the prerequisites.</span>
+<span># This just creates empty .c files when needed.</span>
+<span>%.c:</span>
+   touch <span>$@</span></code></pre>
+<h2 id="double-colon-rules">Double-Colon Rules</h2>
+<!--  (Section 4.11) -->
+<p>Double-Colon Rules are rarely used, but allow multiple rules to be defined for the same target. If these were single colons, a warning would be printed and only the second set of commands would run.</p>
+<pre><code><span>all: blah</span>
+
+<span>blah::</span>
+	echo <span>"hello"</span>
+
+<span>blah::</span>
+	echo <span>"hello again"</span></code></pre>
+<h2 id="commands-and-execution">Commands and execution</h2>
+<h2 id="command-echoingsilencing">Command Echoing/Silencing</h2>
+<!--  (Section 5.1) -->
+<p>Add an <code>@</code> before a command to stop it from being printed<br>You can also run make with <code>-s</code> to add an <code>@</code> before each line  </p>
+<pre><code><span>all: </span>
+	@echo <span>"This make line will not be printed"</span>
+	echo <span>"But this will"</span></code></pre>
+<h2 id="command-execution">Command Execution</h2>
+<!--  (Section 5.2) -->
+<p>Each command is run in a new shell (or at least the effect is as such)</p>
+<pre><code><span>all: </span>
+	cd ..
+	<span># The cd above does not affect this line, because each command is effectively run in a new shell</span>
+	echo `pwd`
+
+	<span># This cd command affects the next because they are on the same line</span>
+	cd ..;echo `pwd`
+
+	<span># Same as above</span>
+	cd ..; \
+	echo `pwd`
+</code></pre>
+<h2 id="default-shell">Default Shell</h2>
+<!--  (Section 5.2) -->
+<p>The default shell is <code>/bin/sh</code>. You can change this by changing the variable SHELL:</p>
+<pre><code>SHELL=/bin/bash
+
+<span>cool:</span>
+	echo <span>"Hello from bash"</span></code></pre>
+<h2 id="double-dollar-sign">Double dollar sign</h2>
+<p>If you want a string to have a dollar sign, you can use <code>$$</code>. This is how to use a shell variable in <code>bash</code> or <code>sh</code>.</p>
+<p>Note the differences between Makefile variables and Shell variables in this next example.</p>
+<pre><code>make_var = I am a make variable
+<span>all:</span>
+	<span># Same as running "sh_var='I am a shell variable'; echo $sh_var" in the shell</span>
+	sh_var='I am a shell variable'; echo $$sh_var
+
+	<span># Same as running "echo I am a make variable" in the shell</span>
+	echo <span>$(make_var)</span></code></pre>
+<h2 id="error-handling-with--k--i-and--">Error handling with <code>-k</code>, <code>-i</code>, and <code>-</code></h2>
+<!--  (Section 5.4) -->
+<p>Add <code>-k</code> when running make to continue running even in the face of errors. Helpful if you want to see all the errors of Make at once.<br>Add a <code>-</code> before a command to suppress the error<br>Add <code>-i</code> to make to have this happen for every command.</p>
+<!--  (Section 5.4) -->
+<pre><code><span>one:</span>
+	<span># This error will be printed but ignored, and make will continue to run</span>
+	-false
+	touch one
+</code></pre>
+<h2 id="interrupting-or-killing-make">Interrupting or killing make</h2>
+<!--  (Section 5.5) -->
+<p>Note only: If you <code>ctrl+c</code> make, it will delete the newer targets it just made.</p>
+<h2 id="recursive-use-of-make">Recursive use of make</h2>
+<!--  (Section 5.6) -->
+<p>To recursively call a makefile, use the special <code>$(MAKE)</code> instead of <code>make</code> because it will pass the make flags for you and won't itself be affected by them.</p>
+<pre><code>new_contents = <span>"hello:\n\ttouch inside_file"</span>
+<span>all:</span>
+	mkdir -p subdir
+	printf <span>$(new_contents)</span> | sed -e 's/^ //' &gt; subdir/makefile
+	cd subdir &amp;&amp; <span>$(MAKE)</span>
+
+<span>clean:</span>
+	rm -rf subdir
+</code></pre>
+<h2 id="export-environments-and-recursive-make">Export, environments, and recursive make</h2>
+<!--  (Section 5.6) -->
+<p>When Make starts, it automatically creates Make variables out of all the environment variables that are set when it's executed.</p>
+<pre><code><span># Run this with "export shell_env_var='I am an environment variable'; make"</span>
+<span>all:</span>
+	<span># Print out the Shell variable</span>
+	echo $$shell_env_var
+
+	<span># Print out the Make variable</span>
+	echo <span>$(shell_env_var)</span></code></pre>
+<p>The <code>export</code> directive takes a variable and sets it the environment for all shell commands in all the recipes:</p>
+<pre><code>shell_env_var=Shell env var, created inside of Make
+<span>export</span> shell_env_var
+<span>all:</span>
+	echo <span>$(shell_env_var)</span>
+	echo $$shell_env_var</code></pre>
+<p>As such, when you run the <code>make</code> command inside of make, you can use the <code>export</code> directive to make it accessible to sub-make commands. In this example, <code>cooly</code> is exported such that the makefile in subdir can use it.</p>
+<pre><code>new_contents = <span>"hello:\n\techo \$<span>$(cooly)</span>"</span>
+
+<span>all:</span>
+	mkdir -p subdir
+	printf <span>$(new_contents)</span> | sed -e 's/^ //' &gt; subdir/makefile
+	@echo <span>"---MAKEFILE CONTENTS---"</span>
+	@cd subdir &amp;&amp; cat makefile
+	@echo <span>"---END MAKEFILE CONTENTS---"</span>
+	cd subdir &amp;&amp; <span>$(MAKE)</span>
+
+<span># Note that variables and exports. They are set/affected globally.</span>
+cooly = <span>"The subdirectory can see me!"</span>
+<span>export</span> cooly
+<span># This would nullify the line above: unexport cooly</span>
+
+<span>clean:</span>
+	rm -rf subdir</code></pre>
+<!--  (Section 5.6) -->
+<p>You need to export variables to have them run in the shell as well.  </p>
+<pre><code>one=this will only work locally
+<span>export</span> two=we can run subcommands with this
+
+<span>all: </span>
+	@echo <span>$(one)</span>
+	@echo $$one
+	@echo <span>$(two)</span>
+	@echo $$two</code></pre>
+<!--  (Section 5.6) -->
+<p><code>.EXPORT_ALL_VARIABLES</code> exports all variables for you.</p>
+<pre><code><span>.EXPORT_ALL_VARIABLES:</span>
+new_contents = <span>"hello:\n\techo \$<span>$(cooly)</span>"</span>
+
+cooly = <span>"The subdirectory can see me!"</span>
+<span># This would nullify the line above: unexport cooly</span>
+
+<span>all:</span>
+	mkdir -p subdir
+	printf <span>$(new_contents)</span> | sed -e 's/^ //' &gt; subdir/makefile
+	@echo <span>"---MAKEFILE CONTENTS---"</span>
+	@cd subdir &amp;&amp; cat makefile
+	@echo <span>"---END MAKEFILE CONTENTS---"</span>
+	cd subdir &amp;&amp; <span>$(MAKE)</span>
+
+<span>clean:</span>
+	rm -rf subdir</code></pre>
+<h2 id="arguments-to-make">Arguments to make</h2>
+<!--  (Section 9) -->
+
+<p>There's a nice <a href="http://www.gnu.org/software/make/manual/make.html#Options-Summary">list of options</a> that can be run from make. Check out <code>--dry-run</code>, <code>--touch</code>, <code>--old-file</code>. </p>
+<p>You can have multiple targets to make, i.e. <code>make clean run test</code> runs the <code>clean</code> goal, then <code>run</code>, and then <code>test</code>.</p>
+<h2 id="variables-pt-2">Variables Pt. 2</h2>
+<h2 id="flavors-and-modification">Flavors and modification</h2>
+<!-- (6.1, 6.2, 6.3) -->
+<p>There are two flavors of variables:  </p>
+<ul>
+<li>recursive (use <code>=</code>) - only looks for the variables when the command is <em>used</em>, not when it's <em>defined</em>.  </li>
+<li>simply expanded (use <code>:=</code>) - like normal imperative programming -- only those defined so far get expanded</li>
+</ul>
+<pre><code><span># Recursive variable. This will print "later" below</span>
+one = one ${later_variable}
+<span># Simply expanded variable. This will not print "later" below</span>
+two := two ${later_variable}
+
+later_variable = later
+
+<span>all: </span>
+	echo <span>$(one)</span>
+	echo <span>$(two)</span></code></pre>
+<p>Simply expanded (using <code>:=</code>) allows you to append to a variable. Recursive definitions will give an infinite loop error.  </p>
+<pre><code>one = hello
+<span># one gets defined as a simply expanded variable (:=) and thus can handle appending</span>
+one := ${one} there
+
+<span>all: </span>
+	echo <span>$(one)</span></code></pre>
+<p><code>?=</code> only sets variables if they have not yet been set</p>
+<pre><code>one = hello
+one ?= will not be set
+two ?= will be set
+
+<span>all: </span>
+	echo <span>$(one)</span>
+	echo <span>$(two)</span></code></pre>
+<p>Spaces at the end of a line are not stripped, but those at the start are. To make a variable with a single space, use <code>$(nullstring)</code></p>
+<pre><code>with_spaces = hello   <span># with_spaces has many spaces after "hello"</span>
+after = <span>$(with_spaces)</span>there
+
+nullstring =
+space = <span>$(nullstring)</span> <span># Make a variable with a single space.</span>
+
+<span>all: </span>
+	echo <span>"<span>$(after)</span>"</span>
+	echo start<span>"<span>$(space)</span>"</span>end</code></pre>
+<p>An undefined variable is actually an empty string!</p>
+<pre><code><span>all: </span>
+	<span># Undefined variables are just empty strings!</span>
+	echo <span>$(nowhere)</span></code></pre>
+<p>Use <code>+=</code> to append</p>
+<pre><code>foo := start
+foo += more
+
+<span>all: </span>
+	echo <span>$(foo)</span></code></pre>
+<p><a href="#string-substitution">String Substitution</a> is also a really common and useful way to modify variables. Also check out <a href="https://www.gnu.org/software/make/manual/html_node/Text-Functions.html#Text-Functions">Text Functions</a> and <a href="https://www.gnu.org/software/make/manual/html_node/File-Name-Functions.html#File-Name-Functions">Filename Functions</a>.</p>
+<h2 id="command-line-arguments-and-override">Command line arguments and override</h2>
+<!--  (Section 6.7) -->
+<p>You can override variables that come from the command line by using <code>override</code>.
+Here we ran make with <code>make option_one=hi</code></p>
+<pre><code><span># Overrides command line arguments</span>
+<span>override</span> option_one = did_override
+<span># Does not override command line arguments</span>
+option_two = not_override
+<span>all: </span>
+	echo <span>$(option_one)</span>
+	echo <span>$(option_two)</span></code></pre>
+<h2 id="list-of-commands-and-define">List of commands and define</h2>
+<!--  (Section 6.8) -->
+<p>The <a href="https://www.gnu.org/software/make/manual/html_node/Multi_002dLine.html">define directive</a> is not a function, though it may look that way. I've seen it used so infrequently that I won't go into details, but it's mainly used for defining <a href="https://www.gnu.org/software/make/manual/html_node/Canned-Recipes.html#Canned-Recipes">canned recipes</a> and also pairs well with the <a href="https://www.gnu.org/software/make/manual/html_node/Eval-Function.html#Eval-Function">eval function</a>.</p>
+<p><code>define</code>/<code>endef</code> simply creates a variable that is set to a list of commands. Note here that it's a bit different than having a semi-colon between commands, because each is run in a separate shell, as expected.</p>
+<pre><code>one = <span>export</span> blah=<span>"I was set!"</span>; echo $$blah
+
+<span>define</span> two
+<span>export</span> blah=<span>"I was set!"</span>
+echo $$blah
+<span>endef</span>
+
+<span>all: </span>
+	@echo <span>"This prints 'I was set'"</span>
+	@<span>$(one)</span>
+	@echo <span>"This does not print 'I was set' because each command runs in a separate shell"</span>
+	@<span>$(two)</span></code></pre>
+<h2 id="target-specific-variables">Target-specific variables</h2>
+<!--  (Section 6.10) -->
+<p>Variables can be set for specific targets</p>
+<pre><code><span>all: one = cool</span>
+
+<span>all: </span>
+	echo one is defined: <span>$(one)</span>
+
+<span>other:</span>
+	echo one is nothing: <span>$(one)</span></code></pre>
+<h2 id="pattern-specific-variables">Pattern-specific variables</h2>
+<!--  (Section 6.11) -->
+<p>You can set variables for specific target <em>patterns</em></p>
+<pre><code><span>%.c: one = cool</span>
+
+<span>blah.c: </span>
+	echo one is defined: <span>$(one)</span>
+
+<span>other:</span>
+	echo one is nothing: <span>$(one)</span></code></pre>
+<h2 id="conditional-part-of-makefiles">Conditional part of Makefiles</h2>
+<h2 id="conditional-ifelse">Conditional if/else</h2>
+<!--  (Section 7.1) -->
+<pre><code>foo = ok
+
+<span>all:</span>
+<span>ifeq</span> (<span>$(foo)</span>, ok)
+	echo <span>"foo equals ok"</span>
+<span>else</span>
+	echo <span>"nope"</span>
+<span>endif</span></code></pre>
+<h2 id="check-if-a-variable-is-empty">Check if a variable is empty</h2>
+<!--  (Section 7.2) -->
+<pre><code>nullstring =
+foo = <span>$(nullstring)</span> <span># end of line; there is a space here</span>
+
+<span>all:</span>
+<span>ifeq</span> (<span>$(<span>strip</span> <span>$(foo)</span>)</span>,)
+	echo <span>"foo is empty after being stripped"</span>
+<span>endif</span>
+<span>ifeq</span> (<span>$(nullstring)</span>,)
+	echo <span>"nullstring doesn't even have spaces"</span>
+<span>endif</span></code></pre>
+<h2 id="check-if-a-variable-is-defined">Check if a variable is defined</h2>
+<!--  (Section 7.2) -->
+<p>ifdef does not expand variable references; it just sees if something is defined at all</p>
+<pre><code>bar =
+foo = <span>$(bar)</span>
+
+<span>all:</span>
+<span>ifdef</span> foo
+	echo <span>"foo is defined"</span>
+<span>endif</span>
+<span>ifndef</span> bar
+	echo <span>"but bar is not"</span>
+<span>endif</span>
+</code></pre>
+<h2 id="makeflags">$(MAKEFLAGS)</h2>
+<!-- `(Section 7.3) -->
+<p>This example shows you how to test make flags with <code>findstring</code> and <code>MAKEFLAGS</code>. Run this example with <code>make -i</code> to see it print out the echo statement.</p>
+<pre><code><span>all:</span>
+<span># Search for the "-i" flag. MAKEFLAGS is just a list of single characters, one per flag. So look for "i" in this case.</span>
+<span>ifneq</span> (,<span>$(<span>findstring</span> i, <span>$(MAKEFLAGS)</span>)</span>)
+	echo <span>"i was passed to MAKEFLAGS"</span>
+<span>endif</span></code></pre>
+<h2 id="functions">Functions</h2>
+<h2 id="first-functions">First Functions</h2>
+<!--  (Section 8.1) -->
+<p><em>Functions</em> are mainly just for text processing. Call functions with <code>$(fn, arguments)</code> or <code>${fn, arguments}</code>. Make has a decent amount of <a href="https://www.gnu.org/software/make/manual/html_node/Functions.html">builtin functions</a>.</p>
+<pre><code>bar := ${subst not,<span>"totally"</span>, <span>"I am not superman"</span>}
+<span>all: </span>
+	@echo <span>$(bar)</span>
+</code></pre>
+<p>If you want to replace spaces or commas, use variables</p>
+<pre><code>comma := ,
+empty:=
+space := <span>$(empty)</span> <span>$(empty)</span>
+foo := a b c
+bar := <span>$(<span>subst</span> <span>$(space)</span>,<span>$(comma)</span>,<span>$(foo)</span>)</span>
+
+<span>all: </span>
+	@echo <span>$(bar)</span></code></pre>
+<p>Do NOT include spaces in the arguments after the first. That will be seen as part of the string.</p>
+<pre><code>comma := ,
+empty:=
+space := <span>$(empty)</span> <span>$(empty)</span>
+foo := a b c
+bar := <span>$(<span>subst</span> <span>$(space)</span>, <span>$(comma)</span> , <span>$(foo)</span>)</span> <span># Watch out!</span>
+
+<span>all: </span>
+	<span># Output is ", a , b , c". Notice the spaces introduced</span>
+	@echo <span>$(bar)</span>
+</code></pre>
+<!-- # 8.2, 8.3, 8.9 TODO do something about the fns   
+# TODO 8.7 origin fn? Better in documentation?
+-->
+
+<h2 id="string-substitution">String Substitution</h2>
+<p><code>$(patsubst pattern,replacement,text)</code> does the following:</p>
+<p>"Finds whitespace-separated words in text that match pattern and replaces them with replacement. Here pattern may contain a ‘%’ which acts as a wildcard, matching any number of any characters within a word. If replacement also contains a ‘%’, the ‘%’ is replaced by the text that matched the ‘%’ in pattern. Only the first ‘%’ in the pattern and replacement is treated this way; any subsequent ‘%’ is unchanged." (<a href="https://www.gnu.org/software/make/manual/html_node/Text-Functions.html#Text-Functions">GNU docs</a>)</p>
+<p>The substitution reference <code>$(text:pattern=replacement)</code> is a shorthand for this.</p>
+<p>There's another shorthand that replaces only suffixes: <code>$(text:suffix=replacement)</code>. No <code>%</code> wildcard is used here.</p>
+<p>Note: don't add extra spaces for this shorthand. It will be seen as a search or replacement term.</p>
+<pre><code>foo := a.o b.o l.a c.o
+one := <span>$(<span>patsubst</span> %.o,%.c,<span>$(foo)</span>)</span>
+<span># This is a shorthand for the above</span>
+two := $(foo:%.o=%.c)
+<span># This is the suffix-only shorthand, and is also equivalent to the above.</span>
+three := $(foo:.o=.c)
+
+<span>all:</span>
+	echo <span>$(one)</span>
+	echo <span>$(two)</span>
+	echo <span>$(three)</span></code></pre>
+<h2 id="the-foreach-function">The foreach function</h2>
+<!--  (Section 8.4) -->
+<p>The foreach function looks like this: <code>$(foreach var,list,text)</code>. It converts one list of words (separated by spaces) to another. <code>var</code> is set to each word in list, and <code>text</code> is expanded for each word.<br>This appends an exclamation after each word:</p>
+<pre><code>foo := who are you
+<span># For each "word" in foo, output that same word with an exclamation after</span>
+bar := <span>$(<span>foreach</span> wrd,<span>$(foo)</span>,<span>$(wrd)</span>!)</span>
+
+<span>all:</span>
+	<span># Output is "who! are! you!"</span>
+	@echo <span>$(bar)</span></code></pre>
+<h2 id="the-if-function">The if function</h2>
+<!--  (Section 8.5) -->
+<p><code>if</code> checks if the first argument is nonempty. If so, runs the second argument, otherwise runs the third.</p>
+<pre><code>foo := <span>$(<span>if</span> this-is-not-empty,then!,else!)</span>
+empty :=
+bar := <span>$(<span>if</span> <span>$(empty)</span>,then!,else!)</span>
+
+<span>all:</span>
+	@echo <span>$(foo)</span>
+	@echo <span>$(bar)</span></code></pre>
+<h2 id="the-call-function">The call function</h2>
+<!--  (Section 8.6) -->
+<p>Make supports creating basic functions. You "define" the function just by creating a variable, but use the parameters <code>$(0)</code>, <code>$(1)</code>, etc. You then call the function with the special <a href="https://www.gnu.org/software/make/manual/html_node/Call-Function.html#Call-Function"><code>call</code></a> builtin function. The syntax is <code>$(call variable,param,param)</code>. <code>$(0)</code> is the variable, while <code>$(1)</code>, <code>$(2)</code>, etc. are the params.</p>
+<pre><code>sweet_new_fn = Variable Name: $(0) First: $(1) Second: $(2) Empty Variable: $(3)
+
+<span>all:</span>
+	<span># Outputs "Variable Name: sweet_new_fn First: go Second: tigers Empty Variable:"</span>
+	@echo <span>$(<span>call</span> sweet_new_fn, go, tigers)</span></code></pre>
+<h2 id="the-shell-function">The shell function</h2>
+<!--  (Section 8.8) -->
+<p>shell - This calls the shell, but it replaces newlines with spaces!</p>
+<pre><code><span>all: </span>
+	@echo <span>$(<span>shell</span> ls -la)</span> <span># Very ugly because the newlines are gone!</span></code></pre>
+<h2 id="the-filter-function">The filter function</h2>
+<p>The <code>filter</code> function is used to select certain elements from a list that match a specific pattern. For example, this will select all elements in <code>obj_files</code> that end with <code>.o</code>.</p>
+<pre><code>obj_files = foo.result bar.o lose.o
+filtered_files = <span>$(<span>filter</span> %.o,<span>$(obj_files)</span>)</span>
+
+<span>all:</span>
+	@echo <span>$(filtered_files)</span></code></pre>
+<p>Filter can also be used in more complex ways:</p>
+<ol>
+<li><p><strong>Filtering multiple patterns</strong>: You can filter multiple patterns at once. For example, <code>$(filter %.c %.h, $(files))</code> will select all <code>.c</code> and <code>.h</code> files from the files list.</p>
+</li>
+<li><p><strong>Negation</strong>: If you want to select all elements that do not match a pattern, you can use <code>filter-out</code>. For example, <code>$(filter-out %.h, $(files))</code> will select all files that are not <code>.h</code> files.</p>
+</li>
+<li><p><strong>Nested filter</strong>: You can nest filter functions to apply multiple filters. For example, <code>$(filter %.o, $(filter-out test%, $(objects)))</code> will select all object files that end with <code>.o</code> but don't start with <code>test</code>.</p>
+</li>
+</ol>
+<h2 id="other-features">Other Features</h2>
+<h2 id="include-makefiles">Include Makefiles</h2>
+<p>The include directive tells make to read one or more other makefiles. It's a line in the makefile that looks like this:</p>
+<pre><code><span>include</span> filenames...</code></pre>
+<p>This is particularly useful when you use compiler flags like <code>-M</code> that create Makefiles based on the source. For example, if some c files includes a header, that header will be added to a Makefile that's written by gcc. I talk about this more in the <a href="#makefile-cookbook">Makefile Cookbook</a></p>
+<h2 id="the-vpath-directive">The vpath Directive</h2>
+<!--  (Section 4.3.2) -->
+<p>Use vpath to specify where some set of prerequisites exist. The format is <code>vpath &lt;pattern&gt; &lt;directories, space/colon separated&gt;</code>
+<code>&lt;pattern&gt;</code> can have a <code>%</code>, which matches any zero or more characters.
+You can also do this globallyish with the variable VPATH</p>
+<pre><code><span>vpath</span> %.h ../headers ../other-directory
+
+<span># Note: vpath allows blah.h to be found even though blah.h is never in the current directory</span>
+<span>some_binary: ../headers blah.h</span>
+	touch some_binary
+
+<span>../headers:</span>
+	mkdir ../headers
+
+<span># We call the target blah.h instead of ../headers/blah.h, because that's the prereq that some_binary is looking for</span>
+<span># Typically, blah.h would already exist and you wouldn't need this.</span>
+<span>blah.h:</span>
+	touch ../headers/blah.h
+
+<span>clean:</span>
+	rm -rf ../headers
+	rm -f some_binary
+</code></pre>
+<h2 id="multiline">Multiline</h2>
+<p>The backslash ("\") character gives us the ability to use multiple lines when the commands are too long</p>
+<pre><code><span>some_file: </span>
+	echo This line is too long, so \
+		it is broken up into multiple lines</code></pre>
+<h2 id="phony">.phony</h2>
+<p>Adding <code>.PHONY</code> to a target will prevent Make from confusing the phony target with a file name. In this example, if the file <code>clean</code> is created, make clean will still be run. Technically, I should have used it in every example with <code>all</code> or <code>clean</code>, but I wanted to keep the examples clean. Additionally, "phony" targets typically have names that are rarely file names, and in practice many people skip this.</p>
+<pre><code><span>some_file:</span>
+	touch some_file
+	touch clean
+
+<span><span>.PHONY</span>: clean</span>
+<span>clean:</span>
+	rm -f some_file
+	rm -f clean</code></pre>
+<h2 id="delete_on_error">.delete_on_error</h2>
+<!-- (Section 5.4) -->
+
+<p>The make tool will stop running a rule (and will propogate back to prerequisites) if a command returns a nonzero exit status.<br><code>DELETE_ON_ERROR</code> will delete the target of a rule if the rule fails in this manner. This will happen for all targets, not just the one it is before like PHONY. It's a good idea to always use this, even though make does not for historical reasons.  </p>
+<pre><code><span>.DELETE_ON_ERROR:</span>
+<span>all: one two</span>
+
+<span>one:</span>
+	touch one
+	false
+
+<span>two:</span>
+	touch two
+	false</code></pre>
+<h2 id="makefile-cookbook">Makefile Cookbook</h2>
+<p>Let's go through a really juicy Make example that works well for medium sized projects.</p>
+<p>The neat thing about this makefile is it automatically determines dependencies for you. All you have to do is put your C/C++ files in the <code>src/</code> folder.</p>
+<pre><code><span># Thanks to Job Vranish (https://spin.atomicobject.com/2016/08/26/makefile-c-projects/)</span>
+TARGET_EXEC := final_program
+
+BUILD_DIR := ./build
+SRC_DIRS := ./src
+
+<span># Find all the C and C++ files we want to compile</span>
+<span># Note the single quotes around the * expressions. The shell will incorrectly expand these otherwise, but we want to send the * directly to the find command.</span>
+SRCS := <span>$(<span>shell</span> find <span>$(SRC_DIRS)</span> -name '*.cpp' -<span>or</span> -name '*.c' -<span>or</span> -name '*.s')</span>
+
+<span># Prepends BUILD_DIR and appends .o to every src file</span>
+<span># As an example, ./your_dir/hello.cpp turns into ./build/./your_dir/hello.cpp.o</span>
+OBJS := $(SRCS:%=<span>$(BUILD_DIR)</span>/%.o)
+
+<span># String substitution (suffix version without %).</span>
+<span># As an example, ./build/hello.cpp.o turns into ./build/hello.cpp.d</span>
+DEPS := $(OBJS:.o=.d)
+
+<span># Every folder in ./src will need to be passed to GCC so that it can find header files</span>
+INC_DIRS := <span>$(<span>shell</span> find <span>$(SRC_DIRS)</span> -type d)</span>
+<span># Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag</span>
+INC_FLAGS := <span>$(<span>addprefix</span> -I,<span>$(INC_DIRS)</span>)</span>
+
+<span># The -MMD and -MP flags together generate Makefiles for us!</span>
+<span># These files will have .d instead of .o as the output.</span>
+CPPFLAGS := <span>$(INC_FLAGS)</span> -MMD -MP
+
+<span># The final build step.</span>
+<span>$(BUILD_DIR)</span>/<span>$(TARGET_EXEC)</span>: <span>$(OBJS)</span>
+	<span>$(CXX)</span> <span>$(OBJS)</span> -o <span>$@</span> <span>$(LDFLAGS)</span>
+
+<span># Build step for C source</span>
+<span>$(BUILD_DIR)</span>/%.c.o: %.c
+	mkdir -p <span>$(<span>dir</span> <span>$@</span>)</span>
+	<span>$(CC)</span> <span>$(CPPFLAGS)</span> <span>$(CFLAGS)</span> -c <span>$&lt;</span> -o <span>$@</span>
+
+<span># Build step for C++ source</span>
+<span>$(BUILD_DIR)</span>/%.cpp.o: %.cpp
+	mkdir -p <span>$(<span>dir</span> <span>$@</span>)</span>
+	<span>$(CXX)</span> <span>$(CPPFLAGS)</span> <span>$(CXXFLAGS)</span> -c <span>$&lt;</span> -o <span>$@</span>
+
+
+<span><span>.PHONY</span>: clean</span>
+<span>clean:</span>
+	rm -r <span>$(BUILD_DIR)</span>
+
+<span># Include the .d makefiles. The - at the front suppresses the errors of missing</span>
+<span># Makefiles. Initially, all the .d files will be missing, and we don't want those</span>
+<span># errors to show up.</span>
+<span>-include</span> <span>$(DEPS)</span></code></pre>
+<!--
+TODO: This example fails initially because blah.d doesn't exist. I'm not sure how to fix this example, there are probably better ones out there..
+
+# Generating Prerequisites Automatically (Section 4.12)
+Example requires: blah.c  
+Generating prereqs automatically  
+This makes one small makefile per source file  
+Notes:  
+1) $$ is the current process id in bash. $$$$ is just $$, with escaping. We use it to make a temporary file, that doesn't interfere with others if there is some parallel builds going on.  
+2) cc -MM outputs a makefile line. This is the magic that generates prereqs automatically, by looking at the code itself  
+3) The purpose of the sed command is to translate (for example):  
+    main.o : main.c defs.h  
+    into:  
+    main.o main.d : main.c defs.h  
+4) Running `make clean` will rerun the rm -f ... rule because the include line wants to include an up to date version of the file. There is such a target that updates it, so it runs that rule before including the file.  
+```makefile
+# Run make init first, then run make
+# This outputs
+all: blah.d
+
+clean:
+    rm -f blah.d blah.c blah.h blah.o blah
+
+%.d: %.c
+    rm -f $@; \
+     $(CC) -MM $(CPPFLAGS) $< > $@.$$$$; \
+     sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+     rm -f $@.$$$$
+
+init:
+    echo "#include \"blah.h\"; int main() { return 0; }" > blah.c
+    touch blah.h
+
+sources = blah.c
+
+include $(sources:.c=.d)
+```
+-->
+
+                            </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Scheduling Tasks and Threads | Web Browser Engineering</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Scheduling Tasks and Threads | Web Browser Engineering</h1>
+    <p><strong>URL:</strong> <a href="https://browser.engineering/scheduling.html">https://browser.engineering/scheduling.html</a></p>
+    <p><strong>Tags:</strong> browsers, webdev</p>
+    <p><strong>Bookmark ID:</strong> 876782714</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page">
+
+
+<header>
+
+<a href="https://twitter.com/browserbook">Twitter</a> ·
+<a href="https://browserbook.substack.com/">Blog</a> ·
+<a href="https://patreon.com/browserengineering">Patreon</a> ·
+<a href="https://github.com/browserengineering/book/discussions">Discussions</a>
+</header>
+
+<nav>
+  Chapter 12 of <a href="https://browser.engineering/index.html" title="Table of Contents">Web Browser Engineering</a>.
+  <a rel="prev" title="Previous chapter" href="https://browser.engineering/visual-effects.html">&lt;</a>
+  <a rel="next" title="Next chapter" href="https://browser.engineering/animations.html">&gt;</a>
+</nav>
+
+
+
+
+
+<nav id="toc">
+<ul>
+<li><a href="#tasks-and-task-queues" id="toc-tasks-and-task-queues">Tasks and Task Queues</a></li>
+<li><a href="#timers-and-settimeout" id="toc-timers-and-settimeout">Timers and
+<code>setTimeout</code></a></li>
+<li><a href="#long-lived-threads" id="toc-long-lived-threads">Long-lived
+threads</a></li>
+<li><a href="#the-cadence-of-rendering" id="toc-the-cadence-of-rendering">The Cadence of Rendering</a></li>
+<li><a href="#optimizing-with-dirty-bits" id="toc-optimizing-with-dirty-bits">Optimizing with Dirty Bits</a></li>
+<li><a href="#animating-frames" id="toc-animating-frames">Animating
+Frames</a></li>
+<li><a href="#profiling-rendering" id="toc-profiling-rendering">Profiling Rendering</a></li>
+<li><a href="#two-threads" id="toc-two-threads">Two Threads</a></li>
+<li><a href="#committing-a-display-list" id="toc-committing-a-display-list">Committing a Display List</a></li>
+<li><a href="#threaded-profiling" id="toc-threaded-profiling">Threaded
+Profiling</a></li>
+<li><a href="#threaded-scrolling" id="toc-threaded-scrolling">Threaded
+Scrolling</a></li>
+<li><a href="#threaded-style-and-layout" id="toc-threaded-style-and-layout">Threaded Style and Layout</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+<li><a href="#outline" id="toc-outline">Outline</a></li>
+<li><a href="#exercises" id="toc-exercises">Exercises</a></li>
+</ul>
+</nav>
+
+<p>Modern browsers must handle user input, request remote files, run
+various callbacks, and ultimately render to the screen, all while
+staying fast and responsive. That requires a unified task abstraction to
+keep track of the browser’s pending work. Moreover, browser work must be
+split across multiple CPU threads, with different threads running tasks
+in parallel to maximize responsiveness.</p>
+<h2 id="tasks-and-task-queues">Tasks and Task Queues</h2>
+<p>So far, most of the work our browser’s been doing has come from user
+actions like scrolling, pressing buttons, and clicking on links. But as
+the web applications our browser runs get more and more sophisticated,
+they begin querying remote servers, showing animations, and prefetching
+information for later. And while users are slow and deliberative,
+leaving long gaps between actions for the browser to catch up,
+applications can be very demanding. This requires a change in
+perspective: the browser now has a never-ending queue of tasks to
+do.</p>
+<p>Modern browsers adapt to this reality by multitasking, prioritizing,
+and deduplicating work. Every bit of work the browser might do—loading
+pages, running scripts, and responding to user actions—is turned into a
+<em>task</em>, which can be executed later, where a task is just a
+function (plus its arguments) that can be executed:</p>
+<div id="cb1"><pre><code><span id="cb1-1"><span>class</span> Task:</span>
+<span id="cb1-2">    <span>def</span> <span>__init__</span>(<span>self</span>, task_code, <span>*</span>args):</span>
+<span id="cb1-3">        <span>self</span>.task_code <span>=</span> task_code</span>
+<span id="cb1-4">        <span>self</span>.args <span>=</span> args</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">    <span>def</span> run(<span>self</span>):</span>
+<span id="cb1-7">        <span>self</span>.task_code(<span>*</span><span>self</span>.args)</span>
+<span id="cb1-8">        <span>self</span>.task_code <span>=</span> <span>None</span></span>
+<span id="cb1-9">        <span>self</span>.args <span>=</span> <span>None</span></span></code></pre></div>
+<p>Note the special <code>*args</code> syntax in the constructor
+arguments and in the call to <code>task_code</code>. This syntax
+indicates that a <code>Task</code> can be constructed with any number of
+arguments, which are then available as the list <code>args</code>. Then,
+calling a function with <code>*args</code> unpacks the list back into
+multiple arguments.</p>
+<p>The point of a task is that it can be created at one point in time,
+and then run at some later time by a task runner of some kind, according
+to a scheduling algorithm.<span><span>The event loops we discussed in <a href="https://browser.engineering/graphics.html#eventloop">Chapter 2</a> and <a href="https://browser.engineering/visual-effects.html#sdl-creates-the-window">Chapter 11</a> are
+task runners, where the tasks to run are provided by the operating
+system.</span></span> In our browser, the task runner will store tasks
+in a first-in, first-out queue:</p>
+<div id="cb2" data-replace="(self)/(self%2c%20tab)"><pre><code><span id="cb2-1"><span>class</span> TaskRunner:</span>
+<span id="cb2-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb2-3">        <span>self</span>.tab <span>=</span> tab</span>
+<span id="cb2-4">        <span>self</span>.tasks <span>=</span> []</span>
+<span id="cb2-5"></span>
+<span id="cb2-6">    <span>def</span> schedule_task(<span>self</span>, task):</span>
+<span id="cb2-7">        <span>self</span>.tasks.append(task)</span></code></pre></div>
+<p>When the time comes to run a task, our task runner can just remove
+the first task from the queue and run it:<span><span>First-in, first-out is a
+simplistic way to choose which task to run next, and real browsers have
+sophisticated <em>schedulers</em> which consider <a href="https://blog.chromium.org/2015/04/scheduling-tasks-intelligently-for_30.html">many
+different factors</a>.</span></span></p>
+<div id="cb3" data-expected="False"><pre><code><span id="cb3-1"><span>class</span> TaskRunner:</span>
+<span id="cb3-2">    <span>def</span> run(<span>self</span>):</span>
+<span id="cb3-3">        <span>if</span> <span>len</span>(<span>self</span>.tasks) <span>&gt;</span> <span>0</span>:</span>
+<span id="cb3-4">            task <span>=</span> <span>self</span>.tasks.pop(<span>0</span>)</span>
+<span id="cb3-5">            task.run()</span></code></pre></div>
+<p>To run those tasks, we need to call the <code>run</code> method on
+our <code>TaskRunner</code>, which we can do in the main event loop:</p>
+<div id="cb4" data-expected="False"><pre><code><span id="cb4-1"><span>class</span> Tab:</span>
+<span id="cb4-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb4-3">        <span>self</span>.task_runner <span>=</span> TaskRunner(<span>self</span>)</span></code></pre></div>
+<div id="cb5" data-expected="False"><pre><code><span id="cb5-1"><span>def</span> mainloop(browser):</span>
+<span id="cb5-2">    <span>while</span> <span>True</span>:</span>
+<span id="cb5-3">        <span># ...</span></span>
+<span id="cb5-4">        browser.active_tab.task_runner.run()</span></code></pre></div>
+<p>The <code>TaskRunner</code> allows us to choose when exactly
+different tasks are handled. Here, I’ve chosen to check for user events
+between every <code>Task</code> the browser runs, which makes our
+browser more responsive when there are lots of tasks. I’ve also chosen
+to only run tasks on the active tab, which means background tabs can’t
+slow our browser down.</p>
+<p>With this simple task runner, we can now queue up tasks and execute
+them later. For example, right now, when loading a web page, our browser
+will download and run all scripts before doing its rendering steps. That
+makes pages slower to load. We can fix this by creating tasks for
+running scripts:</p>
+<div id="cb6"><pre><code><span id="cb6-1"><span>class</span> Tab:</span>
+<span id="cb6-2">    <span>def</span> load(<span>self</span>, url, payload<span>=</span><span>None</span>):</span>
+<span id="cb6-3">        <span># ...</span></span>
+<span id="cb6-4">        <span>for</span> script <span>in</span> scripts:</span>
+<span id="cb6-5">            <span># ...</span></span>
+<span id="cb6-6">            <span>try</span>:</span>
+<span id="cb6-7">                header, body <span>=</span> script_url.request(url)</span>
+<span id="cb6-8">            <span>except</span>:</span>
+<span id="cb6-9">                <span>continue</span></span>
+<span id="cb6-10">            task <span>=</span> Task(<span>self</span>.js.run, script_url, body)</span>
+<span id="cb6-11">            <span>self</span>.task_runner.schedule_task(task)</span></code></pre></div>
+<p>Now our browser will not run scripts until after <code>load</code>
+has completed and the event loop comes around again. And if there are
+lots of scripts to run, we’ll also be able to process user events while
+the page loads.</p>
+<p>JavaScript uses a task-based <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop">event
+loop</a> even <a href="https://nodejs.dev/learn/the-nodejs-event-loop">outside</a> of the
+browser. For example, JavaScript uses message passing, handles input and
+output via <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#never_blocking">asynchronous</a>
+APIs, and has run-to-completion semantics. Of course, this programming
+model grew out of early browser implementations, and is now another
+important reason to architect a browser using tasks.</p>
+<h2 id="timers-and-settimeout">Timers and <code>setTimeout</code></h2>
+<p>Tasks are <em>also</em> a natural way to support several JavaScript
+APIs that ask for a function to be run at some point in the future. For
+example, <a href="https://developer.mozilla.org/en-US/docs/Web/API/setTimeout"><code>setTimeout</code></a>
+lets you run a JavaScript function some number of milliseconds from now.
+This code prints “Callback” to the console one second from now:</p>
+<div id="cb7"><pre><code><span id="cb7-1"><span>function</span> <span>callback</span>() { <span>console</span><span>.</span><span>log</span>(<span>'Callback'</span>)<span>;</span> }</span>
+<span id="cb7-2"><span>setTimeout</span>(callback<span>,</span> <span>1000</span>)<span>;</span></span></code></pre></div>
+<p>As with <code>addEventListener</code> in <a href="https://browser.engineering/scripts.html#event-handling">Chapter 9</a>, we’ll implement
+<code>setTimeout</code> by saving the callback in a JavaScript variable
+and creating a handle by which the Python-side code can call it:</p>
+<div id="cb8"><pre><code><span id="cb8-1">SET_TIMEOUT_REQUESTS <span>=</span> {}</span>
+<span id="cb8-2"></span>
+<span id="cb8-3"><span>function</span> <span>setTimeout</span>(callback<span>,</span> time_delta) {</span>
+<span id="cb8-4">    <span>var</span> handle <span>=</span> <span>Object</span><span>.</span><span>keys</span>(SET_TIMEOUT_REQUESTS)<span>.</span><span>length</span><span>;</span></span>
+<span id="cb8-5">    SET_TIMEOUT_REQUESTS[handle] <span>=</span> callback<span>;</span></span>
+<span id="cb8-6">    <span>call_python</span>(<span>"setTimeout"</span><span>,</span> handle<span>,</span> time_delta)</span>
+<span id="cb8-7">}</span></code></pre></div>
+<p>The exported <code>setTimeout</code> function will create a timer,
+wait for the requested time period, and then ask the JavaScript runtime
+to run the callback. That last part will happen via
+<code>__runSetTimeout</code>:<span><span>Note that we never remove <code>callback</code> from the
+<code>SET_TIMEOUT_REQUESTS</code> dictionary. This could lead to a
+memory leak, if the callback is holding on to the last reference to some
+large data structure. <a href="https://browser.engineering/scripts.html">Chapter 9</a> had a similar
+issue with handles. Avoiding memory leaks in data structures shared
+between the browser and the browser application takes a lot of care and
+this book doesn’t attempt to do it right.</span></span></p>
+<div id="cb9"><pre><code><span id="cb9-1"><span>function</span> <span>__runSetTimeout</span>(handle) {</span>
+<span id="cb9-2">    <span>var</span> callback <span>=</span> SET_TIMEOUT_REQUESTS[handle]</span>
+<span id="cb9-3">    <span>callback</span>()<span>;</span></span>
+<span id="cb9-4">}</span></code></pre></div>
+<p>Now let’s implement the Python side of this API. We can use the <a href="https://docs.python.org/3/library/threading.html#timer-objects"><code>Timer</code></a>
+class in Python’s <a href="https://docs.python.org/3/library/threading.html"><code>threading</code></a>
+module. You use the class like this:<span><span>An alternative approach would be to record when each
+<code>Task</code> is supposed to occur, and compare against the current
+time in the event loop. This is called <em>polling</em>, and is what,
+for example, the SDL event loop does to look for events and tasks.
+However, that can mean wasting CPU cycles in a loop until the task is
+ready, so I expect the <code>Timer</code> to be more
+efficient.</span></span></p>
+<div id="cb10"><pre><code><span id="cb10-1"><span>import</span> threading</span>
+<span id="cb10-2"><span>def</span> callback():</span>
+<span id="cb10-3">    <span># ...</span></span>
+<span id="cb10-4">threading.Timer(<span>1.0</span>, callback).start()</span></code></pre></div>
+<p>This runs <code>callback</code> one second from now. Simple! But
+<code>threading.Timer</code> executes its callback <em>on a new Python
+thread</em>, and that introduces a lot of challenges. The callback can’t
+just call <code>evaljs</code> directly: we’d end up with JavaScript
+running on two Python threads at the same time, which is not good.<span><span>JavaScript is not a
+multithreaded programming language. It’s possible on the web to create
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API">workers</a>
+of various kinds, but they all run independently and communicate only
+via special message-passing APIs.</span></span> So as a workaround, the
+callback will add a new <code>Task</code> to the task queue to call
+<code>__runSetTimeout</code>. That has the downside of potentially
+delaying the callback, but it means that JavaScript will only ever
+execute on the main thread.</p>
+<p>Let’s implement that:</p>
+<div id="cb11"><pre><code><span id="cb11-1">SETTIMEOUT_JS <span>=</span> <span>"__runSetTimeout(dukpy.handle)"</span></span>
+<span id="cb11-2"></span>
+<span id="cb11-3"><span>class</span> JSContext:</span>
+<span id="cb11-4">    <span>def</span> <span>__init__</span>(<span>self</span>, tab):</span>
+<span id="cb11-5">        <span># ...</span></span>
+<span id="cb11-6">        <span>self</span>.interp.export_function(<span>"setTimeout"</span>,</span>
+<span id="cb11-7">            <span>self</span>.setTimeout)</span>
+<span id="cb11-8"></span>
+<span id="cb11-9">    <span>def</span> dispatch_settimeout(<span>self</span>, handle):</span>
+<span id="cb11-10">        <span>self</span>.interp.evaljs(SETTIMEOUT_JS, handle<span>=</span>handle)</span>
+<span id="cb11-11"></span>
+<span id="cb11-12">    <span>def</span> setTimeout(<span>self</span>, handle, time):</span>
+<span id="cb11-13">        <span>def</span> run_callback():</span>
+<span id="cb11-14">            task <span>=</span> Task(<span>self</span>.dispatch_settimeout, handle)</span>
+<span id="cb11-15">            <span>self</span>.tab.task_runner.schedule_task(task)</span>
+<span id="cb11-16">        threading.Timer(time <span>/</span> <span>1000.0</span>, run_callback).start()</span></code></pre></div>
+<p>But this still isn’t quite right. We now have two threads accessing
+the <code>task_runner</code>: the primary thread, to run tasks, and the
+timer thread, to add them. This is a <a href="https://en.wikipedia.org/wiki/Race_condition">race condition</a>
+that can cause all sorts of bad things to happen, so we need to make
+sure only one thread accesses the <code>task_runner</code> at a
+time.</p>
+<p>To do so we use a <a href="https://docs.python.org/3/library/threading.html#threading.Condition"><code>Condition</code></a>
+object, which can only be held by one thread at a time. Each thread will
+try to acquire <code>condition</code> before reading or writing to the
+<code>task_runner</code>, avoiding simultaneous access.<span><span>The <code>blocking</code>
+parameter to <code>acquire</code> indicates whether the thread should
+wait for the condition to be available before continuing; in this
+chapter you’ll always set it to <code>True</code>. (When the thread is
+waiting, it’s said to be <em>blocked</em>.)</span></span></p>
+<p>The <code>Condition</code> class is actually a <a href="https://docs.python.org/3/library/threading.html#threading.Lock"><code>Lock</code></a>,
+plus functionality to be able to <em>wait</em> until a state condition
+occurs. If you have no more work to do right now, acquire
+<code>condition</code> and then call <code>wait</code>. This will cause
+the thread to stop at that line of code. When more work comes in to do,
+such as in <code>schedule_task</code>, a call to <code>notify_all</code>
+will wake up the thread that called <code>wait</code>.</p>
+<div id="cb12" data-expected="False"><pre><code><span id="cb12-1"><span>class</span> TaskRunner:</span>
+<span id="cb12-2">    <span>def</span> <span>__init__</span>(<span>self</span>, tab):</span>
+<span id="cb12-3">        <span># ...</span></span>
+<span id="cb12-4">        <span>self</span>.condition <span>=</span> threading.Condition()</span>
+<span id="cb12-5"></span>
+<span id="cb12-6">    <span>def</span> schedule_task(<span>self</span>, task):</span>
+<span id="cb12-7">        <span>self</span>.condition.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb12-8">        <span>self</span>.tasks.append(task)</span>
+<span id="cb12-9">        <span>self</span>.condition.notify_all()</span>
+<span id="cb12-10">        <span>self</span>.condition.release()</span>
+<span id="cb12-11"></span>
+<span id="cb12-12">    <span>def</span> run(<span>self</span>):</span>
+<span id="cb12-13">        task <span>=</span> <span>None</span></span>
+<span id="cb12-14">        <span>self</span>.condition.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb12-15">        <span>if</span> <span>len</span>(<span>self</span>.tasks) <span>&gt;</span> <span>0</span>:</span>
+<span id="cb12-16">            task <span>=</span> <span>self</span>.tasks.pop(<span>0</span>)</span>
+<span id="cb12-17">        <span>self</span>.condition.release()</span>
+<span id="cb12-18">        <span>if</span> task:</span>
+<span id="cb12-19">            task.run()</span>
+<span id="cb12-20"></span>
+<span id="cb12-21">        <span>self</span>.condition.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb12-22">        <span>if</span> <span>len</span>(<span>self</span>.tasks) <span>==</span> <span>0</span>:</span>
+<span id="cb12-23">            <span>self</span>.condition.wait()</span>
+<span id="cb12-24">        <span>self</span>.condition.release()</span></code></pre></div>
+<p>It’s important to call <code>wait</code> at the end of the
+<code>run</code> loop if there is nothing left to do. Otherwise that
+thread will tend to use up a lot of the CPU, plus constantly be
+acquiring and releasing <code>condition</code>. This busywork not only
+slows down the computer, but also causes the callbacks from the
+<code>Timer</code> to happen at erratic times, because the two threads
+are competing for the lock.<span><span>Try removing this code and observe. The timers will become
+quite erratic.</span></span></p>
+<p>When using locks, it’s super important to remember to release the
+lock eventually and to hold it for the shortest time possible. The code
+above, for example, releases the lock before running the
+<code>task</code>. That’s because after the task has been removed from
+the queue, it can’t be accessed by another thread, so the lock does not
+need to be held while the task is running.</p>
+<p>The <code>setTimeout</code> code is now thread-safe, but still has
+yet another bug: if we navigate from one page to another,
+<code>setTimeout</code> callbacks still pending on the previous page
+might still try to execute. That is easily prevented by adding a
+<code>discarded</code> field on <code>JSContext</code> and setting it
+when loading a new page:</p>
+<div id="cb13"><pre><code><span id="cb13-1"><span>class</span> JSContext:</span>
+<span id="cb13-2">    <span>def</span> <span>__init__</span>(<span>self</span>, tab):</span>
+<span id="cb13-3">        <span># ...</span></span>
+<span id="cb13-4">        <span>self</span>.discarded <span>=</span> <span>False</span></span>
+<span id="cb13-5"></span>
+<span id="cb13-6">    <span>def</span> dispatch_settimeout(<span>self</span>, handle):</span>
+<span id="cb13-7">        <span>if</span> <span>self</span>.discarded: <span>return</span></span>
+<span id="cb13-8">        <span>self</span>.interp.evaljs(SETTIMEOUT_JS, handle<span>=</span>handle)</span></code></pre></div>
+<div id="cb14"><pre><code><span id="cb14-1"><span>class</span> Tab:</span>
+<span id="cb14-2">    <span>def</span> load(<span>self</span>, url, payload<span>=</span><span>None</span>):</span>
+<span id="cb14-3">        <span># ...</span></span>
+<span id="cb14-4">        <span>if</span> <span>self</span>.js: <span>self</span>.js.discarded <span>=</span> <span>True</span></span>
+<span id="cb14-5">        <span>self</span>.js <span>=</span> JSContext(<span>self</span>)</span>
+<span id="cb14-6">        <span># ...</span></span></code></pre></div>
+<p>Unfortunately, Python currently has a <a href="https://wiki.python.org/moin/GlobalInterpreterLock">global
+interpreter lock</a> (GIL), so Python threads don’t truly run in
+parallel. This unfortunate limitation of Python has some effect on our
+browser, but not on real browsers, so in this chapter I mostly pretend
+the GIL isn’t there. And perhaps a future version of Python will <a href="https://peps.python.org/pep-0703/">get rid of it</a>. We still
+need locks despite the global interpreter lock, because Python threads
+can yield between bytecode operations or during calls into C libraries.
+That means concurrent accesses and race conditions are still
+possible.<span><span>In fact, while
+debugging the code for this chapter, I often encountered this kind of
+race condition when I forgot to add a lock. Remove some of the locks
+from your browser and you can see for yourself!</span></span></p>
+<h2 id="long-lived-threads">Long-lived threads</h2>
+<p>Threads can also be used to add browser multitasking. For example, in
+<a href="https://browser.engineering/security.html#cross-site-requests">Chapter 10</a> we
+implemented the <code>XMLHttpRequest</code> class, which lets scripts
+make requests to the server. But in our implementation, the whole
+browser would seize up while waiting for the request to finish. That’s
+obviously bad.<span><span>For this
+reason, the synchronous version of the API that we implemented in
+Chapter 10 is not very useful and a huge performance footgun. Some
+browsers are now moving to deprecate synchronous
+<code>XMLHttpRequest</code>.</span></span> Python’s <code>Thread</code>
+class lets us do better:</p>
+<div id="cb15"><pre><code><span id="cb15-1">threading.Thread(target<span>=</span>callback).start()</span></code></pre></div>
+<p>This code creates a new thread and then immediately returns. The
+<code>callback</code> then runs in parallel, on the new thread, while
+the initial thread continues to execute later code.</p>
+<p>We’ll implement asynchronous <code>XMLHttpRequest</code> calls using
+threads. Specifically, we’ll have the browser start a thread, do the
+request and parse the response on that thread, and then schedule a
+<code>Task</code> to send the response back to the script.</p>
+<p>Like with <code>setTimeout</code>, we’ll store the callback on the
+JavaScript side and refer to it with a handle:</p>
+<div id="cb16"><pre><code><span id="cb16-1">XHR_REQUESTS <span>=</span> {}</span>
+<span id="cb16-2"></span>
+<span id="cb16-3"><span>function</span> <span>XMLHttpRequest</span>() {</span>
+<span id="cb16-4">    <span>this</span><span>.</span><span>handle</span> <span>=</span> <span>Object</span><span>.</span><span>keys</span>(XHR_REQUESTS)<span>.</span><span>length</span><span>;</span></span>
+<span id="cb16-5">    XHR_REQUESTS[<span>this</span><span>.</span><span>handle</span>] <span>=</span> <span>this</span><span>;</span></span>
+<span id="cb16-6">}</span></code></pre></div>
+<p>When a script calls the <code>open</code> method on an
+<code>XMLHttpRequest</code> object, we’ll now allow the
+<code>is_async</code> flag to be true:<span><span>In browsers, the <code>is_async</code> parameter is
+optional and defaults to <code>true</code>, but our browser doesn’t
+implement that.</span></span></p>
+<div id="cb17"><pre><code><span id="cb17-1"><span>XMLHttpRequest</span><span>.</span><span>prototype</span><span>.</span><span>open</span> <span>=</span> <span>function</span>(method<span>,</span> url<span>,</span> is_async) {</span>
+<span id="cb17-2">    <span>this</span><span>.</span><span>is_async</span> <span>=</span> is_async<span>;</span></span>
+<span id="cb17-3">    <span>this</span><span>.</span><span>method</span> <span>=</span> method<span>;</span></span>
+<span id="cb17-4">    <span>this</span><span>.</span><span>url</span> <span>=</span> url<span>;</span></span>
+<span id="cb17-5">}</span></code></pre></div>
+<p>The <code>send</code> method will need to send over the
+<code>is_async</code> flag and the handle:</p>
+<div id="cb18"><pre><code><span id="cb18-1"><span>XMLHttpRequest</span><span>.</span><span>prototype</span><span>.</span><span>send</span> <span>=</span> <span>function</span>(body) {</span>
+<span id="cb18-2">    <span>this</span><span>.</span><span>responseText</span> <span>=</span> <span>call_python</span>(<span>"XMLHttpRequest_send"</span><span>,</span></span>
+<span id="cb18-3">        <span>this</span><span>.</span><span>method</span><span>,</span> <span>this</span><span>.</span><span>url</span><span>,</span> body<span>,</span> <span>this</span><span>.</span><span>is_async</span><span>,</span> <span>this</span><span>.</span><span>handle</span>)<span>;</span></span>
+<span id="cb18-4">}</span></code></pre></div>
+<p>On the browser side, the <code>XMLHttpRequest_send</code> handler
+will have three parts. The first part will resolve the URL and do
+security checks:</p>
+<div id="cb19"><pre><code><span id="cb19-1"><span>class</span> JSContext:</span>
+<span id="cb19-2">    <span>def</span> XMLHttpRequest_send(</span>
+<span id="cb19-3">        <span>self</span>, method, url, body, isasync, handle):</span>
+<span id="cb19-4">        full_url <span>=</span> <span>self</span>.tab.url.resolve(url)</span>
+<span id="cb19-5">        <span>if</span> <span>not</span> <span>self</span>.tab.allowed_request(full_url):</span>
+<span id="cb19-6">            <span>raise</span> <span>Exception</span>(<span>"Cross-origin XHR blocked by CSP"</span>)</span>
+<span id="cb19-7">        <span>if</span> full_url.origin() <span>!=</span> <span>self</span>.tab.url.origin():</span>
+<span id="cb19-8">            <span>raise</span> <span>Exception</span>(</span>
+<span id="cb19-9">                <span>"Cross-origin XHR request not allowed"</span>)</span></code></pre></div>
+<p>Then, we’ll define a function that makes the request and enqueues a
+task for running callbacks:</p>
+<div id="cb20"><pre><code><span id="cb20-1"><span>class</span> JSContext:</span>
+<span id="cb20-2">    <span>def</span> XMLHttpRequest_send(</span>
+<span id="cb20-3">        <span>self</span>, method, url, body, isasync, handle):</span>
+<span id="cb20-4">        <span># ...</span></span>
+<span id="cb20-5">        <span>def</span> run_load():</span>
+<span id="cb20-6">            headers, response <span>=</span> full_url.request(<span>self</span>.tab.url, body)</span>
+<span id="cb20-7">            task <span>=</span> Task(<span>self</span>.dispatch_xhr_onload, response, handle)</span>
+<span id="cb20-8">            <span>self</span>.tab.task_runner.schedule_task(task)</span>
+<span id="cb20-9">            <span>return</span> response</span></code></pre></div>
+<p>Note that the task runs <code>dispatch_xhr_onload</code>, which we’ll
+define in just a moment.</p>
+<p>Finally, depending on the <code>is_async</code> flag the browser will
+either call this function right away, or in a new thread:</p>
+<div id="cb21"><pre><code><span id="cb21-1"><span>class</span> JSContext:</span>
+<span id="cb21-2">    <span>def</span> XMLHttpRequest_send(</span>
+<span id="cb21-3">        <span>self</span>, method, url, body, isasync, handle):</span>
+<span id="cb21-4">        <span># ...</span></span>
+<span id="cb21-5">        <span>if</span> <span>not</span> isasync:</span>
+<span id="cb21-6">            <span>return</span> run_load()</span>
+<span id="cb21-7">        <span>else</span>:</span>
+<span id="cb21-8">            threading.Thread(target<span>=</span>run_load).start()</span></code></pre></div>
+<p>Note that in the asynchronous case, the
+<code>XMLHttpRequest_send</code> method starts a thread and then
+immediately returns. That thread will run in parallel with the browser’s
+main work until the request is done.<span><span>In theory two parallel requests could race while accessing
+the cookie jar; I’m not fixing this out of expediency but a proper
+implementation would have locks for the cookie jar.</span></span></p>
+<p>To communicate the result back to JavaScript, we’ll call a
+<code>__runXHROnload</code> function from
+<code>dispatch_xhr_onload</code>:</p>
+<div id="cb22"><pre><code><span id="cb22-1">XHR_ONLOAD_JS <span>=</span> <span>"__runXHROnload(dukpy.out, dukpy.handle)"</span></span>
+<span id="cb22-2"></span>
+<span id="cb22-3"><span>class</span> JSContext:</span>
+<span id="cb22-4">    <span>def</span> dispatch_xhr_onload(<span>self</span>, out, handle):</span>
+<span id="cb22-5">        <span>if</span> <span>self</span>.discarded: <span>return</span></span>
+<span id="cb22-6">        do_default <span>=</span> <span>self</span>.interp.evaljs(</span>
+<span id="cb22-7">            XHR_ONLOAD_JS, out<span>=</span>out, handle<span>=</span>handle)</span></code></pre></div>
+<p>The <code>__runXHROnload</code> method just pulls the relevant object
+from <code>XHR_REQUESTS</code> and calls its <code>onload</code>
+function, which is the standard callback for asynchronous
+<code>XMLHttpRequest</code>s:</p>
+<div id="cb23"><pre><code><span id="cb23-1"><span>function</span> <span>__runXHROnload</span>(body<span>,</span> handle) {</span>
+<span id="cb23-2">    <span>var</span> obj <span>=</span> XHR_REQUESTS[handle]<span>;</span></span>
+<span id="cb23-3">    <span>var</span> evt <span>=</span> <span>new</span> <span>Event</span>(<span>'load'</span>)<span>;</span></span>
+<span id="cb23-4">    obj<span>.</span><span>responseText</span> <span>=</span> body<span>;</span></span>
+<span id="cb23-5">    <span>if</span> (obj<span>.</span><span>onload</span>)</span>
+<span id="cb23-6">        obj<span>.</span><span>onload</span>(evt)<span>;</span></span>
+<span id="cb23-7">}</span></code></pre></div>
+<p>As you can see, tasks allow not only the browser but also
+applications running in the browser to delay tasks until later.</p>
+<p><code>XMLHttpRequest</code> played a key role in helping the web
+evolve. In the 1990s, clicking on a link or submitting a form required
+loading a new pages. With <code>XMLHttpRequest</code> web pages were
+able to act a whole lot more like a dynamic application; GMail was one
+famous early example.<span><span>GMail dates from April 2004, <a href="https://en.wikipedia.org/wiki/XMLHttpRequest#History">soon
+after</a> enough browsers finished adding support for the API. The first
+application to use <code>XMLHttpRequest</code> was <a href="https://en.wikipedia.org/wiki/Outlook_on_the_web">Outlook Web
+Access</a>, in 1999, but it took a while for the API to make it into
+other browsers.</span></span> Nowadays, a web application that uses DOM
+mutations instead of page loads to update its state is called a <a href="https://en.wikipedia.org/wiki/Single-page_application">single-page
+app</a>. Single-page apps enabled more interactive and complex web apps,
+which in turn made browser speed and responsiveness more important.</p>
+<h2 id="the-cadence-of-rendering">The Cadence of Rendering</h2>
+<p>There’s more to tasks than just implementing some JavaScript APIs.
+Once something is a <code>Task</code>, the task runner controls when it
+runs: perhaps now, perhaps later, or maybe at most once a second, or
+even at different rates for active and inactive pages, or according to
+its priority. A browser could even have multiple task runners, optimized
+for different use cases.</p>
+<p>Now, it might be hard to see how the browser can prioritize which
+JavaScript callback to run, or why it might want to execute JavaScript
+tasks at a fixed cadence. But besides JavaScript the browser also has to
+render the page, and as you may recall from <a href="https://browser.engineering/graphics.html#framebudget">Chapter 2</a>, we’d like the browser to
+render the page exactly as fast as the display hardware can refresh. On
+most computers, this is 60 times per second, or 16 ms per frame.
+However, even with today’s computers, it’s quite difficult to maintain
+such a high frame rate, and certainly too high a bar for our toy
+browser.</p>
+<p>So let’s establish 30 frames per second—33 ms for each frame—as our
+refresh rate target:<span><span>Of
+course, 30 times per second is actually 33.33333… ms. But it’s a toy
+browser, and having a more exact value also makes tests easier to
+write.</span></span></p>
+<div id="cb24"><pre><code><span id="cb24-1">REFRESH_RATE_SEC <span>=</span> <span>.033</span></span></code></pre></div>
+<p>Now, drawing a frame is split between the <code>Tab</code> and
+<code>Browser</code>. The <code>Tab</code> needs to call
+<code>render</code> to compute a display list. Then the
+<code>Browser</code> needs to raster and draw that display list (and
+also the chrome display list). Let’s put those <code>Browser</code>
+tasks in their own method:</p>
+<div id="cb25"><pre><code><span id="cb25-1"><span>class</span> Browser:</span>
+<span id="cb25-2">    <span>def</span> raster_and_draw(<span>self</span>):</span>
+<span id="cb25-3">        <span>self</span>.raster_chrome()</span>
+<span id="cb25-4">        <span>self</span>.raster_tab()</span>
+<span id="cb25-5">        <span>self</span>.draw()</span></code></pre></div>
+<p>Now, we don’t need <em>each</em> tab redrawing itself every frame,
+because the user only sees one tab at a time. We just need the
+<em>active</em> tab redrawing itself. Therefore, it’s the
+<code>Browser</code> that should control when we update the display, not
+individual <code>Tab</code>s. So let’s write a
+<code>schedule_animation_frame</code> method<span><span>It’s called an “animation
+frame” because sequential rendering of different pixels is an animation,
+and each time you render it’s one “frame”—like a drawing in a picture
+frame.</span></span> that schedules a task to <code>render</code> the
+active tab:</p>
+<div id="cb26" data-expected="False"><pre><code><span id="cb26-1"><span>class</span> Browser:</span>
+<span id="cb26-2">    <span>def</span> schedule_animation_frame(<span>self</span>):</span>
+<span id="cb26-3">        <span>def</span> callback():</span>
+<span id="cb26-4">            active_tab <span>=</span> <span>self</span>.active_tab</span>
+<span id="cb26-5">            task <span>=</span> Task(active_tab.render)</span>
+<span id="cb26-6">            active_tab.task_runner.schedule_task(task)</span>
+<span id="cb26-7">        threading.Timer(REFRESH_RATE_SEC, callback).start()</span></code></pre></div>
+<p>Note how every time a frame is scheduled, we set up a timer to
+schedule the next one. We can kick off the process when we start the
+browser. In the top-level loop, after running a task on the active tab
+the browser will need to raster and draw, in case that task was a
+rendering task:</p>
+<div id="cb27" data-expected="False"><pre><code><span id="cb27-1"><span>def</span> mainloop(browser):</span>
+<span id="cb27-2">    <span>while</span> <span>True</span>:</span>
+<span id="cb27-3">        <span># ...</span></span>
+<span id="cb27-4">        browser.active_tab.task_runner.run()</span>
+<span id="cb27-5">        browser.raster_and_draw()</span>
+<span id="cb27-6">        browser.schedule_animation_frame()</span></code></pre></div>
+<p>Now we’re scheduling a new rendering task every 33 ms, just as we
+wanted to.</p>
+<p>There’s nothing special about any particular refresh rate. Some
+displays refresh 72 times per second, and displays that <a href="https://www.intel.com/content/www/us/en/gaming/resources/highest-refresh-rate-gaming.html">refresh
+even more often</a> are becoming more common. Movies are often shot at
+24 frames per second (though <a href="https://www.extremetech.com/extreme/128113-why-movies-are-moving-from-24-to-48-fps">some
+directors advocate 48</a>) while television shows traditionally use 30
+frames per second. Consistency is often more important than the actual
+frame rate: a consistant 24 frames per second can look a lot smoother
+than a varying rate between 60 and 24.</p>
+<h2 id="optimizing-with-dirty-bits">Optimizing with Dirty Bits</h2>
+<p>If you run this on your computer, there’s a good chance your CPU
+usage will spike and your batteries will start draining. That’s because
+we’re calling <code>render</code> every frame, which means our browser
+is now constantly styling elements, building layout trees, and painting
+display lists. Most of that work is wasted, because on most frames, the
+web page will not have changed at all, so the old styles, layout trees,
+and display lists would have worked just as well as the new ones.</p>
+<p>Let’s fix this using a <em>dirty bit</em>, a piece of state that
+tells us if some complex data structure is up to date. Since we want to
+know if we need to run <code>render</code>, let’s call our dirty bit
+<code>needs_render</code>:</p>
+<div id="cb28"><pre><code><span id="cb28-1"><span>class</span> Tab:</span>
+<span id="cb28-2">    <span>def</span> <span>__init__</span>(<span>self</span>, browser, tab_height):</span>
+<span id="cb28-3">        <span># ...</span></span>
+<span id="cb28-4">        <span>self</span>.needs_render <span>=</span> <span>False</span></span>
+<span id="cb28-5"></span>
+<span id="cb28-6">    <span>def</span> set_needs_render(<span>self</span>):</span>
+<span id="cb28-7">        <span>self</span>.needs_render <span>=</span> <span>True</span></span>
+<span id="cb28-8"></span>
+<span id="cb28-9">    <span>def</span> render(<span>self</span>):</span>
+<span id="cb28-10">        <span>if</span> <span>not</span> <span>self</span>.needs_render: <span>return</span></span>
+<span id="cb28-11">        <span># ...</span></span>
+<span id="cb28-12">        <span>self</span>.needs_render <span>=</span> <span>False</span></span></code></pre></div>
+<p>One advantage of this flag is that we can now set
+<code>needs_render</code> when the HTML has changed instead of calling
+<code>render</code> directly. The <code>render</code> will still happen,
+but later. This makes scripts faster, especially if they modify the page
+multiple times. Make this change in <code>innerHTML_set</code>,
+<code>load</code>, <code>click</code>, and <code>keypress</code> when
+changing the DOM. For example, in <code>load</code>, do this:</p>
+<div id="cb29"><pre><code><span id="cb29-1"><span>class</span> Tab:</span>
+<span id="cb29-2">    <span>def</span> load(<span>self</span>, url, payload<span>=</span><span>None</span>):</span>
+<span id="cb29-3">        <span># ...</span></span>
+<span id="cb29-4">        <span>self</span>.set_needs_render()</span></code></pre></div>
+<p>And in <code>innerHTML_set</code>, do this:</p>
+<div id="cb30"><pre><code><span id="cb30-1"><span>class</span> JSContext:</span>
+<span id="cb30-2">    <span>def</span> innerHTML_set(<span>self</span>, handle, s):</span>
+<span id="cb30-3">        <span># ...</span></span>
+<span id="cb30-4">        <span>self</span>.tab.set_needs_render()</span></code></pre></div>
+<p>There are more calls to <code>render</code>; you should find and fix
+all of them … except, let’s take a closer look at
+<code>click</code>.</p>
+<p>We now don’t immediately render when something changes. That means
+that the layout tree (and style) could be out of date when a method is
+called. Normally, this isn’t a problem, but in one important case it is:
+click handling. That’s because we need to read the layout tree to figure
+out what object was clicked on, which means the layout tree needs to be
+up to date. To fix this, add a call to <code>render</code> at the top of
+<code>click</code>:</p>
+<div id="cb31"><pre><code><span id="cb31-1"><span>class</span> Tab:</span>
+<span id="cb31-2">    <span>def</span> click(<span>self</span>, x, y):</span>
+<span id="cb31-3">        <span>self</span>.render()</span>
+<span id="cb31-4">        <span># ...</span></span></code></pre></div>
+<p>Another problem with our implementation is that the browser is now
+doing <code>raster_and_draw</code> every time the active tab runs a
+task. But sometimes that task is just running JavaScript that doesn’t
+touch the web page, and the <code>raster_and_draw</code> call is a
+waste.</p>
+<p>We can avoid this using another dirty bit, which I’ll call
+<code>needs_raster_and_draw</code>:<span><span>The <code>needs_raster_and_draw</code> dirty bit doesn’t
+just make the browser a bit more efficient. Later in this chapter, we’ll
+add multiple browser threads, and at that point this dirty bit is
+necessary to avoid erratic behavior when animating. Try removing it
+later and see for yourself!</span></span></p>
+<div id="cb32"><pre><code><span id="cb32-1"><span>class</span> Browser:</span>
+<span id="cb32-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb32-3">        <span>self</span>.needs_raster_and_draw <span>=</span> <span>False</span></span>
+<span id="cb32-4"></span>
+<span id="cb32-5">    <span>def</span> set_needs_raster_and_draw(<span>self</span>):</span>
+<span id="cb32-6">        <span>self</span>.needs_raster_and_draw <span>=</span> <span>True</span></span>
+<span id="cb32-7"></span>
+<span id="cb32-8">    <span>def</span> raster_and_draw(<span>self</span>):</span>
+<span id="cb32-9">        <span>if</span> <span>not</span> <span>self</span>.needs_raster_and_draw:</span>
+<span id="cb32-10">            <span>return</span></span>
+<span id="cb32-11">        <span># ...</span></span>
+<span id="cb32-12">        <span>self</span>.needs_raster_and_draw <span>=</span> <span>False</span></span></code></pre></div>
+<p>We will need to call <code>set_needs_raster_and_draw</code> every
+time either the <code>Browser</code> changes something about the browser
+chrome, or any time the <code>Tab</code> changes its rendering. The
+browser chrome is changed by event handlers:</p>
+<div id="cb33"><pre><code><span id="cb33-1"><span>class</span> Browser:</span>
+<span id="cb33-2">    <span>def</span> handle_click(<span>self</span>, e):</span>
+<span id="cb33-3">        <span>if</span> e.y <span>&lt;</span> <span>self</span>.chrome.bottom:</span>
+<span id="cb33-4">            <span># ...</span></span>
+<span id="cb33-5">            <span>self</span>.set_needs_raster_and_draw()</span>
+<span id="cb33-6"></span>
+<span id="cb33-7">    <span>def</span> handle_key(<span>self</span>, char):</span>
+<span id="cb33-8">        <span>if</span> <span>self</span>.chrome.keypress(char):</span>
+<span id="cb33-9">            <span># ...</span></span>
+<span id="cb33-10">            <span>self</span>.set_needs_raster_and_draw()</span>
+<span id="cb33-11"></span>
+<span id="cb33-12">    <span>def</span> handle_enter(<span>self</span>):</span>
+<span id="cb33-13">        <span>if</span> <span>self</span>.chrome.enter():</span>
+<span id="cb33-14">            <span># ...</span></span>
+<span id="cb33-15">            <span>self</span>.set_needs_raster_and_draw()</span></code></pre></div>
+<p>Here I need a small change to make <code>enter</code> return whether
+something was done:</p>
+<div id="cb34"><pre><code><span id="cb34-1"><span>class</span> Chrome:</span>
+<span id="cb34-2">    <span>def</span> enter(<span>self</span>):</span>
+<span id="cb34-3">        <span>if</span> <span>self</span>.focus <span>==</span> <span>"address bar"</span>:</span>
+<span id="cb34-4">            <span>self</span>.browser.active_tab.load(URL(<span>self</span>.address_bar))</span>
+<span id="cb34-5">            <span>self</span>.focus <span>=</span> <span>None</span></span>
+<span id="cb34-6">            <span>return</span> <span>True</span></span>
+<span id="cb34-7">        <span>return</span> <span>False</span></span></code></pre></div>
+<p>And the <code>Tab</code> should also set this bit after running
+<code>render</code>:</p>
+<div id="cb35" data-dropline="set_needs_raster_and_draw"><pre><code><span id="cb35-1"><span>class</span> Tab:</span>
+<span id="cb35-2">    <span>def</span> <span>__init__</span>(<span>self</span>, browser, tab_height):</span>
+<span id="cb35-3">        <span># ...</span></span>
+<span id="cb35-4">        <span>self</span>.browser <span>=</span> browser</span>
+<span id="cb35-5">        </span>
+<span id="cb35-6">    <span>def</span> render(<span>self</span>):</span>
+<span id="cb35-7">        <span># ...</span></span>
+<span id="cb35-8">        <span>self</span>.browser.set_needs_raster_and_draw()</span></code></pre></div>
+<p>You’ll need to pass in the <code>browser</code> parameter when a
+<code>Tab</code> is constructed:</p>
+<div id="cb36"><pre><code><span id="cb36-1"><span>class</span> Browser:</span>
+<span id="cb36-2">    <span>def</span> new_tab(<span>self</span>, url):</span>
+<span id="cb36-3">        new_tab <span>=</span> Tab(<span>self</span>, HEIGHT <span>-</span> <span>self</span>.chrome.bottom)</span>
+<span id="cb36-4">        <span># ...</span></span></code></pre></div>
+<p>Now the rendering pipeline is only run if necessary, and the browser
+should have acceptable performance again.</p>
+<p>This scheduled, task-based approach to rendering is necessary for
+running complex interactive applications, but it still took until the
+2010s for all modern browsers to adopt it, well after such web
+applications became widespread. That’s because it typically required
+extensive refactors of vast browser codebases. Chromium, for example, <a href="https://developer.chrome.com/docs/chromium/renderingng">only
+recently</a> finished 100% of the work to leverage this model, though of
+course work (always) remains to be done.</p>
+<h2 id="animating-frames">Animating Frames</h2>
+<p>One big reason for a steady rendering cadence is so that animations
+run smoothly. Web pages can set up such animations using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame"><code>requestAnimationFrame</code></a>
+API. This API allows scripts to run code right before the browser runs
+its rendering pipeline, making the animation maximally smooth. It works
+like this:</p>
+<div id="cb37"><pre><code><span id="cb37-1"><span>function</span> <span>callback</span>() { <span>/* Modify DOM */</span> }</span>
+<span id="cb37-2"><span>requestAnimationFrame</span>(callback)<span>;</span></span></code></pre></div>
+<p>By calling <code>requestAnimationFrame</code>, this code is doing two
+things: scheduling a rendering task, and asking that the browser call
+<code>callback</code> <em>at the beginning</em> of that rendering task,
+before any browser rendering code. This lets web page authors change the
+page and be confident that it will be rendered right away.</p>
+<p>The implementation of this JavaScript API is straightforward. Like
+before, we store the callbacks on the JavaScript side:</p>
+<div id="cb38"><pre><code><span id="cb38-1">RAF_LISTENERS <span>=</span> []<span>;</span></span>
+<span id="cb38-2"></span>
+<span id="cb38-3"><span>function</span> <span>requestAnimationFrame</span>(fn) {</span>
+<span id="cb38-4">    RAF_LISTENERS<span>.</span><span>push</span>(fn)<span>;</span></span>
+<span id="cb38-5">    <span>call_python</span>(<span>"requestAnimationFrame"</span>)<span>;</span></span>
+<span id="cb38-6">}</span></code></pre></div>
+<p>In <code>JSContext</code>, when that method is called, we need to
+schedule a new rendering task:</p>
+<div id="cb39"><pre><code><span id="cb39-1"><span>class</span> JSContext:</span>
+<span id="cb39-2">    <span>def</span> <span>__init__</span>(<span>self</span>, tab):</span>
+<span id="cb39-3">        <span># ...</span></span>
+<span id="cb39-4">        <span>self</span>.interp.export_function(<span>"requestAnimationFrame"</span>,</span>
+<span id="cb39-5">            <span>self</span>.requestAnimationFrame)</span></code></pre></div>
+<div id="cb40" data-expected="False"><pre><code><span id="cb40-1">    <span>def</span> requestAnimationFrame(<span>self</span>):</span>
+<span id="cb40-2">        task <span>=</span> Task(<span>self</span>.tab.render)</span>
+<span id="cb40-3">        <span>self</span>.tab.task_runner.schedule_task(task)</span></code></pre></div>
+<p>Then, when <code>render</code> is actually called, we need to call
+back into JavaScript, like this:</p>
+<div id="cb41" data-dropline="self.needs_render" data-replace="render(self)/run_animation_frame(self%2c%20scroll)"><pre><code><span id="cb41-1"><span>class</span> Tab:</span>
+<span id="cb41-2">    <span>def</span> render(<span>self</span>):</span>
+<span id="cb41-3">        <span>if</span> <span>not</span> <span>self</span>.needs_render: <span>return</span></span>
+<span id="cb41-4">        <span>self</span>.js.interp.evaljs(<span>"__runRAFHandlers()"</span>)</span>
+<span id="cb41-5">        <span># ...</span></span></code></pre></div>
+<p>This <code>__runRAFHandlers</code> function is a little tricky:</p>
+<div id="cb42"><pre><code><span id="cb42-1"><span>function</span> <span>__runRAFHandlers</span>() {</span>
+<span id="cb42-2">    <span>var</span> handlers_copy <span>=</span> RAF_LISTENERS<span>;</span></span>
+<span id="cb42-3">    RAF_LISTENERS <span>=</span> []<span>;</span></span>
+<span id="cb42-4">    <span>for</span> (<span>var</span> i <span>=</span> <span>0</span><span>;</span> i <span>&lt;</span> handlers_copy<span>.</span><span>length</span><span>;</span> i<span>++</span>) {</span>
+<span id="cb42-5">        handlers_copy[i]()<span>;</span></span>
+<span id="cb42-6">    }</span>
+<span id="cb42-7">}</span></code></pre></div>
+<p>Note that <code>__runRAFHandlers</code> needs to reset
+<code>RAF_LISTENERS</code> to the empty array before it runs any of the
+callbacks. That’s because one of the callbacks could itself call
+<code>requestAnimationFrame</code>. If this happens during such a
+callback, the specification says that a <em>second</em> animation frame
+should be scheduled. That means we need to make sure to store the
+callbacks for the <em>current</em> frame separately from the callbacks
+for the <em>next</em> frame.</p>
+<p>This situation may seem like a corner case, but it’s actually very
+important, as this is how pages can run an <em>animation</em>: by
+iteratively scheduling one frame after another. For example, here’s a
+simple counter “animation”:</p>
+<div id="cb43" data-file="eventloop"><pre><code><span id="cb43-1"><span>var</span> count <span>=</span> <span>0</span><span>;</span></span>
+<span id="cb43-2"><span>function</span> <span>callback</span>() {</span>
+<span id="cb43-3">    <span>var</span> output <span>=</span> <span>document</span><span>.</span><span>querySelectorAll</span>(<span>"div"</span>)[<span>1</span>]<span>;</span></span>
+<span id="cb43-4">    output<span>.</span><span>innerHTML</span> <span>=</span> <span>"count: "</span> <span>+</span> (count<span>++</span>)<span>;</span></span>
+<span id="cb43-5">    <span>if</span> (count <span>&lt;</span> <span>100</span>)</span>
+<span id="cb43-6">        <span>requestAnimationFrame</span>(callback)<span>;</span></span>
+<span id="cb43-7">}</span>
+<span id="cb43-8"><span>requestAnimationFrame</span>(callback)<span>;</span></span></code></pre></div>
+<p>This script will cause 100 animation frame tasks to run on the
+rendering event loop. During that time, our browser will display an
+animated count from 0 to 99. Serve this example web page from our HTTP
+server:</p>
+<div id="cb44" data-file="server" data-replace="eventloop/eventloop12"><pre><code><span id="cb44-1"><span>def</span> do_request(session, method, url, headers, body):</span>
+<span id="cb44-2">    <span>elif</span> method <span>==</span> <span>"GET"</span> <span>and</span> url <span>==</span> <span>"/count"</span>:</span>
+<span id="cb44-3">        <span>return</span> <span>"200 OK"</span>, show_count()</span>
+<span id="cb44-4"><span># ...</span></span>
+<span id="cb44-5"><span>def</span> show_count():</span>
+<span id="cb44-6">    out <span>=</span> <span>"&lt;!doctype html&gt;"</span></span>
+<span id="cb44-7">    out <span>+=</span> <span>"&lt;div&gt;"</span><span>;</span></span>
+<span id="cb44-8">    out <span>+=</span> <span>"  Let's count up to 99!"</span></span>
+<span id="cb44-9">    out <span>+=</span> <span>"&lt;/div&gt;"</span><span>;</span></span>
+<span id="cb44-10">    out <span>+=</span> <span>"&lt;div&gt;Output&lt;/div&gt;"</span></span>
+<span id="cb44-11">    out <span>+=</span> <span>"&lt;script src=/eventloop.js&gt;&lt;/script&gt;"</span></span>
+<span id="cb44-12">    <span>return</span> out</span></code></pre></div>
+<p>Load this up and observe an animation from 0 to 99.</p>
+<p>One flaw with our implementation so far is that an inattentive coder
+might call <code>requestAnimationFrame</code> multiple times and thereby
+schedule more animation frames than expected. If other JavaScript tasks
+appear later, they might end up delayed by many, many frames.</p>
+<p>Luckily, rendering is special in that it never makes sense to have
+two rendering tasks in a row, since the page wouldn’t have changed in
+between. To avoid having two rendering tasks we’ll add a dirty bit
+called <code>needs_animation_frame</code> to the <code>Browser</code>
+that indicates whether a rendering task actually needs to be
+scheduled:</p>
+<div id="cb45"><pre><code><span id="cb45-1"><span>class</span> Browser:</span>
+<span id="cb45-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb45-3">        <span>self</span>.animation_timer <span>=</span> <span>None</span></span>
+<span id="cb45-4">        <span># ...</span></span>
+<span id="cb45-5">        <span>self</span>.needs_animation_frame <span>=</span> <span>True</span></span></code></pre></div>
+<div id="cb46"><pre><code><span id="cb46-1">    <span>def</span> schedule_animation_frame(<span>self</span>):</span>
+<span id="cb46-2">        <span># ...</span></span>
+<span id="cb46-3">        <span>if</span> <span>self</span>.needs_animation_frame <span>and</span> <span>not</span> <span>self</span>.animation_timer:</span>
+<span id="cb46-4">            <span>self</span>.animation_timer <span>=</span> <span>\</span></span>
+<span id="cb46-5">                threading.Timer(REFRESH_RATE_SEC, callback)</span>
+<span id="cb46-6">            <span>self</span>.animation_timer.start()</span></code></pre></div>
+<p>Note how I also checked for not having an animation timer object;
+this avoids running two at once.</p>
+<p>A tab will set the <code>needs_animation_frame</code> flag when an
+animation frame is requested:</p>
+<div id="cb47"><pre><code><span id="cb47-1"><span>class</span> JSContext:</span>
+<span id="cb47-2">    <span>def</span> requestAnimationFrame(<span>self</span>):</span>
+<span id="cb47-3">        <span>self</span>.tab.browser.set_needs_animation_frame(<span>self</span>.tab)</span>
+<span id="cb47-4"></span>
+<span id="cb47-5"><span>class</span> Tab:</span>
+<span id="cb47-6">    <span>def</span> set_needs_render(<span>self</span>):</span>
+<span id="cb47-7">        <span># ...</span></span>
+<span id="cb47-8">        <span>self</span>.browser.set_needs_animation_frame(<span>self</span>)</span>
+<span id="cb47-9"></span>
+<span id="cb47-10"><span>class</span> Browser:</span>
+<span id="cb47-11">    <span>def</span> set_needs_animation_frame(<span>self</span>, tab):</span>
+<span id="cb47-12">        <span>if</span> tab <span>==</span> <span>self</span>.active_tab:</span>
+<span id="cb47-13">            <span>self</span>.needs_animation_frame <span>=</span> <span>True</span></span></code></pre></div>
+<p>Note that <code>set_needs_animation_frame</code> will only actually
+set the dirty bit if called from the active tab. This guarantees that
+inactive tabs can’t interfere with active tabs. Besides preventing
+scripts from scheduling too many animation frames, this system also
+makes sure that if our browser consistently runs slower than 30 frames
+per second, we won’t end up with an ever-growing queue of rendering
+tasks.</p>
+<p>Before the <code>requestAnimationFrame</code> API, developers
+approximated it with <code>setTimeout</code>. This did run animations at
+a (roughly) fixed cadence, but because it didn’t line up with the
+browser’s rendering loop, events would sometimes be handled between the
+callback and rendering, which might force an extra, unnecessary
+rendering step. Not only does <code>requestAnimationFrame</code> avoid
+this, but it also lets the browser turn off rendering work when a web
+page tab or window is backgrounded, minimized or otherwise throttled,
+while still allowing other background tasks like saving your work to the
+cloud.</p>
+<h2 id="profiling-rendering">Profiling Rendering</h2>
+<p>We now have a system for scheduling a rendering task every 33 ms. But
+what if rendering takes longer than 33 ms to finish? Before we answer
+this question, let’s instrument the browser and measure how much time is
+really being spent rendering. It’s important to always measure before
+optimizing, because the result is often surprising.</p>
+<p>To instrument our browser, let’s have it output the <a href="https://www.json.org/">JSON</a> tracing format used by <a href="https://www.chromium.org/developers/how-tos/trace-event-profiling-tool/"><code>chrome://tracing</code>
+in Chrome</a>, <a href="https://profiler.firefox.com/">Firefox
+Profiler</a> or <a href="https://ui.perfetto.dev/">Perfetto UI</a>.<span><span>Though note that these three
+tools seem to have somewhat different interpretations of the JSON format
+and display the same trace in slightly different ways.</span></span></p>
+<p>To start, let’s wrap the actual file and format in a class:</p>
+<div id="cb48"><pre><code><span id="cb48-1"><span>class</span> MeasureTime:</span>
+<span id="cb48-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb48-3">        <span>self</span>.<span>file</span> <span>=</span> <span>open</span>(<span>"browser.trace"</span>, <span>"w"</span>)</span></code></pre></div>
+<p>A trace file is just a JSON object with a <code>traceEvents</code>
+field<span><span>There are other
+optional fields too, which provide various kinds of metadata. We won’t
+need them here.</span></span> which contains a list of trace events:</p>
+<div id="cb49"><pre><code><span id="cb49-1"><span>class</span> MeasureTime:</span>
+<span id="cb49-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb49-3">        <span># ...</span></span>
+<span id="cb49-4">        <span>self</span>.<span>file</span>.write(<span>'{"traceEvents": ['</span>)</span></code></pre></div>
+<p>Each trace event has a number of fields. The <code>ph</code> and
+<code>name</code> fields define the event type. For example, setting
+<code>ph</code> to <code>M</code> and <code>name</code> to
+<code>process_name</code> allows us to change the displayed process
+name:</p>
+<div id="cb50"><pre><code><span id="cb50-1"><span>class</span> MeasureTime:</span>
+<span id="cb50-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb50-3">        <span># ...</span></span>
+<span id="cb50-4">        ts <span>=</span> time.time() <span>*</span> <span>1000000</span></span>
+<span id="cb50-5">        <span>self</span>.<span>file</span>.write(</span>
+<span id="cb50-6">            <span>'{ "name": "process_name",'</span> <span>+</span></span>
+<span id="cb50-7">            <span>'"ph": "M",'</span> <span>+</span></span>
+<span id="cb50-8">            <span>'"ts": '</span> <span>+</span> <span>str</span>(ts) <span>+</span> <span>','</span> <span>+</span></span>
+<span id="cb50-9">            <span>'"pid": 1, "cat": "__metadata",'</span> <span>+</span></span>
+<span id="cb50-10">            <span>'"args": {"name": "Browser"</span><span>}}</span><span>'</span>)</span>
+<span id="cb50-11">        <span>self</span>.<span>file</span>.flush()</span></code></pre></div>
+<p>The new name (“Browser”) is passed in <code>args</code>, and the
+other fields are required. Since our browser only has one process, I
+just pass <code>1</code> for the process ID, and the
+<code>cat</code>egory has to be <code>__metadata</code> for metadata
+trace events. The <code>ts</code> field stores a timestamp; since this
+is the first event, it’ll set the start time for the whole trace, so
+it’s important to put in the actual current time.</p>
+<p>We’ll create this <code>MeasureTime</code> object when we start the
+browser, so we can use it to measure how long various browser components
+take:</p>
+<div id="cb51"><pre><code><span id="cb51-1"><span>class</span> Browser:</span>
+<span id="cb51-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb51-3">        <span>self</span>.measure <span>=</span> MeasureTime()</span></code></pre></div>
+<p>Now let’s add trace events when our browser does something
+interesting. We specifically want <code>B</code> and <code>E</code>
+events, which mark the beginning and end of some interesting
+computation. Because we have that initial trace event, every later trace
+event needs to be preceded by a comma:</p>
+<div id="cb52" data-replace="1%7d/%27%20%2b%20str(tid)%20%2b%20%27%7d"><pre><code><span id="cb52-1"><span>class</span> MeasureTime:</span>
+<span id="cb52-2">    <span>def</span> time(<span>self</span>, name):</span>
+<span id="cb52-3">        ts <span>=</span> time.time() <span>*</span> <span>1000000</span></span>
+<span id="cb52-4">        <span>self</span>.<span>file</span>.write(</span>
+<span id="cb52-5">            <span>', { "ph": "B", "cat": "_",'</span> <span>+</span></span>
+<span id="cb52-6">            <span>'"name": "'</span> <span>+</span> name <span>+</span> <span>'",'</span> <span>+</span></span>
+<span id="cb52-7">            <span>'"ts": '</span> <span>+</span> <span>str</span>(ts) <span>+</span> <span>','</span> <span>+</span></span>
+<span id="cb52-8">            <span>'"pid": 1, "tid": 1}'</span>)</span>
+<span id="cb52-9">        <span>self</span>.<span>file</span>.flush()</span></code></pre></div>
+<p>Here, the <code>name</code> argument to <code>time</code> should
+describe what kind of computation is starting, and it needs to match the
+name passed to the corresponding <code>stop</code> event:</p>
+<div id="cb53" data-replace="1%7d/%27%20%2b%20str(tid)%20%2b%20%27%7d"><pre><code><span id="cb53-1"><span>class</span> MeasureTime:</span>
+<span id="cb53-2">    <span>def</span> stop(<span>self</span>, name):</span>
+<span id="cb53-3">        ts <span>=</span> time.time() <span>*</span> <span>1000000</span></span>
+<span id="cb53-4">        <span>self</span>.<span>file</span>.write(</span>
+<span id="cb53-5">            <span>', { "ph": "E", "cat": "_",'</span> <span>+</span></span>
+<span id="cb53-6">            <span>'"name": "'</span> <span>+</span> name <span>+</span> <span>'",'</span> <span>+</span></span>
+<span id="cb53-7">            <span>'"ts": '</span> <span>+</span> <span>str</span>(ts) <span>+</span> <span>','</span> <span>+</span></span>
+<span id="cb53-8">            <span>'"pid": 1, "tid": 1}'</span>)</span>
+<span id="cb53-9">        <span>self</span>.<span>file</span>.flush()</span></code></pre></div>
+<p>We can measure tab rendering by just calling <code>time</code> and
+<code>stop</code>:</p>
+<div id="cb54"><pre><code><span id="cb54-1"><span>class</span> Tab:</span>
+<span id="cb54-2">    <span>def</span> render(<span>self</span>):</span>
+<span id="cb54-3">        <span>if</span> <span>not</span> <span>self</span>.needs_render: <span>return</span></span>
+<span id="cb54-4">        <span>self</span>.browser.measure.time(<span>'render'</span>)</span>
+<span id="cb54-5">        <span># ...</span></span>
+<span id="cb54-6">        <span>self</span>.browser.measure.stop(<span>'render'</span>)</span></code></pre></div>
+<p>Do the same for <code>raster_and_draw</code>, and for all of the code
+that calls <code>evaljs</code> to run JavaScript.</p>
+<p>Finally, when we finish tracing (that is, when we close the browser
+window), we want to leave the file a valid JSON file:</p>
+<div id="cb55"><pre><code><span id="cb55-1"><span>class</span> MeasureTime:</span>
+<span id="cb55-2">    <span>def</span> finish(<span>self</span>):</span>
+<span id="cb55-3">        <span>self</span>.<span>file</span>.write(<span>']}'</span>)</span>
+<span id="cb55-4">        <span>self</span>.<span>file</span>.close()</span>
+<span id="cb55-5"></span>
+<span id="cb55-6"><span>class</span> Browser:</span>
+<span id="cb55-7">    <span>def</span> handle_quit(<span>self</span>):</span>
+<span id="cb55-8">        <span># ...</span></span>
+<span id="cb55-9">        <span>self</span>.measure.finish()</span></code></pre></div>
+<p>By the way, note that I’m careful to <code>flush</code> after every
+write. This makes sure that if the browser crashes, all of the log
+events—which might help me debug—are already safely on disk.<span><span>Some of the tracing tools
+listed above actually accept invalid JSON files, in case the trace comes
+from a browser crash.</span></span></p>
+<p>Fire up the server, open our timer script, wait for it to finish
+counting, and then exit the browser. Then open up Chrome tracing or one
+of the other tracing tools named above and load the trace. If you don’t
+want to do it yourself, <a href="https://browser.engineering/examples/example12-count-single-threaded.trace">here</a> is a
+sample trace file from my computer. You should see something like Figure
+1.</p>
+<div>
+<figure>
+<img src="data:application/octet-stream;base64," alt="Figure 1: Tracing for the timer script in single-threaded mode.">
+
+</figure>
+</div>
+<p>In Chrome tracing, you can choose the cursor icon from the toolbar
+and drag a selection around a set of trace events. That will show counts
+and average times for those events in the details window at the bottom
+of the screen. On my computer, my browser spent about 23 ms in
+<code>render</code> and about 62 ms in <code>raster_and_draw</code> on
+average, as you can see in the zoomed-in view in Figure 2. That clearly
+blows through our 33 ms budget. So, what can we do?</p>
+<div>
+<figure>
+<img src="data:application/octet-stream;base64," alt="Figure 2: Tracing for render and raster of one frame of the timer script.">
+
+</figure>
+</div>
+<p>Our browser spends a lot of time copying pixels. That’s why <a href="https://browser.engineering/visual-effects.html#optimizing-surface-use">optimizing
+surfaces</a> is important! It’ll be faster if you’ve completed Exercise
+11-3, because making <code>tab_surface</code> smaller also helps a lot.
+Modern browsers go a step further and perform raster-and-draw <a href="https://skia.org/docs/user/api/skcanvas_creation/#gpu">on the
+GPU</a>, where a lot more parallelism is available. Even so, on complex
+pages raster and draw really do sometimes take a lot of time. I’ll dig
+into this more in Chapter 13.</p>
+<h2 id="two-threads">Two Threads</h2>
+<p>Well, one option, of course, is optimizing raster-and-draw, or even
+render, and we’ll do that in <a href="https://browser.engineering/animations.html">Chapter 13</a>
+But another option—complex, but worthwhile and done by every major
+browser—is to do the render step in parallel with the raster-and-draw
+step by adopting a multithreaded architecture. Not only would this speed
+up the rendering pipeline (dropping from 85 ms to 62 ms) but we could
+also execute JavaScript on one thread while the expensive
+<code>raster_and_draw</code> task runs on the other.</p>
+<p>Let’s call our two threads the <em>browser thread</em><span><span>In modern browsers the
+analogous thread is often called the <a href="https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/how_cc_works.md"><em>compositor
+thread</em></a>, though modern browsers have lots of threads and the
+correspondence isn’t exact.</span></span> and the <em>main
+thread</em>.<span><span>Here I’m
+going with the name real browsers often use. A better name might be the
+“DOM” thread (since JavaScript can sometimes run on <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API">other
+threads</a>).</span></span> The browser thread corresponds to the
+<code>Browser</code> class and will handle raster-and-draw. It’ll also
+handle interactions with the browser chrome. The main thread, on the
+other hand, corresponds to a <code>Tab</code> and will handle running
+scripts, loading resources, and rendering, along with associated tasks
+like running event handlers and callbacks. If you’ve got more than one
+tab open, you’ll have multiple main threads (one per tab) but only one
+browser thread.</p>
+<p>Now, multithreaded architectures are tricky, so let’s do a little
+planning.</p>
+<p>To start, the one thread that exists already—the one that runs when
+you start the browser—will be the browser thread. We’ll make a main
+thread every time we create a tab. These two threads will need to
+communicate to handle events and draw to the screen.</p>
+<p>When the browser thread needs to communicate with the main thread, to
+inform it of events, it’ll place tasks on the main thread’s
+<code>TaskRunner</code>.<span><span>You might be wondering why the main thread doesn’t also
+communicate back to the browser thread with a <code>TaskRunner</code>.
+That could certainly be done. Here I chose to only do it in one
+direction, because the main thread is generally the “slowest” thread in
+browsers, due to the unpredictable nature of JavaScript and the unknown
+size of the DOM.</span></span> The main thread will need to communicate
+with the browser thread to request animation frames and to send it a
+display list to raster-and-draw, and the main thread will do that via
+two methods on <code>browser</code>:
+<code>set_needs_animation_frame</code> to request an animation frame and
+<code>commit</code> to send it a display list.</p>
+<p>The overall control flow for rendering a frame will therefore be:</p>
+<ol type="1">
+<li>The code running in the main thread requests an animation frame with
+<code>set_needs_animation_frame</code>, perhaps in response to an event
+handler or due to <code>requestAnimationFrame</code>.</li>
+<li>The browser thread event loop schedules an animation frame on the
+main thread <code>TaskRunner</code>.</li>
+<li>The main thread executes its part of rendering, then calls
+<code>browser.commit</code>.</li>
+<li>The browser thread rasters the display list and draws to the
+screen.</li>
+</ol>
+<p>Let’s implement this design. To start, we’ll add a
+<code>Thread</code> to each <code>TaskRunner</code>, which will be the
+tab’s main thread. This thread will need to run in a loop, pulling tasks
+from the task queue and running them. We’ll put that loop inside the
+<code>TaskRunner</code>’s <code>run</code> method.</p>
+<div id="cb56"><pre><code><span id="cb56-1"><span>class</span> TaskRunner:</span>
+<span id="cb56-2">    <span>def</span> <span>__init__</span>(<span>self</span>, tab):</span>
+<span id="cb56-3">        <span># ...</span></span>
+<span id="cb56-4">        <span>self</span>.main_thread <span>=</span> threading.Thread(</span>
+<span id="cb56-5">            target<span>=</span><span>self</span>.run,</span>
+<span id="cb56-6">            name<span>=</span><span>"Main thread"</span>,</span>
+<span id="cb56-7">        )</span>
+<span id="cb56-8"></span>
+<span id="cb56-9">    <span>def</span> start_thread(<span>self</span>):</span>
+<span id="cb56-10">        <span>self</span>.main_thread.start()</span></code></pre></div>
+<p>Note that I name the thread; this is a good habit that helps with
+debugging. Let’s also name the browser thread:</p>
+<div id="cb57"><pre><code><span id="cb57-1"><span>class</span> Browser:</span>
+<span id="cb57-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb57-3">        <span># ...</span></span>
+<span id="cb57-4">        threading.current_thread().name <span>=</span> <span>"Browser thread"</span></span></code></pre></div>
+<p>Remove the call to <code>run</code> from the top-level
+<code>while True</code> loop, since that loop is now going to be running
+in the browser thread. And <code>run</code> will have its own loop:</p>
+<div id="cb58"><pre><code><span id="cb58-1"><span>class</span> TaskRunner:</span>
+<span id="cb58-2">    <span>def</span> run(<span>self</span>):</span>
+<span id="cb58-3">        <span>while</span> <span>True</span>:</span>
+<span id="cb58-4">            <span># ...</span></span></code></pre></div>
+<p>Because this loop runs forever, the main thread will live on
+indefinitely. So if the browser quits, we’ll want it to ask the main
+thread to quit as well:</p>
+<div id="cb59"><pre><code><span id="cb59-1"><span>class</span> Browser:</span>
+<span id="cb59-2">    <span>def</span> handle_quit(<span>self</span>):</span>
+<span id="cb59-3">        <span>for</span> tab <span>in</span> <span>self</span>.tabs:</span>
+<span id="cb59-4">            tab.task_runner.set_needs_quit()</span></code></pre></div>
+<p>The <code>set_needs_quit</code> method sets a flag on
+<code>TaskRunner</code> that’s checked every time it loops:</p>
+<div id="cb60"><pre><code><span id="cb60-1"><span>class</span> TaskRunner:</span>
+<span id="cb60-2">    <span>def</span> set_needs_quit(<span>self</span>):</span>
+<span id="cb60-3">        <span>self</span>.condition.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb60-4">        <span>self</span>.needs_quit <span>=</span> <span>True</span></span>
+<span id="cb60-5">        <span>self</span>.condition.notify_all()</span>
+<span id="cb60-6">        <span>self</span>.condition.release()</span>
+<span id="cb60-7"></span>
+<span id="cb60-8">    <span>def</span> run(<span>self</span>):</span>
+<span id="cb60-9">        <span>while</span> <span>True</span>:</span>
+<span id="cb60-10">            <span>self</span>.condition.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb60-11">            needs_quit <span>=</span> <span>self</span>.needs_quit</span>
+<span id="cb60-12">            <span>self</span>.condition.release()</span>
+<span id="cb60-13">            <span>if</span> needs_quit:</span>
+<span id="cb60-14">                <span>return</span></span>
+<span id="cb60-15">    </span>
+<span id="cb60-16">            <span># ...</span></span>
+<span id="cb60-17">    </span>
+<span id="cb60-18">            <span>self</span>.condition.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb60-19">            <span>if</span> <span>len</span>(<span>self</span>.tasks) <span>==</span> <span>0</span> <span>and</span> <span>not</span> <span>self</span>.needs_quit:</span>
+<span id="cb60-20">                <span>self</span>.condition.wait()</span>
+<span id="cb60-21">            <span>self</span>.condition.release()</span></code></pre></div>
+<p>The <code>Browser</code> should no longer call any methods on the
+<code>Tab</code>. Instead, to handle events, it should schedule tasks on
+the main thread. For example, here is loading:</p>
+<div id="cb61"><pre><code><span id="cb61-1"><span>class</span> Browser:</span>
+<span id="cb61-2">    <span>def</span> schedule_load(<span>self</span>, url, body<span>=</span><span>None</span>):</span>
+<span id="cb61-3">        <span>self</span>.active_tab.task_runner.clear_pending_tasks()</span>
+<span id="cb61-4">        task <span>=</span> Task(<span>self</span>.active_tab.load, url, body)</span>
+<span id="cb61-5">        <span>self</span>.active_tab.task_runner.schedule_task(task)</span></code></pre></div>
+<p>We need to clear any pending tasks before loading a new page, because
+those previous tasks are now invalid:</p>
+<div id="cb62"><pre><code><span id="cb62-1"><span>class</span> TaskRunner:</span>
+<span id="cb62-2">    <span>def</span> clear_pending_tasks(<span>self</span>):</span>
+<span id="cb62-3">        <span>self</span>.condition.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb62-4">        <span>self</span>.tasks.clear()</span>
+<span id="cb62-5">        <span>self</span>.condition.release()</span></code></pre></div>
+<p>We also need to split <code>new_tab</code> into a version that
+acquires a lock and one that doesn’t
+(<code>new_tab_internal</code>):</p>
+<div id="cb63"><pre><code><span id="cb63-1"><span>class</span> Browser:</span>
+<span id="cb63-2">    <span>def</span> new_tab(<span>self</span>, url):</span>
+<span id="cb63-3">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb63-4">        <span>self</span>.new_tab_internal(url)</span>
+<span id="cb63-5">        <span>self</span>.lock.release()</span>
+<span id="cb63-6"></span>
+<span id="cb63-7">    <span>def</span> new_tab_internal(<span>self</span>, url):</span>
+<span id="cb63-8">        new_tab <span>=</span> Tab(<span>self</span>, HEIGHT <span>-</span> <span>self</span>.chrome.bottom)</span>
+<span id="cb63-9">        <span>self</span>.tabs.append(new_tab)</span>
+<span id="cb63-10">        <span>self</span>.set_active_tab(new_tab)</span>
+<span id="cb63-11">        <span>self</span>.schedule_load(url)</span></code></pre></div>
+<p>This way <code>new_tab_internal</code> can be called directly by
+methods, like <code>Chrome</code>’s <code>click</code> method, that
+already hold the lock.<span><span>Using locks while avoiding race conditions and deadlocks
+can be quite difficult!</span></span></p>
+<div id="cb64"><pre><code><span id="cb64-1"><span>class</span> Chrome:</span>
+<span id="cb64-2">    <span>def</span> click(<span>self</span>, x, y):</span>
+<span id="cb64-3">        <span>if</span> <span>self</span>.newtab_rect.contains(x, y):</span>
+<span id="cb64-4">            <span>self</span>.browser.new_tab_internal(</span>
+<span id="cb64-5">                URL(<span>"https://browser.engineering/"</span>))</span>
+<span id="cb64-6"></span>
+<span id="cb64-7">    <span>def</span> enter(<span>self</span>):</span>
+<span id="cb64-8">        <span>if</span> <span>self</span>.focus <span>==</span> <span>"address bar"</span>:</span>
+<span id="cb64-9">            <span>self</span>.browser.schedule_load(URL(<span>self</span>.address_bar))</span></code></pre></div>
+<p>Event handlers are mostly similar, except that we need to be careful
+to distinguish events that affect the browser chrome from those that
+affect the tab. For example, consider <code>handle_click</code>. If the
+user clicked on the browser chrome, we can handle it right there in the
+browser thread. But if the user clicked on the web page, we must
+schedule a task on the main thread:</p>
+<div id="cb65"><pre><code><span id="cb65-1"><span>class</span> Browser:</span>
+<span id="cb65-2">    <span>def</span> handle_click(<span>self</span>, e):</span>
+<span id="cb65-3">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb65-4">        <span>if</span> e.y <span>&lt;</span> <span>self</span>.chrome.bottom:</span>
+<span id="cb65-5">             <span># ...</span></span>
+<span id="cb65-6">        <span>else</span>:</span>
+<span id="cb65-7">            <span># ...</span></span>
+<span id="cb65-8">            tab_y <span>=</span> e.y <span>-</span> <span>self</span>.chrome.bottom</span>
+<span id="cb65-9">            task <span>=</span> Task(<span>self</span>.active_tab.click, e.x, tab_y)</span>
+<span id="cb65-10">            <span>self</span>.active_tab.task_runner.schedule_task(task)</span>
+<span id="cb65-11">        <span>self</span>.lock.release()</span></code></pre></div>
+<p>The same logic holds for <code>keypress</code>:</p>
+<div id="cb66"><pre><code><span id="cb66-1"><span>class</span> Browser:</span>
+<span id="cb66-2">    <span>def</span> handle_key(<span>self</span>, char):</span>
+<span id="cb66-3">        <span>if</span> <span>not</span> (<span>0x20</span> <span>&lt;=</span> <span>ord</span>(char) <span>&lt;</span> <span>0x7f</span>): <span>return</span></span>
+<span id="cb66-4">        <span>if</span> <span>self</span>.chrome.keypress(char):</span>
+<span id="cb66-5">            <span># ...</span></span>
+<span id="cb66-6">        <span>elif</span> <span>self</span>.focus <span>==</span> <span>"content"</span>:</span>
+<span id="cb66-7">            task <span>=</span> Task(<span>self</span>.active_tab.keypress, char)</span>
+<span id="cb66-8">            <span>self</span>.active_tab.task_runner.schedule_task(task)</span></code></pre></div>
+<p>Do the same with any other calls from the <code>Browser</code> to the
+<code>Tab</code>.</p>
+<p>So now we have the browser thread telling the main thread what to do.
+Communication in the other direction is a little subtler.</p>
+<p>Originally, threads were a mechanism for improving
+<em>responsiveness</em> via pre-emptive multitasking, but these days
+they also allow browsers to increase <em>throughput</em> because even
+phones have several cores. But different CPU architectures differ, and
+browser engineers (like you!) have to use more or less hardware
+parallelism as appropriate to the situation. For example, some devices
+have more <a href="https://en.wikipedia.org/wiki/Multi-core_processor">CPU cores</a>
+than others, or are more sensitive to battery power usage, or their
+system processes such as listening to the wireless radio may limit the
+actual parallelism available to the browser.</p>
+<h2 id="committing-a-display-list">Committing a Display List</h2>
+<p>We already have a <code>set_needs_animation_frame</code> method, but
+we also need a <code>commit</code> method that a <code>Tab</code> can
+call when it’s finished creating a display list. And if you look
+carefully at our raster-and-draw code, you’ll see that to draw a display
+list we also need to know the URL (to update the browser chrome), the
+document height (to allocate a surface of the right size), and the
+scroll position (to draw the right part of the surface).</p>
+<p>Let’s make a simple class for storing this data:</p>
+<div id="cb67"><pre><code><span id="cb67-1"><span>class</span> CommitData:</span>
+<span id="cb67-2">    <span>def</span> <span>__init__</span>(<span>self</span>, url, scroll, height, display_list):</span>
+<span id="cb67-3">        <span>self</span>.url <span>=</span> url</span>
+<span id="cb67-4">        <span>self</span>.scroll <span>=</span> scroll</span>
+<span id="cb67-5">        <span>self</span>.height <span>=</span> height</span>
+<span id="cb67-6">        <span>self</span>.display_list <span>=</span> display_list</span></code></pre></div>
+<p>When running an animation frame, the <code>Tab</code> should
+construct one of these objects and pass it to <code>commit</code>. To
+keep <code>render</code> from getting too confusing, let’s put this in a
+new <code>run_animation_frame</code> method, and move
+<code>__runRAFHandlers</code> there too.<span><span>Why not reuse
+<code>render</code> instead of a new method? Because the
+<code>render</code> method is just about updating style, layout and
+paint when needed; it’s called for every frame, but it’s also called
+from <code>click</code>, and in real browsers from many other places
+too. Meanwhile, <code>run_animation_frame</code> is only called for
+frames, and therefore it, not <code>render</code>, runs RAF handlers and
+calls <code>commit</code>.</span></span></p>
+<div id="cb68" data-replace="self.scroll%2c/scroll%2c,(self)/(self%2c%20scroll)"><pre><code><span id="cb68-1"><span>class</span> Tab:</span>
+<span id="cb68-2">    <span>def</span> <span>__init__</span>(<span>self</span>, browser, tab_height):</span>
+<span id="cb68-3">        <span># ...</span></span>
+<span id="cb68-4">        <span>self</span>.browser <span>=</span> browser</span>
+<span id="cb68-5"></span>
+<span id="cb68-6">    <span>def</span> run_animation_frame(<span>self</span>):</span>
+<span id="cb68-7">        <span>self</span>.js.interp.evaljs(<span>"__runRAFHandlers()"</span>)</span>
+<span id="cb68-8">        <span>self</span>.render()</span>
+<span id="cb68-9">        commit_data <span>=</span> CommitData(</span>
+<span id="cb68-10">            <span>self</span>.url, <span>self</span>.scroll, document_height, <span>self</span>.display_list)</span>
+<span id="cb68-11">        <span>self</span>.display_list <span>=</span> <span>None</span></span>
+<span id="cb68-12">        <span>self</span>.browser.commit(<span>self</span>, commit_data)</span></code></pre></div>
+<p>Think of the <code>CommitData</code> object as being sent from the
+main thread to the browser thread. That means the main thread shouldn’t
+access it any more, and for this reason I’m resetting the
+<code>display_list</code> field. The <code>Browser</code> should now
+schedule <code>run_animation_frame</code>:</p>
+<div id="cb69" data-replace="frame)/frame%2c%20scroll)"><pre><code><span id="cb69-1"><span>class</span> Browser:</span>
+<span id="cb69-2">    <span>def</span> schedule_animation_frame(<span>self</span>):</span>
+<span id="cb69-3">        <span>def</span> callback():</span>
+<span id="cb69-4">            <span># ...</span></span>
+<span id="cb69-5">            task <span>=</span> Task(<span>self</span>.active_tab.run_animation_frame)</span>
+<span id="cb69-6">            <span># ...</span></span></code></pre></div>
+<p>On the <code>Browser</code> side, the new <code>commit</code> method
+needs to read out all of the data it was sent and call
+<code>set_needs_raster_and_draw</code> as needed. Because this call will
+come from another thread, we’ll need to acquire a lock. Another
+important step is to not clear the <code>animation_timer</code> object
+until <em>after</em> the next commit occurs. Otherwise multiple
+rendering tasks could be queued at the same time. Finally, save
+<code>scroll</code> in <code>active_tab_scroll</code> and
+<code>url</code> in <code>active_tab_url</code>:</p>
+<div id="cb70"><pre><code><span id="cb70-1"><span>class</span> Browser:</span>
+<span id="cb70-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb70-3">        <span>self</span>.lock <span>=</span> threading.Lock()</span>
+<span id="cb70-4"></span>
+<span id="cb70-5">        <span>self</span>.active_tab_url <span>=</span> <span>None</span></span>
+<span id="cb70-6">        <span>self</span>.active_tab_scroll <span>=</span> <span>0</span></span>
+<span id="cb70-7">        <span>self</span>.active_tab_height <span>=</span> <span>0</span></span>
+<span id="cb70-8">        <span>self</span>.active_tab_display_list <span>=</span> <span>None</span></span>
+<span id="cb70-9"></span>
+<span id="cb70-10">    <span>def</span> commit(<span>self</span>, tab, data):</span>
+<span id="cb70-11">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb70-12">        <span>if</span> tab <span>==</span> <span>self</span>.active_tab:</span>
+<span id="cb70-13">            <span>self</span>.active_tab_url <span>=</span> data.url</span>
+<span id="cb70-14">            <span>self</span>.active_tab_scroll <span>=</span> data.scroll</span>
+<span id="cb70-15">            <span>self</span>.active_tab_height <span>=</span> data.height</span>
+<span id="cb70-16">            <span>if</span> data.display_list:</span>
+<span id="cb70-17">                <span>self</span>.active_tab_display_list <span>=</span> data.display_list</span>
+<span id="cb70-18">            <span>self</span>.animation_timer <span>=</span> <span>None</span></span>
+<span id="cb70-19">            <span>self</span>.set_needs_raster_and_draw()</span>
+<span id="cb70-20">        <span>self</span>.lock.release()</span></code></pre></div>
+<p>Make sure to update the <code>Chrome</code> class to use this new
+<code>url</code> field, since we don’t want the chrome, running on the
+browser thread, to read from the tab, running on the main thread.</p>
+<p>Note that <code>commit</code> is called on the main thread, but
+acquires the browser thread lock. As a result, <code>commit</code> is a
+critical time when both threads are “stopped” simultaneously.<span><span>For this reason commit needs
+to be as fast as possible, to maximize parallelism and responsiveness.
+In modern browsers, optimizing commit is quite challenging, because
+their method of caching and sending data between threads is much more
+sophisticated.</span></span> Also note that it’s possible for the
+browser thread to get a <code>commit</code> from an inactive tab,<span><span>That’s because even inactive
+tabs might be processing one last animation frame.</span></span> so the
+<code>tab</code> parameter is compared with the active tab before
+copying over any committed data.</p>
+<p>Now that we have a browser lock, we also need to acquire the lock any
+time the browser thread accesses any of its variables. For example, in
+<code>set_needs_animation_frame</code>, do this:</p>
+<div id="cb71"><pre><code><span id="cb71-1"><span>class</span> Browser:</span>
+<span id="cb71-2">    <span>def</span> set_needs_animation_frame(<span>self</span>, tab):</span>
+<span id="cb71-3">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb71-4">        <span># ...</span></span>
+<span id="cb71-5">        <span>self</span>.lock.release()</span></code></pre></div>
+<p>In <code>schedule_animation_frame</code> you’ll need to do it both
+inside and outside the callback:</p>
+<div id="cb72"><pre><code><span id="cb72-1"><span>class</span> Browser:</span>
+<span id="cb72-2">    <span>def</span> schedule_animation_frame(<span>self</span>):</span>
+<span id="cb72-3">        <span>def</span> callback():</span>
+<span id="cb72-4">            <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb72-5">            <span># ...</span></span>
+<span id="cb72-6">            <span>self</span>.lock.release()</span>
+<span id="cb72-7">            <span># ...</span></span>
+<span id="cb72-8">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb72-9">        <span># ...</span></span>
+<span id="cb72-10">        <span>self</span>.lock.release()</span></code></pre></div>
+<p>Add locks to <code>raster_and_draw</code>, <code>handle_down</code>,
+<code>handle_click</code>, <code>handle_key</code>, and
+<code>handle_enter</code> as well.</p>
+<p>We also don’t want the main thread doing rendering faster than the
+browser thread can raster and draw. So we should only schedule animation
+frames once raster and draw are done.<span><span>The technique of controlling the speed of the front of a
+pipeline by means of the speed of its end is called <em>back
+pressure</em>.</span></span> Luckily, that’s exactly what we’re
+doing:</p>
+<div id="cb73"><pre><code><span id="cb73-1"><span>def</span> mainloop(browser):</span>
+<span id="cb73-2">    <span>while</span> <span>True</span>:</span>
+<span id="cb73-3">        <span># ...</span></span>
+<span id="cb73-4">        browser.raster_and_draw()</span>
+<span id="cb73-5">        browser.schedule_animation_frame()</span></code></pre></div>
+<p>And that’s it: we should now be doing render on one thread and raster
+and draw on another!</p>
+<p>Due to the Python GIL, threading in Python doesn’t increase
+<em>throughput</em>, but it can increase <em>responsiveness</em> by,
+say, running JavaScript tasks on the main thread while the browser does
+raster and draw. It’s also possible to turn off the global interpreter
+lock while running foreign C/C++ code linked into a Python library; Skia
+is thread-safe, but DukPy and SDL may not be, and don’t seem to release
+the GIL. If they did, then JavaScript or raster-and-draw truly could run
+in parallel with the rest of the browser, and performance would improve
+as well.</p>
+<h2 id="threaded-profiling">Threaded Profiling</h2>
+<p>Now that we have two threads, we’ll want to be able to visualize this
+in the traces we produce. Luckily, the Chrome tracing format supports
+that. First of all, we’ll want to make the <code>MeasureTime</code>
+methods thread-safe, so they can be called from either thread:</p>
+<div id="cb74"><pre><code><span id="cb74-1"><span>class</span> MeasureTime:</span>
+<span id="cb74-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb74-3">        <span>self</span>.lock <span>=</span> threading.Lock()</span>
+<span id="cb74-4">        <span># ...</span></span>
+<span id="cb74-5"></span>
+<span id="cb74-6">    <span>def</span> time(<span>self</span>, name):</span>
+<span id="cb74-7">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb74-8">        <span># ...</span></span>
+<span id="cb74-9">        <span>self</span>.lock.release()</span>
+<span id="cb74-10"></span>
+<span id="cb74-11">    <span>def</span> stop(<span>self</span>, name):</span>
+<span id="cb74-12">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb74-13">        <span># ...</span></span>
+<span id="cb74-14">        <span>self</span>.lock.release()</span>
+<span id="cb74-15"></span>
+<span id="cb74-16">    <span>def</span> finish(<span>self</span>):</span>
+<span id="cb74-17">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb74-18">        <span># ...</span></span>
+<span id="cb74-19">        <span>self</span>.lock.release()</span></code></pre></div>
+<p>Next, in every trace event, we’ll want to provide a real thread ID in
+the <code>tid</code> field, which we can get by calling
+<code>get_ident</code> from the <code>threading</code> library:</p>
+<div id="cb75"><pre><code><span id="cb75-1"><span>class</span> MeasureTime:</span>
+<span id="cb75-2">    <span>def</span> time(<span>self</span>, name):</span>
+<span id="cb75-3">        <span># ...</span></span>
+<span id="cb75-4">        tid <span>=</span> threading.get_ident()</span>
+<span id="cb75-5">        <span>self</span>.<span>file</span>.write(</span>
+<span id="cb75-6">            <span>', { "ph": "B", "cat": "_",'</span> <span>+</span></span>
+<span id="cb75-7">            <span>'"name": "'</span> <span>+</span> name <span>+</span> <span>'",'</span> <span>+</span></span>
+<span id="cb75-8">            <span>'"ts": '</span> <span>+</span> <span>str</span>(ts) <span>+</span> <span>','</span> <span>+</span></span>
+<span id="cb75-9">            <span>'"pid": 1, "tid": '</span> <span>+</span> <span>str</span>(tid) <span>+</span> <span>'}'</span>)</span>
+<span id="cb75-10">        <span># ...</span></span></code></pre></div>
+<p>Do the same thing in <code>stop</code>. We can also show
+human-readable thread names by adding metadata events when finishing the
+trace:<span><span>Note that our
+browser doesn’t let you close tabs, so any thread stays around until the
+trace is <code>finish</code>ed.&nbsp;If closing tabs were possible, we’d need
+to do thread names somewhat differently.</span></span></p>
+<div id="cb76"><pre><code><span id="cb76-1"><span>class</span> MeasureTime:</span>
+<span id="cb76-2">    <span>def</span> finish(<span>self</span>):</span>
+<span id="cb76-3">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb76-4">        <span>for</span> thread <span>in</span> threading.<span>enumerate</span>():</span>
+<span id="cb76-5">            <span>self</span>.<span>file</span>.write(</span>
+<span id="cb76-6">                <span>', { "ph": "M", "name": "thread_name",'</span> <span>+</span></span>
+<span id="cb76-7">                <span>'"pid": 1, "tid": '</span> <span>+</span> <span>str</span>(thread.ident) <span>+</span> <span>','</span> <span>+</span></span>
+<span id="cb76-8">                <span>'"args": { "name": "'</span> <span>+</span> thread.name <span>+</span> <span>'"</span><span>}}</span><span>'</span>)</span>
+<span id="cb76-9">        <span># ...</span></span></code></pre></div>
+<p>Now, if you make a new trace from the counting animation and load it
+into one of the tracing tools, you should see something like Figure 3 (
+click <a href="https://browser.engineering/examples/example12-count-two-threads.trace">here</a> to
+download an example trace):</p>
+<div>
+<figure>
+<img src="data:application/octet-stream;base64," alt="Figure 3: Tracing for the timer script in two-threads mode.">
+
+</figure>
+</div>
+<p>You can see how the render and raster tasks now happen on different
+threads, and how our multithreaded architecture allows them to happen
+concurrently.<span><span>However, in
+this case the two threads are <em>not</em> running tasks concurrently.
+That’s because all of the JavaScript tasks are
+<code>requestAnimationFrame</code> callbacks, which are scheduled by the
+browser thread, and those are only kicked off once the browser thread
+finishes its raster and draw work. Execise 12-8 addresses that problem.
+</span></span></p>
+<p>The tracing system we introduced in this chapter comes directly from
+real browsers. And it’s used every day by browser engineers to
+understand the performance characteristics of the browser in different
+situations, find bottlenecks, and fix them. Without these tools,
+browsers would not have been able to make many of the performance leaps
+they did in recent years. Good debugging tools are essential to software
+engineering!</p>
+
+<p>Splitting the main thread from the browser thread means that the main
+thread can run a lot of JavaScript without slowing down the browser
+much. But it’s still possible for really slow JavaScript to slow the
+browser down. For example, imagine our counter adds the following
+artificial slowdown:</p>
+<div id="cb77" data-file="eventloop"><pre><code><span id="cb77-1"><span>function</span> <span>callback</span>() {</span>
+<span id="cb77-2">    <span>for</span> (<span>var</span> i <span>=</span> <span>0</span><span>;</span> i <span>&lt;</span> <span>5e6</span><span>;</span> i<span>++</span>)<span>;</span></span>
+<span id="cb77-3">    <span>// ...</span></span>
+<span id="cb77-4">}</span></code></pre></div>
+<p>Now, every tick of the counter has an artificial pause during which
+the main thread is stuck running JavaScript. This means it can’t respond
+to any events; for example, if you hold down the down key, the scrolling
+will be janky and annoying. I encourage you to try this and witness how
+annoying it is, because modern browsers usually don’t have this kind of
+jank.<span><span>Adjust the loop
+bound to make it pause for about a second or so on your
+computer.</span></span></p>
+<p>To fix this, we need the browser thread to handle scrolling, not the
+main thread. This is harder than it might seem, because the scroll
+offset can be affected by both the browser (when the user scrolls) and
+the main thread (when loading a new page or changing the height of the
+document via JavaScript). Now that the browser thread and the main
+thread run in parallel, they can disagree about the scroll offset.</p>
+<p>The best we can do is to keep two scroll offsets, one on the browser
+thread and one on the main thread. Importantly, the browser thread’s
+scroll offset refers to the browser’s copy of the display list, while
+the main thread’s scroll offset refers to the main thread’s display
+list, which can be slightly different. We’ll have the browser thread
+send scroll offsets to the main thread when it renders, but then the
+main thread will have to be able to <em>override</em> that scroll offset
+if the new frame requires it.</p>
+<p>Let’s implement that. To start, we’ll need to store an
+<code>active_tab_scroll</code> variable on the <code>Browser</code>, and
+update it when the user scrolls:</p>
+<div id="cb78"><pre><code><span id="cb78-1"><span>class</span> Browser:</span>
+<span id="cb78-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb78-3">        <span># ...</span></span>
+<span id="cb78-4">        <span>self</span>.active_tab_scroll <span>=</span> <span>0</span></span>
+<span id="cb78-5"></span>
+<span id="cb78-6">    <span>def</span> clamp_scroll(<span>self</span>, scroll):</span>
+<span id="cb78-7">        height <span>=</span> <span>self</span>.active_tab_height</span>
+<span id="cb78-8">        maxscroll <span>=</span> height <span>-</span> (HEIGHT <span>-</span> <span>self</span>.chrome.bottom)</span>
+<span id="cb78-9">        <span>return</span> <span>max</span>(<span>0</span>, <span>min</span>(scroll, maxscroll))</span>
+<span id="cb78-10"></span>
+<span id="cb78-11">    <span>def</span> handle_down(<span>self</span>):</span>
+<span id="cb78-12">        <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb78-13">        <span>if</span> <span>not</span> <span>self</span>.active_tab_height:</span>
+<span id="cb78-14">            <span>self</span>.lock.release()</span>
+<span id="cb78-15">            <span>return</span></span>
+<span id="cb78-16">        <span>self</span>.active_tab_scroll <span>=</span> <span>self</span>.clamp_scroll(</span>
+<span id="cb78-17">            <span>self</span>.active_tab_scroll <span>+</span> SCROLL_STEP)</span>
+<span id="cb78-18">        <span>self</span>.set_needs_raster_and_draw()</span>
+<span id="cb78-19">        <span>self</span>.needs_animation_frame <span>=</span> <span>True</span></span>
+<span id="cb78-20">        <span>self</span>.lock.release()</span></code></pre></div>
+<p>This code calls <code>set_needs_raster_and_draw</code> to redraw the
+screen with a new scroll offset, and also sets
+<code>needs_animation_frame</code> to cause the main thread to receive
+the scroll offset asynchronously in the future. Even though the browser
+thread has already handled scrolling, it’s still important to
+synchronize the new value back to the main thread soon because APIs like
+click handling depend on it.</p>
+<p>The scroll offset also needs to change when the user switches tabs,
+but in this case we don’t know the right scroll offset yet. We need the
+main thread to run in order to commit a new display list for the other
+tab, and at that point we will have a new scroll offset as well. Move
+tab switching (in <code>load</code> and <code>handle_click</code>) to a
+new method <code>set_active_tab</code> that simply schedules a new
+animation frame:<span><span>Note
+that both callers already hold the lock, so this method doesn’t need to
+acquire it.</span></span></p>
+<div id="cb79"><pre><code><span id="cb79-1"><span>class</span> Browser:</span>
+<span id="cb79-2">    <span>def</span> set_active_tab(<span>self</span>, tab):</span>
+<span id="cb79-3">        <span>self</span>.active_tab <span>=</span> tab</span>
+<span id="cb79-4">        <span>self</span>.active_tab_scroll <span>=</span> <span>0</span></span>
+<span id="cb79-5">        <span>self</span>.active_tab_url <span>=</span> <span>None</span></span>
+<span id="cb79-6">        <span>self</span>.needs_animation_frame <span>=</span> <span>True</span></span>
+<span id="cb79-7">        <span>self</span>.animation_timer <span>=</span> <span>None</span></span></code></pre></div>
+<p>So far, this is only updating the scroll offset on the browser
+thread. But the main thread eventually needs to know about the scroll
+offset, so it can pass it back to <code>commit</code>. So, when the
+<code>Browser</code> creates a rendering task for
+<code>run_animation_frame</code>, it should pass in the scroll offset.
+The <code>run_animation_frame</code> function can then store the scroll
+offset before doing anything else. Add a <code>scroll</code> parameter
+to <code>run_animation_frame</code>:</p>
+<div id="cb80"><pre><code><span id="cb80-1"><span>class</span> Browser:</span>
+<span id="cb80-2">    <span>def</span> schedule_animation_frame(<span>self</span>):</span>
+<span id="cb80-3">        <span># ...</span></span>
+<span id="cb80-4">        <span>def</span> callback():</span>
+<span id="cb80-5">            <span>self</span>.lock.acquire(blocking<span>=</span><span>True</span>)</span>
+<span id="cb80-6">            scroll <span>=</span> <span>self</span>.active_tab_scroll</span>
+<span id="cb80-7">            <span>self</span>.needs_animation_frame <span>=</span> <span>False</span></span>
+<span id="cb80-8">            task <span>=</span> Task(<span>self</span>.active_tab.run_animation_frame, scroll)</span>
+<span id="cb80-9">            <span>self</span>.active_tab.task_runner.schedule_task(task)</span>
+<span id="cb80-10">            <span>self</span>.lock.release()</span>
+<span id="cb80-11">        <span># ...</span></span></code></pre></div>
+<p>But the main thread also needs to be able to modify the scroll
+offset. We’ll add a <code>scroll_changed_in_tab</code> flag that tracks
+whether it’s done so, and only store the browser thread’s scroll offset
+if <code>scroll_changed_in_tab</code> is not already true.<span><span>Two-threaded scroll has a lot
+of edge cases, including some I didn’t anticipate when writing this
+chapter. For example, it’s pretty clear that a load should force scroll
+to 0 (unless the browser implements <a href="https://developer.mozilla.org/en-US/docs/Web/API/History/scrollRestoration">scroll
+restoration</a> for back-navigations!), but what about a scroll clamp
+followed by a browser scroll that brings it back to within the clamped
+region? By splitting the browser into two threads, we’ve brought in all
+of the challenges of concurrency and distributed
+state.</span></span></p>
+<div id="cb81"><pre><code><span id="cb81-1"><span>class</span> Tab:</span>
+<span id="cb81-2">    <span>def</span> <span>__init__</span>(<span>self</span>, browser, tab_height):</span>
+<span id="cb81-3">        <span># ...</span></span>
+<span id="cb81-4">        <span>self</span>.scroll_changed_in_tab <span>=</span> <span>False</span></span>
+<span id="cb81-5"></span>
+<span id="cb81-6">    <span>def</span> run_animation_frame(<span>self</span>, scroll):</span>
+<span id="cb81-7">        <span>if</span> <span>not</span> <span>self</span>.scroll_changed_in_tab:</span>
+<span id="cb81-8">            <span>self</span>.scroll <span>=</span> scroll</span>
+<span id="cb81-9">        <span># ...</span></span></code></pre></div>
+<p>We’ll set <code>scroll_changed_in_tab</code> when loading a new page
+or when the browser thread’s scroll offset is past the bottom of the
+page:</p>
+<div id="cb82"><pre><code><span id="cb82-1"><span>class</span> Tab:</span>
+<span id="cb82-2">    <span>def</span> load(<span>self</span>, url, payload<span>=</span><span>None</span>):</span>
+<span id="cb82-3">        <span># ...</span></span>
+<span id="cb82-4">        <span>self</span>.scroll <span>=</span> <span>0</span></span>
+<span id="cb82-5">        <span>self</span>.scroll_changed_in_tab <span>=</span> <span>True</span></span>
+<span id="cb82-6"></span>
+<span id="cb82-7">    <span>def</span> clamp_scroll(<span>self</span>, scroll):</span>
+<span id="cb82-8">        height <span>=</span> math.ceil(<span>self</span>.document.height <span>+</span> <span>2</span><span>*</span>VSTEP)</span>
+<span id="cb82-9">        maxscroll <span>=</span> height <span>-</span> <span>self</span>.tab_height</span>
+<span id="cb82-10">        <span>return</span> <span>max</span>(<span>0</span>, <span>min</span>(scroll, maxscroll))</span>
+<span id="cb82-11"></span>
+<span id="cb82-12">    <span>def</span> run_animation_frame(<span>self</span>, scroll):</span>
+<span id="cb82-13">        <span># ...</span></span>
+<span id="cb82-14">        <span>self</span>.browser.commit(<span>self</span>, commit_data)</span>
+<span id="cb82-15">        <span>self</span>.scroll_changed_in_tab <span>=</span> <span>False</span></span>
+<span id="cb82-16"></span>
+<span id="cb82-17">    <span>def</span> render(<span>self</span>):</span>
+<span id="cb82-18">        <span># ...</span></span>
+<span id="cb82-19">        clamped_scroll <span>=</span> <span>self</span>.clamp_scroll(<span>self</span>.scroll)</span>
+<span id="cb82-20">        <span>if</span> clamped_scroll <span>!=</span> <span>self</span>.scroll:</span>
+<span id="cb82-21">            <span>self</span>.scroll_changed_in_tab <span>=</span> <span>True</span></span>
+<span id="cb82-22">        <span>self</span>.scroll <span>=</span> clamped_scroll</span>
+<span id="cb82-23">        <span># ...</span></span></code></pre></div>
+<p>If the main thread <em>hasn’t</em> overridden the browser’s scroll
+offset, we’ll set the scroll offset to <code>None</code> in the commit
+data:</p>
+<div id="cb83"><pre><code><span id="cb83-1"><span>class</span> Tab:</span>
+<span id="cb83-2">    <span>def</span> run_animation_frame(<span>self</span>, scroll):</span>
+<span id="cb83-3">        <span># ...</span></span>
+<span id="cb83-4">        scroll <span>=</span> <span>None</span></span>
+<span id="cb83-5">        <span>if</span> <span>self</span>.scroll_changed_in_tab:</span>
+<span id="cb83-6">            scroll <span>=</span> <span>self</span>.scroll</span>
+<span id="cb83-7">        commit_data <span>=</span> CommitData(</span>
+<span id="cb83-8">            <span>self</span>.url, scroll, document_height, <span>self</span>.display_list)</span>
+<span id="cb83-9">        <span># ...</span></span></code></pre></div>
+<p>The browser thread can ignore the scroll offset in this case:</p>
+<div id="cb84"><pre><code><span id="cb84-1"><span>class</span> Browser:</span>
+<span id="cb84-2">    <span>def</span> commit(<span>self</span>, tab, data):</span>
+<span id="cb84-3">        <span>if</span> tab <span>==</span> <span>self</span>.active_tab:</span>
+<span id="cb84-4">            <span># ...</span></span>
+<span id="cb84-5">            <span>if</span> data.scroll <span>!=</span> <span>None</span>:</span>
+<span id="cb84-6">                <span>self</span>.active_tab_scroll <span>=</span> data.scroll</span></code></pre></div>
+<p>That’s it! If you try the counting demo now, you’ll be able to scroll
+even during the artificial pauses. <a href="https://browser.engineering/examples/example12-count-with-scroll.trace">Here</a> is a trace
+that shows threaded scrolling at work (notice how raster and draw now
+sometimes happen at the same time as main-thread work), and it’s
+visualized in Figure 4.</p>
+<div>
+<figure>
+<img src="data:application/octet-stream;base64," alt="Figure 4: Trace output of threaded scrolling on the counting demo.">
+
+</figure>
+</div>
+<p>As you’ve seen, moving tasks to the browser thread can be
+challenging, but can also lead to a much more responsive browser. These
+same trade-offs are present in real browsers, at a much greater level of
+complexity.</p>
+<p>Scrolling in real browsers goes <em>way</em> beyond what we’ve
+implemented here. For example, in a real browser JavaScript can listen
+to a <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event"><code>scroll</code></a>
+event and call <code>preventDefault</code> to cancel scrolling. And some
+rendering features like <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-attachment"><code>background-attachment: fixed</code></a>
+are hard to implement on the browser thread.<span><span>Our browser doesn’t support
+any of these features, so it doesn’t run into these difficulties. That’s
+also a strategy. For example, until 2020, Chromium-based browsers on
+Android did not support
+<code>background-attachment: fixed</code>.</span></span> For this
+reason, most real browsers implement both threaded and non-threaded
+scrolling, and fall back to non-threaded scrolling when these advanced
+features are used.<span><span>Actually, a real browser only falls back to non-threaded
+scrolling when necessary. For example, it might disable threaded
+scrolling only if a <code>scroll</code> event listener calls
+<code>preventDefault</code>.</span></span> Concerns like this also drive
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#passive">new
+JavaScript APIs</a>.</p>
+<h2 id="threaded-style-and-layout">Threaded Style and Layout</h2>
+<p>Now that we have separate browser and main threads, and now that some
+operations are performed on the browser thread, our browser’s thread
+architecture has started to resemble that of a real browser.<span><span>Note that many browsers now
+run some parts of the browser thread and main thread in different
+processes, which has advantages for security and error
+handling.</span></span> But why not move even more browser components
+into even more threads? Wouldn’t that make the browser even faster?</p>
+<p>In a word, yes. Modern browsers have <a href="https://developer.chrome.com/blog/renderingng-architecture/#process-and-thread-structure">dozens
+of threads</a>, which together serve to make the browser even faster and
+more responsive. For example, raster-and-draw often runs on its own
+thread so that the browser thread can handle events even while a new
+frame is being prepared. Likewise, modern browsers typically have a
+collection of network or input/output (I/O) threads, which move all
+interaction with the network or the file system off the main thread.</p>
+<p>On the other hand, some parts of the browser can’t be easily
+threaded. For example, consider the earlier part of the rendering
+pipeline: style, layout and paint. In our browser, these run on the main
+thread. But could they move to their own thread?</p>
+<p>In principle, yes. The only thing browsers <em>have</em> to do is
+implement all the web API specifications correctly, and draw to the
+screen after scripts and <code>requestAnimationFrame</code> callbacks
+have completed. The specification spells this out in detail in what it
+calls the “<a href="https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering">update-the-rendering</a>”
+steps. These steps don’t mention style or layout at all—because style
+and layout, just like paint and draw, are implementation details of a
+browser. The specification’s update-the-rendering steps are the
+<em>JavaScript-observable</em> things that have to happen before drawing
+to the screen.</p>
+<p>Nevertheless, in practice, no current modern browser runs style or
+layout on any thread but the main one.<span><span>Some browsers do use multiple threads <em>within</em> style
+and layout; the <a href="https://en.wikipedia.org/wiki/Servo_(software)">Servo</a> research
+browser was the pioneer here, attempting a fully parallel style, layout,
+and paint phase. Some of Servo’s code is now part of Firefox. Still,
+even if style or another phase uses threads internally, those steps
+still don’t happen concurrently with, say, JavaScript
+execution.</span></span> The reason is simple: there are many JavaScript
+APIs that can query style or layout state. For example, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle"><code>getComputedStyle</code></a>
+requires first computing style, and <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect"><code>getBoundingClientRect</code></a>
+requires first doing layout.<span><span>There is no JavaScript API that allows reading back state
+from anything later in the rendering pipeline than layout, which is what
+made it possible to move the back half of the pipeline to another
+thread.</span></span> If a web page calls one of these APIs, and style
+or layout is not up to date, then it has to be computed then and there.
+These computations are called <em>forced style</em> or <em>forced
+layout</em>: style or layout are “forced” to happen right away, as
+opposed to possibly 33 ms in the future, if they’re not already
+computed. Because of these forced style and layout situations, browsers
+have to be able to compute style and layout on the main thread.<span><span>Or the main thread could force
+the browser thread to do that work, but that’s even worse, because
+forcing work on the compositor thread will make scrolling janky unless
+you do even more work to avoid that somehow.</span></span></p>
+<p>One possible way to resolve these tensions is to optimistically move
+style and layout off the main thread, similar to optimistically doing
+threaded scrolling if a web page doesn’t <code>preventDefault</code> a
+scroll. Is that a good idea? Maybe, but forced style and layout aren’t
+just caused by JavaScript execution. One example is our implementation
+of <code>click</code>, which causes a forced render before hit
+testing:</p>
+<div id="cb85"><pre><code><span id="cb85-1"><span>class</span> Tab:</span>
+<span id="cb85-2">    <span>def</span> click(<span>self</span>, x, y):</span>
+<span id="cb85-3">        <span>self</span>.render()</span>
+<span id="cb85-4">        <span># ...</span></span></code></pre></div>
+<p>It’s possible (but very hard) to move hit testing off the main thread
+or to do hit testing against an older version of the layout tree, or to
+come up with some other technological fix. Thus it’s not
+<em>impossible</em> to move style and layout off the main thread
+“optimistically”, but it <em>is</em> challenging. That said, browser
+developers are always looking for ways to make things faster, and I
+expect that at some point in the future style and layout will be moved
+to their own thread. Maybe you’ll be the one to do it?</p>
+<p>Browser rendering pipelines are strongly influenced by graphics and
+games. Many high-performance games are driven by event loops, update a
+<a href="https://en.wikipedia.org/wiki/Scene_graph">scene graph</a> on
+each event, convert the scene graph into a display list, and then
+convert the display list into pixels. But in a game, the programmer
+knows <em>in advance</em> what scene graphs will be provided, and can
+tune the graphics pipeline for those graphs. Games can upload
+hyper-optimized code and pre-rendered data to the CPU and GPU memory
+when they start. Browsers, on the other hand, need to handle arbitrary
+web pages, and can’t spend much time optimizing anything. This makes for
+a very different set of trade-offs, and is why browsers often feel less
+fancy and smooth than games.</p>
+<h2 id="summary">Summary</h2>
+<p>This chapter demonstrated the two-thread rendering system at the core
+of modern browsers. The main points to remember are:</p>
+<ul>
+<li>The browser organizes work into task queues, with tasks for things
+like running JavaScript, handling user input, and rendering the
+page.</li>
+<li>The goal is to consistently generate frames to the screen at a 30 Hz
+cadence, which means a 33 ms budget to draw each animation frame.</li>
+<li>The browser has two key threads involved in rendering.</li>
+<li>The main thread runs JavaScript and the special rendering task.</li>
+<li>The browser thread draws the display list to the screen,
+handles/dispatches input events, and performs scrolling.</li>
+<li>The main thread communicates with the browser thread via
+<code>commit</code>, which synchronizes the two threads.</li>
+</ul>
+<p>Additionally, you’ve seen how hard it is to move tasks between the
+two threads, such as the challenges involved in scrolling on the browser
+thread, or how forced style and layout makes it hard to fully isolate
+the rendering pipeline from JavaScript.</p>
+<p>Click <a href="https://browser.engineering/widgets/lab12-browser.html">here</a> to try this
+chapter’s browser.</p>
+<h2 id="outline">Outline</h2>
+<p>The complete set of functions, classes, and methods in our browser
+should now look something like this:</p>
+<p><code>COOKIE_JAR
+</code>
+<code><span>class</span> URL:
+<code>    <span>def</span> __init__(url)
+</code>
+<code>    <span>def</span> request(referrer, payload)
+</code>
+<code>    <span>def</span> resolve(url)
+</code>
+<code>    <span>def</span> origin()
+</code>
+<code>    <span>def</span> __str__()
+</code>
+</code>
+<code><span>class</span> Text:
+<code>    <span>def</span> __init__(text, parent)
+</code>
+<code>    <span>def</span> __repr__()
+</code>
+</code>
+<code><span>class</span> Element:
+<code>    <span>def</span> __init__(tag, attributes, parent)
+</code>
+<code>    <span>def</span> __repr__()
+</code>
+</code>
+<code><span>def</span> print_tree(node, indent)
+</code>
+<code><span>def</span> tree_to_list(tree, list)
+</code>
+<code><span>class</span> HTMLParser:
+<code>    SELF_CLOSING_TAGS
+</code>
+<code>    HEAD_TAGS
+</code>
+<code>    <span>def</span> __init__(body)
+</code>
+<code>    <span>def</span> parse()
+</code>
+<code>    <span>def</span> get_attributes(text)
+</code>
+<code>    <span>def</span> add_text(text)
+</code>
+<code>    <span>def</span> add_tag(tag)
+</code>
+<code>    <span>def</span> implicit_tags(tag)
+</code>
+<code>    <span>def</span> finish()
+</code>
+</code>
+<code><span>class</span> CSSParser:
+<code>    <span>def</span> __init__(s)
+</code>
+<code>    <span>def</span> whitespace()
+</code>
+<code>    <span>def</span> literal(literal)
+</code>
+<code>    <span>def</span> word()
+</code>
+<code>    <span>def</span> ignore_until(chars)
+</code>
+<code>    <span>def</span> pair()
+</code>
+<code>    <span>def</span> selector()
+</code>
+<code>    <span>def</span> body()
+</code>
+<code>    <span>def</span> parse()
+</code>
+</code>
+<code><span>class</span> TagSelector:
+<code>    <span>def</span> __init__(tag)
+</code>
+<code>    <span>def</span> matches(node)
+</code>
+</code>
+<code><span>class</span> DescendantSelector:
+<code>    <span>def</span> __init__(ancestor, descendant)
+</code>
+<code>    <span>def</span> matches(node)
+</code>
+</code>
+<code>FONTS
+</code>
+<code><span>def</span> get_font(size, weight, style)
+</code>
+<code><span>def</span> linespace(font)
+</code>
+<code>NAMED_COLORS
+</code>
+<code><span>def</span> parse_color(color)
+</code>
+<code><span>def</span> parse_blend_mode(blend_mode_str)
+</code>
+<code>REFRESH_RATE_SEC
+</code>
+<code><span>class</span> MeasureTime:
+<code>    <span>def</span> __init__()
+</code>
+<code>    <span>def</span> time(name)
+</code>
+<code>    <span>def</span> stop(name)
+</code>
+<code>    <span>def</span> finish()
+</code>
+</code>
+<code><span>class</span> Task:
+<code>    <span>def</span> __init__(task_code)
+</code>
+<code>    <span>def</span> run()
+</code>
+</code>
+<code><span>class</span> TaskRunner:
+<code>    <span>def</span> __init__(tab)
+</code>
+<code>    <span>def</span> schedule_task(task)
+</code>
+<code>    <span>def</span> set_needs_quit()
+</code>
+<code>    <span>def</span> clear_pending_tasks()
+</code>
+<code>    <span>def</span> start_thread()
+</code>
+<code>    <span>def</span> run()
+</code>
+<code>    <span>def</span> handle_quit()
+</code>
+</code>
+<code>DEFAULT_STYLE_SHEET
+</code>
+<code>INHERITED_PROPERTIES
+</code>
+<code><span>def</span> style(node, rules)
+</code>
+<code><span>def</span> cascade_priority(rule)
+</code>
+<code>WIDTH, HEIGHT
+</code>
+<code>HSTEP, VSTEP
+</code>
+<code>INPUT_WIDTH_PX
+</code>
+<code>BLOCK_ELEMENTS
+</code>
+<code><span>class</span> DocumentLayout:
+<code>    <span>def</span> __init__(node)
+</code>
+<code>    <span>def</span> layout()
+</code>
+<code>    <span>def</span> should_paint()
+</code>
+<code>    <span>def</span> paint()
+</code>
+<code>    <span>def</span> paint_effects(cmds)
+</code>
+</code>
+<code><span>class</span> BlockLayout:
+<code>    <span>def</span> __init__(node, parent, previous)
+</code>
+<code>    <span>def</span> layout_mode()
+</code>
+<code>    <span>def</span> layout()
+</code>
+<code>    <span>def</span> recurse(node)
+</code>
+<code>    <span>def</span> new_line()
+</code>
+<code>    <span>def</span> word(node, word)
+</code>
+<code>    <span>def</span> input(node)
+</code>
+<code>    <span>def</span> self_rect()
+</code>
+<code>    <span>def</span> should_paint()
+</code>
+<code>    <span>def</span> paint()
+</code>
+<code>    <span>def</span> paint_effects(cmds)
+</code>
+</code>
+<code><span>class</span> LineLayout:
+<code>    <span>def</span> __init__(node, parent, previous)
+</code>
+<code>    <span>def</span> layout()
+</code>
+<code>    <span>def</span> should_paint()
+</code>
+<code>    <span>def</span> paint()
+</code>
+<code>    <span>def</span> paint_effects(cmds)
+</code>
+</code>
+<code><span>class</span> TextLayout:
+<code>    <span>def</span> __init__(node, word, parent, previous)
+</code>
+<code>    <span>def</span> layout()
+</code>
+<code>    <span>def</span> should_paint()
+</code>
+<code>    <span>def</span> paint()
+</code>
+<code>    <span>def</span> paint_effects(cmds)
+</code>
+</code>
+<code><span>class</span> InputLayout:
+<code>    <span>def</span> __init__(node, parent, previous)
+</code>
+<code>    <span>def</span> layout()
+</code>
+<code>    <span>def</span> should_paint()
+</code>
+<code>    <span>def</span> paint()
+</code>
+<code>    <span>def</span> paint_effects(cmds)
+</code>
+<code>    <span>def</span> self_rect()
+</code>
+</code>
+<code><span>class</span> DrawText:
+<code>    <span>def</span> __init__(x1, y1, text, font, color)
+</code>
+<code>    <span>def</span> execute(canvas)
+</code>
+</code>
+<code><span>class</span> DrawRect:
+<code>    <span>def</span> __init__(rect, color)
+</code>
+<code>    <span>def</span> execute(canvas)
+</code>
+</code>
+<code><span>class</span> DrawRRect:
+<code>    <span>def</span> __init__(rect, radius, color)
+</code>
+<code>    <span>def</span> execute(canvas)
+</code>
+</code>
+<code><span>class</span> DrawLine:
+<code>    <span>def</span> __init__(x1, y1, x2, y2, color, thickness)
+</code>
+<code>    <span>def</span> execute(canvas)
+</code>
+</code>
+<code><span>class</span> DrawOutline:
+<code>    <span>def</span> __init__(rect, color, thickness)
+</code>
+<code>    <span>def</span> execute(canvas)
+</code>
+</code>
+<code><span>class</span> Blend:
+<code>    <span>def</span> __init__(opacity, blend_mode, children)
+</code>
+<code>    <span>def</span> execute(canvas)
+</code>
+</code>
+<code><span>def</span> paint_tree(layout_object, display_list)
+</code>
+<code><span>def</span> paint_visual_effects(node, cmds, rect)
+</code>
+<code>EVENT_DISPATCH_JS
+</code>
+<code>SETTIMEOUT_JS
+</code>
+<code>XHR_ONLOAD_JS
+</code>
+<code>RUNTIME_JS
+</code>
+<code><span>class</span> JSContext:
+<code>    <span>def</span> __init__(tab)
+</code>
+<code>    <span>def</span> run(script, code)
+</code>
+<code>    <span>def</span> dispatch_event(type, elt)
+</code>
+<code>    <span>def</span> dispatch_settimeout(handle)
+</code>
+<code>    <span>def</span> dispatch_xhr_onload(out, handle)
+</code>
+<code>    <span>def</span> get_handle(elt)
+</code>
+<code>    <span>def</span> querySelectorAll(selector_text)
+</code>
+<code>    <span>def</span> getAttribute(handle, attr)
+</code>
+<code>    <span>def</span> innerHTML_set(handle, s)
+</code>
+<code>    <span>def</span> XMLHttpRequest_send(...)
+</code>
+<code>    <span>def</span> setTimeout(handle, time)
+</code>
+<code>    <span>def</span> requestAnimationFrame()
+</code>
+</code>
+<code>SCROLL_STEP
+</code>
+<code><span>class</span> Tab:
+<code>    <span>def</span> __init__(browser, tab_height)
+</code>
+<code>    <span>def</span> load(url, payload)
+</code>
+<code>    <span>def</span> run_animation_frame(scroll)
+</code>
+<code>    <span>def</span> render()
+</code>
+<code>    <span>def</span> allowed_request(url)
+</code>
+<code>    <span>def</span> raster(canvas)
+</code>
+<code>    <span>def</span> clamp_scroll(scroll)
+</code>
+<code>    <span>def</span> set_needs_render()
+</code>
+<code>    <span>def</span> scrolldown()
+</code>
+<code>    <span>def</span> click(x, y)
+</code>
+<code>    <span>def</span> go_back()
+</code>
+<code>    <span>def</span> submit_form(elt)
+</code>
+<code>    <span>def</span> keypress(char)
+</code>
+</code>
+<code><span>class</span> Chrome:
+<code>    <span>def</span> __init__(browser)
+</code>
+<code>    <span>def</span> tab_rect(i)
+</code>
+<code>    <span>def</span> paint()
+</code>
+<code>    <span>def</span> click(x, y)
+</code>
+<code>    <span>def</span> keypress(char)
+</code>
+<code>    <span>def</span> enter()
+</code>
+<code>    <span>def</span> blur()
+</code>
+</code>
+<code><span>class</span> CommitData:
+<code>    <span>def</span> __init__(...)
+</code>
+</code>
+<code><span>class</span> Browser:
+<code>    <span>def</span> __init__()
+</code>
+<code>    <span>def</span> schedule_animation_frame()
+</code>
+<code>    <span>def</span> commit(tab, data)
+</code>
+<code>    <span>def</span> render()
+</code>
+<code>    <span>def</span> raster_and_draw()
+</code>
+<code>    <span>def</span> raster_tab()
+</code>
+<code>    <span>def</span> raster_chrome()
+</code>
+<code>    <span>def</span> draw()
+</code>
+<code>    <span>def</span> set_needs_animation_frame(tab)
+</code>
+<code>    <span>def</span> set_needs_raster_and_draw()
+</code>
+<code>    <span>def</span> new_tab(url)
+</code>
+<code>    <span>def</span> new_tab_internal(url)
+</code>
+<code>    <span>def</span> set_active_tab(tab)
+</code>
+<code>    <span>def</span> schedule_load(url, body)
+</code>
+<code>    <span>def</span> clamp_scroll(scroll)
+</code>
+<code>    <span>def</span> handle_down()
+</code>
+<code>    <span>def</span> handle_click(e)
+</code>
+<code>    <span>def</span> handle_key(char)
+</code>
+<code>    <span>def</span> handle_enter()
+</code>
+<code>    <span>def</span> handle_quit()
+</code>
+</code>
+<code><span>def</span> mainloop(browser)
+</code>
+
+</p>
+<p>If you run it, it should look something like <a href="https://browser.engineering/widgets/lab12-browser.html">this page</a>; due to the browser
+sandbox, you will need to open that page in a new tab.</p>
+<h2 id="exercises">Exercises</h2>
+<p>12-1 <em><code>setInterval</code></em>. <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval"><code>setInterval</code></a>
+is similar to <code>setTimeout</code> but runs repeatedly at a given
+cadence until <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval"><code>clearInterval</code></a>
+is called. Implement these APIs. Make sure to test
+<code>setInterval</code> with various cadences in a page that also uses
+<code>requestAnimationFrame</code> with some expensive rendering
+pipeline work to do. Record the actual timing of
+<code>setInterval</code> tasks; how consistent is the cadence?</p>
+<p>12-2 <em>Task timing</em>. Modify <code>Task</code> to add trace
+events every time a task executes. You’ll want to provide a good name
+for these trace events. One option is to use the <code>__name__</code>
+field of <code>task_code</code>, which will get the name of the Python
+function run by the task.</p>
+<p>12-3 <em>Clock-based frame timing</em>. Right now our browser
+schedules each animation frame exactly 33 ms after the previous one
+completes. This actually leads to a slower animation frame rate cadence
+than 33 ms. Fix this in our browser by using the absolute time to
+schedule animation frames, instead of a fixed delay between frames. Also
+implement main-thread animation frame scheduling that happens
+<em>before</em> raster and draw, not after, allowing both threads to do
+animation work simultaneously.</p>
+<p>12-4 <em>Scheduling</em>. As more types of complex tasks end up on
+the event queue, there comes a greater need to carefully schedule them
+to ensure the rendering cadence is as close to 33 ms as possible, and
+also to avoid task starvation. Implement a task scheduler with a
+priority system that balances these two needs: prioritize rendering
+tasks and input handling, and deprioritize (but don’t completely starve)
+tasks that ultimately come from JavaScript APIs like
+<code>setTimeout</code>. Test it out on a web page that taxes the system
+with a lot of <code>setTimeout</code>-based tasks.</p>
+<p>12-5 <em>Threaded loading</em>. When loading a page, our browser
+currently waits for each style sheet or script resource to load in turn.
+This is unnecessarily slow, especially on a bad network. Instead, make
+your browser send off all the network requests in parallel. You must
+still process resources like styles in source order, however. It may be
+convenient to use the <code>join</code> method on a <code>Thread</code>,
+which will block the thread calling <code>join</code> until the thread
+being <code>join</code>ed completes.</p>
+<p>12-6 <em>Networking thread</em>. Real browsers usually have a
+separate thread for networking (and other I/O). Tasks are added to this
+thread in a similar fashion to the main thread. Implement a third
+<em>networking</em> thread and put all networking tasks on it.</p>
+<p>12-7 <em>Optimized scheduling</em>. On a complicated web page, the
+browser may not be able to keep up with the desired cadence. Instead of
+constantly pegging the CPU in a futile attempt to keep up, implement a
+<em>frame time estimator</em> that estimates the true cadence of the
+browser based on previous frames, and adjust
+<code>schedule_animation_frame</code> to match. This way complicated
+pages get consistently slower, instead of having random slowdowns.</p>
+<p>12-8 <em>Raster-and-draw thread</em>. Right now, if an input event
+arrives while the browser thread is rastering or drawing, that input
+event won’t be handled immediately. This is especially a problem because
+<a href="#profiling-rendering">raster and draw are slow</a>. Fix this by
+adding a separate raster-and-draw thread controlled by the browser
+thread. While the raster-and-draw thread is doing its work, the browser
+thread should be available to handle input events. Be careful: SDL is
+not thread-safe, so all of the steps that directly use SDL still need to
+happen on the browser thread.</p>
+
+
+
+<nav>
+  Chapter 12 of <a href="https://browser.engineering/index.html" title="Table of Contents">Web Browser Engineering</a>.
+  <a rel="prev" title="Previous chapter" href="https://browser.engineering/visual-effects.html">&lt;</a>
+  <a rel="next" title="Next chapter" href="https://browser.engineering/animations.html">&gt;</a>
+</nav>
+
+<p>Did you find this chapter useful? </p>
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</body>
+</html>

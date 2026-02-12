@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Many-to-Many Associations in Active Record Example</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Many-to-Many Associations in Active Record Example</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/williamluck/many-to-many-associations-in-active-record-example-285h">https://dev.to/williamluck/many-to-many-associations-in-active-record-example-285h</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876788764</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1223268" id="article-body">
+            <h2>
+  <a name="background" href="#background">
+  </a>
+  Background
+</h2>
+
+<p>Using Ruby, Active Record, Sinatra, and a React frontend, I created a traveler tracker for travelers in a country at a given time. Users can scroll through a list of all countries, see the number of travelers in that country, select the country for a list of current travelers, and see the individual visits for the traveler in that country. Additionally, users can see the traveler profile, and there are options to add a new traveler or a new visit for an existing traveler: </p>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--HDFPFmoL--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/cx61fm5yc64autsfhazz.gif"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="852" height="452" data-animated="true"></a></p>
+
+<p>The application makes use of three backend models, Country, Visit, and Traveler. A given country has many travelers, through the visits recorded in that country. Similarly, a traveler has many countries, through visits recorded in each of the countries they visited. Each visit belongs to both a country and a traveler (many-to-many association), and only one can traveler can stay at an an accommodation at a time (which is recorded as a visit):<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>Country</span> <span>&lt;</span> <span>ActiveRecord</span><span>::</span><span>Base</span>
+
+    <span>has_many</span> <span>:visits</span>
+    <span>has_many</span> <span>:travelers</span><span>,</span> <span>through: :visits</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+
+
+<div>
+<pre><code><span>class</span> <span>Traveler</span> <span>&lt;</span> <span>ActiveRecord</span><span>::</span><span>Base</span> 
+
+    <span>has_many</span> <span>:visits</span>
+    <span>has_many</span> <span>:countries</span><span>,</span> <span>through: :visits</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+
+
+<div>
+<pre><code><span>class</span> <span>Visit</span> <span>&lt;</span> <span>ActiveRecord</span><span>::</span><span>Base</span>
+    <span>belongs_to</span> <span>:country</span>
+    <span>belongs_to</span> <span>:traveler</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="entity-relationship-diagram" href="#entity-relationship-diagram">
+  </a>
+  Entity Relationship Diagram
+</h2>
+
+<p>When I was thinking of ideas for the relationships needed to build this application, I originally came up with this ERD:</p>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--VcQCeLuu--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xk3jpotr794zejsa539b.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="880" height="333"></a></p>
+
+<p>The Visits are established correctly as the join table, but the Travelers has an unnecessary column as current_country_id, with no association to a country established other than the ID. However, each traveler will have a list of countries they have visited, and you could find the current country of a traveler by just calling <code>#countries[-1]</code> on an instance of a traveler, as such:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>Traveler</span> <span>&lt;</span> <span>ActiveRecord</span><span>::</span><span>Base</span> 
+
+    <span>has_many</span> <span>:visits</span>
+    <span>has_many</span> <span>:countries</span><span>,</span> <span>through: :visits</span>
+
+    <span>def</span> <span>current_country</span>
+        <span>self</span><span>.</span><span>countries</span><span>[</span><span>-</span><span>1</span><span>]</span>
+    <span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>'from_country_id' is a separate column, and this is used for nationality. I kept this an integer to correspond with the country IDs of the countries table, instead of having to match a nationality string exactly with the country name. We could just find a traveler's nationality by calling <code>#find(#traveler.from_country_id)</code> on an instance of a country. This leaves us with the following ERD: </p>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--n2qBFHXi--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/bs732cfhf1b81gnog6oz.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="880" height="357"></a></p>
+
+<h2>
+  <a name="finding-travelers-currently-in-a-country" href="#finding-travelers-currently-in-a-country">
+  </a>
+  Finding travelers currently in a country
+</h2>
+
+<p>While we could easily query which country a given traveler is currently in, it is a bit more difficult to find all the travelers that are currently in a given country. Calling <code>#travelers</code> on an instance of a country will return all the travelers that were in that country <em>ever</em>, through the series of visits belonging to each traveler in that country. Similarly, calling <code>#visits</code> on an instance of a country will return all the visits in that country ever, not necessarily the visits of the travelers currently in that country. We can use the <code>#current_country</code> method defined above to help with this. </p>
+
+<p>As calling <code>#travelers</code> on an instance of a country returns all travelers in that country ever, we can iterate through that array of travelers to see if their last country_id corresponds with the country_id of the country instance. If this is the case, we can push those travelers to a new array, and return that array to get all the travelers currently in that country:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>Country</span> <span>&lt;</span> <span>ActiveRecord</span><span>::</span><span>Base</span>
+
+    <span>has_many</span> <span>:visits</span>
+    <span>has_many</span> <span>:travelers</span><span>,</span> <span>through: :visits</span>
+
+    <span>def</span> <span>travelers_currently_in_country</span>
+        <span>travelers_in_country</span> <span>=</span> <span>[]</span>
+        <span>all_travelers</span> <span>=</span> <span>self</span><span>.</span><span>travelers</span>
+        <span>all_travelers</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>traveler</span><span>|</span>
+            <span>current_country</span> <span>=</span> <span>traveler</span><span>.</span><span>current_country</span>
+            <span>if</span> <span>current_country</span><span>.</span><span>id</span> <span>==</span> <span>self</span><span>.</span><span>id</span>
+                <span>travelers_in_country</span> <span>&lt;&lt;</span> <span>traveler</span>
+            <span>end</span>
+        <span>end</span>
+        <span>travelers_in_country</span><span>.</span><span>uniq</span>
+    <span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="how-is-this-used-in-the-application-controller" href="#how-is-this-used-in-the-application-controller">
+  </a>
+  How is this used in the application controller?
+</h2>
+
+<p>When I click on a country in the application, we want the travelers in the country to display immediately below the list of countries. I have defined this route in the application controller for get requests to receive JSON of the travelers in a given country, using the above <code>#travelers_currently_in_country</code> method:<br>
+</p>
+
+<div>
+<pre><code><span>get</span> <span>'/travelers_in_country/:id'</span> <span>do</span>
+    <span>selected_country</span> <span>=</span> <span>Country</span><span>.</span><span>find</span><span>(</span><span>params</span><span>[</span><span>:id</span><span>])</span>
+    <span>selected_country</span><span>.</span><span>travelers_currently_in_country</span><span>.</span><span>to_json</span>
+  <span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>We make use of the params hash here, so that the route is dynamic and accepts a country ID. The params hash is created when a request is made to that endpoint. As we are not sending any data in a post or patch request, the dynamic id is the only thing that we need to use with the params hash.  We use <code>Country.find(params[:id])</code> to find the matching country in the database, and then call the <code>#travelers_currently_in_country</code> method on that country.</p>
+
+<p>In the frontend, the fetch request looks like this:<br>
+</p>
+
+<div>
+<pre><code><span>fetch</span><span>(</span><span>`http://localhost:9292/travelers_in_country/</span><span>${</span><span>selectedCountry</span><span>}</span><span>`</span><span>)</span>
+            <span>.</span><span>then</span><span>((</span><span>r</span><span>)</span> <span>=&gt;</span> <span>r</span><span>.</span><span>json</span><span>())</span>
+            <span>.</span><span>then</span><span>(</span><span>travelersInCountry</span> <span>=&gt;</span> <span>setTravelersInCountry</span><span>(</span><span>travelersInCountry</span><span>))</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>We pass the ID of the selected country in the url, the application receives the response from the API, and we set state to have the list of traveler's re-render in the frontend. We get an array of objects in this response, and we can then call <code>.map</code> to return JSX to display the travelers in that country.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

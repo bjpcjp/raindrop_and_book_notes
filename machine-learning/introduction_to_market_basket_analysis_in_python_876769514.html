@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Introduction to Market Basket Analysis in Python</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Introduction to Market Basket Analysis in Python</h1>
+    <p><strong>URL:</strong> <a href="http://pbpython.com/market-basket-analysis.html">http://pbpython.com/market-basket-analysis.html</a></p>
+    <p><strong>Tags:</strong> machine-learning, python</p>
+    <p><strong>Bookmark ID:</strong> 876769514</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="text articleBody">
+      <p><img alt="article header image" itemprop="image" src="data:application/octet-stream;base64,"></p><div id="introduction">
+<h2>Introduction</h2>
+<p>There are many data analysis tools available to the python analyst and it can be
+challenging to know which ones to use in a particular situation. A useful
+(but somewhat overlooked) technique is called association analysis
+which attempts to find common patterns of items in large data sets. One specific
+application is often called market basket analysis.  The most
+commonly cited example of market basket analysis is the so-called “beer and diapers”
+case. The basic story is that a large retailer
+was able to mine their transaction data and find an unexpected purchase pattern
+of individuals that were buying beer and baby diapers at the same&nbsp;time.</p>
+<p>Unfortunately this story is most likely a <a href="http://www.dssresources.com/newsletters/66.php">data urban legend</a>. However, it is
+an illustrative (and entertaining) example of the types of insights
+that can be gained by mining transactional&nbsp;data.</p>
+<p>While these types of associations are normally used for looking at sales transactions;
+the basic analysis can be applied to other situations like click stream tracking,
+spare parts ordering and online recommendation engines - just to name a&nbsp;few.</p>
+<p>If you have some basic understanding of the python data science world, your first
+inclination would be to look at scikit-learn for a ready-made algorithm. However,
+scikit-learn does not support this algorithm. Fortunately, the very useful <a href="http://rasbt.github.io/mlxtend/">MLxtend</a>
+library by Sebastian Raschka has a a an implementation of the <a href="http://rasbt.github.io/mlxtend/user_guide/frequent_patterns/apriori/">Apriori algorithm</a>
+for extracting frequent item sets for further&nbsp;analysis.</p>
+<p>The rest of this article will walk through an example of using this library
+to analyze a relatively large <a href="http://archive.ics.uci.edu/ml/datasets/Online+Retail">online retail</a> data set and try to find
+interesting purchase combinations. By the end of this article, you should be
+familiar enough with the basic approach to apply it to your own data&nbsp;sets.</p>
+</div>
+<div id="why-association-analysis">
+<h2>Why Association&nbsp;Analysis?</h2>
+<p>In today’s world, there are many complex ways to analyze data (clustering, regression,
+Neural Networks, Random Forests, <span>SVM</span>, etc.). The challenge with many of these approaches
+is that they can be difficult to tune, challenging to interpret and require quite a bit
+of data prep and feature engineering to get  good results. In other words, they
+can be very powerful but require a lot of knowledge to implement&nbsp;properly.</p>
+<p>Association analysis is relatively light on the math concepts and easy to explain
+to non-technical people. In addition, it is an unsupervised learning tool that looks
+for hidden patterns so there is limited need for data prep and feature engineering.
+It is a good start for certain cases of data exploration and can point the way for a deeper dive
+into the data using other&nbsp;approaches.</p>
+<p>As an added bonus, the python implementation in MLxtend should be very familiar
+to anyone that has exposure to scikit-learn and pandas. For all these reasons,
+I think it is a useful tool to be familiar with and can help you with
+your data analysis&nbsp;problems.</p>
+<p>One quick note - technically, market basket analysis is just one application of
+association analysis. In this post though, I will use association
+analysis and market basket analysis&nbsp;interchangeably.</p>
+</div>
+<div id="association-analysis-101">
+<h2>Association Analysis&nbsp;101</h2>
+<p>There are a couple of terms used in association analysis that are important to understand.
+This <a href="http://www-users.cs.umn.edu/~kumar/dmbook/ch6.pdf">chapter</a> in <a href="http://www-users.cs.umn.edu/~kumar/dmbook/index.php">Introduction to Data Mining</a> is a great reference for those
+interested in the math behind these definitions and the details of the algorithm&nbsp;implementation.</p>
+<p>Association rules are normally written like this: {Diapers} -&gt; {Beer} which means that
+there is a strong relationship between customers that purchased diapers and also purchased
+beer in the same&nbsp;transaction.</p>
+<p>In the above example, the {Diaper} is the <strong>antecedent</strong> and the {Beer} is the <strong>consequent</strong>.
+Both antecedents and consequents can have multiple items. In other words,
+{Diaper, Gum} -&gt; {Beer, Chips} is a valid&nbsp;rule.</p>
+<p><strong>Support</strong> is the relative frequency that the rules show up. In many instances, you
+may want to look for high support in order to make sure it is a useful relationship.
+However, there may be instances where a low support is useful if you are trying to find
+“hidden”&nbsp;relationships.</p>
+<p><strong>Confidence</strong> is a measure of the reliability of the rule. A confidence of .5 in
+the above example would mean that in 50% of the cases where Diaper and Gum were
+purchased, the purchase also included Beer and Chips. For product
+recommendation, a 50% confidence may be perfectly acceptable but in a medical
+situation, this level may not be high&nbsp;enough.</p>
+<p><strong>Lift</strong> is the ratio of the observed support to that expected if the two rules were
+independent (see <a href="https://en.wikipedia.org/wiki/Association_rule_learning">wikipedia</a>). The basic rule of thumb is that a lift value close
+to 1 means the rules were completely independent. Lift values &gt; 1 are generally
+more “interesting” and could be indicative of a useful rule&nbsp;pattern.</p>
+<p>One final note, related to the data. This analysis requires that all the data for
+a transaction be included in 1 row and the items should be 1-hot encoded.
+The MLxtend <a href="http://rasbt.github.io/mlxtend/user_guide/frequent_patterns/apriori/">documentation</a> example is&nbsp;useful:</p>
+<div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Apple</th>
+<th>Corn</th>
+<th>Dill</th>
+<th>Eggs</th>
+<th>Ice cream</th>
+<th>Kidney Beans</th>
+<th>Milk</th>
+<th>Nutmeg</th>
+<th>Onion</th>
+<th>Unicorn</th>
+<th>Yogurt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<th>1</th>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<th>2</th>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<th>3</th>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<th>4</th>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div><p>The specific <a href="http://archive.ics.uci.edu/ml/datasets/Online+Retail">data</a> for this article comes from the <span>UCI</span> Machine Learning Repository
+and represents transactional data from a <span>UK</span> retailer from 2010-2011. This mostly
+represents sales to wholesalers so it is slightly different from consumer purchase
+patterns but is still a useful case&nbsp;study.</p>
+</div>
+<div id="let-s-code">
+<h2>Let’s&nbsp;Code</h2>
+<p>MLxtend can be installed using pip, so make sure that is done before trying to
+execute any of the code below. Once it is installed, the code below shows how
+to get it up and running. I have made the <a href="https://github.com/chris1610/pbpython/blob/master/notebooks/Market_Basket_Intro.ipynb">notebook</a> available so feel free to
+follow along with the examples&nbsp;below.</p>
+<p>Get our pandas and MLxtend code imported and read the&nbsp;data:</p>
+<div><pre><span></span><span>import</span> <span>pandas</span> <span>as</span> <span>pd</span>
+<span>from</span> <span>mlxtend.frequent_patterns</span> <span>import</span> <span>apriori</span>
+<span>from</span> <span>mlxtend.frequent_patterns</span> <span>import</span> <span>association_rules</span>
+
+<span>df</span> <span>=</span> <span>pd</span><span>.</span><span>read_excel</span><span>(</span><span>'http://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx'</span><span>)</span>
+<span>df</span><span>.</span><span>head</span><span>()</span>
+</pre></div>
+<div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>InvoiceNo</th>
+<th>StockCode</th>
+<th>Description</th>
+<th>Quantity</th>
+<th>InvoiceDate</th>
+<th>UnitPrice</th>
+<th>CustomerID</th>
+<th>Country</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>536365</td>
+<td>85123A</td>
+<td><span>WHITE</span> <span>HANGING</span> <span>HEART</span> T-<span>LIGHT</span> <span>HOLDER</span></td>
+<td>6</td>
+<td>2010-12-01 08:26:00</td>
+<td>2.55</td>
+<td>17850.0</td>
+<td>United Kingdom</td>
+</tr>
+<tr>
+<th>1</th>
+<td>536365</td>
+<td>71053</td>
+<td><span>WHITE</span> <span>METAL</span> <span>LANTERN</span></td>
+<td>6</td>
+<td>2010-12-01 08:26:00</td>
+<td>3.39</td>
+<td>17850.0</td>
+<td>United Kingdom</td>
+</tr>
+<tr>
+<th>2</th>
+<td>536365</td>
+<td>84406B</td>
+<td><span>CREAM</span> <span>CUPID</span> <span>HEARTS</span> <span>COAT</span> <span>HANGER</span></td>
+<td>8</td>
+<td>2010-12-01 08:26:00</td>
+<td>2.75</td>
+<td>17850.0</td>
+<td>United Kingdom</td>
+</tr>
+<tr>
+<th>3</th>
+<td>536365</td>
+<td>84029G</td>
+<td><span>KNITTED</span> <span>UNION</span> <span>FLAG</span> <span>HOT</span> <span>WATER</span> <span>BOTTLE</span></td>
+<td>6</td>
+<td>2010-12-01 08:26:00</td>
+<td>3.39</td>
+<td>17850.0</td>
+<td>United Kingdom</td>
+</tr>
+<tr>
+<th>4</th>
+<td>536365</td>
+<td>84029E</td>
+<td><span>RED</span> <span>WOOLLY</span> <span>HOTTIE</span> <span>WHITE</span> <span>HEART</span>.</td>
+<td>6</td>
+<td>2010-12-01 08:26:00</td>
+<td>3.39</td>
+<td>17850.0</td>
+<td>United Kingdom</td>
+</tr>
+</tbody>
+</table>
+</div><p>There is a little cleanup, we need to do. First, some of the descriptions have spaces
+that need to be removed. We’ll also drop the rows that don’t have invoice numbers
+and remove the credit transactions (those with invoice numbers containing&nbsp;C).</p>
+<div><pre><span></span><span>df</span><span>[</span><span>'Description'</span><span>]</span> <span>=</span> <span>df</span><span>[</span><span>'Description'</span><span>]</span><span>.</span><span>str</span><span>.</span><span>strip</span><span>()</span>
+<span>df</span><span>.</span><span>dropna</span><span>(</span><span>axis</span><span>=</span><span>0</span><span>,</span> <span>subset</span><span>=</span><span>[</span><span>'InvoiceNo'</span><span>],</span> <span>inplace</span><span>=</span><span>True</span><span>)</span>
+<span>df</span><span>[</span><span>'InvoiceNo'</span><span>]</span> <span>=</span> <span>df</span><span>[</span><span>'InvoiceNo'</span><span>]</span><span>.</span><span>astype</span><span>(</span><span>'str'</span><span>)</span>
+<span>df</span> <span>=</span> <span>df</span><span>[</span><span>~</span><span>df</span><span>[</span><span>'InvoiceNo'</span><span>]</span><span>.</span><span>str</span><span>.</span><span>contains</span><span>(</span><span>'C'</span><span>)]</span>
+</pre></div>
+<p>After the cleanup, we need to consolidate the items into 1 transaction per row with each
+product <a href="https://pbpython.com/categorical-encoding.html">1 hot encoded</a>. For the sake of keeping the data set small, I’m only
+looking at sales for France. However, in additional code below, I will compare
+these results to sales from Germany. Further country comparisons would be
+interesting to&nbsp;investigate.</p>
+<div><pre><span></span><span>basket</span> <span>=</span> <span>(</span><span>df</span><span>[</span><span>df</span><span>[</span><span>'Country'</span><span>]</span> <span>==</span><span>"France"</span><span>]</span>
+          <span>.</span><span>groupby</span><span>([</span><span>'InvoiceNo'</span><span>,</span> <span>'Description'</span><span>])[</span><span>'Quantity'</span><span>]</span>
+          <span>.</span><span>sum</span><span>()</span><span>.</span><span>unstack</span><span>()</span><span>.</span><span>reset_index</span><span>()</span><span>.</span><span>fillna</span><span>(</span><span>0</span><span>)</span>
+          <span>.</span><span>set_index</span><span>(</span><span>'InvoiceNo'</span><span>))</span>
+</pre></div>
+<p>Here’s what the first few columns look like (note, I added some numbers
+to the columns to illustrate the concept - the actual data in this example
+is all&nbsp;0’s):</p>
+<div>
+<table>
+<thead>
+<tr>
+<th>Description</th>
+<th>10 <span>COLOUR</span> <span>SPACEBOY</span> <span>PEN</span></th>
+<th>12 <span>COLOURED</span> <span>PARTY</span> <span>BALLOONS</span></th>
+<th>12 <span>EGG</span> <span>HOUSE</span> <span>PAINTED</span> <span>WOOD</span></th>
+<th>12 <span>MESSAGE</span> <span>CARDS</span> <span>WITH</span> <span>ENVELOPES</span></th>
+<th>12 <span>PENCIL</span> <span>SMALL</span> <span>TUBE</span> <span>WOODLAND</span></th>
+<th>12 <span>PENCILS</span> <span>SMALL</span> <span>TUBE</span> <span>RED</span> <span>RETROSPOT</span></th>
+<th>12 <span>PENCILS</span> <span>SMALL</span> <span>TUBE</span> <span>SKULL</span></th>
+<th>12 <span>PENCILS</span> <span>TALL</span> <span>TUBE</span> <span>POSY</span></th>
+</tr>
+<tr>
+<th>InvoiceNo</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>536370</th>
+<td>11.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>536852</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>5.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr>
+<th>536974</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr>
+<th>537065</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>7.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr>
+<th>537463</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>9.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+</div><p>There are a lot of zeros in the data but we also need to make sure any positive
+values are converted to a 1 and anything less the 0 is set to 0. This step will
+complete the one hot encoding of the data and remove the postage column (since
+that charge is not one we wish to&nbsp;explore):</p>
+<div><pre><span></span><span>def</span> <span>encode_units</span><span>(</span><span>x</span><span>):</span>
+    <span>if</span> <span>x</span> <span>&lt;=</span> <span>0</span><span>:</span>
+        <span>return</span> <span>0</span>
+    <span>if</span> <span>x</span> <span>&gt;=</span> <span>1</span><span>:</span>
+        <span>return</span> <span>1</span>
+
+<span>basket_sets</span> <span>=</span> <span>basket</span><span>.</span><span>applymap</span><span>(</span><span>encode_units</span><span>)</span>
+<span>basket_sets</span><span>.</span><span>drop</span><span>(</span><span>'POSTAGE'</span><span>,</span> <span>inplace</span><span>=</span><span>True</span><span>,</span> <span>axis</span><span>=</span><span>1</span><span>)</span>
+</pre></div>
+<p>Now that the data is structured properly, we can generate frequent item sets
+that have a support of at least 7% (this number was chosen so that I could
+get enough useful&nbsp;examples):</p>
+<div><pre><span></span><span>frequent_itemsets</span> <span>=</span> <span>apriori</span><span>(</span><span>basket_sets</span><span>,</span> <span>min_support</span><span>=</span><span>0.07</span><span>,</span> <span>use_colnames</span><span>=</span><span>True</span><span>)</span>
+</pre></div>
+<p>The final step is to generate the rules with their corresponding support, confidence and&nbsp;lift:</p>
+<div><pre><span></span><span>rules</span> <span>=</span> <span>association_rules</span><span>(</span><span>frequent_itemsets</span><span>,</span> <span>metric</span><span>=</span><span>"lift"</span><span>,</span> <span>min_threshold</span><span>=</span><span>1</span><span>)</span>
+<span>rules</span><span>.</span><span>head</span><span>()</span>
+</pre></div>
+<div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>antecedants</th>
+<th>consequents</th>
+<th>support</th>
+<th>confidence</th>
+<th>lift</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>WOODLAND</span> <span>ANIMALS</span>)</td>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>CIRCUS</span> <span>PARADE</span>)</td>
+<td>0.170918</td>
+<td>0.597015</td>
+<td>3.545907</td>
+</tr>
+<tr>
+<th>1</th>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>CIRCUS</span> <span>PARADE</span>)</td>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>WOODLAND</span> <span>ANIMALS</span>)</td>
+<td>0.168367</td>
+<td>0.606061</td>
+<td>3.545907</td>
+</tr>
+<tr>
+<th>2</th>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>CIRCUS</span> <span>PARADE</span>)</td>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>SPACEBOY</span>)</td>
+<td>0.168367</td>
+<td>0.530303</td>
+<td>3.849607</td>
+</tr>
+<tr>
+<th>3</th>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>SPACEBOY</span>)</td>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>CIRCUS</span> <span>PARADE</span>)</td>
+<td>0.137755</td>
+<td>0.648148</td>
+<td>3.849607</td>
+</tr>
+<tr>
+<th>4</th>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>WOODLAND</span> <span>ANIMALS</span>)</td>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>SPACEBOY</span>)</td>
+<td>0.170918</td>
+<td>0.611940</td>
+<td>4.442233</td>
+</tr>
+</tbody>
+</table>
+</div><p>That’s all there is to it! Build the frequent items using <code>
+apriori</code>
+ then
+build the rules with <code>
+association_rules</code>
+.</p>
+<p>Now, the tricky part is figuring out what this tells us.
+For instance, we can see that there are quite a few rules with a high lift value
+which means that it occurs more frequently than would be expected given the number
+of transaction and product combinations. We can also see several where the confidence
+is high as well. This part of the analysis is where the domain knowledge
+will come in handy. Since I do not have that, I’ll just look for a couple of
+illustrative&nbsp;examples.</p>
+<p>We can filter the dataframe using standard pandas code. In this case, look for a
+large lift (6) and high confidence&nbsp;(.8):</p>
+<div><pre><span></span><span>rules</span><span>[</span> <span>(</span><span>rules</span><span>[</span><span>'lift'</span><span>]</span> <span>&gt;=</span> <span>6</span><span>)</span> <span>&amp;</span>
+       <span>(</span><span>rules</span><span>[</span><span>'confidence'</span><span>]</span> <span>&gt;=</span> <span>0.8</span><span>)</span> <span>]</span>
+</pre></div>
+<div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>antecedants</th>
+<th>consequents</th>
+<th>support</th>
+<th>confidence</th>
+<th>lift</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>8</th>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>CUPS</span>)</td>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>PLATES</span>)</td>
+<td>0.137755</td>
+<td>0.888889</td>
+<td>6.968889</td>
+</tr>
+<tr>
+<th>9</th>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>PLATES</span>)</td>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>CUPS</span>)</td>
+<td>0.127551</td>
+<td>0.960000</td>
+<td>6.968889</td>
+</tr>
+<tr>
+<th>10</th>
+<td>(<span>ALARM</span> <span>CLOCK</span> <span>BAKELIKE</span> <span>GREEN</span>)</td>
+<td>(<span>ALARM</span> <span>CLOCK</span> <span>BAKELIKE</span> <span>RED</span>)</td>
+<td>0.096939</td>
+<td>0.815789</td>
+<td>8.642959</td>
+</tr>
+<tr>
+<th>11</th>
+<td>(<span>ALARM</span> <span>CLOCK</span> <span>BAKELIKE</span> <span>RED</span>)</td>
+<td>(<span>ALARM</span> <span>CLOCK</span> <span>BAKELIKE</span> <span>GREEN</span>)</td>
+<td>0.094388</td>
+<td>0.837838</td>
+<td>8.642959</td>
+</tr>
+<tr>
+<th>16</th>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>CUPS</span>, <span>SET</span>/6 <span>RED</span> <span>SPOTTY</span>…</td>
+<td>(<span>SET</span>/20 <span>RED</span> <span>RETROSPOT</span> <span>PAPER</span> <span>NAPKINS</span>)</td>
+<td>0.122449</td>
+<td>0.812500</td>
+<td>6.125000</td>
+</tr>
+<tr>
+<th>17</th>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>CUPS</span>, <span>SET</span>/20 <span>RED</span> <span>RETRO</span>…</td>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>PLATES</span>)</td>
+<td>0.102041</td>
+<td>0.975000</td>
+<td>7.644000</td>
+</tr>
+<tr>
+<th>18</th>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>PLATES</span>, <span>SET</span>/20 <span>RED</span> <span>RET</span>…</td>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>CUPS</span>)</td>
+<td>0.102041</td>
+<td>0.975000</td>
+<td>7.077778</td>
+</tr>
+<tr>
+<th>22</th>
+<td>(<span>SET</span>/6 <span>RED</span> <span>SPOTTY</span> <span>PAPER</span> <span>PLATES</span>)</td>
+<td>(<span>SET</span>/20 <span>RED</span> <span>RETROSPOT</span> <span>PAPER</span> <span>NAPKINS</span>)</td>
+<td>0.127551</td>
+<td>0.800000</td>
+<td>6.030769</td>
+</tr>
+</tbody>
+</table>
+</div><p>In looking at the rules, it seems that the green and red alarm clocks are purchased
+together and the red paper cups, napkins and plates are purchased together in
+a manner that is higher than the overall probability would&nbsp;suggest.</p>
+<p>At this point, you may want to look at how much opportunity there is to use the popularity
+of one product to drive sales of another. For instance, we can see that we sell
+340 Green Alarm clocks but only 316 Red Alarm Clocks so maybe we can drive more
+Red Alarm Clock sales through&nbsp;recommendations?</p>
+<div><pre><span></span><span>basket</span><span>[</span><span>'ALARM CLOCK BAKELIKE GREEN'</span><span>]</span><span>.</span><span>sum</span><span>()</span>
+
+<span>340.0</span>
+
+<span>basket</span><span>[</span><span>'ALARM CLOCK BAKELIKE RED'</span><span>]</span><span>.</span><span>sum</span><span>()</span>
+
+<span>316.0</span>
+</pre></div>
+<p>What is also interesting is to see how the combinations vary by country of
+purchase. Let’s check out what some popular combinations might be in&nbsp;Germany:</p>
+<div><pre><span></span><span>basket2</span> <span>=</span> <span>(</span><span>df</span><span>[</span><span>df</span><span>[</span><span>'Country'</span><span>]</span> <span>==</span><span>"Germany"</span><span>]</span>
+          <span>.</span><span>groupby</span><span>([</span><span>'InvoiceNo'</span><span>,</span> <span>'Description'</span><span>])[</span><span>'Quantity'</span><span>]</span>
+          <span>.</span><span>sum</span><span>()</span><span>.</span><span>unstack</span><span>()</span><span>.</span><span>reset_index</span><span>()</span><span>.</span><span>fillna</span><span>(</span><span>0</span><span>)</span>
+          <span>.</span><span>set_index</span><span>(</span><span>'InvoiceNo'</span><span>))</span>
+
+<span>basket_sets2</span> <span>=</span> <span>basket2</span><span>.</span><span>applymap</span><span>(</span><span>encode_units</span><span>)</span>
+<span>basket_sets2</span><span>.</span><span>drop</span><span>(</span><span>'POSTAGE'</span><span>,</span> <span>inplace</span><span>=</span><span>True</span><span>,</span> <span>axis</span><span>=</span><span>1</span><span>)</span>
+<span>frequent_itemsets2</span> <span>=</span> <span>apriori</span><span>(</span><span>basket_sets2</span><span>,</span> <span>min_support</span><span>=</span><span>0.05</span><span>,</span> <span>use_colnames</span><span>=</span><span>True</span><span>)</span>
+<span>rules2</span> <span>=</span> <span>association_rules</span><span>(</span><span>frequent_itemsets2</span><span>,</span> <span>metric</span><span>=</span><span>"lift"</span><span>,</span> <span>min_threshold</span><span>=</span><span>1</span><span>)</span>
+
+<span>rules2</span><span>[</span> <span>(</span><span>rules2</span><span>[</span><span>'lift'</span><span>]</span> <span>&gt;=</span> <span>4</span><span>)</span> <span>&amp;</span>
+        <span>(</span><span>rules2</span><span>[</span><span>'confidence'</span><span>]</span> <span>&gt;=</span> <span>0.5</span><span>)]</span>
+</pre></div>
+<div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>antecedants</th>
+<th>consequents</th>
+<th>support</th>
+<th>confidence</th>
+<th>lift</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>7</th>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>SPACEBOY</span>)</td>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>WOODLAND</span> <span>ANIMALS</span>)</td>
+<td>0.107221</td>
+<td>0.571429</td>
+<td>4.145125</td>
+</tr>
+<tr>
+<th>9</th>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>CIRCUS</span> <span>PARADE</span>)</td>
+<td>(<span>PLASTERS</span> <span>IN</span> <span>TIN</span> <span>WOODLAND</span> <span>ANIMALS</span>)</td>
+<td>0.115974</td>
+<td>0.584906</td>
+<td>4.242887</td>
+</tr>
+<tr>
+<th>10</th>
+<td>(<span>RED</span> <span>RETROSPOT</span> <span>CHARLOTTE</span> <span>BAG</span>)</td>
+<td>(<span>WOODLAND</span> <span>CHARLOTTE</span> <span>BAG</span>)</td>
+<td>0.070022</td>
+<td>0.843750</td>
+<td>6.648168</td>
+</tr>
+</tbody>
+</table>
+</div><p>It seems that in addition to David Hasselhoff, Germans love Plasters in Tin Spaceboy and
+Woodland&nbsp;Animals.</p>
+<p>In all seriousness, an analyst that has familiarity with the data would probably
+have a dozen different questions that this type of analysis could drive. I did not
+replicate this analysis for additional countries or customer combos but the overall
+process would be relatively simple given the basic pandas code shown&nbsp;above.</p>
+</div>
+<div id="conclusion">
+<h2>Conclusion</h2>
+<p>The really nice aspect of association analysis is that it is easy to run and relatively
+easy to interpret. If you did not have access to MLxtend and this association
+analysis, it would be exceedingly difficult to find these patterns using
+basic Excel analysis. With python and MLxtend, the analysis process is relatively
+straightforward and since you are in python, you have access to all the additional
+visualization techniques and data analysis tools in the python&nbsp;ecosystem.</p>
+<p>Finally, I encourage you to check out the rest of the MLxtend library. If you are
+doing any work in sci-kit learn it is helpful to be familiar with MLxtend and how
+it could augment some of the existing tools in your data science&nbsp;toolkit.</p>
+</div>
+
+  </div></div>
+  </div>
+</body>
+</html>

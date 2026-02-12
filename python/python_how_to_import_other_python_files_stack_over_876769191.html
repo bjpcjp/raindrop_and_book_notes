@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Python: How to import other Python files - Stack Overflow</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Python: How to import other Python files - Stack Overflow</h1>
+    <p><strong>URL:</strong> <a href="https://stackoverflow.com/questions/2349991/python-how-to-import-other-python-files">https://stackoverflow.com/questions/2349991/python-how-to-import-other-python-files</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876769191</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="text">
+<h2>There are many ways to import a python file, all with their pros and cons.</h2>
+<p>Don't just hastily pick the first import strategy that works for you or else you'll have to rewrite the codebase later on when you find it doesn't meet your needs.</p>
+<p>I'll start out explaining the easiest example #1, then I'll move toward the most professional and robust example #7</p>
+<p><strong>Example 1, Import a python module with python interpreter:</strong></p>
+<ol>
+<li><p>Put this in /home/el/foo/fox.py:</p>
+<pre><code>def what_does_the_fox_say():
+  print("vixens cry")
+</code></pre>
+</li>
+<li><p>Get into the python interpreter:</p>
+<pre><code>el@apollo:/home/el/foo$ python
+Python 2.7.3 (default, Sep 26 2013, 20:03:06) 
+&gt;&gt;&gt; import fox
+&gt;&gt;&gt; fox.what_does_the_fox_say()
+vixens cry
+&gt;&gt;&gt; 
+</code></pre>
+<p>You imported fox through the python interpreter, invoked the python function <code>what_does_the_fox_say()</code> from within fox.py.</p>
+</li>
+</ol>
+<p><strong>Example 2, Use <code>execfile</code> or (<a href="https://stackoverflow.com/q/6357361/55075"><code>exec</code> in Python 3</a>) in a script to execute the other python file in place:</strong></p>
+<ol>
+<li><p>Put this in /home/el/foo2/mylib.py:</p>
+<pre><code>def moobar():
+  print("hi")
+</code></pre>
+</li>
+<li><p>Put this in /home/el/foo2/main.py:</p>
+<pre><code>execfile("/home/el/foo2/mylib.py")
+moobar()
+</code></pre>
+</li>
+<li><p>run the file:</p>
+<pre><code>el@apollo:/home/el/foo$ python main.py
+hi
+</code></pre>
+<p>The function moobar was imported from mylib.py and made available in main.py</p>
+</li>
+</ol>
+<p><strong>Example 3, Use from ... import ... functionality:</strong></p>
+<ol>
+<li><p>Put this in /home/el/foo3/chekov.py:</p>
+<pre><code>def question():
+  print("where are the nuclear wessels?")
+</code></pre>
+</li>
+<li><p>Put this in /home/el/foo3/main.py:</p>
+<pre><code>from chekov import question
+question()
+</code></pre>
+</li>
+<li><p>Run it like this:</p>
+<pre><code>el@apollo:/home/el/foo3$ python main.py 
+where are the nuclear wessels?
+</code></pre>
+<p>If you defined other functions in chekov.py, they would not be available unless you <code>import *</code></p>
+</li>
+</ol>
+<p><strong>Example 4, Import riaa.py if it's in a different file location from where it is imported</strong></p>
+<ol>
+<li><p>Put this in /home/el/foo4/stuff/riaa.py:</p>
+<pre><code>def watchout():
+  print("computers are transforming into a noose and a yoke for humans")
+</code></pre>
+</li>
+<li><p>Put this in /home/el/foo4/main.py:</p>
+<pre><code>import sys 
+import os
+sys.path.append(os.path.abspath("/home/el/foo4/stuff"))
+from riaa import *
+watchout()
+</code></pre>
+</li>
+<li><p>Run it:</p>
+<pre><code>el@apollo:/home/el/foo4$ python main.py 
+computers are transforming into a noose and a yoke for humans
+</code></pre>
+<p>That imports everything in the foreign file from a different directory.</p>
+</li>
+</ol>
+<p><strong>Example 5, use <code>os.system("python yourfile.py")</code></strong></p>
+<pre><code>import os
+os.system("python yourfile.py")
+</code></pre>
+<p><strong>Example 6, import your file via piggybacking the python startuphook:</strong></p>
+<p><strong>Update:</strong> This example used to work for both python2 and 3, but now only works for python2.  python3 got rid of this user startuphook feature set because it was abused by low-skill python library writers, using it to impolitely inject their code into the global namespace, before all user-defined programs.  If you want this to work for python3, you'll have to get more creative.  If I tell you how to do it, python developers will disable that feature set as well, so you're on your own.</p>
+<p>See: <a href="https://docs.python.org/2/library/user.html" rel="noreferrer">https://docs.python.org/2/library/user.html</a></p>
+<p>Put this code into your home directory in <code>~/.pythonrc.py</code></p>
+<pre><code>class secretclass:
+    def secretmessage(cls, myarg):
+        return myarg + " is if.. up in the sky, the sky"
+    secretmessage = classmethod( secretmessage )
+
+    def skycake(cls):
+        return "cookie and sky pie people can't go up and "
+    skycake = classmethod( skycake )
+</code></pre>
+<p>Put this code into your main.py (can be anywhere):</p>
+<pre><code>import user
+msg = "The only way skycake tates good" 
+msg = user.secretclass.secretmessage(msg)
+msg += user.secretclass.skycake()
+print(msg + " have the sky pie! SKYCAKE!")
+</code></pre>
+<p>Run it, you should get this:</p>
+<pre><code>$ python main.py
+The only way skycake tates good is if.. up in the sky, 
+the skycookie and sky pie people can't go up and  have the sky pie! 
+SKYCAKE!
+</code></pre>
+<p>If you get an error here: <code>ModuleNotFoundError: No module named 'user'</code> then it means you're using python3, startuphooks are disabled there by default.</p>
+<p>Credit for this jist goes to: <a href="https://github.com/docwhat/homedir-examples/blob/master/python-commandline/.pythonrc.py" rel="noreferrer">https://github.com/docwhat/homedir-examples/blob/master/python-commandline/.pythonrc.py</a>  Send along your up-boats.</p>
+<p><strong>Example 7, Most Robust: Import files in python with the bare import command:</strong></p>
+<ol>
+<li><p>Make a new directory <code>/home/el/foo5/</code></p>
+</li>
+<li><p>Make a new directory <code>/home/el/foo5/herp</code></p>
+</li>
+<li><p>Make an empty file named <code>__init__.py</code> under herp:</p>
+<pre><code>el@apollo:/home/el/foo5/herp$ touch __init__.py
+el@apollo:/home/el/foo5/herp$ ls
+__init__.py
+</code></pre>
+</li>
+<li><p>Make a new directory /home/el/foo5/herp/derp</p>
+</li>
+<li><p>Under derp, make another <code>__init__.py</code> file:</p>
+<pre><code>el@apollo:/home/el/foo5/herp/derp$ touch __init__.py
+el@apollo:/home/el/foo5/herp/derp$ ls
+__init__.py
+</code></pre>
+</li>
+<li><p>Under /home/el/foo5/herp/derp make a new file called <code>yolo.py</code> Put this in there:</p>
+<pre><code>def skycake():
+  print("SkyCake evolves to stay just beyond the cognitive reach of " +
+  "the bulk of men. SKYCAKE!!")
+</code></pre>
+</li>
+<li><p>The moment of truth, Make the new file <code>/home/el/foo5/main.py</code>, put this in there;</p>
+<pre><code>from herp.derp.yolo import skycake
+skycake()
+</code></pre>
+</li>
+<li><p>Run it:</p>
+<pre><code>el@apollo:/home/el/foo5$ python main.py
+SkyCake evolves to stay just beyond the cognitive reach of the bulk 
+of men. SKYCAKE!!
+</code></pre>
+<p>The empty <code>__init__.py</code> file communicates to the python interpreter that the developer intends this directory to be an importable package.</p>
+</li>
+</ol>
+<p>If you want to see my post on how to include ALL .py files under a directory see here: <a href="https://stackoverflow.com/a/20753073/445131">https://stackoverflow.com/a/20753073/445131</a></p>
+    </div></div>
+  </div>
+</body>
+</html>

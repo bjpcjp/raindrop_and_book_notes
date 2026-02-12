@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Count Video Frames Using FFmpeg on Linux</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Count Video Frames Using FFmpeg on Linux</h1>
+    <p><strong>URL:</strong> <a href="https://www.tecmint.com/find-video-frames-in-linux/?fbclid=IwY2xjawGbs7pleHRuA2FlbQIxMQABHf05JxaimhtRns_2HyXDxNQnf2IgqGrSr9o4pwvuWkRr5HzgTnUfYTweew_aem_lwqcIIot_d3g526x29peGw">https://www.tecmint.com/find-video-frames-in-linux/?fbclid=IwY2xjawGbs7pleHRuA2FlbQIxMQABHf05JxaimhtRns_2HyXDxNQnf2IgqGrSr9o4pwvuWkRr5HzgTnUfYTweew_aem_lwqcIIot_d3g526x29peGw</a></p>
+    <p><strong>Tags:</strong> linux, video</p>
+    <p><strong>Bookmark ID:</strong> 896308612</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="text">
+			<p>Counting video frames can be useful in various scenarios, such as <a title="Video Editing Software" href="https://www.tecmint.com/best-free-video-editing-softwares-for-linux/" target="_blank" rel="noopener">video editing</a>, quality analysis, or determining frame rates.</p>
+<p><a title="Install FFmpeg in Linux" href="https://www.tecmint.com/install-ffmpeg-in-linux/" target="_blank" rel="noopener">FFmpeg</a>, a popular open-source tool for handling multimedia files, provides an easy way to count video frames.</p>
+<p>This article will walk you through how to use <strong>FFmpeg</strong> on Linux to count video frames.</p>
+<h2>Installing FFmpeg in Linux</h2>
+<p><strong>FFmpeg</strong> installed on your Linux system, if you don’t have it installed, use the following command to install <strong>FFmpeg</strong>.</p>
+<pre>sudo apt install ffmpeg         [On <strong>Debian, Ubuntu and Mint</strong>]
+sudo yum install ffmpeg         [On <strong>RHEL/CentOS/Fedora</strong> and <strong>Rocky/AlmaLinux</strong>]
+sudo emerge -a sys-apps/ffmpeg  [On <strong>Gentoo Linux</strong>]
+sudo apk add ffmpeg             [On <strong>Alpine Linux</strong>]
+sudo pacman -S ffmpeg           [On <strong>Arch Linux</strong>]
+sudo zypper install ffmpeg      [On <strong>OpenSUSE</strong>]    
+sudo pkg install ffmpeg         [On FreeBSD]
+</pre>
+
+<p>Before running <strong>FFmpeg</strong>, make sure you know the exact path to your video file, which could be in your <strong>Downloads</strong> folder, <strong>Videos</strong> directory, or another location.</p>
+<center></center><p>To count frames in a video, use the following command:</p>
+<pre>ffmpeg -i video.mp4 -map 0:v:0 -c copy -f null -
+</pre>
+<p>Explanation of the Command:</p>
+<ul>
+<li><code>ffmpeg</code>: Runs the FFmpeg program.</li>
+<li><code>-i video.mp4</code>: Specifies the input video file.</li>
+<li><code>-map 0:v:0</code>: Maps the first video stream (the main video).</li>
+<li><code>-c copy</code>: Copies the video codec without re-encoding (faster processing).</li>
+<li><code>-f null -</code>: Sends the output to a null sink (discards the output).</li>
+</ul>
+<p><strong>FFmpeg</strong> will display output in the terminal, including statistics for each frame it processes. Near the end of the output, look for a line showing the number of frames processed.</p>
+<pre>frame= 4926 fps=0.0 q=-1.0 Lsize=N/A time=00:03:16.96 bitrate=N/A speed=1.97e+04x
+</pre>
+<p>The <code>frame</code> value represents the total number of frames in the video. For example, if it shows <code>frame= 4926</code>, this means your video has <code>4926</code> frames.</p>
+<p>If you want to save the frame count result to a text file, use the <a title="Linux Grep Command" href="https://www.tecmint.com/12-practical-examples-of-linux-grep-command/" target="_blank" rel="noopener">grep command</a> to filter only the frame information and redirect it to a file.</p>
+<pre>ffmpeg -i video.mp4 -map 0:v:0 -c copy -f null - 2&gt;&amp;1 | grep "frame=" &gt; frame_count.txt
+</pre>
+<p>Open the <code>frame_count.txt</code> file to see the total frame count.</p>
+<pre>cat frame_count.txt
+</pre>
+<p><strong>Sample Output</strong>:</p>
+<pre>frame= 4926 fps=0.0 q=-1.0 Lsize=N/A time=00:03:16.96 bitrate=N/A speed=2.15e+04x    
+</pre>
+<h2>Using FFprobe to Count Video Frames</h2>
+<p><strong>FFprobe</strong>, another tool within the <strong>FFmpeg</strong> suite, can directly extract information about the frames without decoding the video. It’s often faster than using <strong>FFmpeg</strong> for counting frames.</p>
+<p>To count frames with <strong>ffprobe</strong>, use the following command:</p>
+<pre>ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of csv=p=0 video.mp4
+</pre>
+<p>This command will output the total frame count as a single number.</p>
+<pre>4926    
+</pre>
+<h5>Conclusion</h5>
+<p>Counting frames in a video is easy with <strong>FFmpeg</strong> on Linux, and there are a few different ways to do it. The most direct way is to use the <code>-f null -</code> command with <strong>FFmpeg</strong>, but you can also use <strong>FFprobe</strong> for a quicker result.</p>
+		</div></div>
+  </div>
+</body>
+</html>

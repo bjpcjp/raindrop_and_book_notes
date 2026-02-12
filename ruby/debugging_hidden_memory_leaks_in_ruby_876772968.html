@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Debugging hidden memory leaks in Ruby</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Debugging hidden memory leaks in Ruby</h1>
+    <p><strong>URL:</strong> <a href="https://samsaffron.com/archive/2019/10/08/debugging-unmanaged-and-hidden-memory-leaks-in-ruby">https://samsaffron.com/archive/2019/10/08/debugging-unmanaged-and-hidden-memory-leaks-in-ruby</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876772968</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      
+<p>In 2015 I wrote about some of the tooling Ruby provides for <a href="https://samsaffron.com/archive/2015/03/31/debugging-memory-leaks-in-ruby">diagnosing managed memory leaks</a>. The article mostly focused on the easy managed leaks.</p>
+<p>This article covers tools and tricks you can use to attack leaks that you can not easily introspect in Ruby. In particular I will discuss mwrap, heaptrack, iseq_collector and chap.</p>
+<div><a href="https://discuss.samsaffron.com/uploads/default/original/2X/9/921e3b91465bbbb906d535676b1d1b89d154c80f.png" data-download-href="https://discuss.samsaffron.com/uploads/default/921e3b91465bbbb906d535676b1d1b89d154c80f" title="image"><img src="data:application/octet-stream;base64," alt="image" data-base62-sha1="kQCu0aBea6Wzy5u52K6j9Bm7lin" width="690" height="286" srcset="data:application/octet-stream;base64,, data:application/octet-stream;base64, 1.5x, data:application/octet-stream;base64, 2x" data-dominant-color="453F3D"></a></div>
+<h3>
+<a name="an-unmanaged-memory-leak-1" href="#an-unmanaged-memory-leak-1"></a>An unmanaged memory leak</h3>
+<p>This little program leaks memory by calling malloc directly. It starts off consuming 16MB and finishes off consuming 118MB of RSS. The code allocates 100k blocks of 1024 bytes and de-allocates 50 thousand of them.</p>
+<pre><code>
+require 'fiddle'
+require 'objspace'
+
+def usage
+  rss = `ps -p #{Process.pid} -o rss -h`.strip.to_i * 1024
+  puts "RSS: #{rss / 1024} ObjectSpace size #{ObjectSpace.memsize_of_all / 1024}"
+end
+
+def leak_memory
+  pointers = []
+  100_000.times do
+    i = Fiddle.malloc(1024)
+    pointers &lt;&lt; i
+  end
+
+  50_000.times do
+    Fiddle.free(pointers.pop)
+  end
+end
+
+usage
+# RSS: 16044 ObjectSpace size 2817
+
+leak_memory
+
+usage
+# RSS: 118296 ObjectSpace size 3374
+
+</code></pre>
+<p>Even though our RSS is 118MB, our Ruby object space is only aware of 3MB, introspection wise we have very little visibility of this very large memory leak.</p>
+<p>A real world example of such a leak is <a href="http://www.be9.io/2015/09/21/memory-leak/">documented by Oleg Dashevskii</a>, it is an excellent article worth reading.</p>
+<h3>
+<a name="enter-mwrap-2" href="#enter-mwrap-2"></a>Enter Mwrap</h3>
+<p><a href="https://80x24.org/mwrap/README.html">Mwrap</a> is a memory profiler for Ruby that keeps track of all allocations by intercepting malloc and family calls. It does so by intercepting the real calls that allocate and free memory using  <a href="https://blog.jessfraz.com/post/ld_preload/">LD_PRELOAD</a>. It uses <a href="https://liburcu.org/">liburcu</a> for bookkeeping and is able to keep track of allocation and de-allocation counts per call-site for both C code and Ruby. It is reasonably lightweight and will approximately double the RSS for the program being profiled and approximately halve the speed.</p>
+<p>It differs from many other libraries in that it is very lightweight and Ruby aware. It track locations in Ruby files and is not limited to C level backtrackes valgrind+masif and similar profilers show. This makes isolating actual sources of an issue much simpler.</p>
+<p>Usage involves running an application via the mwrap wrapper, it inject the LD_PRELOAD environment and execs the Ruby binary.</p>
+<p>Let’s append mwrap to our above script:</p>
+<pre><code>require 'mwrap'
+
+def report_leaks
+  results = []
+  Mwrap.each do |location, total, allocations, frees, age_total, max_lifespan|
+    results &lt;&lt; [location, ((total / allocations.to_f) * (allocations - frees)), allocations, frees]
+  end
+  results.sort! do |(_, growth_a), (_, growth_b)|
+    growth_b &lt;=&gt; growth_a
+  end
+
+  results[0..20].each do |location, growth, allocations, frees|
+    next if growth == 0
+    puts "#{location} growth: #{growth.to_i} allocs/frees (#{allocations}/#{frees})"
+  end
+end
+
+GC.start
+Mwrap.clear
+
+leak_memory
+
+GC.start
+
+# Don't track allocations for this block
+Mwrap.quiet do
+  report_leaks
+end
+
+Mwrap.dump
+</code></pre>
+<p>Next we will launch our script with the mwrap wrapper</p>
+<pre><code>% gem install mwrap
+% mwrap ruby leak.rb
+leak.rb:12 growth: 51200000 allocs/frees (100000/50000)
+leak.rb:51 growth: 4008 allocs/frees (1/0)
+</code></pre>
+<p>Mwrap correctly detected the leak in the above script (50,000 * 1024). Not only it detected it, it isolated the actual line in the script (<code> i = Fiddle.malloc(1024)</code> ) which caused the leak. It correctly accounted for the <code>Fiddle.free</code> calls.</p>
+<p>It is important to note we are dealing with estimates here, mwrap keeps track of <strong>total</strong> memory allocated at the call-site and then keeps track of de-allocations. However, if you have a single call-site that is allocating memory blocks of different sizes the results can be skewed, we have access to the estimate: <code>((total / allocations) * (allocations - frees))</code></p>
+<p>Additionally, to make tracking down leaks easier mwrap keeps track of <code>age_total</code> which is the sum of the lifespans of every object that was freed, and <code>max_lifespan</code> which is the lifespan of the oldest object in the call-site. If <code>age_total / frees</code> is high, it means the memory growth survives many garbage collections.</p>
+<p>Mwrap has a few helpers that can help you reduce noise. <code>Mwrap.clear</code> will clear all the internal storage. <code>Mwrap.quiet {}</code> will suppress Mwrap tracking for a block of code.</p>
+<p>Another neat feature Mwrap has is that it keeps track of total allocated bytes and total freed bytes. If we remove the clear from our script and run:</p>
+<pre><code>usage
+puts "Tracked size: #{(Mwrap.total_bytes_allocated - Mwrap.total_bytes_freed) / 1024}"
+
+# RSS: 130804 ObjectSpace size 3032
+# Tracked size: 91691
+</code></pre>
+<p>This is very interesting cause even though our RSS is 130MB, Mwrap is only seeing 91MB, this demonstrates we have bloated our process. Running without mwrap shows that the process would normally be 118MB so in this simple case accounting is a mere 12MB, the pattern of allocation / deallocation caused fragmentation. Knowing about fragmentation can be quite powerful, in some cases with untuned glibc malloc processes can fragment so much that a very large amount memory consumed in RSS is actually free.</p>
+<h3>
+<a name="could-mwrap-isolate-the-old-redcarpet-leak-3" href="#could-mwrap-isolate-the-old-redcarpet-leak-3"></a>Could Mwrap isolate the old redcarpet leak?</h3>
+<p>In <a href="http://www.be9.io/2015/09/21/memory-leak/">Oleg’s article</a> he discussed a very thorough way he isolated a very subtle leak in redcarpet. There is lots of detail there. It is critical that you <strong>have instrumentation</strong>. If you are not graphing process RSS you have very little chance at attacking any memory leak.</p>
+<p>Let’s step into a time machine and demonstrate how much easier it can be to use Mwrap for such leaks.</p>
+<pre><code>def red_carpet_leak
+  100_000.times do
+
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
+    markdown.render("hi")
+  end
+end
+
+GC.start
+Mwrap.clear
+
+red_carpet_leak
+
+GC.start
+
+# Don't track allocations for this block
+Mwrap.quiet do
+  report_leaks
+end
+</code></pre>
+<p>Redcarpet version 3.3.2</p>
+<pre><code>redcarpet.rb:51 growth: 22724224 allocs/frees (500048/400028)
+redcarpet.rb:62 growth: 4008 allocs/frees (1/0)
+redcarpet.rb:52 growth: 634 allocs/frees (600007/600000)
+</code></pre>
+<p>Redcarpet version 3.5.0</p>
+<pre><code>redcarpet.rb:51 growth: 4433 allocs/frees (600045/600022)
+redcarpet.rb:52 growth: 453 allocs/frees (600005/600000)
+</code></pre>
+<p>Provided you can afford for a process to run at half speed simply re-launching it in production with Mwrap and logging Mwrap output once in a while to a file can identify a broad spectrum of memory leaks.</p>
+<h3>
+<a name="a-mysterious-memory-leak-4" href="#a-mysterious-memory-leak-4"></a>A mysterious memory leak</h3>
+<p>Recently we upgraded Rails to version 6 at Discourse. Overall the experience was extremely positive, performance remained more or less the same, Rails 6 includes some very nice features we get to use (like <a href="https://medium.com/@fxn/zeitwerk-a-new-code-loader-for-ruby-ae7895977e73">Zeitwerk</a>).</p>
+<p>Rails amended the way templates are rendered which required a few backwards compatible changes.</p>
+<p>Fast forward a few days after our upgrade and we noticed RSS for our Sidekiq job runner was climbing.</p>
+<p>Mwrap kept on reporting a sharp incline in memory due to memory being allocated at:</p>
+
+
+<p>We initially found this very confusing and kept thinking to ourselves, why is Mwrap complaining? Could it be broken?</p>
+<p>During the period where memory was climbing the Ruby heaps were not growing in size in a significant manner.</p>
+<div><a href="https://discuss.samsaffron.com/uploads/default/original/2X/c/c1926ed0e9422d702e41c9e86e6d579d21a1d0ca.png" data-download-href="https://discuss.samsaffron.com/uploads/default/c1926ed0e9422d702e41c9e86e6d579d21a1d0ca" title="image"><img src="data:application/octet-stream;base64," alt="image" data-base62-sha1="rCpSJqmRXgVaxNUrv8Wnw3moXO2" width="690" height="574" srcset="data:application/octet-stream;base64,, data:application/octet-stream;base64, 1.5x, data:application/octet-stream;base64, 2x" data-dominant-color="292B2A"></a></div>
+<p>2 million slots in the heap are a meager 78MB (40 bytes per slot), strings and arrays can take up more space, but this simply did not explain the enormous memory usage we were seeing. This was confirmed when I ran <code>rbtrace -p SIDEKIQ_PID -e ObjectSpace.memsize_of_all</code>.</p>
+<p>Where did all the memory go?</p>
+<h3>
+<a name="heaptrack-5" href="#heaptrack-5"></a>Heaptrack</h3>
+<p><a href="https://github.com/KDE/heaptrack">Heaptrack</a> is a memory heap profiler for Linux.</p>
+<p>Milian Wolff does a great job explaining what it is and how it came to be <a href="https://milianw.de/blog/heaptrack-a-heap-memory-profiler-for-linux.html">on his blog</a>. He also has several talks about it (<a href="https://www.youtube.com/watch?v=myDWLPBiHn0">1</a>, <a href="https://www.youtube.com/watch?v=YB0QoWI-g8E">2</a>, <a href="https://www.youtube.com/watch?v=-8cOWt7lvUQ">3</a>)</p>
+<p>In essence it is an incredibly efficient native heap profiler that gathers backtraces from a profiled applications using <a href="https://www.nongnu.org/libunwind/">libunwind</a>.</p>
+<p>It is significantly faster than <a href="http://valgrind.org/docs/manual/ms-manual.html">Valgrind/Massif</a> and has a feature that makes is much more suitable for <strong>temporary</strong> production profiling.</p>
+<p>It can attach to an already running process!</p>
+<p>As with most heap profilers, when every single malloc family function is called it needs to do some accounting. This accounting certainly slows down the process a bit.</p>
+<p>The design, in my mind, is  the best possible design for this type of program. It intercepts using an LD_PRELOAD trick or a <a href="https://milianw.de/blog/heaptrack-attaching-to-running-process">GDB trick</a> to load up the profiler. It ships the data out of the profiled process as quickly as possibly using a <a href="https://linux.die.net/man/3/mkfifo">FIFO special file</a>. The wrapper <a href="https://github.com/KDE/heaptrack/blob/983cc35dd000a8219e0d5713ab0a0d298af59c97/src/track/heaptrack.sh.cmake"><code>heaptrack</code></a> is a simple shell script, something that makes troubleshooting simple. A second process runs to read from the FIFO and compress the tracking data on the fly. Since heaptrack operates in “chunks” you can start looking at the profiled information seconds after you start profiling, mid way through a profiling session. Simply copy the profile file to another location and run the heaptrack gui.</p>
+<p>This <a href="https://gitlab.com/gitlab-org/gitlab-foss/issues/49702">ticket at GitLab</a> alerted me to the possibility of running heaptrack. Since they were able to run it, I knew it was a possibility for me.</p>
+<p>We run our application in a container, I needed to relaunch our container with <code>--cap-add=SYS_PTRACE</code> which allows GDB to use <a href="https://en.wikipedia.org/wiki/Ptrace">ptrace</a> which we needed so heaptrack can inject itself. Additionally, I needed a <a href="https://github.com/KDE/heaptrack/pull/22">small hack</a> on the shell file to allow <code>root</code> to profile a non <code>root</code> process (we run our Discourse application under a restricted account in the container).</p>
+<p>Once this was done it was as simple as running <code>heaptrack -p PID</code> and waiting for results to stream in.</p>
+<p>The UX of heaptrack is fantastic and extremely rich, it was very easy to follow what was happening with my memory leak.</p>
+<div><a href="https://discuss.samsaffron.com/uploads/default/original/2X/6/692199b4589d173c373edccea8c0abd0400f72e0.png" data-download-href="https://discuss.samsaffron.com/uploads/default/692199b4589d173c373edccea8c0abd0400f72e0" title="image"><img src="data:application/octet-stream;base64," alt="image" data-base62-sha1="f027CzVKR9bfbrWW04uJ9FOpBCw" width="690" height="404" srcset="data:application/octet-stream;base64,, data:application/octet-stream;base64, 1.5x, data:application/octet-stream;base64, 2x" data-dominant-color="E3E1CA"></a></div>
+<p>At a top level I could see two jumps, one was due to <code>cppjieba</code> and the other was originating from Ruby <code>objspace_xmalloc0</code></p>
+<p>I knew about <a href="https://github.com/fantasticfears/cppjieba_rb">cppjieba</a>, segmenting Chinese is expensive, large dictionaries are needed, it was not leaking.</p>
+<p>But why was ruby allocating memory and further more, not telling me about it?</p>
+<div><a href="https://discuss.samsaffron.com/uploads/default/original/2X/2/2e4109dc8c97cc11cc6e478b65623c1f92eed8b7.png" data-download-href="https://discuss.samsaffron.com/uploads/default/2e4109dc8c97cc11cc6e478b65623c1f92eed8b7" title="image"><img src="data:application/octet-stream;base64," alt="image" data-base62-sha1="6Bbj64hwTXdVhJ3zkwqeej2nfJd" width="690" height="325" srcset="data:application/octet-stream;base64,, data:application/octet-stream;base64, 1.5x, data:application/octet-stream;base64, 2x" data-dominant-color="E1E3E4"></a></div>
+<p>The largest increase was coming from <code>iseq_set_sequence</code> in <code>compile.c</code>. So it follows that we were leaking instruction sequences.</p>
+<p>This made the leak Mwrap detected make sense. <code>mod.module_eval(source, identifier, 0)</code> was causing a leak cause it was creating instruction sequences that were never being removed.</p>
+<p>In retrospect if I carefully analyzed a heap dump from Ruby I should have seen all these IMEMOs, cause they are included in heap dumps, just invisible from in-process introspection.</p>
+<p>From here on debugging was pretty simple, I tracked down all calls to the module eval and dumped out what it was evaluating. I discovered we kept on appending methods over and over to a big class.</p>
+<p>Simplified, this is the bug we were seeing:</p>
+<pre><code>require 'securerandom'
+module BigModule; end
+
+def leak_methods
+  10_000.times do
+    method = "def _#{SecureRandom.hex}; #{"sleep;" * 100}; end"
+    BigModule.module_eval(method)
+  end
+end
+
+usage
+# RSS: 16164 ObjectSpace size 2869
+
+leak_methods
+
+usage
+# RSS: 123096 ObjectSpace size 5583
+</code></pre>
+<p>Ruby has a class to contain instruction sequences called: <code>RubyVM::InstructionSequence</code>. However, Ruby is lazy about creating these wrapping objects, cause it is inefficient to have them around unless needed.</p>
+<p>Interestingly <a href="http://www.atdot.net/~ko1/">Koichi Sasada</a> created the <a href="https://github.com/ko1/iseq_collector">iseq_collector</a> gem. If we add this snippet we can now find our hidden memory:</p>
+<pre><code>require 'iseq_collector'
+puts "#{ObjectSpace.memsize_of_all_iseq / 1024}"
+# 98747
+</code></pre>
+<p><code>ObjectSpace.memsize_of_all_iseq</code> will materialize every instruction sequence, which can introduce slight process memory growth and slightly more GC work.</p>
+<p>If we, for example, count the number of ISEQs before and after running the collector we will notice that after running <code>ObjectSpace.memsize_of_all_iseq</code> our <code>RubyVM::InstructionSequence</code> class count grows from 0 to 11128 in the example above:</p>
+<pre><code>def count_iseqs
+  ObjectSpace.each_object(RubyVM::InstructionSequence).count
+end
+</code></pre>
+<p>These wrappers will stay around for the life of a method and need to be visited when a full GC runs.</p>
+<p>For those curious, our fix to our issue was reusing the class responsible for rendering email templates. (<a href="https://review.discourse.org/t/perf-reuse-renderer-when-rendering-email-templates/6010">fix 1</a>, <a href="https://review.discourse.org/t/fix-during-concurrent-emails-generation-renderer-should-not-be-reused/6097">fix 2</a>)</p>
+<h3>
+<a name="chap-6" href="#chap-6"></a>chap</h3>
+<p>During my debugging I came across a very interesting tool.</p>
+<p>Tim Boddy, extracted an internal tool used at VMWare for analysis of memory leaks and open sourced it a few years ago. The only video I can find about it <a href="https://www.youtube.com/watch?v=EZ2n3kGtVDk">is here</a>. Unlike most tools out there this tool has zero impact on a running process. It can simply run against core dump files, as long as the allocator being used is glibc (no support for jemalloc/tcmalloc etc)</p>
+<p>The initial leak I had can be very easily detected using chap. Not many distros include a binary for chap, but you can easily <a href="https://github.com/vmware/chap">build it from source</a>. It is very actively maintained.</p>
+<pre><code># 444098 is the `Process.pid` of the leaking process I had
+sudo gcore -p 444098
+
+chap core.444098
+chap&gt; summarize leaked
+Unsigned allocations have 49974 instances taking 0x312f1b0(51,573,168) bytes.
+   Unsigned allocations of size 0x408 have 49974 instances taking 0x312f1b0(51,573,168) bytes.
+49974 allocations use 0x312f1b0 (51,573,168) bytes.
+
+chap&gt; list leaked
+...
+Used allocation at 562ca267cdb0 of size 408
+Used allocation at 562ca267d1c0 of size 408
+Used allocation at 562ca267d5d0 of size 408
+...
+
+
+chap&gt; summarize anchored 
+....
+Signature 7fbe5caa0500 has 1 instances taking 0xc8(200) bytes.
+23916 allocations use 0x2ad7500 (44,922,112) bytes.
+</code></pre>
+<p>Chap can use signatures to find where various memory is allocated and can complement GDB. When it comes to debugging Ruby it can do a great job helping you finding out what the actual memory is in use for a process. <code>summarize used</code> gives the actual memory, sometimes glibc malloc can fragment so much that the <code>used</code> number is enormously different to the actual RSS. See: <a href="https://bugs.ruby-lang.org/issues/14759">Feature #14759: [PATCH] set M_ARENA_MAX for glibc malloc - Ruby master - Ruby Issue Tracking System</a> for more discussion. Chap can correctly account for all memory usage and provide deep analysis around memory allocation behaviors.</p>
+<p>Additionally chap can be integrated into build pipelines to automatically detect leaks and flag builds that are leaking.</p>
+<h3>
+<a name="future-work-7" href="#future-work-7"></a>Future work</h3>
+<p>This round of debugging did prompt me to raise a few issues with our supporting tool-sets:</p>
+<ul>
+<li>
+<p>I would love to see heaptrack support grabbing call-stack frames from Ruby. Milian is interested in this problem as well: <a href="https://bugs.kde.org/show_bug.cgi?id=412929">412929 – Can we grab a frame from Ruby land?</a></p>
+</li>
+<li>
+<p>I would love Ruby to support richer introspection: <a href="https://bugs.ruby-lang.org/issues/16245">Feature #16245: Add interfaces to count and measure size all IMEMO objects - Ruby master - Ruby Issue Tracking System</a></p>
+</li>
+<li>
+<p>I would love to see Mwrap be a little bit easier to use in production. <a href="https://80x24.org/mwrap-public/CAAtdryNmPFAEDhf9ctEiCsGioX50h9JzOn4CusU76th+Oj_7vw@mail.gmail.com/T/#t">Tracked here</a>.</p>
+</li>
+</ul>
+<h3>
+<a name="summary-8" href="#summary-8"></a>Summary</h3>
+<p>Our existing tooling for debugging very complex memory leaks in 2019 is vastly superior to what we had 4 years ago! Mwrap, heaptrack and chap provide us with very powerful tools for attacking memory related issues both in development and production.</p>
+<p>If you are hunting a simple memory leak in Ruby, I recommend <a href="https://samsaffron.com/archive/2015/03/31/debugging-memory-leaks-in-ruby">my earlier article</a> from 2015, most of it still holds.</p>
+<p>I hope that next time you are stuck debugging a complex native memory leak you have an easier time!</p>
+<p>If you have any interesting battle stories or tools I have forgotten to mention you would like to share, please post a comment!</p>
+	</div></div>
+  </div>
+</body>
+</html>

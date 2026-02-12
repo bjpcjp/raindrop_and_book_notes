@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using Google Analytics with Angular</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using Google Analytics with Angular</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/jordanirabor/using-google-analytics-with-angular-930">https://dev.to/jordanirabor/using-google-analytics-with-angular-930</a></p>
+    <p><strong>Tags:</strong> analytics, angularjs</p>
+    <p><strong>Bookmark ID:</strong> 876769082</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="8853" id="article-body">
+                <p><a href="https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fd2mxuefqeaa7sj.cloudfront.net%2Fs_8B805E743D0128ACF618A871FEBA5C99CBD620659DA693C8FED388C4F0EC3EC1_1507892590270_Featured%2BImage%2B1.png"><img src="https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fd2mxuefqeaa7sj.cloudfront.net%2Fs_8B805E743D0128ACF618A871FEBA5C99CBD620659DA693C8FED388C4F0EC3EC1_1507892590270_Featured%2BImage%2B1.png" loading="lazy"></a></p>
+
+<p>Google Analytics is known to be very efficient and easy to integrate into web applications. Once installed, it will send detailed information about the navigation history of visitors on the website.</p>
+
+<p>Installing Google Analytics for traditional web applications is as easy as copying and pasting the JavaScript tracking snippet provided on registration of a new property. The only setup necessary is adding the snippet to the <code>&lt;head&gt;</code> tag of the <code>HTML</code> files to be tracked and the entire navigation history of each visitor will be updated in real time.</p>
+
+<p>For SPAs, this is not the case, setting up Google Analytics requires a little more effort.</p>
+
+<p>Do not get lost in the comfort of pasting snippets around because the era of single page applications is forcing developers and non-developers alike to adopt new approaches towards implementing web analytics services on their applications.</p>
+
+<h2>
+  <a name="why-are-spas-so-different" href="#why-are-spas-so-different">
+  </a>
+  Why are SPAs so different?
+</h2>
+
+<p>The JavaScript tracking snippet works well with traditional web applications because whenever a new page is loaded, the snippet is freshly run; hence Google Analytics information is updated for that page. For a SPA where no actual full-page request is made, the <code>analytics.js</code> code will run only once and user navigation information will not be tracked correctly.</p>
+
+<p>In this article, we will write our application to inform Google Analytics on the successful load of every new page and send the correct page information.</p>
+
+<p>Angular is an awesome JavaScript framework for developing single page applications; it has a robust routing framework called the UI-Router that is responsible for updating the view based on the state of the application, this article will mainly discuss how Angular applications can be intentionally written to support Google Analytics services.</p>
+
+<p>The source code is available <a href="https://github.com/Jordanirabor/Using-Google-Analytics-with-Angular" target="_blank" rel="noopener noreferrer">here</a> on GitHub.</p>
+
+<p>Below is a step by step guide:</p>
+
+<h2>
+  <a name="setting-up-google-analytics" href="#setting-up-google-analytics">
+  </a>
+  Setting up Google Analytics
+</h2>
+
+<p>We begin by setting up a Google Analytics account and registering a property <a href="https://analytics.google.com/analytics/" target="_blank" rel="noopener noreferrer">here</a>.</p>
+
+<p>If you have Angular and other modules installed on your local machine, be sure to have the UI-Router module also available because we will be injecting it as a module dependency when initializing our app's main module.</p>
+
+<p>If you'd rather use Angular and other modules from another computer, you can get Angular on this <a href="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js" target="_blank" rel="noopener noreferrer">URL</a> and the UI-Router module on this <a href="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.3/angular-ui-router.js" target="_blank" rel="noopener noreferrer">URL</a> (For the sake of this article, I will be referencing Angular and its modules from a CDN).</p>
+
+<h2>
+  <a name="setting-up-the-raw-head-endraw-tag" href="#setting-up-the-raw-head-endraw-tag">
+  </a>
+  Setting up the <code>head</code> tag
+</h2>
+
+<p>Copy and paste the JavaScript tracking snippet with its unique tracking ID just above the closing <code>&lt;/head&gt;</code> tag.</p>
+
+<p>Now comment out the two lines of code that look like this:<br>
+</p>
+
+<div>
+<pre><code>ga('create', 'UA-XXXXX-X', 'auto');
+
+ga('send', 'pageview');
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Where <code>UA-XXXXX-X</code> is your unique tracking ID.</p>
+
+<p>We are commenting these lines out right now because we are building a SPA and not a traditional application, we'd later wrap them in the <code>run</code> block of our Angular script to ensure that when our app begins running, they will only be triggered based on certain changes in the application's state.</p>
+
+<p>Following the above instructions, we should have a <code>&lt;/head&gt;</code> tag looking similar to this:<br>
+</p>
+
+<div>
+<pre><code><span>&lt;html&gt;</span>
+<span>&lt;head&gt;</span>
+<span>&lt;script </span><span>src=</span><span>"https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"</span><span>&gt;&lt;/script&gt;</span>
+<span>&lt;script </span><span>src=</span><span>"https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.3/angular-ui-router.js"</span><span>&gt;&lt;/script&gt;</span>
+<span>&lt;script&gt;</span>
+  <span>(</span><span>function</span><span>(</span><span>i</span><span>,</span><span>s</span><span>,</span><span>o</span><span>,</span><span>g</span><span>,</span><span>r</span><span>,</span><span>a</span><span>,</span><span>m</span><span>){</span><span>i</span><span>[</span><span>'</span><span>GoogleAnalyticsObject</span><span>'</span><span>]</span><span>=</span><span>r</span><span>;</span><span>i</span><span>[</span><span>r</span><span>]</span><span>=</span><span>i</span><span>[</span><span>r</span><span>]</span><span>||</span><span>function</span><span>(){</span>
+  <span>(</span><span>i</span><span>[</span><span>r</span><span>].</span><span>q</span><span>=</span><span>i</span><span>[</span><span>r</span><span>].</span><span>q</span><span>||</span><span>[]).</span><span>push</span><span>(</span><span>arguments</span><span>)},</span><span>i</span><span>[</span><span>r</span><span>].</span><span>l</span><span>=</span><span>1</span><span>*</span><span>new</span> <span>Date</span><span>();</span><span>a</span><span>=</span><span>s</span><span>.</span><span>createElement</span><span>(</span><span>o</span><span>),</span>
+  <span>m</span><span>=</span><span>s</span><span>.</span><span>getElementsByTagName</span><span>(</span><span>o</span><span>)[</span><span>0</span><span>];</span><span>a</span><span>.</span><span>async</span><span>=</span><span>1</span><span>;</span><span>a</span><span>.</span><span>src</span><span>=</span><span>g</span><span>;</span><span>m</span><span>.</span><span>parentNode</span><span>.</span><span>insertBefore</span><span>(</span><span>a</span><span>,</span><span>m</span><span>)</span>
+  <span>})(</span><span>window</span><span>,</span><span>document</span><span>,</span><span>'</span><span>script</span><span>'</span><span>,</span><span>'</span><span>https://www.google-analytics.com/analytics.js</span><span>'</span><span>,</span><span>'</span><span>ga</span><span>'</span><span>);</span>
+<span>&lt;/script&gt;</span>
+<span>&lt;/head&gt;</span>
+<span>&lt;/html&gt;</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="setting-up-the-body-as-a-view-container" href="#setting-up-the-body-as-a-view-container">
+  </a>
+  Setting up the body as a view container
+</h2>
+
+<p>First things first, let's understand how the view section of a SPA works; since the entire application behaves as if it is a single page, Angular loads the content of other requested pages into the view section. We can think of this view section as a container within the main application. To help Angular indentify the view section in our markup, we assign the <code>ui-view</code> directive of the UI-Router module to a div tag, just like this:<br>
+</p>
+
+<div>
+<pre><code><span>&lt;body</span> <span>ng-app=</span><span>"myApp"</span><span>&gt;</span>
+<span>&lt;div</span> <span>ui-view</span><span>&gt;</span>
+<span>&lt;a</span> <span>ui-sref=</span><span>"first"</span><span>&gt;</span>This is the first page.<span>&lt;/a&gt;</span>
+<span>&lt;a</span> <span>ui-sref=</span><span>"second"</span><span>&gt;</span>This is the second page.<span>&lt;/a&gt;</span>
+<span>&lt;a</span> <span>ui-sref=</span><span>"third"</span><span>&gt;</span>This is the third page.<span>&lt;/a&gt;</span>
+<span>&lt;h1&gt;</span>{{ title }}<span>&lt;/h1&gt;</span>
+<span>&lt;/div&gt;</span>
+<span>&lt;/body&gt;</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This <code>body</code> section above looks simple but it defines the basic structure for defining the Angular app and the view section.</p>
+
+<h2>
+  <a name="configuring-the-application" href="#configuring-the-application">
+  </a>
+  Configuring the application
+</h2>
+
+<p>We begin by initializing the main Angular module and injecting <code>UI-Router</code> as a module dependency.<br>
+</p>
+
+<div>
+<pre><code><span>var</span> <span>app</span> <span>=</span> <span>angular</span><span>.</span><span>module</span><span>(</span><span>"</span><span>myApp</span><span>"</span><span>,</span> <span>[</span><span>'</span><span>ui.router</span><span>'</span><span>]);</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Next we write the configuration block of our application and inject all the providers we will be needing for this application, the result looks like this:<br>
+</p>
+
+<div>
+<pre><code><span>app</span><span>.</span><span>config</span><span>([</span><span>'</span><span>$urlRouterProvider</span><span>'</span><span>,</span> <span>'</span><span>$stateProvider</span><span>'</span><span>,</span> <span>function</span><span>(</span><span>$urlRouterProvider</span><span>,</span> <span>$stateProvider</span><span>){</span>
+      <span>$urlRouterProvider</span><span>.</span><span>otherwise</span><span>(</span><span>'</span><span>/</span><span>'</span><span>);</span>
+      <span>$stateProvider</span>
+      <span>.</span><span>state</span><span>(</span><span>'</span><span>index</span><span>'</span><span>,</span> <span>{</span>
+            <span>url</span><span>:</span> <span>'</span><span>/</span><span>'</span><span>,</span>
+            <span>templateUrl</span><span>:</span> <span>'</span><span>index.html</span><span>'</span><span>,</span>
+            <span>controller</span><span>:</span> <span>function</span><span>(</span><span>$scope</span><span>){</span>
+            <span>$scope</span><span>.</span><span>title</span> <span>=</span> <span>'</span><span>I am the root page, ergo, submit thyself to me.</span><span>'</span>
+    <span>}</span>
+  <span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Again, this is just a simple demonstration but it defines how an actual application should be set up.</p>
+
+<p>Lastly, we write the <code>run</code> block of the Angular app to ensure that our application sends data to Google Analytics whenever a new page is loaded into the view section. We do this by injecting some services and using their methods during the run phase of our app's lifecycle.</p>
+
+<p>We inject the <code>$location</code> service and it will help us determine the current location of the browser using its <code>path()</code> method.</p>
+
+<p>Remember the two lines of code we commented out above? We'll be needing them very soon since we've gotten to the run block we spoke about earlier.</p>
+
+<p>Next, we inject the global <code>$window</code> service and what this will do for us is:- Trigger the ga's (google analytics object) methods we commented out in the <code>&lt;/head&gt;</code> of our program.</p>
+
+<p>Next, we inject the <code>$transitions</code> service that will help us determine when a user has made or is making a transition to a new state.</p>
+
+<p>In the end, we combine all these services and their methods to jointly instruct Angular to send data (containing information about the browsers current location) to Google Analytics when a transition to a new state is successful.</p>
+
+<p>Here is what the code for the <code>run</code> block looks like:<br>
+</p>
+
+<div>
+<pre><code><span>app</span><span>.</span><span>run</span><span>([</span><span>'</span><span>$location</span><span>'</span><span>,</span> <span>'</span><span>$window</span><span>'</span><span>,</span><span>'</span><span>$transitions</span><span>'</span><span>,</span> <span>function</span><span>(</span><span>$location</span><span>,</span> <span>$window</span><span>,</span> <span>$transitions</span><span>){</span>
+        <span>$window</span><span>.</span><span>ga</span><span>(</span><span>'</span><span>create</span><span>'</span><span>,</span> <span>'</span><span>UA-XXXXX-X</span><span>'</span><span>,</span> <span>'</span><span>auto</span><span>'</span><span>);</span>
+        <span>$transitions</span><span>.</span><span>onSuccess</span><span>({},</span> <span>function</span><span>(){</span>
+              <span>$window</span><span>.</span><span>ga</span><span>(</span><span>'</span><span>send</span><span>'</span><span>,</span> <span>'</span><span>pageview</span><span>'</span><span>,</span> <span>$location</span><span>.</span><span>path</span><span>());</span>
+        <span>});</span>
+<span>}])</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Awesome, now for every transition to a new state in our application, we'd get an update on our Google Analytics dashboard. On my web browser, I have visited my application and have navigated to a view that has a URL of <code>/first</code>.</p>
+
+<p>This is the immediate update on my Google Analytics dashboard:</p>
+
+<p><a href="https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fcdn.scotch.io%2F40410%2FPVN2tZVwRyuJOuiuJinf_track.png"><img src="https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fcdn.scotch.io%2F40410%2FPVN2tZVwRyuJOuiuJinf_track.png" loading="lazy"></a></p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>Just like that, our application is now being tracked correctly by Google Analytics, we get a real-time update on the navigation history of visitors to our web application. It requires just a little modification but goes a long way in ensuring that we stay in control and know our users!</p>
+
+
+            </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Unveiling the Smooth Operator: Rolling Averages in R</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Unveiling the Smooth Operator: Rolling Averages in R</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/2024/01/unveiling-the-smooth-operator-rolling-averages-in-r">https://www.r-bloggers.com/2024/01/unveiling-the-smooth-operator-rolling-averages-in-r</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876793743</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					<!-- 
+<div style="min-height: 30px;">
+[social4i size="small" align="align-left"]
+</div>
+-->
+
+
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.9-->
+
+	 
+
+
+
+
+<section id="introduction">
+<h2>Introduction</h2>
+<p>Ever felt those data points were a bit too jittery? Smoothing out trends and revealing underlying patterns is a breeze with rolling averages in R. Ready to roll? Let’s dive in!</p>
+</section>
+<section id="rolling-with-the-zoo">
+<h2>Rolling with the ‘zoo’</h2>
+<p>Meet the ‘zoo’ package, your trusty companion for time series data wrangling. It’s got a handy function called ‘rollmean’ that handles those rolling averages with ease.</p>
+</section>
+<section id="installing-and-loading">
+<h2>Installing and Loading</h2>
+<div>
+<pre># install.packages("zoo")  # Grab it if you haven't already
+library(zoo)  # Bring it into your workspace</pre>
+</div>
+</section>
+<section id="example">
+<h2>Example</h2>
+<section id="creating-a-simple-time-series">
+<h2 data-anchor-id="creating-a-simple-time-series">Creating a Simple Time Series</h2>
+<div>
+<pre>set.seed(123)  # Set seed for reproducibility (optional
+# Let's imagine some daily sales data
+sales &lt;- trunc(runif(112, min = 100, max = 500))  # Generate some random sales
+days &lt;- as.Date(1:112, origin = "2022-12-31")  # Add some dates!
+data_zoo &lt;- zoo(sales, days)  # Convert to a zoo object</pre>
+</div>
+</section>
+<section id="calculating-rolling-averages">
+<h2 data-anchor-id="calculating-rolling-averages">Calculating Rolling Averages</h2>
+<div>
+<pre># Say we want a 7-day rolling average:
+rolling_avg7 &lt;- rollmean(data_zoo, k = 7)
+rolling_avg7_left &lt;- rollmean(data_zoo, k = 7, align = "left")
+rolling_avg7_right &lt;- rollmean(data_zoo, k = 7, align = "right")
+
+# How about a 28-day one?
+rolling_avg28 &lt;- rollmean(data_zoo, k = 28)
+rolling_avg28_left &lt;- rollmean(data_zoo, k = 28, align = "left")
+rolling_avg28_right &lt;- rollmean(data_zoo, k = 28, align = "right")</pre>
+</div>
+</section>
+<section id="visualizing-the-smoothness">
+<h2 data-anchor-id="visualizing-the-smoothness">Visualizing the Smoothness</h2>
+<div>
+<pre>plot(data_zoo, type = "l", col = "black", lwd = 1, ylab = "Sales")
+lines(rolling_avg7, col = "red", lwd = 2, lty = 2)
+lines(rolling_avg7_left, col = "green", lwd = 2, lty = 2)
+lines(rolling_avg7_right, col = "orange", lwd = 2, lty = 2)
+legend(
+  "bottomleft", 
+  legend = c(
+    "Original Data", "7-day Avg", "7-day Avg (left-aligned)", 
+    "7-day Avg (right-aligned)"
+    ),
+  col = c("black", "red", "green", "orange"), 
+  lwd = 1, lty = 1:2,
+  cex = 0.628
+  )</pre>
+<p><img src="https://i0.wp.com/www.spsanderson.com/steveondata/posts/2024-01-05/index_files/figure-html/unnamed-chunk-4-1.png?w=450&amp;ssl=1" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i0.wp.com/www.spsanderson.com/steveondata/posts/2024-01-05/index_files/figure-html/unnamed-chunk-4-1.png?w=450&amp;ssl=1"></p>
+</div>
+<div>
+<pre>plot(data_zoo, type = "l", col = "black", lwd = 1, ylab = "Sales")
+lines(rolling_avg28, col = "green", lwd = 2, lty = 2)
+lines(rolling_avg28_left, col = "steelblue", lwd = 2, lty = 2)
+lines(rolling_avg28_right, col = "brown", lwd = 2, lty = 2)
+legend(
+  "bottomleft", 
+  legend = c(
+    "Original Data", "28-day Avg", "28-day Avg (left-aligned)", 
+    "28-day Avg (right-aligned)"
+    ),
+  col = c("black", "green", "steelblue", "brown"), 
+  lwd = 1, lty = 1:2,
+  cex = 0.628
+  )</pre>
+<p><img src="https://i1.wp.com/www.spsanderson.com/steveondata/posts/2024-01-05/index_files/figure-html/unnamed-chunk-5-1.png?w=450&amp;ssl=1" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i1.wp.com/www.spsanderson.com/steveondata/posts/2024-01-05/index_files/figure-html/unnamed-chunk-5-1.png?w=450&amp;ssl=1"></p>
+</div>
+</section>
+</section>
+<section id="experimenting-and-interpreting">
+<h2>Experimenting and Interpreting</h2>
+<p>Play with different ‘k’ values to see how they affect the smoothness. Remember, larger ‘k’ means more smoothing, but potential loss of detail.</p>
+</section>
+<section id="your-turn-to-roll">
+<h2>Your Turn to Roll!</h2>
+<p>Grab your data and start exploring rolling averages! It’s a powerful tool to uncover hidden patterns and trends. Share your discoveries and join the rolling conversation!</p>
+
+
+</section>
+
+ 
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.9-->
+							</div></div>
+  </div>
+</body>
+</html>

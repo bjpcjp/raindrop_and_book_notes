@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A round-up of topology-based papers at ICML 2020</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A round-up of topology-based papers at ICML 2020</h1>
+    <p><strong>URL:</strong> <a href="https://bastian.rieck.me/blog/posts/2020/icml_topology_roundup">https://bastian.rieck.me/blog/posts/2020/icml_topology_roundup</a></p>
+    <p><strong>Tags:</strong> topology</p>
+    <p><strong>Bookmark ID:</strong> 876775979</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+        <p>With this year’s <a href="https://icml.cc/Conferences/2020">International Conference on Machine Learning&nbsp;(ICML)</a>
+being over, it is time to have another instalment of this series.
+Similar to <a href="http://bastian.rieck.me/blog/2019/icml_tda_roundup/">last year’s post</a>, I shall cover
+several papers that caught my attention because of their use of
+topological concepts—however, <em>unlike</em> last year, I shall not
+restrict the selection to papers using <a href="https://en.wikipedia.org/wiki/Topological_data_analysis">topological data analysis&nbsp;(TDA)</a>.</p>
+<p><strong>Caveat lector:</strong> I might have missed some promising papers. Any
+suggestions for additions are more than welcome! Please reach out
+to me via <a href="https://twitter.com/Pseudomanifold">Twitter</a> or
+<a href="mailto:bastian@rieck.me">e-mail</a>.</p>
+<h2 id="chen-et-al-learning-flat-latent-manifolds-with-vaes">Chen et al.: Learning Flat Latent Manifolds with VAEs</h2>
+<div>
+<figure><img src="data:application/octet-stream;base64," alt="Learning Flat Latent Manifolds with VAEs" width="500">
+</figure>
+
+</div>
+<p><a href="https://arxiv.org/abs/2002.04881">Learning Flat Latent Manifolds with VAEs</a>
+by <a href="https://argmax.ai/team/nutan-chen">Nutan Chen</a>, <a href="https://www.argmax.ai/team/alexej-klushyn">Alexej Klushyn</a>,
+Francesco Ferroni, <a href="http://bayerj.github.io/">Justin Bayer</a>, and
+<a href="https://argmax.ai/team/patrick-van-der-smagt">Patrick van der Smagt</a>
+discusses an interesting modification of variational autoencoders, viz.
+an extended loss term that regularises the latent space to be
+<em>flat</em>&nbsp;(i.e. having no <a href="https://en.wikipedia.org/wiki/Curvature">curvature</a>).
+The main idea is to ensure that the <a href="https://en.wikipedia.org/wiki/Metric_tensor">Riemannian metric tensor</a>
+is the identity matrix.</p>
+<p>The ingenious implication of such a latent space is that the Euclidean
+distance is a good proxy for the similarity between data points, whereas
+this is <em>not</em> a priori the case for other latent spaces. It is interesting
+to note that there is a ‘sibling’ paper to this one, which was published
+at ICLR 2020, namely <a href="https://openreview.net/pdf?id=S1g6xeSKDS">Mixed-curvature Variational Autoencoders</a>.
+This paper presents an autoencoder whose latent space is a product of
+Riemannian manifolds, whose curvature is either fixed or learnable.</p>
+<p>I am glad to see that curvature is starting to attract more attention
+from the machine learning community. It is such a fundamental property
+of a manifold but can influence the validity of many calculations in
+latent spaces. It also has some beneficial properties for <a href="https://openreview.net/pdf?id=BylEqnVFDB">graph
+classification</a>, but this is
+maybe a better topic for a subsequent post!</p>
+<h2 id="hofer-et-al-graph-filtration-learning">Hofer et al.: Graph Filtration Learning</h2>
+<div>
+<figure><img src="data:application/octet-stream;base64," alt="Graph Filtration Learning" width="500">
+</figure>
+
+</div>
+<p><a href="https://arxiv.org/abs/1905.10996">Graph Filtration Learning</a> by
+<a href="https://www.researchgate.net/profile/Christoph_Hofer8">Christoph Hofer</a>,
+<a href="https://www.uni-salzburg.at/index.php?id=213185&amp;L=1">Florian Graf</a>,
+<a href="https://bastian.rieck.me/">Bastian Rieck</a>,
+<a href="http://wwwx.cs.unc.edu/~mn/?q=content/overview">Marc Niethammer</a>, and
+<a href="https://rkwitt.github.io/">Roland Kwitt</a> is arguably<sup id="fnref:1"><a href="#fn:1" role="doc-noteref">1</a></sup> the first step
+towards properly integrating topological features into neural networks
+for graph classification! Briefly put, we developed a homological
+<code>READOUT</code> function&nbsp;(to use the parlance of graph neural networks)
+that gives rise to a learnable filter function—a <em>filtration</em>.</p>
+<p>This concept might be unknown to some readers, but a filtration in this
+context is a scalar-valued function on the vertices of a graph that
+permits <em>sorting</em> it. Filtrations serve as the backbone for many
+topology-based algorithms, primarily for the aforementioned <a href="https://christian.bock.ml/posts/persistent_homology/">persistent homology</a>,
+which permits us to study multi-scale topological
+features&nbsp;(connected components, cycles, etc.) of an object.
+Prior to this paper, filtrations were pre-defined or chosen based on
+some target function, such as the vertex degree function of a graph. Our
+approach changes this—leading to a filtration that is learnable in an
+end-to-end fashion and thus specifically designed for a classification
+problem.</p>
+<p>We manage to achieve this by first initialising our filter function
+based on a regular graph neural network; essentially, one level of
+message passing between nodes is sufficient. This provides us with
+a non-trivial filter function whose performance we can subsequently
+adjust by calculating the topological features induced by said filter,
+and vectorising the resulting representations. Since each of these steps
+is differentiable<sup id="fnref:2"><a href="#fn:2" role="doc-noteref">2</a></sup>, the resulting function is also differentiable,
+making it possible to adjust the filter for the best classification
+results.</p>
+<p>I would recommend this paper to anyone who is interested in learning
+more about the benefits that a topology-based perspective brings to
+certain application problems. Being able to learn the <em>right</em> topological features
+to classify a set of graphs opens up exciting opportunities.</p>
+<h2 id="hofer-et-al-topologically-densified-distributions">Hofer et al.: Topologically Densified Distributions</h2>
+<div>
+<figure><img src="data:application/octet-stream;base64," alt="Topologically Densified Distribution" width="500">
+</figure>
+
+</div>
+<p><a href="https://arxiv.org/abs/2002.04805">Topologically Densified Distributions</a>
+by <a href="https://www.researchgate.net/profile/Christoph_Hofer8">Christoph Hofer</a>,
+<a href="https://www.uni-salzburg.at/index.php?id=213185&amp;L=1">Florian Graf</a>,
+<a href="http://wwwx.cs.unc.edu/~mn/?q=content/overview">Marc Niethammer</a>, and
+<a href="https://rkwitt.github.io/">Roland Kwitt</a> studies regularisation properties of
+over-parametrised neural networks in the context of small sample-size learning.
+This is achieved by studying the properties of latent
+representations&nbsp;(the paper uses the term <em>internal representation</em>,
+but this is equivalent). More precisely, generalisation properties are
+analysed via the <a href="https://en.wikipedia.org/wiki/Pushforward_measure">push-forward probability measure</a>
+induced by the latent representation&nbsp;(or <em>encoding</em>).</p>
+<p>The authors show that probability mass concentration around training
+samples in the latent space is linked to the generalisation capabilities
+of a model, but, even more exciting, such a concentration can be achieved by applying
+topological constraints on samples from that space! In the context of
+this paper, such constraints pertain to measuring the <em>connectivity</em> of
+samples. This is achieved using <a href="https://christian.bock.ml/posts/persistent_homology/">persistent homology</a>, specifically,
+by calculating a zero-dimensional Vietoris–Rips complex—if you are
+not familiar with this term, just think of a minimum spanning tree.</p>
+<p>What I particularly enjoyed about this paper is that it starts providing
+solid answers to fundamental concepts in machine learning. All too often,
+we remain in the realm of the empirical and just <em>observe</em> whether our
+network generalises. This paper ventures into hitherto-unknown territories
+and gives us a theoretical justification!</p>
+<h2 id="moor-et-al-topological-autoencoders">Moor et al.: Topological Autoencoders</h2>
+<div>
+<figure><img src="data:application/octet-stream;base64," alt="Topological Autoencoders" width="250">
+</figure>
+
+</div>
+<p><a href="https://arxiv.org/abs/1906.00722">Topological Autoencoders</a> by
+<a href="https://michaelmoor.ml/">Michael Moor</a>,
+<a href="https://expectationmax.github.io/">Max Horn</a>,
+<a href="https://bastian.rieck.me/">Bastian Rieck</a>, and
+<a href="https://bsse.ethz.ch/mlcb/karsten.html">Karsten Borgwardt</a> deals with
+regularising the latent space in terms of its topology. More precisely,
+we preserve the topological features of the input data in the respective
+latent space&nbsp;(on the batch level, respectively). While we restrict
+our experiments to connected components for now&nbsp;(so no cycles
+yet, even though our method generalises to higher dimensions),
+our approach makes it possible to create latent representations
+that ‘mimic’ the topological features of the input.</p>
+<p>This leads to a nice plug-and-play loss term that can be easily
+integrated into most architectures, and we can demonstrate that, among
+others, it considerably improves the quality of a ‘vanilla’ autoencoder
+architecture. To achieve this goal, we had to solve all kinds of
+interesting adventures, one of them being how to make everything
+differentiable. Interestingly, we end up with a similar necessary
+condition for differentiability than for the graph filtration learning
+paper, viz. the pairwise distances between different samples of the
+input batch need to be <em>unique</em>.</p>
+<p>The coolest feature of our method is that it technically <em>only</em> requires
+a distance metric between input samples<sup id="fnref:3"><a href="#fn:3" role="doc-noteref">3</a></sup>, nothing more—no feature
+vector representation or anything. It can thus conceivably be used to
+represent the topology of any object you fancy&nbsp;(including
+documents, images, and graphs).</p>
+<p>If you are interested in a beautifully-animated high-level introduction
+to this publication, you should take the time to read Michael’s <a href="https://michaelmoor.ml/blog/topoae/main/">blog post on our paper</a>.</p>
+<h2 id="rezende-et-al-normalizing-flows-on-tori-and-spheres">Rezende et al.: Normalizing Flows on Tori and Spheres</h2>
+<div>
+<figure><img src="data:application/octet-stream;base64," alt="Normalizing Flows on Tori and Spheres" width="500">
+</figure>
+
+</div>
+<p><a href="https://arxiv.org/abs/2002.02428">Normalizing Flows on Tori and Spheres</a> by
+<a href="https://danilorezende.com/">Danilo Jimenez Rezende</a>,
+<a href="https://gpapamak.github.io/">George Papamakarios</a>,
+<a href="https://scholar.google.com/citations?user=o-h0vrQAAAAJ">Sébastien Racanière</a>,
+<a href="http://malbergo.me/">Michael S. Albergo</a>,
+<a href="https://scholar.google.com/citations?user=zK77P6MAAAAJ">Gurtej Kanwar</a>,
+<a href="https://web.mit.edu/physics/people/faculty/shanahan_phiala.html">Phiala E.  Shanahan</a>,
+and <a href="http://theoryandpractice.org/">Kyle Cranmer</a>
+present a novel method for calculating normalising flows on more complex
+spaces than the usual Euclidean ones. Specifically, as the title
+implies, they develop methods for calculating such flows on tori and
+spheres.</p>
+<p>What I enjoyed about this paper is the smart way of constructing flows
+iteratively: first, flows on the circle are being constructed&nbsp;(using
+different concepts for defining a <a href="https://en.wikipedia.org/wiki/Diffeomorphism">diffeomorphism</a>, the most favourite of
+mine being a <a href="https://en.wikipedia.org/wiki/M%C3%B6bius_transformation">Möbius transformation</a>).
+Since a torus can be described as the Cartesian product of circles, this
+is sufficient to describe flows on tori of arbitrary dimensions! Next,
+the flows are generalised to higher-dimensional spheres.</p>
+<p>While I am by no means and expert in normalising flows, I liked
+reading this paper a lot. The theory is well-developed and it is another
+one of those publications that shows you how to go beyond the boundaries
+of what is currently possible. Moreover, I enjoyed the discussion of the
+implementation details—it turns out that achieving numerical stability
+here is another feat that deserves some mention!</p>
+<h2 id="summary">Summary</h2>
+<p>This year’s ICML also featured an interesting array of topology-based
+papers. Not all of them fit neatly into the field of topological data
+analysis&nbsp;(TDA), but I am happy to see that the community is
+starting to pick up this fundamental topic. I remain convinced that
+a topology-driven perspective is needed to answer certain foundational
+questions in machine learning. Here’s to the future of topology!</p>
+<div role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Even if say so myself.&nbsp;<a href="#fnref:1" role="doc-backlink">↩︎</a></p>
+</li>
+<li id="fn:2">
+<p>Under mild assumptions, viz. provided that the filter function
+values are unique for each vertex. This can always be achieved by
+a small symbolic perturbation.&nbsp;<a href="#fnref:2" role="doc-backlink">↩︎</a></p>
+</li>
+<li id="fn:3">
+<p>Practically, it might not even require the properties of a metric,
+although the mathematician in me is screaming at the horrors of this
+thought.&nbsp;<a href="#fnref:3" role="doc-backlink">↩︎</a></p>
+</li>
+</ol>
+</div>
+
+      </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Meteor toolbox for your next hackathon or project start</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Meteor toolbox for your next hackathon or project start</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/jankapunkt/meteor-toolbox-for-your-next-hackathon-or-project-start-1ino">https://dev.to/jankapunkt/meteor-toolbox-for-your-next-hackathon-or-project-start-1ino</a></p>
+    <p><strong>Tags:</strong> meteorjs</p>
+    <p><strong>Bookmark ID:</strong> 876787773</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1159254" id="article-body">
+            <p><small>Photo by <a href="https://unsplash.com/es/@nasa?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">NASA</a> on <a href="https://unsplash.com/s/photos/rocket-launch?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></small></p>
+
+<p>Whether you start a new project or want to get ready for <a href="https://dev.to/jankapunkt/why-should-you-attend-the-meteor-hackathon-2022-in-september-1pki">the next hackathon</a>: These tools will help you to get fast results and keep code maintainable and scalable at the same time. Teammates will better understand what your code does by reading less, but more descriptive code.</p>
+
+<p>At <a href="https://github.com/leaonline/">lea.online</a> we often have created similar implementations across apps when managing collections, methods, publications, file uploads and http routes. We also decided to abstract some of these recurring pattern and published them as Meteor packages under a free license so you can benefit from our efforts, too. 💪</p>
+
+
+<hr>
+<h2>
+  <a name="code-splitting" href="#code-splitting">
+  </a>
+  Code splitting
+</h2>
+
+<p>Meteor supports to write code once and use it on the server AND on the client. It also supports exact code-splitting at build-time, which allows you to indicate, if code is only meant for server or client. Both features together allow for <strong>isomorphic code</strong>, which means that an object "looks" similar (same functions/api) but can be implemented to behave diferrent, specifically for each environment.</p>
+
+<p>In such a case you don't want code to leak into the other environment, which could have negative side-effects like increased client bundle size (thus longer load times). To achieve that and keep the code tidy and readable, we have created some short and easy functions:<br>
+</p>
+
+<div>
+<pre><code><span>// returns a value only on a given architecture</span>
+<span>export</span> <span>const</span> <span>onServer</span> <span>=</span> <span>x</span> <span>=&gt;</span> <span>Meteor</span><span>.</span><span>isServer</span> <span>?</span> <span>x</span> <span>:</span> <span>undefined</span>
+<span>export</span> <span>const</span> <span>onClient</span> <span>=</span> <span>x</span> <span>=&gt;</span> <span>Meteor</span><span>.</span><span>isClient</span> <span>?</span> <span>x</span> <span>:</span> <span>undefined</span>
+
+<span>// execute a function and return it's value only on a given architecture</span>
+<span>export</span> <span>const</span> <span>onServerExec</span> <span>=</span> <span>fn</span> <span>=&gt;</span> <span>Meteor</span><span>.</span><span>isServer</span> <span>?</span> <span>fn</span><span>()</span> <span>:</span> <span>undefined</span>
+<span>export</span> <span>const</span> <span>onClientExec</span> <span>=</span> <span>fn</span> <span>=&gt;</span> <span>Meteor</span><span>.</span><span>isClient</span> <span>?</span> <span>fn</span><span>()</span> <span>:</span> <span>undefined</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>An example of code-splitting with direct assignment:<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>onServer</span><span>,</span> <span>onClient</span> <span>}</span> <span>from</span> <span>'</span><span>utils/arch</span><span>'</span>
+
+<span>export</span> <span>const</span> <span>Greeting</span> <span>=</span> <span>{</span>
+  <span>name</span><span>:</span> <span>onServer</span><span>(</span><span>'</span><span>John Doe</span><span>'</span><span>),</span> <span>// will be undefined on the client</span>
+  <span>age</span><span>:</span> <span>onClient</span><span>(</span><span>42</span><span>)</span> <span>// will be undefined on the server </span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Note, that this example is <strong>note isomorphic</strong>. On the server <code>name</code> will be present but not on the client. Vice versa with <code>age</code>.</p>
+
+<p>An example of isomorphic code using code-splitting with function execution would be:<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>onServerExec</span><span>,</span> <span>onClientExec</span> <span>}</span> <span>from</span> <span>'</span><span>utils/arch</span><span>'</span>
+
+<span>export</span> <span>const</span> <span>Greeting</span> <span>=</span> <span>{}</span>
+
+<span>Greeting</span><span>.</span><span>name</span> <span>=</span> <span>undefined</span>
+
+<span>onServerExec</span><span>(()</span> <span>=&gt;</span> <span>{</span>
+  <span>Greeting</span><span>.</span><span>name</span> <span>=</span> <span>'</span><span>John Doe</span><span>'</span>
+<span>})</span>
+
+<span>onClientExec</span><span>(()</span> <span>=&gt;</span> <span>{</span>
+  <span>Greeting</span><span>.</span><span>name</span> <span>=</span> <span>'</span><span>Anonymous</span><span>'</span>
+<span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>The great thing is, that you can use <code>import</code> within these function calls and still prevent leakage into the other environment!</p>
+<h3>
+  <a name="bonus-create-an-isomorphic-wrapper" href="#bonus-create-an-isomorphic-wrapper">
+  </a>
+  Bonus: create an isomorphic wrapper
+</h3>
+
+<p>The above abstractions can be taken even further to wrap assignments into one line:<br>
+</p>
+<div>
+<pre><code><span>export</span> <span>const</span> <span>isomorphic</span> <span>=</span> <span>({</span> <span>server</span><span>,</span> <span>client</span> <span>})</span> <span>=&gt;</span> <span>{</span>
+  <span>if </span><span>(</span><span>Meteor</span><span>.</span><span>isServer</span><span>)</span> <span>return</span> <span>server</span>
+  <span>if </span><span>(</span><span>Meteor</span><span>.</span><span>isClient</span><span>)</span> <span>return</span> <span>client</span>
+<span>}</span>
+
+<span>export</span> <span>const</span> <span>isomorphicExec</span> <span>=</span> <span>({</span> <span>server</span><span>,</span> <span>client</span> <span>})</span> <span>=&gt;</span> <span>{</span>
+  <span>if </span><span>(</span><span>Meteor</span><span>.</span><span>isServer</span><span>)</span> <span>return</span> <span>server</span><span>()</span>
+  <span>if </span><span>(</span><span>Meteor</span><span>.</span><span>isClient</span><span>)</span> <span>return</span> <span>client</span><span>()</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Usage:<br>
+</p>
+<div>
+<pre><code><span>export</span> <span>const</span> <span>Greeting</span> <span>=</span> <span>{</span>
+  <span>name</span><span>:</span> <span>isomorphic</span><span>({</span>
+    <span>server</span><span>:</span> <span>'</span><span>John Doe</span><span>'</span><span>,</span>
+    <span>client</span><span>:</span> <span>'</span><span>Anonymous</span><span>'</span>
+  <span>}),</span>
+
+  <span>lang</span><span>:</span> <span>isomorphicExec</span><span>({</span>
+    <span>server</span><span>:</span> <span>()</span> <span>=&gt;</span> <span>Meteor</span><span>.</span><span>settings</span><span>.</span><span>defaultLang</span><span>,</span>
+    <span>client</span><span>:</span> <span>()</span> <span>=&gt;</span> <span>window</span><span>.</span><span>navigator</span><span>.</span><span>language</span>
+  <span>})</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+<h3>
+  <a name="when-to-use-which-one" href="#when-to-use-which-one">
+  </a>
+  When to use which one?
+</h3>
+
+<p>Use the direct assignments if values are static or have no external dependencies or if you want to create non-isomorphic objects. Otherwise use the function-based assignments to <strong>prevent leaking dependencies into the other environment</strong>.</p>
+
+
+<hr>
+<h2>
+  <a name="collection-factory" href="#collection-factory">
+  </a>
+  Collection factory
+</h2>
+
+<p>GitHub Link: <a href="https://github.com/leaonline/collection-factory">https://github.com/leaonline/collection-factory</a><br>
+Packosphere: <a href="https://packosphere.com/leaonline/collection-factory">https://packosphere.com/leaonline/collection-factory</a></p>
+
+<p>Creating Mongo collections in Meteor is already as fast and easy as it ever can be. 🚀 Beyond that you may also want to attach a schema to a given collection, attach hooks or define the collection as local.</p>
+
+<p>In order to achieve all this at once you can leverage the power of our lea.online collection factory package. Add the following packages to your project:<br>
+</p>
+<div>
+<pre><code><span>$ </span>meteor add leaonline:collection-factory aldeed:collection2
+<span>$ </span>meteor npm <span>install</span> <span>--save</span> simpl-schema
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>The other two packages (<code>simpl-schema</code> and <code>aldeed:collection2</code>) allow to validate any incoming data <strong>on the collection level</strong> (insert/update/remove), providing an extra layer of safety when it comes to handling your data. Note, that they are entirely optional.</p>
+<h3>
+  <a name="usecase" href="#usecase">
+  </a>
+  Use-case
+</h3>
+
+<p>Let's consider a collection definition as an Object with a <code>name</code> (representing the collection name) and <code>schema</code> (representing the collection data structure schema):<br>
+</p>
+<div>
+<pre><code><span>export</span> <span>const</span> <span>Todos</span> <span>=</span> <span>{</span>
+  <span>name</span><span>:</span> <span>'</span><span>todos</span><span>'</span>
+<span>}</span>
+
+<span>Todos</span><span>.</span><span>schema</span> <span>=</span> <span>{</span>
+  <span>userId</span><span>:</span> <span>String</span><span>,</span>
+  <span>title</span><span>:</span> <span>String</span><span>,</span>
+  <span>isPublic</span><span>:</span> <span>Boolean</span><span>,</span>
+  <span>items</span><span>:</span> <span>Array</span><span>,</span>
+  <span>'</span><span>items.$</span><span>'</span><span>:</span> <span>Object</span><span>,</span>
+  <span>'</span><span>items.$.text</span><span>'</span><span>:</span> <span>String</span><span>,</span>
+  <span>'</span><span>items.$.checked</span><span>'</span><span>:</span> <span>Boolean</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>As you can see there is no code for actually creating (instantiating) the collection and neither for creating a new schema. But it looks readable and clear to understand. This is where the factory comes into play:<br>
+</p>
+<div>
+<pre><code><span>// imports/api/factories/createCollection</span>
+<span>import</span> <span>{</span> <span>createCollectionFactory</span> <span>}</span> <span>from</span> <span>'</span><span>meteor/leaonline:collection-factory</span><span>'</span>
+<span>import</span> <span>SimpleSchema</span> <span>from</span> <span>'</span><span>simpl-schema</span><span>'</span>
+
+<span>export</span> <span>const</span> <span>createCollection</span> <span>=</span> <span>createCollectionFactory</span><span>({</span> 
+  <span>schemaFactory</span><span>:</span> <span>definitions</span> <span>=&gt;</span> <span>new</span> <span>SimpleSchema</span><span>(</span><span>definitions</span><span>)</span> 
+<span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>With this function you have now a single handler to create collections and attach a schema to them:<br>
+</p>
+<div>
+<pre><code><span>// server/main.js</span>
+<span>import</span> <span>{</span> <span>Todos</span> <span>}</span> <span>from</span> <span>'</span><span>../imports/api/Todos</span><span>'</span>
+<span>import</span> <span>{</span> <span>createCollection</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/createCollection</span><span>'</span>
+
+<span>const</span> <span>TodosCollection</span> <span>=</span> <span>createCollection</span><span>(</span><span>Todos</span><span>)</span>
+<span>TodosCollection</span><span>.</span><span>insert</span><span>({</span> <span>foo</span><span>:</span> <span>'</span><span>bar</span><span>'</span> <span>})</span> <span>// throws validation error, foo is not in schema</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+<h3>
+  <a name="collection-instances" href="#collection-instances">
+  </a>
+  Collection instances
+</h3>
+
+<p>Separating definition from implementation is what makes your code testable and maintainable. You can even go one step further and access these collections independently (decoupled) from the local collection variable. </p>
+
+<p>In order to do that you need to add <a href="https://github.com/Meteor-Community-Packages/mongo-collection-instances">the Mongo Collection Instances package (dburles:mongo-collection-instances)</a>:</p>
+
+
+<div id="readme" data-path="README.md"><article itemprop="text"><p dir="auto">
+<h2 dir="auto">Meteor Mongo Collection Instances</h2>
+</p>
+
+<p dir="auto"><a href="https://meteor.com/" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Meteor Community Package" data-canonical-src="https://img.shields.io/badge/Meteor-Package-green?logo=meteor&amp;logoColor=white"></a>
+<a href="https://github.com/Meteor-Community-Packages/mongo-collection-instances/actions/workflows/testsuite.yml"><img src="data:application/octet-stream;base64," alt="Test suite"></a>
+<a href="https://github.com/Meteor-Community-Packages/mongo-collection-instances/actions/workflows/github-code-scanning/codeql"><img src="data:application/octet-stream;base64," alt="CodeQL"></a>
+<a href="https://www.repostatus.org/#active" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed." data-canonical-src="https://www.repostatus.org/badges/latest/active.svg"></a>
+<a href="https://standardjs.com/" rel="nofollow"><img src="data:application/octet-stream;base64," alt="JavaScript Style Guide" data-canonical-src="https://img.shields.io/badge/code_style-standard-brightgreen.svg"></a></p>
+<p dir="auto">This package augments Mongo.Collection (and the deprecated Meteor.Collection) and allows you to later lookup a Mongo Collection instance by the collection name.</p>
+<p dir="auto">
+<h2 dir="auto">Installation</h2>
+</p>
+<div dir="auto" data-snippet-clipboard-copy-content="$ meteor add dburles:mongo-collection-instances">
+<pre>$ meteor add dburles:mongo-collection-instances</pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+<p dir="auto">
+<h2 dir="auto">Usage Example</h2>
+</p>
+<div dir="auto" data-snippet-clipboard-copy-content="const Books = new Mongo.Collection('books');
+
+Mongo.Collection.get('books').insert({ name: 'test' });
+
+Mongo.Collection.get('books').findOne({ name: 'test' });">
+<pre><span>const</span> <span>Books</span> <span>=</span> <span>new</span> <span>Mongo</span><span>.</span><span>Collection</span><span>(</span><span>'books'</span><span>)</span><span>;</span>
+
+<span>Mongo</span><span>.</span><span>Collection</span><span>.</span><span>get</span><span>(</span><span>'books'</span><span>)</span><span>.</span><span>insert</span><span>(</span><span>{</span> <span>name</span>: <span>'test'</span> <span>}</span><span>)</span><span>;</span>
+
+<span>Mongo</span><span>.</span><span>Collection</span><span>.</span><span>get</span><span>(</span><span>'books'</span><span>)</span><span>.</span><span>findOne</span><span>(</span><span>{</span> <span>name</span>: <span>'test'</span> <span>}</span><span>)</span><span>;</span></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+<p dir="auto">
+<h2 dir="auto">API</h2>
+
+</p>
+<p dir="auto">
+<h4 dir="auto">Mongo.Collection.get('name', [options])</h4>
+
+</p>
+<p dir="auto">Returns the collection instance.</p>
+<ul dir="auto">
+<li>name (String)</li>
+<li>options (Object) [optional]
+<ul dir="auto">
+<li>options.connection (A connection object, see example below)</li>
+</ul>
+</li>
+</ul>
+<p dir="auto">
+<h4 dir="auto">Mongo.Collection.getAll()</h4>
+
+</p>
+<p dir="auto">Returns an array of objects containing:</p>
+<ul dir="auto">
+<li>name (The name of the collection)</li>
+<li>instance (The collection instance)</li>
+<li>options (Any options that were passed in on instantiation)</li>
+</ul>
+<p dir="auto">
+<h2 dir="auto">Multiple connections</h2>
+
+</p>
+<p dir="auto">It's possible to have more than one collection with the same name if they're on a different connection
+In order to lookup the…</p></article></div>
+<br>
+
+
+<div>
+<pre><code><span>$ </span>meteor add dburles:mongo-collection-instances
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Wrapper:<br>
+</p>
+<div>
+<pre><code><span>export</span> <span>const</span> <span>getCollection</span> <span>=</span> <span>({</span> <span>name</span> <span>})</span> <span>=&gt;</span> <span>Mongo</span><span>.</span><span>Collection</span><span>.</span><span>get</span><span>(</span><span>name</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Usage:<br>
+</p>
+<div>
+<pre><code><span>const</span> <span>TodosCollection</span> <span>=</span> <span>getCollection</span><span>(</span><span>Todos</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Now you can access collections anywhere. We will use this pattern in later sections to use our defined collections anywhere in the code executions.</p>
+
+
+<hr>
+<h2>
+  <a name="method-factory" href="#method-factory">
+  </a>
+  Method Factory
+</h2>
+
+<p>GitHub Link: <a href="https://github.com/leaonline/method-factory">https://github.com/leaonline/method-factory</a><br>
+Packosphere: <a href="https://packosphere.com/leaonline/method-factory">https://packosphere.com/leaonline/method-factory</a></p>
+
+<p>A central concept of Meteor is to define rpc-style endpoints, named Meteor Methods. They can be called by any connected clients, which makes them a handy way to communicate with the server but also an easy attack vector. Many concepts around methods exist to validate incoming data or restrict access.</p>
+
+<p>We published <code>leaonline:method-factory</code> as a way to easily define methods in a mostly declarative way. It does so by extending the concept of <code>mdg:validated-method</code> by a few abstractions:<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>createMethodFactory</span> <span>}</span> <span>from</span> <span>'</span><span>meteor/leaonline:method-factory</span><span>'</span>
+<span>import</span> <span>SimpleSchema</span> <span>from</span> <span>'</span><span>simpl-schema</span><span>'</span>
+
+<span>export</span> <span>const</span> <span>createMethod</span> <span>=</span> <span>createMethodFactory</span><span>({</span>
+  <span>schemaFactory</span><span>:</span> <span>definitions</span> <span>=&gt;</span> <span>new</span> <span>SimpleSchema</span><span>(</span><span>definitions</span><span>)</span> 
+<span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>If you don't have Simple Schema installed, you need to add it via npm:<br>
+</p>
+<div>
+<pre><code><span>$</span> <span>meteor</span> <span>npm</span> <span>install</span> <span>--</span><span>save</span> <span>simpl</span><span>-</span><span>schema</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Defining a method for our <code>Todos</code> is super easy:<br>
+</p>
+<div>
+<pre><code><span>Todos</span><span>.</span><span>methods</span> <span>=</span> <span>{</span>
+  <span>create</span><span>:</span> <span>{</span>
+    <span>name</span><span>:</span> <span>'</span><span>todos.methods.create</span><span>'</span><span>,</span>
+    <span>schema</span><span>:</span> <span>Todos</span><span>.</span><span>schema</span><span>,</span> <span>// no need to write validate function</span>
+    <span>isPublic</span><span>:</span> <span>false</span><span>,</span> <span>// see mixins section</span>
+    <span>run</span><span>:</span> <span>onServer</span><span>(</span><span>function </span><span>(</span><span>document</span><span>)</span> <span>{</span>
+      <span>document</span><span>.</span><span>userId</span> <span>=</span> <span>this</span><span>.</span><span>userId</span> <span>// don't let clients decide who owns a document</span>
+      <span>return</span> <span>getCollection</span><span>(</span><span>Todos</span><span>.</span><span>name</span><span>).</span><span>insert</span><span>(</span><span>document</span><span>)</span>
+    <span>})</span>
+  <span>}</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Creating the Method is similar to the previously mentioned collection factory:<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>Todos</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/Todos</span><span>'</span>
+<span>import</span> <span>{</span> <span>createMethod</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/createMethod</span><span>'</span>
+
+<span>Object</span><span>.</span><span>methods</span><span>(</span><span>Todos</span><span>).</span><span>forEach</span><span>(</span><span>options</span> <span>=&gt;</span> <span>createMethod</span><span>(</span><span>options</span><span>))</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>And finally, calling it on the client is also super easy:<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>Todos</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/Todos</span><span>'</span>
+
+<span>const</span> <span>insertDoc</span> <span>=</span> <span>{</span>
+  <span>title</span><span>:</span> <span>'</span><span>buy groceries</span><span>'</span><span>,</span>
+  <span>isPublic</span><span>:</span> <span>false</span><span>,</span>
+  <span>items</span><span>:</span> <span>[</span>
+    <span>{</span> <span>text</span><span>:</span> <span>'</span><span>bread</span><span>'</span><span>,</span> <span>checked</span><span>:</span> <span>false</span> <span>},</span>
+    <span>{</span> <span>text</span><span>:</span> <span>'</span><span>butter</span><span>'</span><span>,</span> <span>checked</span><span>:</span> <span>false</span> <span>},</span>
+    <span>{</span> <span>text</span><span>:</span> <span>'</span><span>water</span><span>'</span><span>,</span> <span>checked</span><span>:</span> <span>false</span> <span>},</span>
+  <span>]</span>
+<span>}</span>
+
+<span>Meteor</span><span>.</span><span>call</span><span>(</span><span>Todos</span><span>.</span><span>methods</span><span>.</span><span>create</span><span>.</span><span>name</span><span>,</span> <span>insertDoc</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+<h3>
+  <a name="adding-constraints-via-mixins" href="#adding-constraints-via-mixins">
+  </a>
+  Adding constraints via mixins
+</h3>
+
+<p>Let's say you want to make Todos private and let only their owners create/read/update/delete them. At the same time you want to log any errors that occur during a method call or due to permission being denied. You can use mixins - functions that extend the execution of a method, to get to these goals:<br>
+</p>
+<div>
+<pre><code><span>export</span> <span>const</span> <span>checkPermissions</span> <span>=</span> <span>options</span> <span>=&gt;</span> <span>{</span>
+  <span>const</span> <span>{</span> <span>run</span><span>,</span> <span>isPublic</span> <span>}</span> <span>=</span> <span>options</span>
+
+  <span>// check if we have an authenticated user</span>
+  <span>options</span><span>.</span><span>run</span> <span>=</span> <span>function </span><span>(...</span><span>args</span><span>)</span> <span>{</span>
+    <span>const</span> <span>env</span> <span>=</span> <span>this</span>
+
+    <span>// methods, flagged as isPublic have no permissions check</span>
+    <span>if </span><span>(</span><span>!</span><span>isPublic</span> <span>&amp;&amp;</span> <span>!</span><span>env</span><span>.</span><span>userId</span><span>)</span> <span>{</span>
+      <span>throw</span> <span>new</span> <span>Meteor</span><span>.</span><span>Error</span><span>(</span><span>'</span><span>permissionDenied</span><span>'</span><span>,</span> <span>'</span><span>notLoggedIn</span><span>'</span><span>)</span>
+    <span>}</span>
+
+    <span>// if all good run the original function</span>
+    <span>return</span> <span>run</span><span>.</span><span>apply</span><span>(</span><span>env</span><span>,</span> <span>args</span><span>)</span>
+  <span>}</span>
+
+  <span>return</span> <span>options</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<div>
+<pre><code><span>// note: replace the console. calls with</span>
+<span>// your custom logging library</span>
+
+<span>export</span> <span>const</span> <span>logging</span> <span>=</span> <span>options</span> <span>=&gt;</span> <span>{</span>
+   <span>const</span> <span>{</span> <span>name</span><span>,</span> <span>run</span> <span>}</span> <span>=</span> <span>options</span>
+   <span>const</span> <span>logname</span> <span>=</span> <span>`[</span><span>${</span><span>name</span><span>}</span><span>]:`</span>
+
+   <span>options</span><span>.</span><span>run</span> <span>=</span> <span>function </span><span>(...</span><span>args</span><span>)</span> <span>{</span>
+     <span>const</span> <span>env</span> <span>=</span> <span>this</span>
+     <span>console</span><span>.</span><span>log</span><span>(</span><span>logname</span><span>,</span> <span>'</span><span>run by</span><span>'</span><span>,</span> <span>env</span><span>.</span><span>userId</span><span>)</span>
+
+     <span>try</span> <span>{</span>
+       <span>run</span><span>.</span><span>apply</span><span>(</span><span>env</span><span>,</span> <span>args</span><span>)</span>
+     <span>}</span> <span>catch </span><span>(</span><span>runtimeError</span><span>)</span> <span>{</span>
+       <span>console</span><span>.</span><span>error</span><span>(</span><span>logname</span><span>,</span> <span>'</span><span>error at runtime</span><span>'</span><span>)</span>
+       <span>throw</span> <span>runtimeError</span>
+     <span>}</span>
+   <span>}</span>
+
+   <span>return</span> <span>options</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>This is how the updated method factory looks like using mixins:<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>createMethodFactory</span> <span>}</span> <span>from</span> <span>'</span><span>meteor/leaonline:method-factory</span><span>'</span>
+<span>import</span> <span>SimpleSchema</span> <span>from</span> <span>'</span><span>simpl-schema</span><span>'</span>
+<span>import</span> <span>{</span> <span>checkPermissions</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/checkPermissions</span><span>'</span>
+<span>import</span> <span>{</span> <span>logging</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/loggin</span><span>'</span>
+
+<span>export</span> <span>const</span> <span>createMethod</span> <span>=</span> <span>createMethodFactory</span><span>({</span>
+  <span>schemaFactory</span><span>:</span> <span>definitions</span> <span>=&gt;</span> <span>new</span> <span>SimpleSchema</span><span>(</span><span>definitions</span><span>),</span>
+  <span>mixins</span><span>:</span> <span>[</span><span>checkPermissions</span><span>,</span> <span>logging</span><span>]</span>
+<span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>These mixins are now applied to all methods automatically, without the need to assign them to each method on your own! Note, that the package would also allow to attach mixins only to a single method definition. If you want to read on the whole API documentation, you should checkout the repo:</p>
+
+
+<div id="readme" data-path="README.md"><article itemprop="text"><p dir="auto">
+<h2 dir="auto">Meteor ValidatedMethod Factory</h2>
+</p>
+
+<p dir="auto"><a href="https://standardjs.com/" rel="nofollow"><img src="data:application/octet-stream;base64," alt="JavaScript Style Guide" data-canonical-src="https://img.shields.io/badge/code_style-standard-brightgreen.svg"></a>
+<a href="https://www.repostatus.org/#active" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed." data-canonical-src="https://www.repostatus.org/badges/latest/active.svg"></a>
+<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/1119883bd58495bc168c154187ed2bf78c4bd804c562dfd6b4b743c211470095/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f73697a652f6c65616f6e6c696e652f6d6574686f642d666163746f72792f6d6574686f642d666163746f72792e6a73"><img src="data:application/octet-stream;base64," alt="GitHub file size in bytes" data-canonical-src="https://img.shields.io/github/size/leaonline/method-factory/method-factory.js"></a>
+<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/41ecba21c9dcfb5cfb51ea2b8a2e24ef87423a8af24b877b339e45a0f889e4f4/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f6c6963656e73652f6c65616f6e6c696e652f6d6574686f642d666163746f7279"><img src="data:application/octet-stream;base64," alt="GitHub" data-canonical-src="https://img.shields.io/github/license/leaonline/method-factory"></a></p>
+<p dir="auto">Create validated Meteor methods. Lightweight. Simple.</p>
+<p dir="auto">With this package you can define factory functions to create a variety of Meteor methods
+Decouples definition from instantiation (also for the schema) and allows different configurations for different
+types of methods.</p>
+<p dir="auto"><strong>Minified size &lt; 2KB!</strong></p>
+<p dir="auto">
+<h2 dir="auto">Why do I want this?</h2>
+</p>
+<ul dir="auto">
+<li>Decouple definition from instantiation</li>
+<li>Just pass in the schema as plain object, instead of manually instantiating <code>SimpleSchema</code>
+</li>
+<li>Create fixed mixins on the abstract factory level, on the factory level, or both (see mixins section)</li>
+</ul>
+<p dir="auto">
+<h2 dir="auto">Installation</h2>
+
+</p>
+<p dir="auto">Simply add this package to your meteor packages</p>
+<div dir="auto" data-snippet-clipboard-copy-content="$ meteor add leaonline:method-factory">
+<pre>$ meteor add leaonline:method-factory</pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+<p dir="auto">
+<h2 dir="auto">Usage</h2>
+
+</p>
+<p dir="auto">Import the <code>createMethodFactory</code> method and create the factory function from it:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="import { createMethodFactory } from 'meteor/leaonline:method-factory'
+
+const createMethod = createMethodFactory() // no params = use defaults
+const fancyMethod = createMethod({ name: 'fancy', validate: () => {}, run: () => 'fancy' }) // minimal required
+fancyMethod.call() // 'fancy'">
+<pre><span>import</span> <span>{</span> <span>createMethodFactory</span> <span>}</span> <span>from</span> <span>'meteor/leaonline:method-factory'</span>
+<span>const</span> <span>createMethod</span> <span>=</span> <span>createMethodFactory</span><span>(</span><span>)</span> <span>// no params = use defaults</span>
+<span>const</span> <span>fancyMethod</span> <span>=</span> <span>createMethod</span><span>(</span><span>{</span> <span>name</span>: <span>'fancy'</span><span>,</span> <span>validate</span>: <span>(</span><span>)</span> <span>=&gt;</span> <span>{</span><span>}</span><span>,</span> <span>run</span>: <span>(</span><span>)</span> <span>=&gt;</span></pre><p>…</p><div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div></article></div>
+
+
+
+<hr>
+<h2>
+  <a name="publication-factory" href="#publication-factory">
+  </a>
+  Publication Factory
+</h2>
+
+<p>GitHub Link: <a href="https://github.com/leaonline/publication-factory">https://github.com/leaonline/publication-factory</a><br>
+Packosphere: <a href="https://packosphere.com/leaonline/publication-factory">https://packosphere.com/leaonline/publication-factory</a></p>
+
+<p>In Meteor you can subscribe to live updates of your Mongo collections. Meteor then takes care of all the syncing between server and the client. The server, however has to publish the data with all constraints as with methods (input validation, permissions etc.). </p>
+
+<p>We created a handy abstraction for publications in order to have a similar API like the method factory (or like <code>ValidatedMethod</code>). It also allows you to pass mixins as with methods and this even reuse the mixins! Let's create our publication factory:<br>
+</p>
+
+<div>
+<pre><code><span>import</span> <span>{</span> <span>createPublicationFactory</span> <span>}</span> <span>from</span> <span>'</span><span>meteor/leaonline:publication-factory</span><span>'</span>
+<span>import</span> <span>{</span> <span>checkPermissions</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/checkPermissions</span><span>'</span>
+<span>import</span> <span>{</span> <span>logging</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/loggin</span><span>'</span>
+
+<span>const</span> <span>createPublication</span> <span>=</span> <span>createPublicationFactory</span><span>({</span>
+  <span>schemaFactory</span><span>:</span> <span>definitions</span> <span>=&gt;</span> <span>new</span> <span>SimpleSchema</span><span>(</span><span>definitions</span><span>),</span>
+  <span>mixins</span><span>:</span> <span>[</span><span>checkPermissions</span><span>,</span> <span>logging</span><span>]</span>
+<span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Then add a publication to our Todos that publishes a single todos list:<br>
+</p>
+<div>
+<pre><code><span>Todos</span><span>.</span><span>publications</span> <span>=</span> <span>{</span>
+  <span>my</span><span>:</span> <span>{</span>
+    <span>name</span><span>:</span> <span>'</span><span>todos.publications.my</span><span>'</span><span>,</span>
+    <span>schema</span><span>:</span> <span>{</span>
+      <span>limit</span><span>:</span> <span>{</span>
+        <span>type</span><span>:</span> <span>Number</span><span>,</span>
+        <span>optional</span><span>:</span> <span>true</span>
+        <span>min</span><span>:</span> <span>1</span>
+      <span>}</span>
+    <span>},</span>
+    <span>run</span><span>:</span> <span>onServer</span><span>(</span><span>function </span><span>({</span> <span>limit</span> <span>=</span> <span>15</span> <span>}</span> <span>=</span> <span>{})</span> <span>{</span>
+      <span>const</span> <span>query</span> <span>=</span> <span>{</span> <span>userId</span><span>:</span> <span>this</span><span>.</span><span>userId</span> <span>}</span>
+      <span>const</span> <span>projection</span> <span>=</span> <span>{</span> <span>limit</span> <span>}</span>
+      <span>return</span> <span>getCollection</span><span>(</span><span>Todos</span><span>).</span><span>find</span><span>(</span><span>query</span><span>,</span> <span>projection</span><span>)</span>
+    <span>})</span>
+  <span>}</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>The creational pipeline is the same as the one we use for our methods:<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>Todos</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/Todos</span><span>'</span>
+<span>import</span> <span>{</span> <span>createPublication</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/createPublication</span><span>'</span>
+
+<span>Object</span><span>.</span><span>values</span><span>(</span><span>Todos</span><span>.</span><span>publications</span><span>).</span><span>forEach</span><span>(</span><span>options</span> <span>=&gt;</span> <span>createPublication</span><span>(</span><span>options</span><span>))</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>There are multiple benefits at this point: </p>
+
+<ol>
+<li>You have a readable and (mostly) descriptive way of defining, what Todos actually publishes. </li>
+<li>You can reuse the mixins you used in the Methods Factory.</li>
+<li>You can easily compose these factory methods together (which we will do in the last section)</li>
+</ol>
+
+<p>For more info on the package you should read the documentation on the GitHub repository:</p>
+
+
+<div id="readme" data-path="README.md"><article itemprop="text"><p dir="auto">
+<h2 dir="auto">Meteor Publication Factory</h2>
+</p>
+
+<p dir="auto"><a href="https://standardjs.com/" rel="nofollow"><img src="data:application/octet-stream;base64," alt="JavaScript Style Guide" data-canonical-src="https://img.shields.io/badge/code_style-standard-brightgreen.svg"></a>
+<a href="https://www.repostatus.org/#active" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed." data-canonical-src="https://www.repostatus.org/badges/latest/active.svg"></a>
+<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/608e2dd842623674bebda62b1c1fc423d8805a235c0a6a7f708ab0ec1dc0e920/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f73697a652f6c65616f6e6c696e652f7075626c69636174696f6e2d666163746f72792f7075626c69636174696f6e2d666163746f72792e6a73"><img src="data:application/octet-stream;base64," alt="GitHub file size in bytes" data-canonical-src="https://img.shields.io/github/size/leaonline/publication-factory/publication-factory.js"></a>
+<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/ab14286370ebb6ea1e069474d4e7841f557de7f248200ba7ed8308e0682ca4a1/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f6c6963656e73652f6c65616f6e6c696e652f7075626c69636174696f6e2d666163746f7279"><img src="data:application/octet-stream;base64," alt="GitHub" data-canonical-src="https://img.shields.io/github/license/leaonline/publication-factory"></a></p>
+<p dir="auto">Create validated Meteor publications. Lightweight. Simple.</p>
+<p dir="auto">With this package you can define factory functions to create a variety of Meteor publications
+Decouples definition from instantiation (also for the schema) and allows different configurations for different
+types of publications.</p>
+<p dir="auto"><strong>Minified size &lt; 2KB!</strong></p>
+<p dir="auto">
+<h2 dir="auto">Why do I want this?</h2>
+</p>
+<ul dir="auto">
+<li>Decouple definition from instantiation</li>
+<li>Validate publication arguments as with <code>mdg:validated-method</code>
+</li>
+<li>Just pass in the schema as plain object, instead of manually instantiating <code>SimpleSchema</code>
+</li>
+<li>Create mixins (similar to <code>mdg:validated-method</code>) on the abstract factory level, on the factory level, or both
+(see mixins section)</li>
+<li>Fail silently in case of errors (uses the publication's <code>error</code> and <code>ready</code>), undefined cursors or unexpected
+returntypes</li>
+</ul>
+<p dir="auto">
+<h2 dir="auto">Installation</h2>
+
+</p>
+<p dir="auto">Simply add this package to your meteor packages</p>
+<div dir="auto" data-snippet-clipboard-copy-content="$ meteor add leaonline:publication-factory">
+<pre>$ meteor add leaonline:publication-factory</pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+<p dir="auto">
+<h2 dir="auto">Usage</h2>
+
+</p>
+<p dir="auto">Import the <code>createPublicationFactory</code> publication and create the factory function from it:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="import { createPublicationFactory } from 'meteor/leaonline:publication-factory'
+import { MyCollection } from '/path/to/MyCollection'
+
+const createPublication = createPublicationFactory() // no params = use defaults
+const fancyPublication = createPublication({ name: 'fancy', validate: () => {}, run: () => MyCollection.find() }) // minimal required">
+<pre><span>import</span> <span>{</span> <span>createPublicationFactory</span> <span>}</span> <span>from</span> <span>'meteor/leaonline:publication-factory'</span>
+<span>import</span> <span>{</span> <span>MyCollection</span> <span>}</span> <span>from</span> <span>'/path/to/MyCollection'</span>
+<span>const</span> <span>createPublication</span></pre><p>…</p><div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div></article></div>
+
+
+
+<hr>
+<h2>
+  <a name="rate-limiting" href="#rate-limiting">
+  </a>
+  Rate Limiting
+</h2>
+
+<p>GitHub Link: <a href="https://github.com/leaonline/ratelimit-factory">https://github.com/leaonline/ratelimit-factory</a><br>
+Packosphere: <a href="https://packosphere.com/leaonline/ratelimit-factory">https://packosphere.com/leaonline/ratelimit-factory</a></p>
+
+<p>Every time you use Methods and Publications you should use Meteor's DDP rate limiter to prevent overloading server resources by massive calls to heavy methods or publications.</p>
+
+<p>You can also read <a href="https://docs.meteor.com/api/methods.html#ddpratelimiter">more on rate limiting in the official Meteor docs</a>.</p>
+
+<p>We provide with our ratelimiter factory a fast and effective way to include ratelimiting to your Methods, Publications and Meteor internals:<br>
+</p>
+
+<div>
+<pre><code><span>$ </span>meteor add leaonline:ratelimit-factory
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Then add the Method or Publication definitions to the rateLimiter:<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>Todos</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/Todos</span><span>'</span>
+<span>import</span> <span>{</span> 
+  <span>runRateLimiter</span><span>,</span>
+  <span>rateLimitMethod</span><span>,</span>
+  <span>rateLimitPublication</span>
+<span>}</span> <span>from</span> <span>'</span><span>meteor/leaonline:ratelimit-factory</span><span>'</span>
+
+<span>// ...</span>
+
+<span>Object</span><span>.</span><span>values</span><span>(</span><span>Todos</span><span>.</span><span>publications</span><span>).</span><span>forEach</span><span>(</span><span>options</span> <span>=&gt;</span> <span>{</span>
+  <span>createPublication</span><span>(</span><span>options</span><span>)</span>
+  <span>rateLimitPublication</span><span>(</span><span>options</span><span>)</span>
+<span>})</span>
+
+<span>Object</span><span>.</span><span>values</span><span>(</span><span>Todos</span><span>.</span><span>methods</span><span>).</span><span>forEach</span><span>(</span><span>options</span> <span>=&gt;</span> <span>{</span>
+  <span>createMethod</span><span>(</span><span>options</span><span>)</span>
+  <span>rateLimitMethod</span><span>(</span><span>options</span><span>)</span>
+<span>})</span>
+
+<span>runRateLimiter</span><span>(</span><span>function </span><span>(</span><span>reply</span><span>,</span> <span>input</span><span>)</span> <span>{</span>
+  <span>// if the rate limiter has forbidden a call</span>
+  <span>if </span><span>(</span><span>!</span><span>reply</span><span>.</span><span>allowed</span><span>)</span> <span>{</span>
+    <span>const</span> <span>data</span> <span>=</span> <span>{</span> <span>...</span><span>reply</span><span>,</span> <span>...</span><span>input</span> <span>}</span>
+    <span>console</span><span>.</span><span>error</span><span>(</span><span>'</span><span>rate limit exceeded</span><span>'</span><span>,</span> <span>data</span><span>)</span>
+  <span>}</span>
+<span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Under the hood the whole package uses <a href="https://docs.meteor.com/api/methods.html#ddpratelimiter">DDPRateLimiter</a> so you can also add <code>numRequests</code> and <code>timeInterval</code> to your Method or Publication definitions to get more fine-grained rate limits.</p>
+
+
+<hr>
+<h2>
+  <a name="http-endpoints" href="#http-endpoints">
+  </a>
+  HTTP endpoints
+</h2>
+
+<p>GitHub Link: <a href="https://github.com/leaonline/http-factory">https://github.com/leaonline/http-factory</a><br>
+Packosphere: <a href="https://packosphere.com/leaonline/http-factory">https://packosphere.com/leaonline/http-factory</a></p>
+
+<p>Creating HTTP endpoints is possible in Meteor but it operates at a very low-level, compared to Methods or Publications and can become very cumberstone with a growing code complexity.</p>
+
+<p>At lea.online we tried to abstract this process to make it  similar to defining Methods or Publications in a rather descriptive way (as shown in the above sections). The result is our HTTP-Factory:<br>
+</p>
+<div>
+<pre><code><span>$ </span>meteor add leaonline:http-factory
+<span>$ </span>meteor npm <span>install</span> <span>--save</span> body-parser
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<div>
+<pre><code><span>import</span> <span>{</span> <span>WebApp</span> <span>}</span> <span>from</span> <span>'</span><span>meteor/webapp</span><span>'</span>
+<span>import</span> <span>{</span> <span>createHTTPFactory</span> <span>}</span> <span>from</span> <span>'</span><span>meteor/leaonline:http-factory</span><span>'</span>
+<span>import</span> <span>bodyParser</span> <span>from</span> <span>'</span><span>body-parser</span><span>'</span>
+
+<span>WebApp</span><span>.</span><span>connectHandlers</span><span>.</span><span>urlEncoded</span><span>(</span><span>bodyParser</span> <span>/*, options */</span><span>)</span> <span>// inject body parser</span>
+
+<span>export</span> <span>const</span> <span>createHttpRoute</span> <span>=</span> <span>createHTTPFactory</span><span>({</span> 
+  <span>schemaFactory</span><span>:</span> <span>definitions</span> <span>=&gt;</span> <span>new</span> <span>SimpleSchema</span><span>(</span><span>definitions</span><span>)</span>
+ <span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Now let's define an HTTP endpoint on our <code>Todos</code>:<br>
+</p>
+<div>
+<pre><code><span>Todos</span><span>.</span><span>routes</span> <span>=</span> <span>{}</span>
+
+<span>Todos</span><span>.</span><span>routes</span><span>.</span><span>allPublic</span> <span>=</span> <span>{</span>
+  <span>path</span><span>:</span> <span>'</span><span>/todos/public</span><span>'</span><span>,</span>
+  <span>method</span><span>:</span> <span>'</span><span>get</span><span>'</span><span>,</span>
+  <span>schema</span><span>:</span> <span>{</span>
+    <span>limit</span><span>:</span> <span>{</span>
+      <span>type</span><span>:</span> <span>Number</span><span>,</span>
+      <span>optional</span><span>:</span> <span>true</span><span>,</span>
+      <span>min</span><span>:</span> <span>1</span>
+    <span>}</span>
+  <span>},</span>
+  <span>run</span><span>:</span> <span>onServer</span><span>(</span><span>function </span><span>(</span><span>req</span><span>,</span> <span>res</span><span>,</span> <span>next</span><span>)</span> <span>{</span>
+    <span>// use the api to get data instead if req</span>
+    <span>const</span> <span>{</span> <span>limit</span> <span>=</span> <span>15</span> <span>}</span> <span>=</span> <span>this</span><span>.</span><span>data</span><span>()</span>
+    <span>return</span> <span>getCollection</span><span>(</span><span>Todos</span><span>)</span>
+      <span>.</span><span>find</span><span>({</span> <span>isPublic</span><span>:</span> <span>true</span> <span>},</span> <span>{</span> <span>limit</span> <span>})</span>
+      <span>.</span><span>fetch</span><span>()</span>
+  <span>})</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Creating the endpoints at startup is, again, as easy as with the other factories:<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>Todos</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/Todos</span><span>'</span>
+<span>import</span> <span>{</span> <span>createHttpRoute</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/createHttpRoute</span><span>'</span>
+
+<span>Object</span><span>.</span><span>values</span><span>(</span><span>Todos</span><span>.</span><span>routes</span><span>).</span><span>forEach</span><span>(</span><span>options</span> <span>=&gt;</span> <span>createHttpRoute</span><span>(</span><span>options</span><span>))</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Calling the endpoint can be done with <code>fetch</code>, classic <code>XMLHttpRequest</code> or Meteor's <code>http</code> library (used in the example):<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>Todos</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/Todos</span><span>'</span>
+
+<span>HTTP</span><span>.</span><span>get</span><span>(</span><span>Todos</span><span>.</span><span>routes</span><span>.</span><span>allPublic</span><span>.</span><span>path</span><span>,</span> <span>{</span> <span>params</span><span>:</span> <span>{</span> <span>limit</span><span>:</span> <span>5</span> <span>}},</span> <span>(</span><span>err</span><span>,</span> <span>res</span><span>)</span> <span>=&gt;</span> <span>{</span>
+  <span>console</span><span>.</span><span>log</span><span>(</span><span>res</span><span>.</span><span>content</span><span>)</span> <span>// [{...}, {...}, {...},{...}, {...}]</span>
+<span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>This is just a very small snipped of what you can do with this package! Read more about the API and documentation in the GitHub repository: </p>
+
+
+<div id="readme" data-path="README.md"><article itemprop="text"><p dir="auto">
+<h2 dir="auto">Meteor HTTP Factory</h2>
+</p>
+
+<p dir="auto"><a href="https://standardjs.com/" rel="nofollow"><img src="data:application/octet-stream;base64," alt="JavaScript Style Guide" data-canonical-src="https://img.shields.io/badge/code_style-standard-brightgreen.svg"></a>
+<a href="https://www.repostatus.org/#active" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed." data-canonical-src="https://www.repostatus.org/badges/latest/active.svg"></a>
+<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/f86b9b3d68801600a732493557f5c08e8a5cfb3994d1c9888eeafe80f6438227/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f73697a652f6c65616f6e6c696e652f687474702d666163746f72792f687474702d666163746f72792e6a73"><img src="data:application/octet-stream;base64," alt="GitHub file size in bytes" data-canonical-src="https://img.shields.io/github/size/leaonline/http-factory/http-factory.js"></a>
+<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/e2fff5d81c8c052f0c8ff0338f2d27b600c23b4040ecc77e6b43dbf044f07ccf/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f6c6963656e73652f6c65616f6e6c696e652f687474702d666163746f7279"><img src="data:application/octet-stream;base64," alt="GitHub" data-canonical-src="https://img.shields.io/github/license/leaonline/http-factory"></a></p>
+<p dir="auto">Create Meteor <code>WebApp</code> (connect) HTTP middleware. Lightweight. Simple.</p>
+<p dir="auto">With this package you can define factory functions to create a variety of Meteor HTTP routes
+Decouples definition from instantiation (also for the schema) and allows different configurations for different
+types of HTTP routes.</p>
+<p dir="auto"><strong>Minified size &lt; 2KB!</strong></p>
+<p dir="auto">
+<h2 dir="auto">Table of Contents</h2>
+</p>
+
+
+<ul dir="auto">
+<li><a href="https://github.com/leaonline/http-factory#why-do-i-want-this">Why do I want this?</a></li>
+<li><a href="https://github.com/leaonline/http-factory#installation">Installation</a></li>
+<li>
+<a href="https://github.com/leaonline/http-factory#usage">Usage</a>
+<ul dir="auto">
+<li><a href="https://github.com/leaonline/http-factory#basic-example">Basic example</a></li>
+<li><a href="https://github.com/leaonline/http-factory#use-webapprawconnecthandlers">Use <code>WebApp.rawConnectHandlers</code></a></li>
+<li><a href="https://github.com/leaonline/http-factory#create-universal-handlers">Create universal handlers</a></li>
+<li><a href="https://github.com/leaonline/http-factory#specify-a-method">Specify a method</a></li>
+<li><a href="https://github.com/leaonline/http-factory#passing-data-to-the-next-handler">Passing data to the next handler</a></li>
+</ul>
+</li>
+<li>
+<a href="https://github.com/leaonline/http-factory#responding-with-errors">Responding with errors</a>
+<ul dir="auto">
+<li><a href="https://github.com/leaonline/http-factory#throwing-500-errors">Throwing 500 errors</a></li>
+<li><a href="https://github.com/leaonline/http-factory#handle-custom-error-responses">Handle custom error responses</a></li>
+</ul>
+</li>
+<li>
+<a href="https://github.com/leaonline/http-factory#with-schema">With schema</a>
+<ul dir="auto">
+<li><a href="https://github.com/leaonline/http-factory#using-simpleschema">Using SimpleSchema</a></li>
+<li><a href="https://github.com/leaonline/http-factory#overriding-validate-when-using-schema">Overriding <code>validate</code> when using schema</a></li>
+<li><a href="https://github.com/leaonline/http-factory#using-check">Using check</a></li>
+</ul>
+</li>
+<li>
+<a href="https://github.com/leaonline/http-factory#using-middleware">Using middleware</a>
+<ul dir="auto">
+<li><a href="https://github.com/leaonline/http-factory#define-global-middleware">Define global middleware</a></li>
+<li><a href="https://github.com/leaonline/http-factory#define-route-specific-middleware">Define route-specific middleware</a></li>
+<li><a href="https://github.com/leaonline/http-factory#define-middleware-using-the-internal-environment">Define middleware using the internal environment</a></li>
+</ul>
+</li>
+<li>
+<a href="https://github.com/leaonline/http-factory#codestyle">Codestyle</a>
+- <a href="https://github.com/leaonline/http-factory#via-npm">via npm</a>
+- <a href="https://github.com/leaonline/http-factory#via-meteor-npm">via Meteor npm</a>
+</li>
+<li>
+<a href="https://github.com/leaonline/http-factory#test">Test</a>
+- <a href="https://github.com/leaonline/http-factory#watch-mode">Watch mode</a>
+</li>
+<li><a href="https://github.com/leaonline/http-factory#changelog">Changelog</a></li>
+<li><a href="https://github.com/leaonline/http-factory#license">License</a></li>
+</ul>
+
+<p dir="auto">
+<h2 dir="auto">Why do I want this?</h2>
+
+</p>
+<ul dir="auto">
+<li>Decouple definition from instantiation</li>
+<li>Easy management between own and externally defined middleware on a local or global level</li>
+<li>Validate http request…</li>
+</ul></article></div>
+
+
+
+<hr>
+<h2>
+  <a name="files-and-gridfs" href="#files-and-gridfs">
+  </a>
+  Files and GridFs
+</h2>
+
+<p>GitHub Link: <a href="https://github.com/leaonline/grid-factory">https://github.com/leaonline/grid-factory</a><br>
+Packosphere: <a href="https://packosphere.com/leaonline/grid-factory">https://packosphere.com/leaonline/grid-factory</a></p>
+
+<p>Meteor has no builtin concept to upload Files but there are great packages out there, suche as <a href="https://github.com/VeliovGroup/Meteor-Files">Meteor-Files (ostrio:files)</a>.</p>
+
+<p>It supports uploading files to several storages, such as FileSystem, S3, Google Drive or Mongo's Builtin GridFs. The last one is a very tricky solution but provides a great way to upload files to the database without further need to register (and pay for) an external service or fiddling with paths and filesystem constraints.</p>
+
+<p>Fortunately we created a package with complete GridFs integration for Meteor-Files:<br>
+</p>
+
+<div>
+<pre><code><span>$ </span>meteor add leaonline:files-collection-factory ostrio:files
+<span>$ </span>meteor npm <span>install</span> <span>--save</span> mmmagic mime-types <span># optional</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>The second line is optional, these<br>
+</p>
+<div>
+<pre><code><span>import</span> <span>{</span> <span>MongoInternals</span> <span>}</span> <span>from</span> <span>'</span><span>meteor/mongo</span><span>'</span>
+<span>import</span> <span>{</span> <span>createGridFilesFactory</span> <span>}</span> <span>from</span> <span>'</span><span>meteor/leaonline:grid-factory</span><span>'</span>
+<span>import</span> <span>{</span> <span>i18n</span> <span>}</span> <span>from</span> <span>'</span><span>/path/to/i8n</span><span>'</span>
+<span>import</span> <span>fs</span> <span>from</span> <span>'</span><span>fs</span><span>'</span>
+
+<span>const</span> <span>debug</span> <span>=</span> <span>Meteor</span><span>.</span><span>isDevelopment</span>
+<span>const</span> <span>i18nFactory</span> <span>=</span> <span>(...</span><span>args</span><span>)</span> <span>=&gt;</span> <span>i18n</span><span>.</span><span>get</span><span>(...</span><span>args</span><span>)</span>
+<span>const</span> <span>createObjectId</span> <span>=</span> <span>({</span> <span>gridFsFileId</span> <span>})</span> <span>=&gt;</span> <span>new</span> <span>MongoInternals</span><span>.</span><span>NpmModule</span><span>.</span><span>ObjectID</span><span>(</span><span>gridFsFileId</span><span>)</span>
+<span>const</span> <span>bucketFactory</span> <span>=</span> <span>bucketName</span> <span>=&gt;</span> 
+  <span>new</span> <span>MongoInternals</span><span>.</span><span>NpmModule</span><span>.</span><span>GridFSBucket</span><span>(</span><span>MongoInternals</span><span>.</span><span>defaultRemoteCollectionDriver</span><span>().</span><span>mongo</span><span>.</span><span>db</span><span>,</span> <span>{</span> <span>bucketName</span> <span>})</span>
+<span>const</span> <span>defaultBucket</span> <span>=</span> <span>'</span><span>fs</span><span>'</span> <span>// resolves to fs.files / fs.chunks as default</span>
+<span>const</span> <span>onError</span> <span>=</span> <span>error</span> <span>=&gt;</span> <span>console</span><span>.</span><span>error</span><span>(</span><span>error</span><span>)</span>
+
+<span>export</span> <span>const</span> <span>createFilesCollection</span> <span>=</span> <span>createGridFilesFactory</span><span>({</span> 
+  <span>i18nFactory</span><span>,</span> 
+  <span>fs</span><span>,</span> 
+  <span>bucketFactory</span><span>,</span> 
+  <span>defaultBucket</span><span>,</span> 
+  <span>createObjectId</span><span>,</span> 
+  <span>onError</span><span>,</span> 
+  <span>debug</span> 
+<span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Now let's assume, our <code>Todos</code> app will have multiple users collaborating on lists and we want them to provide a profile picture then we can create a new FilesCollection with GridFs storage like so:<br>
+</p>
+<div>
+<pre><code><span>const</span> <span>ProfileImages</span> <span>=</span> <span>createFilesCollection</span><span>({</span>
+  <span>collectionName</span><span>:</span> <span>'</span><span>profileImages</span><span>'</span><span>,</span>
+  <span>bucketName</span><span>:</span> <span>'</span><span>images</span><span>'</span><span>,</span> <span>// put image collections in the 'images' bucket</span>
+  <span>maxSize</span><span>:</span> <span>3072000</span><span>,</span> <span>// 3 MB max in this example</span>
+  <span>validateUser</span><span>:</span> <span>function </span><span>(</span><span>userId</span><span>,</span> <span>file</span><span>,</span> <span>type</span><span>,</span> <span>translate</span><span>)</span> <span>{</span>
+    <span>// is this a valid and registered user?</span>
+    <span>if </span><span>(</span><span>!</span><span>userId</span> <span>||</span> <span>Meteor</span><span>.</span><span>users</span><span>.</span><span>find</span><span>(</span><span>userId</span><span>).</span><span>count</span><span>()</span> <span>!==</span> <span>1</span><span>)</span> <span>{</span>
+      <span>return</span> <span>false</span>
+    <span>}</span>
+
+    <span>const</span> <span>isOwner</span> <span>=</span> <span>userId</span> <span>===</span> <span>file</span><span>.</span><span>userId</span>
+    <span>const</span> <span>isAdmin</span> <span>=</span> <span>...</span><span>your</span> <span>code</span> <span>to</span> <span>determine</span> <span>admin</span>
+    <span>const</span> <span>isAllowedToDownload</span> <span>=</span>  <span>...</span><span>other</span> <span>custom</span> <span>rules</span>
+
+    <span>if </span><span>(</span><span>type</span> <span>===</span> <span>'</span><span>upload</span><span>'</span><span>)</span> <span>{</span>
+      <span>return</span> <span>Roles</span><span>.</span><span>userIsInRole</span><span>(</span><span>userId</span><span>,</span> <span>'</span><span>can-upload</span><span>'</span><span>,</span> <span>'</span><span>mydomain.com</span><span>'</span><span>)</span> <span>// example of using roles</span>
+    <span>}</span>
+
+    <span>if </span><span>(</span><span>type</span> <span>===</span> <span>'</span><span>download</span><span>'</span><span>)</span> <span>{</span>
+      <span>return</span> <span>isOwner</span> <span>||</span> <span>isAdmin</span> <span>||</span> <span>isAllowedToDownload</span> <span>// custom flags</span>
+    <span>}</span>
+
+    <span>if </span><span>(</span><span>type</span> <span>===</span> <span>'</span><span>remove</span><span>'</span><span>)</span> <span>{</span>
+     <span>// allow only owner to remove the file</span>
+     <span>return</span> <span>isOwner</span> <span>||</span> <span>isAdmin</span>
+    <span>}</span>
+
+    <span>throw</span> <span>new</span> <span>Error</span><span>(</span><span>translate</span><span>(</span><span>'</span><span>unexpectedCodeReach</span><span>'</span><span>))</span>
+  <span>}</span>
+<span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>With this short setup you will save lots of time and effort that you would waste, when trying to get this whole GridFs setup running.</p>
+
+<p>Read more on the API at the repository:</p>
+
+
+
+
+
+
+<hr>
+<h2>
+  <a name="a-composition-of-all-tools" href="#a-composition-of-all-tools">
+  </a>
+  A composition of all tools
+</h2>
+
+<p>The great thing about all these tools is, that they can easily be combined into a single pipeline while the several definitions control, what is actually to be created:<br>
+</p>
+
+<div>
+<pre><code><span>import</span> <span>{</span> <span>createCollection</span> <span>}</span> <span>from</span> <span>'</span><span>path/to/createCollection</span><span>'</span>
+<span>import</span> <span>{</span> <span>createFilesCollection</span> <span>}</span> <span>from</span> <span>'</span><span>path/to/createFilesCollection</span><span>'</span>
+<span>import</span> <span>{</span> <span>createMethod</span> <span>}</span> <span>from</span> <span>'</span><span>path/to/createMethod</span><span>'</span>
+<span>import</span> <span>{</span> <span>createPublication</span> <span>}</span> <span>from</span> <span>'</span><span>path/to/createPublication</span><span>'</span>
+<span>import</span> <span>{</span> <span>createHttpRoute</span> <span>}</span> <span>from</span> <span>'</span><span>path/to/createHttpRoute</span><span>'</span>
+
+<span>export</span> <span>const</span> <span>createBackend</span> <span>=</span> <span>definitions</span> <span>=&gt;</span> <span>{</span>
+  <span>const</span> <span>collection</span> <span>=</span> <span>createCollection</span><span>(</span><span>definitions</span><span>)</span>
+
+  <span>// files collections could be indicated by a files property</span>
+  <span>if </span><span>(</span><span>definitions</span><span>.</span><span>files</span><span>)</span> <span>{</span>
+    <span>createFilesCollection</span><span>({</span> <span>collection</span><span>,</span> <span>...</span><span>definition</span><span>.</span><span>files</span> <span>})</span>
+  <span>}</span>
+
+  <span>// there will be no op if no methods are defined</span>
+  <span>Object</span><span>.</span><span>values</span><span>(</span><span>definitions</span><span>.</span><span>methods</span> <span>||</span> <span>{}).</span><span>forEach</span><span>(</span><span>options</span> <span>=&gt;</span> <span>{</span>
+    <span>createMethod</span><span>(</span><span>options</span><span>)</span>
+    <span>rateLimitMethod</span><span>(</span><span>options</span><span>)</span>
+  <span>})</span>
+
+  <span>// there will be no op if no publications are defined</span>
+  <span>Object</span><span>.</span><span>values</span><span>(</span><span>definitions</span><span>.</span><span>publications</span> <span>||</span> <span>{}).</span><span>forEach</span><span>(</span><span>options</span> <span>=&gt;</span> <span>{</span>
+    <span>createMethod</span><span>(</span><span>options</span><span>)</span>
+    <span>rateLimitMethod</span><span>(</span><span>options</span><span>)</span>
+  <span>})</span>
+
+  <span>// there will be no op if no publications are defined</span>
+  <span>Object</span><span>.</span><span>values</span><span>(</span><span>definitions</span><span>.</span><span>routes</span> <span>||</span> <span>{}).</span><span>forEach</span><span>(</span><span>options</span> <span>=&gt;</span> <span>{</span>
+    <span>createRoute</span><span>(</span><span>options</span><span>)</span>
+  <span>})</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Once you have setup this pipeline you can pass in various definitions, similar to the <code>Todos</code> object. The benefits of this approach will become more visible, once your application grows in terms of collections, methods and publications.</p>
+
+<h2>
+  <a name="some-final-notes" href="#some-final-notes">
+  </a>
+  Some final notes
+</h2>
+
+<p>At lea.online we always try to improve our published code where we can. If you find any issues with the code in this article then please leave a comment and if you have trouble with the packages or miss crucial features then leave an issue in the repositories.</p>
+
+<p>We hope these tools will help you boosting your productivity! 🚀</p>
+
+
+<hr>
+<p>
+I regularly publish articles here on dev.to about <strong>Meteor</strong> and <strong>JavaScript</strong>. If you like what you are reading and want to support me, you can <a href="https://paypal.me/kuesterjan">send me a tip via PayPal</a>.
+
+</p><p>You can also find (and contact) me on <a href="https://github.com/jankapunkt/">GitHub</a>, <a href="https://twitter.com/kuester_jan">Twitter</a> and <a href="https://www.linkedin.com/in/jan-kuester/">LinkedIn</a>.</p>
+
+<p>Keep up with the latest development on Meteor by visiting <a href="https://blog.meteor.com/?utm_source=jkuester&amp;utm_medium=online&amp;utm_campaign=Q2-2022-Ambassadors">their blog</a> and if you are the same into Meteor like I am and want to show it to the world, you should check out the <a href="https://shop.meteor.com/?utm_source=jkuester&amp;utm_medium=online&amp;utm_campaign=Q2-2022-Ambassadors">Meteor merch store</a>.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

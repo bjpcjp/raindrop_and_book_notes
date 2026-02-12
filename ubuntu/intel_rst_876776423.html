@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Intel RST</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Intel RST</h1>
+    <p><strong>URL:</strong> <a href="https://help.ubuntu.com/rst">https://help.ubuntu.com/rst</a></p>
+    <p><strong>Tags:</strong> linux, ubuntu</p>
+    <p><strong>Bookmark ID:</strong> 876776423</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+<h2>Overview</h2>
+<p>Intel Rapid Storage Technology (RST) is a solution built into a range of Intel chipsets. On platforms that have RST support built and enabled in the computer’s BIOS, it allows users to group and manage multiple hard disks as single volumes. This functionality is known as the Redundant Array of Independent Disks (RAID).</p>
+<p>In some usage scenarios, RAID offers various advantages over the use of several disks independently. RAID offers multiple configurations - levels - which focus on performance and redundancy.</p>
+<p>A complete user guide is available through the <a href="https://www.intel.com/content/dam/support/us/en/documents/chipsets/imsm/sb/irst_user_guide.pdf">official Intel documentation</a>.</p>
+<h2>RST &amp; Ubuntu installation</h2>
+<p>If you intend to install Ubuntu on a computer that supports RST functionality, you may need to make operational adjustments to your setup before you can proceed.</p>
+<p>By default, the Ubuntu installer can detect certain RAID configurations, but it may not necessarily be able to access and use the hard disks grouped in them.</p>
+<p>If the Ubuntu installer cannot detect the hard disks you need, then before you can install Ubuntu, you will need to turn RST in the computer’s BIOS. The exact terminology and steps required to access and manage RST in BIOS often depend on the specific implementation by the platform vendor. For instance, Dell computers may have different settings from Lenovo or HP computers.</p>
+<p>Furthermore, you may already have Windows installed on the computer that uses RST. If you disable RST in the BIOS or change the RST configuration, Windows may become unbootable, as it may no longer be able to find and use the hard disks.</p>
+<h2>Possible installation scenarios</h2>
+<p>Broadly, there are two main configurations you may encounter when you try to install Ubuntu on a computer that supports and uses RST:</p>
+<div>
+<ul>
+<li><p>RST used and enabled, no operating system installed.</p></li>
+<li><p>RST used and enabled, Windows installed.</p></li>
+<li><p>RST enabled, no operating system installed.</p></li>
+</ul></div>
+<p>Again, there are two possible scenarios here:</p>
+<div>
+<ul>
+<li><p>The Ubuntu installer correctly detects the hard disks and can use them. In this case, you can proceed normally.</p></li>
+<li><p>The Ubuntu installer detects a conflict with RST and will notify the user that RST configuration is required.</p></li>
+</ul></div>
+<p>The latter scenario can be resolved by either one of the two changes:</p>
+<div>
+<ul>
+<li><p>Turning RST off completely in BIOS.</p></li>
+<li><p>Changing the storage controller protocol from RST to Advanced Host Controller Interface (AHCI). </p></li>
+</ul></div>
+<p>AHCI is a relatively new specification that describes how computer storage is accessed and managed, and it supersedes several older specifications. It is primarily designed to utilize advanced features of hard drives connected via the Serial ATA (SATA) bus. Typically, these will be 2.5-in and 3.5-in hard disks, including both mechanical and SSD devices. The change from RST to AHCI may result in the loss of some of the advanced functionality that the RST module offers (for instance TRIM for SSD).</p>
+<p>The exact terminology and steps required to access and manage controller type in BIOS often depend on the specific implementation by the platform vendor.</p>
+<h3>RST enabled, Windows installed</h3>
+<p>Similarly, there are two possible scenarios available:</p>
+<div>
+<ul>
+<li><p>The Ubuntu installer correctly detects the hard disks and can use them. In this case, you can proceed normally. You will need to create a side-by-side configuration for Windows and Ubuntu.</p></li>
+<li><p>The Ubuntu installer detects a conflict with RST and will notify the user that RST configuration change is required. In this case, the change will affect the installed Windows operating system.</p></li>
+</ul></div>
+<p>Caution: Please note that changes to storage configuration can be destructible and lead to irrecoverable loss of data. If you break a RAID setup, your data may no longer be accessible. Likewise, if you change the controller type from RST to AHCI, Windows may no longer be able to boot.</p>
+<h2>How to safely re-configure Windows to use AHCI</h2>
+<p>If the Ubuntu installer detects RST, and you have Windows installed on your system, there are several steps you need to do to allow Ubuntu to install side by side with Windows, without any loss of data and functionality.</p>
+<div>
+<ul>
+<li><p>Back your data up - any hard drive structure or configuration change, or installation of new operating systems on a hard drive that already contains data can potentially lead to a data loss. You need to make sure your personal data is safe. Even simply copying the important files to an external drive can minimize the risk of data loss.</p></li>
+<li><p>Verify which controller mode is in use in Windows. You can do this through the Device Manager. If the controller mode is set to anything other than “Standard SATA AHCI Controller”, then you will need to make a change that allows Windows to boot safely in AHCI mode. This can be done using the Registry Editor.</p></li>
+<li><p>Start Registry Editor, and navigate to:<br>
+</p><pre>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\iaStorV\</pre><br>
+<img src="data:application/octet-stream;base64," alt="Regedit"></li>
+<li><p>Here, in the right column, double-click on the Start key, and change its value to 0.</p></li>
+<li><div><p>Next, double-click on the iaStorV entry in the left column to expand it, select the StartOverride entry, and then in the right column, change the value of the key 0 to 0.</p><p>
+<img src="data:application/octet-stream;base64," alt="Regedit override"></p></div></li>
+<li><p>Repeat this set of changes for the following path in the Registry Editor:<br>
+</p><pre>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\storahci\</pre></li>
+</ul></div>
+<p>Once this step is complete, reboot Windows and start your computer’s BIOS. Normally, BIOS is accessed by hitting the F2 or Del key during the early boot sequence. In the BIOS menu, change the hard disk controller type to AHCI. The exact terminology and steps required to access and manage controller type in BIOS often depend on the specific implementation by the platform vendor.</p>
+<p>Exit BIOS, and let the system boot. Windows should load normally, and you can check the controller mode in the Device Manager. It should read: Standard SATA AHCI Controller.</p>
+<p><img src="data:application/octet-stream;base64," alt="Regedit override"></p>
+<h3>Possible boot problems</h3>
+<p>After making the necessary changes to allow Ubuntu to install side by side with Windows, you may encounter a situation where Windows no longer boots. For instance, this could happen if you made the BIOS change without making the registry changes in Windows. In this case, you will need to recover your Windows.</p>
+<p><img src="data:application/octet-stream;base64," alt="Regedit override"></p><p>You will most likely see a blue screen with a Stop code: INACCESSIBLE BOOT DEVICE.</p>
+<p>Windows will attempt to restart and automatically diagnose and repair the boot-related problems, but it will most likely not be able to complete the task itself, and you will need to manually launch the command prompt from the recovery screen, and fix the issue.</p>
+<p><img src="data:application/octet-stream;base64," alt="System boot"></p>
+<p><img src="data:application/octet-stream;base64," alt="Automatic repair"></p>
+<p>On the screen that gives you the result of the Automatic Repair, click on Advanced Options. Under Choose an option, select Troubleshoot. Next, selected Advanced Options again. Finally, select Command Prompt.</p>
+<p><img src="data:application/octet-stream;base64," alt="Automatic repair did not work"></p>
+<p><img src="data:application/octet-stream;base64," alt="Choose an option"></p>
+<p><img src="data:application/octet-stream;base64," alt="Troubleshoot"></p>
+<h3>Command prompt, diskpart and bcdedit</h3>
+<p>This will launch the Windows command prompt, where you can run commands to diagnose and repair problems, including boot-related issues. The first step is to run the disk partition tool to see and understand the disk layout.</p>
+<p><img src="data:application/octet-stream;base64," alt="Command prompt"></p>
+<p>On the command line, type <span>diskpart</span>. Next, you will need to display the list of volumes, make sure the volume that contains Windows is correctly assigned the letter C: (if it’s not, you will need to change this), make this volume active, and then run the boot repair command.</p>
+<p>The full sequence of commands is as follows:</p>
+<pre><p>diskpart<br>
+list volume<br>
+select volume [number]<br>
+assign letter=[letter]</p></pre>
+<p>For example, a “wrong” volume may be assigned the letter C:, so you will need to select it first, assign it a different letter (e.g.: F: or H:), select the volume that contains Windows, and then assign it the letter C:.</p>
+<p>Finally, activate the C: volume, and exit the diskpart utility.</p>
+<pre><p>activate<br>
+exit</p></pre>
+<p>Now, run the bcdedit repair command:</p>
+<pre><p>bcdedit /deletevalue {default} safeboot</p></pre>
+<p>If the above does not work, alternative commands you can run are:</p>
+<pre><p>bcdedit /deletevalue {current} safeboot<br>
+bcdedit /deletevalue safeboot</p></pre>
+<p>If this command completes successfully, exit the command prompt, the Windows recovery console will restart, and Windows should load normally, with the controller mode set to AHCI.</p>
+<p>If Windows does not start correctly, you can then manually recreate the bootloader file.</p>
+<pre><p>Bcdboot</p></pre>
+<p>To this end, you will need to access either the System partition or the EFI partition on your computer. The Windows disk layout will typically include one of these two configurations:</p>
+<p>A volume that contains Windows (C:) and a small hidden partition, usually 100MB in size called System partition, formatted as NTFS. It contains the files needed to start (boot) Windows, as well as recovery tools to help you diagnose and repair your system when it does not start correctly.</p>
+<p>On UEFI-powered computers, a volume that contains Windows (C:) and a boot partition (also called EFI), typically 256-512MB in size, formatted as FAT32. This partition will contain the files needed to start (boot) Windows.</p>
+<p>You will need to access the partition to make the necessary changes. If you have already run the diskpart utility, you do not need to do anything at this point, you only need to check the letter that is assigned to this partition (e.g.: letter F:).</p>
+<p>Switch to the boot partition, move the existing boot file aside, and then create a new one. The sequence of commands to do this is as follows (assuming letter F: for the boot partition):</p>
+<pre><p>F:<br>
+cd boot<br>
+ren BCD BCD.bak<br>
+bcdboot c:\windows /l en-us /s f: /f ALL</p></pre>
+<p>The bcdboot command will initialize the system partition by using BCD files from the C:\Windows folder, use the en-us locale (/l en-us), target the system partition assigned letter F: (/s option), and create boot files both for UEFI and BIOS (/f ALL option).</p>
+<p>Once this command completes, reboot. Windows should start normally. You can now re-launch the Ubuntu installer and finish the side-by-side setup of the two operating systems.
+              </p></div></div>
+  </div>
+</body>
+</html>

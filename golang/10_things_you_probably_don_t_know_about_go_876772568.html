@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>10 things you (probably) don't know about Go</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>10 things you (probably) don't know about Go</h1>
+    <p><strong>URL:</strong> <a href="https://talks.golang.org/2012/10things.slide#4">https://talks.golang.org/2012/10things.slide#4</a></p>
+    <p><strong>Tags:</strong> golang</p>
+    <p><strong>Bookmark ID:</strong> 876772568</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page">
+
+    <section>
+
+      <article>
+        <h2>10 things you (probably) don't know about Go</h2>
+        
+        
+        
+          <div>
+            
+  
+  <p>
+    Andrew Gerrand
+  </p>
+  
+
+  
+  <p>
+    Gopher
+  </p>
+  
+
+          </div>
+        
+      </article>
+
+  
+  
+      <article>
+      
+        <h3>1. Anonymous structs</h3>
+        
+  <ul>
+  
+    <li>Grouped globals</li>
+  
+  </ul>
+
+  
+  <div><pre>var config struct {
+    APIKey      string
+    OAuthConfig oauth.Config
+}
+
+config.APIKey = "BADC0C0A"</pre></div>
+  
+
+  <ul>
+  
+    <li>Template data</li>
+  
+  </ul>
+
+  
+  <div><pre>data := struct {
+    Title string
+    Users []*User
+}{
+    title,
+    users,
+}
+err := tmpl.Execute(w, data)</pre></div>
+  
+
+  
+  <p>
+    (Cheaper and safer than using <code>map[string]interface{}</code>.)
+  </p>
+  
+
+      
+      <span>2</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>1b. Anonymous structs</h3>
+        
+  <ul>
+  
+    <li>Test tables</li>
+  
+  </ul>
+
+  
+  <div><pre>var indexRuneTests = []struct {
+    s    string
+    rune rune
+    out  int
+}{
+    {"a A x", 'A', 2},
+    {"some_text=some_value", '=', 9},
+    {"☺a", 'a', 3},
+    {"a☻☺b", '☺', 4},
+}</pre></div>
+  
+
+  <ul>
+  
+    <li>Embedded lock</li>
+  
+  </ul>
+
+  
+  <div><pre>var hits struct {
+    sync.Mutex
+    n int
+}
+
+hits.Lock()
+hits.n++
+hits.Unlock()</pre></div>
+  
+
+      
+      <span>3</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>2. Nested structs</h3>
+        
+  <ul>
+  
+    <li>Decoding deeply nested JSON data</li>
+  
+  </ul>
+
+  
+  <div><pre>{"data": {"children": [
+  {"data": {
+    "title": "The Go homepage",
+    "url": "https://go.dev/"
+  }},
+  ...
+]}}</pre></div>
+  
+
+  
+  <div><pre>type Item struct {
+    Title string
+    URL   string
+}
+
+type Response struct {
+    Data struct {
+        Children []struct {
+            Data Item
+        }
+    }
+}</pre></div>
+  
+
+      
+      <span>4</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>3. Command-line godoc</h3>
+        
+  
+  <div><pre>% godoc sync Mutex
+PACKAGE
+
+package sync
+    import "sync"
+
+TYPES
+
+type Mutex struct {
+    // contains filtered or unexported fields
+}
+    A Mutex is a mutual exclusion lock. Mutexes can be created as part of
+    other structures; the zero value for a Mutex is an unlocked mutex.
+
+func (m *Mutex) Lock()
+    Lock locks m. If the lock is already in use, the calling goroutine
+    blocks until the mutex is available.
+
+func (m *Mutex) Unlock()
+    Unlock unlocks m. It is a run-time error if m is not locked on entry to
+    Unlock.
+
+    A locked Mutex is not associated with a particular goroutine. It is
+    allowed for one goroutine to lock a Mutex and then arrange for another
+    goroutine to unlock it.</pre></div>
+  
+
+      
+      <span>5</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>4. godoc -src</h3>
+        
+  
+  <div><pre>% godoc -src sync Mutex
+// A Mutex is a mutual exclusion lock.
+// Mutexes can be created as part of other structures;
+// the zero value for a Mutex is an unlocked mutex.
+type Mutex struct {
+    state int32
+    sema  uint32
+}</pre></div>
+  
+
+  
+  <p>
+    Also shows unexported state! Great for digging around.
+  </p>
+  
+
+      
+      <span>6</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>5. go get supports custom domains</h3>
+        
+  
+  <p>
+    Yep:
+  </p>
+  
+
+  
+  <div><pre>go get camlistore.org/pkg/netutil</pre></div>
+  
+
+  
+  <p>
+    See `go help importpath` for the details.
+  </p>
+  
+
+      
+      <span>7</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>6. Mock out the file system</h3>
+        
+  
+  <p>
+    Got a package that works with the file system, but don't want your tests to actually use the disk?
+  </p>
+  
+
+  
+  <div><pre>var fs fileSystem = osFS{}
+
+type fileSystem interface {
+    Open(name string) (file, error)
+    Stat(name string) (os.FileInfo, error)
+}
+
+type file interface {
+    io.Closer
+    io.Reader
+    io.ReaderAt
+    io.Seeker
+    Stat() (os.FileInfo, error)
+}
+
+// osFS implements fileSystem using the local disk.
+type osFS struct{}
+
+func (osFS) Open(name string) (file, error)        { return os.Open(name) }
+func (osFS) Stat(name string) (os.FileInfo, error) { return os.Stat(name) }</pre></div>
+  
+
+  
+  <p>
+    Implement your own fake <code>fileSystem</code> in and put it in <code>fs</code> while testing.
+  </p>
+  
+
+      
+      <span>8</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>7. Method expressions</h3>
+        
+  
+  <div><pre>type T struct {}
+func (T) Foo(s string) { println(s) }
+
+var fn func(T, string) = T.Foo</pre></div>
+  
+
+  
+  <p>
+    Real example from <code>os/exec</code>:
+  </p>
+  
+
+  
+  <div><pre>func (c *Cmd) stdin() (f *os.File, err error)
+func (c *Cmd) stdout() (f *os.File, err error)
+func (c *Cmd) stderr() (f *os.File, err error)</pre></div>
+  
+
+  
+  <div><pre>type F func(*Cmd) (*os.File, error)
+for _, setupFd := range []F{(*Cmd).stdin, (*Cmd).stdout, (*Cmd).stderr} {
+    fd, err := setupFd(c)
+    if err != nil {
+        c.closeDescriptors(c.closeAfterStart)
+        c.closeDescriptors(c.closeAfterWait)
+        return err
+    }
+    c.childFiles = append(c.childFiles, fd)
+}</pre></div>
+  
+
+      
+      <span>9</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>8. Send and receive on the same channel</h3>
+        
+  <div>
+<pre><span num="3">package main</span>
+<span num="4"></span>
+<span num="5">import "fmt"</span>
+<span num="6"></span>
+<span num="7">var battle = make(chan string)</span>
+<span num="8"></span>
+<span num="9">func warrior(name string, done chan struct{}) {</span>
+<span num="10">    select {</span>
+<span num="11">    case opponent := &lt;-battle:</span>
+<span num="12">        fmt.Printf("%s beat %s\n", name, opponent)</span>
+<span num="13">    case battle &lt;- name:</span>
+<span num="14">        // I lost :-(</span>
+<span num="15">    }</span>
+<span num="16">    done &lt;- struct{}{}</span>
+<span num="17">}</span>
+<span num="18"></span>
+<span num="19">func main() {</span>
+<span num="20">    done := make(chan struct{})</span>
+<span num="21">    langs := []string{"Go", "C", "C++", "Java", "Perl", "Python"}</span>
+<span num="22">    for _, l := range langs { go warrior(l, done) }</span>
+<span num="23">    for _ = range langs { &lt;-done }</span>
+<span num="24">}</span>
+</pre>
+</div>
+
+      
+      <span>10</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>9. Using close to broadcast</h3>
+        
+  <div>
+<pre><span>// +build ignore,OMIT
+
+package main
+
+import (
+	"fmt"
+	"time"
+	"math/rand"
+)
+
+</span></pre><pre><span num="11">func waiter(i int, block, done chan struct{}) {</span>
+<span num="12">    time.Sleep(time.Duration(rand.Intn(3000)) * time.Millisecond)</span>
+<span num="13">    fmt.Println(i, "waiting...")</span>
+<span num="14">    <b>&lt;-block</b></span>
+<span num="15">    fmt.Println(i, "done!")</span>
+<span num="16">    done &lt;- struct{}{}</span>
+<span num="17">}</span>
+<span num="18"></span>
+<span num="19">func main() {</span>
+<span num="20">    block, done := make(chan struct{}), make(chan struct{})</span>
+<span num="21">    for i := 0; i &lt; 4; i++ {</span>
+<span num="22">        go waiter(i, block, done)</span>
+<span num="23">    }</span>
+<span num="24">    time.Sleep(5 * time.Second)</span>
+<span num="25">    <b>close(block)</b></span>
+<span num="26">    for i := 0; i &lt; 4; i++ {</span>
+<span num="27">        &lt;-done</span>
+<span num="28">    }</span>
+<span num="29">}</span>
+</pre>
+</div>
+
+      
+      <span>11</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>9b. Using close to broadcast</h3>
+        
+  <div>
+<pre><span>// +build ignore,OMIT
+
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+</span></pre><pre><span num="11">func worker(i int, ch chan Work, quit chan struct{}) {</span>
+<span num="12">    var quitting bool</span>
+<span num="13">    for {</span>
+<span num="14">        select {</span>
+<span num="15">        case w := &lt;-ch:</span>
+<span num="16">            if quitting {</span>
+<span num="17">                w.Refuse(); fmt.Println("worker", i, "refused", w)</span>
+<span num="18">                break</span>
+<span num="19">            }</span>
+<span num="20">            w.Do(); fmt.Println("worker", i, "processed", w)</span>
+<span num="21">        case &lt;-quit:</span>
+<span num="22">            fmt.Println("worker", i, "quitting")</span>
+<span num="23">            quitting = true</span>
+<span num="24">        }</span>
+<span num="25">    }</span>
+<span num="26">}</span>
+<span num="27"></span>
+<span num="28">func main() {</span>
+<span num="29">    ch, quit := make(chan Work), make(chan struct{})</span>
+<span num="30">    go makeWork(ch)</span>
+<span num="31">    for i := 0; i &lt; 4; i++ { go worker(i, ch, quit) }</span>
+<span num="32">    time.Sleep(5 * time.Second)</span>
+<span num="33">    close(quit)</span>
+<span num="34">    time.Sleep(2 * time.Second)</span>
+<span num="35">}</span>
+</pre>
+<pre><span>
+type Work string
+func (w Work) Do() {
+	time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+}
+func (w Work) Refuse() {
+	time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond)
+}
+
+func makeWork(ch chan Work) {
+	for i := 0; ; i++ {
+		ch &lt;- Work(fmt.Sprintf("job %x", i))
+	}
+}
+</span></pre></div>
+
+      
+      <span>12</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>10. Nil channel in select</h3>
+        
+  <div>
+<pre><span>// +build ignore,OMIT
+
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+</span></pre><pre><span num="11">func worker(i int, ch chan Work, quit chan struct{}) {</span>
+<span num="12">    for {</span>
+<span num="13">        select {</span>
+<span num="14">        case w := &lt;-ch:</span>
+<span num="15">            <b>if quit == nil {</b></span>
+<span num="16">                w.Refuse(); fmt.Println("worker", i, "refused", w)</span>
+<span num="17">                break</span>
+<span num="18">            }</span>
+<span num="19">            w.Do(); fmt.Println("worker", i, "processed", w)</span>
+<span num="20">        case &lt;-quit:</span>
+<span num="21">            fmt.Println("worker", i, "quitting")</span>
+<span num="22">            <b>quit = nil</b></span>
+<span num="23">        }</span>
+<span num="24">    }</span>
+<span num="25">}</span>
+<span num="26"></span>
+<span num="27">func main() {</span>
+<span num="28">    ch, quit := make(chan Work), make(chan struct{})</span>
+<span num="29">    go makeWork(ch)</span>
+<span num="30">    for i := 0; i &lt; 4; i++ { go worker(i, ch, quit) }</span>
+<span num="31">    time.Sleep(5 * time.Second)</span>
+<span num="32">    close(quit)</span>
+<span num="33">    time.Sleep(2 * time.Second)</span>
+<span num="34">}</span>
+</pre>
+<pre><span>
+type Work string
+func (w Work) Do() {
+	time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+}
+func (w Work) Refuse() {
+	time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond)
+}
+
+func makeWork(ch chan Work) {
+	for i := 0; ; i++ {
+		ch &lt;- Work(fmt.Sprintf("job %x", i))
+	}
+}
+</span></pre></div>
+
+      
+      <span>13</span>
+      </article>
+  
+  
+  
+      <article>
+      
+        <h3>11. The gopher's name</h3>
+        
+<div>
+  <img src="https://talks.golang.org/2012/10things/gopher.jpg">
+</div>
+
+      
+      <span>14</span>
+      </article>
+  
+  
+
+      <article>
+        <h3>Thank you</h3>
+        
+          
+        
+      </article>
+
+    </section>
+
+    
+
+    
+
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Drawing to the Screen | Web Browser Engineering</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Drawing to the Screen | Web Browser Engineering</h1>
+    <p><strong>URL:</strong> <a href="https://browser.engineering/graphics.html">https://browser.engineering/graphics.html</a></p>
+    <p><strong>Tags:</strong> browsers, webdev</p>
+    <p><strong>Bookmark ID:</strong> 876781040</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page">
+
+
+<header>
+
+<a href="https://twitter.com/browserbook">Twitter</a> ·
+<a href="https://browserbook.substack.com/">Blog</a> ·
+<a href="https://patreon.com/browserengineering">Patreon</a> ·
+<a href="https://github.com/browserengineering/book/discussions">Discussions</a>
+</header>
+
+<nav>
+  Chapter 2 of <a href="https://browser.engineering/index.html" title="Table of Contents">Web Browser Engineering</a>.
+  <a rel="prev" title="Previous chapter" href="https://browser.engineering/http.html">&lt;</a>
+  <a rel="next" title="Next chapter" href="https://browser.engineering/text.html">&gt;</a>
+</nav>
+
+
+
+
+
+<nav id="toc">
+<ul>
+<li><a href="#creating-windows" id="toc-creating-windows">Creating
+Windows</a></li>
+<li><a href="#drawing-to-the-window" id="toc-drawing-to-the-window">Drawing to the Window</a></li>
+<li><a href="#laying-out-text" id="toc-laying-out-text">Laying Out
+Text</a></li>
+<li><a href="#scrolling-text" id="toc-scrolling-text">Scrolling
+Text</a></li>
+<li><a href="#faster-rendering" id="toc-faster-rendering">Faster
+Rendering</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+<li><a href="#outline" id="toc-outline">Outline</a></li>
+<li><a href="#exercises" id="toc-exercises">Exercises</a></li>
+</ul>
+</nav>
+
+<p>A web browser doesn’t just download a web page; it also has to show
+that page to the user. In the twenty-first century, that means a
+graphical application.<span><span>There are some obscure text-based browsers: I used
+<code>w3m</code> as my main browser for most of 2011. I don’t
+anymore.</span></span> So in this chapter we’ll equip our browser with a
+graphical user interface.</p>
+<h2 id="creating-windows">Creating Windows</h2>
+<p>Desktop and laptop computers run operating systems that provide
+<em>desktop environments</em>: windows, buttons, and a mouse. So
+responsibility ends up split: programs control their windows, but the
+desktop environment controls the screen. Therefore:</p>
+<ul>
+<li>The program asks for a new window and the desktop environment
+actually displays it.</li>
+<li>The program draws to its window and the desktop environment puts
+that on the screen.</li>
+<li>The desktop environment tells the program about clicks and key
+presses, and the program responds and redraws its window.</li>
+</ul>
+<p>Doing all of this by hand is a bit of a drag, so programs usually use
+a <em>graphical toolkit</em> to simplify these steps. Python comes with
+a graphical toolkit called Tk in the Python package
+<code>tkinter</code>.<span><span>The
+library is called Tk, and it was originally written for a different
+language called Tcl. Python contains an interface to it, hence the
+name.</span></span> Using it is quite simple:</p>
+<div id="cb1" data-expected="False"><pre><code><span id="cb1-1"><span>import</span> tkinter</span>
+<span id="cb1-2">window <span>=</span> tkinter.Tk()</span>
+<span id="cb1-3">tkinter.mainloop()</span></code></pre></div>
+<p>Here, <code>tkinter.Tk()</code> asks the desktop environment to
+create a window and returns an object that you can use to draw to the
+window. The <code>tkinter.mainloop()</code> call enters a loop that
+looks like this:<span><span>This
+pseudocode may look like an infinite loop that locks up the computer,
+but it’s not. Either the operating system will multitask among threads
+and processes, or the <code>pendingEvents</code> call will sleep until
+events are available, or both; in any case, other code will run and
+create events for the loop to respond to.</span></span></p>
+
+<div id="cb2"><pre><code><span id="cb2-1"><span>while</span> <span>True</span>:</span>
+<span id="cb2-2">    <span>for</span> evt <span>in</span> pendingEvents():</span>
+<span id="cb2-3">        handleEvent(evt)</span>
+<span id="cb2-4">    drawScreen()</span></code></pre></div>
+<div>
+<figure>
+<img src="data:application/octet-stream;base64," alt="Figure 1: Flowchart of an event-handling cycle.">
+
+</figure>
+</div>
+<p>Here, <code>pendingEvents</code> first asks the desktop environment
+for recent mouse clicks or key presses, then <code>handleEvent</code>
+calls your application to update state, and then <code>drawScreen</code>
+redraws the window. This <em>event loop</em> pattern (see Figure 1) is
+common in many applications, from web browsers to video games, because
+in complex graphical applications it ensures that all events are
+eventually handled and the screen is eventually updated.</p>
+<div>
+<p>Although you’re probably writing your browser on a desktop computer,
+many people access the web through mobile devices such as phones or
+tablets. On mobile devices there’s still a screen, a rendering loop, and
+most other things discussed in this book.<span><span>For example, most real
+browsers have both desktop and mobile editions, and the rendering engine
+code is almost exactly the same for both.</span></span></p>
+<p>But there are several differences worth noting. Applications are
+usually full-screen, with only one application drawing to the screen at
+a time. There’s no mouse and only a virtual keyboard, so the main form
+of interaction is touch. There is the concept of a “visual viewport”
+that is not present on a desktop, to accommodate “desktop-only” and
+“mobile-ready” sites, as well as pinch zoom.<span><span>Look at the source of <a href="https://browser.engineering/graphics.html">this chapter’s
+webpage</a>. In the <code>&lt;head&gt;</code> you’ll see a “viewport”
+<code>&lt;meta&gt;</code> tag. This tag tells the browser that the page
+supports mobile devices; without it, the browser assumes that the site
+is “desktop-only” and renders it differently, such as allowing the user
+to use a pinch-zoom or double-tap gesture to focus in on one part of the
+page. Once zoomed in, the part of the page visible on the screen is the
+“visual viewport” and the whole documents’ bounds are the “layout
+viewport”. This is kind of a mix between zooming and scrolling that’s
+usually absent on desktop.</span></span> And screen pixel density is
+much higher, but the total screen resolution is usually lower.
+Supporting all of these differences is doable, but quite a bit of work.
+This book won’t go further into implementing them, except in some cases
+as exercises.</p>
+<p>Also, power efficiency is much more important, because the device
+runs on a battery, while at the same time the central processing unit
+(CPU) and memory are significantly slower and less capable. That makes
+it much more important to take advantage of any graphical processing
+unit (GPU)—the slow CPU makes good performance harder to achieve. Mobile
+browsers are challenging!</p>
+</div>
+<h2 id="drawing-to-the-window">Drawing to the Window</h2>
+<p>Our browser will draw the web page text to a <em>canvas</em>, a
+rectangular Tk widget that you can draw circles, lines, and text on. For
+example, you can create a canvas with Tk like this:<span><span>You may be familiar with the
+HTML <code>&lt;canvas&gt;</code> element, which is a similar idea: a
+two-dimensional rectangle in which you can draw
+shapes.</span></span></p>
+<div id="cb3"><pre><code><span id="cb3-1">window <span>=</span> tkinter.Tk()</span>
+<span id="cb3-2">canvas <span>=</span> tkinter.Canvas(window, width<span>=</span><span>800</span>, height<span>=</span><span>600</span>)</span>
+<span id="cb3-3">canvas.pack()</span></code></pre></div>
+<p>The first line creates the window, and the second creates the
+<code>Canvas</code> inside that window. We pass the window as an
+argument, so that Tk knows where to display the canvas. The other
+arguments define the canvas’s size; I chose 800 × 600 because that was a
+common old-timey monitor size.<span><span>This size, called Super Video Graphics Array (SVGA), was
+standardized in 1987, and probably did seem super back
+then.</span></span> The third line is a Tk peculiarity, which positions
+the canvas inside the window. Tk also has widgets like buttons and
+dialog boxes, but our browser won’t use them: we will need finer-grained
+control over appearance, which a canvas provides.<span><span>This is why desktop
+applications are more uniform than web pages: desktop applications
+generally use widgets provided by a common graphical toolkit, which
+makes them look similar.</span></span></p>
+<p>To keep it all organized let’s put this code in a class:</p>
+<div id="cb4"><pre><code><span id="cb4-1">WIDTH, HEIGHT <span>=</span> <span>800</span>, <span>600</span></span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span>class</span> Browser:</span>
+<span id="cb4-4">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb4-5">        <span>self</span>.window <span>=</span> tkinter.Tk()</span>
+<span id="cb4-6">        <span>self</span>.canvas <span>=</span> tkinter.Canvas(</span>
+<span id="cb4-7">            <span>self</span>.window, </span>
+<span id="cb4-8">            width<span>=</span>WIDTH,</span>
+<span id="cb4-9">            height<span>=</span>HEIGHT</span>
+<span id="cb4-10">        )</span>
+<span id="cb4-11">        <span>self</span>.canvas.pack()</span></code></pre></div>
+<p>Once you’ve made a canvas, you can call methods that draw shapes on
+the canvas. Let’s do that inside <code>load</code>, which we’ll move
+into the new <code>Browser</code> class:</p>
+<div id="cb5" data-expected="False"><pre><code><span id="cb5-1"><span>class</span> Browser:</span>
+<span id="cb5-2">    <span>def</span> load(<span>self</span>, url):</span>
+<span id="cb5-3">        <span># ...</span></span>
+<span id="cb5-4">        <span>self</span>.canvas.create_rectangle(<span>10</span>, <span>20</span>, <span>400</span>, <span>300</span>)</span>
+<span id="cb5-5">        <span>self</span>.canvas.create_oval(<span>100</span>, <span>100</span>, <span>150</span>, <span>150</span>)</span>
+<span id="cb5-6">        <span>self</span>.canvas.create_text(<span>200</span>, <span>150</span>, text<span>=</span><span>"Hi!"</span>)</span></code></pre></div>
+<p>To run this code, create a <code>Browser</code>, call
+<code>load</code>, and then start the Tk <code>mainloop</code>:</p>
+<div id="cb6"><pre><code><span id="cb6-1"><span>if</span> <span>__name__</span> <span>==</span> <span>"__main__"</span>:</span>
+<span id="cb6-2">    <span>import</span> sys</span>
+<span id="cb6-3">    Browser().load(URL(sys.argv[<span>1</span>]))</span>
+<span id="cb6-4">    tkinter.mainloop()</span></code></pre></div>
+<p>You ought to see: a rectangle, starting near the top-left corner of
+the canvas and ending at its center; then a circle inside that
+rectangle; and then the text “Hi!” next to the circle, as in Figure
+2.</p>
+<div>
+<figure>
+<img src="data:application/octet-stream;base64," alt="Figure 2: The expected example output with a rectangle, circle, and text.">
+
+</figure>
+</div>
+<p>Coordinates in Tk refer to <em>x</em> positions from left to right
+and <em>y</em> positions from top to bottom. In other words, the bottom
+of the screen has <em>larger</em> <em>y</em> values, the opposite of
+what you might be used to from math. Play with the coordinates above to
+figure out what each argument refers to.<span><span>The answers are in the <a href="https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/canvas.html">online
+documentation</a>.</span></span></p>
+<p>The Tk canvas widget is quite a bit more powerful than what we’re
+using it for here. As you can see from <a href="https://tkdocs.com/tutorial/canvas.html">the tutorial</a>, you can
+move the individual things you’ve drawn to the canvas, listen to click
+events on each one, and so on. I’m not using those features in this
+book, because I want to teach you how to implement them yourself.</p>
+<h2 id="laying-out-text">Laying Out Text</h2>
+<p>Let’s draw a simple web page on this canvas. So far, our browser
+steps through the web page source code character by character and prints
+the text (but not the tags) to the console window. Now we want to draw
+the characters on the canvas instead.</p>
+<p>To start, let’s change the <code>show</code> function from the
+previous chapter into a function that I’ll call <code>lex</code><span><span>Foreshadowing future
+developments…</span></span> which just <em>returns</em> the textual
+content of an HTML document without printing it:</p>
+<div id="cb7"><pre><code><span id="cb7-1"><span>def</span> lex(body):</span>
+<span id="cb7-2">    text <span>=</span> <span>""</span></span>
+<span id="cb7-3">    <span># ...</span></span>
+<span id="cb7-4">    <span>for</span> c <span>in</span> body:</span>
+<span id="cb7-5">        <span># ...</span></span>
+<span id="cb7-6">        <span>elif</span> <span>not</span> in_tag:</span>
+<span id="cb7-7">            text <span>+=</span> c</span>
+<span id="cb7-8">    <span>return</span> text</span></code></pre></div>
+<p>Then, <code>load</code> will draw that text, character by
+character:</p>
+<div id="cb8" data-expected="False"><pre><code><span id="cb8-1"><span>def</span> load(<span>self</span>, url):</span>
+<span id="cb8-2">    <span># ...</span></span>
+<span id="cb8-3">    <span>for</span> c <span>in</span> text:</span>
+<span id="cb8-4">        <span>self</span>.canvas.create_text(<span>100</span>, <span>100</span>, text<span>=</span>c)</span></code></pre></div>
+<p>Let’s test this code on a real web page. For reasons that might seem
+inscrutable,<span><span>It’s to
+delay a discussion of basic typography to the next
+chapter.</span></span> let’s test it on the <a href="https://browser.engineering/examples/xiyouji.html">first chapter
+of <span lang="zh">西游记</span> or <em>Journey to the West</em></a>, a
+classic Chinese novel about a monkey. Run this URL<span><span>Right click on the link and "Copy URL". </span></span>
+through <code>request</code>, <code>lex</code>, and <code>load</code>.
+You should see a window with a big blob of black pixels inset a little
+from the top left corner of the window.</p>
+<p>Why a blob instead of letters? Well, of course, because we are
+drawing every letter in the same place, so they all overlap! Let’s fix
+that:</p>
+<div id="cb9" data-expected="False"><pre><code><span id="cb9-1">HSTEP, VSTEP <span>=</span> <span>13</span>, <span>18</span></span>
+<span id="cb9-2">cursor_x, cursor_y <span>=</span> HSTEP, VSTEP</span>
+<span id="cb9-3"><span>for</span> c <span>in</span> text:</span>
+<span id="cb9-4">    <span>self</span>.canvas.create_text(cursor_x, cursor_y, text<span>=</span>c)</span>
+<span id="cb9-5">    cursor_x <span>+=</span> HSTEP</span></code></pre></div>
+<p>The variables <code>cursor_x</code> and <code>cursor_y</code> point
+to where the next character will go, as if you were typing the text into
+a word processor. I picked the magic numbers—13 and 18—by trying a few
+different values and picking one that looked most readable.<span><span>In <a href="https://browser.engineering/text.html">Chapter
+3</a>, we’ll replace the magic numbers with font
+metrics.</span></span></p>
+<p>The text now forms a line from left to right. But with an
+800-pixel-wide canvas and 13 pixels per character, one line only fits
+about 60 characters. You need more than that to read a novel, so we also
+need to <em>wrap</em> the text once we reach the edge of the screen:</p>
+<div id="cb10" data-indent="8"><pre><code><span id="cb10-1"><span>for</span> c <span>in</span> text:</span>
+<span id="cb10-2">    <span># ...</span></span>
+<span id="cb10-3">    <span>if</span> cursor_x <span>&gt;=</span> WIDTH <span>-</span> HSTEP:</span>
+<span id="cb10-4">        cursor_y <span>+=</span> VSTEP</span>
+<span id="cb10-5">        cursor_x <span>=</span> HSTEP</span></code></pre></div>
+<p>The code increases <code>cursor_y</code> and resets
+<code>cursor_x</code><span><span>In
+the olden days of typewriters, increasing <em>y</em> meant
+<em>feed</em>ing in a new <em>line</em>, and resetting <em>x</em> meant
+<em>return</em>ing the <em>carriage</em> that printed letters to the
+left edge of the page. So the American Standard Code for Information
+Interchange (<a href="https://en.wikipedia.org/wiki/ASCII">ASCII</a>)
+standardized two separate characters—“carriage return” and “line
+feed”—for these operations, so that ASCII could be directly executed by
+teletypewriters. That’s why headers in HTTP are separated by
+<code>\r\n</code>, even though modern computers have no mechanical
+carriage.</span></span> once <code>cursor_x</code> goes past 787
+pixels.<span><span>Not 800, because
+we started at pixel 13 and I want to leave an even gap on both
+sides.</span></span> The sequence is shown in Figure 3. Wrapping the
+text this way makes it possible to read more than a single line.</p>
+<div>
+<p>Here’s a widget demonstrating that concept:</p>
+
+</div>
+<p>At this point you should be able to load up <a href="https://browser.engineering/examples/xiyouji.html">our example
+page</a> in your browser and have it look something like Figure 4.</p>
+<div>
+<figure>
+<img src="data:application/octet-stream;base64," alt="Figure 4: The first chapter of Journey to the West rendered in our browser.">
+
+</figure>
+</div>
+<p>Now we can read a lot of text, but still not all of it: if there’s
+enough text, not all of the lines will fit on the screen. We want users
+to <em>scroll</em> the page to look at different parts of it.</p>
+<p>In English text, you can’t wrap to the next line in the middle of a
+word (without hyphenation at least), but in Chinese that’s the default,
+even for words made up of multiple characters. For example, <span lang="zh">开关</span> meaning “switch” is composed of <span lang="zh">开</span> “on” and <span lang="zh">关</span> “off”, but it’s
+just fine to line-break after <span lang="zh">开</span>. You can change
+the default with the word-break CSS property: <code>break-all</code>
+allows line breaks anywhere, while <code>auto-phrase</code> prevents
+them inside even inside Chinese or Japanese words or phrases such as
+<span lang="zh">开关</span>. The “auto” part here refers to the fact
+that the words aren’t identified by the author but instead
+auto-detected, often <a href="https://unicode-org.github.io/icu/userguide/boundaryanalysis/break-rules.html#details-about-dictionary-based-break-iteration">using
+dynamic programming</a> based on a <a href="https://github.com/unicode-org/icu/blob/master/icu4c/source/data/brkitr/dictionaries/cjdict.txt">word
+frequency table</a>.</p>
+<h2 id="scrolling-text">Scrolling Text</h2>
+<p>Scrolling introduces a layer of indirection between page coordinates
+(this text is 132 pixels from the top of the <em>page</em>) and screen
+coordinates (since you’ve scrolled 60 pixels down, this text is 72
+pixels from the top of the <em>screen</em>)—see Figure 5. Generally
+speaking, a browser <em>lays out</em> the page—determines where
+everything on the page goes—in terms of page coordinates and then
+<em>rasters</em> the page—draws everything—in terms of screen
+coordinates.<span><span>Sort of.
+What actually happens is that the page is first drawn into a bitmap or
+GPU texture, then that bitmap/texture is shifted according to the
+scroll, and the result is rendered to the screen. <a href="https://browser.engineering/visual-effects.html">Chapter 11</a> will have more on this
+topic.</span></span></p>
+<figure>
+<img src="data:application/octet-stream;base64," alt="Figure 5: The difference between page and screen coordinates.">
+
+</figure>
+<p>Our browser will have the same split. Right now <code>load</code>
+computes both the position of each character and draws it: layout and
+rendering. Let’s instead have a <code>layout</code> function to compute
+and store the position of each character, and a separate
+<code>draw</code> function to then draw each character based on the
+stored position. This way, <code>layout</code> can operate with page
+coordinates and only <code>draw</code> needs to think about screen
+coordinates.</p>
+<p>Let’s start with <code>layout</code>. Instead of calling
+<code>canvas.create_text</code> on each character, let’s add it to a
+list, together with its position. Since <code>layout</code> doesn’t need
+to access anything in <code>Browser</code>, it can be a standalone
+function:</p>
+<div id="cb11"><pre><code><span id="cb11-1"><span>def</span> layout(text):</span>
+<span id="cb11-2">    display_list <span>=</span> []</span>
+<span id="cb11-3">    cursor_x, cursor_y <span>=</span> HSTEP, VSTEP</span>
+<span id="cb11-4">    <span>for</span> c <span>in</span> text:</span>
+<span id="cb11-5">        display_list.append((cursor_x, cursor_y, c))</span>
+<span id="cb11-6">        <span># ...</span></span>
+<span id="cb11-7">    <span>return</span> display_list</span></code></pre></div>
+<p>The resulting list of things to display is called a <em>display
+list</em>.<span><span>The term
+“display list” is standard.</span></span> Since <code>layout</code> is
+all about page coordinates, we don’t need to change anything else about
+it to support scrolling.</p>
+<p>Once the display list is computed, <code>draw</code> needs to loop
+through it and draw each character. Since <code>draw</code> does need
+access to the canvas, we make it a method on <code>Browser</code>:</p>
+<div id="cb12" data-expected="False"><pre><code><span id="cb12-1"><span>class</span> Browser:</span>
+<span id="cb12-2">    <span>def</span> draw(<span>self</span>):</span>
+<span id="cb12-3">        <span>for</span> x, y, c <span>in</span> <span>self</span>.display_list:</span>
+<span id="cb12-4">            <span>self</span>.canvas.create_text(x, y, text<span>=</span>c)</span></code></pre></div>
+<p>Now <code>load</code> just needs to call <code>layout</code> followed
+by <code>draw</code>:</p>
+<div id="cb13"><pre><code><span id="cb13-1"><span>class</span> Browser:</span>
+<span id="cb13-2">    <span>def</span> load(<span>self</span>, url):</span>
+<span id="cb13-3">        body <span>=</span> url.request()</span>
+<span id="cb13-4">        text <span>=</span> lex(body)</span>
+<span id="cb13-5">        <span>self</span>.display_list <span>=</span> layout(text)</span>
+<span id="cb13-6">        <span>self</span>.draw()</span></code></pre></div>
+<p>Now we can add scrolling. Let’s add a field for how far you’ve
+scrolled:</p>
+<div id="cb14"><pre><code><span id="cb14-1"><span>class</span> Browser:</span>
+<span id="cb14-2">    <span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb14-3">        <span># ...</span></span>
+<span id="cb14-4">        <span>self</span>.scroll <span>=</span> <span>0</span></span></code></pre></div>
+<p>The page coordinate <code>y</code> then has screen coordinate
+<code>y - self.scroll</code>:</p>
+<div id="cb15"><pre><code><span id="cb15-1"><span>def</span> draw(<span>self</span>):</span>
+<span id="cb15-2">    <span>for</span> x, y, c <span>in</span> <span>self</span>.display_list:</span>
+<span id="cb15-3">        <span>self</span>.canvas.create_text(x, y <span>-</span> <span>self</span>.scroll, text<span>=</span>c)</span></code></pre></div>
+<p>If you change the value of <code>scroll</code> the page will now
+scroll up and down. But how does the <em>user</em> change
+<code>scroll</code>?</p>
+<p>Most browsers scroll the page when you press the up and down keys,
+rotate the scroll wheel, drag the scroll bar, or apply a touch gesture
+to the screen. To keep things simple, let’s just implement the down
+key.</p>
+<p>Tk allows you to <em>bind</em> a function to a key, which instructs
+Tk to call that function when the key is pressed. For example, to bind
+to the down arrow key, write:</p>
+<div id="cb16"><pre><code><span id="cb16-1"><span>def</span> <span>__init__</span>(<span>self</span>):</span>
+<span id="cb16-2">    <span># ...</span></span>
+<span id="cb16-3">    <span>self</span>.window.bind(<span>"&lt;Down&gt;"</span>, <span>self</span>.scrolldown)</span></code></pre></div>
+<p>Here, <code>self.scrolldown</code> is an <em>event handler</em>, a
+function that Tk will call whenever the down arrow key is pressed.<span><span><code>scrolldown</code> is
+passed an <em>event object</em> as an argument by Tk, but since
+scrolling down doesn’t require any information about the key press
+besides the fact that it happened, <code>scrolldown</code> ignores that
+event object.</span></span> All it needs to do is increment
+<code>scroll</code> and redraw the canvas:</p>
+<div id="cb17"><pre><code><span id="cb17-1">SCROLL_STEP <span>=</span> <span>100</span></span>
+<span id="cb17-2"></span>
+<span id="cb17-3"><span>def</span> scrolldown(<span>self</span>, e):</span>
+<span id="cb17-4">    <span>self</span>.scroll <span>+=</span> SCROLL_STEP</span>
+<span id="cb17-5">    <span>self</span>.draw()</span></code></pre></div>
+<p>If you try this out, you’ll find that scrolling draws all the text a
+second time. That’s because we didn’t erase the old text before drawing
+the new text. Call <code>canvas.delete</code> to clear the old text:</p>
+<div id="cb18"><pre><code><span id="cb18-1"><span>def</span> draw(<span>self</span>):</span>
+<span id="cb18-2">    <span>self</span>.canvas.delete(<span>"all"</span>)</span>
+<span id="cb18-3">    <span># ...</span></span></code></pre></div>
+<p>Scrolling should now work!</p>
+<div>
+<p>Storing the display list makes scrolling faster: the browser isn’t
+doing <code>layout</code> every time you scroll. Modern browsers <a href="https://hacks.mozilla.org/2017/10/the-whole-web-at-maximum-fps-how-webrender-gets-rid-of-jank/">take
+this further</a>, retaining much of the display list even when the web
+page changes due to JavaScript or user interaction.</p>
+<p>In general, scrolling is the most common user interaction with web
+pages. Real browsers have accordingly invested a <em>tremendous</em>
+amount of time making it fast; we’ll get to some more of the ways they
+do this later in the book.</p>
+</div>
+<h2 id="faster-rendering">Faster Rendering</h2>
+<p><a name="framebudget"></a> Applications have to redraw page contents
+quickly for interactions to feel fluid,<span><span>On older systems, applications
+drew directly to the screen, and if they didn’t update, whatever was
+there last would stay in place, which is why in error conditions you’d
+often have one window leave “trails” on another. Modern systems use <a href="https://en.wikipedia.org/wiki/Compositing_window_manager">compositing</a>,
+which avoids trails and also improves performance and isolation.
+Applications still redraw their window contents, though, to change what
+is displayed. <a href="https://browser.engineering/animations.html">Chapter 13</a> discusses
+compositing in more detail.</span></span> and must respond quickly to
+clicks and key presses so the user doesn’t get frustrated. “Feel fluid”
+can be made more precise. Graphical applications such as browsers
+typically aim to redraw at a speed equal to the refresh rate, or
+<em>frame rate</em>, of the screen, and/or a fixed 60&nbsp;Hz.<span><span>Most screens today have a
+refresh rate of 60&nbsp;Hz, and that is generally considered fast enough to
+look smooth. However, new hardware is increasingly appearing with higher
+refresh rates, such as 120 Hz. It’s not yet clear if browsers can be
+made that fast. Some rendering engines, games in particular, refresh at
+lower rates on purpose if they know the rendering speed can’t keep
+up.</span></span> This means that the browser has to finish all its work
+in less than 1/60th of a second, or 16&nbsp;ms, in order to keep up. For this
+reason, 16&nbsp;ms is called the <em>animation frame budget</em> of the
+application.</p>
+<p>But scrolling in our browser is pretty slow.<span><span>How fast exactly seems to
+depend a lot on your operating system and default font.</span></span>
+Why? It turns out that loading information about the shape of a
+character, inside <code>create_text</code>, takes a while. To speed up
+scrolling we need to make sure to do it only when necessary (while at
+the same time ensuring the pixels on the screen are always correct).</p>
+<p>Real browsers have a lot of quite tricky optimizations for this, but
+for our browser let’s limit ourselves to a simple improvement: skip
+drawing characters that are offscreen:</p>
+<div id="cb19"><pre><code><span id="cb19-1"><span>for</span> x, y, c <span>in</span> <span>self</span>.display_list:</span>
+<span id="cb19-2">    <span>if</span> y <span>&gt;</span> <span>self</span>.scroll <span>+</span> HEIGHT: <span>continue</span></span>
+<span id="cb19-3">    <span>if</span> y <span>+</span> VSTEP <span>&lt;</span> <span>self</span>.scroll: <span>continue</span></span>
+<span id="cb19-4">    <span># ...</span></span></code></pre></div>
+<p>The first <code>if</code> statement skips characters below the
+viewing window; the second skips characters above it. In that second
+<code>if</code> statement, <code>y + VSTEP</code> is the bottom edge of
+the character, because characters that are halfway inside the viewing
+window still have to be drawn.</p>
+<p>Scrolling should now be pleasantly fast, and hopefully close to the
+16&nbsp;ms animation frame budget.<span><span>On my computer, it was still about double that budget, so
+there is work to do—we’ll get to that in future chapters.</span></span>
+And because we split <code>layout</code> and <code>draw</code>, we don’t
+need to change <code>layout</code> at all to implement this
+optimization.</p>
+<p>You should also keep in mind that not all web page interactions are
+animations—there are also discrete actions such as mouse clicks.
+Research has shown that it usually suffices to respond to a discrete
+action in [100&nbsp;ms]—below that threshold, most humans are not sensitive
+to discrete action speed. This is very different from interactions such
+as scroll, where a speed of less than 60&nbsp;Hz or so is quite noticeable.
+The difference between the two has to do with the way the human mind
+processes movement (animation) versus discrete action, and the time it
+takes for the brain to decide upon such an action, execute it, and
+understand its result.</p>
+<h2 id="summary">Summary</h2>
+<p>This chapter went from a rudimentary command-line browser to a
+graphical user interface with text that can be scrolled. The browser
+now:</p>
+<ul>
+<li>talks to your operating system to create a window;</li>
+<li>lays out the text and draws it to that window;</li>
+<li>listens for keyboard commands;</li>
+<li>scrolls the window in response.</li>
+</ul>
+<div>
+<p>And here is our browser rendering this very web page (it’s fullly
+interactive—after clicking on it to focus, you should be able to scroll
+with the down arrow):<span><span>This is the full browser source code, cross-compiled to
+JavaScript and running in an iframe. Click “restart” to choose a new web
+page to render, then “start” to render it. Subsequent chapters will
+include one of these at the end of the chapter so you can see how it
+improves.</span></span></p>
+
+</div>
+<p>Next, we’ll make this browser work on English text, handling
+complexities like variable-width characters, line layout, and
+formatting.</p>
+
+
+<h2 id="outline">Outline</h2>
+<p>The complete set of functions, classes, and methods in our browser
+should look something like this:</p>
+<p><code><span>class</span> URL:
+<code>    <span>def</span> __init__(url)
+</code>
+<code>    <span>def</span> request()
+</code>
+</code>
+<code><span>def</span> lex(body)
+</code>
+<code>WIDTH, HEIGHT
+</code>
+<code>HSTEP, VSTEP
+</code>
+<code><span>def</span> layout(text)
+</code>
+<code>SCROLL_STEP
+</code>
+<code><span>class</span> Browser:
+<code>    <span>def</span> __init__()
+</code>
+<code>    <span>def</span> draw()
+</code>
+<code>    <span>def</span> load(url)
+</code>
+<code>    <span>def</span> scrolldown(e)
+</code>
+</code>
+
+</p>
+<h2 id="exercises">Exercises</h2>
+<p>2-1 <em>Line breaks</em>. Change <code>layout</code> to end the
+current line and start a new one when it sees a newline character.
+Increment <em>y</em> by more than <code>VSTEP</code> to give the
+illusion of paragraph breaks. There are poems embedded in <em>Journey to
+the West</em>; now you’ll be able to make them out.</p>
+<p>2-2 <em>Mouse wheel</em>. Add support for scrolling up when you hit
+the up arrow. Make sure you can’t scroll past the top of the page. Then
+bind the <code>&lt;MouseWheel&gt;</code> event, which triggers when you
+scroll with the mouse wheel.<span><span>It will also trigger with touchpad gestures, if you don’t
+have a mouse.</span></span> The associated event object has an
+<code>event.delta</code> value which tells you how far and in what
+direction to scroll. Unfortunately, macOS and Windows give the
+<code>event.delta</code> objects opposite sign and different scales, and
+on Linux scrolling instead uses the <code>&lt;Button-4&gt;</code> and
+<code>&lt;Button-5&gt;</code> events.<span><span>The <a href="https://wiki.tcl-lang.org/page/mousewheel">Tk
+manual</a> has more information about this. Cross-platform applications
+are much harder to write than cross-browser ones!</span></span></p>
+<p>2-3 <em>Resizing</em>. Make the browser resizable. To do so, <a href="https://web.archive.org/web/20201111222645id_/http://effbot.org/tkinterbook/pack.htm">pass
+the <code>fill</code> and <code>expand</code> arguments</a> to
+<code>canvas.pack</code>, and call and bind to the
+<code>&lt;Configure&gt;</code> event, which happens when the window is
+resized. The window’s new width and height can be found in the
+<code>width</code> and <code>height</code> fields on the event object.
+Remember that when the window is resized, the line breaks must change,
+so you will need to call <code>layout</code> again.</p>
+<p>2-4 <em>Scrollbar</em>. Stop your browser from scrolling down past
+the last display list entry.<span><span>This is not quite right in a real browser; the browser
+needs to account for extra whitespace at the bottom of the screen or the
+possibility of objects purposefully drawn offscreen. In <a href="https://browser.engineering/layout.html">Chapter 5</a>, we’ll implement this
+correctly.</span></span> At the right edge of the screen, draw a blue,
+rectangular scrollbar. Make sure the size and position of the scrollbar
+reflects what part of the full document the browser can see, as in
+Figure 5. Hide the scrollbar if the whole document fits onscreen.</p>
+<p>2-5 <em>Emoji</em>. Add support for emoji to your browser 😀. Emoji
+are characters, and you can call <code>create_text</code> to draw them,
+but the results aren’t very good. Instead, head to <a href="https://openmoji.org/">the OpenMoji project</a>, download the emoji
+for <a href="https://openmoji.org/library/#emoji=1F600">“grinning
+face”</a> as a PNG file, resize it to 16 × 16 pixels, and save it to the
+same folder as the browser. Use Tk’s <code>PhotoImage</code> class to
+load the image and then the <code>create_image</code> method to draw it
+to the canvas. In fact, download the whole OpenMoji library (look for
+the “Get OpenMojis” button at the top right)—then your browser can look
+up whatever emoji is used in the page.</p>
+<p>2-6 <em><code>about:blank</code></em>. Currently, a malformed URL
+causes the browser to crash. It would be much better to have error
+recovery for that, and instead show a blank page, so that the user can
+fix the error. To do this, add support for the special
+<code>about:blank</code> URL, which should just render a blank page, and
+cause malformed URLs to automatically render as if they were
+<code>about:blank</code>.</p>
+<p>2-7 <em>Alternate text direction</em>. Not all languages read and lay
+out from left to right. Arabic, Persian, and Hebrew are good examples of
+right-to-left languages. Implement basic support for this with a
+command-line flag to your browser.<span><span>Once we get to <a href="https://browser.engineering/html.html">Chapter 4</a> you could
+instead use the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir"><code>dir</code></a>
+attribute on the <code>&lt;body&gt;</code> element.</span></span>
+English sentences should still lay out left-to-right, but they should
+grow from the right side of the screen (load <a href="https://browser.engineering/examples/example2-rtl.html">this example</a> in your favorite
+browser to see what I mean).<span><span>Sentences in an actual right-to-left language should do the
+opposite. And then there is vertical writing mode for some East Asian
+languages like Chinese and Japanese.</span></span></p>
+
+
+
+<nav>
+  Chapter 2 of <a href="https://browser.engineering/index.html" title="Table of Contents">Web Browser Engineering</a>.
+  <a rel="prev" title="Previous chapter" href="https://browser.engineering/http.html">&lt;</a>
+  <a rel="next" title="Next chapter" href="https://browser.engineering/text.html">&gt;</a>
+</nav>
+
+<p>Did you find this chapter useful? </p>
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Race Charts In R: How To Visualize And Compare Change Over Time With Gganim</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Race Charts In R: How To Visualize And Compare Change Over Time With Gganim</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/2024/06/race-charts-in-r-how-to-visualize-and-compare-change-over-time-with-gganimate">https://www.r-bloggers.com/2024/06/race-charts-in-r-how-to-visualize-and-compare-change-over-time-with-gganimate</a></p>
+    <p><strong>Tags:</strong> visualization, _r_</p>
+    <p><strong>Bookmark ID:</strong> 876797843</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					<!-- 
+<div style="min-height: 30px;">
+[social4i size="small" align="align-left"]
+</div>
+-->
+
+
+
+            <!-- Share buttons by mashshare.net - Version: 4.0.47-->
+
+	<p><img src="https://i1.wp.com/wordpress.appsilon.com/wp-content/uploads/2024/06/6671684b77c3acfda50cc0bf_gganimate2-p-800.png?w=450&amp;ssl=1" alt="" decoding="async" loading="lazy" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i1.wp.com/wordpress.appsilon.com/wp-content/uploads/2024/06/6671684b77c3acfda50cc0bf_gganimate2-p-800.png?w=450&amp;ssl=1"></p><p>So, you’ve mastered the basics of <a href="https://www.appsilon.com/post/r-gganimate" rel="nofollow" target="_blank">ggplot2 animation</a> and are now looking for a real-world challenge? You’re in the right place. After reading this one, you’ll know how to download and visualize stock data change through something known as <strong>race charts</strong>.</p>
+<p>You can think of race charts as dynamic visualizations (typically <a href="https://www.appsilon.com/post/ggplot2-bar-charts" rel="nofollow" target="_blank">bar charts</a>) that display a ranking of different items over time. In our case, we’ll build a stock price comparison animation that shows the average monthly stock price for 7 tickers for the last 10 years.</p>
+<p>Let’s start by gathering data. The best part – you can do it straight from R!</p>
+<blockquote><p>Want to use R to process huge volumes of data? <a href="https://www.appsilon.com/post/r-one-billion-row-challenge" rel="nofollow" target="_blank">Read our detailed comparison of tools and packages for efficiently handling 1 billion rows</a>.</p></blockquote>
+<h3>Table of contents:</h3>
+<ul role="list">
+<li>Data Gathering: How to Download and Organize Stock Data in R</li>
+<li>Step 1: Build and Style a Bar Chart for a Single Time Period</li>
+<li>Step 2: Chart Animation with R gganimate</li>
+<li>Summing up Race Charts in R</li>
+</ul>
+<p>‍</p>
+<h2>Data Gathering: How To Download And Organize Stock Data In R</h2>
+<p>The process of gathering data typically involves downloading CSV/Excel files from the web or connecting to a database of some sort. That couldn’t be further from the truth when it comes to <strong>financial data</strong>.</p>
+<p>You can download data for any ticker and any time period straight from R! Just make sure you have the `quantmod` package installed. And speaking of packages, these are the ones you’ll need today:</p>
+<div>
+<pre>library(quantmod)
+library(dplyr)
+library(lubridate)
+library(gganimate)</pre>
+</div>
+<p>If you don’t have them installed, simply run `install.packages(“”)` from the R console.</p>
+<p>Moving on, we’ll declare a vector of 7 tickers for which we want to download daily stock prices: Amazon, Apple, Google, Microsoft, Meta, Tesla, and Nvidia. For each, we’ll grab the <strong>last 10 years’</strong> worth of data, indicated with `start_date` and `end_date`.</p>
+<p>To demonstrate how this approach works, we’ll call the `quantmod::getSymbols()` function to display the first 10 rows of a returned dataframe for the Nvidia stock. It will make adequate API calls to Yahoo Finance for you:</p>
+<div>
+<pre># Define stock tickers and the time period
+tickers &lt;- c("AMZN", "AAPL", "GOOGL", "MSFT", "META", "TSLA", "NVDA")
+start_date &lt;- Sys.Date() - years(10)
+end_date &lt;- Sys.Date()
+
+# The getSymbols() function returns a data.frame of stock data for a given ticker
+head(getSymbols("NVDA", src = "yahoo", from = start_date, to = end_date, auto.assign = FALSE), 10)</pre>
+</div>
+<p>This is the output you’ll see:</p>
+<figure>
+<p><img decoding="async" src="https://cdn.prod.website-files.com/654fd3ad88635290d9845b9e/666beba8ddf32fdde6b3ffe4_1.webp" alt="" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://cdn.prod.website-files.com/654fd3ad88635290d9845b9e/666beba8ddf32fdde6b3ffe4_1.webp"></p><figcaption>Image 1 – Sample of Nvidia stock prices</figcaption></figure>
+<p>We only care about the <strong>Adjusted price</strong> and the date, which is represented by the dataframe index. Let’s see how to get the data for all tickers next.</p>
+<h3>How to Get Historical Data for All Tickers</h3>
+<p>The `get_monthly_averages()` is a custom function that will download stock data for a provided ticker. It will then rename the dataframe columns so that the ticker name is removed from them (needed for the aggregation later).</p>
+<p>As mentioned earlier, only the Adjusted price column is relevant, so we’ll construct a new dataframe with its value and the index (time period). We’ll then remove the day information from the date since we only care for monthly averages.</p>
+<p>Finally, the mean value for each time period is calculated and returned:</p>
+<div>
+<pre># Function to download and aggregate stock data
+get_monthly_averages &lt;- function(ticker) {
+  # Download stock data from Yahoo Finance
+  stock_data &lt;- getSymbols(ticker, src = "yahoo", from = start_date, to = end_date, auto.assign = FALSE) 
+  # Remove ticker prefix from column names
+  colnames(stock_data) &lt;- gsub(paste0(ticker, "\\."), "", colnames(stock_data)) 
+  # Keep only the 'Adjusted' column from the data
+  stock_data &lt;- stock_data[, "Adjusted"] 
+  # Convert the data to a data frame with Date and Adjusted columns
+  stock_data &lt;- data.frame(Date = index(stock_data), Adjusted = coredata(stock_data))
+  # Add a YearMonth column by flooring the Date to the nearest month
+  stock_data$YearMonth &lt;- floor_date(stock_data$Date, "month") 
+  
+  # Group the data by month and calcualte the mean adjusted price for each period
+  monthly_data &lt;- stock_data %&gt;% 
+    group_by(YearMonth) %&gt;%
+    summarize(Value = mean(Adjusted, na.rm = TRUE)) %&gt;%
+    ungroup() %&gt;%
+    mutate(Ticker = ticker)
+  
+  return(monthly_data)
+}</pre>
+</div>
+<p>With the function to get single stock data out of the way, you can now use the `lapply()` magic to apply the function to each of our 7 tickers. Here, we’ll also arrange the data by the time period (ascending) and the average stock value (descending):</p>
+<div>
+<pre>data &lt;- lapply(tickers, get_monthly_averages)
+data &lt;- bind_rows(data)
+data &lt;- data %&gt;%
+  arrange(YearMonth, desc(Value))
+
+head(data, 10)</pre>
+</div>
+<figure>
+<p><img decoding="async" src="https://cdn.prod.website-files.com/654fd3ad88635290d9845b9e/666bebdfceb639247242dbbe_2.webp" alt="" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://cdn.prod.website-files.com/654fd3ad88635290d9845b9e/666bebdfceb639247242dbbe_2.webp"></p><figcaption>Image 2 – Downloaded stock data for all 7 tickers</figcaption></figure>
+<p>You could say the following to interpret this data: <strong>Microsoft’s average stock price for the month June of the year 2014 was USD 35.5.</strong></p>
+<p>You now have the data, so the only thing left to do is to build some cool visualizations!</p>
+<h2>Step 1: Build And Style A Bar Chart For A Single Time Period</h2>
+<p>Rendering an animated chart takes time, so a good piece of advice is to <strong>start small</strong> by building a visualization for a single time period. This way, you’ll know everything looks exactly the way you want to.</p>
+<p>Race charts need one thing to work properly, and that is the <strong>rank</strong>. In our case, rank represents the position of the ticker’s value when compared to other tickers. In other words, it determines the position the column will have in a bar chart.</p>
+<p>While here, we’ll also add a label column (you’ll see why in a bit):</p>
+<div>
+<pre>chart_data &lt;- data %&gt;%
+  group_by(YearMonth) %&gt;%
+  mutate(
+    Rank = rank(-Value),
+    Label = paste0("$", round(Value, 2))
+  )
+
+head(chart_data, 10)</pre>
+</div>
+<p>Here’s what your dataframe should look like now:</p>
+<figure>
+<p><img decoding="async" src="https://cdn.prod.website-files.com/654fd3ad88635290d9845b9e/666bec00a2b87ec9ac6bc2a7_3.webp" alt="" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://cdn.prod.website-files.com/654fd3ad88635290d9845b9e/666bec00a2b87ec9ac6bc2a7_3.webp"></p><figcaption>Image 3 – Stock data with added Rank and Label columns</figcaption></figure>
+<p>Meta had the highest stock price in June 2014, so it’s ranked number 1. The exact opposite is true for Nvidia.</p>
+<p>The last thing we want to do before visualizing this data is to declare a <strong>custom color palette</strong>. We’ve grabbed the official brand color codes so the chart looks more representative:</p>
+<div>
+<pre>chart_colors &lt;- c(
+  AMZN = "#FF9900",
+  AAPL = "#555555",
+  GOOGL = "#0F9D58",
+  MSFT = "#FFB900",
+  META = "#0081FB",
+  TSLA = "#cc0000",
+  NVDA = "#76B900"
+)</pre>
+</div>
+<p>And now, onto the visualization. As mentioned, we’ll create it for a single time period first, and discuss animation in the following section.</p>
+<p>We’re creating a horizontal bar chart with the help of the `geom_tile()` function that’s typically used to build heatmaps. The two `geom_text()` calls are used to add ticker names and stock prices, both from their respective side of the chart. The rest of the code is related to styling, changing the theme, and playing around with the overall aesthetics:</p>
+<div>
+<pre>ggplot(chart_data %&gt;% filter(YearMonth == "2024-05-01"), aes(Rank, group = Ticker, fill = as.factor(Ticker), color = as.factor(Ticker))) +
+  geom_tile(aes(y = Value / 2, height = Value, width = 0.9), alpha = 0.9, color = NA) +
+  geom_text(aes(y = 0, label = Ticker), vjust = 0.2, hjust = 1.3) +
+  geom_text(aes(y = Value, label = Label, hjust = -0.15)) +
+  coord_flip(clip = "off", expand = FALSE) +
+  scale_x_reverse() +
+  scale_fill_manual(values = chart_colors) +
+  scale_color_manual(values = chart_colors) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.title = element_text(size = 18, face = "bold", color = "#424242"),
+    legend.position = "none",
+    plot.margin = margin(1, 2, 1, 2, unit = "cm")
+  )</pre>
+</div>
+<p>In the end, this is the chart you should end up with:</p>
+<figure>
+<p><img decoding="async" src="https://cdn.prod.website-files.com/654fd3ad88635290d9845b9e/666bec4649e6535ff2d0d944_4.webp" alt="" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://cdn.prod.website-files.com/654fd3ad88635290d9845b9e/666bec4649e6535ff2d0d944_4.webp"></p><figcaption>Image 4 – Static chart for a single time period</figcaption></figure>
+<p>Now let‘s see how to animate it!</p>
+<h2>Step 2: Chart Animation With R Gganimate</h2>
+<p>Good news – nothing much changes in the charting code. You only have to remove the data filtering so all time periods are captured, and also store the entire plot into a variable:</p>
+<div>
+<pre>p &lt;- ggplot(chart_data, aes(Rank, group = Ticker, fill = as.factor(Ticker), color = as.factor(Ticker))) +
+  geom_tile(aes(y = Value / 2, height = Value, width = 0.9), alpha = 0.9, color = NA) +
+  geom_text(aes(y = 0, label = Ticker), vjust = 0.2, hjust = 1.3) +
+  geom_text(aes(y = Value, label = Label, hjust = -0.15)) +
+  coord_flip(clip = "off", expand = FALSE) +
+  scale_x_reverse() +
+  scale_fill_manual(values = chart_colors) +
+  scale_color_manual(values = chart_colors) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.title = element_text(size = 18, face = "bold", color = "#424242"),
+    legend.position = "none",
+    plot.margin = margin(1, 2, 1, 2, unit = "cm")
+  )</pre>
+</div>
+<p>Now to build the animation, we’ll append the `transition_states()` function to our chart to indicate we want the chart to change between different states. Then, the `view_follow()` function allows the chart window to follow the data dynamically, but only on the Y-axis.</p>
+<p>The `labs()` function allows us to modify the title through the `{closest_state}` property. In simple terms, this updates the time period in the chart title:</p>
+<div>
+<pre>anim &lt;- p + transition_states(YearMonth, transition_length = 4, state_length = 1) +
+  view_follow(fixed_x = TRUE) +
+  labs(title = "Average monthly stock price in USD ({closest_state})")</pre>
+</div>
+<p>Finally, the `animate()` function will render a 1024×768 GIF with 600 frames in total (<a href="https://www.appsilon.com/post/r-gganimate#rendering" rel="nofollow" target="_blank">more info about different rendering options here</a>):</p>
+<div>
+<pre>animate(
+  anim,
+  width = 1024,
+  height = 768,
+  res = 150,
+  nframes = 600,
+  fps = 60,
+  end_pause = 60,
+  renderer = gifski_renderer("stock_race_chart.gif")
+)</pre>
+</div>
+<p>Once the rendering finishes, you’ll see the following chart saved to your disk:</p>
+<figure>
+<p><img decoding="async" src="https://i1.wp.com/cdn.prod.website-files.com/654fd3ad88635290d9845b9e/666befcf200bc6a1f55df164_gganim.gif?w=584&amp;ssl=1" alt="" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64,"></p><figcaption>Image 5 – Rendered race chart</figcaption></figure>
+<p>And that’s the basics of race charts for you. Let’s wrap things up next.</p>
+<h2>Summing Up Race Charts In R</h2>
+<p>Data visualization is a powerful tool. Given the option, almost no one would choose to stare at spreadsheets instead of charts. Animating these charts brings the whole thing to a different dimension.</p>
+<p>You now know how to breathe life into static and somewhat boring ggplot2 visualizations, which is an amazing skill to have. Animated charts make it easy to capture trends and shifts over time, ensuring your data stories are more engaging and easier to understand. They are especially useful in presentations and reports where you need to highlight <strong>key changes and patterns</strong> dynamically, rather than relying on a series of static images.</p>
+<p>‍<em>What are your thoughts on chart animation in R? Do you use gganimate or some other package?</em> <a href="https://go.appsilon.com/shiny4allcommunity" rel="nofollow" target="_blank">Let us know in our Slack community.</a></p>
+<blockquote><p>Are you hitting the wall with Excel? <a href="https://www.appsilon.com/post/r-programming-vs-excel-for-business-workflow" rel="nofollow" target="_blank">Here are 5 ways R can help you improve your business workflows</a>.</p></blockquote>
+<p>The post appeared first on appsilon.com/blog/.</p>
+
+
+            <!-- Share buttons by mashshare.net - Version: 4.0.47-->
+							</div></div>
+  </div>
+</body>
+</html>

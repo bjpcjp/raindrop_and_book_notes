@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using Siege to Stress Test an Application</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using Siege to Stress Test an Application</h1>
+    <p><strong>URL:</strong> <a href="http://sublimecoding.com/blog/2014/05/28/using-siege-to-stress-test-an-application">http://sublimecoding.com/blog/2014/05/28/using-siege-to-stress-test-an-application</a></p>
+    <p><strong>Tags:</strong> devops, web-servers</p>
+    <p><strong>Bookmark ID:</strong> 876782037</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section>
+        <!--kg-card-begin: markdown--><p>Recently the company I work for migrated to new servers. During this migration we were all fairly confident that our new architecture would work and would be able to sustain considerable traffic. How much traffic is "considerable traffic"? In all honesty, none of our team and even our consultants, could say for sure.</p>
+<p>In order to gain confidence in the new architecture we needed to test with our applications while it was running and getting real world data with out actually impacting our users. There are many options for stress testing applications, Jmeter, Apache Bench, Siege, Tsung, Locust. We chose to use Siege, it was one of the easiest to configure and use, and it just worked.</p>
+<p>Let's install Siege and run some test against your application.</p>
+<h5 id="hombrew">Hombrew</h5>
+<pre><code>brew install siege
+</code></pre>
+<h5 id="linux">Linux</h5>
+<p>Open Terminal</p>
+<p>Download the latest version of siege ( 4.0.4 – current)</p>
+<p><a href="http://download.joedog.org/siege/siege-latest.tar.gz?ref=sublimecoding.com">http://download.joedog.org/siege/siege-latest.tar.gz</a></p>
+<p>Extract the tarball</p>
+<pre><code>$ tar -xvf siege-latest.tar.gz
+</code></pre>
+<p>Change directories to the extracted directory (again, currently siege-4.0.4)</p>
+<pre><code>$ cd siege-4.0.4/
+</code></pre>
+<p>Run the following commands (one at a time) to build and install siege. If you have an older version of Siege read the INSTALL file for more instructions.</p>
+<pre><code>$ ./configure
+$ make
+$ make install
+</code></pre>
+<h5 id="checkyourversion">Check your version</h5>
+<p>Once your installation is complete, check your version to make sure it installed correctly:</p>
+<pre><code>$ siege --version
+</code></pre>
+<p>You should see an output like this, your version may be different:</p>
+<pre><code>SIEGE 4.0.4
+</code></pre>
+<h5 id="installingsiegeubuntu">Installing Siege Ubuntu</h5>
+<pre><code>$ sudo apt-get install siege
+</code></pre>
+<h5 id="installingsiegecentos">Installing Siege CentOS</h5>
+<pre><code>$ sudo yum install siege
+</code></pre>
+<h5 id="usingsiege">Using Siege</h5>
+<p>Siege out of the Box will work for most stress testing needs. There are a ton of configuration options. To generate the default config file run the following command.</p>
+<pre><code>$ siege.config
+</code></pre>
+<p>It will show you where it added the file. Typically this gets added into your users home directory.</p>
+<p>To start running tests against your website URL simply run:</p>
+<pre><code>$ siege -c10 -d10 -v http://www.mywebsite.com/
+</code></pre>
+<ul>
+<li>Warning: Do not try this against your production applications, Siege can very easily kick over servers, and require you to restart server services.</li>
+</ul>
+<p>-c is the number of concurrent users this can be ramped up into the hundreads.<br>
+-d is the delay between each users request, this is a random interval between 1 and the number specified in this case its 1-10 seconds.<br>
+-v tells the output from siege to be verbose and produce details information about each transaction.</p>
+<p>More commonly you do not want to slam a single sever URL with one request because this does not simulate real world traffic. Users do not just hit your home page repeatedly with no delay between.</p>
+<p>To get a better similation of user traffic we supplied Siege with a list of URLs to hit randomly. The URLs we used were pulled from apache logs, but you could pull them from any location you like. Web server logs tend to work the best since its the closest to real traffic.</p>
+<p>Below is a common test command we ran while testing our new servers. We adjusted the variables of -c and -d to increase the number of users, and how the traffic was quickly interacting with the endpoints. Two new parameters get introduced here.</p>
+<pre><code>$ siege -c 50 -d 10 -i -f /PathToFile/siegeTest.txt
+</code></pre>
+<p>-f is the path to the file you want to use. Urls should be serperated by a line break.<br>
+-i tells siege to randomly select URLs from this file. Each user it generates will randomly select one line and execute that request.</p>
+<p>Here is an example Siege url file, so you can see how the URLs are organized.</p>
+<pre><code>http://www.mywebsite.com/
+http://www.mywebsite.com/home
+http://www.mywebsite.com/about
+http://www.mywebsite.com/contact
+http://www.mywebsite.com/posts
+http://www.mywebsite.com/post/some-article
+http://www.mywebsite.com/post/another-article
+http://www.mywebsite.com/subscribe
+http://www.mywebsite.com/rss
+http://www.mywebsite.com/example-page
+</code></pre>
+<p>Happy sieging your servers!</p>
+<!--kg-card-end: markdown-->
+    </section></div>
+  </div>
+</body>
+</html>

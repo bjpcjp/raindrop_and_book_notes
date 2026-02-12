@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Upload and download files in Sinatra</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Upload and download files in Sinatra</h1>
+    <p><strong>URL:</strong> <a href="https://coderwall.com/p/xjlflg/upload-and-download-files-in-sinatra">https://coderwall.com/p/xjlflg/upload-and-download-files-in-sinatra</a></p>
+    <p><strong>Tags:</strong> ruby, sinatra</p>
+    <p><strong>Bookmark ID:</strong> 876793732</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>A simple example.</p>
+
+<p>List</p>
+
+<pre><code>get '/' do
+  list = Dir.glob("./files/*.*").map{|f| f.split('/').last}
+  # render list here
+end</code></pre>
+
+<p>Upload</p>
+
+<pre><code>post '/' do
+  tempfile = params['file'][:tempfile]
+  filename = params['file'][:filename]
+  File.copy(tempfile.path, "./files/#{filename}")
+  redirect '/'
+end</code></pre>
+
+<p>Download</p>
+
+<pre><code>get '/download/:filename' do |filename|
+  send_file "./files/#{filename}", :filename =&gt; filename, :type =&gt; 'Application/octet-stream'
+end</code></pre>
+
+<p>Delete</p>
+
+<pre><code>get '/remove/:filename' do |filename|
+  File.delete("./files/#{filename}")
+  redirect '/'
+end</code></pre></div></div>
+  </div>
+</body>
+</html>

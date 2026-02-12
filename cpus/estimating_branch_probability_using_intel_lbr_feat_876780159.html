@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Estimating branch probability using Intel LBR feature. | Easyperf</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Estimating branch probability using Intel LBR feature. | Easyperf</h1>
+    <p><strong>URL:</strong> <a href="https://easyperf.net/blog/2019/05/06/Estimating-branch-probability">https://easyperf.net/blog/2019/05/06/Estimating-branch-probability</a></p>
+    <p><strong>Tags:</strong> cpus</p>
+    <p><strong>Bookmark ID:</strong> 876780159</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+				<p><strong>Contents:</strong></p>
+<ul id="markdown-toc">
+  <li><a href="#recap-on-lbr" id="markdown-toc-recap-on-lbr">Recap on LBR</a></li>
+  <li><a href="#getting-to-a-real-world-case" id="markdown-toc-getting-to-a-real-world-case">Getting to a real world case</a></li>
+  <li><a href="#collecting-branch-statistics" id="markdown-toc-collecting-branch-statistics">Collecting branch statistics</a></li>
+  <li><a href="#analyzing-virtual-calls-and-jump-tables" id="markdown-toc-analyzing-virtual-calls-and-jump-tables">Analyzing virtual calls and jump tables</a></li>
+  <li><a href="#other-references" id="markdown-toc-other-references">Other references</a></li>
+</ul>
+
+<hr>
+<p><strong>Subscribe to my <a href="https://products.easyperf.net/newsletter">newsletter</a>, support me on <a href="https://www.patreon.com/dendibakh">Patreon</a> or by PayPal <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TBM3NW8TKTT34&amp;currency_code=USD&amp;source=url">donation</a>.</strong></p>
+
+<hr>
+
+<p>Intel LBR (Last branch record) is one of my favorite CPU performance monitoring features. I previously wrote about one interesting use case for using it. Here is the <a href="https://easyperf.net/blog/2019/04/03/Precise-timing-of-machine-code-with-Linux-perf">blog post</a> about how you can measure the number of cycles for a sequence of assembly instructions without fancy code instrumentation. Today I will write about another interesting use case for LBR feature that I use. In particular, having a code like:</p>
+<div><pre><code><span>if</span> <span>(</span><span>condition</span><span>)</span>
+  <span>// do something</span>
+<span>else</span>
+  <span>// do something else</span>
+</code></pre></div>
+<p>It would be interesting to know how much time the condition was true and how much it was false. Why we might want to know that? Well that’s one the key data we need to have for making better optimizing decisions. Knowing that condition is 99% of the time false, we better revert the condition and put the <code>else</code> branch first<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" rel="footnote">1</a></sup>. We also might want to outline <code>true</code> branch in a separate function<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" rel="footnote">2</a></sup>.</p>
+
+<p>In this article I will show one way to get this data without touching the source code. All you need to do is to have Linux environment with not too old Linux perf tool.</p>
+
+<p>I should say that it’s usually easier just to instrument the code (i.e. do printf logging of all the condition results) than to use sophisticated performance monitoring features. Manual code instrumentation will give a little bit better accuracy of the measurements, but usually the difference is negligible. The downside is that instrumentation gives more runtime performance overhead, whereas using LBR is almost free.</p>
+
+<p>It may look like a clear win for instrumentation method, but there are certain scenarios when you have no such option. First scenario is when you don’t have access to the source code of the application. We at Intel have such cases when people work under NDA on a customers application without having access to the source code of this application. Second scenario is when you have the sources, but you don’t know how the software was built or you can’t build it yourself.</p>
+
+<p>If you are in any of the 2 cases described above, you’ve better read the article so you know all the options available.</p>
+
+<h3 id="recap-on-lbr">Recap on LBR</h3>
+
+<p>The underlying CPU feature that allows this to happen is called LBR(Last Branch Record). LBR feature is used to track control flow of the program. This feature uses MSRs (Model Specific Registers) to store history of last taken branches. Why we are so interested in branches? Well, because this is how we are able to determine the control flow of our program. Since we are interested in branches which are always the last instructions in a basic blocks and all instructions in the basic block are guaranteed to be executed once, we can only focus on branches. Using this control flow statistics we can determine which path of our program (chain of basic blocks) is the hottest. This chain of hot blocks is sometimes called a Hyper Block.</p>
+
+<p>Traditionally LBR entry<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" rel="footnote">3</a></sup> has two important components: <code>FROM_IP</code> and <code>TO_IP</code>, which are basically source address of the branch and destination address. If we collect long enough history of source-destination pairs, we will be able to unwind the control flow of our program. Just like a call stack! Sounds nice and simple, right? It’s not that easy-peasy as it sounds, but keep on reading, with examples it will be more clear.</p>
+
+<h3 id="getting-to-a-real-world-case">Getting to a real world case</h3>
+
+<p>To demonstrate it’s power I took the example from my <a href="https://easyperf.net/blog/2019/04/10/Performance-analysis-and-tuning-contest-2">previous contest</a>. This is <a href="https://github.com/llvm-mirror/test-suite/tree/master/MultiSource/Benchmarks/7zip">7zip benchmark</a> which measures compression and decompression speed.</p>
+
+<p>First of all let’s run it through the <a href="https://easyperf.net/blog/2019/02/09/Top-Down-performance-analysis-methodology">TMAM process</a> and see where we have the bottleneck:</p>
+
+<div><pre><code><span>$ </span>~/pmu-tools/toplev.py <span>--core</span> S0-C0 <span>-l1</span> <span>-v</span> <span>--no-desc</span> taskset <span>-c</span> 0 ./7zip-benchmark b
+S0-C0    FE             Frontend_Bound:          10.93 +-     0.00 % Slots below
+S0-C0    BAD            Bad_Speculation:         41.98 +-     0.00 % Slots       &lt;<span>==</span>
+S0-C0    BE             Backend_Bound:           14.29 +-     0.00 % Slots      
+S0-C0    RET            Retiring:                32.80 +-     0.00 % Slots below
+</code></pre></div>
+
+<p>All right, let’s drill down on the next level:</p>
+<div><pre><code><span>$ </span>~/pmu-tools/toplev.py <span>--core</span> S0-C0 <span>-l2</span> <span>-v</span> <span>--no-desc</span> taskset <span>-c</span> 0 ./7zip-benchmark b
+S0-C0    FE             Frontend_Bound:                             13.74 +-     0.00 % Slots below
+S0-C0    BAD            Bad_Speculation:                            39.32 +-     0.00 % Slots      
+S0-C0    BE             Backend_Bound:                              15.61 +-     0.00 % Slots      
+S0-C0    RET            Retiring:                                   31.28 +-     0.00 % Slots below
+S0-C0    FE             Frontend_Bound.Frontend_Latency:             8.48 +-     0.00 % Slots below
+S0-C0    FE             Frontend_Bound.Frontend_Bandwidth:           5.28 +-     0.00 % Slots below
+S0-C0    BAD            Bad_Speculation.Branch_Mispredicts:         39.29 +-     0.00 % Slots       &lt;<span>==</span>
+S0-C0    BAD            Bad_Speculation.Machine_Clears:              0.03 +-     0.00 % Slots below
+S0-C0    BE/Mem         Backend_Bound.Memory_Bound:                  7.14 +-     0.00 % Slots below
+S0-C0    BE/Core        Backend_Bound.Core_Bound:                    8.47 +-     0.00 % Slots below
+S0-C0    RET            Retiring.Base:                              31.15 +-     0.00 % Slots below
+S0-C0    RET            Retiring.Microcode_Sequencer:                0.12 +-     0.00 % Slots below
+</code></pre></div>
+
+<p>We see that there is a lot of branch mispredictions in this application. We also can confirm it with collecting perf statistics:</p>
+
+<div><pre><code><span>$ </span>perf <span>stat</span> ./7zip-benchmark b
+        3368666620      branches                  <span>#  362,573 M/sec                  </span>
+         432791583      branch-misses             <span>#   12,85% of all branches</span>
+</code></pre></div>
+
+<p>Next step is to locate the exact place in the code where the most of branch mispredictions happen. Please refer to my article about <a href="https://easyperf.net/blog/2019/02/09/Top-Down-performance-analysis-methodology">Top-Down performance analysis methodology</a> for more explanations on why we are doing this. I’m using <code>BR_MISP_RETIRED.ALL_BRANCHES_PS</code> precise event (PEBS) to locate exact instruction where issue triggers.</p>
+
+<div><pre><code><span>$ </span>perf record <span>-e</span> cpu/event<span>=</span>0xc5,umask<span>=</span>0x0,name<span>=</span>BR_MISP_RETIRED.ALL_BRANCHES_PS/ppp ./7zip-benchmark b
+ 
+ % of samples     address        instruction
+
+    0.00 : ┌─┬───&gt; 4edab0:       mov    ecx,ecx
+    0.00 : │ │     4edab2:       movzx  eax,WORD PTR <span>[</span>r9+rcx<span>*</span>2]
+    4.36 : │ │     4edab7:       cmp    ebp,0xffffff
+    0.66 : │ │ ┌── 4edabd:       ja     4edad0 
+    0.00 : │ │ │   4edabf:       shl    ebp,0x8
+    0.00 : │ │ │   4edac2:       shl    r10d,0x8
+    0.00 : │ │ │   4edac6:       movzx  edx,BYTE PTR <span>[</span>r8]
+    0.00 : │ │ │   4edaca:       inc    r8
+    0.00 : │ │ │   4edacd:       or     r10d,edx
+    0.00 : │ │ └─&gt; 4edad0:       mov    edx,ebp
+    0.00 : │ │     4edad2:       shr    ebp,0xb
+    0.00 : │ │     4edad5:       imul   ebp,eax
+    0.00 : │ │     4edad8:       mov    esi,r10d
+<span>!</span>-&gt; 8.77 : │ │     4edadb:       sub    esi,ebp
+<span>!</span>-&gt; 8.74 : │ │ ┌── 4edadd:       jae    4edb00            &lt;<span>==</span> THIS IS OUR BRANCH
+    0.00 : │ │ │   4edadf:       mov    edx,0x800         &lt;<span>==</span> TRUE CASE
+    0.00 : │ │ │   4edae4:       sub    edx,eax
+    0.00 : │ │ │   4edae6:       shr    edx,0x5
+    0.00 : │ │ │   4edae9:       add    edx,eax
+    0.00 : │ │ │   4edaeb:       mov    WORD PTR <span>[</span>r9+rcx<span>*</span>2],dx
+    0.00 : │ │ │   4edaf0:       lea    ecx,[rcx+rcx<span>*</span>1]
+    2.03 : │ │ │   4edaf3:       cmp    ecx,0x100
+    0.47 : │ └──── 4edaf9:       jb     4edab0 
+    0.00 : │   │   4edafb:       jmp    4edb26 
+    0.00 : │   │   4edafd:       nop    DWORD PTR <span>[</span>rax]
+    0.00 : │   └─&gt; 4edb00:       sub    edx,ebp           &lt;<span>==</span> FALSE CASE
+    0.00 : │       4edb02:       mov    edi,eax
+    0.00 : │       4edb04:       shr    edi,0x5
+    0.00 : │       4edb07:       sub    eax,edi
+    0.00 : │       4edb09:       mov    rdi,QWORD PTR <span>[</span>rsp-0x68]
+    0.00 : │       4edb0e:       mov    WORD PTR <span>[</span>r9+rcx<span>*</span>2],ax
+    0.00 : │       4edb13:       lea    ecx,[rcx+rcx<span>*</span>1]
+    0.00 : │       4edb16:       add    ecx,0x1
+    0.00 : │       4edb19:       mov    ebp,edx
+    0.00 : │       4edb1b:       mov    r10d,esi
+    2.12 : │       4edb1e:       cmp    ecx,0x100
+    0.40 : └────── 4edb24:       jb     4edab0 
+</code></pre></div>
+
+<p>Okay, now we know which branch is causing us performance inefficiencies. The code snippet that corresponds to the assembly above is the following (it doesn’t matter much what exactly is going on in the code):</p>
+<div><pre><code><span>do</span> <span>{</span>
+  <span>ttt</span> <span>=</span> <span>*</span><span>(</span><span>prob</span> <span>+</span> <span>symbol</span><span>);</span>
+  <span>if</span> <span>(</span><span>range</span> <span>&lt;</span> <span>((</span><span>UInt32</span><span>)</span><span>1</span> <span>&lt;&lt;</span> <span>24</span><span>))</span> <span>{</span>
+    <span>range</span> <span>&lt;&lt;=</span> <span>8</span><span>;</span>
+    <span>code</span> <span>=</span> <span>(</span><span>code</span> <span>&lt;&lt;</span> <span>8</span><span>)</span> <span>|</span> <span>(</span><span>*</span><span>buf</span><span>++</span><span>);</span>
+  <span>};</span>
+  <span>bound</span> <span>=</span> <span>(</span><span>range</span> <span>&gt;&gt;</span> <span>11</span><span>)</span> <span>*</span> <span>ttt</span><span>;</span>
+  <span>if</span> <span>(</span><span>code</span> <span>&lt;</span> <span>bound</span><span>)</span> <span>{</span>               <span>// &lt;== This is mispredicted branch</span>
+    <span>range</span> <span>=</span> <span>bound</span><span>;</span>
+    <span>*</span><span>(</span><span>prob</span> <span>+</span> <span>symbol</span><span>)</span> <span>=</span> <span>(</span><span>UInt16</span><span>)(</span><span>ttt</span> <span>+</span> <span>(((</span><span>1</span> <span>&lt;&lt;</span> <span>11</span><span>)</span> <span>-</span> <span>ttt</span><span>)</span> <span>&gt;&gt;</span> <span>5</span><span>));</span>
+    <span>symbol</span> <span>=</span> <span>(</span><span>symbol</span> <span>+</span> <span>symbol</span><span>);</span>
+  <span>}</span> <span>else</span> <span>{</span>
+    <span>range</span> <span>-=</span> <span>bound</span><span>;</span>
+    <span>code</span> <span>-=</span> <span>bound</span><span>;</span>
+    <span>*</span><span>(</span><span>prob</span> <span>+</span> <span>symbol</span><span>)</span> <span>=</span> <span>(</span><span>UInt16</span><span>)(</span><span>ttt</span> <span>-</span> <span>(</span><span>ttt</span> <span>&gt;&gt;</span> <span>5</span><span>));</span>
+    <span>symbol</span> <span>=</span> <span>(</span><span>symbol</span> <span>+</span> <span>symbol</span><span>)</span> <span>+</span> <span>1</span><span>;</span> 
+  <span>}</span>
+<span>}</span> <span>while</span> <span>(</span><span>symbol</span> <span>&lt;</span> <span>0x100</span><span>);</span>
+</code></pre></div>
+
+<h3 id="collecting-branch-statistics">Collecting branch statistics</h3>
+
+<p>Let’s profile the workload with collecting branch stacks with every sample. You can refer to the same procedure I did in one of my previous posts: <a href="https://easyperf.net/blog/2019/04/03/Precise-timing-of-machine-code-with-Linux-perf">Precise timing of machine code with Linux perf</a>.</p>
+<div><pre><code><span>$ </span>~/perf record <span>-b</span> <span>-e</span> cycles ./7zip-benchmark b
+<span>[</span> perf record: Woken up 68 <span>times </span>to write data <span>]</span>
+<span>[</span> perf record: Captured and wrote 17.205 MB perf.data <span>(</span>22089 samples<span>)</span> <span>]</span>
+</code></pre></div>
+<p>Now let’s dump the contents of collected branch stacks:</p>
+<div><pre><code><span>$ </span>~/perf script <span>-F</span> brstack &amp;&gt; dump.txt
+</code></pre></div>
+<p>If we look inside the <code>dump.txt</code> (it might be big) we will see something like:</p>
+<div><pre><code>0x4edabd/0x4edad0/P/-/-/2  0x4edaf9/0x4edab0/P/-/-/29  0x4edabd/0x4edad0/P/-/-/2  0x4edb24/0x4edab0/P/-/-/23  0x4edadd/0x4edb00/M/-/-/4  0x4edabd/0x4edad0/P/-/-/2  0x4edb24/0x4edab0/P/-/-/24  0x4edadd/0x4edb00/M/-/-/4  0x4edabd/0x4edad0/P/-/-/2  0x4edb24/0x4edab0/P/-/-/23  0x4edadd/0x4edb00/M/-/-/1  0x4edabd/0x4edad0/P/-/-/1  0x4edb24/0x4edab0/P/-/-/3  0x4edadd/0x4edb00/P/-/-/1  0x4edabd/0x4edad0/P/-/-/1  0x4edb24/0x4edab0/P/-/-/3  0x4edadd/0x4edb00/P/-/-/1  0x4edabd/0x4edad0/P/-/-/1  0x4edb24/0x4edab0/P/-/-/3  0x4edadd/0x4edb00/P/-/-/4  0x4edabd/0x4edad0/P/-/-/42  0x4edd16/0x4ed9f0/P/-/-/13  0x4edca1/0x4edcd7/P/-/-/17  0x4edc5f/0x4edc72/P/-/-/2  0x4edc9f/0x4edc40/P/-/-/4  0x4edc5f/0x4edc72/P/-/-/3  0x4edc9f/0x4edc40/P/-/-/3  0x4edc5f/0x4edc72/P/-/-/2  0x4edc9f/0x4edc40/P/-/-/9  0x4edc5f/0x4edc72/P/-/-/4  0x4edc9f/0x4edc40/P/-/-/29  0x4edc5f/0x4edc72/P/-/-/2
+</code></pre></div>
+<p><strong>This is one branch stack</strong> that consists of 32 LBR entries. Each entry has <code>FROM</code> and <code>TO</code> addresses, predicted flag (<code>M</code>/<code>P</code>) and number of cycles (number in the last position of each entry). Format of the entry is described in the perf script <a href="http://man7.org/linux/man-pages/man1/perf-script.1.html">specification</a>.</p>
+
+<p>For the purpose of calculating how much time certain branch was taken we would be interested in FROM/TO pairs. This is an easy case since we need just to grep our dump with <code>FROM</code> as address of our branch instruction and <code>TO</code> as destination of our branch:</p>
+
+<div><pre><code><span># How much times the branch was taken:</span>
+<span>$ </span><span>grep</span> <span>"0x4edadd/0x4edb00"</span> dump.txt <span>-o</span> | <span>wc</span> <span>-l</span>
+20038
+</code></pre></div>
+
+<p>Knowing the opposite might be a little bit tricky since not taken branches are not logged by LBR mechanism. But in this case it’s possible to do. When <code>0x4edadd</code> branch is not taken, either <code>0x4edaf9</code> or <code>0x4edafb</code> branches would be taken.</p>
+
+<div><pre><code><span># How much times the branch was NOT taken:</span>
+<span>$ </span><span>grep</span> <span>"0x4edaf9/0x4edab0"</span> dump.txt <span>-o</span> | <span>wc</span> <span>-l</span>
+17246
+<span>$ </span><span>grep</span> <span>"0x4edafb/0x4edb26"</span> dump.txt <span>-o</span> | <span>wc</span> <span>-l</span>
+2475
+Total: 17246 + 2475 <span>=</span> 19721
+</code></pre></div>
+
+<p>Now we can also calculate how often this condition was true or false:</p>
+<div><pre><code>Ratio: F = 20038 / 39759 = 50.3%
+Ratio: T = 19721 / 39759 = 49.6%
+</code></pre></div>
+<p>I was really surprised with such numbers so I decided to manually instrument the code and log all the branch outcomes in this place of the benchmark:</p>
+<div><pre><code>Ratio: F = 56953776 / 114025796 = 49.9%
+Ratio: T = 57072020 / 114025796 = 50.0%
+</code></pre></div>
+
+<p>And indeed this branch has 50% probability of being true.</p>
+
+<h3 id="analyzing-virtual-calls-and-jump-tables">Analyzing virtual calls and jump tables</h3>
+
+<p>This technique is especially useful for determining the outcome for indirect branches and indirect calls. Indirect branches usually appear from a converting switch statement to a jump table. Indirect call usually can be seen in C++ code and appear from a virtual call.</p>
+
+<p>Let’s look at the example of collecting statistics which virtual function has the biggest call count. We have classes <code>B</code>, <code>C</code> and <code>D</code> all derived from <code>A</code>. All three classes implement public interface <code>foo()</code> (complete sources on my <a href="https://github.com/dendibakh/dendibakh.github.io/tree/master/_posts/code/BranchProbabilitiesUsingLBR">github</a>):</p>
+
+<div><pre><code><span>int</span> <span>main</span><span>()</span> <span>{</span>
+  <span>const</span> <span>int</span> <span>min</span> <span>=</span> <span>0</span><span>;</span>
+  <span>const</span> <span>int</span> <span>max</span> <span>=</span> <span>9</span><span>;</span>
+  <span>std</span><span>::</span><span>default_random_engine</span> <span>generator</span><span>;</span>
+  <span>std</span><span>::</span><span>uniform_int_distribution</span><span>&lt;</span><span>int</span><span>&gt;</span> <span>distribution</span><span>(</span><span>min</span><span>,</span><span>max</span><span>);</span>
+
+  <span>B</span> <span>b</span><span>;</span>
+  <span>C</span> <span>c</span><span>;</span>
+  <span>D</span> <span>d</span><span>;</span>
+  <span>A</span><span>*</span> <span>a</span> <span>=</span> <span>nullptr</span><span>;</span>
+  <span>for</span> <span>(</span><span>int</span> <span>i</span> <span>=</span> <span>0</span><span>;</span> <span>i</span> <span>&lt;</span> <span>100000000</span><span>;</span> <span>i</span><span>++</span><span>)</span> <span>{</span>
+    <span>int</span> <span>random_int</span> <span>=</span> <span>distribution</span><span>(</span><span>generator</span><span>);</span>
+    <span>if</span> <span>(</span><span>random_int</span> <span>==</span> <span>0</span><span>)</span>
+      <span>a</span> <span>=</span> <span>&amp;</span><span>b</span><span>;</span> <span>// 10% probability</span>
+    <span>else</span> <span>if</span> <span>(</span><span>random_int</span> <span>&lt;</span> <span>4</span><span>)</span>
+      <span>a</span> <span>=</span> <span>&amp;</span><span>c</span><span>;</span> <span>// 30% probability</span>
+    <span>else</span> 
+      <span>a</span> <span>=</span> <span>&amp;</span><span>d</span><span>;</span> <span>// 60% probability</span>
+    <span>a</span><span>-&gt;</span><span>foo</span><span>(</span><span>random_int</span><span>);</span>
+  <span>}</span>
+
+  <span>return</span> <span>0</span><span>;</span>
+<span>}</span>
+</code></pre></div>
+
+<p>Let’s make sure we have an indirect call inside the loop:</p>
+
+<div><pre><code><span>$ </span>perf record ./a.out
+<span>$ </span>perf annotate <span>--stdio</span> <span>-M</span> intel <span>-l</span> main
+    0.00 : ┌─&gt; 4005f0:       lea    rdx,[rsp+0x10]
+    0.00 : │   4005f5:       mov    rsi,rsp
+    4.63 : │   4005f8:       mov    rdi,rdx
+    7.16 : │   4005fb:       call   400720 std::uniform_int_distribution&lt;int&gt;::operator<span>()</span>
+    0.00 : │   400600:       <span>test   </span>eax,eax
+    7.41 : │   400602:       lea    rdi,[rsp+0x20]
+    0.00 : │   400607:       je     400613 &lt;main+0x73&gt;
+    0.19 : │   400609:       cmp    eax,0x3
+    0.00 : │   40060c:       mov    rdi,r12
+   12.86 : │   40060f:       cmovg  rdi,rbp
+   28.33 : │   400613:       mov    rdx,QWORD PTR <span>[</span>rdi]
+    0.00 : │   400616:       mov    esi,eax
+   32.38 : │   400618:       call   QWORD PTR <span>[</span>rdx]       &lt;<span>==</span> this is our virtual call
+    0.00 : │   40061a:       sub    ebx,0x1
+    7.03 : └─  40061d:       jne    4005f0 &lt;main+0x50&gt;
+</code></pre></div>
+
+<p>I did all the steps I made while analyzing first example in the article (see above) and collected call counts:</p>
+
+<div><pre><code><span># call count for B::foo()</span>
+<span>$ </span><span>grep</span> <span>"0x400618/0x4008c0"</span> dump.txt <span>-o</span> | <span>wc</span> <span>-l</span>
+6041
+<span># call count for C::foo()</span>
+<span>$ </span><span>grep</span> <span>"0x400618/0x4008d0"</span> dump.txt <span>-o</span> | <span>wc</span> <span>-l</span>
+18219
+<span># call count for D::foo():</span>
+<span>$ </span><span>grep</span> <span>"0x400618/0x4008e0"</span> dump.txt <span>-o</span> | <span>wc</span> <span>-l</span>
+33914
+
+<span># total call count: 58174</span>
+</code></pre></div>
+
+<p>Here is what we get if we calculate the call frequencies:</p>
+
+<div><pre><code>B::foo(): 10.3%
+C::foo(): 31.3%
+D::foo(): 58.3%
+</code></pre></div>
+
+<p>You see, results are quite accurate and not that far off from what we expected.</p>
+
+<h3 id="other-references">Other references</h3>
+
+<p>I encourage you to take a look at Andi Kleen’s articles on lwn.net: <a href="https://lwn.net/Articles/680985/">part1</a>, <a href="https://lwn.net/Articles/680996/">part2</a>. There he describes other important uses cases for LBR feature:</p>
+
+<ol>
+  <li>Collecting basic block frequencies</li>
+  <li>Detecting “super blocks”<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" rel="footnote">4</a></sup>.</li>
+  <li>Calculating branch mispredictions.</li>
+  <li>Capturing call graph.</li>
+</ol>
+
+<hr>
+<div role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>See example <a href="https://easyperf.net/blog/2019/03/27/Machine-code-layout-optimizatoins#basic-block-placement">here</a>.&nbsp;<a href="#fnref:1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>See example <a href="https://easyperf.net/blog/2019/03/27/Machine-code-layout-optimizatoins#function-splitting">here</a>.&nbsp;<a href="#fnref:2" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>See https://software.intel.com/sites/default/files/managed/7c/f1/253669-sdm-vol-3b.pdf, chapter “17.4.8 LBR Stack”.&nbsp;<a href="#fnref:3" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:4" role="doc-endnote">
+      <p>Super blocks are also sometimes called Hyper Blocks. It is a sequence of hot basic blocks that are not necessary laid out in sequential physical order, but often execute sequentially (i.e. one basic block is a successor of another basic block).&nbsp;<a href="#fnref:4" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</div>
+
+			</div></div>
+  </div>
+</body>
+</html>

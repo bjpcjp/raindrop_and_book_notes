@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ruby Method Parameters and Arguments | Alchemists</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Ruby Method Parameters and Arguments | Alchemists</h1>
+    <p><strong>URL:</strong> <a href="https://www.alchemists.io/articles/ruby_method_parameters_and_arguments">https://www.alchemists.io/articles/ruby_method_parameters_and_arguments</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876790898</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+  
+
+
+  <main>
+    <section>
+        
+
+        <article>
+          <div>
+<p><img src="data:application/octet-stream;base64," alt="Cover" width="420" height="200">
+</p>
+<p>Ruby Method Parameters And Arguments</p>
+</div>
+<p>The distinction between method <a href="https://en.wikipedia.org/wiki/Parameter_(computer_programming)">parameters and arguments</a> — as shown in the screenshot above — is probably familiar to most Ruby engineers. If not, here’s a quick explanation on the distinction between the two as pulled from the <a href="https://www.alchemists.io/projects/marameters">Marameters</a> gem:</p>
+<div>
+<blockquote>
+<div>
+<ul>
+<li>
+<p><strong>Parameters</strong>: Represents the <em>expected</em> values to be passed to a method when
+messaged as defined when the method is implemented. Example: <code>def demo one, two: nil</code>.</p>
+</li>
+<li>
+<p><strong>Arguments</strong>: Represents the <em>actual</em> values passed to the method when messaged.
+Example: <code>demo 1, two: 2</code>.</p>
+</li>
+</ul>
+</div>
+</blockquote>
+</div>
+<p>With the above in mind, this article will dig deeper into how parameters and arguments work in Ruby since there are subtleties that might not be obvious unless you’re doing more complex logic and/or metaprogramming.</p>
+<div id="toc">
+<p>Table of Contents</p>
+<ul>
+<li><a href="#_parameters">Parameters</a>
+<ul>
+<li><a href="#_basic">Basic</a></li>
+<li><a href="#_forwards">Forwards</a></li>
+<li><a href="#_splats">Splats</a>
+<ul>
+<li><a href="#_anonymous">Anonymous</a></li>
+<li><a href="#_named">Named</a></li>
+<li><a href="#_empty">Empty</a></li>
+</ul>
+</li>
+<li><a href="#_post">Post</a></li>
+<li><a href="#_no_keywords">No Keywords</a></li>
+<li><a href="#_keyword_fallbacks">Keyword Fallbacks</a></li>
+<li><a href="#_keyword_overrides">Keyword Overrides</a></li>
+<li><a href="#_parenthesis">Parenthesis</a></li>
+<li><a href="#_primitives">Primitives</a></li>
+<li><a href="#_procs_and_lambdas">Procs and Lambdas</a></li>
+</ul>
+</li>
+<li><a href="#_arguments">Arguments</a>
+<ul>
+<li><a href="#_basic_2">Basic</a></li>
+<li><a href="#_splats_2">Splats</a></li>
+<li><a href="#_super">Super</a></li>
+<li><a href="#_message_delegation">Message Delegation</a>
+<ul>
+<li><a href="#_argument_forwarding">Argument Forwarding</a></li>
+<li><a href="#_splats_3">Splats</a></li>
+<li><a href="#_destructuring">Destructuring</a></li>
+<li><a href="#_marameters">Marameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_conclusion">Conclusion</a></li>
+</ul>
+</div>
+<div>
+<p>There is important terminology to be aware of when defining method parameters and later passing arguments to the same method. I’ve split the terminology into several sections starting at a high level and working further down into specifics.</p>
+<div>
+<h3 id="_basic">Basic</h3>
+<p><em>Basic</em> parameters are those which you are most likely to be aware of and use on a daily basis. Consider the following code where all possible parameters are used:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>one</span><span>,</span> <span>two</span> <span>=</span> <span>:b</span><span>,</span> <span>*</span><span>three</span><span>,</span> <span>four</span><span>:,</span> <span>five: :e</span><span>,</span> <span>**</span><span>six</span><span>,</span> <span>&amp;</span><span>seven</span><span>)</span> <span>=</span> <span>super</span></code></pre>
+</div>
+<p>The above leverages the basic parameters you can define for a method <em>in order of precedence</em>. If we inspect the method’s <a href="https://rubyapi.org/o/method#method-i-parameters">parameters</a> and then use <a href="https://github.com/amazing-print/amazing_print">Amazing Print</a> to render the response, things become more clear since we get an array of tuples (i.e. <em>kind</em> and <em>name</em>):</p>
+<div>
+<pre><code data-lang="ruby"><span>ap</span> <span>method</span><span>(</span><span>:demo</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :req,</span>
+<span>#     :one</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :opt,</span>
+<span>#     :two</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :rest,</span>
+<span>#     :three</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :keyreq,</span>
+<span>#     :four</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :key,</span>
+<span>#     :five</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :keyrest,</span>
+<span>#     :six</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :block,</span>
+<span>#     :seven</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>The <em>kinds</em> of parameters allowed can be split into <em>three</em> categories:</p>
+<div>
+<ul>
+<li>
+<p><strong>Positionals</strong>: Positional parameters are more strict, less descriptive, and require arguments to be passed in a specific order, otherwise you’ll get an <code>ArgumentError</code>. There are three types of positional arguments you can use:</p>
+<div>
+<ul>
+<li>
+<p><code>req</code>: A required parameter with no default value.</p>
+</li>
+<li>
+<p><code>opt</code>: An optional parameter that always has a default value and should only be defined after a required positional parameter.</p>
+</li>
+<li>
+<p><code>rest</code>: Optional parameters — also known as single splats (<code>*</code>) — which can be any number of parameters after your optional positionals. ⚠️ Heavy use of this parameter is considered a code smell because, when unchecked, can get quite large so use with care or avoid altogether.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Keywords</strong>: Keyword parameters are more descriptive than positional parameters and have a similar breakdown to positional parameters:</p>
+<div>
+<ul>
+<li>
+<p><code>keyreq</code>: A required parameter with no default value.</p>
+</li>
+<li>
+<p><code>key</code>: An optional parameter that always has a default value and should only be defined after a required keyword parameter.</p>
+</li>
+<li>
+<p><code>keyrest</code>: Optional parameters — also known as double splats (<code>**</code>) — which can be any number of parameters that come after your optional keywords. ⚠️ Heavy use of this parameter is considered a code smell because, when unchecked, can get quite large so use with care or avoid altogether.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Block</strong>: You can only define a single block parameter and <em>must</em> be in the last position. In our case, the block parameter is explicitly named <code>seven</code> even though most people tend to use <code>block</code> as the parameter name. A deeper dive into blocks is out of scope for this article but you can learn more about them in my <a href="https://www.alchemists.io/articles/ruby_function_composition">Ruby Function Composition</a> article. In the meantime, here’s a quick explanation:</p>
+<div>
+<ul>
+<li>
+<p><strong>Implicit</strong>: All methods can <em>implicitly</em> accept a block. Example: <code>demo { "Example." }</code>. Implicit blocks make for an elegant design when coupled with <a href="https://rubyapi.org/o/kernel#method-i-block_given-3F">block_given?</a> in order to <code>yield</code> to the block passed to your method.</p>
+</li>
+<li>
+<p><strong>Explicit</strong>: If you want to explicitly reference a block, then you must name it. Example: <code>def demo(&amp;block)</code>. Explicit blocks are great when you need to use the block directly without the need to check if a block has been <em>implicitly</em> defined.</p>
+</li>
+<li>
+<p><strong>Anonymous</strong>: <a href="https://rubyreferences.github.io/rubychanges/3.1.html#anonymous-block-argument">Anonymous blocks</a> were first introduced in <a href="https://www.alchemists.io/articles/ruby_310">Ruby 3.1.0</a> and are great for forwarding to another method without needing to name them first. Example: <code>def demo(&amp;)</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div>
+<h3 id="_forwards">Forwards</h3>
+<p>Argument forwarding was first introduced in <a href="https://rubyreferences.github.io/rubychanges/2.7.html#keyword-argument-related-changes">Ruby 2.7.0</a>. The syntax only requires three dots (ellipses) to use. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>...</span><span>)</span> <span>=</span> <span>super</span>
+
+<span>ap</span> <span>method</span><span>(</span><span>:demo</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :rest,</span>
+<span>#     :*</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :keyrest,</span>
+<span>#     :**</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :block,</span>
+<span>#     :&amp;</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>What’s important to highlight is that this resolves to the following:</p>
+<div>
+<ul>
+<li>
+<p>Uses <code>:rest</code> as the <em>kind</em> and <code>:*</code> as the <em>name</em> (i.e. anonymous single splat).</p>
+</li>
+<li>
+<p>Uses <code>:keyrest</code> as the <em>kind</em> and <code>:**</code> as the <em>name</em> (i.e. anonymous double splat).</p>
+</li>
+<li>
+<p>Uses <code>:block</code> as the <em>kind</em> and <code>:&amp;</code> as the <em>name</em> (i.e. anonymous block).</p>
+</li>
+</ul>
+</div>
+<p>Argument forwarding was enhanced with leading arguments in <a href="https://www.alchemists.io/articles/ruby_300">Ruby 3.0.0</a>. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>one</span><span>,</span> <span>...</span><span>)</span> <span>=</span> <span>super</span>
+
+<span>ap</span> <span>method</span><span>(</span><span>:demo</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :req,</span>
+<span>#     :one</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :rest,</span>
+<span>#     :*</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :keyrest,</span>
+<span>#     :**</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :block,</span>
+<span>#     :&amp;</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>While the above is a simple example that only uses a leading <em>required positional</em> parameter, you can definitely lead with both required and optional positional arguments as well. Keywords and blocks are not allowed, though, and will cause a syntax error.</p>
+<p>The <em>kinds</em> and <em>names</em> of these parameters are important because they allow you to <a href="https://www.alchemists.io/articles/ruby_pattern_matching">pattern match</a> and dynamically distinguish between a method using forwarding, anonymous splats/blocks, or named parameters.</p>
+</div>
+<div>
+<h3 id="_splats">Splats</h3>
+<p>There are three <em>kinds</em> of parameter splats: <em>forwards</em>, <em>anonymous</em>, or <em>named</em>. You’ve already seen how forwarding works and to illustrate further, the following table provides a visual breakdown of the different kinds of splats in <a href="https://www.alchemists.io/articles/ruby_320">Ruby 3.2.0</a> and higher:</p>
+<table>
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Signature</th>
+<th>Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Forwards</p></td>
+<td><p><code>demo(...)</code></p></td>
+<td><p><code>[[:rest, :*], [:keyrest, :**], [:block, :&amp;]]</code></p></td>
+</tr>
+<tr>
+<td><p>Anonymous</p></td>
+<td><p><code>demo(*, **, &amp;)</code></p></td>
+<td><p><code>[[:rest, :*], [:keyrest, :**], [:block, :&amp;]]</code></p></td>
+</tr>
+<tr>
+<td><p>Named</p></td>
+<td><p><code>demo(*positionals, **keywords, &amp;block)</code></p></td>
+<td><p><code>[[:rest, :positionals], [:keyrest, :keywords], [:block, :block]]</code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Prior to the release of <a href="https://www.alchemists.io/articles/ruby_320">Ruby 3.2.0</a>, forwarding of bare splats wasn’t supported which meant a method signature of <code>def demo(*, **)</code> would result in the following parameters: <code>[[:rest], [:keyrest]]</code>. With Ruby 3.2.0 and higher, using forwarded or anonymous parameters always results in identical parameters as emphasized above: <code>[[:rest, :*], [:keyrest, :**]]</code>.</p>
+<p>We’ll dive into the details of each <em>kind</em> of parameter next.</p>
+<div>
+<h4 id="_anonymous">Anonymous</h4>
+<p>Anonymous splats — also known as <em>bare</em> splats — are denoted by use of a single splat (<code>*</code>), double splat (<code>**</code>), and/or the bare block (<code>&amp;</code>). The single splat is an <code>Array</code> while the double splat is a <code>Hash</code>. Here’s an example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>*</span><span>,</span> <span>**</span><span>,</span> <span>&amp;</span><span>)</span> <span>=</span> <span>super</span>
+
+<span>ap</span> <span>method</span><span>(</span><span>:demo</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :rest,</span>
+<span>#     :*</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :keyrest,</span>
+<span>#     :**</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :block,</span>
+<span>#     :&amp;</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>Prior to the release of <a href="https://www.alchemists.io/articles/ruby_320">Ruby 3.2.0</a>, bare splats never had a <em>name</em> so you’d only get information about the <em>kind</em> of splat which meant you couldn’t do much else with them. With Ruby 3.2.0 and higher, bare splats can be forwarded in addition to other benefits:</p>
+<div>
+<ul>
+<li>
+<p>You can use <code>super</code> — as shown in the example above — to pass the splatted arguments upwards for further processing.</p>
+</li>
+<li>
+<p>You can forward the single, double, and/or block splat to another method. Example: <code>def demo(*, **, &amp;) = my_method(*, **, &amp;)</code>.</p>
+</li>
+<li>
+<p>You can gobble positional and/or keyword arguments into a black hole so-to-speak so they are never used. This can be handy when coupled with the <em>Null Object Pattern</em> where you ignore the incoming splatted arguments entirely.</p>
+</li>
+</ul>
+</div>
+<p>💡 Despite anonymous splats being…​well…​anonymous, you can debug them by splatting them into an empty array, hash, or proc accordingly. <em>Don’t use this in production, though.</em> Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>*</span><span>,</span> <span>**</span><span>,</span> <span>&amp;</span><span>)</span> <span>=</span> <span>puts</span> <span>"Positionals: </span><span>#{</span><span>[</span><span>*</span><span>]</span><span>}</span><span>, Keywords: </span><span>#{</span><span>{</span><span>**</span><span>}</span><span>}, Block: </span><span>#{</span><span>proc</span><span>(</span><span>&amp;</span><span>)</span><span>}</span><span>."</span>
+
+<span>demo</span><span>(</span><span>1</span><span>,</span> <span>2</span><span>,</span> <span>c: </span><span>3</span><span>,</span> <span>d: </span><span>4</span><span>)</span> <span>{</span> <span>"example"</span> <span>}</span>
+
+<span># Positionals: [1, 2], Keywords: {:c=&gt;3, :d=&gt;4}, Block: #&lt;Proc:0x000000012c293128 (irb):5&gt;.</span></code></pre>
+</div>
+<p>With the positional and keyword arguments, you get immediate inspection. With the block, you get partial inspection because you can see if you are dealing with a proc or a lambda. Alternatively, you could call the block for deeper inspection:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>*</span><span>,</span> <span>**</span><span>,</span> <span>&amp;</span><span>)</span> <span>=</span> <span>puts</span> <span>"Positionals: </span><span>#{</span><span>[</span><span>*</span><span>]</span><span>}</span><span>, Keywords: </span><span>#{</span><span>{</span><span>**</span><span>}</span><span>}, Block: </span><span>#{</span><span>proc</span><span>(</span><span>&amp;</span><span>).</span><span>call</span><span>}</span><span>."</span>
+
+<span>demo</span><span>(</span><span>1</span><span>,</span> <span>2</span><span>,</span> <span>c: </span><span>3</span><span>,</span> <span>d: </span><span>4</span><span>)</span> <span>{</span> <span>"example"</span> <span>}</span>
+<span># Positionals: [1, 2], Keywords: {:c=&gt;3, :d=&gt;4}, Block: example.</span></code></pre>
+</div>
+</div>
+<div>
+<h4 id="_named">Named</h4>
+<p>In contrast to <em>anonymous</em> splats, we can use <em>named</em> splats as well. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>)</span> <span>=</span> <span>super</span>
+
+<span>ap</span> <span>method</span><span>(</span><span>:demo</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :rest,</span>
+<span>#     :positionals</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :keyrest,</span>
+<span>#     :keywords</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>As you can see, we get kind <em>and</em> name information which means we can make use of them within the method like any other argument.</p>
+<p>The difference between <em>forwards</em>, <em>anonymous</em> and <em>named</em> splats is important to know when inspecting a method’s behavior or dynamically building a list of arguments for messaging.</p>
+</div>
+<div>
+<h4 id="_empty">Empty</h4>
+<p>Single and double splats can be implicitly coerced into an <code>Array</code> and <code>Hash</code>, respectively, when given no arguments. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>)</span> <span>=</span> <span>puts</span> <span>"Positionals: </span><span>#{</span><span>positionals</span><span>}</span><span>, Keywords: </span><span>#{</span><span>keywords</span><span>}</span><span>"</span>
+
+<span>demo</span> <span># Positionals: [], Keywords: {}</span></code></pre>
+</div>
+<p>Behavior is different when passing <code>nil</code>, though. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>demo</span> <span>*</span><span>nil</span>   <span># Positionals: [], Keywords: {}</span>
+<span>demo</span> <span>**</span><span>nil</span>  <span># no implicit conversion of nil into Hash (TypeError)</span></code></pre>
+</div>
+<p>At the moment — and unlike an <code>Array</code> — <code>**nil</code> can’t be <em>implicitly</em> cast into a <code>Hash</code> and will raise a <code>TypeError</code>. Starting in Ruby 3.4.0, this is <a href="https://bugs.ruby-lang.org/issues/20064">fixed</a> so you can pass <code>*nil</code> and <code>**nil</code> as arguments and, implicitly, get an empty array and hash.</p>
+</div>
+</div>
+<div>
+<h3 id="_post">Post</h3>
+<p>The <em>post</em> parameter is obscure, rare, and awkward when you see it in the wild that is a <em>required</em> positional parameter that comes <em>after</em> an optional positional parameter. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>one</span><span>,</span> <span>two</span> <span>=</span> <span>2</span><span>,</span> <span>three</span><span>)</span> <span>=</span> <span>super</span>
+
+<span>ap</span> <span>method</span><span>(</span><span>:demo</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :req,</span>
+<span>#     :one</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :opt,</span>
+<span>#     :two</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :req,</span>
+<span>#     :three</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>In very rare cases, post parameters can be useful but, in general, they suffer from the following:</p>
+<div>
+<ul>
+<li>
+<p>Harder to read, surprising, and uncommon to see in actual code.</p>
+</li>
+<li>
+<p>You will get a <a href="https://docs.rubocop.org/rubocop">RuboCop</a> <code>Style/OptionalArguments</code> error if attempting to use this parameter.</p>
+</li>
+<li>
+<p>You can’t use a single splat positional argument after a post parameter is defined. Although, you can use required, optional, and double splat keyword parameters as well as a block.</p>
+</li>
+<li>
+<p>Performance-wise, Ruby can’t optimize post parameters like it can for required and optional parameters.</p>
+</li>
+</ul>
+</div>
+</div>
+<div>
+<h3 id="_no_keywords">No Keywords</h3>
+<p>This keyword parameter — though, rarely used — comes in handy when you don’t want to support <em>any</em> keywords. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>**</span><span>nil</span><span>)</span> <span>=</span> <span>super</span>
+
+<span>ap</span> <span>method</span><span>(</span><span>:demo</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :nokey</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>Generally, you combine the <code>nokey</code> parameter with positional parameters. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>one</span><span>,</span> <span>two</span> <span>=</span> <span>2</span><span>,</span> <span>**</span><span>nil</span><span>)</span> <span>=</span> <span>super</span>
+
+<span>ap</span> <span>method</span><span>(</span><span>:demo</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :req,</span>
+<span>#     :one</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :opt,</span>
+<span>#     :two</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :nokey</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>Once the <code>nokey</code> parameter is defined, you can’t provide any required or optional parameters (blocks are always allowed, though) as the following syntax is invalid:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>**</span><span>nil</span><span>,</span> <span>one</span><span>:,</span> <span>two: </span><span>2</span><span>)</span> <span>=</span> <span>super</span>
+<span># unexpected label, expecting &amp; or '&amp;' (SyntaxError)</span></code></pre>
+</div>
+</div>
+<div>
+<h3 id="_keyword_fallbacks">Keyword Fallbacks</h3>
+<p>Parameters are evaluated from <em>left to right</em>, which means you can have a method signature using either positional or keyword parameters. Consider the following:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>positional_name</span> <span>=</span> <span>nil</span><span>,</span> <span>name: </span><span>positional_name</span><span>)</span> <span>=</span> <span>puts</span> <span>"Name: </span><span>#{</span><span>name</span><span>}</span><span>."</span>
+
+<span>demo</span> <span>"Test"</span>        <span># "Name: Test"</span>
+<span>demo</span> <span>name: </span><span>"Test"</span>  <span># "Name: Test"</span></code></pre>
+</div>
+<p>Notice you can pass in the <code>"Test"</code> value either as a positional argument or keyword argument and get the same result. In the case of using a positional argument, the value will become the default value for the keyword parameter. This can be handy when wanting to use a positional parameter as a fallback for your keyword parameter or wanting to refactor using keyword parameters instead of positional parameters. While this is worth knowing, there are several caveats to watch out for since this can lead to problematic code:</p>
+<div>
+<ul>
+<li>
+<p>When passing in both a positional and keyword argument, the keyword argument will take precedence due to being evaluated last. For example, using <code>demo "One", name: "Two"</code> will print the value of <code>"Two"</code> instead of <code>"One"</code>.</p>
+</li>
+<li>
+<p>When wanting to convert multiple positional parameters into keyword parameters, you can end up with a very long method signature that will quickly violate the <em>rule of three</em> for maximum number of parameters used.</p>
+</li>
+<li>
+<p>You should add a deprecation warning when the positional parameter is set to encourage people to update their code to using the keyword arguments instead. This will allow people to upgrade while also setting a date in which you delete positional parameter support to keep code complexity at a minimum.</p>
+</li>
+</ul>
+</div>
+</div>
+<div>
+<h3 id="_keyword_overrides">Keyword Overrides</h3>
+<p>There are several <a href="https://www.alchemists.io/articles/ruby_keywords">Ruby Keywords</a>. In rare situations, you might want to use one of those keywords as a method parameter which will cause a syntax error. For example, the following errors because both the <code>begin</code> and <code>end</code> keywords conflict with the built-in language keywords:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>(</span><span>begin: </span><span>1</span><span>,</span> <span>end: </span><span>10</span><span>)</span> <span>=</span> <span>puts</span> <span>"Begin: </span><span>#{</span><span>begin</span><span>}</span><span>, End: </span><span>#{</span><span>end</span><span>}</span><span>."</span>
+<span>demo</span>  <span># syntax error, unexpected '}' (SyntaxError)</span></code></pre>
+</div>
+<p>You can workaround this situation by using <code>binding</code>. Here’s how to rewrite the above to solve the problem:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span> <span>begin: </span><span>1</span><span>,</span> <span>end: </span><span>10</span>
+  <span>puts</span> <span>"Begin: </span><span>#{</span><span>binding</span><span>.</span><span>local_variable_get</span><span>(</span><span>:begin</span><span>)</span><span>}</span><span>, End: </span><span>#{</span><span>binding</span><span>.</span><span>local_variable_get</span><span>(</span><span>:end</span><span>)</span><span>}</span><span>."</span>
+<span>end</span>
+
+<span>demo</span>  <span># "Begin: 1, End: 10."</span></code></pre>
+</div>
+<p>You can clean this up further by using the <a href="https://www.alchemists.io/projects/refinements">Refinements</a> gem:</p>
+<div>
+<pre><code data-lang="ruby"><span>require</span> <span>"refinements/binding"</span>
+
+<span>using</span> <span>Refinements</span><span>::</span><span>Binding</span>
+
+<span>def</span> <span>demo</span><span>(</span><span>begin: </span><span>1</span><span>,</span> <span>end: </span><span>10</span><span>)</span> <span>=</span> <span>puts</span> <span>"Begin: </span><span>#{</span><span>binding</span><span>[</span><span>:begin</span><span>]</span><span>}</span><span>, End: </span><span>#{</span><span>binding</span><span>[</span><span>:end</span><span>]</span><span>}</span><span>."</span>
+<span>demo</span>
+<span># "Begin: 1, End: 10."</span></code></pre>
+</div>
+<p>If refining isn’t your cup of team, you could use hash pinning:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span> <span>begin: </span><span>1</span><span>,</span> <span>end: </span><span>10</span>
+  <span>attributes</span> <span>=</span> <span>{</span><span>begin</span><span>:,</span> <span>end</span><span>:}</span>
+  <span>puts</span> <span>"Begin: </span><span>#{</span><span>attributes</span><span>[</span><span>:begin</span><span>]</span><span>}</span><span>, End: </span><span>#{</span><span>attributes</span><span>[</span><span>:end</span><span>]</span><span>}</span><span>."</span>
+<span>end</span>
+
+<span>demo</span>  <span># "Begin: 1, End: 10."</span></code></pre>
+</div>
+<p>While hash pinning might be slightly awkward, there can be a performance boost as shown in these <a href="https://www.alchemists.io/projects/benchmarks#_scriptsbindings">benchmarks</a>.</p>
+<p>While the above provides a working solution, there are important caveats to be aware of:</p>
+<div>
+<ul>
+<li>
+<p>This solution is only possible when using <em>keyword</em> parameters and <em>does not</em> work for <em>positional</em> parameters.</p>
+</li>
+<li>
+<p>There is <a href="https://docs.ruby-lang.org/en/3.3/Range.html#method-i-begin">precedence</a> for this use case but even the core language is not the best teacher so tread with caution.</p>
+</li>
+<li>
+<p>Applying this solution to your own code should be <em>done with caution</em> because heavy use of <code>binding</code> can get unwieldy and cumbersome quickly. Granted, this can be useful in Domain Specific Languages (DSLs) or adding a touch of syntactic sugar to your method signatures in rare situations but you’d only want to reach for this when all other options have been exhausted.</p>
+</li>
+</ul>
+</div>
+</div>
+<div>
+<h3 id="_parenthesis">Parenthesis</h3>
+<p>As an obscure syntactical oddity, you can wrap a <em>required positional</em> parameter in parenthesis as a way to bypass being able to pass a tuple (or larger) as a <em>destructured</em> required parameter. The inner parenthesis is critical to making this work and <em>only</em> works for required parameters. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>((</span><span>one</span><span>,</span> <span>two</span><span>))</span> <span>=</span> <span>super</span>
+
+<span>ap</span> <span>method</span><span>(</span><span>:demo</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :req</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>Notice that you only get <code>:req</code> as the kind but no name. In truth, you have two parameter names (i.e. <code>one</code> and <code>two</code>) — each destructured — but the <code>#parameters</code> method can’t show you that since it has no way to represent multiple names for a kind. Here’s a more complete illustration:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo</span><span>((</span><span>one</span><span>,</span> <span>two</span><span>))</span> <span>=</span> <span>puts</span> <span>"One: </span><span>#{</span><span>one</span><span>}</span><span>, Two: </span><span>#{</span><span>two</span><span>}</span><span>"</span>
+<span>demo</span> <span>[</span><span>1</span><span>,</span> <span>2</span><span>]</span>  <span># One: 1, Two: 2</span></code></pre>
+</div>
+<p>This usage is more an <a href="https://www.alchemists.io/articles/ruby_antipatterns/#_misused_method_parameters">antipattern</a> because the required positional parameter (array) is subtle and will cause people to have a hard time reading and understanding the code. At the same time, this does give you a way to define the <em>shape</em> of the required positional parameter. Other complications, such as shared assignment, is another concern. Take the following:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>demo_a</span><span>(</span><span>first</span><span>,</span> <span>second</span> <span>=</span> <span>first</span><span>)</span> <span>=</span> <span>[</span><span>first</span><span>,</span> <span>second</span><span>]</span>
+
+<span>def</span> <span>demo_b</span><span>((</span><span>first</span><span>,</span> <span>second</span><span>),</span> <span>third</span> <span>=</span> <span>first</span><span>)</span> <span>=</span> <span>[</span><span>first</span><span>,</span> <span>second</span><span>,</span> <span>third</span><span>]</span>
+
+<span># Default assignment works as expected.</span>
+<span>demo_a</span> <span>1</span>       <span># [1, 1]</span>
+
+<span># Default assignment fails due to a bug with parameter destructuring.</span>
+<span>demo_b</span> <span>[</span><span>1</span><span>,</span> <span>2</span><span>]</span>  <span># [1, 2, nil]</span></code></pre>
+</div>
+<p>In general — and due to these complications — use of parenthesis is not a recommended practice.</p>
+</div>
+<div>
+<h3 id="_primitives">Primitives</h3>
+<p>Ruby primitives — such as <code>String</code>, <code>Integer</code>, <code>Struct</code>, and so forth — are written in C, not Ruby. Sadly, this means asking for a primitive’s parameters will give you false information. A good example is using an <em>inline</em> <code>Struct</code>:</p>
+<div>
+<pre><code data-lang="ruby"><span>ap</span> <span>Struct</span><span>.</span><span>new</span><span>(</span><span>:one</span><span>,</span> <span>:two</span><span>).</span><span>method</span><span>(</span><span>:new</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :rest</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>If you use <a href="https://www.alchemists.io/articles/ruby_structs">Structs</a> a lot — or any primitive written in C — you know this information is incorrect because a struct can accept both positional <em>and</em> keyword arguments. The problem is the argument conversion is done in C, not Ruby. This is another aspect of Ruby where asking for a method’s parameters won’t help you but is important to be aware of. There is a long standing <a href="https://bugs.ruby-lang.org/issues/8088">Ruby Issue</a>, if fixed, would solve this problem and lead to more informative parameter information.</p>
+<p>One trick to solving this situation is via a <code>.for</code> method (or whatever method you deem is an appropriate shim). Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>Demo</span> <span>=</span> <span>Struct</span><span>.</span><span>new</span> <span>:one</span><span>,</span> <span>:two</span> <span>do</span>
+  <span>def</span> <span>self</span><span>.</span><span>for</span><span>(</span><span>...</span><span>)</span> <span>=</span> <span>new</span><span>(</span><span>...</span><span>)</span>
+<span>end</span>
+
+<span>ap</span> <span>Demo</span><span>.</span><span>method</span><span>(</span><span>:for</span><span>).</span><span>parameters</span>
+
+<span># [</span>
+<span>#   [</span>
+<span>#     :rest,</span>
+<span>#     :*</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :keyrest,</span>
+<span>#     :**</span>
+<span>#   ],</span>
+<span>#   [</span>
+<span>#     :block,</span>
+<span>#     :&amp;</span>
+<span>#   ]</span>
+<span># ]</span></code></pre>
+</div>
+<p>Notice how we get better parameter information — well, minus the block parameter — which tells the truth in terms of being able to use positional or keyword parameters. To take this a step further by being specific, use splats instead. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span># Positional Only. Parameters: `[[:rest, :*]]`.</span>
+<span>Demo</span> <span>=</span> <span>Struct</span><span>.</span><span>new</span> <span>:one</span><span>,</span> <span>:two</span> <span>do</span>
+  <span>def</span> <span>self</span><span>.</span><span>for</span><span>(</span><span>*</span><span>)</span> <span>=</span> <span>new</span><span>(</span><span>*</span><span>)</span>
+<span>end</span>
+
+<span># Keyword Only. Parameters: `[[:keyrest, :**]]`.</span>
+<span>Demo</span> <span>=</span> <span>Struct</span><span>.</span><span>new</span> <span>:one</span><span>,</span> <span>:two</span> <span>do</span>
+  <span>def</span> <span>self</span><span>.</span><span>for</span><span>(</span><span>**</span><span>)</span> <span>=</span> <span>new</span><span>(</span><span>**</span><span>)</span>
+<span>end</span></code></pre>
+</div>
+<p>In all of these examples, you now have more accurate parameter information via <code>.for</code> instead of <code>.new</code> which comes in handy when dynamically messaging these objects and using a gem like <a href="https://www.alchemists.io/projects/marameters">Marameters</a>, for example.</p>
+</div>
+<div>
+<h3 id="_procs_and_lambdas">Procs and Lambdas</h3>
+<p>Starting with <a href="https://www.alchemists.io/articles/ruby_320">Ruby 3.2.0</a>, <a href="https://bugs.ruby-lang.org/issues/15357">support was added</a> for proc parameters to be converted into lambda parameters for quick proc to lambda conversion. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>demo</span> <span>=</span> <span>proc</span> <span>{</span> <span>|</span><span>one</span><span>,</span> <span>two</span> <span>=</span> <span>2</span><span>|</span> <span>[</span><span>one</span><span>,</span> <span>two</span><span>]</span> <span>}</span>
+
+<span>demo</span><span>.</span><span>parameters</span>               <span># [[:opt, :one], [:opt, :two]]</span>
+<span>demo</span><span>.</span><span>parameters</span> <span>lambda: </span><span>true</span>  <span># [[:req, :one], [:opt, :two]]</span></code></pre>
+</div>
+<p>Notice, by passing <code>lambda: true</code> to the <code>#parameters</code> method, the proc will answer back parameters as if the proc was a lambda since the first parameter would be required for a lambda but optional for a proc. This provides a way for you to dynamically convert a proc into a lambda.</p>
+<p>One caveat to be aware of with procs/lambas is: argument forwarding. Currently, argument forwarding isn’t possible. Consider the following:</p>
+<div>
+<pre><code data-lang="ruby"><span>inspector</span> <span>=</span> <span>lambda</span> <span>do</span> <span>|*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span><span>|</span>
+  <span>puts</span> <span>"Positionals: {#positionals}, Keywords: </span><span>#{</span><span>keywords</span><span>}</span><span>, Block: </span><span>#{</span><span>block</span><span>}</span><span>"</span>
+<span>end</span>
+
+<span># Syntax Error</span>
+<span>proc</span> <span>{</span> <span>|...|</span> <span>inspector</span><span>.</span><span>call</span><span>(</span><span>...</span><span>)</span> <span>}</span>
+<span># unexpected (..., expecting '|'</span>
+
+<span># Syntax Error</span>
+<span>proc</span> <span>{</span> <span>|*</span><span>,</span> <span>**</span><span>,</span> <span>&amp;|</span> <span>inspector</span><span>.</span><span>call</span><span>(</span><span>*</span><span>,</span> <span>**</span><span>,</span> <span>&amp;</span><span>)</span> <span>}</span>
+<span># no anonymous rest parameter</span>
+<span># no anonymous keyword rest parameter</span>
+<span># no anonymous block parameter</span>
+
+<span># Named parameters are OK to be forwarded.</span>
+<span>demo</span> <span>=</span> <span>proc</span> <span>do</span> <span>|*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span><span>|</span>
+  <span>inspector</span><span>.</span><span>call</span><span>(</span><span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span><span>)</span>
+<span>end</span>
+
+<span>demo</span><span>.</span><span>call</span><span>(</span><span>1</span><span>,</span> <span>a: </span><span>1</span><span>)</span> <span>{</span> <span>"example"</span> <span>}</span>
+<span># Positionals: {#positionals}, Keywords: {:a=&gt;1}, Block: #&lt;Proc:0x00000001191108b8 /demo:105&gt;</span></code></pre>
+</div>
+<p>Anonymous argument forwarding might be supported in the future so keep an eye on future versions of Ruby to see how this evolves.</p>
+</div>
+</div>
+<div>
+<h2 id="_arguments">Arguments</h2>
+<div>
+<p>To understand arguments, we’ll need to a more…​introspective…​implementation:</p>
+<div>
+<pre><code data-lang="ruby"><span>module</span> <span>Operation</span>
+  <span>def</span> <span>self</span><span>.</span><span>demo</span> <span>one</span><span>,</span> <span>two</span> <span>=</span> <span>:b</span><span>,</span> <span>*</span><span>three</span><span>,</span> <span>four</span><span>:,</span> <span>five: :e</span><span>,</span> <span>**</span><span>six</span><span>,</span> <span>&amp;</span><span>seven</span>
+    <span>puts</span> <span>&lt;&lt;~</span><span>ARGUMENTS</span><span>
+      1 (reg):      </span><span>#{</span><span>one</span><span>.</span><span>inspect</span><span>}</span><span>
+      2 (opt):      </span><span>#{</span><span>two</span><span>.</span><span>inspect</span><span>}</span><span>
+      3 (rest):     </span><span>#{</span><span>three</span><span>.</span><span>inspect</span><span>}</span><span>
+      4 (keyreq):   </span><span>#{</span><span>four</span><span>.</span><span>inspect</span><span>}</span><span>
+      5 (key):      </span><span>#{</span><span>five</span><span>.</span><span>inspect</span><span>}</span><span>
+      6 (keyrest):  </span><span>#{</span><span>six</span><span>.</span><span>inspect</span><span>}</span><span>
+      7 (block):    </span><span>#{</span><span>seven</span><span>.</span><span>inspect</span><span>}</span><span>
+</span><span>    ARGUMENTS</span>
+  <span>end</span>
+<span>end</span></code></pre>
+</div>
+<p>Keep this implementation in mind or scroll back, when needed, to reread since this implementation will be referenced repeatedly.</p>
+<div>
+<h3 id="_basic_2">Basic</h3>
+<p>With the above implementation, the minimal set of arguments we could use are:</p>
+<div>
+<pre><code data-lang="ruby"><span>Operation</span><span>.</span><span>demo</span> <span>:a</span><span>,</span> <span>four: :d</span>
+
+<span># 1 (reg):      :a</span>
+<span># 2 (opt):      :b</span>
+<span># 3 (rest):     []</span>
+<span># 4 (keyreq):   :d</span>
+<span># 5 (key):      :e</span>
+<span># 6 (keyrest):  {}</span>
+<span># 7 (block):    nil</span></code></pre>
+</div>
+<p>All seven arguments — a few of which are either <code>nil</code> or empty since they are optional — are printed to the console. This output can be further explained as follows:</p>
+<div>
+<ol>
+<li>
+<p><code>req: a</code>: This positional argument was required so we had to pass in a value (i.e. <code>:a</code>).</p>
+</li>
+<li>
+<p><code>opt: b</code>: This positional argument was optional so the default value of <code>:b</code> was answered back.</p>
+</li>
+<li>
+<p><code>rest: []</code>: This positional argument was optional too but since we gave it nothing, we got an empty array due to single splats always resolving to an array.</p>
+</li>
+<li>
+<p><code>keyreq: d</code>: This keyword argument was required so we had to pass in a value (i.e. <code>:d</code>).</p>
+</li>
+<li>
+<p><code>key: e</code>: This keyword argument was optional so the default value of <code>:e</code> was answered back.</p>
+</li>
+<li>
+<p><code>keyrest: {}</code>: This keyword argument was optional too but since we gave it nothing, we got an empty hash due to double splats always resolving to a hash.</p>
+</li>
+<li>
+<p><code>block: nil</code>: We didn’t supply a block so we got back nil in this case since blocks are optional since they can be implicitly or explicitly used.</p>
+</li>
+</ol>
+</div>
+<p>To contrast the minimal set of arguments passed to the <code>.demo</code> method, we can also pass in a maximum — loosely speaking — set of arguments. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>function</span> <span>=</span> <span>proc</span> <span>{</span> <span>"test"</span> <span>}</span>
+<span>Operation</span><span>.</span><span>demo</span> <span>:a</span><span>,</span> <span>:b</span><span>,</span> <span>:y</span><span>,</span> <span>:z</span><span>,</span> <span>four: :d</span><span>,</span> <span>y: </span><span>10</span><span>,</span> <span>z: </span><span>20</span><span>,</span> <span>&amp;</span><span>function</span>
+
+<span># 1 (reg):      :a</span>
+<span># 2 (opt):      :b</span>
+<span># 3 (rest):     [:y, :z]</span>
+<span># 4 (keyreq):   :d</span>
+<span># 5 (key):      :e</span>
+<span># 6 (keyrest):  {:y=&gt;10, :z=&gt;20}</span>
+<span># 7 (block):    #&lt;Proc:0x0000000109679ad0 /snippet:32&gt;</span></code></pre>
+</div>
+<p>This time we have a lot more arguments passed in and printed out to the console. We can break this down further highlighting the differences:</p>
+<div>
+<ol>
+<li>
+<p><code>req: a</code></p>
+</li>
+<li>
+<p><code>opt: b</code></p>
+</li>
+<li>
+<p><code>rest: [:y, :z]</code>: Any number of optional positional arguments could have been supplied here but only <code>:y</code> and <code>:z</code> were used in this case.</p>
+</li>
+<li>
+<p><code>keyreq: d</code></p>
+</li>
+<li>
+<p><code>key: e</code></p>
+</li>
+<li>
+<p><code>keyrest: {:y ⇒ 10, :z ⇒ 20}</code>: Any number of optional keyword arguments could have been supplied here but only <code>y: 10</code> and <code>z: 20</code> were used in this case.</p>
+</li>
+<li>
+<p><code>block: #&lt;Proc:0x000000010d1cbc78&gt;</code>: Since we passed in an <em>explicit</em> block, you can see it’s pass through and printed out as well.</p>
+</li>
+</ol>
+</div>
+<p>With the basic use of arguments in mind, we can now expand into more advanced usage.</p>
+</div>
+<div>
+<h3 id="_splats_2">Splats</h3>
+<p>Argument splats — as mentioned earlier when first discussing parameters — can be categorized as follows:</p>
+<div>
+<ul>
+<li>
+<p><strong>Single</strong> (array): Can be bare (i.e. <code>*</code>) or named (example: <code>*positionals</code>).</p>
+</li>
+<li>
+<p><strong>Double</strong> (hash): Can be bare (i.e. <code>**</code>) or named (example: <code>**keywords</code>).</p>
+</li>
+<li>
+<p><strong>Block</strong> (proc): Can be bare (i.e. <code>&amp;</code>) or named (example: <code>&amp;block</code>).</p>
+</li>
+</ul>
+</div>
+<p>When these are arguments are passed in, they will be automatically coerced. For simplicity, I’m using <em>named</em> arguments but the same applies for <em>bare</em> arguments:</p>
+<div>
+<ul>
+<li>
+<p><strong>Single</strong> (array): Evaluates to <code>*positionals.to_a</code>. This behavior is definitely surprising and an oddity because you’d expect the <em>implicit</em> <code>#to_ary</code> to be called instead of the <em>explicit</em> <code>#to_a</code> which is inconsistent with how double and block arguments work.</p>
+</li>
+<li>
+<p><strong>Double</strong> (hash): Evaluates to <code>**keywords.to_hash</code>.</p>
+</li>
+<li>
+<p><strong>Block</strong> (proc): Evaluates to <code>&amp;block.to_proc</code>.</p>
+</li>
+</ul>
+</div>
+<p>💡 For more information on proper use of <em>implicit</em> and <em>explicit</em> casting, see my <a href="https://www.alchemists.io/articles/ruby_antipatterns/#_misused_casting">Ruby Antipatterns</a> articles for details.</p>
+<p>You want to splat your arguments when you need to destruct your arrays, hashes, or proc into a list of arguments or can’t directly pass them to a method but need to dynamically build up the arguments instead. With the <code>.demo</code> method implementation from earlier — and using our knowledge of positional, keyword, and block parameters — we can pass single and double splats along with a block to this method as follows:</p>
+<div>
+<pre><code data-lang="ruby"><span>Operation</span><span>.</span><span>demo</span> <span>*</span><span>%i[a b y z]</span><span>,</span> <span>**</span><span>{</span><span>four: :d</span><span>,</span> <span>y: </span><span>10</span><span>,</span> <span>z: </span><span>20</span><span>},</span> <span>&amp;</span><span>function</span>
+
+<span># 1 (reg):      :a</span>
+<span># 2 (opt):      :b</span>
+<span># 3 (rest):     [:y, :z]</span>
+<span># 4 (keyreq):   :d</span>
+<span># 5 (key):      :e</span>
+<span># 6 (keyrest):  {:y=&gt;10, :z=&gt;20}</span>
+<span># 7 (block):    #&lt;Proc:0x0000000119418d58 /snippet:32&gt;</span></code></pre>
+</div>
+<p>Notice the above’s output is identical to our earlier example (except for the new <code>Proc</code> instance) where we passed in a maximum set of arguments. What’s different is we’ve categorized the positional, keyword, and block arguments. Single and double splats makes this easier. To take this a step further — and assuming the argument list was dynamically assigned to local variables — the code then becomes more descriptive:</p>
+<div>
+<pre><code data-lang="ruby"><span>function</span> <span>=</span> <span>proc</span> <span>{</span> <span>"test"</span> <span>}</span>
+<span>positionals</span> <span>=</span> <span>%i[a b y z]</span>
+<span>keywords</span> <span>=</span> <span>{</span><span>four: :d</span><span>,</span> <span>y: </span><span>10</span><span>,</span> <span>z: </span><span>20</span><span>}</span>
+
+<span>Operation</span><span>.</span><span>demo</span> <span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>function</span>
+
+<span># 1 (reg):      :a</span>
+<span># 2 (opt):      :b</span>
+<span># 3 (rest):     [:y, :z]</span>
+<span># 4 (keyreq):   :d</span>
+<span># 5 (key):      :e</span>
+<span># 6 (keyrest):  {:y=&gt;10, :z=&gt;20}</span>
+<span># 7 (block):    #&lt;Proc:0x0000000109c59810 /snippet:32&gt;</span></code></pre>
+</div>
+<p>Keep in mind that single and double splats must be used when destructuring arrays and hashes for messaging purposes. For example, the following doesn’t work because you have to <em>explicitly</em> use single or double splats with your arguments:</p>
+<div>
+<pre><code data-lang="ruby"><span>Operation</span><span>.</span><span>demo</span> <span>positionals</span><span>,</span> <span>keywords</span><span>,</span> <span>&amp;</span><span>function</span>
+
+<span>#  missing keyword: :four (ArgumentError)</span></code></pre>
+</div>
+<p>We’ll learn more about splats in message delegation next.</p>
+</div>
+<div>
+<h3 id="_super">Super</h3>
+<p>The <code>super</code> keyword is one of several <a href="https://www.alchemists.io/articles/ruby_keywords">Ruby Keywords</a> that allows you to forward arguments to the parent method when using <em>inheritance</em>. The <code>super</code> keyword deserves special mention since behavior can differ based on the types of arguments used. Consider this basic implementation:</p>
+<div>
+<pre><code data-lang="ruby"><span>class</span> <span>Parent</span>
+  <span>def</span> <span>demo</span><span>(</span><span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span><span>)</span>
+    <span>puts</span> <span>"Positionals: </span><span>#{</span><span>positionals</span><span>}</span><span>, Keywords: </span><span>#{</span><span>keywords</span><span>}</span><span>, Block: </span><span>#{</span><span>block</span><span>}</span><span>"</span>
+  <span>end</span>
+<span>end</span>
+
+<span>class</span> <span>Child</span> <span>&lt;</span> <span>Parent</span>
+  <span>def</span> <span>demo</span><span>(</span><span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span><span>)</span> <span>=</span> <span>super</span>
+<span>end</span>
+
+<span>child</span> <span>=</span> <span>Child</span><span>.</span><span>new</span>
+
+<span>child</span><span>.</span><span>demo</span><span>(</span><span>1</span><span>,</span> <span>b: </span><span>2</span><span>)</span> <span>{</span> <span>:example</span> <span>}</span>
+<span># Positionals: [1], Keywords: {:b=&gt;2}, Block: #&lt;Proc:0x000000013e9d9ba0&gt;</span></code></pre>
+</div>
+<p>The above shouldn’t be surprising when forwarding arguments from the child to the parent because <code>super</code> — without <em>explicit</em> arguments or parenthesis — <em>implicitly</em> forwards the same arguments. Same goes if you modify the arguments before calling <code>super</code>:</p>
+<div>
+<pre><code data-lang="ruby"><span>class</span> <span>Child</span> <span>&lt;</span> <span>Parent</span>
+  <span>def</span> <span>demo</span><span>(</span><span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span><span>)</span>
+    <span>positionals</span><span>.</span><span>append</span> <span>:a</span>
+    <span>keywords</span><span>[</span><span>:b</span><span>]</span> <span>=</span> <span>2</span>
+    <span>super</span>
+  <span>end</span>
+<span>end</span>
+
+<span>Child</span><span>.</span><span>new</span><span>.</span><span>demo</span> <span>{</span> <span>:example</span> <span>}</span>
+<span># Positionals: [:a], Keywords: {:b=&gt;2}, Block: #&lt;Proc:0x0000000133c190b0&gt;</span></code></pre>
+</div>
+<p>However, using parenthesis, will prevent <code>super</code> from forwarding any arguments:</p>
+<div>
+<pre><code data-lang="ruby"><span>class</span> <span>Child</span> <span>&lt;</span> <span>Parent</span>
+  <span>def</span> <span>demo</span><span>(</span><span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span><span>)</span> <span>=</span> <span>super</span><span>()</span>
+<span>end</span>
+
+<span>child</span> <span>=</span> <span>Child</span><span>.</span><span>new</span>
+
+<span>child</span><span>.</span><span>demo</span><span>(</span><span>1</span><span>,</span> <span>b: </span><span>2</span><span>)</span> <span>{</span> <span>:example</span> <span>}</span>
+<span># Positionals: [], Keywords: {}, Block: #&lt;Proc:0x0000000148034208&gt;</span></code></pre>
+</div>
+<p>As you can see, the positional and keyword arguments were <em>not</em> forwarded but notice the block was! This is because <code>super</code> <em>implicitly</em> forwards the block whether you like it or not. To prevent this behavior, use <code>super(&amp;nil)</code>:</p>
+<div>
+<pre><code data-lang="ruby"><span>class</span> <span>Child</span> <span>&lt;</span> <span>Parent</span>
+  <span>def</span> <span>demo</span><span>(</span><span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span><span>)</span> <span>=</span> <span>super</span><span>(</span><span>&amp;</span><span>nil</span><span>)</span>
+<span>end</span>
+
+<span>child</span> <span>=</span> <span>Child</span><span>.</span><span>new</span>
+
+<span>child</span><span>.</span><span>demo</span><span>(</span><span>1</span><span>,</span> <span>b: </span><span>2</span><span>)</span> <span>{</span> <span>:example</span> <span>}</span>
+<span># Positionals: [], Keywords: {}, Block:</span></code></pre>
+</div>
+</div>
+<div>
+<h3 id="_message_delegation">Message Delegation</h3>
+<p>At this point, we are now primed to discuss message delegation which is where parameter and argument compatibility gets interesting. To set the stage, we’ll expand upon our earlier implementation by using the following snippet of code:</p>
+<div>
+<pre><code data-lang="ruby"><span>#! /usr/bin/env ruby</span>
+<span># frozen_string_literal: true</span>
+
+<span># Save as `snippet`, then `chmod 755 snippet`, and run as `./snippet`.</span>
+
+<span>require</span> <span>"bundler/inline"</span>
+
+<span>gemfile</span> <span>true</span> <span>do</span>
+  <span>source</span> <span>"https://rubygems.org"</span>
+
+  <span>gem</span> <span>"amazing_print"</span>
+  <span>gem</span> <span>"debug"</span>
+  <span>gem</span> <span>"dry-monads"</span>
+  <span>gem</span> <span>"marameters"</span>
+<span>end</span>
+
+<span>include</span> <span>Dry</span><span>::</span><span>Monads</span><span>[</span><span>:result</span><span>]</span>
+
+<span>function</span> <span>=</span> <span>proc</span> <span>{</span> <span>"test"</span> <span>}</span>
+
+<span>module</span> <span>Operation</span>
+  <span>def</span> <span>self</span><span>.</span><span>demo</span> <span>one</span><span>,</span> <span>two</span> <span>=</span> <span>:b</span><span>,</span> <span>*</span><span>three</span><span>,</span> <span>four</span><span>:,</span> <span>five: :e</span><span>,</span> <span>**</span><span>six</span><span>,</span> <span>&amp;</span><span>seven</span>
+    <span>puts</span> <span>&lt;&lt;~</span><span>ARGUMENTS</span><span>
+      1 (reg):      </span><span>#{</span><span>one</span><span>.</span><span>inspect</span><span>}</span><span>
+      2 (opt):      </span><span>#{</span><span>two</span><span>.</span><span>inspect</span><span>}</span><span>
+      3 (rest):     </span><span>#{</span><span>three</span><span>.</span><span>inspect</span><span>}</span><span>
+      4 (keyreq):   </span><span>#{</span><span>four</span><span>.</span><span>inspect</span><span>}</span><span>
+      5 (key):      </span><span>#{</span><span>five</span><span>.</span><span>inspect</span><span>}</span><span>
+      6 (keyrest):  </span><span>#{</span><span>six</span><span>.</span><span>inspect</span><span>}</span><span>
+      7 (block):    </span><span>#{</span><span>seven</span><span>.</span><span>inspect</span><span>}</span><span>
+</span><span>    ARGUMENTS</span>
+  <span>end</span>
+<span>end</span>
+
+<span>class</span> <span>Exampler</span>
+  <span>def</span> <span>initialize</span> <span>operation</span><span>,</span> <span>method</span><span>,</span> <span>marameters: </span><span>Marameters</span>
+    <span>@operation</span> <span>=</span> <span>operation</span>
+    <span>@method</span> <span>=</span> <span>method</span>
+    <span>@marameters</span> <span>=</span> <span>marameters</span>
+  <span>end</span>
+
+  <span>def</span> <span>first_example</span><span>(</span><span>...</span><span>)</span>
+    <span>operation</span><span>.</span><span>public_send</span><span>(</span><span>method</span><span>,</span> <span>...</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>second_example</span><span>(</span><span>*</span><span>,</span> <span>**</span><span>,</span> <span>&amp;</span><span>)</span>
+    <span>operation</span><span>.</span><span>public_send</span><span>(</span><span>method</span><span>,</span> <span>*</span><span>,</span> <span>**</span><span>,</span> <span>&amp;</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>third_example</span> <span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span>
+    <span>operation</span><span>.</span><span>public_send</span> <span>method</span><span>,</span> <span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span>
+  <span>end</span>
+
+  <span>def</span> <span>fourth_example</span> <span>arguments</span>
+    <span>positionals</span><span>,</span> <span>keywords</span><span>,</span> <span>block</span> <span>=</span> <span>arguments</span>
+    <span>operation</span><span>.</span><span>public_send</span> <span>method</span><span>,</span> <span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span>
+  <span>end</span>
+
+  <span>def</span> <span>fifth_example</span> <span>result</span>
+    <span>result</span><span>.</span><span>fmap</span> <span>do</span> <span>|</span><span>positionals</span><span>,</span> <span>keywords</span><span>,</span> <span>block</span><span>|</span>
+      <span>operation</span><span>.</span><span>public_send</span> <span>method</span><span>,</span> <span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>def</span> <span>sixth_example</span> <span>arguments</span>
+    <span>marameters</span><span>.</span><span>categorize</span><span>(</span><span>operation</span><span>.</span><span>method</span><span>(</span><span>method</span><span>).</span><span>parameters</span><span>,</span> <span>arguments</span><span>)</span>
+              <span>.</span><span>then</span> <span>do</span> <span>|</span><span>splat</span><span>|</span>
+                <span>operation</span><span>.</span><span>public_send</span> <span>method</span><span>,</span> <span>*</span><span>splat</span><span>.</span><span>positionals</span><span>,</span> <span>**</span><span>splat</span><span>.</span><span>keywords</span><span>,</span> <span>&amp;</span><span>splat</span><span>.</span><span>block</span>
+              <span>end</span>
+  <span>end</span>
+
+  <span>private</span>
+
+  <span>attr_reader</span> <span>:operation</span><span>,</span> <span>:method</span><span>,</span> <span>:marameters</span>
+<span>end</span></code></pre>
+</div>
+<p>The major changes are that:</p>
+<div>
+<ul>
+<li>
+<p>The above is written as a <a href="https://bundler.io/guides/bundler_in_a_single_file_ruby_script.html">Bundler Inline</a> script so you can tinker with the code locally.</p>
+</li>
+<li>
+<p><a href="https://dry-rb.org/gems/dry-monads">Monads</a> are used. Don’t worry about needing to know how to use monads. You only need to care about the destructuring of arguments in the <code>#fifth_example</code> method. I’ll explain, shortly.</p>
+</li>
+<li>
+<p>The <a href="https://www.alchemists.io/projects/marameters">Marameters</a> gem is introduced as well which provides a convenient way to obtain method parameter information. We’ll talk about this gem in the final example.</p>
+</li>
+</ul>
+</div>
+<p>Now we can focus on the <code>#*_example</code> methods in terms of argument forwarding, splats, and destructured arguments.</p>
+<div>
+<h4 id="_argument_forwarding">Argument Forwarding</h4>
+<p>Argument forwarding (i.e. <code>...</code>) makes passing of arguments less of a hassle in some cases. To see argument forwarding in action, here’s how make use of the above code snippet:</p>
+<div>
+<pre><code data-lang="ruby"><span>exampler</span> <span>=</span> <span>Exampler</span><span>.</span><span>new</span> <span>Operation</span><span>,</span> <span>:demo</span>
+<span>exampler</span><span>.</span><span>first_example</span> <span>:a</span><span>,</span> <span>:b</span><span>,</span> <span>:y</span><span>,</span> <span>:z</span><span>,</span> <span>four: :d</span><span>,</span> <span>y: </span><span>10</span><span>,</span> <span>z: </span><span>20</span><span>,</span> <span>&amp;</span><span>function</span>
+
+<span># 1 (reg):      :a</span>
+<span># 2 (opt):      :b</span>
+<span># 3 (rest):     [:y, :z]</span>
+<span># 4 (keyreq):   :d</span>
+<span># 5 (key):      :e</span>
+<span># 6 (keyrest):  {:y=&gt;10, :z=&gt;20}</span>
+<span># 7 (block):    #&lt;Proc:0x0000000109675980 /snippet:32&gt;</span></code></pre>
+</div>
+<p>By now, the output should come as no surprise since all we’ve done is forward all arguments from the <code>#first_example</code> method to the <code>.demo</code> method by adding a leading argument to specify the <code>:demo</code> method when using <code>#public_send</code>. This is a elegant and the most succinct of all examples.</p>
+</div>
+<div>
+<h4 id="_splats_3">Splats</h4>
+<p>Should argument forwarding not be desired or needed, we can always fall back to using splats as provided by the second and third examples. We’ll start with the second example:</p>
+<div>
+<pre><code data-lang="ruby"><span>exampler</span> <span>=</span> <span>Exampler</span><span>.</span><span>new</span> <span>Operation</span><span>,</span> <span>:demo</span>
+<span>exampler</span><span>.</span><span>second_example</span> <span>:a</span><span>,</span> <span>:b</span><span>,</span> <span>:y</span><span>,</span> <span>:z</span><span>,</span> <span>four: :d</span><span>,</span> <span>y: </span><span>10</span><span>,</span> <span>z: </span><span>20</span><span>,</span> <span>&amp;</span><span>function</span>
+
+<span># 1 (reg):      a</span>
+<span># 2 (opt):      b</span>
+<span># 3 (rest):     [:y, :z]</span>
+<span># 4 (keyreq):   d</span>
+<span># 5 (key):      e</span>
+<span># 6 (keyrest):  {:y=&gt;10, :z=&gt;20}</span>
+<span># 7 (block):    #&lt;Proc:0x000000010b7cbee0 /snippet:18&gt;</span></code></pre>
+</div>
+<p>As you can see from the output, there is no change between the first and second example. What might be surprising is you can use anonymous single splat, double splat, and block parameters. This is new in <a href="https://www.alchemists.io/articles/ruby_320">Ruby 3.2.0</a>. If we want to be more verbose, we can name our arguments as done in the third example:</p>
+<div>
+<pre><code data-lang="ruby"><span>exampler</span> <span>=</span> <span>Exampler</span><span>.</span><span>new</span> <span>Operation</span><span>,</span> <span>:demo</span>
+<span>exampler</span><span>.</span><span>third_example</span> <span>:a</span><span>,</span> <span>:b</span><span>,</span> <span>:y</span><span>,</span> <span>:z</span><span>,</span> <span>four: :d</span><span>,</span> <span>y: </span><span>10</span><span>,</span> <span>z: </span><span>20</span><span>,</span> <span>&amp;</span><span>function</span></code></pre>
+</div>
+<p>Again, no change in output as we get the same desired result but this time we’ve given our single splat, double splat, and block arguments a name.</p>
+<p>A subtle distinction is that you <em>must</em> use splats in your parameters <em>and</em> continue to use splats when delegating the arguments, otherwise you’ll end up with nested arrays and/or hashes. Here are a few examples of the errors you’ll get when the code is modified without splats:</p>
+<div>
+<pre><code data-lang="ruby"><span># No parameter splats.</span>
+<span>def</span> <span>third_example</span> <span>positionals</span><span>,</span> <span>keywords</span><span>,</span> <span>&amp;</span><span>block</span>
+  <span>operation</span><span>.</span><span>public_send</span> <span>method</span><span>,</span> <span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span>
+<span>end</span>
+
+<span># Yields:  wrong number of arguments (given 5, expected 2) (ArgumentError)</span>
+
+<span># No argument splats.</span>
+<span>def</span> <span>third_example</span> <span>*</span><span>positionals</span><span>,</span> <span>**</span><span>keywords</span><span>,</span> <span>&amp;</span><span>block</span>
+  <span>operation</span><span>.</span><span>public_send</span> <span>method</span><span>,</span> <span>positionals</span><span>,</span> <span>keywords</span><span>,</span> <span>&amp;</span><span>block</span>
+<span>end</span>
+
+<span># Yields: `demo': missing keyword: :four (ArgumentError)</span></code></pre>
+</div>
+</div>
+<div>
+<h4 id="_destructuring">Destructuring</h4>
+<p>Last, but not least, is argument destructuring. Both the third and fourth example methods tackle this in similar ways by wrapping of all arguments within a single array. Consider the following:</p>
+<div>
+<pre><code data-lang="ruby"><span>exampler</span> <span>=</span> <span>Exampler</span><span>.</span><span>new</span> <span>Operation</span><span>,</span> <span>:demo</span>
+<span>exampler</span><span>.</span><span>fourth_example</span> <span>[</span><span>%i[a b y z]</span><span>,</span> <span>{</span><span>four: :d</span><span>,</span> <span>five: :e</span><span>,</span> <span>y: </span><span>10</span><span>,</span> <span>z: </span><span>20</span><span>},</span> <span>function</span><span>]</span>
+
+<span># 1 (reg):      :a</span>
+<span># 2 (opt):      :b</span>
+<span># 3 (rest):     [:y, :z]</span>
+<span># 4 (keyreq):   :d</span>
+<span># 5 (key):      :e</span>
+<span># 6 (keyrest):  {:y=&gt;10, :z=&gt;20}</span>
+<span># 7 (block):    #&lt;Proc:0x00000001091916a8 /snippet:32&gt;</span></code></pre>
+</div>
+<p>In this case, the single array argument is composed of positional, keyword, and block elements which are destructured into <code>positionals</code>, <code>keywords</code>, <code>block</code> local variables so they can be passed on using a single splat, double splat, and ampersand. There is no way to dynamically use <code>*</code>, <code>**</code>, or <code>&amp;</code> unless you evaluate the expression as a string. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>def</span> <span>fourth_example</span> <span>arguments</span>
+  <span>positionals</span><span>,</span> <span>keywords</span><span>,</span> <span>block</span> <span>=</span> <span>arguments</span>
+  <span>instance_eval</span> <span>"operation.</span><span>#{</span><span>method</span><span>}</span><span> *positionals, **keywords, &amp;block"</span><span>,</span> <span>__FILE__</span><span>,</span> <span>__LINE__</span>
+<span>end</span></code></pre>
+</div>
+<p>Instance evaluation would be an unnecessary — and less performant — so prefixing the local variables with <code>*</code>, <code>**</code>, and <code>&amp;</code> is better. A similar pattern is used when passing a monad as an argument to the fourth method:</p>
+<div>
+<pre><code data-lang="ruby"><span>exampler</span> <span>=</span> <span>Exampler</span><span>.</span><span>new</span> <span>Operation</span><span>,</span> <span>:demo</span>
+<span>exampler</span><span>.</span><span>fifth_example</span> <span>Success</span><span>([</span><span>%i[a b y z]</span><span>,</span> <span>{</span><span>four: :d</span><span>,</span> <span>five: :e</span><span>,</span> <span>y: </span><span>10</span><span>,</span> <span>z: </span><span>20</span><span>},</span> <span>function</span><span>])</span>
+
+<span># 1 (reg):      a</span>
+<span># 2 (opt):      b</span>
+<span># 3 (rest):     [:y, :z]</span>
+<span># 4 (keyreq):   d</span>
+<span># 5 (key):      e</span>
+<span># 6 (keyrest):  {:y=&gt;10, :z=&gt;20}</span>
+<span># 7 (block):    #&lt;Proc:0x0000000109ba35b0 /snippet:18&gt;</span></code></pre>
+</div>
+<p>The key difference is that we can use the block parameters to automatically destructure into positional, keyword, and block arguments needed for message passing. 🎉</p>
+<p>Sadly, we can’t use argument forwarding in block parameters. It would be nice but is currently not possible.</p>
+</div>
+<div>
+<h4 id="_marameters">Marameters</h4>
+<p>At the start of this article, I alluded to the <a href="https://www.alchemists.io/projects/marameters">Marameters</a> gem. Specifically, the <code>.categorize</code> method used in the <code>#sixth_example</code> method. Using everything we’ve discussed above, Marameters will ensure the arguments align as required by the method’s parameters. Example:</p>
+<div>
+<pre><code data-lang="ruby"><span>exampler</span> <span>=</span> <span>Exampler</span><span>.</span><span>new</span> <span>Operation</span><span>,</span> <span>:demo</span>
+<span>exampler</span><span>.</span><span>sixth_example</span> <span>[</span><span>:a</span><span>,</span> <span>:b</span><span>,</span> <span>%i[y z]</span><span>,</span> <span>{</span><span>four: :d</span><span>},</span> <span>nil</span><span>,</span> <span>{</span><span>y: </span><span>10</span><span>,</span> <span>z: </span><span>20</span><span>},</span> <span>function</span><span>]</span>
+
+<span># 1 (reg):      :a</span>
+<span># 2 (opt):      :b</span>
+<span># 3 (rest):     [:y, :z]</span>
+<span># 4 (keyreq):   :d</span>
+<span># 5 (key):      :e</span>
+<span># 6 (keyrest):  {:y=&gt;10, :z=&gt;20}</span>
+<span># 7 (block):    #&lt;Proc:0x0000000109370b40 /snippet:32&gt;</span></code></pre>
+</div>
+<p>As you can see, the output is the same as all of our earlier examples. No change and no surprise. However — and this is important to be compatible with <a href="https://rubyapi.org/o/method#method-i-parameters">Method#parameters</a> — we use a single array argument which means all elements of the array must be in the right position to match the equivalent positions of the method’s parameters.</p>
+<p>The <a href="https://www.alchemists.io/projects/marameters">Marameters</a> gem can be handy when you want to build an array of arguments for forwarding to a method. Definitely check out the gem’s documentation for more details.</p>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h2 id="_conclusion">Conclusion</h2>
+<div>
+<p>During the course of this article we’ve learned how to parse a methods’s parameters, along with the kinds of parameters you can use in a method signature, and how the arguments passed to the method are parsed based on the defined parameters. We’ve also learned, briefly, how to leverage the <a href="https://www.alchemists.io/projects/marameters">Marameters</a> gem to dynamically build a list of method arguments. Hopefully, with this knowledge, you’ll be able to leverage better use of parameters and arguments in your own implementations too. Enjoy!</p>
+</div>
+</div>
+<hr>
+<p>💡 <em>If you've enjoyed what you've learned here, consider <a href="https://www.alchemists.io/hire">hiring us</a> because we can bring decades of software engineering experience, solutions, automation, and much more to your team.</em> 🚀</p>
+
+        </article>
+      </section>
+  </main>
+
+  
+
+</div></div>
+  </div>
+</body>
+</html>

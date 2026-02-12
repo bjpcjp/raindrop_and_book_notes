@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Machine Learning Attack Series: Image Scaling Attacks · wunderwuzzi blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Machine Learning Attack Series: Image Scaling Attacks · wunderwuzzi blog</h1>
+    <p><strong>URL:</strong> <a href="https://embracethered.com/blog/posts/2020/husky-ai-image-rescaling-attacks">https://embracethered.com/blog/posts/2020/husky-ai-image-rescaling-attacks</a></p>
+    <p><strong>Tags:</strong> deep-learning, vision</p>
+    <p><strong>Bookmark ID:</strong> 876775950</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section>
+    <p>This post is part of a series about machine learning and artificial intelligence. Click on the blog tag “huskyai” to see related posts.</p>
+<ul>
+<li><a href="https://embracethered.com/blog/posts/2020/machine-learning-attack-series-overview/">Overview</a>: How Husky AI was built, threat modeled and operationalized</li>
+<li><a href="https://embracethered.com/blog/posts/2020/husky-ai-threat-modeling-machine-learning/">Attacks</a>: Some of the attacks I want to investigate, learn about, and try out</li>
+</ul>
+<p>A few weeks ago while preparing demos for my GrayHat 2020 - Red Team Village presentation I ran across “Image Scaling Attacks” in <a href="https://www.usenix.org/system/files/sec20-quiring.pdf">Adversarial Preprocessing: Understanding and Preventing Image-Scaling Attacks in Machine Learning</a> by Erwin Quiring, et al.</p>
+<p>I thought that was so cool!</p>
+<h2 id="what-is-an-image-scaling-attack">What is an image scaling attack?</h2>
+<p>The basic idea is to hide a smaller image inside a larger image (it should be about 5-10x the size). The attack is easy to explain actually:</p>
+<ol>
+<li>Attacker crafts a malicious input image by hiding the desired target image inside a benign image</li>
+<li>The image is loaded by the server</li>
+<li>Pre-processing resizes the image</li>
+<li>The server acts and makes decision based on a different image then intended</li>
+</ol>
+<p>My goal was to hide a husky image inside another image:</p>
+<p><a href="https://embracethered.com/blog/images/2020/image-rescale-attack.gif"><img src="https://embracethered.com/blog/images/2020/image-rescale-attack.gif" alt="Image Rescaling Attack"></a></p>
+<p>Here are the two images I used - before and after the modification:
+<a href="https://embracethered.com/blog/images/2020/image-rescaling-attack-schoenbrunn.png"><img src="https://embracethered.com/blog/images/2020/image-rescaling-attack-schoenbrunn.png" alt="Image Rescaling Attack"></a></p>
+<p>If you look closely, you can see that the second image does have some strange dots all around. But this is not noticable when viewed in smaller version.</p>
+<p>You can find the code on <a href="https://github.com/EQuiw/2019-scalingattack">Github</a>. I used Google Colab to run it, and there were some errors initialy but it worked - let me know if interested and I can clean up and share the Notebook also.</p>
+<h2 id="rescaling-and-magic-happens">Rescaling and magic happens!</h2>
+<p>Now, look what happens when the image is loaded and resized with <code>OpenCV</code> using default settings:</p>
+<p><a href="https://embracethered.com/blog/images/2020/image-rescaling-attack.png"><img src="https://embracethered.com/blog/images/2020/image-rescaling-attack.png" alt="Image Rescaling Attack"></a></p>
+<p>On the left you can see the original sized image, and on the right the same image downsized to 128x128 pixels.</p>
+<p><strong>That’s amazing!</strong></p>
+<p>The downsized image is an entirely different picture now! Of course I picked a husky, since I wanted to attack “Husky AI” and find another bypass.</p>
+<h2 id="implications">Implications</h2>
+<p>This can have a set of implications:</p>
+<ol>
+<li><strong>Training process:</strong> Images that poisen the training data (as pre-processing rescales images)</li>
+<li><strong>Model queries:</strong> The model might predict on a different image than the one the user uploaded</li>
+<li><strong>Non ML related attacks:</strong> This can also be an issue in other, non machine learning areas.</li>
+</ol>
+<p>I guess security never gets boring, there is always something new to learn.</p>
+<h2 id="mitigations">Mitigations</h2>
+<p>Turns out that Husky AI uses PIL and that was not vulnerable to this attack by default.</p>
+<p>I got lucky, because initially Husky AI did use <code>OpenCV</code> and it’s default settings to resize images. But for some reason I changed that early on (not knowing it would also mitigate this attack).</p>
+<p>If you use <code>OpenCV</code> the issue can be fixed by using the <code>interpolation</code> argument when calling the <code>resize</code> API to change the default behavior.</p>
+<p>Hope that was useful and interesting.</p>
+<p>Cheers,
+Johann.</p>
+<p>Twitter: <a href="https://twitter.com/wunderwuzzi23">@wunderwuzzi23</a></p>
+<p><em>If you are interested in red teaming at large, check out my book <a href="https://www.amazon.com/gp/product/1838828869/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1838828869&amp;linkCode=as2&amp;tag=wunderwuzzi-20&amp;linkId=b6523e937607be47499c6010ff489537">Red Team Strategies</a>.</em></p>
+<h2 id="references">References</h2>
+<ul>
+<li>Adversarial Preprocessing: Understanding and Preventing Image-Scaling Attacks in Machine Learning (<a href="https://www.usenix.org/system/files/sec20-quiring.pdf">https://www.usenix.org/system/files/sec20-quiring.pdf</a>) (Erwin Quiring, TU Braunschweig)</li>
+<li><a href="https://github.com/EQuiw/2019-scalingattack">https://github.com/EQuiw/2019-scalingattack</a></li>
+<li><a href="https://scaling-attacks.net/">https://scaling-attacks.net</a></li>
+</ul>
+
+  </section></div>
+  </div>
+</body>
+</html>

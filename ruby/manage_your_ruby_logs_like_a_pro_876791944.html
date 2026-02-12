@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Your Ruby Logs Like a Pro</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Manage Your Ruby Logs Like a Pro</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2023/05/17/manage-your-ruby-logs-like-a-pro.html">https://blog.appsignal.com/2023/05/17/manage-your-ruby-logs-like-a-pro.html</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876791944</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Logs are essential to any application's development. Most Ruby logs are
+verbose and chunky, so digging for exactly what you need can be difficult.
+Even though they contain useful information, you
+might not get as much value as you should from logs if you don't know how to
+use them effectively.</p>
+<p>In this article, we'll explore:</p>
+<ul>
+<li>The importance of logging</li>
+<li>How to use Ruby's inbuilt logging utilities — <code>puts</code> and Logger</li>
+<li>Log levels and their differences</li>
+<li>Customizing your logs using JSON</li>
+<li>Integrating a logging library, using Lograge as an example</li>
+</ul>
+<p>Let's get started.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>To follow along with this tutorial, you should have the following:</p>
+<ul>
+<li>A local installation of Ruby (we'll be using Ruby 3.2.0 for the tutorial).</li>
+<li>Some experience with Ruby.</li>
+</ul>
+<p>Let's start by answering the question: "Why do we need to log, anyway?"</p>
+<h2 id="why-we-log">Why We Log</h2>
+<p>Before we dive in, it helps to know exactly why we log in
+the first place.</p>
+<p>Logs provide us with information on what's happening inside our Ruby
+app. This is very useful for tasks like debugging errors and collecting critical
+app metrics. Log data depends on the type of app we have and the environment
+it is running on.</p>
+<p>With that out of the way, let's introduce Ruby's inbuilt logging utilities.</p>
+<h2 id="rubys-inbuilt-logging-utilities-puts-and-logger">Ruby’s Inbuilt Logging Utilities: <code>puts</code> and Logger</h2>
+<p>Ruby comes with two logging utilities. One is <code>puts</code>, a method provided
+by the <a href="https://ruby-doc.org/3.2.0/IO.html">IO class</a> (other methods include
+<code>print</code>, <code>printf</code>, and <code>write</code>).</p>
+<p>The other
+inbuilt logging utility is the Logger class.</p>
+<p>Let's explore each in more detail, starting with <code>puts</code>.</p>
+<h2 id="rubys-puts-method">Ruby's <code>puts</code> Method</h2>
+<p>Ruby's <code>puts</code> method — which is actually syntactic sugar for <code>STDOUT.puts</code> — is a way
+of writing Ruby program messages to the <code>STDOUT</code> output stream (usually a
+terminal output). <code>puts</code> will print out the given message string and add a
+new line to the end of the output.</p>
+<p>The example below shows a simple use case where we use <code>puts</code> to output each line's length from a given text file:</p>
+
+
+<p>Then we run the above Ruby script and pass in the text file as the argument:</p>
+
+<p>And once the script has run, each line's length is written out to the console:</p>
+
+<p>This simple example provides a glimpse into the world of the input/output (IO)
+streams at the heart of logging. Basically, anytime you run a Ruby
+program, you spawn the following IO streams:</p>
+<ul>
+<li><code>STDIN</code> - This stream accepts commands into your Ruby program — for example, a
+key pressed on a user's keyboard.</li>
+<li><code>STDOUT</code> writes to an output — for example, a terminal displayed on a
+user's screen.</li>
+<li><code>STDERR</code> writes to an output just like the <code>STDOUT</code> one, but with
+a subtle difference that we'll cover in the next section.</li>
+</ul>
+<p>Each of these is integral to logging and understanding how they work
+forms the basis of properly applying logs in Ruby apps.</p>
+<h3 id="the-limitations-of-puts-in-ruby">The Limitations of <code>puts</code> in Ruby</h3>
+<p>Even though <code>puts</code> is a convenient and easy
+logging method for simple Ruby programs, you
+will very quickly need a proper logging library instead.</p>
+<p>Here are a couple of its limitations:</p>
+<ul>
+<li><strong>Automatic timestamps aren't included by default</strong> - Unless you manually customize <code>puts</code>, you will not get any timestamps in your log output.</li>
+<li><strong>Output is not categorized into appropriate log levels</strong> - We'll cover
+this in more detail later, but the <code>puts</code>
+method has no way to categorize output messages according to standard
+log levels.</li>
+</ul>
+<p>These features are basic requirements for any logging solution. The fact that
+they are missing from the <code>puts</code> method by default (coupled with the manual
+customization needed to have meaningful output messages) means that our
+ability to properly log using the method is limited.</p>
+<p>So let's now consider a more robust solution, the Ruby Logger
+class.</p>
+<h2 id="logging-with-ruby-logger">Logging with Ruby Logger</h2>
+<p>The <a href="https://docs.ruby-lang.org/en/master/Logger.html">Logger</a> class is a
+sophisticated logging utility that can create single or multiple
+event logs from a Ruby application. Logger comes bundled in Ruby, so no gem installation is needed to get it up and running. You only need a
+simple <code>require</code> statement somewhere at the top of your script:</p>
+
+<p>After that, instantiate a new Logger object as below:</p>
+
+<p><em><strong>Note:</strong> The Logger class can accept a number of arguments, but the first one is
+almost always the log stream output, followed by other arguments like the
+retention policy (how long logs should be kept, how much the
+log files should grow in size before they are rotated, etc.)</em></p>
+<p>You will get output similar to this:</p>
+
+<p>From the printed log message, we have:</p>
+<ul>
+<li><strong>The log level's shortened format</strong> - Indicated by the leading "D". In this
+case, it shows that this is an <code>info</code> level log entry.</li>
+<li><strong>A timestamp</strong> - A full timestamp of the log entry.</li>
+<li><strong>A process ID</strong> - The ID of the server process running the program.</li>
+<li><strong>The log level type in full</strong>.</li>
+<li><strong>A program name</strong> - An optional argument that can be added to a Logger
+entry (we'll see how in a later code example).</li>
+<li><strong>The log message</strong> - The message output that will be printed in the log
+entry (also optional).</li>
+</ul>
+<p>Each of these log entry components is important, and
+together they give context to app events that lead to the
+creation of log entries.</p>
+<p>That said, one aspect of log entry that deserves more coverage is the log
+level. Let's take a look at it next.</p>
+<h2 id="understanding-log-levels">Understanding Log Levels</h2>
+<p>A log level setting tells the Logger a log
+message's severity. The severity level depends upon the event that
+resulted in that log output.</p>
+<p>There are six levels of severity, ranging from the
+least to the most severe:</p>
+
+<p>And here's the output:</p>
+
+<p>Log levels can help filter out app and server
+events that warrant your attention. To put this into context,
+consider these differences between log levels:</p>
+<ul>
+<li><code>debug</code> - This is the default log level and the most information-rich. When
+this log level is enabled, your log entries will include pretty much every
+request happening in your app. This is particularly useful for a debugging session.</li>
+<li><code>info</code> - A level above <code>debug</code>. Just like the previous log level,
+enabling this level will result in some very information-rich log entries of
+your app's events. <code>info</code> log entries will tell you what's going on with
+your app — for instance, running processes and method calls.</li>
+<li><code>warn</code> - Any log entries at this level usually mean that your app
+encountered a problem, but nothing so severe that your app can't continue to
+function as expected (for example, you may have used an outdated method call for a gem or
+library.)</li>
+<li><code>error</code> - At this level, your app has encountered an error that stops it from
+proceeding with the action that caused the error. However, this does not stop
+other parts of the app from working as expected. For example, if your app references
+a recently moved file, an <code>error</code> log entry will likely be
+generated.</li>
+<li><code>fatal</code> - Your app has encountered an error that
+stops it from working any further. This could be caused by anything from running
+out of memory on the production server or a crashed background job.</li>
+<li><code>unknown</code> - The
+actual cause of an error cannot be reliably traced.</li>
+</ul>
+<p>Now that we have more information on log levels, let's see how to practically use them in a Ruby app.</p>
+<h2 id="using-log-levels-in-a-ruby-application">Using Log Levels in a Ruby Application</h2>
+<p>In a development environment, the default log level is set to <code>debug</code>.
+As mentioned earlier, if your app's log level is set to <code>debug</code>
+(or even <code>info</code>), your output will include everything happening in the app.
+You will have very information-rich log entries that make
+for easier debugging in development.</p>
+<p>However, in production, it isn't wise to use the <code>debug</code> or <code>info</code> log
+levels.</p>
+
+<p>For starters, a production app will likely have too many processes, users, and
+method calls going on, so could very easily generate thousands (if not millions)
+of log entries. If these entries are being saved to log files on a production
+server, you can quickly run out of disk space.</p>
+<p>Secondly, any attempt to sift for important <code>error</code> and <code>fatal</code> entries is extremely inefficient in production simply because you will have too much
+information to go through. So, you should only log entries
+when something "important" happens or when your app malfunctions in such a way
+that the user experience is affected.</p>
+<p>It therefore makes
+more sense to set the log level at something more manageable like the <code>error</code>
+level, for example.</p>
+<p>Although setting the log level can reduce the amount of information
+in the log entries, it doesn't help format the entries in any way. To do that,
+you need to customize the log output.</p>
+<h2 id="customizing-log-output-in-ruby">Customizing Log Output in Ruby</h2>
+<p>Customizing log output involves changing the format of how log
+entries look and the information they contain when printed
+out.</p>
+<p>By default, log entries printed to the terminal will be in black and white text. But for some logs, a little color can go a long
+way. You can colorize default log output using ANSI color codes.</p>
+<p>In Ruby, this is possible using a gem like
+<a href="https://github.com/fazibear/colorize">Colorize</a> or
+<a href="https://github.com/sickill/rainbow">Rainbow</a>.</p>
+<p>You can format the printed output from your Ruby
+program using either of these gems. This example code uses <code>Rainbow</code> to colorize some sample log
+outputs:</p>
+
+<p>And here's the colorized log output:</p>
+<figure><p><img alt="Colorized output" loading="lazy" width="1183" height="66" decoding="async" data-nimg="1" srcset="data:application/octet-stream;base64, 1x, data:application/octet-stream;base64, 2x" src="data:application/octet-stream;base64,"></p></figure>
+<p>The other way to format log entries goes beyond just customizing the
+look and feel. First, consider the simple Logger entry below:</p>
+
+<p>It's good to note that you are not limited to using the log entry as is. It is
+entirely possible to customize a log message by tweaking the log entry
+components. Let's see how.</p>
+<p>The first step is to call <code>Logger.new</code>, and then add some log entries:</p>
+
+<p>Which gives us this output:</p>
+
+<p>It's also possible to customize a program name in the log entry, like so:</p>
+
+<p>And here's the subsequent output:</p>
+
+<p>By customizing the log entry's program name, you can add even more contextual
+information to your logs.</p>
+<p>Now, let's look at how to customize all of the log entry's components all at
+once:</p>
+
+
+<p>Here, we use the logger entry formatter <code>proc</code>, which takes four arguments — severity, datetime, the program's name, and the message — to format the log
+entry and output a string formatted in the way specified.</p>
+<p>Great — but we can still do better! So far, everything we've done has produced
+log outputs in an unstructured format. But log entries can build up quickly in a production app that has thousands of users and
+millions of processes. Parsing unstructured logs can take up significant time and is very inefficient.</p>
+<p>What
+if there was a way to quickly and efficiently search through log files? Enter JSON.</p>
+<h2 id="logging-into-json">Logging into JSON</h2>
+<p>The Javascript Object Notation format — or JSON — is a structured text format that uses key/value pairs.</p>
+<p>It's not the only format that has structured text — there are others like YAML and even TOML. Both YAML and TOML function best as configuration files, though, while JSON's structure makes
+it really good for logging.</p>
+<p>Here's some code that outputs a JSON-formatted log entry:</p>
+
+
+<p>At first glance, it's not easy to see why one would even want to do something like
+this. But with JSON formatted logs, it's possible to:</p>
+<ul>
+<li><strong>Easily parse logs</strong> as they are now structured in a particular format (compared to the
+mass of unstructured entries characteristic of default logs). You can search for particular pieces of information using
+JSON keys tied to specific values.</li>
+<li><strong>Forward these logs to a proper log processing tool</strong>
+that can process log outputs of almost any size.</li>
+</ul>
+<p>So we've seen how useful Logger can be. But that does not mean the library
+is perfect.</p>
+<p>Logger does have its imperfections, and we'll look at these next.</p>
+<h2 id="limitations-of-logger">Limitations of Logger</h2>
+<p>If you use Logger to write output to log files frequently, one challenge you'll
+likely face is unreadable characters messing up your log
+files. These are caused by colorization ANSI codes not being parsed correctly in
+the log output files.</p>
+<p>For example, consider this example code:</p>
+
+<p>If you try to open the resulting log file, you'll notice it contains a bunch
+of unreadable characters in the log message section:</p>
+
+<p>One way to fix this problem is by using a string regex to escape these
+characters. For example, the <code>Colorize</code> gem contains a convenient <code>uncolorize</code>
+block:</p>
+
+<p>Another limitation of Logger, especially for busy
+production apps, is that default Logger entries can end up as
+information-rich multi-line entries (even when the log level has been set to
+something above the <code>debug</code> and <code>info</code> levels, like the <code>error</code> level).</p>
+<p>If you're in charge of such an app, debugging can easily become a messy
+affair as you have to go through a mass of unstructured text to get what you
+want.</p>
+<p>Considering these limitations, let's seek a better logging
+solution — one that has the features we've been lacking
+in most of the solutions we've outlined so far.</p>
+<h2 id="integrating-a-third-party-logging-library">Integrating a Third-Party Logging Library</h2>
+<p>You can choose from a number of third-party logging libraries, including <a href="https://github.com/twp/logging">Logging</a> — based on Java's log4j library — and <a href="https://github.com/roidrage/lograge">Lograge</a>.
+Lograge is a feature-rich logging library meant to simplify the often messy and verbose Rails logs characteristic of the default application logger.</p>
+<p>Also worth mentioning is <a href="https://github.com/trusche/httplog">httplog</a>,
+a specialized logging library for tracking third-party API calls that might
+not be captured in regular logs.</p>
+<p>For this article, we'll look at Lograge.</p>
+<h2 id="lograge-for-logging-in-rails">Lograge for Logging in Rails</h2>
+<p>According to <a href="https://github.com/roidrage/lograge">Lograge's GitHub page</a>, Lograge is an attempt at bringing sanity to Rails' unusable and unparsable log output.</p>
+<p>Lograge replaces the default Rails logger and simplifies output to single lines, with all the important information included. The resulting output is much easier to read through than the Rails logger.</p>
+<h2 id="getting-started-with-lograge">Getting Started with Lograge</h2>
+<p>To get started with Lograge, open up your project's Gemfile and add the following line:</p>
+
+<p>Then run <code>bundle install</code> to finalize the installation.</p>
+<h2 id="logging-in-rails-using-lograge-with-appsignal">Logging in Rails: Using Lograge with AppSignal</h2>
+<p>With Lograge installed, you're halfway through setting up a capable logging solution for your app. The next obvious question is what you'll use to read and parse the logs. SSHing into your server to read through log tails is highly inefficient, so what to do?</p>
+<p>Well, <a href="https://www.appsignal.com/tour/log-management">AppSignal has a new logging feature</a> that is perfect for this.</p>
+<p>To get started, install the latest version of the AppSignal for Ruby gem by adding it to your Gemfile:</p>
+
+<p>Then run <code>bundle install</code>. If you already have the gem installed in your project, just run <code>bundle update appsignal</code> to get the latest version.</p>
+<p>Next, add an initializer with the following information:</p>
+
+<p>And that's it! You can now conveniently access your app's logs from AppSignal's logging dashboard:</p>
+<figure><p><img alt="AppSignal Logging" loading="lazy" width="2560" height="1570" decoding="async" data-nimg="1" srcset="data:application/octet-stream;base64, 1x" src="data:application/octet-stream;base64,"></p></figure>
+<h2 id="wrapping-up">Wrapping Up</h2>
+<p>In this article, we took a deep dive into the world of Ruby logs. We
+learned about <code>puts</code>, the Logger class, and how to customize log messages using
+JSON. We finally explored logging using Lograge and AppSignal.</p>
+<p>Obviously, logging in Ruby goes much deeper. Use this post as a stepping stone to learn more. You might also find our <a href="https://blog.appsignal.com/2023/03/01/making-the-most-of-your-logs-in-rails.html">Making the Most of Your Logs in Rails</a> and <a href="https://blog.appsignal.com/2023/04/12/audit-logging-in-ruby-and-rails.html">Audit Logging in Ruby and Rails</a> posts useful.</p>
+<p>Thanks for reading!</p>
+<p><strong>P.S. If you'd like to read Ruby Magic posts as soon as they get off the press, <a href="https://blog.appsignal.com/ruby-magic">subscribe to our Ruby Magic newsletter and never miss a single post</a>!</strong></p></div></div>
+  </div>
+</body>
+</html>

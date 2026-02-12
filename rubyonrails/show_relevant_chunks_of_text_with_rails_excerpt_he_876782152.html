@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Show relevant chunks of text with Rails excerpt helper</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Show relevant chunks of text with Rails excerpt helper</h1>
+    <p><strong>URL:</strong> <a href="https://boringrails.com/tips/rails-excerpt-helper">https://boringrails.com/tips/rails-excerpt-helper</a></p>
+    <p><strong>Tags:</strong> ruby, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876782152</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+<p>The Rails helper <code>excerpt</code> can extract a chunk of text that matches a certain phrase, no matter where in the string it is.</p>
+
+<p>Imagine you wanted to display a list of emails matching a certain search term:</p>
+
+<p><img src="data:application/octet-stream;base64," alt=""></p>
+
+<p>Simply filter down your records and then use <code>excerpt</code> on the email body.</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>Here’s what your view might look like to build this feature.</p>
+
+
+
+<div><pre><code><span>&lt;%=</span> <span>link_to</span> <span>email</span> <span>do</span> <span>%&gt;</span>
+  <span>&lt;div</span> <span>class=</span><span>"flex justify-between items-center"</span><span>&gt;</span>
+    <span>&lt;p</span> <span>class=</span><span>"text-sm font-medium text-gray-900"</span><span>&gt;</span>
+      <span>&lt;%=</span> <span>email</span><span>.</span><span>sender_name</span> <span>%&gt;</span>
+    <span>&lt;/p&gt;</span>
+    <span>&lt;%=</span> <span>local_time_ago</span> <span>email</span><span>.</span><span>received_at</span> <span>%&gt;</span>
+  <span>&lt;/div&gt;</span>
+  <span>&lt;p</span> <span>class=</span><span>"text-sm text-gray-700"</span><span>&gt;</span>
+    <span>&lt;%=</span> <span>email</span><span>.</span><span>subject</span> <span>%&gt;</span>
+  <span>&lt;/p&gt;</span>
+  <span>&lt;p</span> <span>class=</span><span>"text-sm text-gray-500"</span><span>&gt;</span>
+    <span>&lt;%=</span> <span>excerpt</span><span>(</span><span>email</span><span>.</span><span>body</span><span>.</span><span>to_plain_text</span><span>,</span> <span>params</span><span>[</span><span>:q</span><span>],</span> <span>radius: </span><span>15</span><span>)</span> <span>%&gt;</span>
+  <span>&lt;/p&gt;</span>
+<span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+</code></pre></div>
+
+<p>One trick is that if you are using <code>ActionText</code>, call <code>to_plain_text</code> otherwise you might end up with unclosed HTML tags. In general, when you show an excerpt of rich text, you don’t want all of the formatting to be applied anyways.</p>
+
+<p>For bonus points, combine with the <a href="https://boringrails.com/tips/rails-highlight-search-results">Rails highlight helper</a>!</p>
+
+<h2 id="options">Options</h2>
+
+<div><pre><code><span>@product</span><span>.</span><span>description</span> <span>=</span> <span>"A one-of-a-kind vintange DHH coffee mug signed by the man himself!"</span>
+
+<span>excerpt</span><span>(</span><span>@product</span><span>.</span><span>description</span><span>,</span> <span>"coffee"</span><span>,</span> <span>radius: </span><span>10</span><span>)</span>
+<span>=&gt;</span> <span>"...tange DHH coffee mug signe..."</span>
+</code></pre></div>
+
+<p>This helper is case-insensitive and can accept a string or Regex:</p>
+
+<div><pre><code><span>@product</span><span>.</span><span>description</span> <span>=</span> <span>"A one-of-a-kind vintange DHH coffee mug signed by the man himself!"</span>
+
+<span>excerpt</span><span>(</span><span>@product</span><span>.</span><span>description</span><span>,</span> <span>"COFFEE"</span><span>,</span> <span>radius: </span><span>10</span><span>)</span>
+<span>=&gt;</span> <span>"...tange DHH coffee mug signe..."</span>
+
+<span>excerpt</span><span>(</span><span>@product</span><span>.</span><span>description</span><span>,</span> <span>/tea|coffee/</span><span>,</span> <span>radius: </span><span>10</span><span>)</span>
+<span>=&gt;</span> <span>"...tange DHH coffee mug signe..."</span>
+</code></pre></div>
+
+<h2 id="options-1">Options</h2>
+
+<p>You can expand the “radius” – or how many characters around the match – are shown. The default is <code>100</code>.</p>
+
+<div><pre><code><span>@product</span><span>.</span><span>description</span> <span>=</span> <span>"A one-of-a-kind vintange DHH coffee mug signed by the man himself!"</span>
+
+<span>excerpt</span><span>(</span><span>@product</span><span>.</span><span>description</span><span>,</span> <span>"coffee"</span><span>,</span> <span>radius: </span><span>5</span><span>)</span>
+<span>=&gt;</span> <span>"...DHH coffee mug..."</span>
+
+<span>excerpt</span><span>(</span><span>@product</span><span>.</span><span>description</span><span>,</span> <span>"coffee"</span><span>,</span> <span>radius: </span><span>25</span><span>)</span>
+<span>=&gt;</span> <span>"...e-of-a-kind vintange DHH coffee mug signed by the man hi..."</span>
+</code></pre></div>
+
+<p>If you need to change the <code>...</code> into something else, use the <code>omission</code> option.</p>
+
+<div><pre><code><span>@product</span><span>.</span><span>description</span> <span>=</span> <span>"A one-of-a-kind vintange DHH coffee mug signed by the man himself!"</span>
+
+<span>excerpt</span><span>(</span><span>@product</span><span>.</span><span>description</span><span>,</span> <span>"coffee"</span><span>,</span> <span>radius: </span><span>10</span><span>)</span>
+<span>=&gt;</span> <span>"...tange DHH coffee mug signe..."</span>
+
+<span>excerpt</span><span>(</span><span>@product</span><span>.</span><span>description</span><span>,</span> <span>"coffee"</span><span>,</span> <span>radius: </span><span>10</span><span>,</span> <span>omission: </span><span>"---"</span><span>)</span>
+<span>=&gt;</span> <span>"---tange DHH coffee mug signe---"</span>
+
+<span>excerpt</span><span>(</span><span>@product</span><span>.</span><span>description</span><span>,</span> <span>"coffee"</span><span>,</span> <span>radius: </span><span>10</span><span>,</span> <span>omission: </span><span>"&lt;snip&gt;"</span><span>)</span>
+<span>=&gt;</span> <span>"&lt;snip&gt;tange DHH coffee mug signe&lt;snip&gt;"</span>
+</code></pre></div>
+
+<h2 id="additional-resources">Additional Resources</h2>
+
+<p>Rails API Docs: <a href="https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/TextHelper.html#method-i-excerpt">TextHelper#excerpt</a></p>
+
+<p>Rails API Docs: <a href="https://edgeapi.rubyonrails.org/classes/ActionText/RichText.html#method-i-to_plain_text">ActionText#to_plain_text</a></p>
+</div></div>
+  </div>
+</body>
+</html>

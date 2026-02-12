@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Estimate Depth from a Single Image</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Estimate Depth from a Single Image</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/voxel51/how-to-estimate-depth-from-a-single-image-o3a">https://dev.to/voxel51/how-to-estimate-depth-from-a-single-image-o3a</a></p>
+    <p><strong>Tags:</strong> depth-estimation, machine-vision</p>
+    <p><strong>Bookmark ID:</strong> 876796800</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1834334" id="article-body">
+            <p><em>Author: <a href="https://www.linkedin.com/in/jacob-marks/">Jacob Marks</a> (Machine Learning Engineer at <a href="https://voxel51.com/">Voxel51</a>)</em></p>
+
+<h2>
+  <a name="run-and-evaluate-monocular-depth-estimation-models-with-hugging-face-and-fiftyone" href="#run-and-evaluate-monocular-depth-estimation-models-with-hugging-face-and-fiftyone">
+  </a>
+  Run and Evaluate Monocular Depth Estimation Models with Hugging Face and FiftyOne
+</h2>
+
+<p>Humans view the world through two eyes. One of the primary benefits of this binocular vision is the ability to perceive depth — how near or far objects are. The human brain infers object depths by comparing the pictures captured by left and right eyes at the same time and interpreting the disparities. This process is known as stereopsis.</p>
+
+<p>Just as depth perception plays a crucial role in human vision and navigation, the ability to estimate depth is critical for a wide range of computer vision applications, from autonomous driving to robotics, and even augmented reality. Yet a slew of practical considerations from spatial limitations to budgetary constraints often limit these applications to a single camera.</p>
+
+<p><a href="https://paperswithcode.com/task/monocular-depth-estimation">Monocular depth estimation</a> (MDE) is the task of predicting the depth of a scene from a single image. Depth computation from a single image is inherently ambiguous, as there are multiple ways to project the same 3D scene onto the 2D plane of an image. As a result, MDE is a challenging task that requires (either explicitly or implicitly) factoring in many cues such as object size, occlusion, and perspective.</p>
+
+<p>In this post, we will illustrate how to load and visualize depth map data, run monocular depth estimation models, and evaluate depth predictions. We will do so using data from the <a href="https://rgbd.cs.princeton.edu/">SUN-RGBD</a> dataset.&nbsp;</p>
+
+<p>In particular, we will cover the following:</p>
+
+<ul>
+<li>Loading and visualizing SUN-RGBD ground truth depth maps</li>
+<li>Running inference with Marigold and DPT</li>
+<li>Evaluating relative depth predictions</li>
+</ul>
+
+<p>We will use the Hugging Face <a href="https://huggingface.co/docs/transformers/index">transformers</a> and <a href="https://huggingface.co/docs/diffusers/index">diffusers</a> libraries for inference, <a href="https://github.com/voxel51/fiftyone">FiftyOne</a> for data management and visualization, and <a href="https://scikit-image.org/">scikit-image</a> for evaluation metrics.</p>
+
+<p>Before we get started, make sure you have all of the necessary libraries installed:<br>
+</p>
+
+<div>
+<pre><code>pip install -U torch fiftyone diffusers transformers scikit-image
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Then we’ll import the modules we’ll be using throughout the post:<br>
+</p>
+
+<div>
+<pre><code>from glob import glob
+import numpy as np
+from PIL import Image
+import torch
+
+import fiftyone as fo
+import fiftyone.zoo as foz
+import fiftyone.brain as fob
+from fiftyone import ViewField as F
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="loading-and-visualizing-sunrgbd-depth-data" href="#loading-and-visualizing-sunrgbd-depth-data">
+  </a>
+  Loading and Visualizing SUN-RGBD Depth Data
+</h2>
+
+<p>The <a href="https://rgbd.cs.princeton.edu/">SUN RGB-D dataset</a> contains 10,335 RGB-D images, each of which has a corresponding RGB image, depth image, and camera intrinsics. It contains images from the <a href="https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html">NYU depth v2</a>, Berkeley <a href="http://kinectdata.com/">B3DO</a>, and <a href="https://sun3d.cs.princeton.edu/">SUN3D</a> datasets. SUN RGB-D is <a href="https://paperswithcode.com/dataset/sun-rgb-d">one of the most popular</a> datasets for monocular depth estimation and semantic segmentation tasks!</p>
+
+<p>💡For this walkthrough, we will only use the NYU depth v2 portions. NYU depth v2 is <a href="https://github.com/dwofk/fast-depth/blob/master/LICENSE">permissively licensed for commercial use</a> (MIT), and can be <a href="https://huggingface.co/datasets/sayakpaul/nyu_depth_v2">downloaded from Hugging Face</a> directly.</p>
+
+<h3>
+  <a name="downloading-the-raw-data" href="#downloading-the-raw-data">
+  </a>
+  Downloading the Raw Data
+</h3>
+
+<p>First, download the SUN RGB-D dataset from <a href="https://rgbd.cs.princeton.edu/">here</a> and unzip it, or use the following command to download it directly:<br>
+</p>
+
+<div>
+<pre><code>curl -o sunrgbd.zip https://rgbd.cs.princeton.edu/data/SUNRGBD.zip
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>And then unzip it:<br>
+</p>
+
+<div>
+<pre><code>unzip sunrgbd.zip
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>If you want to use the dataset for other tasks, you can fully convert the annotations and load them into your <code>fiftyone.Dataset</code>. However, for this tutorial, we will only be using the depth images, so we will only use the RGB images and the depth images (stored in the <code>depth_bfx</code> sub-directories).</p>
+
+<h3>
+  <a name="creating-the-dataset" href="#creating-the-dataset">
+  </a>
+  Creating the Dataset
+</h3>
+
+<p>Because we are just interested in getting the point across, we'll restrict ourselves to the first 20 samples, which are all from the NYU Depth v2 portion of the dataset:<br>
+</p>
+
+<div>
+<pre><code>## create, name, and persist the dataset
+dataset = fo.Dataset(name="SUNRGBD-20", persistent=True)
+
+## pick out first 20 scenes
+scene_dirs = glob("SUNRGBD/kv1/NYUdata/*")[:20]
+
+samples = []
+
+for scene_dir in scene_dirs:
+    ## Get image file path from scene directory
+    image_path = glob(f"{scene_dir}/image/*")[0]
+
+    ## Get depth map file path from scene directory
+    depth_path = glob(f"{scene_dir}/depth_bfx/*")[0]
+
+    depth_map = np.array(Image.open(depth_path))
+    depth_map = (depth_map * 255 / np.max(depth_map)).astype("uint8")
+
+    ## Create sample
+    sample = fo.Sample(
+        filepath=image_path,
+        gt_depth=fo.Heatmap(map=depth_map),
+    )
+
+    samples.append(sample)
+
+## Add samples to dataset
+dataset.add_samples(samples);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Here we are storing the depth maps as <a href="https://docs.voxel51.com/user_guide/using_datasets.html#heatmaps">heatmaps</a>. Everything is represented in terms of normalized, <em>relative</em> distances, where 255 represents the maximum distance in the scene and 0 represents the minimum distance in the scene. This is a common way to represent depth maps, although it is far from the only way to do so. If we were interested in <em>absolute</em> distances, we could store sample-wise parameters for the minimum and maximum distances in the scene, and use these to reconstruct the absolute distances from the relative distances.</p>
+
+<h3>
+  <a name="visualizing-ground-truth-data" href="#visualizing-ground-truth-data">
+  </a>
+  Visualizing Ground Truth Data
+</h3>
+
+<p>With heatmaps stored on our samples, we can visualize the ground truth data:<br>
+</p>
+
+<div>
+<pre><code>session = fo.launch_app(dataset, auto=False)
+## then open tab to localhost:5151 in browser
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F7uj1g4g7cluo58llqzn8.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="800" height="425"></a></p>
+
+<p>When working with depth maps, the color scheme and opacity of the heatmap are important. I’m colorblind, so I find that the <a href="https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html">viridis</a> colormap with opacity turned all the way up works best for me.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fhdvj5i353k1wpwv50c7h.gif"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="960" height="508" data-animated="true"></a></p>
+
+<h3>
+  <a name="ground-truth" href="#ground-truth">
+  </a>
+  Ground Truth?
+</h3>
+
+<p>Inspecting these RGB images and depth maps, we can see that there are some inaccuracies in the ground truth depth maps. For example, in this image, the dark rift through the center of the image is actually the <em>farthest</em> part of the scene, but the ground truth depth map shows it as the <em>closest</em> part of the scene:</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F3w5i7w53wwvh2tyq9o19.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="800" height="425"></a></p>
+
+<p>This is one of the key challenges for MDE tasks: ground truth data is hard to come by, and is often noisy! It’s essential to be aware of this while evaluating your MDE models.</p>
+
+<h2>
+  <a name="running-monocular-depth-estimation-models" href="#running-monocular-depth-estimation-models">
+  </a>
+  Running Monocular Depth Estimation Models
+</h2>
+
+<p>Now that we have our dataset loaded in, we can run monocular depth estimation models on our RGB images!&nbsp;</p>
+
+<p>For a long time, the state-of-the-art models for monocular depth estimation such as <a href="https://github.com/hufu6371/DORN">DORN</a> and <a href="https://github.com/ialhashim/DenseDepth">DenseDepth</a> were built with convolutional neural networks. Recently, however, both transformer-based models such as <a href="https://huggingface.co/docs/transformers/model_doc/dpt">DPT</a> and <a href="https://huggingface.co/docs/transformers/model_doc/glpn">GLPN</a>, and diffusion-based models like <a href="https://huggingface.co/Bingxin/Marigold">Marigold</a> have achieved remarkable results!</p>
+
+<p>In this section, we’ll show you how to generate MDE depth map predictions with both DPT and Marigold. In both cases, you can optionally run the model locally with the respective Hugging Face library, or run remotely with <a href="https://replicate.com/">Replicate</a>.</p>
+
+<p>To run via Replicate, install the Python client:<br>
+</p>
+
+<div>
+<pre><code>pip install replicate
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>And export your Replicate API token:<br>
+</p>
+
+<div>
+<pre><code>export REPLICATE_API_TOKEN=r8_&lt;your_token_here&gt;
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>💡 With Replicate, it might take a minute for the model to load into memory on the server (cold-start problem), but once it does the prediction should only take a few seconds. Depending on your local compute resources, running on server may give you massive speedups compared to running locally, especially for Marigold and other diffusion-based depth-estimation approaches.</p>
+
+<h3>
+  <a name="monocular-depth-estimation-with-dpt" href="#monocular-depth-estimation-with-dpt">
+  </a>
+  Monocular Depth Estimation with DPT
+</h3>
+
+<p>The first model we will run is a dense-prediction transformer (DPT). DPT models have found utility in both MDE and semantic segmentation —&nbsp;tasks that require “dense”, pixel-level predictions.</p>
+
+<p>The checkpoint below uses <a href="https://github.com/isl-org/MiDaS/tree/master">MiDaS</a>, which returns the <a href="https://pyimagesearch.com/2022/01/17/torch-hub-series-5-midas-model-on-depth-estimation/">inverse depth map</a>, so we have to invert it back to get a comparable depth map.</p>
+
+<p>To run locally with <code>transformers</code>, first we load the model and image processor:<br>
+</p>
+
+<div>
+<pre><code>from transformers import AutoImageProcessor, AutoModelForDepthEstimation
+
+## swap for "Intel/dpt-large" if you'd like
+pretrained = "Intel/dpt-hybrid-midas"
+
+image_processor = AutoImageProcessor.from_pretrained(pretrained)
+dpt_model = AutoModelForDepthEstimation.from_pretrained(pretrained)
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Next, we encapsulate the code for inference on a sample, including pre and post processing:<br>
+</p>
+
+<div>
+<pre><code>def apply_dpt_model(sample, model, label_field):
+    image = Image.open(sample.filepath)
+    inputs = image_processor(images=image, return_tensors="pt")
+
+    with torch.no_grad():
+        outputs = model(**inputs)
+        predicted_depth = outputs.predicted_depth
+
+    prediction = torch.nn.functional.interpolate(
+        predicted_depth.unsqueeze(1),
+        size=image.size[::-1],
+        mode="bicubic",
+        align_corners=False,
+    )
+
+    output = prediction.squeeze().cpu().numpy()
+    ## flip b/c MiDaS returns inverse depth
+    formatted = (255 - output * 255 / np.max(output)).astype("uint8")
+
+    sample[label_field] = fo.Heatmap(map=formatted)
+    sample.save()
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Here, we are storing predictions in a <code>label_field</code> field on our samples, represented with a heatmap just like the ground truth labels.</p>
+
+<p>Note that in the <code>apply_dpt_model()</code> function, between the model's forward pass and the heatmap generation, notice that we make a call to <code>torch.nn.functional.interpolate()</code>. This is because the model's forward pass is run on a downsampled version of the image, and we want to return a heatmap that is the same size as the original image.</p>
+
+<p>Why do we need to do this? If we just want to <em>look</em> at the heatmaps, this would not matter. But if we want to compare the ground truth depth maps to the model's predictions on a per-pixel basis, we need to make sure that they are the same size.</p>
+
+<p>All that is left to do is iterate through the dataset:<br>
+</p>
+
+<div>
+<pre><code>for sample in dataset.iter_samples(autosave=True, progress=True):
+    apply_dpt_model(sample, dpt_model, "dpt")
+
+session = fo.launch_app(dataset)
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Feb93l0im1ivq9xnu6j4e.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="800" height="425"></a></p>
+
+<p>To run with Replicate, you can use <a href="https://replicate.com/cjwbw/midas">this</a> model. Here is what the API looks like:<br>
+</p>
+
+<div>
+<pre><code>import replicate
+
+## example application to first sample
+rgb_fp = dataset.first().filepath
+
+output = replicate.run(
+    "cjwbw/midas:a6ba5798f04f80d3b314de0f0a62277f21ab3503c60c84d4817de83c5edfdae0",
+    input={
+        "model_type": "dpt_beit_large_512",
+        "image":open(rgb_fp, "rb")
+    }
+)
+print(output)
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="monocular-depth-estimation-with-marigold" href="#monocular-depth-estimation-with-marigold">
+  </a>
+  Monocular Depth Estimation with Marigold
+</h3>
+
+<p>Stemming from their tremendous success in text-to-image contexts, diffusion models are being applied to an ever-broadening range of problems. <a href="https://huggingface.co/Bingxin/Marigold">Marigold</a> “repurposes” diffusion-based image generation models for monocular depth estimation.</p>
+
+<p>To run Marigold locally, you will need to clone the git repository:<br>
+</p>
+
+<div>
+<pre><code>git clone https://github.com/prs-eth/Marigold.git
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This repository introduces a new diffusers pipeline, <code>MarigoldPipeline</code>, which makes applying Marigold easy:<br>
+</p>
+
+<div>
+<pre><code>## load model
+from Marigold.marigold import MarigoldPipeline
+pipe = MarigoldPipeline.from_pretrained("Bingxin/Marigold")
+
+## apply to first sample, as example
+rgb_image = Image.open(dataset.first().filepath)
+output = pipe(rgb_image)
+depth_image = output['depth_colored']
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Post-processing of the output depth image is then needed.&nbsp;</p>
+
+<p>To instead run via Replicate, we can create an <code>apply_marigold_model()</code> function in analogy with the DPT case above and iterate over the samples in our dataset:<br>
+</p>
+
+<div>
+<pre><code>import replicate
+import requests
+import io
+
+def marigold_model(rgb_image):
+    output = replicate.run(
+        "adirik/marigold:1a363593bc4882684fc58042d19db5e13a810e44e02f8d4c32afd1eb30464818",
+        input={
+            "image":rgb_image
+        }
+    )
+    ## get the black and white depth map
+    response = requests.get(output[1]).content
+    return response
+
+def apply_marigold_model(sample, model, label_field):
+    rgb_image = open(sample.filepath, "rb")
+    response = model(rgb_image)
+    depth_image = np.array(Image.open(io.BytesIO(response)))[:, :, 0] ## all channels are the same
+    formatted = (255 - depth_image).astype("uint8")
+    sample[label_field] = fo.Heatmap(map=formatted)
+    sample.save()
+
+for sample in dataset.iter_samples(autosave=True, progress=True):
+    apply_marigold_model(sample, marigold_model, "marigold")
+
+session = fo.launch_app(dataset)
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fac0rspxy035odl0duhlu.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="800" height="425"></a></p>
+
+<h2>
+  <a name="evaluating-monocular-depth-estimation-models" href="#evaluating-monocular-depth-estimation-models">
+  </a>
+  Evaluating Monocular Depth Estimation Models
+</h2>
+
+<p>Now that we have predictions from multiple models, let's evaluate them! We will leverage <code>scikit-image</code> to apply three simple metrics commonly used for monocular depth estimation: <a href="https://en.wikipedia.org/wiki/Root-mean-square_deviation">root mean squared error </a>(RMSE), <a href="https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio">peak signal to noise ratio </a>(PSNR), and <a href="https://en.wikipedia.org/wiki/Structural_similarity">structural similarity index</a> (SSIM).</p>
+
+<p>💡Higher PSNR and SSIM scores indicate better predictions, while lower RMSE scores indicate better predictions.</p>
+
+<p>Note that the specific values I arrive at are a consequence of the specific pre-and-post processing steps I performed along the way. What matters is the relative performance!</p>
+
+<p>We will define the evaluation routine:<br>
+</p>
+
+<div>
+<pre><code>from skimage.metrics import peak_signal_noise_ratio, mean_squared_error, structural_similarity
+
+def rmse(gt, pred):
+    """Compute root mean squared error between ground truth and prediction"""
+    return np.sqrt(mean_squared_error(gt, pred))
+
+def evaluate_depth(dataset, prediction_field, gt_field):
+  """Run 3 evaluation metrics for all samples for `prediction_field`
+     with respect to `gt_field`"""
+    for sample in dataset.iter_samples(autosave=True, progress=True):
+        gt_map = sample[gt_field].map
+        pred = sample[prediction_field]
+        pred_map = pred.map
+        pred["rmse"] = rmse(gt_map, pred_map)
+        pred["psnr"] = peak_signal_noise_ratio(gt_map, pred_map)
+        pred["ssim"] = structural_similarity(gt_map, pred_map)
+        sample[prediction_field] = pred
+
+    ## add dynamic fields to dataset so we can view them in the App
+    dataset.add_dynamic_sample_fields()
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>And then apply the evaluation to the predictions from both models:<br>
+</p>
+
+<div>
+<pre><code>evaluate_depth(dataset, "dpt", "gt_depth")
+evaluate_depth(dataset, "marigold", "gt_depth")
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Computing average performance for a certain model/metric is as simple as calling the dataset’s <code>mean()</code>method on that field:<br>
+</p>
+
+<div>
+<pre><code>print("Mean Error Metrics")
+for model in ["dpt", "marigold"]:
+    print("-"*50)
+    for metric in ["rmse", "psnr", "ssim"]:
+        mean_metric_value = dataset.mean(f"{model}.{metric}")
+        print(f"Mean {metric} for {model}: {mean_metric_value}")
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+
+
+<div>
+<pre><code>Mean Error Metrics
+--------------------------------------------------
+Mean rmse for dpt: 49.8915828817003
+Mean psnr for dpt: 14.805904629602551
+Mean ssim for dpt: 0.8398022368184576
+--------------------------------------------------
+Mean rmse for marigold: 104.0061165272178
+Mean psnr for marigold: 7.93015537185192
+Mean ssim for marigold: 0.42766803372861134
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>All of the metrics seem to agree that DPT outperforms Marigold. However, it is important to note that these metrics are not perfect. For example, RMSE is very sensitive to outliers, and SSIM is not very sensitive to small errors. For a more thorough evaluation, we can filter by these metrics in the app in order to visualize what the model is doing well and what it is doing poorly — or where the metrics are failing to capture the model's performance.</p>
+
+<p>Finally, toggling masks on and off is a great way to visualize the differences between the ground truth and the model's predictions:</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Folfhpaaoiltgowg9xusm.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="800" height="423"></a></p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>To recap, we learned how to run monocular depth estimation models on our data, how to evaluate the predictions using common metrics, and how to visualize the results. We also learned that monocular depth estimation is a notoriously difficult task.</p>
+
+<p>Data quality and quantity are severely limiting factors; models often struggle to generalize to new environments; and metrics are not always good indicators of model performance. The specific numeric values quantifying model performance can depend greatly on your processing pipeline. And even your qualitative assessment of predicted depth maps can be heavily influenced by your color schemes and opacity scales.&nbsp;</p>
+
+<p>If there’s one thing you take away from this post, I hope it is this: it is mission-critical that you look at the depth maps themselves, and not just the metrics!</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

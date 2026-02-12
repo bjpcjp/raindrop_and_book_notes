@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Setup Devise for User Authentication on Rails 7</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Setup Devise for User Authentication on Rails 7</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/ackshaey/how-to-setup-devise-for-user-authentication-on-rails-7-ojg">https://dev.to/ackshaey/how-to-setup-devise-for-user-authentication-on-rails-7-ojg</a></p>
+    <p><strong>Tags:</strong> authentication, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876791001</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main-title">
+            <a href="https://media.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F6iv0w14vh6mb9enf95pv.png">
+              <img src="data:application/octet-stream;base64," width="1000" height="420" alt="Cover image for How to Setup Devise for User Authentication on Rails 7">
+            </a>
+
+          
+        </div><div data-article-id="1408459" id="article-body">
+            <p>If you are a frequent user of Ruby on Rails, you know that building authentication and user management systems can be a time-consuming and complex process. That’s where Devise comes in — a powerful authentication solution that simplifies the process of implementing user management systems in your Rails applications. As a Rails developer who churns out apps regularly, I’ve found myself reaching for Devise every single time. However, with the release of Rails 7, I’ve had to adjust my workflow and make sure that Devise works seamlessly with the new version. In this blog post, I’ll share my workflow for setting up Devise on Rails 7 and walk you through the steps to get started with this essential tool. So, whether you’re a seasoned Rails developer or just getting started, read on for a comprehensive guide to setting up Devise on Rails 7.</p>
+
+<h2>
+  <a name="hang-on-why-should-i-use-devise" href="#hang-on-why-should-i-use-devise">
+  </a>
+  Hang on, why should I use Devise?
+</h2>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fdrb9llzq6ka4hb4ekmn7.png"><img src="data:application/octet-stream;base64," alt="Devise logo" loading="lazy" width="300" height="125"></a></p>
+
+<p>Authenticating users in a web application is a critical task that requires careful consideration of security best<br>
+practices. Building authentication functionality from scratch can be a daunting and time-consuming process, particularly<br>
+for developers who are not well-versed in security principles. This is where Devise comes in handy. Devise provides a comprehensive and customizable solution that handles common authentication tasks such as user registration, login, and password resets, while also supporting various authentication mechanisms and providing robust security features. By using Devise, developers can save valuable time and ensure their application's authentication system is strong and reliable, allowing them to focus on building other aspects of their application. Let's see it in action on Rails 7.</p>
+<h2>
+  <a name="prerequisites" href="#prerequisites">
+  </a>
+  Prerequisites
+</h2>
+
+<p>Before proceeding with the guide, ensure that you have a new or barebones Rails app created using <code>rails new</code>.<br>
+Additionally, you should not have a <code>User</code> model set up yet.</p>
+<h2>
+  <a name="stepbystep-guide" href="#stepbystep-guide">
+  </a>
+  Step-by-Step Guide
+</h2>
+
+<ul>
+<li>
+<p>Add Devise, Letter Opener, and Omniauth (optional) to your Gemfile:<br>
+</p>
+
+<pre><code><span>...</span>
+<span>gem</span> <span>"devise"</span><span>,</span> <span>github</span> <span>:</span> <span>"heartcombo/devise"</span><span>,</span> <span>ref</span> <span>:</span> <span>"f8d1ea90bc3"</span>
+<span>gem</span> <span>"omniauth"</span>
+<span>...</span>
+<span>group</span> <span>:development</span> <span>do</span>
+    <span>...</span>
+    <span>gem</span> <span>"letter_opener"</span>
+    <span>...</span>
+<span>end</span>
+</code></pre>
+
+
+
+
+</li>
+
+</ul>
+
+<p>Note: cloning Devise from GitHub is necessary because it contains fixes for some Rails 7 incompatibilities.</p>
+
+<ul>
+<li>
+<p>Install the gems:<br>
+</p>
+<pre><code>bundle <span>install</span>
+</code></pre>
+
+</li>
+<li>
+<p>Run the Devise install generator:<br>
+</p>
+<pre><code>rails g devise:install
+</code></pre>
+
+</li>
+</ul>
+
+<p>This generates the <code>devise.rb</code> initializer and adds the <code>en</code> locale at <code>config/locales/devise.en.yml</code>.</p>
+
+<ul>
+<li>
+<p>Add the following Devise-specific configurations to <code>config/development.rb</code>:<br>
+</p>
+<pre><code><span># For Devise</span>
+<span>config</span><span>.</span><span>action_mailer</span><span>.</span><span>default_url_options</span> <span>=</span> <span>{</span> <span>host: </span><span>'localhost'</span><span>,</span> <span>port: </span><span>3000</span> <span>}</span>
+<span># For Letter Opener</span>
+<span>config</span><span>.</span><span>action_mailer</span><span>.</span><span>delivery_method</span> <span>=</span> <span>:letter_opener</span>
+<span>config</span><span>.</span><span>action_mailer</span><span>.</span><span>perform_deliveries</span> <span>=</span> <span>true</span>
+<span>config</span><span>.</span><span>action_mailer</span><span>.</span><span>raise_delivery_errors</span> <span>=</span> <span>true</span>
+</code></pre>
+
+</li>
+<li>
+<p>Generate the <code>User</code> model with Devise:<br>
+</p>
+<pre><code>rails g devise user
+</code></pre>
+
+</li>
+</ul>
+
+<p>This creates the user model files as well as a preliminary migration.</p>
+
+<ul>
+<li>
+<p>Edit the migration to add the fields you need:<br>
+</p>
+<pre><code><span>## Identifying fields</span>
+<span>t</span><span>.</span><span>string</span> <span>:first_name</span><span>,</span> <span>null</span> <span>:</span> <span>false</span><span>,</span> <span>default</span> <span>:</span> <span>""</span>
+<span>t</span><span>.</span><span>string</span> <span>:last_name</span><span>,</span> <span>null: </span><span>false</span><span>,</span> <span>default: </span><span>""</span>
+</code></pre>
+
+</li>
+</ul>
+
+<p>Also, uncomment the <code>trackable</code>, <code>confirmable</code>, and <code>lockable</code> fields (and accompanying indexes).</p>
+
+<ul>
+<li>Edit <code>user.rb</code> and add <code>confirmable</code>, <code>trackable</code>, <code>lockable</code>, and <code>omniauthable</code> to Devise.</li>
+<li>
+<p>Tweak options in <code>config/devise.rb</code> to suit your needs. For example, you may want to increase the <code>remember_for</code><br>
+option to a couple of months:<br>
+</p>
+<pre><code><span>config</span><span>.</span><span>remember_for</span> <span>=</span> <span>2</span><span>.</span><span>months</span>
+</code></pre>
+
+</li>
+</ul>
+
+<p>In the same file, change the default email to one from your application:<br>
+</p>
+
+<div>
+<pre><code>```ruby
+config.mailer_sender = 'no-reply@designerdiscount.club'
+```
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<ul>
+<li>
+<p>Generate the Devise views so you can modify them later:<br>
+</p>
+<pre><code>rails g devise:views
+</code></pre>
+
+</li>
+<li><p>Migrate the database:<br>
+</p></li>
+</ul>
+
+<div>
+<pre><code>   rake db:migrate
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<ul>
+<li>Add the following code to <code>application.html.erb</code> right above the <code>yield</code> block:
+</li>
+</ul>
+
+<div>
+<pre><code>   <span>&lt;%</span> <span>if</span> <span>notice</span> <span>%&gt;</span>
+     <span>&lt;p</span> <span>class=</span><span>"alert alert-success"</span><span>&gt;</span><span>&lt;%=</span> <span>notice</span> <span>%&gt;</span><span>&lt;/p&gt;</span>
+   <span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+   <span>&lt;%</span> <span>if</span> <span>alert</span> <span>%&gt;</span>
+     <span>&lt;p</span> <span>class=</span><span>"alert alert-danger"</span><span>&gt;</span><span>&lt;%=</span> <span>alert</span> <span>%&gt;</span><span>&lt;/p&gt;</span>
+   <span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<ul>
+<li><p>Try it out! Start your rails server and head to <a href="http://localhost:3000/users/sign_up" target="_blank" rel="noopener noreferrer">http://localhost:3000/users/sign_up</a> and create a new user. You should receive an email which opens in the browser (via letter_opener). Great, it’s working!</p></li>
+<li><p>Deny logged-out access to a controller action and test it out. Create a <code>home</code> action in an existing controller,<br>
+which is <code>PagesController</code> in this example:<br>
+</p></li>
+</ul>
+
+<div>
+<pre><code>
+   <span>class</span> <span>PagesController</span> <span>&lt;</span> <span>ApplicationController</span>
+     <span>def</span> <span>landing</span><span>;</span> <span>end</span>
+
+     <span>def</span> <span>home</span><span>;</span> <span>end</span>
+   <span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Let’s redirect the user to the landing page if they try to access <code>home</code> but are logged out.<br>
+</p>
+
+<div>
+<pre><code>
+   <span>def</span> <span>landing</span>
+     <span>redirect_to</span><span>(</span><span>action: :home</span><span>,</span>
+                 <span>params: </span><span>request</span><span>.</span><span>query_parameters</span><span>)</span> <span>if</span> <span>user_signed_in?</span>
+   <span>end</span>
+
+   <span>def</span> <span>home</span>
+     <span>redirect_to</span><span>(</span><span>action: :landing</span><span>,</span>
+                 <span>params: </span><span>request</span><span>.</span><span>query_parameters</span><span>)</span> <span>unless</span> <span>user_signed_in?</span>
+   <span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<ul>
+<li>
+<p>Edit the global header to hide the sign-in link if the user is signed in:<br>
+</p>
+<pre><code><span>&lt;%</span> <span>if</span> <span>user_signed_in?</span> <span>%&gt;</span>
+  <span>&lt;li</span> <span>class=</span><span>"flex"</span><span>&gt;</span>
+    <span>&lt;%=</span> <span>link_to</span> <span>'Logout'</span><span>,</span> <span>destroy_user_session_path</span><span>,</span>
+                <span>method: :delete</span><span>,</span>
+                <span>data: </span><span>{</span> <span>turbo_method: :delete</span> <span>}</span> <span>%&gt;</span>
+  <span>&lt;/li&gt;</span>
+<span>&lt;%</span> <span>else</span> <span>%&gt;</span>
+  <span>&lt;li</span> <span>class=</span><span>"flex"</span><span>&gt;</span>
+    <span>&lt;%=</span> <span>link_to</span> <span>"Sign up"</span><span>,</span> <span>new_user_registration_path</span><span>,</span> <span>rel: </span><span>'noopener noreferrer'</span> <span>%&gt;</span>
+    <span>&lt;%=</span> <span>link_to</span> <span>"Login"</span><span>,</span> <span>new_user_session_path</span><span>,</span> <span>rel: </span><span>'noopener noreferrer'</span> <span>%&gt;</span>
+  <span>&lt;/li&gt;</span>
+<span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+</code></pre>
+
+</li>
+</ul>
+
+<p>That’s it! You now have a basic setup for user authentication using Devise on Rails 7. You can customize the generated Devise views with Tailwind or Bootstrap to match your app’s design. Want to learn more? Check out the <a href="https://github.com/heartcombo/devise#the-devise-wiki" target="_blank" rel="noopener noreferrer">Devise wiki</a>. Preparing for a coding interview? Check out <a href="https://firecode.io/" target="_blank" rel="noopener noreferrer">Firecode.io</a>.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

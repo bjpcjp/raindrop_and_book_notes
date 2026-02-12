@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PostgreSQL on the Command Line</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>PostgreSQL on the Command Line</h1>
+    <p><strong>URL:</strong> <a href="http://phili.pe/posts/postgresql-on-the-command-line">http://phili.pe/posts/postgresql-on-the-command-line</a></p>
+    <p><strong>Tags:</strong> postgres</p>
+    <p><strong>Bookmark ID:</strong> 876781923</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main"><article>
+  <header>
+    <h2>
+      PostgreSQL on the Command Line <small>Working efficiently with psql</small>
+    </h2>
+    <p>
+      October 25, 2015
+    </p>
+  </header><p>I’ve been using PostgreSQL on a daily basis for the last four years. While
+I initially resorted to GUI applications to interact with databases, I now
+exclusively use the built-in command line tools, allowing me to work more
+efficiently while sticking to my preferred tools.</p>
+
+<p>This post is split into different sections, talking about specific tasks to be
+accomplished mainly through the command line tool <em>psql</em>. These are the
+different topics I’ll be talking about:</p>
+
+<ul id="markdown-toc">
+  <li><a id="markdown-toc-configuring-psql" href="#configuring-psql">Configuring psql</a></li>
+  <li><a id="markdown-toc-getting-help" href="#getting-help">Getting Help</a></li>
+  <li><a id="markdown-toc-your-playground-database" href="#your-playground-database">Your Playground Database</a></li>
+  <li><a id="markdown-toc-exploring-a-database" href="#exploring-a-database">Exploring a Database</a></li>
+  <li><a id="markdown-toc-building-a-query" href="#building-a-query">Building a Query</a></li>
+  <li><a id="markdown-toc-comparing-outputs" href="#comparing-outputs">Comparing Outputs</a></li>
+  <li><a id="markdown-toc-cloning-a-database" href="#cloning-a-database">Cloning a Database</a></li>
+  <li><a id="markdown-toc-extracting-data" href="#extracting-data">Extracting Data</a></li>
+</ul>
+
+<h2 id="configuring-psql">Configuring psql</h2>
+
+<p>psql has a decent configuration out of the box. Thus, I won’t go into too many
+details about available options except for two, which will make every-day use of
+psql more enjoyable.</p>
+
+<p>The first one is important in order to get the output to show nicely on screen
+in case the data does not fit horizontally. By default, psql outputs the data
+as a nicely formatted table.</p>
+
+<pre><code>db=# SELECT 'hello' AS foo, bar FROM generate_series(1, 2) AS bar;
+  foo  | bar
+-------+-----
+ hello |   1
+ hello |   2
+(2 rows)
+</code></pre>
+
+<p>When the width of the rendered table no longer fits the terminal width, your
+terminal is going to wrap the lines, making it incredibly hard to visually parse
+the data.</p>
+
+<pre><code>db=# SELECT 'really long string messing with the output' AS foo, bar, 
+'another long string making things worse' AS baz FROM generate_series(1,
+ 2) AS bar;
+                    foo                     | bar |                   ba
+z
+--------------------------------------------+-----+---------------------
+--------------------
+ really long string messing with the output |   1 | another long string 
+making things worse
+ really long string messing with the output |   2 | another long string 
+making things worse
+(2 rows)
+</code></pre>
+
+<p>Fortunately there is a command to activate the so-called <em>expanded display</em>
+mode.</p>
+
+<pre><code>db=# \x
+Expanded display is on.
+</code></pre>
+
+<p>Repeating the query will no longer render the data as a table, but instead show
+every record as a key-value pair, greatly improving readability.</p>
+
+<pre><code>db=# SELECT 'really long string messing with the output' AS foo, bar, 
+'another long string making things worse' AS baz FROM generate_series(1,
+ 2) AS bar;
+-[ RECORD 1 ]-----------------------------------
+foo | really long string messing with the output
+bar | 1
+baz | another long string making things worse
+-[ RECORD 2 ]-----------------------------------
+foo | really long string messing with the output
+bar | 2
+baz | another long string making things worse
+</code></pre>
+
+<p>The best part: by running <code>\x auto</code> it will use the table layout only if
+there’s enough space and otherwise resort to the key-value layout.</p>
+
+<p>The second crucial config is to configure how <code>NULL</code> is rendered. By default,
+it isn’t. Thus, it’s indifferentiable from an empty string.</p>
+
+<pre><code>db=# SELECT '', NULL;
+ ?column? | ?column?
+----------+----------
+          |
+(1 row)
+</code></pre>
+
+<p>By running <code>\pset null ¤</code> we’re telling psql to render <code>NULL</code> as <code>¤</code> (or
+whatever string you prefer).</p>
+
+<pre><code>db=# SELECT '', NULL;
+ ?column? | ?column?
+----------+----------
+          | ¤
+(1 row)
+</code></pre>
+
+<p>Now, whenever you see an empty cell, you know it’s an empty string and not
+a <code>NULL</code>.</p>
+
+<p>There’s one more—though less crucial—configuration I’d like to introduce. If
+you, like me, prefer to have your SQL keywords in ALL-CAPS, then this is for
+you. psql has basic tab-completion. By setting <code>\set COMP_KEYWORD_CASE upper</code>
+you can start writing keywords in lowercase and when pressing tab they’ll be
+completed and transformed to uppercase. For instance, typing <code>sel&lt;tab&gt;</code> will
+result in <code>SELECT&lt;space&gt;</code>.</p>
+
+<p>Of course, having to type these commands to set up your environment every time
+your open a psql shell would be tedious. Luckily, psql evaluates the file
+<code>~/.psqlrc</code> if it exists. Thus, placing the introduced commands in that file
+will result in every psql session to be tailored to your liking.</p>
+
+<p>In summary, this is my <code>~/.psqlrc</code> that makes working with psql more enjoyable
+for me.</p>
+
+<pre><code>\set COMP_KEYWORD_CASE upper
+\x auto
+\pset null ¤
+</code></pre>
+
+<p>There are plenty of posts out there talking more in-depth about configuring psql
+such as <a href="https://robots.thoughtbot.com/improving-the-command-line-postgres-experience">thoughtbot’s</a>. <a href="http://www.postgresql.org/docs/9.4/static/app-psql.html">psql’s documentation</a> is also a great resource for
+finding further commands that might be useful in a <code>psqlrc</code> file.</p>
+
+<h2 id="getting-help">Getting Help</h2>
+
+<p>Every once in a while you’ll find yourself having to run a SQL command that you
+only use infrequently and thus don’t remember its exact name or invocation. This
+is where <code>\h</code> comes in handy.</p>
+
+<p>Without arguments, <code>\h</code> will show you a list of available help topics. That in
+itself is already a handy reference as the help topics are the start of SQL
+commands such as <code>SELECT</code> or <code>ALTER TABLE</code>.</p>
+
+<p>Let’s say you would like to drop the <code>NOT NULL</code> constraint of a column but you
+don’t remember exactly how. You do remember though that things usually get
+changed with <code>ALTER</code>. Thus, you run <code>\h alter</code> to show all related help topics.
+This will output quite a bit of information.</p>
+
+<p>Because psql uses a pager to render long outputs, we can make use of the pager’s
+search functionality. By typing <code>/</code> followed by a search term and <code>&lt;enter&gt;</code>, it
+will highlight the first match and jump to it. With <code>n</code> and <code>N</code> we can jump to
+the next and previous result, respectively.</p>
+
+<p>By searching for <code>NULL</code> we quickly find <code>ALTER [ COLUMN ] column_name { SET
+| DROP } NOT NULL</code>. Scrolling up a bit we’ll see that this is run in the context
+of an <code>ALTER TABLE</code>. Great, we now have all the pieces to perform our desired
+operation without having had to consult Google.</p>
+
+<pre><code>ALTER TABLE table_name ALTER column_name DROP NOT NULL;
+</code></pre>
+
+<p>As you’ve seen, the <code>\h</code> command helps you when you get stuck with SQL commands.
+It does not offer any help for psql commands (also known as meta-commands or
+backslash-commands). This is what <code>\?</code> is for. It will list all possible
+backslash commands and their description. We will be encountering some of these
+helpful commands in the next sections.</p>
+
+<h2 id="your-playground-database">Your Playground Database</h2>
+
+<p>psql is smart when connecting to a database. It assumes default values for
+omitted connection settings, such as localhost, standard port, etc. Thus, when
+I open a psql session to a local database, all I have to type is <code>psql db_name</code>.</p>
+
+<p>Now the cool thing is that you can even omit the database name and psql will
+assume that you want to connect to the database named after the current user.
+Thus, having a database named after your computer’s user account allows you to
+quickly drop into psql.</p>
+
+<pre><code>$ psql
+psql: FATAL:  database "phil" does not exist
+$ createdb `whoami`
+$ psql
+phil=# 
+</code></pre>
+
+<p>This database is perfect for looking up the SQL syntax (<code>\h</code>) or for quickly
+verifying an assumption. I just type <code>psql</code>, test something, and I’m out. No
+need to think about which database to use or about creating a database in the
+first place.</p>
+
+<h2 id="exploring-a-database">Exploring a Database</h2>
+
+<p>psql has a bunch of backslash commands that make exploring a database very easy.
+To list tables, type <code>\dt</code>, to list indexes <code>\di</code>, to list views <code>\dv</code>, etc. One
+great thing about these commands is that they accept a pattern, similar to file
+globbing on the command line. If you want to list all tables starting with
+<code>user</code>, simply run <code>\dt user*</code>.</p>
+
+<p>Where I work, we make extensive use of PostgreSQL schemas. In short, a schema is
+a kind of namespace for tables. If you haven’t heard about schemas, here’s
+a secret. You’re already using them, albeit only the default one called
+<code>public</code>. When you create a table <code>foo</code>, you’re creating it in the <code>public</code>
+schema and you can refer to that table using <code>public.foo</code>. In my company’s case
+we use one schema per customer.</p>
+
+<p>Sometimes I need to check which customers have a certain table. Assuming the
+table is named <code>users</code>, I run <code>\dt *.users</code> to get a list of all tables with
+that name, regardless of its schema.</p>
+
+<pre><code>db=# \dt *.users
+         List of relations
+  Schema  | Name  | Type  | Owner
+----------+-------+-------+-------
+ apple    | users | table | phil
+ google   | users | table | phil
+ facebook | users | table | phil
+(3 rows)
+</code></pre>
+
+<p>Whenever you want to get the details of a single object such as a table or a view,
+type <code>\d</code> followed by the name of that object. This will reveal all the details
+such as:</p>
+
+<ul>
+  <li>the columns along with their types, whether they’re <code>NOT NULL</code>, and their
+default values</li>
+  <li>the indexes</li>
+  <li>check constraints</li>
+  <li>foreign key constraints</li>
+  <li>tables that reference this table through foreign keys</li>
+  <li>triggers</li>
+</ul>
+
+<pre><code>db=# \d users
+                          Table "public.users"
+  Column  |  Type   |                     Modifiers
+----------+---------+----------------------------------------------------
+ id       | integer | not null default nextval('users_id_seq'::regclass)
+ name     | text    | not null
+ email    | text    | not null
+ group_id | integer | not null
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (id)
+    "users_email_key" UNIQUE CONSTRAINT, btree (email)
+Check constraints:
+    "users_email_check" CHECK (email ~ '.@.'::text)
+    "users_name_check" CHECK (name &lt;&gt; ''::text)
+Foreign-key constraints:
+    "users_group_id_fkey" FOREIGN KEY (group_id) REFERENCES groups(id)
+Referenced by:
+    TABLE "posts" CONSTRAINT "posts_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+</code></pre>
+
+<p>Backslash-commands are also very useful when working with functions. So what’s
+the command to list functions? I’m sure you’ve guessed it. <code>\df</code> of course.
+However, <code>\df</code> without an argument doesn’t list all the functions unlike the
+other listing commands above. There are just too many functions I guess.</p>
+
+<p>Sometimes you’re looking for a function that you’ve used before but don’t recall
+its exact name. Let’s assume you’re looking for a regular expression function to
+replace a substring. How about searching for a function containing <code>regexp</code>?</p>
+
+<pre><code>db=# \df *regexp*
+                                    List of functions
+   Schema   |         Name          | Result data type |  Argument data types   |  Type
+------------+-----------------------+------------------+------------------------+--------
+ pg_catalog | regexp_matches        | SETOF text[]     | text, text             | normal
+ pg_catalog | regexp_matches        | SETOF text[]     | text, text, text       | normal
+ pg_catalog | regexp_replace        | text             | text, text, text       | normal
+ pg_catalog | regexp_replace        | text             | text, text, text, text | normal
+ pg_catalog | regexp_split_to_array | text[]           | text, text             | normal
+ pg_catalog | regexp_split_to_array | text[]           | text, text, text       | normal
+ pg_catalog | regexp_split_to_table | SETOF text       | text, text             | normal
+ pg_catalog | regexp_split_to_table | SETOF text       | text, text, text       | normal
+(8 rows)
+</code></pre>
+
+<p>There it is, <code>regexp_replace</code>. And I even learned about some fancy functions
+I didn’t even know existed.</p>
+
+<p>When working with your own functions, you might want to take a look at their
+definition and possibly even edit it. This is where <code>\ef</code> comes in, which stands
+for <em>edit function</em>. It takes the name of the function and, if there are
+multiple functions with the same name, the types of the arguments. This will
+open a file in your <code>$EDITOR</code> with that function’s definition neatly wrapped in
+a <code>CREATE OR REPLACE FUNCTION</code>, such that saving and closing the file results in
+its contents being evaluated, effectively allowing you to modify a function in
+place.</p>
+
+<p>When you only want to inspect a function’s body, it might be a good idea to exit
+your editor with a non-zero exit code just to be sure that the function won’t be
+modified when you didn’t intend to. psql respects the exit code of your editor
+and will only proceed with evaluation if it is 0. In Vim you can exit with an
+error code using <code>:cq</code>.</p>
+
+<h2 id="building-a-query">Building a Query</h2>
+
+<p>The psql prompt is great for quickly writing short queries. Once the query
+starts to grow and your SQL command starts wrapping in the prompt, it’s time for
+an upgrade. This is where <code>\e</code> comes in handy. <code>\e</code> will open the last query in
+your editor where you’ll get all the benefits of your favorite editor, like
+syntax highlighting and more. Once you save and close the file, it gets
+evaluated. Thus, <code>\e</code> is perfect for iteratively building a query.</p>
+
+<p>Occasionally I want to save the query I’ve been working on to a file. I do that
+by typing <code>\e</code> to open the query in my editor and from there I’ll save it to my
+desired location.</p>
+
+<p>psql also works well with queries stored in files. By running <code>\i filename</code>,
+psql will evaluate the contents of that file. This is also great for queries you
+run periodically.</p>
+
+<p><code>\e</code> also works great with existing files. By passing the filename as an
+argument, it will open the file in your editor and, same as <code>\e</code> without
+arguments, evaluate the file when saving and closing it. Unfortunately, it’s not
+possible to specify the name of an inexistent file, e.g. when you’re about to
+start working on a new query. One workaround would be to start typing the first
+version of the query directly in the prompt and then use <code>\e</code> to open the query
+in your editor and save it from there. Another workaround would be to touch the
+file, either from the command line or from within psql using <code>\!</code>, which allows
+you to run any shell command, e.g. <code>\! touch foo.sql</code>.</p>
+
+<p>The combination of <code>\i</code>, <code>\e</code>, and—especially—your own editor, make
+iterating on a query fast and convenient. Personally, I like to have two tmux
+splits side-by-side, one with Vim for editing the file containing the query and
+one with psql where I simply run <code>\i query.sql</code>. I then just jump between the
+two splits. Gone are the days of copy-pasting and clunky text fields in Java
+apps with unfamiliar keyboard shortcuts.</p>
+
+<h2 id="comparing-outputs">Comparing Outputs</h2>
+
+<p>When you run a command in psql, the result gets printed to the terminal. The
+<code>\o</code> command allows you to specify a file to send the output to instead of the
+terminal. By running <code>\o foo</code>, every output resulting from a command is appended
+to the file <code>foo</code>. To revert back to printing to the terminal, run <code>\o</code> without
+arguments.</p>
+
+<p>What’s this good for?, you might be asking yourself. Well, you could export data
+this way, but please don’t. There’s a proper way to export data that I’ll
+explain later. One specific use case I’ve found for <code>\o</code> is to compare multiple
+outputs.</p>
+
+<p>Let’s assume I want to compare the query plan of two queries in my editor or
+diff tool. Here’s how I would do this:</p>
+
+<pre><code>db=# \o a.txt
+db=# EXPLAIN SELECT * FROM users WHERE id IN (SELECT user_id FROM groups WHERE name = 'admins');
+db=# \o b.txt
+db=# EXPLAIN SELECT users.* FROM users LEFT JOIN groups WHERE groups.name = 'admins';
+db=# \! vimdiff a.txt b.txt
+</code></pre>
+
+<p>I can now see both query plans side by side. This is also a great way to find
+out whether the results of two similar queries are the same or not.</p>
+
+<h2 id="cloning-a-database">Cloning a Database</h2>
+
+<p>From time to time I have to create a migration for a database. The process of
+developing a migration is an iterative one of trial and error, meaning that
+I run the migration up and down several times. This is done in order to optimize
+for speed and ensure the reverse migration actually reverses the changes.</p>
+
+<p>The local database on which I test the migration is usually filled with data
+that I created manually or data from a production dump. Because I run the
+migration many times, it can happen that the data or schema ends up in a corrupt
+state. That would require me to set up the database from scratch. Recreating or
+reloading the data would cost me quite some time.</p>
+
+<p>Thankfully, creating a copy of an existing database is easy as pie. This allows
+me to create a backup before running the migration for the first time. In case
+something goes wrong, I just delete the database, restore the backup and try
+again.</p>
+
+<p>In order to copy a database, we create a new database and specify an existing
+one as the <em>template</em>. The resulting database is an exact copy of the template.</p>
+
+<pre><code>$ createdb -T app_db app_db_backup
+</code></pre>
+
+<p>To restore the backup, I simply delete the database and create a new one, using
+the backup as the template.</p>
+
+<pre><code>$ dropdb app_db
+$ createdb -T app_db_backup app_db
+</code></pre>
+
+
+
+<p>Every now and then there’s the need to share data with your coworkers,
+management, or clients. Most likely you want to send them a CSV or an Excel
+file.</p>
+
+<p>You already have your query ready, grabbing the data from all possible tables
+and joining them into this neat result set. Now, how do you actually get it out
+of the database?</p>
+
+<p>Googling <em>psql csv export</em> reveals that there are at least two ways of
+accomplishing this. First, the naïve approach.</p>
+
+<p>Remember, we want to output CSV. Since CSV files are simply values separated by
+commas, one might be tempted to change how psql prints data to screen. By
+turning off the pretty alignment and setting the separator to a comma, we
+actually do get something that resembles CSV. There’s one big problem though.
+If your data contains a comma, it won’t be escaped. Your output will have rows
+with a varying number of fields, rendering your CSV file useless.</p>
+
+<p>The proper way of extracting CSV is by using the <code>COPY</code> SQL command or the
+<code>\copy</code> meta-command. Let’s assume I want to export the result of a query as
+CSV. Here’s how that would work:</p>
+
+<pre><code>COPY (SELECT ...)
+TO '/absolute/path/export.csv'
+WITH (FORMAT csv, HEADER true);
+</code></pre>
+
+<p><code>COPY</code> has a few restrictions. First, it requires you to specify an absolute
+path. Second and more annoyingly, you can only write to the file system local to
+the database, i.e. if you’re opening a session to a remote database, you won’t
+be able to write to your computer.</p>
+
+<p>This is where <code>\copy</code> comes in. It’s basically a wrapper around <code>COPY</code> that
+circumvents above restrictions. The above query is rewritten as follows:</p>
+
+<pre><code>\copy (SELECT ...) TO export.csv WITH (FORMAT csv, HEADER true)
+</code></pre>
+
+<p>Notice how we can specify a relative path and even omit the quotes. The only
+limitation is that the whole command has to go on one line when entering it
+directly in the prompt. The reason is that backslash-commands are triggered on
+a new line and not on a semicolon. This does not apply though when using <code>\e</code> to
+enter your query through your editor.</p>
+
+<p><code>\copy</code> under the hood issues a <code>COPY</code> command with the same query and options,
+but writes to <code>STDOUT</code> instead of a file. psql then redirects the output into
+the local file, thus bypassing aforementioned restriction.</p>
+
+<p>If you’re planning on using the data in Excel, make sure to adjust the output
+encoding. The default encoding is <em>UTF-8</em>, which Excel doesn’t play well with
+(c’mon, we’re in 2015). Instead, go with <em>latin1</em>:</p>
+
+<pre><code>\copy (SELECT ...) TO export.csv WITH (FORMAT csv, HEADER true, ENCODING 'latin1')
+</code></pre>
+
+<p>If you have a query stored in a file, there’s no way to use the contents of that
+file as your copy-statement’s data source. Unfortunately you have to copy paste
+the query into a <code>\copy</code> statement. And don’t forget to remove the semicolon at
+the end of the query.</p>
+
+<p>I’ve found myself repeating this too many times. Therefore, I’ve come up with
+a little tool called <a href="https://github.com/fphilipe/psql2csv">psql2csv</a>. It allows you to run a query stored in a file
+(or as a string argument) and output the result as CSV to STDOUT. Saving the
+output is as easy as redirecting to a file.</p>
+
+<pre><code>$ psql2csv database 'SELECT ...' &gt; export.csv
+</code></pre>
+
+<p>If you have a query stored in a file, redirect the file to STDIN.</p>
+
+<pre><code>$ psql2csv database &lt; query.sql &gt; export.csv
+</code></pre>
+
+<p>The tool’s interface is exactly the same as psql’s. You can simply replace your
+psql command with <code>psql2csv</code>, pass the query string as the last argument or pass
+it in through STDIN and it will output the result as valid CSV. To save it,
+simply redirect the output to a file. But why stop there? How about piping the
+data to another tool that does some interesting thing to it, e.g. plotting it?</p>
+
+<p><code>psql2csv</code> also accepts a <code>--no-header</code> argument and an <code>--encoding=ENCODING</code>
+argument, for when you need Excel compatibility.</p>
+
+<hr>
+
+<p>Interacting with PostgreSQL solely from the command line has been great for me.
+I can do everything that I used to do with a graphical tool—such as
+<a href="http://www.pgadmin.org/">pgAdmin</a>—and much more, all in shorter time and with the tools I prefer. If
+you so far abstained from psql for whatever reasons, I hope that this article
+convinced you of psql’s power.</p>
+
+<p>If you have any special tricks or workflows involving psql not covered here, I’d
+love to hear them. Please reach out!</p>
+
+<p><strong>Edit:</strong> Discuss on <a href="https://news.ycombinator.com/item?id=10458866">Hacker News</a>.</p>
+
+<p><strong>Edit 2:</strong> Read in <a href="http://postd.cc/postgresql-on-the-command-line/">Japanese</a>.</p>
+
+<p>You might also like my other posts on PostgreSQL:</p>
+
+<ul>
+  <li><a href="https://phili.pe/posts/timestamps-and-time-zones-in-postgresql/">Timestamps and Time Zones in PostgreSQL</a></li>
+  <li><a href="https://phili.pe/posts/exporting-csv-from-postgresql/">Exporting CSV from PostgreSQL</a></li>
+</ul>
+
+  
+</article>
+    </div></div>
+  </div>
+</body>
+</html>

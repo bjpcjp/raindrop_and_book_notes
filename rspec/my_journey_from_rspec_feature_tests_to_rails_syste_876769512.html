@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My journey from Rspec feature tests to Rails system tests</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>My journey from Rspec feature tests to Rails system tests</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/dstull/my-journey-from-rspec-feature-tests-to-rails-system-tests">https://dev.to/dstull/my-journey-from-rspec-feature-tests-to-rails-system-tests</a></p>
+    <p><strong>Tags:</strong> rspec, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876769512</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="article-show-container" data-article-id="5595" data-article-slug="my-journey-from-rspec-feature-tests-to-rails-system-tests" data-author-id="9325" data-author-name="Doug Stull" data-author-username="dstull" data-co-author-ids="" data-path="/dstull/my-journey-from-rspec-feature-tests-to-rails-system-tests" data-pin-path="/stories/feed/pinned_article" data-pinned-article-id="" data-published="true" data-scheduled="false">
+        <header id="main-title">
+
+          
+        </header>
+
+        <div data-article-id="5595" id="article-body">
+            <h2>
+  <a name="goals" href="#goals">
+  </a>
+  Goals:
+</h2>
+
+<ul>
+<li>Achieve reliable headless testing with system tests that utilize javascript</li>
+<li>Learn the new Rails system test setup</li>
+</ul>
+
+<p>Quite often I find myself spending hours debugging(and sometimes finally deleting) a flaky feature test.  Finally I decided to stop doing that, and after watching the Rails Conf <a href="https://www.youtube.com/watch?v=sSn4B8orX70">talk</a> about system testing, decided it was time to act.</p>
+
+<p>Since my first goal is to always keep it simple, I didn't jump right away into the Rails system tests.  Due to the rest of my testing suite being written in Rspec, I first tried to go headless with that setup.</p>
+
+<h2>
+  <a name="rspec-failures" href="#rspec-failures">
+  </a>
+  Rspec failure(s)
+</h2>
+
+<h2>
+  <a name="trying-headless-chrome-with-capybara" href="#trying-headless-chrome-with-capybara">
+  </a>
+  Trying <a href="https://robots.thoughtbot.com/headless-feature-specs-with-chrome">headless chrome with capybara</a>
+</h2>
+
+<h3>
+  <a name="specrailshelperrb" href="#specrailshelperrb">
+  </a>
+  spec/rails_helper.rb
+</h3>
+
+
+
+<div><pre><code><span>Capybara</span><span>.</span><span>register_driver</span> <span>:headless_chrome</span> <span>do</span> <span>|</span><span>app</span><span>|</span>
+  <span>capabilities</span> <span>=</span> <span>Selenium</span><span>::</span><span>WebDriver</span><span>::</span><span>Remote</span><span>::</span><span>Capabilities</span><span>.</span><span>chrome</span><span>(</span>
+    <span>chromeOptions: </span><span>{</span> <span>args: </span><span>%w(headless disable-gpu)</span> <span>}</span>
+  <span>)</span>
+
+  <span>Capybara</span><span>::</span><span>Selenium</span><span>::</span><span>Driver</span><span>.</span><span>new</span> <span>app</span><span>,</span>
+    <span>browser: :chrome</span><span>,</span>
+    <span>desired_capabilities: </span><span>capabilities</span>
+<span>end</span>
+
+<span>Capybara</span><span>.</span><span>javascript_driver</span> <span>=</span> <span>:headless_chrome</span>
+</code></pre></div>
+
+
+
+<h3>
+  <a name="result" href="#result">
+  </a>
+  Result:
+</h3>
+
+<ul>
+<li>Selenium::WebDriver::Error::unknownError...basically it gave me the 'is not clickable at point' error.  I tried working around these by doing simple fixes to capybara finders, digging more for answers, and in the end(about 30 minutes), couldn't get it resolved.  So I moved on to the next attempt... </li>
+</ul>
+
+<h2>
+  <a name="trying-capybara-webkit" href="#trying-capybara-webkit">
+  </a>
+  Trying <a href="https://github.com/thoughtbot/capybara-webkit">capybara webkit</a>
+</h2>
+
+<h3>
+  <a name="result" href="#result">
+  </a>
+  Result:
+</h3>
+
+<ul>
+<li>Well this didn't go very far as it needed a <a href="https://github.com/thoughtbot/capybara-webkit#qt-dependency-and-installation-issues">Qt</a> dependency, and when I tried to brew install that, the compiler barfed due to, what seems to be, Xcode upgrade dependency.  Due to not having admin privileges on my mac, I took the easy way out and abandoned webkit for now. </li>
+</ul>
+
+<h2>
+  <a name="trying-poltergeist" href="#trying-poltergeist">
+  </a>
+  Trying <a href="https://github.com/teampoltergeist/poltergeist">poltergeist</a>
+</h2>
+
+<h3>
+  <a name="specrailshelperrb" href="#specrailshelperrb">
+  </a>
+  spec/rails_helper.rb
+</h3>
+
+
+
+<div><pre><code><span>require</span> <span>'capybara/poltergeist'</span>
+
+<span>Capybara</span><span>.</span><span>javascript_driver</span> <span>=</span> <span>:poltergeist</span>
+</code></pre></div>
+
+
+
+<h3>
+  <a name="modifying-some-tests-for-known-clickon-issues" href="#modifying-some-tests-for-known-clickon-issues">
+  </a>
+  Modifying some tests for known 'click_on' <a href="https://github.com/teampoltergeist/poltergeist/issues/530">issues</a>:
+</h3>
+
+<h4>
+  <a name="before" href="#before">
+  </a>
+  Before:
+</h4>
+
+
+
+<div><pre><code><span>click_on</span> <span>'Create Engine'</span>
+</code></pre></div>
+
+
+
+<h4>
+  <a name="after" href="#after">
+  </a>
+  After:
+</h4>
+
+
+
+<div><pre><code><span>find</span><span>(</span><span>"input[type=submit][value='Create Engine']"</span><span>).</span><span>trigger</span><span>(</span><span>'click'</span><span>)</span>
+</code></pre></div>
+
+
+
+<h3>
+  <a name="result" href="#result">
+  </a>
+  Result:
+</h3>
+
+<ul>
+<li>Success! ...or so I thought.  All features passed.  However, when ran with entire test suite, they randomly failed.  So I tried fixing them with different swap-outs for 'have_content' checks and such.  Those then passed, ran again, they failed and the others(that I didn't fix) passed.  At this point I was thoroughly frustrated, because either I run my test suite for features separately from other tests, or I need to fix this...</li>
+<li>Note: I <em>assume</em> this has to due with the database cleanup and different AR threads and such that I've read about.  I did have my database cleaner setup to truncate on js tests, but when ran in headless mode with the rest of my test suite, it was flaky.  Also, before going down this headless path, they worked fine.</li>
+</ul>
+
+<p>Being fed up with flaky tests and 3 failed attempts at remedying this in Rspec, I decided to now move on and try the Rails System Tests...</p>
+
+<h2>
+  <a name="rails-system-tests" href="#rails-system-tests">
+  </a>
+  Rails System Tests:
+</h2>
+
+<h3>
+  <a name="setup" href="#setup">
+  </a>
+  Setup:
+</h3>
+
+<h4>
+  <a name="prerequisites" href="#prerequisites">
+  </a>
+  Prerequisites:
+</h4>
+
+<ul>
+<li>Rails 5.1</li>
+<li><a href="https://github.com/teampoltergeist/poltergeist">Poltergeist</a></li>
+<li><a href="https://github.com/freerange/mocha">Mocha</a></li>
+<li><a href="https://github.com/puma/puma">Puma</a></li>
+<li>Some other gems I like: FactoryGirl/Capybara(of course), standard test setup</li>
+</ul>
+
+<h4>
+  <a name="testtesthelperrb" href="#testtesthelperrb">
+  </a>
+  test/test_helper.rb
+</h4>
+
+<ul>
+<li>Simple setup really, only added a few helpers and such:</li>
+</ul>
+
+
+
+<div><pre><code><span>require</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>'../../config/environment'</span><span>,</span> <span>__FILE__</span><span>)</span>
+<span>require</span> <span>'rails/test_help'</span>
+<span>require</span> <span>'mocha/test_unit'</span> <span># for stubs</span>
+<span>require</span> <span>'minitest/spec'</span> <span># for let/it/etc</span>
+
+<span># not sure about this, but rails kinda does it here...feels sloppy, but I hate</span>
+<span># typing require in all my test files</span>
+<span>Dir</span><span>[</span><span>Rails</span><span>.</span><span>root</span><span>.</span><span>join</span><span>(</span><span>"test/support/**/*.rb"</span><span>)}.</span><span>each</span> <span>{</span> <span>|</span><span>f</span><span>|</span> <span>require</span> <span>f</span> <span>}</span>
+
+<span>class</span> <span>ActiveSupport</span><span>::</span><span>TestCase</span>
+  <span># Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.</span>
+  <span>fixtures</span> <span>:all</span>
+
+  <span># Add more helper methods to be used by all tests here...</span>
+  <span>extend</span> <span>MiniTest</span><span>::</span><span>Spec</span><span>::</span><span>DSL</span>
+  <span>include</span> <span>WaitForAjax</span> <span># hack for remote js calls that waits for ajax to be done</span>
+<span>end</span>
+</code></pre></div>
+
+
+
+<h4>
+  <a name="testapplicationsystemtestcaserb" href="#testapplicationsystemtestcaserb">
+  </a>
+  test/application_system_test_case.rb
+</h4>
+
+<ul>
+<li>This file comes with Rails 5.1, but I switched it to use poltergeist:</li>
+</ul>
+
+
+
+<div><pre><code><span>require</span> <span>'test_helper'</span>
+<span>require</span> <span>'capybara/poltergeist'</span>
+
+<span>class</span> <span>ApplicationSystemTestCase</span> <span>&lt;</span> <span>ActionDispatch</span><span>::</span><span>SystemTestCase</span>
+  <span>driven_by</span> <span>:poltergeist</span>
+<span>end</span>
+</code></pre></div>
+
+
+
+<h4>
+  <a name="testsystemappmymaptestrb" href="#testsystemappmymaptestrb">
+  </a>
+  test/system/app/my_map_test.rb
+</h4>
+
+<ul>
+<li>This is just one of the test files, but good enough to show the setup</li>
+<li>I like to abstract away a lot of the standard Capybara DOM traversal steps, so those will be in the next file.</li>
+</ul>
+
+
+
+<div><pre><code><span>require</span> <span>'application_system_test_case'</span>
+
+<span>class</span> <span>MyMapTest</span> <span>&lt;</span> <span>ApplicationSystemTestCase</span>
+  <span>class</span> <span>StandardType</span> <span>&lt;</span> <span>MyMapTest</span>
+    <span>let</span><span>(</span><span>:subject</span><span>)</span> <span>{</span> <span>MyMapForm</span><span>.</span><span>new</span><span>(</span><span>'standard_type'</span><span>)</span> <span>}</span>
+
+    <span>test</span> <span>'page has different types'</span> <span>do</span>
+      <span>subject</span><span>.</span><span>visit_page</span>
+
+      <span>assert</span> <span>has_content?</span><span>(</span><span>'first type'</span><span>)</span>
+      <span>assert</span> <span>has_content?</span><span>(</span><span>'second type'</span><span>)</span>
+      <span>assert</span> <span>has_content?</span><span>(</span><span>'third type'</span><span>)</span>
+    <span>end</span>
+
+    <span>test</span> <span>'page has address link'</span> <span>do</span>
+      <span>subject</span><span>.</span><span>visit_page</span>
+      <span>assert</span> <span>has_link?</span><span>(</span><span>'Address Import'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+
+
+<p>Note: this was originally written in Rspec, but the conversion was simple...</p>
+
+<ul>
+<li>s/describe/class, s/it/test, s/expect..to/assert, s/have_content/has_content?..etc</li>
+</ul>
+
+<h4>
+  <a name="testsupportformsmymapformrb" href="#testsupportformsmymapformrb">
+  </a>
+  test/support/forms/my_map_form.rb
+</h4>
+
+<ul>
+<li>This is my file to hold all the repeatable/dirty details about traversing the DOM</li>
+</ul>
+
+
+
+<div><pre><code><span>class</span> <span>MyMapForm</span>
+  <span>include</span> <span>Capybara</span><span>::</span><span>DSL</span>
+  <span>include</span> <span>FactoryGirl</span><span>::</span><span>Syntax</span><span>::</span><span>Methods</span>
+  <span>include</span> <span>Rails</span><span>.</span><span>application</span><span>.</span><span>routes</span><span>.</span><span>url_helpers</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>type</span><span>)</span>
+    <span># using factory here of course and converting to find the factory</span>
+    <span>@item</span> <span>=</span> <span>create</span><span>(</span><span>type</span><span>.</span><span>to_sym</span><span>)</span>
+    <span># one more...</span>
+    <span>create</span><span>(</span><span>type</span><span>.</span><span>to_sym</span><span>)</span>
+    <span>@app</span> <span>=</span> <span>item</span><span>.</span><span>app</span>
+  <span>end</span>
+
+  <span>def</span> <span>visit_page</span>
+    <span># don't care about authenticating here</span>
+    <span># in rspec, this uses allow_any_instance_of...</span>
+    <span>ApplicationController</span><span>.</span><span>any_instance</span><span>.</span><span>stubs</span><span>(</span><span>:require_long</span><span>).</span><span>returns</span><span>(</span><span>true</span><span>)</span>
+    <span>ApplicationController</span><span>.</span><span>any_instance</span><span>.</span><span>stubs</span><span>(</span><span>:can_edit?</span><span>).</span><span>returns</span><span>(</span><span>true</span><span>)</span>
+
+    <span>visit</span> <span>app_path</span><span>(</span><span>app</span><span>)</span>
+    <span>find</span><span>(</span><span>'a'</span><span>,</span> <span>test: </span><span>'My Map'</span><span>).</span><span>click</span> <span># in non headless, click_on 'My Map' works</span>
+    <span>self</span>
+  <span>end</span>
+
+  <span>private</span> 
+
+  <span>attr_reader</span> <span>:item</span><span>,</span> <span>:app</span>
+<span>end</span>
+</code></pre></div>
+
+
+
+<h2>
+  <a name="conclusions" href="#conclusions">
+  </a>
+  Conclusions:
+</h2>
+
+<h2>
+  <a name="pros" href="#pros">
+  </a>
+  Pros:
+</h2>
+
+<ul>
+<li>It seems to work so far...and let's be honest, that is the most important thing.</li>
+<li>Default functionality of a screenshot in my terminal on failure.  Basic, but nice.</li>
+<li>Seems to solve the multiple db connection issue, and therefore reducing the flakiness of these gui driven system tests</li>
+<li>Runs faster than non headless implementation</li>
+<li>I suppose it makes running tests in CI env easier, as we can skip some of the browser setup?</li>
+<li>Gives the team some exposure to Rails test framework (this can also be seen as a con below)</li>
+<li>By using a different test suite for system tests, it gives a clear line of delineation in configs and troubleshooting, etc.</li>
+<li>Is part of Rails core, so I have full confidence in the future support and improvements</li>
+</ul>
+
+<h2>
+  <a name="cons" href="#cons">
+  </a>
+  Cons:
+</h2>
+
+<ul>
+<li>Adds technical debt to the team since we do everything else in Rspec</li>
+<li>Documentation/examples for Rspec is miles ahead from what I've been able to find for Rails System tests (hence some of the reason for this writeup)</li>
+</ul>
+
+<h2>
+  <a name="final-thoughts" href="#final-thoughts">
+  </a>
+  Final Thoughts:
+</h2>
+
+<p>While this journey into Rails System tests feels good today, it is quite possible I will look back in a month or so and wonder...what was I thinking using this and multiple test suites...  But then again, don't we always look back and have those thoughts about our development decisions?</p>
+
+<p>Of note, I also see that <a href="https://github.com/rspec/rspec-rails">rspec-rails</a>, is planning on supporting this soon as well, I think, as seen by this <a href="https://github.com/rspec/rspec-rails/pull/1813">issue</a>. If that comes to fruition, it will be worth a look, and definitely worth consolidating back into one test suite...we'll see.</p>
+
+
+          </div>
+          
+  
+
+
+
+      </article></div>
+  </div>
+</body>
+</html>

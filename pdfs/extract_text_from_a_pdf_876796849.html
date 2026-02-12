@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Extract text from a PDF</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Extract text from a PDF</h1>
+    <p><strong>URL:</strong> <a href="https://www.johndcook.com/blog/2024/04/20/extract-text-from-a-pdf">https://www.johndcook.com/blog/2024/04/20/extract-text-from-a-pdf</a></p>
+    <p><strong>Tags:</strong> pdfs, python</p>
+    <p><strong>Bookmark ID:</strong> 876796849</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+		<p>Arshad Khan left a comment on my <a href="https://www.johndcook.com/blog/2024/04/16/more-is-less/">post</a> on the <code>less</code> and <code>more</code> utilities saying “on ubuntu if I do <code>less</code> on a pdf file, it shows me the text contents of the pdf.”</p>
+<p>Apparently this is an undocumented feature of GNU <code>less</code>. It works, but I don’t see anything about it in the <code>man</code> page documentation [1].</p>
+<p>Not all versions of <code>less</code> do this. On my Mac, <code>less</code> applied to a PDF gives a warning saying “… may be a binary file. See it anyway?” If you insist, it will dump gibberish to the command line.</p>
+<p>A more portable way to extract text from a PDF would be to use something like the <code>pypdf</code> Python module:</p>
+<pre>    from pypdf import PdfReader
+
+    reader = PdfReader("myfile.pdf")
+    for page in reader.pages:
+        print(page.extract_text()) 
+</pre>
+<p>The <code>pypdf</code> <a href="https://pypdf.readthedocs.io/en/stable/user/extract-text.html">documentation</a> gives several options for how to extract text. The documentation also gives a helpful discussion of why it’s not always clear what extracting text from a PDF should mean. Should captions and page numbers be extracted? What about tables? In what order should text elements be extracted?</p>
+<p>PDF files are notoriously bad as a data exchange format. When you extract text from a PDF, you’re likely not using the file in a way its author intended, maybe even in a way the author tried to discourage.</p>
+<p><strong>Related post</strong>: <a href="https://www.johndcook.com/blog/2024/02/08/pdf-forensics/">Your PDF may reveal more than you intend</a></p>
+<p>[1] Update: Several people have responded saying that that <code>less</code> isn’t extracting the text from a PDF, but <a href="https://github.com/wofr06/lesspipe">lesspipe</a> is. That would explain why it’s not a documented feature of <code>less</code>. But it’s not clear how <code>lesspipe</code> is implicitly inserting itself.</p>
+<p>Further update: Thanks to Konrad Hinsen for pointing me to <a href="https://www.oreilly.com/library/view/bash-cookbook/0596526784/ch08s15.html">this explanation</a>. <code>less</code> reads an environment variable <code>LESSOPEN</code> for a preprocessor to run on its arguments, and that variable is, on some systems, set to <code>lesspipe</code>.</p>
+			</div></div>
+  </div>
+</body>
+</html>

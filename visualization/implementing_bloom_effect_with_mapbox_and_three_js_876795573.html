@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Implementing Bloom Effect with Mapbox and Three.js</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Implementing Bloom Effect with Mapbox and Three.js</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/ethanzf/implementing-bloom-effect-with-mapbox-and-threejs-3m9j">https://dev.to/ethanzf/implementing-bloom-effect-with-mapbox-and-threejs-3m9j</a></p>
+    <p><strong>Tags:</strong> images, visualization</p>
+    <p><strong>Bookmark ID:</strong> 876795573</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1814859" id="article-body">
+            <p>Bloom effects are typically used to enhance the brightness and lighting effects of images or scenes, such as enhancing light effects and drawing glowing edges. In some game engines and libraries, such as Cesium, bloom is implemented as a post-processing technique. Simply put, post-processing techniques are secondary processing done after the entire canvas rendering.</p>
+
+<p>This article will introduce how to achieve bloom effects with Mapbox and Three.js. First, let's take a look at the final result:</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F0kjnqkr4r783x54p7l90.png"><img src="data:," alt="Image description" loading="lazy" width="800" height="397"></a></p>
+
+<p>The bloom processing workflow typically consists of the following steps:</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fl11xdfhe2qeldrenbnv7.jpg"><img src="data:," alt="Image description" loading="lazy" width="500" height="216"></a></p>
+
+<ol>
+<li>Set a brightness threshold to extract glowing areas.</li>
+<li>Blur the glowing areas. Gaussian blur is commonly used to blur the glowing areas, and multiple blurs with different radii are often performed to achieve a more natural effect.</li>
+<li>Overlay the blurred texture onto the original image to achieve the desired effect blending.</li>
+</ol>
+
+<p>Mapbox does not directly provide the ability to create bloom effects, but its CustomLayerInterface provides a very flexible extension capability, making it possible to load Three.js with Mapbox.</p>
+
+<p>The official Three.js documentation provides an Unreal Engine-inspired UnrealBloom post-processor. Official example: <a href="https://threejs.org/examples/?q=bloom#webgl_postprocessing_unreal_bloom">https://threejs.org/examples/?q=bloom#webgl_postprocessing_unreal_bloom</a></p>
+
+<p>This article combines the two to extend the ability to create bloom effects in Mapbox.</p>
+
+<p>First, let's implement a glowing line effect. Let's consider the problems we are about to face:</p>
+
+<ol>
+<li>Three.js lines are only 1 pixel thick, and we need to draw lines with width.</li>
+<li>How to synchronize the camera of Three.js with Mapbox's camera.</li>
+<li>How to draw Three.js lines according to latitude and longitude.</li>
+</ol>
+
+<p>To draw lines with width, I found another plugin provided by Three.js official: <a href="https://threejs.org/examples/?q=line#webgl_lines_fat">Line2</a></p>
+
+<p>Camera synchronization and coordinate conversion, thanks to the great open-source community, I found Threebox, the initial version of Threebox is no longer maintained, you can pay attention to this fork version: <a href="https://github.com/jscastro76/threebox">https://github.com/jscastro76/threebox</a></p>
+
+<h2>
+  <a name="adding-a-threejs-line-to-mapbox" href="#adding-a-threejs-line-to-mapbox">
+  </a>
+  Adding a Three.js Line to Mapbox
+</h2>
+
+<p>Add a custom layer:<br>
+</p>
+
+<div>
+<pre><code>map.addLayer({
+    id: 'custom_layer',
+    type: 'custom',
+    onAdd: function (map, gl) {
+    },
+    render: function (gl, matrix) {
+
+    },
+});
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>For ease of debugging and to avoid issues with blending with Mapbox textures, we will first create a separate canvas as the container for Three.js. This canvas will have the same size as the map container and perfectly cover it.<br>
+</p>
+
+<div>
+<pre><code>onAdd: function (map, gl) {
+    container = map.getCanvas();
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    const mapContainer = map.getContainer();
+    let bloomContainer = mapContainer.querySelector('#_THREE_EFFECTS_CONTAINER_');
+    if (!bloomContainer) {
+        bloomContainer = document.createElement('canvas');
+        bloomContainer.id = '_THREE_EFFECTS_CONTAINER_';
+        bloomContainer.style.position = 'absolute';
+        bloomContainer.style.zIndex = '99999';
+        bloomContainer.style.pointerEvents = 'none';
+        bloomContainer.style.width = '100%';
+        bloomContainer.style.height = '100%';
+        bloomContainer.width = w;
+        bloomContainer.height = h;
+        mapContainer.appendChild(bloomContainer);
+    }
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Initialize the Three.js renderer and camera in the onAdd method:<br>
+</p>
+
+<div>
+<pre><code>renderer = new THREE.WebGLRenderer({
+    alpha: true,
+    antialias: true,
+    canvas: bloomContainer,
+});
+
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.autoClear = false;
+camera = new THREE.PerspectiveCamera(map.transform.fov, w / h, 0.1, 1e21);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Ensure to enable the alpha channel for transparency and disable autoClear. Also, set the clear alpha color to zero to prevent the Three.js scene's background from covering the map.<br>
+</p>
+
+<div>
+<pre><code>renderer.setClearAlpha(0.0);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Next, synchronize the camera:<br>
+</p>
+
+<div>
+<pre><code>new CameraSync(map, camera, group);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Camera synchronization is crucial as it ensures consistency between the observation range of the three.js camera and the Mapbox camera during mouse interactions. Threebox provides the CameraSync method along with coordinate transformation utility methods, which are essential. However, I won't delve into these details in this article. Interested readers can refer to the Threebox source code.</p>
+
+<p>Next, we create a three.js line: input latitude and longitude points, and generate the corresponding mesh with custom styles.</p>
+
+<p>Creating a Three.js line:<br>
+</p>
+
+<div>
+<pre><code>function createLine2(obj) {
+    // Geometry
+    var straightProject = utils.lnglatsToWorld(obj.geometry);
+    var normalized = utils.normalizeVertices(straightProject);
+    var flattenedArray = utils.flattenVectors(normalized.vertices);
+    var geometry = new LineGeometry();
+    geometry.setPositions(flattenedArray);
+
+    // Material
+    let matLine = new LineMaterial({
+        color: obj.color,
+        linewidth: obj.width,
+        dashed: false,
+        opacity: obj.opacity,
+    });
+
+    matLine.resolution.set(obj.containerWidth, obj.containerHeight);
+    matLine.isMaterial = true;
+    matLine.transparent = true;
+    matLine.depthWrite = false;
+
+    // Mesh
+    let line = new Line2(geometry, matLine);
+    line.position.copy(normalized.position);
+    return line;
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Two important steps are the conversion of latitude and longitude coordinates into three.js world coordinates using lnglatsToWorld, and normalization to obtain the mesh's position information.</p>
+
+<p>The writing style of Line2 can be referenced from the official examples provided by three.js: <a href="https://threejs.org/examples/?q=line#webgl_lines_fat">https://threejs.org/examples/?q=line#webgl_lines_fat</a></p>
+
+<p>Add the line to the scene:<br>
+</p>
+
+<div>
+<pre><code>line = createLine2({
+    color: 0x00bfff,
+    width: 4,
+    opacity: 1,
+    containerWidth: w,
+    containerHeight: h,
+});
+group.add(line);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>With this, we have successfully achieved the first goal: providing an array of latitude and longitude coordinates along with custom styles to generate a Three.js line, and then drawing it onto Mapbox.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fijjuec2q4wj939jbkc3k.png"><img src="data:," alt="Image description" loading="lazy" width="599" height="584"></a></p>
+
+<h2>
+  <a name="implementing-bloom-effect-for-threejs-lines" href="#implementing-bloom-effect-for-threejs-lines">
+  </a>
+  Implementing Bloom Effect for Three.js Lines
+</h2>
+
+<p>Here it is recommended that everyone first understand the basic usage of bloom effect in three.js: <a href="https://threejs.org/examples/?q=bloom#webgl_postprocessing_unreal_bloom">https://threejs.org/examples/?q=bloom#webgl_postprocessing_unreal_bloom</a></p>
+
+<p>Set up the rendering passes using EffectComposer:<br>
+</p>
+
+<div>
+<pre><code>const renderScene = new RenderPass(scene, camera);
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(w, h), params.strength, params.radius, params.threshold);
+const outputPass = new OutputPass();
+
+composer = new EffectComposer(renderer);
+composer.addPass(renderScene);
+composer.addPass(bloomPass);
+composer.addPass(outputPass);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In the render method of the custom layer, render the Three.js scene and update the bloom effect:<br>
+</p>
+
+<div>
+<pre><code>composer.render();
+renderer.resetState();
+renderer.render(scene, camera);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>However, we quickly discovered that the background of the bloom effect was black, covering the map.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fldv0du2ntazg9yq4m5yb.png"><img src="data:," alt="Image description" loading="lazy" width="720" height="357"></a></p>
+
+<p>Upon analyzing the source code related to the bloom effect, we found the following line in UnrealBloomPass.js:<br>
+</p>
+
+<div>
+<pre><code>gl_FragColor = vec4(diffuseSum/weightSum, 1.0);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The shader's alpha channel always remains at 1. Following some other references, it is recommended to sample the alpha value besides the color and output it according to the weight. However, the result doesn't seem ideal.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fp0wd07lzs0pubhtxme7e.png"><img src="data:," alt="Image description" loading="lazy" width="720" height="357"></a></p>
+
+<p>Ultimately, it was found that controlling the maximum value of alpha significantly improves the result.<br>
+</p>
+
+<div>
+<pre><code>void main() {
+    float weightSum = gaussianCoefficients[0];
+    vec3 diffuseSum = texture2D( colorTexture, vUv ).rgb * weightSum;
+    float alphaSum = 0.0;
+    for( int i = 1; i &lt; KERNEL_RADIUS; i ++ ) {
+            float x = float(i);
+            float w = gaussianCoefficients[i];
+            vec2 uvOffset = direction * invSize * x;
+            vec4 sample1 = texture2D( colorTexture, vUv + uvOffset );
+            vec4 sample2 = texture2D( colorTexture, vUv - uvOffset );
+            diffuseSum += (sample1.rgb + sample2.rgb) * w;
+            alphaSum += (sample1.a + sample2.a);  // Sum of alpha values
+            weightSum += 2.0 * w;
+    }
+
+    alphaSum /= weightSum; // Normalize alpha sum
+    alphaSum = min(alphaSum, 0.15); //Limit the value of alphaSum
+    gl_FragColor = vec4(diffuseSum / weightSum, alphaSum);
+}`
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F48n9gch104rmrj4nzf5k.png"><img src="data:," alt="Image description" loading="lazy" width="720" height="357"></a></p>
+
+<p>However, even so, the final result is still unsatisfactory, with noticeable boundaries in the glow areas, especially on maps with bright colors.</p>
+
+<p>Nevertheless, we have essentially achieved the goal of the second stage, successfully overlaying the glow effect on the map. However, besides the unsatisfactory result, the glow effect is global and cannot be precisely controlled for individual graphics.</p>
+
+<p>Therefore, further optimization is needed.</p>
+
+<h2>
+  <a name="partial-glow-and-further-effect-optimization" href="#partial-glow-and-further-effect-optimization">
+  </a>
+  Partial Glow and Further Effect Optimization
+</h2>
+
+<p>Glow effect on individual shapes can be achieved by referring to another example provided by three.js official: <a href="https://threejs.org/examples/?q=bloom#webgl_postprocessing_unreal_bloom_selective">https://threejs.org/examples/?q=bloom#webgl_postprocessing_unreal_bloom_selective</a></p>
+
+<p>The principle behind this implementation is essentially to split the graphics into different layers. Before picking the brightness, the layers that do not need glow effects have their textures set to black. The layers that require glow effects extract brightness and undergo subsequent processing. During rendering, the textures that were set to black are restored, and finally, the two are blended.</p>
+
+<p>After modifying according to the three.js official example, I successfully achieved the same effect as before.</p>
+
+<p>Regarding the optimization of the effect, I found an issue on the three.js GitHub repository: <a href="https://github.com/mrdoob/three.js/issues/14104">https://github.com/mrdoob/three.js/issues/14104</a><br>
+The alpha channel issue seems to be a difficult problem, which has been present since 2018. At the end of the discussion, a solution proposed by a contributor is not to modify the UnrealBloomPass but to blend the source texture and target texture in the shader.<br>
+</p>
+
+<div>
+<pre><code>void main() {
+  vec4 base_color = texture2D(baseTexture, vUv);
+  vec4 bloom_color = texture2D(bloomTexture, vUv);
+
+  float lum = 0.21 * bloom_color.r + 0.71 * bloom_color.g + 0.07 * bloom_color.b;
+  gl_FragColor = vec4(base_color.rgb + bloom_color.rgb, max(base_color.a, lum));
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This solution has essentially addressed the transparency issue, but on certain machines (in my test environment, there are issues on large screens while notebooks are fine), noticeable color boundaries may appear in the display.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fpfrnjjaek7ufrwinbs1n.png"><img src="data:," alt="Image description" loading="lazy" width="720" height="357"></a></p>
+
+<p>So, on top of this solution, we need to increase the range of alpha values to smooth out the color transition.<br>
+</p>
+
+<div>
+<pre><code>void main() {
+        vec4 base_color = texture2D(baseTexture, vUv);
+        vec4 bloom_color = texture2D(bloomTexture, vUv);
+
+        float lum = 0.21 * bloom_color.r + 0.71 * bloom_color.g + 0.07 * bloom_color.b;
+        vec3 blendedColor = base_color.rgb + bloom_color.rgb;
+        float alpha = max(base_color.a, lum);
+
+        alpha = mix(alpha, 0.05, 0.1);
+        gl_FragColor = vec4(blendedColor, alpha);
+    }
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The main point is the following line, where the interpolation and blending factors can be adjusted according to different situations.<br>
+</p>
+
+<div>
+<pre><code>alpha = mix(alpha, 0.05, 0.1);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The problem is resolved.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fprkvmq3b7n9xptsvybhg.png"><img src="data:," alt="Image description" loading="lazy" width="720" height="346"></a></p>
+
+<p>At this stage, the effect is basically meeting the requirements. However, this approach essentially overlays a three.js canvas on top of the mapbox, which inevitably leads to layer occlusion issues. In other words, the mapbox layers cannot cover the glowing layer.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fa9qs7lnxt8pt7ya7v5fk.png"><img src="data:," alt="Image description" loading="lazy" width="720" height="357"></a></p>
+
+<p>Actually, the current solution doesn't entirely rely on Mapbox's custom layers; we just need the Map object.</p>
+
+<p>So, let's continue optimizing!</p>
+
+<h2>
+  <a name="blend-the-glow-layer-with-mapbox" href="#blend-the-glow-layer-with-mapbox">
+  </a>
+  Blend the glow layer with Mapbox.
+</h2>
+
+<p>The three.js container, at its core, is a canvas, and since a canvas can be used as a WebGL texture, we can take the content of the three.js container and draw it onto the mapbox canvas, then blend it with the original texture. This is also the basic usage of mapbox custom layers.</p>
+
+<p>We add shader-related code in the onAdd and render methods.</p>
+
+<p>Method onAdd:<br>
+</p>
+
+<div>
+<pre><code>  const vertexShaderSource = `
+  attribute vec2 a_position;
+  attribute vec2 a_texCoord;
+  uniform vec2 u_resolution;
+  varying vec2 v_texCoord;
+  void main() {
+      vec2 zeroToOne = a_position / u_resolution;
+      vec2 zeroToTwo = zeroToOne * 2.0;
+      vec2 clipSpace = zeroToTwo - 1.0;
+      gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+      v_texCoord = a_texCoord;
+  }
+`;
+const fragmentShaderSource = `
+  #ifdef GL_ES
+  precision mediump float;
+  #endif
+  uniform sampler2D u_image;
+  varying vec2 v_texCoord;
+  void main() {
+      gl_FragColor = texture2D(u_image, v_texCoord);
+  }
+`;
+
+const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vertexShader, vertexShaderSource);
+gl.compileShader(vertexShader);
+if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+console.error(gl.getShaderInfoLog(vertexShader));
+gl.deleteShader(vertexShader);
+return;
+}
+
+const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fragmentShader, fragmentShaderSource);
+gl.compileShader(fragmentShader);
+if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+console.error(gl.getShaderInfoLog(fragmentShader));
+gl.deleteShader(fragmentShader);
+return;
+}
+
+program = gl.createProgram();
+gl.attachShader(program, vertexShader);
+gl.attachShader(program, fragmentShader);
+gl.linkProgram(program);
+if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+console.error(gl.getProgramInfoLog(program));
+gl.deleteProgram(program);
+return;
+}
+
+// attrib
+positionLocation = gl.getAttribLocation(program, 'a_position');
+texcoordLocation = gl.getAttribLocation(program, 'a_texCoord');
+resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+
+// buffer
+positionBuffer = gl.createBuffer();
+texcoordBuffer = gl.createBuffer();
+
+// texture
+texture = gl.createTexture();
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Method render：<br>
+</p>
+
+<div>
+<pre><code>  gl.useProgram(program);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  setRectangle(gl, 0, 0, container.width, container.height);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0]),
+    gl.STATIC_DRAW,
+  );
+
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bloomContainer);
+
+  gl.enableVertexAttribArray(positionLocation);
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+  gl.enableVertexAttribArray(texcoordLocation);
+  gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+  gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+
+  gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ft7p4s0li02xiqev4msff.png"><img src="data:," alt="Image description" loading="lazy" width="720" height="357"></a></p>
+
+<p>The bloom effect is too faint.<br>
+</p>
+
+<div>
+<pre><code>gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The above line represents the current blending method. We need to adjust it and set the alpha of the content inside three.js to 1.0 simultaneously.<br>
+</p>
+
+<div>
+<pre><code>void main() {
+    vec4 base_color = texture2D(baseTexture, vUv);
+    vec4 bloom_color = texture2D(bloomTexture, vUv);
+    vec3 blendedColor = base_color.rgb + bloom_color.rgb;
+    gl_FragColor = vec4(blendedColor, 1.0);
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Set the blendFunc to a simple addition.<br>
+</p>
+
+<div>
+<pre><code>gl.blendFunc(gl.ONE, gl.ONE);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Resolved.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fssrvtw0ms8dd9pwwejhl.png"><img src="data:," alt="Image description" loading="lazy" width="720" height="357"></a></p>
+
+<p>Test the layer order, draw a red line with mapbox, which can cover the glow effect, indicating successful blending with the mapbox layer.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fm8abmj5a6c7xdyeagy5v.png"><img src="data:," alt="Image description" loading="lazy" width="720" height="357"></a></p>
+
+<h2>
+  <a name="add-event-handling" href="#add-event-handling">
+  </a>
+  Add event handling.
+</h2>
+
+<p>Finally, we need to handle events. Mapbox custom layers cannot trigger layer events, while our effect is within the three.js system, so we can use raycasting to handle events.<br>
+</p>
+
+<div>
+<pre><code>  var raycaster = new THREE.Raycaster();
+  var mouse = new THREE.Vector2();
+
+  function onMouseClick(event) {
+    const w = container.width / window.devicePixelRatio;
+    const h = container.height / window.devicePixelRatio;
+
+    mouse.x = (event.clientX / w) * 2 - 1;
+    mouse.y = -(event.clientY / h) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children, true);
+    if (intersects.length &gt; 0) {
+      console.log('Object clicked!');
+      intersects[0].object.material.color.set(0xff0000);
+    }
+  }
+
+  window.addEventListener('click', onMouseClick, false);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>It looks simple, right? Just copy a demo from the official website. But in reality, I encountered a major issue here.</p>
+
+<p>Firstly, intersectObjects always failed to hit, returning an empty result without any error. I even went through the source code of Three.js but couldn't find the issue. Eventually, I discovered that it was due to incorrect camera parameter settings, which was mentioned earlier in the article.</p>
+
+<p>At the beginning, I set it up like this:<br>
+</p>
+
+<div>
+<pre><code>new THREE.PerspectiveCamera(28, container.innerWidth / container.innerHeight,0.000000000001, Infinity);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Did you solve the problem?</p>
+
+<p>The click event seems to work now, but only part of the area responds...</p>
+
+<p>Upon closer inspection, the fov is set to 28, but to fully synchronize with Mapbox, we should directly use the fov of the Mapbox camera.<br>
+</p>
+
+<div>
+<pre><code>camera = new THREE.PerspectiveCamera(map.transform.fov, w / h, 0.1, 1e21);
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The event issue is finally resolved.</p>
+
+<p>With this, the case study that can be applied in practice is considered complete. We have achieved camera synchronization, coordinate system synchronization, bloom effect, selective bloom control, Mapbox layer hierarchy control, and event response. However, it's important to note that bloom effect does have some impact on performance. In real projects, further encapsulation is needed, such as maintaining the bloom container in a singleton form, separating dynamic effects from static effects, and avoiding continuous refreshing for static effects, among others.</p>
+
+<p>GitHub repository: <a href="https://github.com/ethan-zf/mapbox-bloom-effect-sample">https://github.com/ethan-zf/mapbox-bloom-effect-sample</a>. Feel free to star it if you find it helpful!</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

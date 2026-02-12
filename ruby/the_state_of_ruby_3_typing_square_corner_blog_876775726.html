@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The State of Ruby 3 Typing | Square Corner Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The State of Ruby 3 Typing | Square Corner Blog</h1>
+    <p><strong>URL:</strong> <a href="https://developer.squareup.com/blog/the-state-of-ruby-3-typing">https://developer.squareup.com/blog/the-state-of-ruby-3-typing</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876775726</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>We're pleased to announce Ruby 3’s new language for type signatures, RBS. One of the long-stated goals for Ruby 3 has been to add type checking tooling. After much discussion with Matz and the Ruby committer team, we decided to take the incremental step of adding a foundational type signature language called “RBS,” which will ship with Ruby 3 along with signatures for the stdlib. RBS command line tooling will also ship with Ruby 3, so you can generate signatures for your own Ruby code.</p>
+<p><strong>About the author</strong>: Soutaro is a lead Ruby engineer at Square working on Steep, RBS, and static typing. He is a core Ruby committer working with Matz and other core committers on the RBS specification that will ship with Ruby 3.</p>
+<h2 id="background"><a href="#background" aria-label="background permalink"></a>Background</h2>
+<p><em>Static typing versus dynamic typing</em> is an age old issue for programming languages. Statically typed languages are suitable for larger projects but are often less flexible. Dynamically typed languages allow for rapid development, but scaling teams and codebases with them can be difficult.</p>
+<p>Programming language designers are aware of these tradeoffs, and try to incorporate features of the other to offset this. C# has a feature called <em>dynamic</em> which delays type checking from compile time to runtime. Assigning and reading any type of value is allowed at compile time but may raise a runtime error to ensure safety. This is almost equivalent to dynamically typed languages! How about the opposite? We see dynamically typed languages implement type checking options (PHP, Python). We also have typed dialects of dynamically typed languages that are used in production (TypeScript).</p>
+<p>Matz declared that Ruby 3 will support static type checking four years ago. After seeing multiple community developed type checkers, the Ruby committer team decided to build a foundation for the community to build type checkers on. Ruby 3 will ship with the ability to write type signatures for Ruby programs as well as built-in type signatures for the Ruby standard libraries. The standard type signature language will make type definitions in Ruby code portable between type checkers and encourage the community to write types for their gems and apps.</p>
+<p>We call the language and the library <a href="https://github.com/ruby/rbs" target="_blank" rel="noopener">RBS</a>.</p>
+<h2 id="what-does-rbs-look-like"><a href="#what-does-rbs-look-like" aria-label="what does rbs look like permalink"></a>What does RBS look like?</h2>
+<p>We defined a new language called RBS for type signatures for Ruby 3. The signatures are written in <code>.rbs</code> files which is different from Ruby code. You can consider the <code>.rbs</code> files are similar to <code>.d.ts</code> files in TypeScript or <code>.h</code> files in C/C++/ObjC. The benefit of having different files is it doesn't require changing Ruby code to start type checking. You can opt-in type checking safely without changing any part of your workflow.</p>
+<p>The type signatures for Ruby classes in RBS will look like this.</p>
+<pre><code># sig/merchant.rbs
+
+class Merchant
+  attr_reader token: String
+  attr_reader name: String
+  attr_reader employees: Array[Employee]
+
+  def initialize: (token: String, name: String) -&gt; void
+
+  def each_employee: () { (Employee) -&gt; void } -&gt; void
+                   | () -&gt; Enumerator[Employee, void]
+end
+</code></pre>
+<p>The <code>merchant.rbs</code> file defines a class called <code>Merchant</code>, and it helps the reader to understand the overview of the class.</p>
+<p>The class has three attributes <code>token</code>, <code>name</code>, and <code>employees</code>. The type of <code>token</code> and <code>name</code> are <code>String</code>. RBS also supports generic classes like <code>Array</code> as we can see with the type of <code>employees</code> attribute. It is an <code>Array</code> of <code>Employee</code>s.</p>
+<p>RBS also describes methods defined in the class and their types. The class defines the <code>initialize</code> and <code>each_employee</code> methods. The <code>initialize</code> method requires <code>token</code> and <code>name</code> as keyword arguments. The <code>each_employee</code> method accepts a block, or it returns an <code>Enumerator</code> instance.</p>
+<p>RBS is a language to describe the structure of a Ruby program. It gives developers an overview of the code and what classes and methods are defined. The biggest benefit is that the type definition can be validated against both the implementation and its execution!</p>
+<h2 id="key-features-in-rbs"><a href="#key-features-in-rbs" aria-label="key features in rbs permalink"></a>Key features in RBS</h2>
+<p>The development of a type system for a dynamically typed language like Ruby differs from ordinal statically typed languages. There's a lot of Ruby code in the world already, and a type system for Ruby should support as many of them as possible.</p>
+<p>This forces type system designers to make compromises on complexity and correctness for compatibility with existing code. We may have to introduce a type checker feature to support a pattern in existing Ruby code that may be incorrect otherwise. However, adding features makes the type system complicated and difficult to understand. So, we have focused on the most important code patterns to minimize the complexity of the type system.</p>
+<p>We can show two of the important characteristics of Ruby code and how we can give types for them.</p>
+<h3 id="duck-typing"><a href="#duck-typing" aria-label="duck typing permalink"></a>Duck typing</h3>
+<p>Duck typing is a popular programming style among Rubyists that assumes an object will respond to a certain set of methods. The benefit of duck typing is flexibility. It doesn't require inheritance, mixins, or <em>implement</em> declarations. If an object has a specific method, it works. The problem is that this assumption is hidden in the code, making the code difficult to read at a glance.</p>
+<p>To accomodate duck typing we introduced <em>interface types</em>. An interface type represents a set of methods independent from concrete classes and modules.</p>
+<p>If we want to define a method which requires a specific set of methods we can write it with <em>interface types</em>.</p>
+<pre><code>interface _Appendable
+  # Requires `&lt;&lt;` operator which accepts `String` object.
+  def &lt;&lt;: (String) -&gt; void
+end
+
+# Passing `Array[String]` or `IO` works.
+# Passing `TrueClass` or `Integer` doesn't work.
+def append: (_Appendable) -&gt; String
+</code></pre>
+<p>This is better than traditional duck typing as it defines an explicit interface a class or module is expected to implement and provides hints for documentation and editor plugins to expose the formerly implicit interface as solid actionable documentation.</p>
+<h3 id="non-uniformity"><a href="#non-uniformity" aria-label="non uniformity permalink"></a>Non-uniformity</h3>
+<p>Non-uniformity is another code pattern of letting an expression have different types of values. It's also popular in Ruby and introduced:</p>
+<ul>
+<li>When you define a local variable which stores instances of two different classes</li>
+<li>When you write an heterogeneous collection</li>
+<li>When you return two different types of value from a method</li>
+</ul>
+<p>To accommodate for this RBS allows <em>union types</em> and <em>method overloading</em>.</p>
+<pre><code>class Comment
+  # A comment can be made by a User or a Bot
+  def author: () -&gt; (User | Bot)
+
+  # Two overloads with/without blocks
+  def each_reply: () -&gt; Enumerator[Comment, void]
+                | { (Comment) -&gt; void } -&gt; void
+
+  ...
+end
+</code></pre>
+<p>Union types and method overloading are commonly seen in Ruby code and standard libraries.</p>
+<h2 id="ruby-programming-with-types"><a href="#ruby-programming-with-types" aria-label="ruby programming with types permalink"></a>Ruby programming with types</h2>
+<p>We provide a language to write types. So, what can we do with RBS files?</p>
+<p>The following is a list of major benefits of having types. We can write types in RBS files, and the tools will help you writing Ruby code by:</p>
+<ul>
+<li><strong>Finding more bugs</strong>: We can detect an undefined method call, an undefined constant reference, and more things a dynamic language might have missed.</li>
+<li><strong>Nil safety</strong>: Type checkers based on RBS have a concept of <em>optional types</em>, a type which allows the value to be <code>nil</code>. Type checkers can check the possibility of an expression to be <code>nil</code> and uncovers undefined <code>method </code>(save!)' for nil:NilClass`.</li>
+<li><strong>Better IDE integration</strong>: Parsing RBS files gives IDEs better understanding of the Ruby code. Method name completions run faster. On-the-fly error reporting detects more problems. Refactoring can be more reliable!</li>
+<li><strong>Guided duck typing</strong>: Interface types can be used for duck typing. It helps the API users understand what they can do more precisely. This is a safer version of duck typing.</li>
+</ul>
+<p>Of course none of this comes for free. How are we building tools for RBS to make work easier for developers to start using it?</p>
+<p>We developed static type checkers on the top of RBS. <a href="https://github.com/soutaro/steep" target="_blank" rel="noopener">Steep</a> is the static type checker implemented in Ruby and it is based on RBS. <a href="https://github.com/sorbet/sorbet" target="_blank" rel="noopener">Sorbet</a> is a static type checker which has its own type definition language called RBI, but has plans to support RBS in the future.</p>
+<p>We are also developing and working on additional tools to expand the RBS toolchain. RBS runtime type checker is one of the Ruby Google Summer of Code projects, which uses RBS type signatures to implement runtime type checking. <a href="https://github.com/mame/type-profiler" target="_blank" rel="noopener">type-profiler</a> is an exploratory project to generate RBS files from Ruby source code based on a program analysis technique called Abstract Interpretation. There is also a <a href="https://github.com/pocke/rbs_rails" target="_blank" rel="noopener">project for Rails</a> support.</p>
+<h2 id="sorbet-and-rbs">Sorbet and RBS</h2>
+<p>Sorbet is the most widely used static type checker for Ruby today. RBS is not trying to deprecate Sorbet and its type signature format RBI. Matz and the Ruby committer team are working closely with the Sorbet team and really appreciate the efforts and developer experience improvements by the Sorbet team.</p>
+<p>The goal of RBS is to provide the foundation to describe the type information of Ruby programs. Static type checkers like Sorbet or Steep can use the type definition written in RBS. To achieve interoperability, RBS gem ships with a translator from RBI to RBS, and a translator from RBS to RBI is being developed.</p>
+<h2 id="conclusion"><a href="#conclusion" aria-label="conclusion permalink"></a>Conclusion</h2>
+<p>This post introduces RBS, a new part of Ruby 3 for types. I explained what you can write using RBS, the key concepts of the design of RBS, and the benefits and tools that come with RBS. You write type definitions for your Ruby code, and our tools will analyze your code. We know not all of Rubyists will switch to <em>typed</em> Ruby, but we believe that it's worth trying with your code!</p>
+<p>At Square, we are testing RBS based type checking solutions and continuing to iterate on them. We are writing RBS files for some internal projects and type checking the code with Steep. We are building RBS generators from .proto files.</p>
+<p>I am looking forward to sharing the results of these experiments within a few months.</p>
+<p><strong>Updates</strong>:</p>
+<ul>
+<li>In talking with the Sorbet team since releasing this post, <a href="#sorbet-and-rbs">a section was added to explain about the relationship between Sorbet and RBS</a>.</li>
+<li>Added an introduction of the author to clarify the relationship between Soutaro, the Ruby committer team, and Square.</li>
+</ul></div></div>
+  </div>
+</body>
+</html>

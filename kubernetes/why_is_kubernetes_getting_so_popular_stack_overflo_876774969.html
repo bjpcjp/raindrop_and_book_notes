@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Why is Kubernetes getting so popular? - Stack Overflow Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Why is Kubernetes getting so popular? - Stack Overflow Blog</h1>
+    <p><strong>URL:</strong> <a href="https://stackoverflow.blog/2020/05/29/why-kubernetes-getting-so-popular">https://stackoverflow.blog/2020/05/29/why-kubernetes-getting-so-popular</a></p>
+    <p><strong>Tags:</strong> kubernetes</p>
+    <p><strong>Bookmark ID:</strong> 876774969</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="articleBody"><!--[--><p>At the time of this article, Kubernetes is about <a href="https://en.wikipedia.org/wiki/Kubernetes"><!--[-->six years old<!--]--></a>, and over the last two years, it has risen in popularity to consistently be one of the <a href="https://insights.stackoverflow.com/survey/2019#most-loved-dreaded-and-wanted"><!--[-->most loved platforms<!--]--></a>. This year, it comes in as <a href="https://insights.stackoverflow.com/survey/2020#technology-most-loved-dreaded-and-wanted-platforms"><!--[-->the number three most loved platform<!--]--></a>. If you haven’t heard about Kubernetes yet, it’s a platform that allows you to run and orchestrate container workloads.</p><p>Containers began as a Linux kernel process isolation construct that encompasses <a href="https://en.wikipedia.org/wiki/Cgroups"><!--[-->cgroups<!--]--></a> from 2007 and <a href="https://en.wikipedia.org/wiki/Linux_namespaces"><!--[-->namespaces<!--]--></a> from 2002. Containers became more of a thing when <a href="https://en.wikipedia.org/wiki/LXC"><!--[-->LXC<!--]--></a> became available in 2008, and Google developed its own internal ‘run everything in containers mechanism’ called <a href="https://kubernetes.io/blog/2015/04/borg-predecessor-to-kubernetes/"><!--[-->Borg<!--]--></a>. Fast forward to 2013, and Docker was released and completely popularized containers for the masses. At the time, <a href="http://mesos.apache.org/"><!--[-->Mesos<!--]--></a> was the primary tool for orchestrating containers, however, it wasn’t as widely adopted. Kubernetes was released in 2015 and quickly became the de facto container orchestration standard.</p><p>To try to understand the popularity of Kubernetes, let’s consider some questions. When was the last time developers could agree on the way to deploy production applications? How many developers do you know who run tools as is out of the box? How many cloud operations engineers today don't understand how applications work? We’ll explore the answers in this article.</p><p>Coming from the world of <a href="https://github.com/puppetlabs/puppet"><!--[-->Puppet<!--]--></a> and <a href="https://github.com/chef/chef"><!--[-->Chef<!--]--></a>, one of the big shifts with Kubernetes has been the move from infrastructure as code towards infrastructure as data—specifically, as YAML. All the resources in Kubernetes that include Pods, Configurations, Deployments, Volumes, etc., can simply be expressed in a YAML file. For example:</p><pre><code>apiVersion: v1
+kind: Pod
+metadata:
+&nbsp;&nbsp;name: site
+&nbsp;&nbsp;labels:
+&nbsp;&nbsp;&nbsp;&nbsp;app: web
+spec:
+&nbsp;&nbsp;containers:
+&nbsp;&nbsp;&nbsp;&nbsp;- name: front-end
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: nginx
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ports:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- containerPort: 80</code></pre><p>This representation makes it easier for DevOps or site reliability engineers to fully express their workloads without the need to write code in a programming language like Python, Ruby, or Javascript.</p><p>Other benefits from having your infrastructure as data include:</p><ul><li>GitOps or Git Operations Version Control. With this approach, you can keep all your Kubernetes YAML files under git repositories, which allows you to know precisely when a change was made, who made the change, and what exactly changed. This leads to more transparency across the organization and improves efficiency by avoiding ambiguity as to where members need to go to find what they need. At the same time, it can make it easier to automatically make changes to Kubernetes resources by just merging a pull request.</li><li>Scalability. Having resources defined as YAML makes it super easy for cluster operators to change one or two numbers in a Kubernetes resource to change the scaling behavior. Kubernetes has Horizontal Pod Autoscalers to help you identify a minimum and a maximum number of pods a specific deployment would need to have to be able to handle low and high traffic times. For example, if you are running a deployment that may need more capacity because traffic suddenly increases, you could change maxReplicas from 10 to 20:</li></ul><pre><code>apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+&nbsp;&nbsp;name: myapp
+&nbsp;&nbsp;namespace: default
+spec:
+&nbsp;&nbsp;scaleTargetRef:
+&nbsp;&nbsp;&nbsp;&nbsp;apiVersion: apps/v1
+&nbsp;&nbsp;&nbsp;&nbsp;kind: Deployment
+&nbsp;&nbsp;&nbsp;&nbsp;name: myapp-deployment
+&nbsp;&nbsp;minReplicas: 1
+&nbsp;&nbsp;maxReplicas: 20
+&nbsp;&nbsp;metrics:
+&nbsp;&nbsp;- type: Resource
+&nbsp;&nbsp;&nbsp;&nbsp;resource:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: cpu
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: Utilization
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;averageUtilization: 50</code></pre><ul><li>Security and Controls. YAML is a great way to validate what and how things get deployed in Kubernetes. For example, one of the significant concerns when it comes to security is whether your workloads are running as a non-root user. We can make use of tools like <a href="https://www.conftest.dev/"><!--[-->conftest<!--]--></a>, a YAML/JSON validator, together with the <a href="https://www.openpolicyagent.org/"><!--[-->Open Policy Agent<!--]--></a>, a policy validator to check that the <a href="https://kubernetes.io/docs/tasks/configure-pod-container/security-context/"><!--[-->SecurityContext<!--]--></a>of your workloads doesn’t allow a container to run as a root. For that, users can use a simple Open Policy Agent <a href="https://www.openpolicyagent.org/docs/latest/policy-language/"><!--[-->rego<!--]--></a> policy like this:</li></ul><pre><code>package main
+
+deny[msg] {
+&nbsp;&nbsp;input.kind = "Deployment"
+&nbsp;&nbsp;not input.spec.template.spec.securityContext.runAsNonRoot = true
+&nbsp;&nbsp;msg = "Containers must not run as root"
+}</code></pre><ul><li>Cloud Provider Integrations. One of the major trends in the tech industry is to run workloads in the public cloud providers. With the help of the <a href="https://github.com/kubernetes/cloud-provider"><!--[-->cloud-provider<!--]--></a> component, Kubernetes allows every cluster to integrate with the cloud provider it’s running on. For example, if a user is running an application in Kubernetes in AWS and wants that application to be accessible through a service, the cloud provider helps automatically create a LoadBalancer service that will automatically provision an <a href="https://aws.amazon.com/elasticloadbalancing/"><!--[-->Amazon Elastic Load Balancer<!--]--></a> to forward the traffic to the application pods.</li></ul><p>Kubernetes is very extensible, and developers love that. There are a set of existing resources like Pods, Deployments, StatefulSets, Secrets, ConfigMaps, etc. However, users and developers can add more resources in the form of <a href="https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/"><!--[-->Custom Resource Definitions<!--]--></a>. For example, if we’d like to define a CronTab resource, we could do it with something like this:</p><pre><code>apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+&nbsp;&nbsp;name: crontabs.my.org
+spec:
+&nbsp;&nbsp;group: my.org
+&nbsp;&nbsp;versions:
+&nbsp;&nbsp;&nbsp;&nbsp;- name: v1
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;served: true
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;storage: true
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Schema:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;openAPIV3Schema:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: object
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;properties:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;spec:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: object
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;properties:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cronSpec:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: string
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pattern: '^(\d+|\*)(/\d+)?(\s+(\d+|\*)(/\d+)?){4}$'
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;replicas:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: integer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minimum: 1
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maximum: 10
+&nbsp;&nbsp;scope: Namespaced
+&nbsp;&nbsp;names:
+&nbsp;&nbsp;&nbsp;&nbsp;plural: crontabs
+&nbsp;&nbsp;&nbsp;&nbsp;singular: crontab
+&nbsp;&nbsp;&nbsp;&nbsp;kind: CronTab
+&nbsp;&nbsp;&nbsp;&nbsp;shortNames:
+&nbsp;&nbsp;&nbsp;&nbsp;- ct</code></pre><p>We can create a CronTab resource later with something like this:</p><pre><code>apiVersion: "my.org/v1"
+kind: CronTab
+metadata:
+&nbsp;&nbsp;name: my-cron-object
+spec:
+&nbsp;&nbsp;cronSpec: "* * * * */5"
+&nbsp;&nbsp;image: my-cron-image
+&nbsp;&nbsp;replicas: 5</code></pre><p>Another form of Kubernetes extensibility is its ability for developers to write their own <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/operator/"><!--[-->Operators<!--]--></a>, a specific process running in a Kubernetes cluster that follows the <a href="https://kubernetes.io/docs/concepts/#kubernetes-control-plane"><!--[-->control loop pattern<!--]--></a>. An Operator allows users to automate the management of CRDs (custom resource definitions) by talking to the Kubernetes API.</p><p>The community has several tools that allow developers to create their own Operators. One of those tools is the <a href="https://github.com/operator-framework"><!--[-->Operator Framework<!--]--></a> and its <a href="https://github.com/operator-framework/operator-sdk"><!--[-->Operator SDK<!--]--></a>. The SDK provides a skeleton for developers to get started creating an operator very quickly. For example, you can get started on its <a href="https://github.com/operator-framework/operator-sdk#create-and-deploy-an-app-operator"><!--[-->command line<!--]--></a> with something like this:</p><pre><code>$ operator-sdk new my-operator --repo github.com/myuser/my-operator</code></pre><p>Which creates the whole boilerplate for your operator including YAML files and Golang code:</p><pre><code>.
+|____cmd
+| |____manager
+| | |____main.go
+|____go.mod
+|____deploy
+| |____role.yaml
+| |____role_binding.yaml
+| |____service_account.yaml
+| |____operator.yaml
+|____tools.go
+|____go.sum
+|____.gitignore
+|____version
+| |____version.go
+|____build
+| |____bin
+| | |____user_setup
+| | |____entrypoint
+| |____Dockerfile
+|____pkg
+| |____apis
+| | |____apis.go
+| |____controller
+| | |____controller.go</code></pre><p>Then you can add APIs and a controller like this:</p><pre><code>$ operator-sdk add api --api-version=myapp.com/v1alpha1 --kind=MyAppService
+
+$ operator-sdk add controller --api-version=myapp.com/v1alpha1 --kind=MyAppService</code></pre><p>And finally build and push the operator to your container registry:</p><pre><code>$ operator-sdk build your.container.registry/youruser/myapp-operator</code></pre><p>If developers need to have even more control, they can modify the boilerplate code in the Golang files. For example, to modify the specifics of the controller, they can make changes to the controller.go file.</p><p>Another project, <a href="https://kudo.dev/"><!--[-->KUDO<!--]--></a>, allows you to create operators by just using declarative YAML files . For example, an operator for Apache Kafka would be defined with something like <a href="https://github.com/kudobuilder/operators/blob/master/repository/kafka/operator/operator.yaml"><!--[-->this<!--]--></a>, and it allows users to install a Kafka cluster on top of Kubernetes with a couple of commands:</p><pre><code>$ kubectl kudo install zookeeper
+$ kubectl kudo install kafka</code></pre><p>Then tune it also with another command:</p><pre><code>$ kubectl kudo install kafka --instance=my-kafka-name \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181 \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-p ZOOKEEPER_PATH=/my-path -p BROKER_CPUS=3000m \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-p BROKER_COUNT=5 -p BROKER_MEM=4096m \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-p DISK_SIZE=40Gi -p MIN_INSYNC_REPLICAS=3 \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-p NUM_NETWORK_THREADS=10 -p NUM_IO_THREADS=20</code></pre><p>Over the last few years, Kubernetes has had major releases every three or four months, which means that every year there are three or four major releases. The number of new features being introduced hasn’t slowed, evidenced by over 30 different additions and changes in its <a href="https://kubernetes.io/docs/setup/release/notes/#changes-by-kind"><!--[-->last release<!--]--></a>. Furthermore, the contributions don’t show signs of slowing down even during these difficult times as indicated by the <a href="https://k8s.devstats.cncf.io/d/12/dashboards?orgId=1&amp;refresh=15m&amp;from=now-1y&amp;to=now-1h"><!--[-->Kubernetes project Github activity<!--]--></a>.</p><p>The new features allow cluster operators more flexibility when running a variety of different workloads. Software engineers also love to have more controls to deploy their applications directly to production environments.</p><p>Another big aspect of Kubernetes popularity is its strong community. For starters, Kubernetes was donated to a vendor-neutral home in 2015 as it hit version 1.0: the <a href="https://www.cncf.io/"><!--[-->Cloud Native Computing Foundation<!--]--></a>.</p><p>There is also a wide range of <a href="https://github.com/kubernetes/community/blob/master/sig-list.md"><!--[-->community SIGs<!--]--></a> (special interest groups) that target different areas in Kubernetes as the project moves forwards. They continuously add new features and make it even more user friendly.</p><p>The Cloud Native Foundation also organizes CloudNativeCon/KubeCon, which as of this writing, is the largest ever open-source event in the world. The event, which is normally held up to three times a year, gathers thousands of technologists and professionals who want to improve Kubernetes and its ecosystem as well as make use of some of the new features released every three months.</p><p>Furthermore, the Cloud Native Foundation has a <a href="https://github.com/cncf/toc"><!--[-->Technical Oversight Committee<!--]--></a> that, together with its <a href="https://github.com/cncf/toc/blob/master/sigs/README.md"><!--[-->SIGs<!--]--></a>, look at the foundations’ new and <a href="https://www.cncf.io/projects/"><!--[-->existing projects<!--]--></a> in the cloud-native ecosystem. Most of the projects help enhance the value proposition of Kubernetes.</p><p>Finally, I believe that Kubernetes would not have the success that it does without the conscious effort by the community to be inclusive to each other and to be welcoming to any newcomers.</p><p>One of the main challenges developers face in the future is how to focus more on the details of the code rather than the infrastructure where that code runs on. For that, <a href="https://stackoverflow.blog/2020/05/18/you-want-efficient-application-scaling-go-serverless/"><!--[-->serverless<!--]--></a> is emerging as one of the leading architectural paradigms to address that challenge. There are already very advanced frameworks such as <a href="https://github.com/knative"><!--[-->Knative<!--]--></a> and <a href="https://github.com/openfaas/faas"><!--[-->OpenFaas<!--]--></a> that use Kubernetes to abstract the infrastructure from the developer.</p><p>We’ve shown a brief peek at Kubernetes in this article, but this is just the tip of the iceberg. There are many more resources, features, and configurations users can leverage. We will continue to see new open-source projects and technologies that enhance or evolve Kubernetes, and as we mentioned, the contributions and the community aren’t going anywhere.</p><!--]--></div></div>
+  </div>
+</body>
+</html>

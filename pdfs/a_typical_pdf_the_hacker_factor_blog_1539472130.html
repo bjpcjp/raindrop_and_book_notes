@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A Typical PDF - The Hacker Factor Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A Typical PDF - The Hacker Factor Blog</h1>
+    <p><strong>URL:</strong> <a href="https://hackerfactor.com/blog/index.php?/archives/1085-A-Typical-PDF.html">https://hackerfactor.com/blog/index.php?/archives/1085-A-Typical-PDF.html</a></p>
+    <p><strong>Tags:</strong> pdfs</p>
+    <p><strong>Bookmark ID:</strong> 1539472130</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>
+		When folks contact me about my forensic software, they typically ask the same three questions:</p><ol><li>"Can you detect deep fakes?" This usually goes into a detailed discussion about how they define a deep fake, but the general conclusion is "yes".</li>
+<br>
+<li>"Can you handle audio and video?" Yes, but the evaluation process is a lot harder than pictures. Quality means everything, and a high quality video is usually lower quality than a low quality picture. So while the answer is technically "yes", the caveats multiply quickly.</li>
+<br>
+<li>"Can you handle documents?" This is where I begin to cringe. By "documents", they almost always mean PDF. Yes, my code can evaluate PDF files and it can often identify indications of edits. However, distinguishing real from AI or identifying specific edits is significantly harder to do. (If you thought evaluating pictures and videos was hard, wait until you try PDF files.)</li></ol><p>
+Over the last 30 years, I have been developing a suite of tools for evaluating PDF documents. <a href="https://hackerfactor.com/blog/index.php?/archives/1059-PDF-Problems-as-FotoForensics-Turns-13.html">Last year</a> I focused on reducing some of the complexity so they would be easier for non-programmers to use. Right now, I have a couple of commercial clients beta-testing the new PDF analyzers -- and they are thrilled! (As one of them remarked, "Christmas came early! Thank you.")</p><h3>Anything But Typical</h3><p>
+When evaluating any kind of media, a quick way to determine if something could be potentially altered or intentionally edited is to look for deviations from the typical case. If an atypical attribute only comes from an edit, then you can detect an edit. Often, you can detect that "something was edited" without viewing the visual content, like by evaluating the file structure.</p><p>
+
+For example, consider JPEG files. JPEGs have lots of encoding options, including the selection of quantization tables, Huffman encoding tables, and data storage (modes of operation).</p><p>
+
+The most common JPEG encoding mode is <i>baseline</i>. Baseline includes one set of quantization and Huffman tables, converts colors from RGB to YUV, and groups them in grids. Each grid (MCU, or Minimum Coding Unit) contains one set of YUV components. The baseline method stores MCUs in a raster (left to right, top to bottom), like YUVYUVYUV (or YYYYUVYYYYUV). But these are all within the range of "normal". At FotoForensics, over 85% of JPEGs use baseline encoding.</p><p>
+
+The next most common encoding is called <i>progressive</i>. It stores the image in layers, from low quality to high quality. (If you've ever seen a web page where an image first appears blurry and then gets sharper and sharper over a few seconds, that's almost certainly progressive encoding.) These account for nearly 15% of the JPEGs that FotoForensics receives; the vast majority of cameras do not use progressive mode. (If you see progressive mode, then it's not direct from a camera.)</p><p>
+
+If you read the JPEG specifications, they define 12 different encoding modes. I think I have less than a dozen examples of "Lossless JPEG" and "Non-interlaced sequential". The other eight modes appear to be completely theoretical and not used in practice.</p><p>
+
+<img src="https://fotoforensics.com/analysis.php?id=1fe62cbe19f3dd511f6ef31766350c1fec64d269.621391&amp;fmt=orig&amp;size=600"></p><p>
+
+When someone talks about a "typical JPEG", they usually mean baseline, but they could mean progressive. However, if you encounter any other type of JPEG, then it's atypical and should immediately trigger a deeper investigation.</p><h3>The PDF Structure</h3><p>
+Detecting PDF edits and expectations requires understanding the required file structure. Unfortunately with PDF, almost nothing is typical, and that's the core forensic problem.</p><p>
+
+At a very high level, every PDF has some required components:</p><ul><li><b>Version.</b> The first line is a comment with the minimum version number.</li>
+<br>
+<li><b>Objects.</b> A set of objects. Each object has a unique identifier. Objects may define content, pages, metadata, or even other objects. These are the essential building blocks for the PDF document.</li>
+<br>
+<li><b>Xref.</b> One or more cross-reference tables (xref or XRef) that identify the location of every object in the file. (These may also have references, creating a chain of cross-reference tables.)</li>
+<br>
+<li><b>EOF.</b> The last line needs to be a special "%%EOF" comment, denoting the end of the file.</li>
+<br>
+<li><b>Starting Xref.</b> Immediately before the "%%EOF" there must be a "startxref" field with an absolute offset to the top-level cross-reference table. Depending on the PDF version, this could be an older/legacy (PDF 1.0 - 1.4) "xref" object, or a newer/modern (PDF 1.5 or later) XRef object. (Even though xref tables are considered legacy structures, they are more common then the newer XRef objects, even when using newer PDF versions.)</li>
+<br>
+<li><b>Starting Object.</b> With the older xref object, there's also a "trailer" object that identifies the top-level object (root, catalog) and where it is located. With XRef, the object's dictionary contains the same type of information.</li></ul><p>
+To render the PDF, the viewer checks the version, finds the "%%EOF", searches backwards for the startxref, then jumps to the cross-reference table. The initial table (xref table with trailer or XRef object) identifies where the starting object is located. (All of the random file access is very much like a <a target="ref" href="https://en.wikipedia.org/wiki/Choose_Your_Own_Adventure"><i>Choose Your Own Adventure</i></a> book. There are even conditionals that may activate different objects.)</p><p>
+
+I have a collection of over 10,000 PDF files and nearly all have odd corner cases. You might think that being an ISO standard (<a target="ref" rel="norefer" href="https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf">ISO 32000</a>) would make PDF files more consistent. But in practice, very few applications adhere strictly to the standard.</p><p>
+
+As an example of PDF's many problems that impact forensic analysis, just consider the issues around versioning, edits, revised object handling, non-standard implementations, and bad pointers.</p><h3>PDF Versions</h3><p>
+With PDF files, lines beginning with a "%" are comments. (This is in general, but comments cannot appear between dictionary fields and values, or in some other parts of the PDF file.) Typically, comments can be ignored, except when they can't.</p><p>
+
+<img src="https://fotoforensics.com/analysis.php?id=ed31d1287f0f067ce578fbeb5ff9acd33b8a5423.185323&amp;fmt=orig&amp;size=600"></p><p>
+
+For example, the very first line of the PDF is a special comment that isn't treated like a comment: it lists the PDF version, like "%PDF-1.5". (I'm going to pick on PDF 1.5, but these problems exist with every PDF version.)</p><p>
+
+The PDF version does <i>not</i> mean that the PDF complies with the PDF 1.5 version of the specification. Rather, it means that you need a PDF viewer that supports 1.5 or later. Unfortunately, many PDF generators get it wrong:</p><ul><li>Some files may specify a PDF version that is beyond what is really required. For example, it may say "%PDF-1.5" but contains no features found in 1.5 or later versions of the PDF spec. I have many PDF files that specify 1.5 or later, but that could easily be rendered by older viewers.</li>
+<br>
+<li>Some files may specify the wrong minimal requirements. For example, I have some PDF files that say "%PDF-1.5" but that contain features only found in PDF 1.6 or 1.7.</li></ul><p>
+If a PDF's header claims a version newer than what the viewer supports, the software may refuse to open it -- even if the contents are all completely supported by the viewer. Conversely, if the header version is too old, the viewer might attempt to render it and fail, or worse, render the contents incorrectly.</p><p>
+
+Does having a particular PDF version or mismatched version/feature indicate an edit? No. It just means the encoder didn't consider version numbers, which is typical for PDF files. This isn't suspicious or unusual.</p><h3>Seeing Edits</h3><p>
+Unfortunately, there is no "typical" or common way to edit a PDF file. When someone alters a PDF, their encoding system may:</p><ul><li><b>Append after EOF.</b> After the "%%EOF", they may add more objects, cross-reference tables (xref or XRef), another startxref, and a final %%EOF. This results in multiple %%EOF lines: a clear indication of an edit.</li>
+<br>
+<li><b>Append after startxref.</b> Some editors remove the last %%EOF, then add in the objects, xref/XRef, startxref, and final %%EOF. This results in only one %%EOF, but multiple startxref entries.</li>
+<br>
+<li><b>Replace ending.</b> Some editors remove the final startxref and %%EOF before inserting the new objects and new ending. Seeing multiple xref/XRef tables either indicates an edit or a pipelined output system that stores objects in clusters.</li>
+<br>
+<li><b>Revise objects.</b> Revised or obsolete objects may be removed, while new objects may be inserted before rewriting the ending. Seeing unused objects or duplicate objects is an indication of an edit.</li>
+<br>
+<li><b>Rewrite everything.</b> Some PDF encoders don't keep anything from the original. They just create a new PDF file. Even with a clean rewrite, this often has artifacts that carry over, indicating that an edit took place.</li></ul><p>
+If you see an edited PDF document, then it means it was clearly and intentionally altered. Right? Well, wrong. As it turns out, most PDF files contain edit residues. Just consider something like a utility bill that is saved as a PDF:</p><ol><li>Someone created the initial template. This could be a Doc, TeX, PDF, or other file format.</li>
+<br>
+<li>Some process filled in the template with customer information (e.g., utility fees and previous payments).</li>
+<br>
+<li>Maybe another process also fills in the template with more customer information (e.g., mailing address).</li>
+<br>
+<li>Eventually a PDF is generated and sent to the end user.</li>
+<br>
+<li>Some enterprise security gateway or "safe attachment" systems (like MS Defender for Office 365, or Proofpoint) may re-encode PDF attachments before delivering it to the user. (The re-encoding usually strips out macros and disables hyperlinks.) Older mobile devices may not download the full PDF immediately; instead, they might request a transcoded or optimized version for preview on the device. In these cases, the user may not receive the byte-per-byte identical copy of what was sent.</li>
+<br>
+<li>Eventually the user does receive the PDF. Some users know how to save the PDF directly without any changes, but other users may use "print to PDF" or some kind of "Save" feature that re-encodes the PDF. (Don't blame the user, blame the app's usability. As an aside, I also see lots of people open the camera app and take a screenshot of the camera app's preview screen rather than pressing the big "take photo" button.)</li></ol><p>
+Every step in this pipeline can leave residues that appear in the final PDF. This type of PDF step-wise generation is the norm, not the exception, and every company does it differently. There's nothing typical other than everything being atypical.</p><p>
+
+But maybe you can compare your suspect utility bill with a known-real utility bill from the same company? Nope, I've seen the same company generate different PDF formats for the exact same utility bill. This can happen if the company has multiple ways to generate a PDF file for the end customer.</p><h3>Object Identifiers</h3><p>
+The PDF file is built using nested objects. The "catalog" object references a "pages" object. The "pages" object references one or more "page" objects. Each "page" object references the contents for the page (fonts, text, images, line drawings, etc.).</p><p>
+
+<img src="https://fotoforensics.com/analysis.php?id=bd22e5c97a574bea0f315ff3a6b8f2e9db1b6170.129894&amp;fmt=orig&amp;size=600"> <br>
+(This image shows a sample of typical PDF object nesting.)</p><p>
+
+Every object has a unique identifier and a revision (generation) number. If you view the binary PDF file, you'll see text like "123 0 obj ... endobj", which identifies object #123 generation 0. If you edit a PDF and replace an object, the spec says that you should update the generation number. In practice, nearly all PDFs use generation number 0 for every object.</p><p>
+
+Seriously: of the over 10,000 sample PDF documents in my collection, 12 contain objects with non-zero generations. In contrast, it's very common to see the same object number redefined multiple times with the same generation number (123 0 ... 123 0). It may not comply with the specs, but it's typical for PDF generators to always use generation zero. (If you ever see a non-zero generation number, it's technically compliant but definitely atypical; it should set off alarms that the file was edited.)</p><h3>Bad References</h3><p>
+Adobe Acrobat is cited as the authoritative source for following the PDF standard. And that's true... until it isn't.</p><p>
+
+I have a handful of PDF files that have invalid startxref pointers, but that render fine under Acrobat. For example, there's a popular PDF generator called iText. (As iText describes it, they are the "<a target="ref" href="https://itextpdf.com/blog/technical-notes/itext-worlds-4th-most-widely-used-pdf-generator">world's 4th most widely used PDF generator</a>" and "the source of 8% of the world’s PDF documents.") They had a bug where they could generate a startxref file with a bad pointer. (I say "had" because it was fixed in 2011 with <a target="ref" href="https://kb.itextpdf.com/it5kb/release-itext-5-1-2">version 5.1.2</a>, but lots of people still use older buggy versions.)</p><p>
+
+Adobe has had 30 years of dealing with bad PDFs. Empirically, Acrobat appears to have special rules such as: "If the offsets are invalid and the file identifies a known generator, then search for the correct offset." As a result, Acrobat will properly render some PDF files that have bad references, but not others.</p><p>
+
+PDF viewers like Evince (Linux), Firefox, and Chrome are more forgiving. Regardless of the generator: they see the bad references and search for the correct objects. They can often display PDF files that Acrobat cannot. In general, different PDF viewers may handle the same PDF documents differently -- it all depends on the type of offset corruption and how it was auto-fixed.</p><h3>EOF EOF</h3><p>
+The problem with edit detection based on "%%EOF" markers is even more complicated. I have many PDF examples where the encoder wrote a chunk of non-renderable PDF content, dropped in a "%%EOF", then appended the rest of the document with a new "%%EOF".</p><p>
+
+To the casual eye, this might look like an edit. But in reality, it's a surprisingly common two-stage writing system. The first "%%EOF" is a red herring.</p><h3>Typical Problems</h3><p>
+All of this goes back to the problem of trying to define a typical PDF document. Between different PDF generators and different PDF creation pipelines, there's virtually no consistency. You can't say that a PDF looks suspicious because it has multiple EOF lines, multiple startxref, inconsistent object enumerations, etc.</p><p>
+
+There are a few ways to detect intentional PDF edits, like seeing reused object IDs, metadata indicating different edits, or changes more than a few seconds apart. But even then, the question becomes whether those edits are expected. For example, if you're filling out a PDF form, then we'd expect the edits (filled-out form) to happen long after the initial document was created. Seeing a clear indication of an edit may not be suspicious; you must take the context into consideration.</p><p>
+
+Over the last year, I have been hyperfocused on PDF documents in order to detect intentional edits and AI generation. I can finally detect some forms of AI-generated PDF documents. These are often used for fraud, as in, "ChatGPT, can you generate a sample PDF containing a Kansas electrical utility bill for me, for the amount of $1024.45? List the addressee as ..." or "I need a PDF dinner receipt at Martin's Steakhouse for three people last Wednesday." One crucial tell? Look for the dog that didn't bark, such as a filled-in template without an edit between the template and the personalized information. (AI systems generate the template and populate it at the same time, so there is no intermediate edit.)</p><p>
+
+<a target="ff" href="https://fotoforensics.com/analysis.php?id=fde356d607a99a911f1fa831dfa66fd9a5fa1fdd.2577910"><img src="https://fotoforensics.com/analysis.php?id=fde356d607a99a911f1fa831dfa66fd9a5fa1fdd.2577910&amp;fmt=orig&amp;size=600"></a></p><p>
+
+(It's relatively easy to evaluate this image and determine that it is AI generated. But evaluating the associated PDF is significantly harder.)</p><p>
+
+The more complicated file formats are, the more difficult they become to evaluate. Among images, videos, audio files, and other types of media, PDF documents are certainly near the top of the difficulty level.
+	    </p></div></div>
+  </div>
+</body>
+</html>

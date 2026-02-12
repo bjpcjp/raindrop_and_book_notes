@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A Complete Machine Learning Project From Scratch: Setting Up</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A Complete Machine Learning Project From Scratch: Setting Up</h1>
+    <p><strong>URL:</strong> <a href="https://www.mihaileric.com/posts/setting-up-a-machine-learning-project">https://www.mihaileric.com/posts/setting-up-a-machine-learning-project</a></p>
+    <p><strong>Tags:</strong> machine-learning, python</p>
+    <p><strong>Bookmark ID:</strong> 876780033</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-reactid="11"><figure>
+    
+  <a href="https://www.mihaileric.com/static/part1-cover-c8095cb307991cda37da991c7b34b065-6441d.webp" target="_blank" rel="noopener">
+  
+  <span>
+    <span>
+      <img alt="set up project journey begins" title="" src="data:application/octet-stream;base64," srcset="data:application/octet-stream;base64, 240w, data:application/octet-stream;base64, 480w, data:application/octet-stream;base64, 960w, data:application/octet-stream;base64, 1440w, data:application/octet-stream;base64, 1480w" sizes="(max-width: 960px) 100vw, 960px">
+    </span>
+  </span>
+  
+  </a>
+    
+</figure>
+<p>In this first of a series of posts, I will be describing how to build a machine learning-based fake news detector from scratch. That means I will literally construct a system that learns how to discern reality from lies (reasonably well), using nothing but raw data. And our project will take us all the way from initial setup to deployed solution. Full source code <a href="https://github.com/mihail911/fake-news">here</a>.</p>
+<p>I’m doing this because when you look at the state of tutorials today, machine learning projects for beginners mean copy-pasting some sample code off the <a href="https://www.tensorflow.org/">Tensorflow</a> website and running it through an overused benchmark dataset.</p>
+<p>In these posts, I will describe a viable sequence for carrying a machine learning product through a realistic lifecycle, trying to be as true as possible to the details. </p>
+<p>I will go into the nitty-gritty of the technology decisions, down to how I would organize the code repository structure for fast engineering iteration. As I progress through the posts, I will incrementally add code to the <a href="https://github.com/mihail911/fake-news">repository</a> until at the end I have a fully functional and deployable system.</p>
+<p>These posts will cover all of the following:</p>
+<ol>
+<li>Ideation, organizing your codebase, and setting up tooling (this post!)</li>
+<li><a href="https://www.mihaileric.com/posts/performing-exploratory-data-analysis/">Dataset acquisition and exploratory data analysis</a></li>
+<li><a href="https://www.mihaileric.com/posts/machine-learning-project-model-v1">Building and testing the pipeline with a v1 model</a></li>
+<li><a href="https://www.mihaileric.com/posts/machine-learning-project-error-analysis-model-v2/">Performing error analysis and iterating toward a v2 model</a></li>
+<li><a href="https://www.mihaileric.com/posts/machine-learning-project-model-deployment/">Deploying the model and connecting a continuous integration solution</a></li>
+</ol>
+<p>With that let’s get started!</p>
+<h2>Building Machine Learning Systems is Hard</h2>
+<p>There’s no easy way to say this: building a fully-fledged ML system is complex. Starting from the very beginning, the process for a functional and useful system contains at least all of the following steps:</p>
+<ol>
+<li>Ideation and defining of your problem statement</li>
+<li>Acquiring (or labelling) of a dataset </li>
+<li>Exploration of your data to understand its characteristics </li>
+<li>Building a training pipeline for an initial version of your model</li>
+<li>Testing and performing error analysis on your model’s failure modes</li>
+<li>Iterating from this error analysis to build improved models</li>
+<li>Repeating steps 4-6 until you get the model performance you need</li>
+<li>Building the infrastructure to deploy your model with the runtime characteristics your users want</li>
+<li>Monitoring your model consistently and use that to repeat any of steps 2-8</li>
+</ol>
+<p>Sounds like a lot? It is. </p>
+<p>And here’s what the current machine learning tooling/infrastructure landscape looks like (PC to <a href="https://course.fullstackdeeplearning.com/">FSDL</a>): </p>
+<figure>
+    
+  <a href="https://www.mihaileric.com/static/ml_tools-e1596778c4847366213df6987486fc35-cc240.png" target="_blank" rel="noopener">
+  
+  <span>
+    <span>
+      <img alt="overview of all machine learning tools" title="" src="data:application/octet-stream;base64," srcset="data:application/octet-stream;base64, 240w, data:application/octet-stream;base64, 480w, data:application/octet-stream;base64, 960w, data:application/octet-stream;base64, 1440w, data:application/octet-stream;base64, 1678w" sizes="(max-width: 960px) 100vw, 960px">
+    </span>
+  </span>
+  
+  </a>
+    
+</figure>
+<p>When you couple the inherent complexity of building a machine learning product with the myriad tooling decision points, it’s no surprise that many companies report <a href="https://venturebeat.com/2019/07/19/why-do-87-of-data-science-projects-never-make-it-into-production/">87% of their data science projects never making it into production</a>! </p>
+<p>Any of the steps 1-9 above introduce numerous places where a project can hit an insurmountable roadblock, and the breadth of technologies and skills required to deliver on a successful project make amassing a team able to deliver equally challenging. </p>
+<p>It’s hard, but that’s the current reality of bringing data-driven value to the world. </p>
+<p>My hope is that this series of posts will provide a realistic perspective on what it takes to do ML in the wild.</p>
+<p>Note, while I will describe in full-detail our solution to the problem, this is only <em>a</em> solution not <em>the</em> solution. Building machine learning projects, like all engineering work, entails a series of tradeoffs and design decisions, but I think there is value in showing a valid sequence through the full machine learning lifecycle even if your exact steps may differ.</p>
+<h2>Defining Your Machine Learning Problem</h2>
+<p>Arguably the most important step in creating a machine learning application is the problem definition. This means both determining what problem you want your application to solve (the value add) as Ill as how you will measure success (your metrics). </p>
+<p>Given that this is an election year where many people across the US will be looking to form their opinion about candidates through various internet outlets, for the purposes of this project, I will tackle the problem of <strong>fake news detection</strong>. In the modern day, fake statements are more prevalent and are able to spread more virally than ever before.</p>
+<p>To help alleviate this problem, I will want to build an application that can assess the truthfulness of statements made by either political speakers or social media posts. </p>
+<p>Once completed, I would ideally like to deploy our project as a web browser extension that can be run in realtime on statements that users are reading on their pages. </p>
+<p>As far as metrics is concerned, if our tool can automatically detect whether a statement is true or false on a random web page with <strong>at least 50%</strong> accuracy, then I will consider our project a success. Typically success if measured by some sort of business metric, but since I don’t have a formal metrics like that, this (somewhat arbitrary) threshold for accuracy will suffice. </p>
+<h2>Organizing Your Repository and Tooling</h2>
+<p>Now that I have our product goal and metrics defined, let’s describe how I will organize our application code repository. I’m choosing to spend some time talking about this because there is not a clear consensus in the community on best practices for organizing machine learning projects. </p>
+<p>This makes it very difficult to quickly look at new projects and understand how the separation of concerns is defined, making collaboration and iteration sloIr. </p>
+<p>As a counterpoint, consider the convention around how Java projects are structured. Because of a community agreed-upon consensus, any Java programmer can jump into a new codebase and immediately know where to find what. </p>
+<p>In lieu of a common convention, I will describe practices for organizing machine learning projects, born out of my experience with various projects over the years. The full source code can be found at <a href="https://github.com/mihail911/fake-news">this repository</a>. </p>
+<p>At the top-level, our repository will be structured as follows:</p>
+<div>
+      <pre><code>fake-news/
+    assets/
+    config/
+    data/
+        raw/
+        processed/
+    deploy/
+    fake_news/
+        model/
+        utils/
+    model_checkpoints/
+    notebooks/
+    scripts/
+    tests/
+    LICENSE
+    README.md
+    requirements.txt</code></pre>
+      </div>
+<p>Here is what each each item is responsible for:</p>
+<p><strong>assets</strong>: This will store any images, plots, and other non-source files generated throughout the project.</p>
+<p><strong>config</strong>: I will include any configuration files needed for model training and evaluation here. </p>
+<p><strong>data</strong>: This will store our fake news data in both its raw (untouched from the original source) and processed (featurized or updated for our usecase) form.</p>
+<p><strong>deploy</strong>: This will store any files needed for our deployment including Dockerfiles, etc.</p>
+<p><strong>fake_news</strong>: This will store all the source for building, training, and evaluating our models.</p>
+<p><strong>model_checkpoints</strong>: This will store the model binaries that I train and eventually want to deploy. </p>
+<p><strong>notebooks</strong>: This will store any Jupyter notebooks used for any data analysis.</p>
+<p><strong>scripts</strong>: This will store any one-off scripts for generating model artifacts, setting up application environments, or processing the data.</p>
+<p><strong>tests</strong>: Here I will include any unit tests, integration tests, and data tests to ensure the correctness of our system.  </p>
+<p><strong>LICENSE</strong>: Our software license.</p>
+<p><strong>README.md</strong>: A high-level description of our project.</p>
+<p><strong>requirements.txt</strong>: This will store the code dependencies for our project. This is a standard practice for Python-based projects, which our application will be.</p>
+<p>For now our requirements.txt is pretty simple, but I will highlight two dependencies that I will certainly need: <a href="https://docs.pytest.org/en/stable/">pytest</a> (a library I will use for our code testing) and <a href="https://dvc.org/">dvc</a> (a tool I will use for data and train pipeline versioning). </p>
+<p>I will also be using an <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">Anaconda environment</a> to isolate our project dependencies, so they do not interfere with our local system-level dependencies. Dependency isolation is a generally good practice when building new applications, as they not only ensure clean working environments but they make it easier to quickly move and recreate applications on different host servers.</p>
+<p>And with that organization completed, we are ready to move on to the <a href="https://www.mihaileric.com/posts/performing-exploratory-data-analysis/">next step</a> of getting our dataset and doing some exploratory data analysis. </p>
+<p><em>Shameless Pitch Alert: If you’re interested in cool generative AI tools, I’m currently building the <a href="https://storia.ai/lab?utm_source=website&amp;utm_campaign=mihail-personal-page">most advanced AI-powered image and video editor</a> which has been used by thousands of marketers, designers, and creatives to drastically improve their speed and quality of visual asset creation.</em></p></div></div>
+  </div>
+</body>
+</html>

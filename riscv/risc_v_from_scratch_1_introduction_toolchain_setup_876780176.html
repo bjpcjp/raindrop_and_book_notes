@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RISC-V from scratch 1: Introduction, toolchain setup, and hello world!</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>RISC-V from scratch 1: Introduction, toolchain setup, and hello world!</h1>
+    <p><strong>URL:</strong> <a href="https://twilco.github.io/riscv-from-scratch/2019/03/10/riscv-from-scratch-1.html">https://twilco.github.io/riscv-from-scratch/2019/03/10/riscv-from-scratch-1.html</a></p>
+    <p><strong>Tags:</strong> riscv</p>
+    <p><strong>Bookmark ID:</strong> 876780176</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+  
+
+  <article>
+    <p>Table of contents</p>
+<ol id="markdown-toc">
+  <li><a href="#introduction" id="markdown-toc-introduction">Introduction</a></li>
+  <li><a href="#so-what-is-risc-v" id="markdown-toc-so-what-is-risc-v">So what is RISC-V?</a></li>
+  <li><a href="#qemu-and-risc-v-toolchain-setup" id="markdown-toc-qemu-and-risc-v-toolchain-setup">QEMU and RISC-V toolchain setup</a></li>
+  <li><a href="#hello-risc-v" id="markdown-toc-hello-risc-v">Hello, RISC-V!</a></li>
+  <li><a href="#whats-next" id="markdown-toc-whats-next">What’s next?</a></li>
+</ol>
+
+
+
+<p>Welcome to part one of <em>RISC-V from scratch</em>!  Throughout <em>RISC-V from scratch</em> we will explore various low-level concepts (compilation and linking, primitive runtimes, assembly, and more), typically through the lens of RISC-V and its ecosystem.  I am a web developer by trade, and as such I’m not exposed to these things on a daily basis.  However, I think they are very interesting - hence this series!  Join me on a very much unstructured journey into the depths of all things low-level.</p>
+
+<p>In this first post, we’ll talk a little bit about what RISC-V is and why it’s important, set up a RISC-V toolchain, and finish up with building and running a simple C program on emulated RISC-V hardware.</p>
+
+<h2 id="so-what-is-risc-v">So what is RISC-V?</h2>
+
+<p>RISC-V is an open-source, free-to-use ISA that began as a project at UC-Berkeley in 2010.  The free-to-use aspect has been instrumental in its success and is quite a stark contrast to many other architectures.  Take ARM for example - in order to create an ARM-compatible processor, you must pay an upfront fee of <a href="https://www.anandtech.com/show/7112/the-arm-diaries-part-1-how-arms-business-model-works/2">$1M - $10M as well as a 0.5% - 2% royalty fee per-chip</a>.  This free and open model makes RISC-V an attractive option to many groups of people - hardware startups who can’t foot the bill to create an ARM or other licensing-required processor, academic institutions, and (obviously) the open-source community.</p>
+
+<p>RISC-V’s meteoric rise in popularity hasn’t gone unnoticed.  <a href="https://abopen.com/news/rattled-arm-launches-anti-risc-v-marketing-campaign/">ARM launched a now-taken down website</a> that attempted (rather unsuccessfully) to highlight supposed benefits of ARM over RISC-V.  RISC-V is backed by <a href="https://riscv.org/membership/members/">a ton of major companies</a>, including Google, Nvidia, and Western Digital.</p>
+
+<h2 id="qemu-and-risc-v-toolchain-setup">QEMU and RISC-V toolchain setup</h2>
+
+<p>We won’t be able to run any code on a RISC-V processor until we have an environment to do it in.  Fortunately, we don’t need a physical RISC-V processor to do this - we’ll instead be using <a href="https://www.qemu.org/">qemu</a>.  To install <code>qemu</code>, follow the <a href="https://www.qemu.org/download">instructions for your operating system here</a>.  I’m using MacOS, so for me this was as easy as:</p>
+
+<figure><pre><code data-lang="bash"><span># Also available via MacPorts - `sudo port install qemu`</span>
+brew <span>install </span>qemu</code></pre></figure>
+
+<p>The instance of <code>qemu</code> we just installed comes with <a href="https://github.com/riscv/riscv-qemu/wiki#machines">a few machines</a> (specified via the <code>qemu-system-riscv32 -machine</code> option) ready to go, which is a nice convenience.</p>
+
+<p>Next, let’s install a RISC-V compatible copy of <a href="http://openocd.org/">OpenOCD</a> and the RISC-V toolchain.</p>
+
+<ol>
+  <li>Download prebuilt versions of the RISC-V OpenOCD and the RISC-V toolchain from here: <a href="https://www.sifive.com/boards">https://www.sifive.com/boards</a></li>
+  <li>Move and extract these files into a directory of your choosing.   I elected to create one called <code>~/usys/riscv</code> for this and other RISC-V toolchain / QEMU needs.  Remember the directory you choose as we’ll be using it both in this post and in the next.</li>
+</ol>
+
+<figure><pre><code data-lang="bash"><span>mkdir</span> <span>-p</span> ~/usys/riscv
+<span>cd</span> ~/Downloads
+<span>cp </span>openocd-&lt;<span>date</span><span>&gt;</span>-&lt;platform&gt;.tar.gz ~/usys/riscv
+<span>cp </span>riscv64-unknown-elf-gcc-&lt;<span>date</span><span>&gt;</span>-&lt;platform&gt;.tar.gz ~/usys/riscv
+<span>cd</span> ~/usys/riscv
+<span>tar</span> <span>-xvf</span> openocd-&lt;<span>date</span><span>&gt;</span>-&lt;platform&gt;.tar.gz
+<span>tar</span> <span>-xvf</span> riscv64-unknown-elf-gcc-&lt;<span>date</span><span>&gt;</span>-&lt;platform&gt;.tar.gz</code></pre></figure>
+
+<ol start="3">
+  <li>Set the <code>RISCV_OPENOCD_PATH</code> and <code>RISCV_PATH</code> environment variables so other programs can find our toolchain.  This may look different depending on your OS and shell - I had to add these exports to my <code>~/.zshenv</code> file.</li>
+</ol>
+
+<figure><pre><code data-lang="bash"><span># I put these two exports directly in my ~/.zshenv file</span>
+<span># If you use a different shell or OS you may have to do something else.</span>
+<span>export </span><span>RISCV_OPENOCD_PATH</span><span>=</span><span>"</span><span>$HOME</span><span>/usys/riscv/openocd-&lt;date&gt;-&lt;version&gt;"</span>
+<span>export </span><span>RISCV_PATH</span><span>=</span><span>"</span><span>$HOME</span><span>/usys/riscv/riscv64-unknown-elf-gcc-&lt;date&gt;-&lt;version&gt;"</span>
+<span># Reload .zshenv with our new environment variables.  </span>
+<span># Restarting your shell will have a similar effect.</span>
+<span>source</span> ~/.zshenv</code></pre></figure>
+
+<ol start="4">
+  <li>We’ll also create a symbolic link into <code>/usr/local/bin</code> for this executable so that we can run it without specifying the full path to <code>~/usys/riscv/riscv64-unknown-elf-gcc-&lt;date&gt;-&lt;version&gt;/bin/riscv64-unknown-elf-gcc</code> whenever we want to use it.</li>
+</ol>
+
+<figure><pre><code data-lang="bash"><span># Symbolically link our gcc executable into /usr/local/bin.  </span>
+<span># Repeat this process for any other executables you want to quickly access.</span>
+<span>ln</span> <span>-s</span> ~/usys/riscv/riscv64-unknown-elf-gcc-8.2.0-&lt;<span>date</span><span>&gt;</span>-&lt;version&gt;/bin/riscv64-unknown-elf-gcc /usr/local/bin</code></pre></figure>
+
+<p>Et voilà, we have a working RISC-V toolchain!  All our executables, such as <code>riscv64-unknown-elf-gcc</code>, <code>riscv64-unknown-elf-gdb</code>, <code>riscv64-unknown-elf-ld</code>, etc, are located in <code>~/usys/riscv/riscv64-unknown-elf-gcc-&lt;date&gt;-&lt;version&gt;/bin/</code>.</p>
+
+<h2 id="hello-risc-v">Hello, RISC-V!</h2>
+
+<p><strong>Update to this section as of May 26, 2019:</strong></p>
+
+<p>Unfortunately, due to a bug introduced in RISC-V QEMU, running the <a href="https://github.com/sifive/freedom-e-sdk">freedom-e-sdk</a> “hello world” program via QEMU no longer works.  A patch has been introduced to address the issue, but for now you can feel free to skip this section.  The <code>freedom-e-sdk</code> is not necessary for future posts in this series.  I will keep a watch on this issue and update this post after it’s fixed.</p>
+
+<p>For more information, see this comment: <a href="https://github.com/sifive/freedom-e-sdk/issues/260#issuecomment-496037827">https://github.com/sifive/freedom-e-sdk/issues/260#issuecomment-496037827</a></p>
+
+<hr>
+
+
+<p>Now that we have our toolchain setup, let’s run an example RISC-V program.  I previously linked a SiFive repository called <a href="https://github.com/sifive/freedom-e-sdk">freedom-e-sdk</a>, which provides various programs we can try out.  Begin by recursively cloning this repository:</p>
+
+<figure><pre><code data-lang="bash"><span>cd</span> ~/wherever/you/want/to/clone/this
+git clone <span>--recursive</span> https://github.com/sifive/freedom-e-sdk.git
+<span>cd </span>freedom-e-sdk</code></pre></figure>
+
+<p><a href="https://stackoverflow.com/a/12785204">As is tradition</a>, let’s start with the “Hello, world” program provided by <code>freedom-e-sdk</code>.  We’ll use the <code>Makefile</code> they provide to compile this program in debug mode against the “sifive-hifive1” target:</p>
+
+<figure><pre><code data-lang="bash">make <span>PROGRAM</span><span>=</span>hello <span>TARGET</span><span>=</span>sifive-hifive1 <span>CONFIGURATION</span><span>=</span>debug software</code></pre></figure>
+
+<p>And finish by running it in QEMU:</p>
+
+<figure><pre><code data-lang="bash">qemu-system-riscv32 <span>-nographic</span> <span>-machine</span> sifive_e <span>-kernel</span> software/hello/debug/hello.elf
+Hello, World!</code></pre></figure>
+
+<h2 id="whats-next">What’s next?</h2>
+
+<p>This is a great start, but my goal with these blog posts is to truly <a href="https://seths.blog/2005/03/dont_shave_that/">shave the yak</a>, and while we have confirmed that we have a working toolchain, there is a lot of magic hidden by the niceties of the <code>freedom-e-sdk</code> examples.  Note that we didn’t have to set up any linker files or startup code - SiFive’s provided board-support linker scripts, various Makefiles, and the <a href="https://github.com/sifive/freedom-metal">freedom-metal library</a> take care of this for us.</p>
+
+<p>In part two of this series we’ll break free from the <code>freedom-e-sdk</code> and make our own way.  We’ll use <code>dtc</code> to examine the hardware layout of a <code>qemu</code> virtual machine, craft and examine a linker script, create a basic runtime to set up our stack, learn about some basic RISC-V assembly, and more.</p>
+
+<p>The next post in this series has been posted, <a href="https://twilco.github.io/riscv-from-scratch/2019/04/27/riscv-from-scratch-2.html">click here to check it out.</a></p>
+
+  </article>
+
+  
+
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>KV-Direct: High-performance in-memory key-value store with programmable NIC</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>KV-Direct: High-performance in-memory key-value store with programmable NIC</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2017/11/23/kv-direct-high-performance-in-memory-key-value-store-with-programmable-nic">https://blog.acolyer.org/2017/11/23/kv-direct-high-performance-in-memory-key-value-store-with-programmable-nic</a></p>
+    <p><strong>Tags:</strong> databases</p>
+    <p><strong>Bookmark ID:</strong> 876769022</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-6160">
+	<!-- .entry-header -->
+
+	<div>
+		<p><a href="https://lrita.github.io/images/blog/kv-direct.pdf">KV-Direct: High-performance in-memory key-value store with programmable NIC</a> Li et al., <em>SOSP’17</em></p>
+<p>We’ve seen some pretty impressive in-memory datastores in past editions of The Morning Paper, including <a href="https://blog.acolyer.org/2015/05/20/farm-fast-remote-memory/">FaRM</a>, <a href="https://blog.acolyer.org/2016/01/18/ramcloud/">RAMCloud</a>, and <a href="https://blog.acolyer.org/2015/10/26/fast-in-memory-transaction-processing-using-rdma-and-rtm/">DrTM</a>. But nothing that compares with KV-Direct:</p>
+<blockquote><p>
+  With 10 programmable NIC cards in a commodity server, we achieve 1.22 billion KV operations per second, which is almost an order-of-magnitude improvement over existing systems, setting a new milestone for a general-purpose in-memory key-value store.
+</p></blockquote>
+<p>Check out the bottom line in this comparison table from the evaluation:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/11/kv-direct-table-3.jpeg?w=640" alt=""><br>
+(<a href="https://blog.acolyer.org/wp-content/uploads/2017/11/kv-direct-table-3.jpeg">Enlarge</a>)</p>
+<p>In addition to sheer speed, you might also notice that KV-Direct is 3x more power efficient than other systems, and <em>the first general purpose KVS system to achieve 1 million KV operations per watt on commodity servers</em>. Since the server CPU can also be used to run other workloads at the same time, you can make a case for KV-Direct being as much as 10x more power efficient than CPU-based systems.</p>
+<p>What we’re seeing here is a glimpse of how large-scale systems software of the future may well be constructed. As the power ceiling puts a limit on multi-core scaling, people are now turning to domain-specific architectures for better performance.</p>
+<p>A first generation of key-value stores were built in a straightforward manner on top of traditional operating systems and TCP/IP stacks.</p>
+<blockquote><p>
+  More recently, as both the single core frequency scaling and multi-core architecture scaling are slowing down, a new research trend in distributed systems is to leverage Remote Direct Memory Access (RDMA) technology on NIC to reduce network processing cost.
+</p></blockquote>
+<p>KV-Direct however, goes one step beyond. To support network virtualisation, more and more servers in data centers are now equipped with <em>programmable NICS</em> containing field-programmable gate arrays (FPGA). An embedded NIC chip connects to the network, and a PCIe connector attaches to the server. KV-Direct uses the FPGA in the NIC to implement key-value primitives directly.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/11/kv-direct-fig-2.jpeg?w=480" alt=""></p>
+<p>Like one-sided RDMA (Fig 1b below), KV-Direct bypasses the remote CPU. But it also <em>extends</em> the RDMA primitives from simple memory operations (READ and WRITE) to key-value operations (GET, PUT, DELETE and ATOMIC ops) — Fig 1c below.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/11/kv-direct-fig-1.jpeg?w=640" alt=""></p>
+<blockquote><p>
+  Compared with one-sided RDMA based systems, KV-Direct deals with the consistency and synchronization issues on the server-side, thus removing computation overhead in the client, and reducing network traffic.  In addition, to support vector-based operations and reduce network traffic, KV-Direct also provides new vector primitives UPDATE, REDUCE, and FILTER, allowing users to define active messages and delegate certain computations to programmable NIC for efficiency.
+</p></blockquote>
+<h3>Design goals and challenges</h3>
+<p>Use cases for in-memory key-value stores have evolved beyond caching to things such as storing data indices, machine learning model parameters, nodes and edges in graph computing, and sequencers in distributed synchronisation. The role of the store shifts from object caching to a generic data structure store (c.f. Redis). This leads to the following design goals:</p>
+<ul>
+<li>High batch throughput for small key-value pairs (e.g., model parameters, graph node neighbours).</li>
+<li>Predictable low-latency (e.g., for data-parallel computation,where tail latency matters)</li>
+<li>High efficiency under write-intensive workloads (e.g., graph computations, and parameter servers)</li>
+<li>Fast atomic operations  (e.g., for centralized schedulers, sequencers , counters and so on).</li>
+<li>Vector-type operations (for machine learning and graph computing workloads that often require operating on every element in a vector). </li>
+</ul>
+<p>The throughput constraint ends up being PCIe bandwidth:</p>
+<blockquote><p>
+  In order to saturate the network with GET operations, the KVS on NIC must make full use of PCIe bandwidth and achieve close to one average memory access per GET.
+</p></blockquote>
+<p>Getting to this level involves work on three fronts:</p>
+<ol>
+<li>Minimising DMA (direct memory access) requests per KV operation. The two major components that drive random memory access are hash tables and memory allocation. </li>
+<li>Hiding PCIe latency while maintaining consistency, which entails pipelining requests. Care must be taken to respect causal dependencies here though.</li>
+<li>Balancing load between NIC DRAM and host memory. The NIC itself has a small amount of DRAM available, but it turns out not to be much faster than going over PCIe. So the trick turns out to be to use both in order to utilise the joint bandwidth. </li>
+</ol>
+<h3>KV-Direct</h3>
+<p>KV-Direct enables <em>remote direct key-value access</em>. Clients send operation requests to the KVS server, and the programmable NIC processes requests and sends back results, bypassing the CPU.</p>
+<p>The following table shows the supported operations.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/11/kv-direct-table-1.jpeg?w=480" alt=""></p>
+<p>The most interesting of course are the vector operations.</p>
+<blockquote><p>
+  KV-Direct supports two types of vector operations: sending a scalar to the NIC on the server, where the NIC applies the update to each element in the vector; and sending a vector to the server, where the NIC updates the original vector element-by-element. Furthermore, KV-Direct supports user-defined update functions as a generalisation to atomic operations. The update functions needs to be pre-registered and compiled to hardware logic before executing.
+</p></blockquote>
+<p>When the user supplies an update function, the KV-Direct toolchain duplicates it several times to leverage FPGA parallelism and match computation with PCIe throughput, and then compiles it into reconfigurable hardware logic using a high-level synthesis (HLS) tool. These functions can be used for <em>general stream processing on a vector value</em>.</p>
+<p>The programmable NIC on the KVS server is reconfigured as a KV processor, which receives packets from the network, decodes vector operations, and buffers KV operations in a <em>reservation station</em>.  The out-of-order engine then issues independent KV operations from the reservation station into the decoder.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/11/kv-direct-fig-4.jpeg?w=480" alt=""></p>
+<p>To minimise memory accesses, small KV pairs are stored inline in the hash table, while others are stored in dynamically allocated memory from a slab memory allocator. After a KV operation completes, the result is sent back to the out-of-order execution engine to find and execute matching KV operations in the reservation station.</p>
+<p>The reservation station is used to avoid dependencies between two KV operations leading to data hazards and a stalled pipeline.</p>
+<blockquote><p>
+  We borrow the concept of dynamic scheduling from computer architecture and implement a reservation station to track all in-flight KV operations and their execution context. To saturate PCIe, DRAM and the processing pipeline, up to 256 in-flight KV operations are needed. However, comparing 256 16-byte keys in parallel would take 40% of the logic resource of our FPGA. Instead, we store the KV operations in a small hash table in on-chip BRAM, indexed by the hash of the key.
+</p></blockquote>
+<p>When a KV operation completes, the latest value is forwarded to the reservation station, where pending operations in the same hash slot are checked. Those with a matching key are executed immediately and removed from the station.</p>
+<p>Further design and implementation details can be found in sections 3 and 4 of the paper.</p>
+<h3>Evaluation</h3>
+<p>The evaluation section contains a suite of microbenchmarks, followed by a system benchmark based on the YCSB workload. To simulate a skewed Zipf workload, skewness 0.99 was chosen. This is referred to as the <em>long-tail</em> workload in the figures. The testbed comprises eight servers with two 8-core CPUS per server,and one Arista switch. There is a total of 128 GiB of host memory per server. A programmable NIC is connected to the PCIe root complex of CPU 0, and its 40 Gbps Ethernet port is connected to the switch. The NIC has two PCIe Gen3 x8 links in a bifurcated Gen3 x16 physical connector.</p>
+<p>Here’s the overall throughput achieved by the system. The throughput of a KV-Direct NIC is on-par with a state-of-the-art KVS server with tens of CPU cores.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/11/kv-direct-fig-16.jpeg?w=640" alt=""></p>
+<p>Without network batching, the tail latency ranges from 3-9 <img src="https://s0.wp.com/latex.php?latex=%5Cmu&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmu&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmu&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mu">s depending on KV size, operation type, and key distribution. Network batching adds less than 1<img src="https://s0.wp.com/latex.php?latex=%5Cmu&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmu&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmu&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mu">s latency, but significantly improves performance.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/11/kv-direct-fig-17.jpeg?w=640" alt=""></p>
+<p>It is possible to attach multiple NICs per server. With 10 KV-Direct NICs on a server, one billion KV ops/s is readily achievable on a commodity server.  Each NIC owns a disjoin partition of the keys. Multiple NICs suffer the same load imbalance problem as a multi-core KVS implementation, but for a relatively small number of partitions (e.g. 10) the load imbalance is not too great – 1.5x of the average in the highest loaded NIC even for the long-tail highly skewed workload.  KV-Direct throughput scales almost linearly with the number of NICS on a server.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/11/kv-direct-fig-20.jpeg?w=480" alt=""></p>
+<p>The last word:</p>
+<blockquote><p>
+  After years of broken promises, FPGA-based reconfigurable hardware finally becomes widely available in main stream data centers. Many significant workloads will be scrutinized to see whether they can benefit from reconfigurable hardware, and we expect much more fruitful work in this general direction.
+</p></blockquote>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+
+	</article></div>
+  </div>
+</body>
+</html>

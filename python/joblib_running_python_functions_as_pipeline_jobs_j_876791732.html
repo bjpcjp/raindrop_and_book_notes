@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Joblib: running Python functions as pipeline jobs — joblib 1.5.dev0 documentation</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Joblib: running Python functions as pipeline jobs — joblib 1.5.dev0 documentation</h1>
+    <p><strong>URL:</strong> <a href="https://joblib.readthedocs.io/en/latest/index.html">https://joblib.readthedocs.io/en/latest/index.html</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876791732</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section id="joblib-running-python-functions-as-pipeline-jobs" role="main">
+
+<section id="module-joblib">
+<span id="introduction"></span><h2>Introduction<a href="#module-joblib" title="Permalink to this heading">¶</a></h2>
+<p>Joblib is a set of tools to provide <strong>lightweight pipelining in
+Python</strong>. In particular:</p>
+<ol>
+<li><p>transparent disk-caching of functions and lazy re-evaluation
+(memoize pattern)</p></li>
+<li><p>easy simple parallel computing</p></li>
+</ol>
+<p>Joblib is optimized to be <strong>fast</strong> and <strong>robust</strong> on large
+data in particular and has specific optimizations for <cite>numpy</cite> arrays. It is
+<strong>BSD-licensed</strong>.</p>
+<blockquote>
+<div><table>
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr><td><p><strong>Documentation:</strong></p></td>
+<td><p><a href="https://joblib.readthedocs.io/">https://joblib.readthedocs.io</a></p></td>
+</tr>
+<tr><td><p><strong>Download:</strong></p></td>
+<td><p><a href="https://pypi.python.org/pypi/joblib#downloads">https://pypi.python.org/pypi/joblib#downloads</a></p></td>
+</tr>
+<tr><td><p><strong>Source code:</strong></p></td>
+<td><p><a href="https://github.com/joblib/joblib">https://github.com/joblib/joblib</a></p></td>
+</tr>
+<tr><td><p><strong>Report issues:</strong></p></td>
+<td><p><a href="https://github.com/joblib/joblib/issues">https://github.com/joblib/joblib/issues</a></p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<section id="vision">
+<h3>Vision<a href="#vision" title="Permalink to this heading">¶</a></h3>
+<p>The vision is to provide tools to easily achieve better performance and
+reproducibility when working with long running jobs.</p>
+<blockquote>
+<div><ul>
+<li><p><strong>Avoid computing the same thing twice</strong>: code is often rerun again and
+again, for instance when prototyping computational-heavy jobs (as in
+scientific development), but hand-crafted solutions to alleviate this
+issue are error-prone and often lead to unreproducible results.</p></li>
+<li><p><strong>Persist to disk transparently</strong>: efficiently persisting
+arbitrary objects containing large data is hard. Using
+joblib’s caching mechanism avoids hand-written persistence and
+implicitly links the file on disk to the execution context of
+the original Python object. As a result, joblib’s persistence is
+good for resuming an application status or computational job, eg
+after a crash.</p></li>
+</ul>
+</div></blockquote>
+<p>Joblib addresses these problems while <strong>leaving your code and your flow
+control as unmodified as possible</strong> (no framework, no new paradigms).</p>
+</section>
+<section id="main-features">
+<h3>Main features<a href="#main-features" title="Permalink to this heading">¶</a></h3>
+<ol>
+<li><p><strong>Transparent and fast disk-caching of output value:</strong> a memoize or
+make-like functionality for Python functions that works well for
+arbitrary Python objects, including very large numpy arrays. Separate
+persistence and flow-execution logic from domain logic or algorithmic
+code by writing the operations as a set of steps with well-defined
+inputs and  outputs: Python functions. Joblib can save their
+computation to disk and rerun it only if necessary:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>from</span> <span>joblib</span> <span>import</span> <span>Memory</span>
+<span>&gt;&gt;&gt; </span><span>cachedir</span> <span>=</span> <span>'your_cache_dir_goes_here'</span>
+<span>&gt;&gt;&gt; </span><span>mem</span> <span>=</span> <span>Memory</span><span>(</span><span>cachedir</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span>import</span> <span>numpy</span> <span>as</span> <span>np</span>
+<span>&gt;&gt;&gt; </span><span>a</span> <span>=</span> <span>np</span><span>.</span><span>vander</span><span>(</span><span>np</span><span>.</span><span>arange</span><span>(</span><span>3</span><span>))</span><span>.</span><span>astype</span><span>(</span><span>float</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span>square</span> <span>=</span> <span>mem</span><span>.</span><span>cache</span><span>(</span><span>np</span><span>.</span><span>square</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span>b</span> <span>=</span> <span>square</span><span>(</span><span>a</span><span>)</span>                                   
+<span>______________________________________________________________________...</span>
+<span>[Memory] Calling square...</span>
+<span>square(array([[0., 0., 1.],</span>
+<span>       [1., 1., 1.],</span>
+<span>       [4., 2., 1.]]))</span>
+<span>_________________________________________________...square - ...s, 0.0min</span>
+
+<span>&gt;&gt;&gt; </span><span>c</span> <span>=</span> <span>square</span><span>(</span><span>a</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span># The above call did not trigger an evaluation</span>
+</pre></div>
+</li>
+<li><p><strong>Embarrassingly parallel helper:</strong> to make it easy to write readable
+parallel code and debug it quickly:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>from</span> <span>joblib</span> <span>import</span> <span>Parallel</span><span>,</span> <span>delayed</span>
+<span>&gt;&gt;&gt; </span><span>from</span> <span>math</span> <span>import</span> <span>sqrt</span>
+<span>&gt;&gt;&gt; </span><span>Parallel</span><span>(</span><span>n_jobs</span><span>=</span><span>1</span><span>)(</span><span>delayed</span><span>(</span><span>sqrt</span><span>)(</span><span>i</span><span>**</span><span>2</span><span>)</span> <span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>10</span><span>))</span>
+<span>[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]</span>
+</pre></div>
+</li>
+<li><p><strong>Fast compressed Persistence</strong>: a replacement for pickle to work
+efficiently on Python objects containing large data (
+<em>joblib.dump</em> &amp; <em>joblib.load</em> ).</p></li>
+</ol>
+</section>
+<div>
+<p role="heading"><span>User manual</span></p>
+<ul>
+<li><a href="https://joblib.readthedocs.io/en/latest/why.html">Why joblib: project goals</a><ul>
+<li><a href="https://joblib.readthedocs.io/en/latest/why.html#benefits-of-pipelines">Benefits of pipelines</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/why.html#joblib-s-approach">Joblib’s approach</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/why.html#design-choices">Design choices</a></li>
+</ul>
+</li>
+<li><a href="https://joblib.readthedocs.io/en/latest/installing.html">Installing joblib</a><ul>
+<li><a href="https://joblib.readthedocs.io/en/latest/installing.html#using-pip">Using <cite>pip</cite></a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/installing.html#using-distributions">Using distributions</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/installing.html#the-manual-way">The manual way</a></li>
+</ul>
+</li>
+<li><a href="https://joblib.readthedocs.io/en/latest/memory.html">On demand recomputing: the <cite>Memory</cite> class</a><ul>
+<li><a href="https://joblib.readthedocs.io/en/latest/memory.html#use-case">Use case</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/memory.html#using-with-numpy">Using with <cite>numpy</cite></a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/memory.html#shelving-using-references-to-cached-values">Shelving: using references to cached values</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/memory.html#gotchas">Gotchas</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/memory.html#ignoring-some-arguments">Ignoring some arguments</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/memory.html#custom-cache-validation">Custom cache validation</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/memory.html#reference-documentation-of-the-memory-class">Reference documentation of the <code><span>Memory</span></code> class</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/memory.html#useful-methods-of-decorated-functions">Useful methods of decorated functions</a></li>
+</ul>
+</li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html">Embarrassingly parallel for loops</a><ul>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#common-usage">Common usage</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#thread-based-parallelism-vs-process-based-parallelism">Thread-based parallelism vs process-based parallelism</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#serialization-processes">Serialization &amp; Processes</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#shared-memory-semantics">Shared-memory semantics</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#reusing-a-pool-of-workers">Reusing a pool of workers</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#working-with-numerical-data-in-shared-memory-memmapping">Working with numerical data in shared memory (memmapping)</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#avoiding-over-subscription-of-cpu-resources">Avoiding over-subscription of CPU resources</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#custom-backend-api">Custom backend API</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#old-multiprocessing-backend">Old multiprocessing backend</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#bad-interaction-of-multiprocessing-and-third-party-libraries">Bad interaction of multiprocessing and third-party libraries</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/parallel.html#parallel-reference-documentation"><cite>Parallel</cite> reference documentation</a></li>
+</ul>
+</li>
+<li><a href="https://joblib.readthedocs.io/en/latest/persistence.html">Persistence</a><ul>
+<li><a href="https://joblib.readthedocs.io/en/latest/persistence.html#use-case">Use case</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/persistence.html#a-simple-example">A simple example</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/persistence.html#persistence-in-file-objects">Persistence in file objects</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/persistence.html#compressed-joblib-pickles">Compressed joblib pickles</a></li>
+</ul>
+</li>
+<li><a href="https://joblib.readthedocs.io/en/latest/auto_examples/index.html">Examples</a><ul>
+<li><a href="https://joblib.readthedocs.io/en/latest/auto_examples/index.html#id1">General examples</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/auto_examples/index.html#parallel-examples">Parallel examples</a></li>
+</ul>
+</li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html">Development</a><ul>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#getting-the-latest-code">Getting the latest code</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#installing">Installing</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#dependencies">Dependencies</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#workflow-to-contribute">Workflow to contribute</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#running-the-test-suite">Running the test suite</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#building-the-docs">Building the docs</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#making-a-source-tarball">Making a source tarball</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#making-a-release-and-uploading-it-to-pypi">Making a release and uploading it to PyPI</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#updating-the-changelog">Updating the changelog</a></li>
+<li><a href="https://joblib.readthedocs.io/en/latest/developing.html#latest-changes">Latest changes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-reference">
+<h2>Module reference<a href="#module-reference" title="Permalink to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr><td><p><a href="https://joblib.readthedocs.io/en/latest/generated/joblib.Memory.html#joblib.Memory" title="joblib.Memory"><code><span>Memory</span></code></a>([location,&nbsp;backend,&nbsp;mmap_mode,&nbsp;...])</p></td>
+<td><p>A context object for caching a function's return value each time it is called with the same input arguments.</p></td>
+</tr>
+<tr><td><p><a href="https://joblib.readthedocs.io/en/latest/generated/joblib.Parallel.html#joblib.Parallel" title="joblib.Parallel"><code><span>Parallel</span></code></a>([n_jobs,&nbsp;backend,&nbsp;return_as,&nbsp;...])</p></td>
+<td><p>Helper class for readable parallel mapping.</p></td>
+</tr>
+<tr><td><p><a href="https://joblib.readthedocs.io/en/latest/generated/joblib.parallel_config.html#joblib.parallel_config" title="joblib.parallel_config"><code><span>parallel_config</span></code></a>([backend,&nbsp;n_jobs,&nbsp;verbose,&nbsp;...])</p></td>
+<td><p>Set the default backend or configuration for <a href="https://joblib.readthedocs.io/en/latest/generated/joblib.Parallel.html#joblib.Parallel" title="joblib.Parallel"><code><span>Parallel</span></code></a>.</p></td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr><td><p><a href="https://joblib.readthedocs.io/en/latest/generated/joblib.dump.html#joblib.dump" title="joblib.dump"><code><span>dump</span></code></a>(value,&nbsp;filename[,&nbsp;compress,&nbsp;protocol,&nbsp;...])</p></td>
+<td><p>Persist an arbitrary Python object into one file.</p></td>
+</tr>
+<tr><td><p><a href="https://joblib.readthedocs.io/en/latest/generated/joblib.load.html#joblib.load" title="joblib.load"><code><span>load</span></code></a>(filename[,&nbsp;mmap_mode])</p></td>
+<td><p>Reconstruct a Python object from a file persisted with joblib.dump.</p></td>
+</tr>
+<tr><td><p><a href="https://joblib.readthedocs.io/en/latest/generated/joblib.hash.html#joblib.hash" title="joblib.hash"><code><span>hash</span></code></a>(obj[,&nbsp;hash_name,&nbsp;coerce_mmap])</p></td>
+<td><p>Quick calculation of a hash to identify uniquely Python objects containing numpy arrays.</p></td>
+</tr>
+<tr><td><p><a href="https://joblib.readthedocs.io/en/latest/generated/joblib.register_compressor.html#joblib.register_compressor" title="joblib.register_compressor"><code><span>register_compressor</span></code></a>(compressor_name,&nbsp;compressor)</p></td>
+<td><p>Register a new compressor.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="deprecated-functionalities">
+<h2>Deprecated functionalities<a href="#deprecated-functionalities" title="Permalink to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr><td><p><a href="https://joblib.readthedocs.io/en/latest/generated/joblib.parallel_backend.html#joblib.parallel_backend" title="joblib.parallel_backend"><code><span>parallel_backend</span></code></a>(backend[,&nbsp;n_jobs,&nbsp;...])</p></td>
+<td><p>Change the default backend used by Parallel inside a with block.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section></div>
+  </div>
+</body>
+</html>

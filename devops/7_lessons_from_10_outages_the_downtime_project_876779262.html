@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>7 Lessons From 10 Outages – The Downtime Project</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>7 Lessons From 10 Outages – The Downtime Project</h1>
+    <p><strong>URL:</strong> <a href="https://downtimeproject.com/podcast/7-lessons-from-10-outages">https://downtimeproject.com/podcast/7-lessons-from-10-outages</a></p>
+    <p><strong>Tags:</strong> databases, devops</p>
+    <p><strong>Bookmark ID:</strong> 876779262</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="mainContentOfPage">
+		<div id="632622736" tabindex="0" data-episode="100" data-player_id="632622736">
+	<div>
+			<p><img decoding="async" src="http://web.archive.org/web/20251016132809im_/https://downtimeproject.com/files/2021/03/dp_logo-150x150.png" alt="The Downtime Project" title="The Downtime Project">
+			</p>
+			<div>
+				<div>
+					<p>
+						The Downtime Project					</p>
+					<p>7 Lessons From 10 Outages</p>
+				</div>
+				<div>
+					<p>
+						
+						<img decoding="async" src="http://web.archive.org/web/20251016132809im_/https://downtimeproject.com/wp-content/plugins/seriously-simple-podcasting/assets/css/images/player/images/icon-loader.svg" alt="Loading">
+					</p>
+					<div>
+								<p><time>00:00</time>
+								<span>/</span></p><!-- We need actual duration here from the server -->
+								<p><time datetime="PT0H46M20S">46:20</time>
+							</p></div>
+				</div>
+									<nav>
+													
+																			
+											</nav>
+							</div>
+		</div>
+			<div aria-label="RSS Feed URL">
+							<p>RSS Feed</p>
+							
+							</div>
+	
+	
+
+	</div>
+<p>After 10 post-mortems in their first season, Tom and Jamie reflect on the common issues they’ve seen.  Click through for details!</p>
+
+
+
+
+
+<h4>Summing Up Downtime</h4>
+
+
+
+<p>We’re just about through our inaugural season of The Downtime Project podcast, and to celebrate, we’re reflecting back on recurring themes we’ve noticed in many of the ten outages we’ve poured over. It’s been remarkable how consistent certain patterns have been–either as risks or as assets–to the engineering teams as they’ve tackled these incidents.</p>
+
+
+
+<p>Out of these recurring patterns we’ve extracted lessons that we intend to take into our own engineering teams; and so, we’ve compiled five of those lessons below for the benefit of any interested readers, with the hope that you, too, will find them useful to learn from and to prepare for. As we go, we’ll include links to the outages and episodes where each theme occurred.</p>
+
+
+
+<p>If you feel like we’ve missed any major patterns, or have any other feedback for us, please leave a comment. And thank you all for listening to the first season of The Downtime Project.</p>
+
+
+
+<h4>Lesson #1: Circular dependencies will break your operational tools</h4>
+
+
+
+<p>The instinct to “dogfood” is a great one–after all, how can you reasonably expect your customers to use your products and services if you will not? How can you endorse the workflow they enable if you don’t stake your own company’s productivity on it?</p>
+
+
+
+<p>However, this healthy instinct backfires when said dogfooding creates a dependency cycle wherein you rely on your own systems… to fix your systems.</p>
+
+
+
+<p>Other instances of this dependency pattern fall out of the otherwise-virtuous motto: <em>don’t repeat yourself.</em> Why run another kind of database just for monitoring? You already run a production database very well, thank you very much. So just put the telemetry data in there, too.</p>
+
+
+
+<p>These cycles, too, can hurt badly during outages. Like, authentication needing to be working to access operational systems to fix authentication… or monitoring needing working databases to get to metric data to discover what’s wrong the the databases. Fun stuff like that.</p>
+
+
+
+<p>Even customer communication systems are sometimes broken because you use your own system to relay system status to your customers.</p>
+
+
+
+<h6>Citations:</h6>
+
+
+
+<ul><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/episode-1-slack-vs-tgws/">Ep 1. Slack vs TGWs</a>: Slack couldn’t access dashboards to know what was wrong with their systems because AWS Transit Gateways needed to be healthy in order to get http traffic to their dashboards. Unfortunately, the TGW were what was unhealthy.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/monzos-2019-cassandra-outage/">Ep 3. Monzo’s 2019 Cassandra Outage</a>: Monzo’s production database was down, which was necessary to authenticate system access and deploy code to fix the issue.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/kinesis-hits-the-thread-limit/">Ep 10. Kinesis Hits the Thread Limit</a>: AWS couldn’t update their status page about their Kinesis-related outage because updates to the status page depended on Kinesis.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/salesforce-publishes-a-controversial-postmortem-and-breaks-their-dns/">Ep 11. Salesforce Publishes a Controversial Postmortem</a>: Salesforce couldn’t update their status page because they hosted it on a Heroku-based service, and since they owned Heroku and had therefore integrated it into their infrastructure, Heroku’s uptime depended on their system health</li></ul>
+
+
+
+<h4>Lesson #2: Dumb down the automation</h4>
+
+
+
+<p>Everyone is super excited about the modern public cloud and its myriad APIs. The elasticity! The orchestration! Automating away operations so humans don’t have to get woken up!</p>
+
+
+
+<p>But this zeal sometimes has us over-automate systems where it is very difficult to test the degenerate cases. And, the downside of those untested degenerate cases may be much more significant than the slight efficiency or economic upside of having this be an automatic decision during healthier system states.</p>
+
+
+
+<p>But even if the automation <em>is</em> sensible because the adjustment needs to happen often and/or the economics involved are substantial, the automation sometimes lacks a necessary “panic mode”, recognizing when parameters have swung way outside their normal range. In these cases the automation should stop automating and page the operators, because it’s about to start making some wildly illogical decisions.</p>
+
+
+
+<h6>Citations</h6>
+
+
+
+<ul><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/episode-1-slack-vs-tgws/">Ep 1. Slack vs TGWs</a>: Slack’s automation threw away a bunch of servers they “didn’t need” (narrator: they did) due to idle CPU during a network issue, then spun up far too many when the surge of traffic returned, causing file descriptor limits to be exceeded on their systems.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/githubs-43-second-network-partition/">Ep 6. GitHub’s 43 Second Network Partition</a>: GitHub’s database automation did a cross-country promotion of a primary with incomplete records during a 43 second network partition.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/auth0s-seriously-congested-database/">Ep 8. Auth0’s Seriously Congested Database</a>: Auth0 spun up twice as many frontends when requests slowed down due to the database, just exacerbating issues with even more traffic.</li></ul>
+
+
+
+<h4>Lesson #3: It’s 2021 and databases are still tricky</h4>
+
+
+
+<p>If only everything were stateless, eh? Those pesky databases are always causing us problems. Even the issues that manifested themselves in frontend layers were often congestion that cascaded upward from databases slowing down deeper in the service stack.</p>
+
+
+
+<p>This area was so rife for material that we’ve broken out three sub-lessons:</p>
+
+
+
+<h4>Lesson #3a. Production databases should be mostly point queries or tightly-bounded ranges</h4>
+
+
+
+<p>Production systems are happy with flat, uniform loads with low variance. When it comes to database servers, that means lots of very fast queries, probably all index-backed, where the worst-case cost is bound.</p>
+
+
+
+<p>To ensure this, put your arbitrary batch queries in a dedicated secondary server, or in some OLAP system like BigQuery or Snowflake. Or, heck, dump to CSV and parallel grep. Whatever level of sophistication makes you happy and fits your dataset size and workflow.</p>
+
+
+
+<p>And if you don’t yet know enough about your query time distribution to know whether you have crazy table scans at the end your tails, stop reading this and go add that monitoring right now!</p>
+
+
+
+<h6>Citations</h6>
+
+
+
+<ul><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/gitlabs-2017-postgres-outage/">Ep 2. Gitlab’s 2017 Postgres Outage</a>: Very expensive long-running account deletion operations ran live on their production database, leading to congestion and failure.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/auth0-silently-loses-some-indexes/">Ep 5. Auth0 Silently Loses Some Indexes</a>: Unmonitored failures to create an index caused some queries to suddenly become scans greatly increasing load on database and eventually causing outage.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/auth0s-seriously-congested-database/">Ep 8. Auth0’s Seriously Congested Database</a>: Database issues were exacerbated by some ad-hoc expensive scans that were happening on production systems.</li></ul>
+
+
+
+<h4>Lesson #3b. Avoid “middle magic” in databases</h4>
+
+
+
+<p>What’s middle magic? Let’s outline a spectrum to illustrate.</p>
+
+
+
+<p>Low magic (good): Use something boring like MySQL and deal with sharding yourself. This will suck because you have to do a lot of extra work in the application layer, but you will probably know how it works when it breaks. This was probably the right idea 10 years ago, but is still fine.</p>
+
+
+
+<p>Lowest magic (gooder): Just buy a bigger server and use one unsharded MySQL/PostgreSQL server with a replica or two. This good idea is evergreen–ride this as long as you can.</p>
+
+
+
+<p>High magic (admittedly, probably best in 2021+): Pay a cloud provider to run your database for you, including all your backups and failover, etc. You can even use a fancy database if you’d really like, like CloudSpanner, or DynamoDB, or whatever. This used to be unthinkable due the complete, opaque reliance on a 3rd party, but it is likely the best idea in 2021. These big companies have gotten very good at this stuff, and you’re probably already existentially doomed if they don’t do their job well since you’re running your company on one of them anyway. The downside is that it’s gonna cost you, because the markup on these services is high.</p>
+
+
+
+<p>Middle Magic (playing with fire): Use something that will claim to automatically solve all your scaling and failover problems, but <em>you</em> still have to operate, and it has a lot less production miles on it than something boring like MySQL. When it goes wrong, very few people know how to operate or understand its internals well enough to diagnose the sophisticated failure modes of its orchestration flows. The probable suspects we encountered in these outages include MongoDB and Cassandra.</p>
+
+
+
+<h6>Citations</h6>
+
+
+
+<ul><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/monzos-2019-cassandra-outage/">Ep 3. Monzo’s 2019 Cassandra Outage</a>: Expanding Cassandra cluster had lots of poorly-understood configuration foot guns.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/auth0-silently-loses-some-indexes/">Ep 5. Auth0 Silently Loses Some Indexes</a>: The balance of resyncing replicas in mongo without degrading live traffic was very difficult to achieve.</li></ul>
+
+
+
+<h4>Lesson #3c. Focus on restores not backups, and how know long they will take</h4>
+
+
+
+<p>Backing up means <em>nothing</em> if you cannot prove you can restore it, and the restoration produces the correct records, and that restoration will complete before the heat death of the universe.</p>
+
+
+
+<p>Let’s examine the less-comprehensive alternatives:</p>
+
+
+
+<ul><li>Backup didn’t run… that would never happen, I’m monitoring that!</li><li>Backup ran and produced a file in S3. This might be as far as your backup validation goes. The file is empty. Or it contains the helpful string: <code>Error: permission denied on directory /data</code>. Your company is gone, while you scream “but you exited zero!!!” into the night.</li><li>Backup ostensibly contains lots of great data, but got corrupted on upload. Your company is gone.</li><li>Backup contains a valid database! But every shard is shard 0 because of a loop bug in your backup script. 87.5% of your company is gone.</li><li>Every backup contains the correct, valid database! But downloading it from that cheap storage class over a 85ms link will mean restoring will take 2 weeks. Your company is <em>still</em> gone.</li></ul>
+
+
+
+<p>So, make sure you prove your restores work–automate and monitor this, don’t just do it once in awhile–and make sure they will restore in an acceptable amount of time. Expect it to be a bad day, like 4 hours, but not company ending, like 4 days. Make sure corporate-policy-wise your company is comfortable with this restoration time, and get sign-off from your leadership so they won’t be surprised when the engineering team needs 7 hours to get the databases back during a catastrophe.</p>
+
+
+
+<h6>Citations</h6>
+
+
+
+<ul><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/gitlabs-2017-postgres-outage/">Ep 2. Gitlab’s 2017 Postgres Outage</a>: Backup script had been running daily, putting things to S3… until a software update broke the backup script. Restorations hadn’t really ever been tested.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/githubs-43-second-network-partition/">Ep 6. GitHub’s 43 Second Network Partition</a>: Restores took a very long time (10h+), especially during peak traffic, leading to a very long time the site was degraded.</li></ul>
+
+
+
+<h4>Lesson #4: Roll out slowly in stages</h4>
+
+
+
+<p>Despite our best efforts, mistakes will still happen. We’ll introduce bugs, or misconfigure stuff, or propagate a bad firewall rule, or whatever.</p>
+
+
+
+<p>However, staged rollouts localize the issue so you can see the smoke before the fire spreads and burns down your entire site.</p>
+
+
+
+<p>A lot of teams we discussed had a thoughful rollout methodology that made sure their company’s employees were among the first users to be trying out changes to their services, and then only a small fraction of their customers would be exposed before all were.</p>
+
+
+
+<p>Here’s an concrete example:</p>
+
+
+
+<ol><li>Roll out to your <strong>Dogfooding</strong> cluster — every hour, or every single change set, the current HEAD version is deployed to your employees. This lets your own team catch issues far before your customers ever see it.</li><li><strong>Canary</strong> cluster — at your release cadence (once a day, perhaps?), the release candidate is pushed out to a small deployment that exposes it to a small percentage of your users. Some companies make this one datacenter among dozens; others make this some percentage of the userbase, based on a modulus of their user_id or similar. A release manager may carefully monitor the metrics on this new release in the canary population, before moving on to…</li></ol>
+
+
+
+<ul><li><strong>Production</strong>. Now it starts to go out to the wider world. Depending on the criticality of the service and the release cadence, sometimes all at once, or sometimes <em>further</em> staggered, like a datacenter at a time.</li></ul>
+
+
+
+<p>For companies who employed these approaches, certainly there were many occasions when most of us never knew about a small issue because it was caught in dogfooding, or canary, or what-have-you.</p>
+
+
+
+<p>But in instances in our podcasts where the companies had not utilized a staged rollout, things went markedly less well… and the teams writing the postmortems were the first to call out how much a staged deployment would have made a difference.</p>
+
+
+
+<h6>Citations</h6>
+
+
+
+<ul><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/one-subtle-regex-takes-down-cloudflare/">Ep. 4 One Subtle Regex Takes Down Cloudflare</a>: Cloudflare’s very rapid deployment of a more expensive regular expression-based rule took the entire site down due to CPU exhaustion</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/salesforce-publishes-a-controversial-postmortem-and-breaks-their-dns/">Ep 11. Salesforce Publishes a Controversial Postmortem</a>: Rapid deployment of a DNS configuration change took all their name servers offline</li></ul>
+
+
+
+<h4>Lesson #5: Prepare for failure with policies and knobs</h4>
+
+
+
+<p>Finally, while we’d all love to believe that if we’re very thorough on testing, and if we stage things thoughtfully, we won’t have any more full outages… we all know they’re still going to happen.</p>
+
+
+
+<p>So, as we learned from many of our outages, if we build in policies and knobs into our systems and playbooks ahead of outages, we’ll have a much easier time recovering from them.</p>
+
+
+
+<p>Policies means having thought through and decided things like: if the whole site goes down from excess load, which traffic do we shed first to recover? What types, or what classes of customers? If these decisions are made ahead of time, and signed off by leadership, potentially even validated with lawyers, the engineering teams will have a lot easier time getting things back under duress.</p>
+
+
+
+<p>Knobs means: do we have something like a “panic mode” we can set, where orchestration stops, load balancers get less clever, and nonessential jobs are automatically paused? Do we have a runtime parameter we can tweak to shed some fractional percentage of our load, so that we don’t have to just turn off and on everything, thereby encouraging the thundering herd?</p>
+
+
+
+<h6>Citations</h6>
+
+
+
+<ul><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/episode-1-slack-vs-tgws/">Ep 1. Slack vs TGWs</a>: Slack was able to use the envoy proxy’s panic mode to maximize the chance the load balancing algorithm found a healthy host while overloaded.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/one-subtle-regex-takes-down-cloudflare/">Ep. 4 One Subtle Regex Takes Down Cloudflare</a>: Cloudflare already had policies and supporting terms-of-use that allowed them to turn off their global Web Application Firewall when that service was failing. Additionally, they had a runtime parameters that allowed them to disable this instantly without deploying code.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/githubs-43-second-network-partition/">Ep 6. GitHub’s 43 Second Network Partition</a>: GitHub turned off web hook invocations and GitHub Pages builds while it was recovering from overload.</li><li><a href="http://web.archive.org/web/20251016132809/https://downtimeproject.com/podcast/how-coinbase-unleashed-a-thundering-herd/">Ep 9. How Coinbase Unleashed a Thundering Herd</a>: Coinbase needed to overprovision one of its clusters to deal with thundering herd after flipping all traffic off/on rather than just slowly ramping traffic back up.</li></ul>
+
+
+
+<h4>A ounce of prevention…</h4>
+
+
+
+<p>After reviewing all these stressful outages, we feel confident in one very encouraging conclusion: a few common practices, many that we’ve enumerated above, will either prevent or dramatically lessen the severity of all manner of resultant site issues.</p>
+
+
+
+<p>Thanks again to all Downtime Project listeners out there for your feedback, advocacy, and support! We’re considering these ten outages a wrap on season one, and we’ll regroup, reflect, and be back with more episodes in season two shortly! </p>
+
+
+
+<p>– Tom and Jamie</p>
+
+
+		
+									</div></div>
+  </div>
+</body>
+</html>

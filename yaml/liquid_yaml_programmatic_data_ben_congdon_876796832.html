@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Liquid YAML: Programmatic Data | Ben Congdon</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Liquid YAML: Programmatic Data | Ben Congdon</h1>
+    <p><strong>URL:</strong> <a href="https://benjamincongdon.me/blog/2016/07/27/Liquid-YAML-Programmatic-Data">https://benjamincongdon.me/blog/2016/07/27/Liquid-YAML-Programmatic-Data</a></p>
+    <p><strong>Tags:</strong> yaml</p>
+    <p><strong>Bookmark ID:</strong> 876796832</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+            <p>I’ve been working on a configuration management project recently, and as a consequence have been working regularly with YAML. It’s a very capable markdown language, but it gets unwieldy very quickly.</p>
+<p>I’ve come up with a hacky - yet, in my mind, pretty awesome - ‘solution’ to cut down on YAML bulk and allow for some pretty surprising templatization of data.</p>
+<p>First, the problem: Say, for example, I wish to describe a simple object set of ‘cats’. Suppose I have 5 cats, which map to 5 food dishes. Here would by my YAML:</p>
+<pre tabindex="0"><code>- name: cat_01
+  dish: dish_01
+- name: cat_02
+  dish: dish_02
+- name: cat_03
+  dish: dish_03
+- name: cat_04
+  dish: dish_04
+- name: cat_04
+  dish: dish_04
+</code></pre><p>This, obviously, isn’t a very efficient method of describing my situation, but my goal here is to save serialized objects. Verbosity in my YAML allows me to be more lazy about loading objects, to remove complexity from that portion of my project.</p>
+<p>Besides, there may come a time when some system engineer decides that it’s necessary from <code>cat_02</code> to eat from <code>dish_34</code>, and if I were to describe this set with ranges, I would lose that expressiveness.</p>
+<p>However, the problem compounds. Suppose now that my cat problem is actually an animal shelter, and I now have to describe multiple shelter locations in my definitions.</p>
+<p>By my specification, I need to have a <code>seattle.yaml</code> and a <code>boston.yaml</code> which contain my serialized cats, but now the leg work of writing out all these YAML defs gets much more intensive:</p>
+<pre tabindex="0"><code>seattle.yaml
+---
+- name: cat_sea_01
+  dish: dish_sea_01
+- name: cat_sea_02
+  dish: dish_sea_02
+- name: cat_sea_03
+  dish: dish_sea_03
+- name: cat_sea_04
+  dish: dish_sea_04
+- name: cat_sea_04
+  dish: dish_sea_04
+
+boston.yaml
+---
+- name: cat_bos_01
+  dish: dish_bos_01
+- name: cat_bos_02
+  dish: dish_bos_02
+- name: cat_bos_03
+  dish: dish_bos_03
+- name: cat_bos_04
+  dish: dish_bos_04
+- name: cat_bos_04
+  dish: dish_bos_04
+</code></pre><p>Easy to read, but quickly becoming unwieldy. Suppose I double my number of shelters, suppose I need to make a systematic change to the formatting of some of these fields. Storing data this way will cause you to waste literally <em>seconds</em> of time.</p>
+<p>Enter <a href="https://shopify.github.io/liquid/">Liquid</a>, a Ruby-based templating language. Liquid allows us to template this YAML, so as to cut down on the lines we need to change to effectively change the entire structure of our data.</p>
+<p>Liquid also is easily extendable, and has basic control flow mechanics, so we can automate much of the creation of this YAML data.</p>
+<p>Here is what our ‘shelter’ template could look like:</p>
+<pre tabindex="0"><code>template.yaml
+---
+{% for i in (1..num_cats) %}
+- name: cat_{{ location }}_{{ i }}
+  dish: dish_{{ location }}_{{ i }}
+{% endfor %}
+</code></pre><p>Then, we just save parameters for our locations:</p>
+<pre tabindex="0"><code>vars.yaml
+---
+seattle:
+  location: sea
+  num_cats: 5
+boston:
+  location: bos
+  num_cats: 5
+</code></pre><p>And run our YAML through Liquid’s renderer before actually loading it:</p>
+<div><pre tabindex="0"><code data-lang="ruby"><span><span><span>def</span> <span>get_config</span>
+</span></span><span><span>  template = <span>Liquid</span>::<span>Template</span>.parse(<span>File</span>.read(<span>'template.yaml'</span>))
+</span></span><span><span>  vars = <span>YAML</span>.load_file(<span>'vars.yaml'</span>)
+</span></span><span><span>  final_config  = {}
+</span></span><span><span>  vars.each <span>do</span> |loc, loc_vars| {
+</span></span><span><span>    final_config[loc] = template.render loc_vars
+</span></span><span><span>  }
+</span></span><span><span>  final_config
+</span></span><span><span><span>end</span>
+</span></span></code></pre></div><p>The result is the same two sets of YAML definition files, but now we’ve effectively templatized this workflow so future updates will require only a change to the template and the variables, not the rendered data. However, we can still use the rendered template data as an input to whatever configuration management tool we’ve come up with, and as such can make on-the-fly changes to single ‘instances’ of objects in the rendered YAML.</p>
+<p>For me, this solved what was quickly becoming a rather frustrating problem. I felt a bit like I was reinventing the ‘ERB + YAML’ workflow, but the syntax of Liquid <em>feels</em> a lot more intuitive. ERB probably would have added some more flexibility as well, because the tool I was writing is also written in Ruby, but I wanted a templating system that was easily readable by someone who had no idea about the inner workings of Ruby.</p>
+<p>So yeah, Liquid + YAML: a novel concept. Potentially very powerful if templating fits well with the type of data you’re working with.</p>
+        </div></div>
+  </div>
+</body>
+</html>

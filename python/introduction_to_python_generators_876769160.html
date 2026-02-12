@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Introduction to Python Generators</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Introduction to Python Generators</h1>
+    <p><strong>URL:</strong> <a href="https://code.tutsplus.com/tutorials/introduction-to-python-generators--cms-29491">https://code.tutsplus.com/tutorials/introduction-to-python-generators--cms-29491</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876769160</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div content-block-type="Wysi" data-controller="post-body animate-hash-anchors image-gallery" data-post-title="Introduction to Python Generators">
+<p>Generators make it easy to create iterations in Python and in return write less code. This tutorial will introduce you to Python generators, their benefits, and how they work.</p>
+<h2>Basics</h2>
+<p>A generator is a function that returns a generator object on which you can call the&nbsp;<code>next()</code> method, so that for every call it returns a value or the next value. A normal Python function uses the <code>return</code> keyword to return values, but generators use the keyword <code>yield</code>&nbsp;to return values. This means that any Python function containing a <a href="https://docs.python.org/2/reference/simple_stmts.html#yield"><code>yield</code></a> statement is a generator function.</p>
+<p>The <code>yield</code> statement usually halts the function and saves the local state so that it can be resumed right where it left off. Generator functions can have one or more <code>yield</code> statements.</p>
+<p>A generator is also an iterator, but what is an iterator? Before we dive into the details of generators, I think it's important to know what iterators are because they form an integral part of this discussion.<br></p>
+<h2>Python Iterators</h2>
+<p>A Python iterator is simply a class that defines an <code>__iter__()</code>&nbsp;method. Most Python objects are iterable, which means you can loop over each and every element in the objects. Examples of iterables in Python include strings, lists, tuples, dictionaries, and ranges.</p>
+<p>Let's consider the example below, in which we are looping over a list of colors:</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>colors</span><span>=</span> <span>[</span><span>“</span><span>red</span><span>”</span><span>,</span><span>”</span><span>blue</span><span>”</span><span>,</span><span>”</span><span>yellow</span><span>”</span><span>]</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre><span>def</span> <span>my_funct</span><span>():</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>    <span>for</span> <span>color</span> <span>in</span> <span>colors</span><span>:</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>        <span>print</span> <span>color</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Behind the scenes, the&nbsp;<code>for</code> statement will call <code>iter()</code>&nbsp;on the list object. The function will then return an iterator object that defines the method <code>__next__()</code>, which will then access each color, one at a time. When there are no more colors left,&nbsp;<code>__next__</code>&nbsp;will raise a <code>stopIteration</code>&nbsp;exception, which will in turn inform the <code>for</code>&nbsp;loop to terminate.</p>
+
+<h3>Iterating Over a Dictionary</h3>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>d</span> <span>=</span> <span>{</span><span>'x'</span><span>:</span> <span>10</span><span>,</span> <span>'y'</span><span>:</span> <span>20</span><span>,</span> <span>'z'</span><span>:</span> <span>30</span><span>}</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre><span>for</span> <span>k</span><span>,</span><span>v</span> <span>in</span> <span>d</span><span>.</span><span>items</span><span>():</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>    <span>print</span> <span>k</span><span>,</span> <span>v</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre><span>#result
+</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre><span># y 20
+</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre><span># x 10
+</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre><span># z 30
+</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<h3>Iterating Over Rows in a CSV File<br>
+</h3>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>import</span> <span>csv</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre><span>with</span> <span>open</span><span>(</span><span>'file.csv'</span><span>,</span> <span>newline</span><span>=</span><span>''</span><span>)</span> <span>as</span> <span>File</span><span>:</span>  
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>    <span>reader</span> <span>=</span> <span>csv</span><span>.</span><span>reader</span><span>(</span><span>File</span><span>)</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>    <span>for</span> <span>row</span> <span>in</span> <span>reader</span><span>:</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>        <span>yield</span> <span>row</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<h3>Iterating Over a String</h3>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>my_string</span> <span>=</span> <span>'Generators'</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre><span>for</span> <span>string</span> <span>in</span> <span>my_string</span><span>:</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>    <span>print</span> <span>(</span><span>string</span><span>)</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>    
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre><span>#result
+</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre><span># G
+</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre><span># e
+</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre><span># n
+</span>
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre><span># e
+</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre><span># r
+</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre><span># a
+</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre><span># t
+</span>
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre><span># o
+</span>
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre><span># r
+</span>
+</pre></td>
+</tr>
+<tr id="line-16">
+<td><pre>16</pre></td>
+<td><pre><span># s</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<h3>Benefits of Using Generators</h3>
+<p>Let's discuss some of the benefits of using generators as opposed to iterators:</p>
+<h4>Easy to Implement<br>
+</h4>
+<p>Building an iterator in Python will require you to implement a class with <code>__iter__()</code> and <code>__next__()</code> methods as well as taking care of any errors that may cause a <code>stopIteration</code>&nbsp;error.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>class</span> <span>Reverse</span><span>:</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>    <span>"""Iterator for looping over a sequence backwards."""</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>data</span><span>):</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>        <span>self</span><span>.</span><span>data</span> <span>=</span> <span>data</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>        <span>self</span><span>.</span><span>index</span> <span>=</span> <span>len</span><span>(</span><span>data</span><span>)</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>    <span>def</span> <span>__iter__</span><span>(</span><span>self</span><span>):</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>        <span>return</span> <span>self</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>    <span>def</span> <span>__next__</span><span>(</span><span>self</span><span>):</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre>        <span>if</span> <span>self</span><span>.</span><span>index</span> <span>==</span> <span>0</span><span>:</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>            <span>raise</span> <span>StopIteration</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre>        <span>self</span><span>.</span><span>index</span> <span>=</span> <span>self</span><span>.</span><span>index</span> <span>-</span> <span>1</span>
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre>        <span>return</span> <span>self</span><span>.</span><span>data</span><span>[</span><span>self</span><span>.</span><span>index</span><span>]</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>As you can see above, the implementation is very lengthy. All this burden is automatically handled by generators.<br></p>
+<h4>
+<strong></strong>Less Memory Consumption<br>
+</h4>
+<p>Generators help to minimize memory consumption, especially when dealing with large data sets, because a generator will only return one item at a time.</p>
+<h4>Better Performance and Optimisation<br>
+</h4>
+<p>Generators are lazy in nature. This means that they only generate values when required to do so. Unlike a normal iterator, where all values are generated regardless of whether they will be used or not, generators only generate the values needed. This will, in turn, lead to your program performing faster.<br></p>
+<h3>How to Create a Generator in Python</h3>
+<p>Creating a generator is very easy. All you need to do is write a normal function, but with a <code>yield</code> statement instead of a&nbsp;<code>return</code>&nbsp;statement, as shown below.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>def</span> <span>gen_function</span><span>():</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>    <span>yield</span> <span>"python"</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>While a <code>return</code>&nbsp;statement terminates a function entirely, <code>yield</code> just pauses the function until it is called again by the <code>next()</code>&nbsp;method.</p>
+<p>For example, the program below makes use of both the <code>yield</code>&nbsp;and<code> next()</code>&nbsp;statements.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>def</span> <span>myGenerator</span><span>(</span><span>l</span><span>):</span>  
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>     <span>total</span> <span>=</span> <span>1</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>     <span>for</span> <span>n</span> <span>in</span> <span>l</span><span>:</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>       <span>yield</span> <span>total</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>       <span>total</span> <span>+=</span> <span>n</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>     
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre><span>newGenerator</span> <span>=</span> <span>myGenerator</span><span>([</span><span>10</span><span>,</span><span>3</span><span>])</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>newGenerator</span><span>))</span>  
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>newGenerator</span><span>))</span>  
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>  
+</pre></td>
+</tr>
+</tbody></table></div>
+<h3>How Python Generators Work</h3>
+<p>Let's&nbsp; see how generators work. Consider the example below. <br></p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span># generator_example.py
+</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre><span>def</span> <span>myGenerator</span><span>(</span><span>l</span><span>):</span>  
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>     <span>total</span> <span>=</span> <span>0</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>     <span>for</span> <span>n</span> <span>in</span> <span>l</span><span>:</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>       <span>total</span> <span>+=</span> <span>n</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>       <span>yield</span> <span>total</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>      
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>     
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre><span>newGenerator</span> <span>=</span> <span>myGenerator</span><span>([</span><span>10</span><span>,</span><span>20</span><span>,</span><span>30</span><span>])</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>newGenerator</span><span>))</span>  
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>newGenerator</span><span>))</span>  
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>newGenerator</span><span>))</span>  
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre>  
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>In the function above, we define a generator named <code>myGenerator</code>, which takes a list&nbsp;<code>l</code> as an argument. We then define a variable <code>total</code> and assign to it a value of zero. In addition, we loop through each element in the list and subsequently add it to the total variable.</p>
+<p>We then instantiate <code>newGenerator</code>&nbsp;and call the <code>next()</code> method on it. This will run the code until it yields the first value of <code>total</code>, which will be <code>0</code> in this case. The function then keeps the value of the total variable until the next time the function is called. Unlike a normal&nbsp;<code>return</code> statement, which will return all the values at once, the generator will pick up from where it left off.<br></p>
+<p>Below are the remaining subsequent values.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span># generator_example.py
+</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre><span>def</span> <span>myGenerator</span><span>(</span><span>l</span><span>):</span>  
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>     <span>total</span> <span>=</span> <span>0</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>     <span>for</span> <span>n</span> <span>in</span> <span>l</span><span>:</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>       <span>yield</span> <span>total</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>       <span>total</span> <span>+=</span> <span>n</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>      
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>     
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre><span>newGenerator</span> <span>=</span> <span>myGenerator</span><span>([</span><span>10</span><span>,</span><span>20</span><span>,</span><span>30</span><span>])</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>newGenerator</span><span>))</span>  
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>newGenerator</span><span>))</span>  
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>newGenerator</span><span>))</span>  
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre>  
+</pre></td>
+</tr>
+<tr id="line-16">
+<td><pre>16</pre></td>
+<td><pre><span># result
+</span>
+</pre></td>
+</tr>
+<tr id="line-17">
+<td><pre>17</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-18">
+<td><pre>18</pre></td>
+<td><pre><span># 0
+</span>
+</pre></td>
+</tr>
+<tr id="line-19">
+<td><pre>19</pre></td>
+<td><pre><span># 10
+</span>
+</pre></td>
+</tr>
+<tr id="line-20">
+<td><pre>20</pre></td>
+<td><pre><span># 30
+</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>If you try to call the function after it has completed the loop, you will get a <code>StopIteration</code> error.</p>
+<p>A&nbsp;<code>StopIteration</code> is raised by the&nbsp;<code>next()</code>&nbsp;method to signal that there are no further items produced by the iterator.<br></p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre>0
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>10
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>30
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>Traceback <span>(</span>most recent call last<span>)</span>:
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>  File <span>"python"</span>, line 15, <span>in</span> &lt;module&gt;
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>StopIterationNormal <span>function</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<h4>Example 2</h4>
+<p>In this example, we show how to use multiple yield statements in a function.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span># colors.py
+</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre><span>def</span> <span>colors</span><span>():</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>  <span>yield</span> <span>"red"</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>  <span>yield</span> <span>"blue"</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>  <span>yield</span> <span>"green"</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>  
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre><span>next_color</span> <span>=</span><span>colors</span><span>()</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>   
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>next_color</span><span>))</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>next_color</span><span>))</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre><span>print</span><span>(</span><span>next</span><span>(</span><span>next_color</span><span>))</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre><span># result
+</span>
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-16">
+<td><pre>16</pre></td>
+<td><pre><span># red
+</span>
+</pre></td>
+</tr>
+<tr id="line-17">
+<td><pre>17</pre></td>
+<td><pre><span># blue
+</span>
+</pre></td>
+</tr>
+<tr id="line-18">
+<td><pre>18</pre></td>
+<td><pre><span># green</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Whereas a normal function returns all the values when the function is a called, a generator waits until the <code>next()</code>&nbsp;method is called again. Once&nbsp;<code>next()</code>&nbsp;is called, the colors function resumes from where it had stopped.</p>
+<h2>Conclusion</h2>
+<p>Generators are more memory efficient, especially when working with very large lists or big objects. This is because you can use yields to work on smaller bits rather than having the whole data in memory all at once.</p>
+<p>Additionally, don’t forget to see what we have available for sale and for study <a href="https://codecanyon.net/category/all?term=python" target="_self" data-action="click->ga-analytics#sendMarketClickEvent">on Envato Market</a>, and don't hesitate to ask any questions and provide your valuable feedback using the feed below.<br></p>
+<p>Furthermore, if you feel stuck, there is a very good <a href="https://code.tutsplus.com/courses/introduction-to-python/lessons/generators" target="_self">course on Python generators</a> in the course&nbsp;section.&nbsp;</p>
+</div></div>
+  </div>
+</body>
+</html>

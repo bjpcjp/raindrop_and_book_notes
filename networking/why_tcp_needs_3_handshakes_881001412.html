@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Why TCP needs 3 handshakes</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Why TCP needs 3 handshakes</h1>
+    <p><strong>URL:</strong> <a href="https://www.pixelstech.net/article/1727412048-Why-TCP-needs-3-handshakes">https://www.pixelstech.net/article/1727412048-Why-TCP-needs-3-handshakes</a></p>
+    <p><strong>Tags:</strong> networking</p>
+    <p><strong>Bookmark ID:</strong> 881001412</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="article_content_panel">
+		<article>
+         	<h2>Prerequisite Knowledge</h2>
+<p>First, let's look at the control bits and state machine of TCP, which form the basis for understanding the three-way handshake of TCP.</p>
+<h2>TCP Packet Control Bits</h2>
+<p>The control bits in the TCP packet header are used to control the status of the TCP connection and can indicate various control information such as connection establishment, termination, reset, etc.</p>
+<p>There are six common control bits:</p>
+<ul>
+<li><strong>SYN</strong> (Synchronize Sequence Numbers): Requests to establish a connection (part of the three-way handshake). It is set in the initial packet during connection establishment, indicating that the sender wishes to establish a connection and synchronize sequence numbers. Since TCP is bidirectional, both sides need to send a <strong>SYN</strong> when establishing a connection. Although <strong>SYN</strong> packets cannot carry data, they do consume a sequence number.</li>
+<li><strong>ACK</strong> (ACKnowledgment Field Significant): Acknowledges received data. When the <strong>ACK</strong> flag is set, the receiver fills in the next expected sequence number in the acknowledgment field. An <strong>ACK</strong> packet that does not carry data does not consume a sequence number.</li>
+<li><strong>FIN</strong> (No More Data From Sender): Requests to terminate the connection (part of the four-way wave-off). It is set in the packet after all data has been sent, notifying the receiver that the sender has finished sending all data. As TCP is bidirectional, both sides need to send a <strong>FIN</strong> when closing the connection. Although <strong>FIN</strong> packets do not carry data, they do consume a sequence number.</li>
+<li><strong>RST</strong> (Reset the Connection): Resets the connection, used for abnormal or erroneous connection termination. When the receiver receives the <strong>RST</strong> flag, it immediately terminates the connection without any data confirmation. For example, the <strong>TIME_WAIT</strong> issue mentioned in previous articles. Note: The presence of <strong>RST</strong> packets in a production environment often indicates potential problems.</li>
+<li><strong>PSH</strong> (Push Function): Indicates to the receiver that received data should be delivered to the application layer immediately, suggesting that the data should be processed quickly rather than waiting for more subsequent data.</li>
+<li><strong>URG</strong> (Urgent Pointer Field Significant): Indicates that the data has high priority and should be processed by the receiver as soon as possible.</li>
+<li><strong>ECE</strong> (ECN-Echo): Indicates whether both parties have negotiated support for Explicit Congestion Notification during the three-way handshake.</li>
+</ul>
+<h2>Sequence Number (Seq)</h2>
+<p>Since TCP is bidirectional, both sides of a single connection can send data to each other, so each side must maintain its own <strong>Seq</strong> field.</p>
+<p><img src="data:application/octet-stream;base64," width="750"></p>
+<p>The <strong>Seq</strong> is dynamically and randomly generated, which helps prevent forged packets from resetting the connection (RST attack).</p>
+<p>TCP provides ordered transmission, so each data segment must include a <strong>Seq</strong> number field:</p>
+<ul>
+<li>When the receiver gets out-of-order packets, it can reorder them based on the Seq.</li>
+<li>When the receiver gets duplicate packets, it can deduplicate them based on the Seq.</li>
+</ul>
+<p>As shown in the figure, the increment method of the sequence number (<strong>important</strong>):</p>
+<ul>
+<li>For segment 1, if the starting <strong>Seq</strong> number is 1 and the length is 1448 bytes, then the <strong>Seq</strong> number of segment 2 would be 1 + 1448 = 1449.</li>
+<li>If the length of segment 2 is also 1448, then the <strong>Seq</strong> number of segment 3 would be 1449 + 1448 = 2897.</li>
+</ul>
+<p>In other words, the size of a <strong>Seq</strong> number is derived by adding the <strong>Seq</strong> number and the length of the previous segment.</p>
+<blockquote>
+<p>Seq = Previous Segment's Seq + Length (Len)</p>
+</blockquote>
+<p>Therefore, in the process of TCP data transmission, the segments sent by either party should be continuous: the <strong>Seq</strong> number of the next packet equals the <strong>Seq</strong> of the previous packet + <strong>Length</strong> (except for the three-way handshake and four-way wave-off).</p>
+<h2>Len (Segment Length)</h2>
+<p><img src="data:application/octet-stream;base64," width="750"></p>
+<p>It's important to note that the Length (Len) does not include the length of the TCP header; therefore, don't assume that a packet with <code>Len = 0</code> is meaningless. The TCP header itself carries a lot of information.</p>
+<h2>ACK (Acknowledgment Number)</h2>
+<p>The receiver tells the sender which segments (Seq numbers) it has received.</p>
+<p><img src="data:application/octet-stream;base64,"></p>
+<ul>
+<li>If the sender sends a segment with Seq:1 and Len:100 to the receiver, then the ACK reply from the receiver would be 1 + 100 = 101, indicating that it has received all data up to Seq 101.</li>
+<li>If the sender sends a segment with Seq:101 and Len:50 to the receiver, then the ACK reply from the receiver would be 101 + 50 = 151, indicating that it has received all data up to Seq 151.</li>
+</ul>
+<p>For example, if Party A sends a segment "Seq:x Len:y" to Party B, then Party B’s ACK response would be x + y, meaning it has received all bytes up to <code>x + y</code>.</p>
+<p><strong>Conclusion</strong>: The ACK number that the receiver sends back is exactly equal to the next Seq number that the sender expects to send. Therefore, we can see that the ACK number of packet 10377 is exactly equal to the Seq number of packet 10378.</p>
+<p>If neither party sends any data during communication, then the ACK number returned by the other party will not change (that is, it remains the initial value during the three-way handshake).</p>
+<h2>TCP State Machine</h2>
+<p>Below is the classic TCP state machine diagram, which encompasses all states of a TCP connection from its initial establishment to its final termination throughout its entire lifecycle.</p>
+<p><img src="data:application/octet-stream;base64,"></p>
+<p>Here is the color-coded version from Wikipedia:</p>
+<p><img src="data:application/octet-stream;base64," width="750"></p>
+<h2>Three-Way Handshake Example</h2>
+<p>Below is a typical diagram illustrating the three-way handshake.</p>
+<p><img src="data:application/octet-stream;base64,"></p>
+<ul>
+<li>First Handshake: The client initiates a connection request, setting the SYN bit to 1, and initializes a random sequence number (ISN) Seq = x. After sending the SYN packet, the client enters the SYN-SENT state.</li>
+<li>Second Handshake: The server, upon receiving the connection request from the client, initializes a random sequence number (ISN) Seq = y, sets the SYN and ACK bits to 1, and the ACK number to x + 1. After sending the SYN-ACK packet, the server enters the SYN-RECEIVED state.</li>
+<li>Third Handshake: The client, upon receiving the server's response, sets the ACK bit to 1 and sends an ACK packet. The client then enters the ESTABLISHED state. The server, upon receiving the ACK packet with the ACK number y + 1, also enters the ESTABLISHED state, completing the TCP connection establishment.</li>
+</ul>
+<p>During the connection process, the state transitions of the client and server are as follows:</p>
+<p><img src="data:application/octet-stream;base64,"></p>
+<p>From the diagram, we can see that for the <strong>ESTABLISHED</strong> (connection established) state, the client and server perceive the completion of the connection at different times:</p>
+<ul>
+<li>For the client, the connection is considered established after the second handshake.</li>
+<li>For the server, the connection is considered established after the third handshake.</li>
+</ul>
+<h2>Wireshark Packet Capture</h2>
+<p>To gain a more intuitive understanding of the TCP three-way handshake process, we use Wireshark for packet capture:</p>
+<p>Open Wireshark and start capturing packets, then execute the following command in the terminal:</p>
+<pre><code>curl -I -H "Connection: close" https://dbwu.tech</code></pre>
+<p>Switch to the Wireshark interface and use <strong>TCP</strong> filtering to view the packets. You can observe the TCP three-way handshake process, where 192.168.3.68 is the local IP address within the LAN.</p>
+<p><img src="data:application/octet-stream;base64," width="750"></p>
+<ul>
+<li>First Handshake: The client initiates a connection request using the Seq field set to 3123802190.</li>
+<li>Second Handshake: The server responds with the Seq field set to 1071295171, ACK = x + 1, which is 3123802191.</li>
+<li>Third Handshake: The client responds with ACK = y + 1, which is 1071295172.</li>
+</ul>
+<p>Tip: By default, Wireshark displays relative Seq values (starting from 0). If you want to see the actual random Seq values of the client and server, you can adjust this in Wireshark's settings:</p>
+<blockquote>
+<p>Edit - Preferences - Protocols - TCP</p>
+<p>Uncheck: Relative Sequence numbers</p>
+</blockquote>
+<h2>Proof (Rough Version)</h2>
+<p>After explaining the theoretical foundation of the TCP three-way handshake, we can analyze and prove the proposition:</p>
+<blockquote>
+<p>At least three handshakes are required to establish a TCP connection.</p>
+</blockquote>
+<p>Using a basic mathematical proof method called Proof by Contradiction, we posit the following:</p>
+<blockquote>
+<p>A TCP connection can be established without three handshakes.</p>
+</blockquote>
+<p>Specifically, we hypothesize that TCP can establish a connection with fewer than three handshakes, represented by N. We divide N into three ranges:</p>
+<blockquote>
+<p>N &lt; 1 | N == 1 | N == 2</p>
+</blockquote>
+<p>We will prove each case separately.</p>
+<h2>1. N &lt; 1</h2>
+<p>When N &lt; 1, it means that no one initiates the first handshake. In this scenario, neither side knows of the other's existence, making it impossible to establish a connection. Thus, N &lt; 1 is invalid, leading us to the next hypothesis: N == 1.</p>
+<h2>2. N == 1</h2>
+<p>When N == 1, it implies that only one handshake occurs, i.e., the sender sends a connection request (SYN) to the receiver. However, no further action happens after the request is sent, so the connection cannot be established because:</p>
+<ul>
+<li>The sender cannot confirm whether its transmission function works properly (whether it can send data normally to the receiver).</li>
+<li>The receiver cannot confirm whether its reception function works properly (including whether it is listening on the correct port and whether its buffer is functioning correctly).</li>
+</ul>
+<p>Without these confirmations, the sender considers the connection unestablished and will not continue to send data. Thus, N == 1 is invalid, leading us to the next hypothesis: N == 2.</p>
+<h2>3. N == 2</h2>
+<p>When N == 2, it implies that two handshakes occur. Based on the proof for N == 1, we continue our examination.</p>
+<p>After the first handshake, the receiver acknowledges the sender's request with a response (SYN-ACK). Similar to the sender's message, the receiver's response is sent but nothing else happens, so the connection still cannot be established. Now, two things are confirmed:</p>
+<ul>
+<li>The sender's transmission function is normal.</li>
+<li>The receiver's reception function is normal.</li>
+</ul>
+<p>However, the receiver cannot confirm:</p>
+<ul>
+<li>Whether its transmission function is working correctly (whether it can send data normally to the sender).</li>
+<li>Whether the sender's reception function is working correctly.</li>
+</ul>
+<p>Thus, N == 2 is also insufficient for establishing a connection, demonstrating that at least three handshakes are necessary to fully establish a TCP connection.</p>
+<h2>Original Proposition Proof</h2>
+<p>Through the method of proof by contradiction provided earlier, we can prove that at least three handshakes are needed to establish a TCP connection.</p>
+<p>Following the reasoning outlined previously, let's examine the state changes of the sender and receiver when N == 3.</p>
+<p>After the second handshake, the sender receives the connection establishment response packet (SYN-ACK) from the receiver and replies with an acknowledgement packet (ACK).</p>
+<p>Now the following can be confirmed:</p>
+<ol>
+<li>Whether the receiver's transmission function is working correctly (whether it can send data normally to the sender).</li>
+<li>Whether the sender's reception function is working correctly.</li>
+</ol>
+<p>The two issues present when N == 2 are now resolved:</p>
+<ul>
+<li>The receiver's transmission function is normal.</li>
+<li>The sender's reception function is normal.</li>
+</ul>
+<h2>Proof (Correct Version)</h2>
+<p>Previously, we used a rough method of proof by contradiction along with the state of TCP packets to prove that at least three handshakes are required to establish a TCP connection. Additionally, we can rigorously prove this using TCP sequence numbers (Seq).</p>
+<p>To achieve reliable data transmission, both parties in a TCP communication must maintain a sequence number (Seq) to identify which packets have already been received by the other party.</p>
+<blockquote>
+<p>The three-way handshake process involves: both parties exchanging their initial sequence numbers and confirming that the other party has received these initial sequence numbers.</p>
+</blockquote>
+<ul>
+<li>If there is only one handshake, the receiver does not send its initial sequence number.</li>
+<li>If there are only two handshakes, only the sender's initial sequence number can be confirmed, while the receiver's initial sequence number cannot be verified.</li>
+</ul>
+<p>Moreover, with only two handshakes, there might be an exceptional situation caused by delayed packets resulting in invalid connections.</p>
+<p><img src="data:application/octet-stream;base64," width="750"></p>
+<p>As shown in the diagram, there are multiple paths in a network. The first packet sent by the client to establish a connection might end up on a path with severe delays, causing it to take a long time to reach the server.</p>
+<p>After the client's timeout, it assumes the first packet was lost and reinitiates the request. The second request takes a normal path and completes the connection quickly.</p>
+<p>From the client's perspective, the communication seems to have ended, but then its first packet arrives late at the server. Since the server does not know that this is an old and invalid request, it responds normally.</p>
+<p><strong>If TCP had only two handshakes, an invalid (expired duplicate) connection would be established on the server.</strong></p>
+<p>However, under the three-way handshake mechanism, when the client receives the server's response, it realizes that this is an outdated connection and responds with an RST packet. Upon receiving the RST, the server closes the connection.</p>
+<blockquote>
+<p>Key Point: What the three-way handshake confirms is the initial sequence number (ISN, Initial Sequence Number) of both the sender and receiver. This value distinguishes the current connection from historical old connections.</p>
+</blockquote>
+<h2>Conclusion</h2>
+<p>Theoretically, even more than three handshakes would not guarantee a "completely reliable" TCP connection. However, through three handshakes, it can at least be confirmed that the connection is "basically usable." Increasing the number of handshakes would merely increase the confidence level in the "connection availability."</p>
+<p>After the three-way handshake of TCP, the state changes of the sender and receiver are as follows:</p>
+<ul>
+<li>The sender confirms: its own transmission and reception are normal, and the other party's transmission and reception are normal.</li>
+<li>The receiver confirms: its own transmission and reception are normal, and the other party's transmission and reception are normal.</li>
+</ul>
+<p>In summary, the three-way handshake in TCP is a classic example of a "trade-off" in software engineering.</p>
+<p>Translated from&nbsp;<a href="https://dbwu.tech/posts/network/why-tcp-does-needs-three-way-handshake/" target="_blank" rel="noopener">https://dbwu.tech/posts/network/why-tcp-does-needs-three-way-handshake/</a></p>		 </article>
+     </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Why Your Angular Bundle Is Bloated</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Why Your Angular Bundle Is Bloated</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/bitovi/why-your-angular-bundle-is-bloated-p2d">https://dev.to/bitovi/why-your-angular-bundle-is-bloated-p2d</a></p>
+    <p><strong>Tags:</strong> angularjs, javascript</p>
+    <p><strong>Bookmark ID:</strong> 876785177</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main-title">
+            <a href="https://media.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fthkap3noyidzsjq9o7un.jpg">
+              <img src="data:application/octet-stream;base64," width="1000" height="420" alt="Cover image for Why Your Angular Bundle Is Bloated">
+            </a>
+
+          
+        </div><div data-article-id="1127978" id="article-body">
+            <p>A common reason why an Angular bundle is bloated is that it uses a library like <a href="https://momentjs.com/">MomentJS</a> that isn't <a href="https://developer.mozilla.org/en-US/docs/Glossary/Tree_shaking">tree-shakable</a>.</p>
+
+<p>This blog post will go over how to analyze your Angular bundle and pinpoint libraries that are bloating your application.</p>
+
+<h2>
+  <a name="why-you-should-analyze-your-angular-bundle" href="#why-you-should-analyze-your-angular-bundle">
+  </a>
+  Why You Should Analyze Your Angular Bundle
+</h2>
+
+<p>It's important to keep an eye on your project dependencies and call out the ones that are bloating your application. MomentJS used to be a staple in my projects until I realized how huge it was.</p>
+
+<p>The following section will walk through how I came to the conclusion to avoid MomentJS using this <a href="https://m-thompson-code.github.io/moment-replacement/">demo application</a> where I display tomorrow's date.</p>
+
+<h2>
+  <a name="how-to-analyze-your-angular-bundle" href="#how-to-analyze-your-angular-bundle">
+  </a>
+  How to Analyze Your Angular Bundle
+</h2>
+
+<p>A quick way to analyze your Angular bundle is to use <a href="https://github.com/ngx-builders/source-map-analyzer#setting-up-this-builder">ngx-builders/analyze</a>, a custom <a href="https://angular.io/guide/cli-builder#cli-builders">Angular CLI builder</a> which allows you to run <code>source-map-explorer</code> with Angular. This will show you how your application is bundled and which dependencies are bloating your application.</p>
+
+<ol>
+<li>
+<p>Install <code>ngx-builders/analyze</code><br>
+</p>
+<pre><code>ng add @ngx-builders/analyze
+</code></pre>
+
+</li>
+<li>
+<p>Install <code>source-map-explorer</code><br>
+</p>
+<pre><code>npm i -D source-map-explorer
+</code></pre>
+
+</li>
+<li>
+<p>Update <code>package.json</code> to have an analyze npm script:<br>
+</p>
+<pre><code><span>{</span><span>
+</span><span>"name"</span><span>:</span><span> </span><span>"[YOUR_PROJECT_NAME]"</span><span>,</span><span>//</span><span> </span><span>Likely</span><span> </span><span>will</span><span> </span><span>be</span><span> </span><span>your</span><span> </span><span>project</span><span> </span><span>name</span><span>,</span><span> </span><span>but</span><span> </span><span>doesn't</span><span> </span><span>have</span><span> </span><span>to</span><span> </span><span>be</span><span>
+</span><span>"scripts"</span><span>:</span><span> </span><span>{</span><span>
+    </span><span>"ng"</span><span>:</span><span> </span><span>"ng"</span><span>,</span><span>
+    </span><span>//</span><span> </span><span>...</span><span>
+    </span><span>"analyze"</span><span>:</span><span> </span><span>"ng run [YOUR_PROJECT_NAME]:analyze"</span><span>,</span><span>//</span><span> </span><span>You</span><span> </span><span>can</span><span> </span><span>find</span><span> </span><span>your</span><span> </span><span>project</span><span> </span><span>name</span><span> </span><span>in</span><span> </span><span>angular.json</span><span> </span><span>under</span><span> </span><span>the</span><span> </span><span>projects</span><span> </span><span>property</span><span>
+</span><span>},</span><span>
+</span><span>}</span><span>
+</span></code></pre>
+
+</li>
+<li>
+<p>Run analyze npm script<br>
+</p>
+<pre><code>npm run analyze
+</code></pre>
+
+</li>
+</ol>
+
+<p>You should see your application build and your browser should open the results provided by <code>source-map-explorer</code>.</p>
+
+<h2>
+  <a name="why-replace-momentjs" href="#why-replace-momentjs">
+  </a>
+  Why Replace MomentJS
+</h2>
+
+<p>This <a href="https://m-thompson-code.github.io/moment-replacement/">demo</a> has been implemented 3 ways:</p>
+
+<ol>
+<li><p>Using <a href="https://github.com/m-thompson-code/moment-replacement/blob/main/src/app/services/date.service.ts#L10">Native Date API</a></p></li>
+<li><p>Using <a href="https://github.com/m-thompson-code/moment-replacement/blob/momentjs/src/app/services/date.service.ts#L11">MomentJS</a></p></li>
+<li><p>Using <a href="https://github.com/m-thompson-code/moment-replacement/blob/date-fns/src/app/services/date.service.ts#L12">date-fns</a></p></li>
+</ol>
+
+<h3>
+  <a name="tests" href="#tests">
+  </a>
+  Tests
+</h3>
+
+<p>Each of these solutions use the same <a href="https://github.com/m-thompson-code/moment-replacement/blob/main/src/app/services/date.service.spec.ts#L21">tests</a> to verify implementation achieves the expected behavior:</p>
+
+<h3>
+  <a name="comparing-the-results" href="#comparing-the-results">
+  </a>
+  Comparing the Results
+</h3>
+
+<p>Analyzing how each solution affects the overall bundle for my demo shows:</p>
+
+<div><table>
+<thead>
+<tr>
+<th>Implementation</th>
+<th>Total Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Native Date API</td>
+<td>202 KB</td>
+</tr>
+<tr>
+<td>MomentJS</td>
+<td>575.18 KB</td>
+</tr>
+<tr>
+<td>date-fns</td>
+<td>222.65 KB</td>
+</tr>
+</tbody>
+</table></div>
+
+<p><a href="https://m-thompson-code.github.io/moment-replacement/assets/sme-result-native-date.html">Using Native Date API</a> negatively impacts my bundle size the least. Total size is <strong>202 KB</strong>.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fdt2rtmchqby7q9iqqfgp.png"><img src="data:application/octet-stream;base64," alt="native data api bundle graph" loading="lazy" width="800" height="491"></a></p>
+
+<p>This makes sense since by avoiding any extra libraries, there's no risk of bloating my bundle size. Only downside is that implementation took much longer than using an existing library.</p>
+
+<p><a href="https://m-thompson-code.github.io/moment-replacement/assets/sme-result-momentjs.html">Using MomentJS</a> impacts my bundle size the most. Total size is <strong>575.18 KB</strong>. Using MomentJS bloats my application significantly resulting in being <strong>64.8%</strong> of my total bundle size. This is because <strong>MomentJS is not <a href="https://developer.mozilla.org/en-US/docs/Glossary/Tree_shaking">tree-shakable</a> and results in importing the entire library regardless of how little it is used.</strong></p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F1ytdft14wp54j0ij99ba.gif"><img src="data:application/octet-stream;base64," alt="MomentJS bundle graph" loading="lazy" width="600" height="368" data-animated="true"></a></p>
+
+<p><a href="https://m-thompson-code.github.io/moment-replacement/assets/sme-result-date-fns.html">Using date-fns</a> increases my bundle size by <strong>20.79 KB</strong>. Total size is <strong>222.65 KB</strong> resulting in being <strong>9.3%</strong> of my total bundle size. This is a huge improvement over importing MomentJS. This is because date-fns is <a href="https://developer.mozilla.org/en-US/docs/Glossary/Tree_shaking">tree-shakable</a>.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F9vmayc4ow1ikpt8b4j7q.gif"><img src="data:application/octet-stream;base64," alt="data-fns bundle graph" loading="lazy" width="600" height="368" data-animated="true"></a></p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>When considering adding a library to an Angular application, tools such as <a href="https://github.com/ngx-builders/source-map-analyzer#setting-up-this-builder">ngx-builders</a> and <a href="https://github.com/danvk/source-map-explorer#readme">source-map-explorer</a> can verify that the library won't bloat that application's bundle size.</p>
+
+<p>Depending on how much time I want to spend implementing all my features from scratch, I might avoid using any library. But if I want to spend less time reinventing the wheel, I'll reach for a well-known libraries such as <a href="https://date-fns.org/">date-fns</a> that are <a href="https://developer.mozilla.org/en-US/docs/Glossary/Tree_shaking">tree-shakable</a>. One thing is certain, I'll avoid libraries like <a href="https://momentjs.com/">MomentJS</a> since they result in an unnecessary increase in bundle size.</p>
+
+<p>Long story short, please consider the <a href="https://momentjs.com/docs/#/-project-status/recommendations/">alternatives</a> to MomentJS.</p>
+
+<p>Want to read more blog posts by Bitovi? Check out more posts at <a href="https://www.bitovi.com/blog/rfc-strictly-typed-reactive-forms-gotchas-every-angular-developer-needs-to-know">our blogs at Bitovi.com</a></p>
+
+<p>Need help analyzing your Angular application? Bitovi is here to help! <a href="https://bitovi.com/angular">Contact us today</a>!</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

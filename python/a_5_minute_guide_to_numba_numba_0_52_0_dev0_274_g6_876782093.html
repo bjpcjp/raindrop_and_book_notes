@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A ~5 minute guide to Numba — Numba 0.52.0.dev0+274.g626b40e-py3.7-linux-x86_64.egg documentation</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A ~5 minute guide to Numba — Numba 0.52.0.dev0+274.g626b40e-py3.7-linux-x86_64.egg documentation</h1>
+    <p><strong>URL:</strong> <a href="https://numba.pydata.org/numba-doc/dev/user/5minguide.html">https://numba.pydata.org/numba-doc/dev/user/5minguide.html</a></p>
+    <p><strong>Tags:</strong> numba, python</p>
+    <p><strong>Bookmark ID:</strong> 876782093</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="a-5-minute-guide-to-numba" itemprop="articleBody">
+
+<p>Numba is a just-in-time compiler for Python that works best on code that uses
+NumPy arrays and functions, and loops. The most common way to use Numba is
+through its collection of decorators that can be applied to your functions to
+instruct Numba to compile them. When a call is made to a Numba decorated
+function it is compiled to machine code “just-in-time” for execution and all or
+part of your code can subsequently run at native machine code speed!</p>
+<p>Out of the box Numba works with the following:</p>
+<ul>
+<li>OS: Windows (32 and 64 bit), OSX and Linux (32 and 64 bit)</li>
+<li>Architecture: x86, x86_64, ppc64le. Experimental on armv7l, armv8l (aarch64).</li>
+<li>GPUs: Nvidia CUDA. Experimental on AMD ROC.</li>
+<li>CPython</li>
+<li>NumPy 1.15 - latest</li>
+</ul>
+<div id="how-do-i-get-it">
+<h2>How do I get it?<a href="#how-do-i-get-it" title="Permalink to this headline">¶</a></h2>
+<p>Numba is available as a <a href="https://conda.io/docs/">conda</a> package for the
+<a href="https://www.anaconda.com/">Anaconda Python distribution</a>:</p>
+<div><pre><span></span>$ conda install numba
+</pre></div>
+<p>Numba also has wheels available:</p>
+<div><pre><span></span>$ pip install numba
+</pre></div>
+<p>Numba can also be
+<a href="https://numba.pydata.org/numba-doc/dev/user/installing.html#numba-source-install-instructions"><span>compiled from source</span></a>, although we do
+not recommend it for first-time Numba users.</p>
+<p>Numba is often used as a core package so its dependencies are kept to an
+absolute minimum, however, extra packages can be installed as follows to provide
+additional functionality:</p>
+<ul>
+<li><code><span>scipy</span></code> - enables support for compiling <code><span>numpy.linalg</span></code> functions.</li>
+<li><code><span>colorama</span></code> - enables support for color highlighting in backtraces/error
+messages.</li>
+<li><code><span>pyyaml</span></code> - enables configuration of Numba via a YAML config file.</li>
+<li><code><span>icc_rt</span></code> - allows the use of the Intel SVML (high performance short vector
+math library, x86_64 only). Installation instructions are in the
+<a href="https://numba.pydata.org/numba-doc/dev/user/performance-tips.html#intel-svml"><span>performance tips</span></a>.</li>
+</ul>
+</div>
+<div id="will-numba-work-for-my-code">
+<h2>Will Numba work for my code?<a href="#will-numba-work-for-my-code" title="Permalink to this headline">¶</a></h2>
+<p>This depends on what your code looks like, if your code is numerically
+orientated (does a lot of math), uses NumPy a lot and/or has a lot of loops,
+then Numba is often a good choice. In these examples we’ll apply the most
+fundamental of Numba’s JIT decorators, <code><span>@jit</span></code>, to try and speed up some
+functions to demonstrate what works well and what does not.</p>
+<p>Numba works well on code that looks like this:</p>
+<div><pre><span></span><span>from</span> <span>numba</span> <span>import</span> <span>jit</span>
+<span>import</span> <span>numpy</span> <span>as</span> <span>np</span>
+
+<span>x</span> <span>=</span> <span>np</span><span>.</span><span>arange</span><span>(</span><span>100</span><span>)</span><span>.</span><span>reshape</span><span>(</span><span>10</span><span>,</span> <span>10</span><span>)</span>
+
+<span>@jit</span><span>(</span><span>nopython</span><span>=</span><span>True</span><span>)</span> <span># Set "nopython" mode for best performance, equivalent to @njit</span>
+<span>def</span> <span>go_fast</span><span>(</span><span>a</span><span>):</span> <span># Function is compiled to machine code when called the first time</span>
+    <span>trace</span> <span>=</span> <span>0.0</span>
+    <span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>a</span><span>.</span><span>shape</span><span>[</span><span>0</span><span>]):</span>   <span># Numba likes loops</span>
+        <span>trace</span> <span>+=</span> <span>np</span><span>.</span><span>tanh</span><span>(</span><span>a</span><span>[</span><span>i</span><span>,</span> <span>i</span><span>])</span> <span># Numba likes NumPy functions</span>
+    <span>return</span> <span>a</span> <span>+</span> <span>trace</span>              <span># Numba likes NumPy broadcasting</span>
+
+<span>print</span><span>(</span><span>go_fast</span><span>(</span><span>x</span><span>))</span>
+</pre></div>
+<p>It won’t work very well, if at all, on code that looks like this:</p>
+<div><pre><span></span><span>from</span> <span>numba</span> <span>import</span> <span>jit</span>
+<span>import</span> <span>pandas</span> <span>as</span> <span>pd</span>
+
+<span>x</span> <span>=</span> <span>{</span><span>'a'</span><span>:</span> <span>[</span><span>1</span><span>,</span> <span>2</span><span>,</span> <span>3</span><span>],</span> <span>'b'</span><span>:</span> <span>[</span><span>20</span><span>,</span> <span>30</span><span>,</span> <span>40</span><span>]}</span>
+
+<span>@jit</span>
+<span>def</span> <span>use_pandas</span><span>(</span><span>a</span><span>):</span> <span># Function will not benefit from Numba jit</span>
+    <span>df</span> <span>=</span> <span>pd</span><span>.</span><span>DataFrame</span><span>.</span><span>from_dict</span><span>(</span><span>a</span><span>)</span> <span># Numba doesn't know about pd.DataFrame</span>
+    <span>df</span> <span>+=</span> <span>1</span>                        <span># Numba doesn't understand what this is</span>
+    <span>return</span> <span>df</span><span>.</span><span>cov</span><span>()</span>                <span># or this!</span>
+
+<span>print</span><span>(</span><span>use_pandas</span><span>(</span><span>x</span><span>))</span>
+</pre></div>
+<p>Note that Pandas is not understood by Numba and as a result Numba would simply
+run this code via the interpreter but with the added cost of the Numba internal
+overheads!</p>
+</div>
+<div id="what-is-nopython-mode">
+<h2>What is <code><span>nopython</span></code> mode?<a href="#what-is-nopython-mode" title="Permalink to this headline">¶</a></h2>
+<p>The Numba <code><span>@jit</span></code> decorator fundamentally operates in two compilation modes,
+<code><span>nopython</span></code> mode and <code><span>object</span></code> mode. In the <code><span>go_fast</span></code> example above,
+<code><span>nopython=True</span></code> is set in the <code><span>@jit</span></code> decorator, this is instructing Numba to
+operate in <code><span>nopython</span></code> mode. The behaviour of the <code><span>nopython</span></code> compilation mode
+is to essentially compile the decorated function so that it will run entirely
+without the involvement of the Python interpreter. This is the recommended and
+best-practice way to use the Numba <code><span>jit</span></code> decorator as it leads to the best
+performance.</p>
+<p>Should the compilation in <code><span>nopython</span></code> mode fail, Numba can compile using
+<code><span>object</span> <span>mode</span></code>, this is a fall back mode for the <code><span>@jit</span></code> decorator if
+<code><span>nopython=True</span></code> is not set (as seen in the <code><span>use_pandas</span></code> example above). In
+this mode Numba will identify loops that it can compile and compile those into
+functions that run in machine code, and it will run the rest of the code in the
+interpreter. For best performance avoid using this mode!</p>
+</div>
+<div id="how-to-measure-the-performance-of-numba">
+<h2>How to measure the performance of Numba?<a href="#how-to-measure-the-performance-of-numba" title="Permalink to this headline">¶</a></h2>
+<p>First, recall that Numba has to compile your function for the argument types
+given before it executes the machine code version of your function, this takes
+time. However, once the compilation has taken place Numba caches the machine
+code version of your function for the particular types of arguments presented.
+If it is called again the with same types, it can reuse the cached version
+instead of having to compile again.</p>
+<p>A really common mistake when measuring performance is to not account for the
+above behaviour and to time code once with a simple timer that includes the
+time taken to compile your function in the execution time.</p>
+<p>For example:</p>
+<div><pre><span></span><span>from</span> <span>numba</span> <span>import</span> <span>jit</span>
+<span>import</span> <span>numpy</span> <span>as</span> <span>np</span>
+<span>import</span> <span>time</span>
+
+<span>x</span> <span>=</span> <span>np</span><span>.</span><span>arange</span><span>(</span><span>100</span><span>)</span><span>.</span><span>reshape</span><span>(</span><span>10</span><span>,</span> <span>10</span><span>)</span>
+
+<span>@jit</span><span>(</span><span>nopython</span><span>=</span><span>True</span><span>)</span>
+<span>def</span> <span>go_fast</span><span>(</span><span>a</span><span>):</span> <span># Function is compiled and runs in machine code</span>
+    <span>trace</span> <span>=</span> <span>0.0</span>
+    <span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>a</span><span>.</span><span>shape</span><span>[</span><span>0</span><span>]):</span>
+        <span>trace</span> <span>+=</span> <span>np</span><span>.</span><span>tanh</span><span>(</span><span>a</span><span>[</span><span>i</span><span>,</span> <span>i</span><span>])</span>
+    <span>return</span> <span>a</span> <span>+</span> <span>trace</span>
+
+<span># DO NOT REPORT THIS... COMPILATION TIME IS INCLUDED IN THE EXECUTION TIME!</span>
+<span>start</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+<span>go_fast</span><span>(</span><span>x</span><span>)</span>
+<span>end</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+<span>print</span><span>(</span><span>"Elapsed (with compilation) = </span><span>%s</span><span>"</span> <span>%</span> <span>(</span><span>end</span> <span>-</span> <span>start</span><span>))</span>
+
+<span># NOW THE FUNCTION IS COMPILED, RE-TIME IT EXECUTING FROM CACHE</span>
+<span>start</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+<span>go_fast</span><span>(</span><span>x</span><span>)</span>
+<span>end</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+<span>print</span><span>(</span><span>"Elapsed (after compilation) = </span><span>%s</span><span>"</span> <span>%</span> <span>(</span><span>end</span> <span>-</span> <span>start</span><span>))</span>
+</pre></div>
+<p>This, for example prints:</p>
+<div><pre><span></span><span>Elapsed</span> <span>(</span><span>with</span> <span>compilation</span><span>)</span> <span>=</span> <span>0.33030009269714355</span>
+<span>Elapsed</span> <span>(</span><span>after</span> <span>compilation</span><span>)</span> <span>=</span> <span>6.67572021484375e-06</span>
+</pre></div>
+<p>A good way to measure the impact Numba JIT has on your code is to time execution
+using the <a href="https://docs.python.org/3/library/timeit.html">timeit</a> module
+functions, these measure multiple iterations of execution and, as a result,
+can be made to accommodate for the compilation time in the first execution.</p>
+<p>As a side note, if compilation time is an issue, Numba JIT supports
+<a href="https://numba.pydata.org/numba-doc/dev/reference/jit-compilation.html#jit-decorator-cache"><span>on-disk caching</span></a> of compiled functions and also has
+an <a href="https://numba.pydata.org/numba-doc/dev/reference/aot-compilation.html#aot-compilation"><span>Ahead-Of-Time</span></a> compilation mode.</p>
+</div>
+<div id="how-fast-is-it">
+<h2>How fast is it?<a href="#how-fast-is-it" title="Permalink to this headline">¶</a></h2>
+<p>Assuming Numba can operate in <code><span>nopython</span></code> mode, or at least compile some loops,
+it will target compilation to your specific CPU. Speed up varies depending on
+application but can be one to two orders of magnitude. Numba has a
+<a href="https://numba.pydata.org/numba-doc/dev/user/performance-tips.html#performance-tips"><span>performance guide</span></a> that covers common options for
+gaining extra performance.</p>
+</div>
+<div id="how-does-numba-work">
+<h2>How does Numba work?<a href="#how-does-numba-work" title="Permalink to this headline">¶</a></h2>
+<p>Numba reads the Python bytecode for a decorated function and combines this with
+information about the types of the input arguments to the function. It analyzes
+and optimizes your code, and finally uses the LLVM compiler library to generate
+a machine code version of your function, tailored to your CPU capabilities. This
+compiled version is then used every time your function is called.</p>
+</div>
+<div id="other-things-of-interest">
+<h2>Other things of interest:<a href="#other-things-of-interest" title="Permalink to this headline">¶</a></h2>
+<p>Numba has quite a few decorators, we’ve seen <code><span>@jit</span></code>, but there’s
+also:</p>
+<ul>
+<li><code><span>@njit</span></code> - this is an alias for <code><span>@jit(nopython=True)</span></code> as it is so commonly
+used!</li>
+<li><code><span>@vectorize</span></code> - produces NumPy <code><span>ufunc</span></code> s (with all the <code><span>ufunc</span></code> methods
+supported). <a href="https://numba.pydata.org/numba-doc/dev/user/vectorize.html#vectorize"><span>Docs are here</span></a>.</li>
+<li><code><span>@guvectorize</span></code> - produces NumPy generalized <code><span>ufunc</span></code> s.
+<a href="https://numba.pydata.org/numba-doc/dev/user/vectorize.html#guvectorize"><span>Docs are here</span></a>.</li>
+<li><code><span>@stencil</span></code> - declare a function as a kernel for a stencil like operation.
+<a href="https://numba.pydata.org/numba-doc/dev/user/stencil.html#numba-stencil"><span>Docs are here</span></a>.</li>
+<li><code><span>@jitclass</span></code> - for jit aware classes. <a href="https://numba.pydata.org/numba-doc/dev/user/jitclass.html#jitclass"><span>Docs are here</span></a>.</li>
+<li><code><span>@cfunc</span></code> - declare a function for use as a native call back (to be called
+from C/C++ etc). <a href="https://numba.pydata.org/numba-doc/dev/user/cfunc.html#cfunc"><span>Docs are here</span></a>.</li>
+<li><code><span>@overload</span></code> - register your own implementation of a function for use in
+nopython mode, e.g. <code><span>@overload(scipy.special.j0)</span></code>.
+<a href="https://numba.pydata.org/numba-doc/dev/extending/high-level.html#high-level-extending"><span>Docs are here</span></a>.</li>
+</ul>
+<p>Extra options available in some decorators:</p>
+<ul>
+<li><code><span>parallel</span> <span>=</span> <span>True</span></code> - <a href="https://numba.pydata.org/numba-doc/dev/reference/jit-compilation.html#jit-decorator-parallel"><span>enable</span></a> the
+<a href="https://numba.pydata.org/numba-doc/dev/user/parallel.html#numba-parallel"><span>automatic parallelization</span></a> of the function.</li>
+<li><code><span>fastmath</span> <span>=</span> <span>True</span></code> - enable <a href="https://numba.pydata.org/numba-doc/dev/reference/jit-compilation.html#jit-decorator-fastmath"><span>fast-math</span></a>
+behaviour for the function.</li>
+</ul>
+<p>ctypes/cffi/cython interoperability:</p>
+<ul>
+<li><code><span>cffi</span></code> - The calling of <a href="https://numba.pydata.org/numba-doc/dev/reference/pysupported.html#cffi-support"><span>CFFI</span></a> functions is supported
+in <code><span>nopython</span></code> mode.</li>
+<li><code><span>ctypes</span></code> - The calling of <a href="https://numba.pydata.org/numba-doc/dev/reference/pysupported.html#ctypes-support"><span>ctypes</span></a> wrapped
+functions is supported in <code><span>nopython</span></code> mode.
+.</li>
+<li>Cython exported functions <a href="https://numba.pydata.org/numba-doc/dev/extending/high-level.html#cython-support"><span>are callable</span></a>.</li>
+</ul>
+<div id="gpu-targets">
+<h3>GPU targets:<a href="#gpu-targets" title="Permalink to this headline">¶</a></h3>
+<p>Numba can target <a href="https://developer.nvidia.com/cuda-zone">Nvidia CUDA</a> and
+(experimentally) <a href="https://rocm.github.io/">AMD ROC</a> GPUs. You can write a
+kernel in pure Python and have Numba handle the computation and data movement
+(or do this explicitly). Click for Numba documentation on
+<a href="https://numba.pydata.org/numba-doc/dev/cuda/index.html#cuda-index"><span>CUDA</span></a> or <a href="https://numba.pydata.org/numba-doc/dev/roc/index.html#roc-index"><span>ROC</span></a>.</p>
+</div>
+</div>
+</div></div>
+  </div>
+</body>
+</html>

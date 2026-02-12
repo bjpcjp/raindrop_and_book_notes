@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Git exclude, a handy feature you might not know about / Marijke Luttekes</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Git exclude, a handy feature you might not know about / Marijke Luttekes</h1>
+    <p><strong>URL:</strong> <a href="https://marijkeluttekes.dev/blog/articles/2025/09/03/git-exclude-a-handy-feature-you-might-not-know-about/">https://marijkeluttekes.dev/blog/articles/2025/09/03/git-exclude-a-handy-feature-you-might-not-know-about/</a></p>
+    <p><strong>Tags:</strong> git</p>
+    <p><strong>Bookmark ID:</strong> 1323861936</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="article-content" itemprop="articleBody">
+			<p>As a git user, you will undoubtedly have come across "git ignore", but do you also know about "git exclude"? This handy feature, judging from my Fediverse notifications, seems not as well-known as I thought.</p>
+<p>In this article, I will explain what git exclude is, why it is different from git ignore,  and when to use which.</p>
+<p><em>Note: To avoid jokes in the realm of "say git one more time, mother-effer", I will refer to these features as "exclude" and "ignore" in the rest of the article.</em></p>
+<h2 id="so-what-is-it">So, what is it?</h2>
+<p>Exclude, like ignore, is a way of telling git not to track a file in a repository.</p>
+<p>The two features are nearly identical in use and even share the same page in the <a href="https://git-scm.com/docs/gitignore">official gitignore documentation</a>.</p>
+<p>So, if you understand the rules of one, you will get the other for free.</p>
+<p><em>Note: I am Dutch, so the word "free" makes me all giddy on the inside.</em></p>
+<h2 id="what-is-the-difference-between-exclude-and-ignore">What is the difference between exclude and ignore?</h2>
+<p>So if "exclude" and "ignore" are syntactically identical, how do they differ?</p>
+<p>The two main differences between these features are:</p>
+<ol>
+<li><strong>File location(s):</strong> files are stored in different places.</li>
+<li><strong>File tracking:</strong> git does not track the exclude file.</li>
+</ol>
+<p>While you can scatter gitignore files throughout your repository with the enthusiasm of a chef who adds "just a pinch of salt" to the recipe, there is only one exclude file.</p>
+<p>The exclude file is located in the <code>.git</code> directory, which most editors hide from you. More precisely, you will find it here:</p>
+<div><pre><span></span><code>my-repository/.git/info/exclude
+</code></pre></div>
+<p>Actually, you <em>might</em> find it there, as there is a high probability that the directory and file do not exist after cloning the repository. Luckily, you can create them just like any other item.</p>
+<p>Yes, this file does not exist by default, as git does not track it; it is an ignore file only for you, and only in that checkout of the repository.</p>
+<p>So if you were to clone one repository three times on the same machine, then add the same file to each of them, and exclude that file in only one of the three repos, you would still see it in the other two.</p>
+<h2 id="why-is-this-useful-again">Why is this useful again?</h2>
+<p>The usefulness of the exclude file is clearly not in its visibility, but it is powerful nonetheless.</p>
+<p>Exclude is particularly handy when you want to keep personal, non-standard files in a repository that is not yours, and where you cannot update its ignore files willy-nilly.</p>
+<p>Some examples I have used it for:</p>
+<ol>
+<li>Personal scripts and script files (e.g., Makefile, Justfile, Taskfile).</li>
+<li>Temporary code and more of that random experimental stuff.</li>
+<li>A Django management command named <code>zzz_marijke</code>, for when a regular Python module does not cut it.</li>
+<li>A Docker Compose override file, before someone finally added that one to the project's main ignore file (where it belongs).</li>
+</ol>
+<h2 id="what-about-global-gitignore-files">What about global gitignore files?</h2>
+<p>The Fediverse reminded me not once, but twice, about global git ignore files, so it is only fair to mention these as well.</p>
+<p>The global gitignore file is a single file that lives somewhere in your filesystem, and that is designated as "the" file in your global git configuration.</p>
+<p>I use the global ignore only for machine-specific items that I do not want to exclude separately in each repository. This usually comes down to editor- or extension-specific files that are too niche for a regular ignore file.</p>
+<p>These days, I prefer using a starter template from <a href="https://gitignore.org/">gitignore.org</a> in my project over expanding my global file. Still, it has its use, and I would recommend setting one up if needed.</p>
+<p>Word of advice: Be careful about globally ignoring files. It would not be the first time someone accidentally added a file to the repo that someone else forgot to add to the project ignore file, as they already had it in their global one.</p>
+<p>Want to set up such a file for yourself? Check out:
+<a href="https://sebastiandedeyne.com/setting-up-a-global-gitignore-file/">"Setting up a global .gitignore file" by Sebastian De Deyne</a>.
+<em>(Hat-tip to Benjamin Balder Bach for this link.)</em></p>
+<h2 id="when-to-use-which">When to use which?</h2>
+<p>To recap, we looked at three ways to omit files from git repositories:</p>
+<ol>
+<li>The git repository's exclude file;</li>
+<li>Arbitrary project git ignore files;</li>
+<li>A global git ignore file.</li>
+</ol>
+<p>You can use a combination of all three for all projects, and determine which of the three is most suitable for the file you want to omit from the repository.</p>
+<p>I would advise that you focus on a project-level ignore file first, for two reasons:</p>
+<ol>
+<li>It applies to everyone who works on the project, preventing accidental check-ins of unwanted files.</li>
+<li>Unlike the other two, you will see these files in your code editor when you open the project directory.</li>
+</ol>
+<p>As for the exclude file and global ignore file, that is more up to preference.</p>
+<p>I typically put temporary project-specific files in exclude, and code editor-related files in global.</p>
+<p>Once I start excluding the same file in multiple repositories, it is time to move to the global ignore file.</p>
+<p>I also highly recommend looking up starter templates for language-specific ignore files; these usually already contain many entries you and your team might need in the future.</p>
+<h2 id="wrap-up">Wrap-up</h2>
+<p>I get surprised every time I mention the existence of git exclude to people, only to be met with a "today I learned" response.</p>
+<p>Then again, there is so much to git, and I know there is a lot I do not know, and maybe never will.</p>
+<p>Still, git exclude is one of those features you do want to know, and I hope you will enjoy this new tool in your kit.</p>
+<p><em>(Pun intended?)</em></p>
+<p>My git workflow is partially command-line-based and partially UI-driven, with visual support for the exclude file. Hence, I have no issues with the lack of visibility of the exclusion file.</p>
+<p>However, per a Fediverse discussion earlier today, one of the respondents wrote an article about his workaround to make exclude more visible:
+<a href="https://joshthomas.dev/til/direnv/using-direnv-to-add-a-personal-gitignore-file-to-repos/">"Using direnv to add a personal .gitignore file to repos" by Josh Thomas</a>.</p>
+<p>Have fun excluding!</p>
+<p><em>Disclaimer: Exclude files, not humans, please.</em></p>
+		</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Market Basket Analysis using Python</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Market Basket Analysis using Python</h1>
+    <p><strong>URL:</strong> <a href="https://thecleverprogrammer.com/2023/10/16/market-basket-analysis-using-python">https://thecleverprogrammer.com/2023/10/16/market-basket-analysis-using-python</a></p>
+    <p><strong>Tags:</strong> algorithms-math, machine-learning, market-basket, python, analytics</p>
+    <p><strong>Bookmark ID:</strong> 876793716</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+			
+<p>Market Basket Analysis is a data-driven technique used to uncover patterns and relationships within large transactional datasets, particularly in retail and e-commerce. It helps businesses understand which products or items are often purchased together, providing insights for optimizing product placement, marketing strategies, and promotions. So, if you want to learn how to perform Market Basket Analysis, this article is for you. In this article, I’ll take you through the task of Market Basket Analysis using Python.</p>
+
+
+
+
+<h2>Market Basket Analysis: Process We Can Follow</h2>
+
+
+
+<p>Market Basket Analysis is a valuable tool for businesses seeking to optimize their product offerings, increase cross-selling opportunities, and improve marketing strategies. It can lead to higher revenue, enhanced customer satisfaction, and overall business success.</p>
+
+
+
+<p>Below is the process you can follow for the task of Market Basket Analysis as a <strong><a href="https://thecleverprogrammer.com/2022/03/09/data-science-projects/">Data Science</a></strong> professional:</p>
+
+
+
+<ol>
+<li>Gather transactional data, including purchase history, shopping carts, or invoices.</li>
+
+
+
+<li>Analyze product sales and trends.</li>
+
+
+
+<li>Use algorithms like Apriori or FP-growth to discover frequent item sets and generate association rules.</li>
+
+
+
+<li>Interpret the discovered association rules to gain actionable insights.</li>
+
+
+
+<li>Develop strategies based on the insights gained from the analysis.</li>
+</ol>
+
+
+
+<p>So, the process starts with gathering a dataset for Market Basket Analysis. I found an ideal dataset for this task. You can download the dataset from <a href="https://statso.io/market-basket-analysis-case-study/" target="_blank" rel="noreferrer noopener"><strong>here</strong></a>.</p>
+
+
+
+
+
+
+
+
+<p>I’ll start the task of Market Basket Analysis by importing the necessary Python libraries and the <a href="https://statso.io/market-basket-analysis-case-study/" target="_blank" rel="noreferrer noopener"><strong>dataset</strong></a>:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">import pandas as pd
+import plotly.express as px
+import plotly.io as pio
+import plotly.graph_objects as go
+pio.templates.default = "plotly_white"
+
+data = pd.read_csv("market_basket_dataset.csv")
+print(data.head())</pre></div>
+
+
+
+<pre><strong>   BillNo  Itemname  Quantity  Price  CustomerID
+0    1000    Apples         5   8.30       52299
+1    1000    Butter         4   6.06       11752
+2    1000      Eggs         4   2.66       16415
+3    1000  Potatoes         4   8.10       22889
+4    1004   Oranges         2   7.26       52255</strong></pre>
+
+
+
+<p>Let’s have a look if the data has any null values or not before moving forward:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">print(data.isnull().sum())</pre></div>
+
+
+
+<pre><strong>BillNo        0
+Itemname      0
+Quantity      0
+Price         0
+CustomerID    0
+dtype: int64</strong></pre>
+
+
+
+<p>Now, let’s have a look at the summary statistics of this dataset:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">print(data.describe())</pre></div>
+
+
+
+<pre><strong>            BillNo    Quantity       Price    CustomerID
+count   500.000000  500.000000  500.000000    500.000000
+mean   1247.442000    2.978000    5.617660  54229.800000
+std     144.483097    1.426038    2.572919  25672.122585
+min    1000.000000    1.000000    1.040000  10504.000000
+25%    1120.000000    2.000000    3.570000  32823.500000
+50%    1246.500000    3.000000    5.430000  53506.500000
+75%    1370.000000    4.000000    7.920000  76644.250000
+max    1497.000000    5.000000    9.940000  99162.000000</strong></pre>
+
+
+
+<p>Now, let’s have a look at the sales distribution of items:</p>
+
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">fig = px.histogram(data, x='Itemname', 
+                   title='Item Distribution')
+fig.show()</pre></div>
+
+
+
+<figure><img data-recalc-dims="1" decoding="async" width="857" height="525" data-attachment-id="21616" data-permalink="https://thecleverprogrammer.com/2023/10/16/market-basket-analysis-using-python/market-basket-1/" data-orig-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2023/10/Market-basket-1.png?fit=857%2C525&amp;ssl=1" data-orig-size="857,525" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="Market-basket-1" data-image-description="" data-image-caption="" data-medium-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2023/10/Market-basket-1.png?fit=300%2C184&amp;ssl=1" data-large-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2023/10/Market-basket-1.png?fit=857%2C525&amp;ssl=1" tabindex="0" role="button" alt="Market Basket Analysis: Item Distribution" srcset="data:application/octet-stream;base64, 857w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(max-width: 857px) 100vw, 857px"></figure>
+
+
+
+<p>Now, let’s have a look at the top 10 most popular items sold by the store:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}"># Calculate item popularity
+item_popularity = data.groupby('Itemname')['Quantity'].sum().sort_values(ascending=False)
+
+top_n = 10
+fig = go.Figure()
+fig.add_trace(go.Bar(x=item_popularity.index[:top_n], y=item_popularity.values[:top_n],
+                     text=item_popularity.values[:top_n], textposition='auto',
+                     marker=dict(color='skyblue')))
+fig.update_layout(title=f'Top {top_n} Most Popular Items',
+                  xaxis_title='Item Name', yaxis_title='Total Quantity Sold')
+fig.show()</pre></div>
+
+
+
+<figure><img data-recalc-dims="1" decoding="async" width="857" height="525" data-attachment-id="21618" data-permalink="https://thecleverprogrammer.com/2023/10/16/market-basket-analysis-using-python/market-basket-2/" data-orig-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2023/10/Market-basket-2.png?fit=857%2C525&amp;ssl=1" data-orig-size="857,525" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="Market-basket-2" data-image-description="" data-image-caption="" data-medium-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2023/10/Market-basket-2.png?fit=300%2C184&amp;ssl=1" data-large-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2023/10/Market-basket-2.png?fit=857%2C525&amp;ssl=1" tabindex="0" role="button" alt="Most Popular Items" srcset="data:application/octet-stream;base64, 857w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(max-width: 857px) 100vw, 857px"></figure>
+
+
+
+<p>So, bananas are the most popular items sold at the store. Now, let’s have a look at the customer behaviour:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}"># Calculate average quantity and spending per customer
+customer_behavior = data.groupby('CustomerID').agg({'Quantity': 'mean', 'Price': 'sum'}).reset_index()
+
+# Create a DataFrame to display the values
+table_data = pd.DataFrame({
+    'CustomerID': customer_behavior['CustomerID'],
+    'Average Quantity': customer_behavior['Quantity'],
+    'Total Spending': customer_behavior['Price']
+})
+
+# Create a subplot with a scatter plot and a table
+fig = go.Figure()
+
+# Add a scatter plot
+fig.add_trace(go.Scatter(x=customer_behavior['Quantity'], y=customer_behavior['Price'],
+                         mode='markers', text=customer_behavior['CustomerID'],
+                         marker=dict(size=10, color='coral')))
+
+# Add a table
+fig.add_trace(go.Table(
+    header=dict(values=['CustomerID', 'Average Quantity', 'Total Spending']),
+    cells=dict(values=[table_data['CustomerID'], table_data['Average Quantity'], table_data['Total Spending']]),
+))
+
+# Update layout
+fig.update_layout(title='Customer Behavior',
+                  xaxis_title='Average Quantity', yaxis_title='Total Spending')
+
+# Show the plot
+fig.show()</pre></div>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="857" height="525" data-attachment-id="21621" data-permalink="https://thecleverprogrammer.com/2023/10/16/market-basket-analysis-using-python/market-basket-3/" data-orig-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2023/10/Market-basket-3.png?fit=857%2C525&amp;ssl=1" data-orig-size="857,525" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="Market-basket-3" data-image-description="" data-image-caption="" data-medium-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2023/10/Market-basket-3.png?fit=300%2C184&amp;ssl=1" data-large-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2023/10/Market-basket-3.png?fit=857%2C525&amp;ssl=1" tabindex="0" role="button" alt="Market Basket Analysis: Customer Behaviour" srcset="data:application/octet-stream;base64, 857w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(max-width: 857px) 100vw, 857px"></figure>
+
+
+
+<p>Here, we are exploring customer behaviour, comparing average quantity and total spending, and analyzing exact numerical values in the table for each customer.</p>
+
+
+
+<p>Now, let’s use the Apriori algorithm to create association rules. The Apriori algorithm is used to discover frequent item sets in large transactional datasets. It aims to identify items that are frequently purchased together in transactional data. It helps uncover patterns in customer behaviour, allowing businesses to make informed decisions about product placement, promotions, and marketing. Here’s how to implement Apriori to generate association rules:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">from mlxtend.frequent_patterns import apriori, association_rules
+
+# Group items by BillNo and create a list of items for each bill
+basket = data.groupby('BillNo')['Itemname'].apply(list).reset_index()
+
+# Encode items as binary variables using one-hot encoding
+basket_encoded = basket['Itemname'].str.join('|').str.get_dummies('|')
+
+# Find frequent itemsets using Apriori algorithm with lower support
+frequent_itemsets = apriori(basket_encoded, min_support=0.01, use_colnames=True)
+
+# Generate association rules with lower lift threshold
+rules = association_rules(frequent_itemsets, metric='lift', min_threshold=0.5)
+
+# Display association rules
+print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']].head(10))</pre></div>
+
+
+
+<pre><strong>  antecedents consequents   support  confidence      lift
+0     (Bread)    (Apples)  0.045752    0.304348  1.862609
+1    (Apples)     (Bread)  0.045752    0.280000  1.862609
+2    (Butter)    (Apples)  0.026144    0.160000  0.979200
+3    (Apples)    (Butter)  0.026144    0.160000  0.979200
+4    (Cereal)    (Apples)  0.019608    0.096774  0.592258
+5    (Apples)    (Cereal)  0.019608    0.120000  0.592258
+6    (Cheese)    (Apples)  0.039216    0.214286  1.311429
+7    (Apples)    (Cheese)  0.039216    0.240000  1.311429
+8   (Chicken)    (Apples)  0.032680    0.250000  1.530000
+9    (Apples)   (Chicken)  0.032680    0.200000  1.530000</strong></pre>
+
+
+
+<p>The above output shows association rules between different items (antecedents) and the items that tend to be purchased together with them (consequents). Let’s interpret the output step by step:</p>
+
+
+
+
+<ul>
+<li><strong>Antecedents</strong>: These are the items that are considered as the starting point or “if” part of the association rule. For example, Bread, Butter, Cereal, Cheese, and Chicken are the antecedents in this analysis.</li>
+
+
+
+<li><strong>Consequents</strong>: These are the items that tend to be purchased along with the antecedents or the “then” part of the association rule.</li>
+
+
+
+<li><strong>Support</strong>: Support measures how frequently a particular combination of items (both antecedents and consequents) appears in the dataset. It is essentially the proportion of transactions in which the items are bought together. For example, the first rule indicates that Bread and Apples are bought together in approximately 4.58% of all transactions.</li>
+
+
+
+<li><strong>Confidence</strong>: Confidence quantifies the likelihood of the consequent item being purchased when the antecedent item is already in the basket. In other words, it shows the probability of buying the consequent item when the antecedent item is bought. For example, the first rule tells us that there is a 30.43% chance of buying Apples when Bread is already in the basket.</li>
+
+
+
+<li><strong>Lift</strong>: Lift measures the degree of association between the antecedent and consequent items, while considering the baseline purchase probability of the consequent item. A lift value greater than 1 indicates a positive association, meaning that the items are more likely to be bought together than independently. A value less than 1 indicates a negative association. For example, the first rule has a lift of approximately 1.86, suggesting a positive association between Bread and Apples.</li>
+</ul>
+
+
+
+<p>So, this is how you can perform Market Basket Analysis using Python.</p>
+
+
+
+<h3>Summary</h3>
+
+
+
+<p>Market Basket Analysis is a valuable tool for businesses seeking to optimize their product offerings, increase cross-selling opportunities, and improve marketing strategies. It can lead to higher revenue, enhanced customer satisfaction, and overall business success. I hope you liked this article on Market Basket Analysis using Python. Feel free to ask valuable questions in the comments section below.</p>
+<!-- CONTENT END 1 -->
+		</div></div>
+  </div>
+</body>
+</html>

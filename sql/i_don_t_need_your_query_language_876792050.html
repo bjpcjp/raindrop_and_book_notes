@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>I Don't Need Your Query Language</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>I Don't Need Your Query Language</h1>
+    <p><strong>URL:</strong> <a href="https://antonz.org/fancy-ql">https://antonz.org/fancy-ql</a></p>
+    <p><strong>Tags:</strong> sql</p>
+    <p><strong>Bookmark ID:</strong> 876792050</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><article><div><header></header><p><em>This post may seem a bit harsh, but I'm tired of SQL shaming that has somehow become a thing in the industry. I have a right to disagree, don't I?</em></p><p>Every year or so, a new general-purpose database engine comes out. And that's great! It can bring new valuable approaches, architectures, and tools (plus, building database engines is fun).</p><p>Often this new database engine comes with a new query language. And that's probably good, too. Or maybe it's not.</p><h2 id="simple-and-elegant">Simple and elegant</h2><figure><img src="data:application/octet-stream;base64," alt="An elegant query language for a more civilized age"><figcaption>Oh, it's elegant and civilized? Sure, I'll bite.</figcaption></figure><p>What puzzles me is that every time the authors claim that having this brand-new query language is somehow a strength. It's not. It's a weakness. Learning a whole new language just to query your database is a burden. I don't want to do that.</p><p>We already have a common ground language for general-purpose databases. It's called SQL. I'd rather use it with your database.</p><p>📝 <em>I'm not talking about software that targets a specific narrow domain field. Having a separate domain language for specific use cases makes perfect sense.</em></p><p>Sure, your language is elegant. That doesn't help me. First, it's still easier to write a slightly longer query in SQL than to learn a new query language. Second, your supposedly simple language will become complex anyways — as soon as I try to solve real-world tasks with it. So why bother?</p><h2 id="better-than-sql">Better than SQL</h2><figure><img src="data:application/octet-stream;base64," alt="A comparison that speaks for itself"><figcaption>Just look at that ugly SQL beast.</figcaption></figure><p>Sometimes the authors of a new query language try to frame SQL as terribly complex. Let's take an example from one of these "post-SQL" databases. A comparison that, according to the authors, speaks for itself.</p><p>📝 <em>I'm using a particular "post-SQL" database (without naming it) to illustrate my point here, because its landing page is a vivid example of SQL shaming. This is not a criticism of the database or its authors. I'm sure it's a great product.</em></p><p>FancyQL:</p><pre tabindex="0"><code>select Movie {
+  title,
+  actors: {
+   name
+  },
+};
+</code></pre><p>SQL (as the authors of FancyQL see it):</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>SELECT</span>
+</span></span><span><span>  <span>title</span>,
+</span></span><span><span>  <span>Actors</span>.<span>name</span> <span>AS</span> <span>actor_name</span>
+</span></span><span><span><span>FROM</span> <span>Movie</span>
+</span></span><span><span> <span>LEFT</span> <span>JOIN</span> <span>Movie_Actors</span> <span>ON</span>
+</span></span><span><span>  <span>Movie</span>.<span>id</span> <span>=</span> <span>Movie_Actors</span>.<span>movie_id</span>
+</span></span><span><span> <span>LEFT</span> <span>JOIN</span> <span>Person</span> <span>AS</span> <span>Actors</span> <span>ON</span>
+</span></span><span><span>  <span>Movie_Actors</span>.<span>person_id</span> <span>=</span> <span>Person</span>.<span>id</span>
+</span></span></code></pre></div><p>SQL (as it may be):</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>select</span>
+</span></span><span><span>  <span>title</span>,
+</span></span><span><span>  <span>actors</span>.<span>name</span>
+</span></span><span><span><span>from</span> <span>movies</span>
+</span></span><span><span>  <span>join</span> <span>movies_actors</span> <span>using</span>(<span>movie_id</span>)
+</span></span><span><span>  <span>join</span> <span>actors</span> <span>using</span>(<span>actor_id</span>)
+</span></span></code></pre></div><p>Hmm. Another example?</p><p>FancyQL:</p><pre tabindex="0"><code>select Movie {
+  title,
+  actors: {
+   name
+  },
+  rating := math::mean(.reviews.score)
+} filter "Zendaya" in .actors.name;
+</code></pre><p>SQL (as the authors of FancyQL see it):</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>SELECT</span>
+</span></span><span><span>  <span>title</span>,
+</span></span><span><span>  <span>Actors</span>.<span>name</span> <span>AS</span> <span>actor_name</span>,
+</span></span><span><span>  (<span>SELECT</span> <span>avg</span>(<span>score</span>)
+</span></span><span><span>    <span>FROM</span> <span>Movie_Reviews</span>
+</span></span><span><span>    <span>WHERE</span> <span>movie_id</span> <span>=</span> <span>Movie</span>.<span>id</span>) <span>AS</span> <span>rating</span>
+</span></span><span><span><span>FROM</span>
+</span></span><span><span>  <span>Movie</span>
+</span></span><span><span>  <span>LEFT</span> <span>JOIN</span> <span>Movie_Actors</span> <span>ON</span>
+</span></span><span><span>    <span>Movie</span>.<span>id</span> <span>=</span> <span>Movie_Actors</span>.<span>movie_id</span>
+</span></span><span><span>  <span>LEFT</span> <span>JOIN</span> <span>Person</span> <span>AS</span> <span>Actors</span> <span>ON</span>
+</span></span><span><span>    <span>Movie_Actors</span>.<span>person_id</span> <span>=</span> <span>Person</span>.<span>id</span>
+</span></span><span><span><span>WHERE</span>
+</span></span><span><span>  <span>'Zendaya'</span> <span>IN</span> (
+</span></span><span><span>    <span>SELECT</span> <span>Person</span>.<span>name</span>
+</span></span><span><span>    <span>FROM</span>
+</span></span><span><span>      <span>Movie_Actors</span>
+</span></span><span><span>      <span>INNER</span> <span>JOIN</span> <span>Person</span>
+</span></span><span><span>        <span>ON</span> <span>Movie_Actors</span>.<span>person_id</span> <span>=</span> <span>Person</span>.<span>id</span>
+</span></span><span><span>    <span>WHERE</span>
+</span></span><span><span>      <span>Movie_Actors</span>.<span>movie_id</span> <span>=</span> <span>Movie</span>.<span>id</span>)
+</span></span></code></pre></div><p>SQL (as it may be):</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>select</span>
+</span></span><span><span>  <span>title</span>,
+</span></span><span><span>  <span>actors</span>.<span>name</span>,
+</span></span><span><span>  (<span>select</span> <span>avg</span>(<span>score</span>) <span>from</span> <span>reviews</span>
+</span></span><span><span>   <span>where</span> <span>movie_id</span> <span>=</span> <span>movies</span>.<span>movie_id</span>) <span>as</span> <span>rating</span>
+</span></span><span><span><span>from</span> <span>movies</span>
+</span></span><span><span>  <span>join</span> <span>movies_actors</span> <span>using</span>(<span>movie_id</span>)
+</span></span><span><span>  <span>join</span> <span>actors</span> <span>using</span>(<span>actor_id</span>)
+</span></span><span><span><span>where</span> <span>movie_id</span> <span>in</span> (
+</span></span><span><span>  <span>select</span> <span>movie_id</span>
+</span></span><span><span>  <span>from</span> <span>actors</span> <span>join</span> <span>movies_actors</span> <span>using</span>(<span>actor_id</span>)
+</span></span><span><span>  <span>where</span> <span>actors</span>.<span>name</span> <span>=</span> <span>'Zendaya'</span>
+</span></span><span><span>)
+</span></span></code></pre></div><p><a href="https://gist.github.com/nalgeon/f80845eab71153eed7d41b5306d6d785">movies.sql</a></p><p>A bit verbose. But maybe SQL is not that complex after all? Otherwise, why would you paint it scarier than it really is?</p><h2 id="modern">Modern</h2><figure><img src="data:application/octet-stream;base64," alt="Designed for devs, not suits"><figcaption>Let's throw in some suit-shaming!</figcaption></figure><p>Here is another common argument:</p><blockquote><p>SQL was designed with 1970s businessmen in mind, and it shows.</p></blockquote><p>True, SQL was designed in the 1970s. But how is that a weakness? Everyone knows SQL. All major database engines support SQL. SQL is expressive enough to solve any data-related task. SQL has a solid standards committee that maintains and improves it. What can your language offer besides being created in the 2020s?</p><p>I can go on, but I don't think it's necessary. My point is simple.</p><p>I don't need your fancy query language. I'd stick with SQL.</p><p>Maybe it's just me.</p><p>──</p><p>P.S. <mark>Interested in mastering SQL</mark> instead of learning yet another query language? Check out my book — <a href="https://antonz.org/sql-window-functions-book">SQL&nbsp;Window&nbsp;Functions&nbsp;Explained</a></p><p><a href="https://antonz.org/subscribe/">★&nbsp;Subscribe</a> to keep up with new posts.</p></div></article></div></div>
+  </div>
+</body>
+</html>

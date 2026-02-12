@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A quick introduction to machine learning in R with caret</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A quick introduction to machine learning in R with caret</h1>
+    <p><strong>URL:</strong> <a href="http://sharpsightlabs.com/blog/quick-introduction-machine-learning-r-caret">http://sharpsightlabs.com/blog/quick-introduction-machine-learning-r-caret</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876794083</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="text">
+			<p>If you’ve been using R for a while, and you’ve been working with basic data visualization and data exploration techniques, the next logical step is to start learning some machine learning.</p>
+<p>To help you begin learning about machine learning in R, I’m going to introduce you to an R package: the caret package.  We’ll build a very simple machine learning model as a way to learn some of caret’s basic syntax and functionality. </p>
+<p>But before diving into caret, let’s quickly discuss what machine learning is and why we use it.</p>
+<h3>What is machine learning?</h3>
+<p>Machine learning is the study of data-driven, computational methods for making inferences and predictions.  </p>
+<p>Without going into extreme depth here, let’s unpack that by looking at an example.</p>
+<h4>A simple example</h4>
+<p>Imagine that you want to understand the relationship between car weight and car fuel efficiency (I.e., miles per gallon); how is fuel efficiency effected by a car’s weight?</p>
+<p>To answer this question, you could obtain a dataset with several different car models, and attempt to identify a relationship between weight (which we’ll call <inline_code>wt</inline_code>) and miles per gallon (which we’ll call <inline_code>mpg</inline_code>).</p>
+<p>A good starting point would be to simply plot the data, so first, we’ll create a scatterplot using R’s ggplot:</p>
+<pre>require(ggplot2)
+
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point()
+
+</pre>
+<p>&nbsp;<br>
+<img fetchpriority="high" decoding="async" src="data:application/octet-stream;base64," alt="2016-04-06_quick-intro-to-machine-learning-in-R-with-Caret__scatter1" width="450" height="400"></p>
+<p>Just examining the data visually, it’s pretty clear that there’s some relationship. But if we want to make more precise claims about the relationship between <inline_code>wt</inline_code> and <inline_code>mpg</inline_code>, we need to specify this relationship <i>mathematically</i>.  So, as we press forward in our analysis, we’ll make the assumption that this relationship can be described mathematically; more precisely, we’ll assume that this relationship can be described by some mathematical function, <img loading="lazy" decoding="async" src="data:application/octet-stream;base64," alt="f(x)" title="Rendered by QuickLaTeX.com" height="22" width="39">.  In the case of the above example, we’ll be making the assumption that “miles per gallon” can be described as a function of “car weight”.</p>
+<p>Assuming this type of mathematical relationship, machine learning provides a set of methods for identifying that relationship.  Said differently, machine learning provides a set of computational methods that accept data observations as inputs, and subsequently estimate that mathematical function, <img loading="lazy" decoding="async" src="data:application/octet-stream;base64," alt="f(x)" title="Rendered by QuickLaTeX.com" height="22" width="39">; machine learning methods <i>learn</i> the relationship by being <i>trained</i> with an input dataset.</p>
+<p>Ultimately, once we have this mathematical function (a model), we can use that model to make predictions and inferences.</p>
+<h3>How much math you <i>really</i> need to know</h3>
+<p>What I just wrote in the last few paragraphs about “estimating functions” and “mathematical relationships” might cause you to ask a question: “how much math do I need to know to do machine learning?”</p>
+<p>Ok, here is some good news: to implement basic machine learning techniques, you don’t need to know much math.  </p>
+<p>To be clear, there is quite a bit of math involved in machine learning, but most of that math is taken care of for you.  What I mean, is that for the most part, R libraries and functions perform the mathematical calculations for you.  You just need to know which functions to use, and when to use them.  </p>
+<p>Here’s an analogy: if you were a carpenter, you wouldn’t need to build your own power tools.  You wouldn’t need to build your own drill and power saw.  Therefore, you wouldn’t need to understand the mathematics, physics, and electrical engineering principles that would be required to construct those tools from scratch.  You could just go and buy them “off the shelf.”  To be clear, you’d still need to learn <i>how to use</i> those tools, but you wouldn’t need a deep understanding of math and electrical engineering to operate them.</p>
+<p>When you’re first getting started with machine learning, the situation is very similar: you can learn to use some of the tools, without knowing the deep mathematics that makes those tools work.</p>
+<p>Having said that, the above analogy is somewhat imperfect.  At some point, as you progress to more advanced topics, it will be very beneficial to know the underlying mathematics.  My argument, however, is that in the beginning, you can still be productive without a deep understanding of calculus, linear algebra, etc.  In any case, I’ll be writing more about “how much math you need” in another blog post.</p>
+<p>Ok, so you don’t need to know that much math to get stared, but you’re not entirely off the hook.  As I noted above, you still need to know how to use the tools properly.</p>
+<p>In some sense, this is one of the challenges of using machine learning tools in R: many of them be difficult to use.  </p>
+<p>R has many packages for implementing various machine learning methods, but unfortunately many of these tools were designed separately, and they are not always consistent in how they work.  The syntax for some of the machine learning tools is very awkward, and syntax from one tool to the next is not always the same.  If you don’t know where to start, machine learning in R can become very confusing.</p>
+<p>This is why I recommend using the caret package to do machine learning in R.</p>
+<h3>A quick introduction to caret</h3>
+<p>For starters, let’s discuss what caret is.</p>
+<p>The caret package is a set of tools for building machine learning models in R.  The name “caret” stands for <b>C</b>lassification <b>A</b>nd <b>RE</b>gression <b>T</b>raining.  As the name implies, the caret package gives you a toolkit for building classification models and regression models.  Moreover, caret provides you with essential tools for:</p>
+<p>– Data preparation, including: imputation, centering/scaling data, removing correlated predictors, reducing skewness<br>
+– Data splitting<br>
+– Model evaluation<br>
+– Variable selection</p>
+<h4>Caret simplifies machine learning in R</h4>
+<p>While caret has broad functionality, the real reason to use caret is that it’s simple and easy to use.</p>
+<p>As noted above, one of the major problems with machine learning in R is that most of R’s different machine learning tools have different interfaces.  They almost all “work” a little differently from one another: the syntax is slightly different from one modeling tool to the next; tools for different parts of the machine learning workflow don’t always “work well” together;  tools for fine tuning models or performing critical functions may be awkward or difficult to work with.  Said succinctly, R has many machine learning tools, but they can be extremely clumsy to work with.</p>
+<p>Caret solves this problem.  To simplify the process, caret provides tools for almost every part of the model building process, and moreover, provides a common interface to these different machine learning methods.</p>
+<p>For example, caret provides a simple, common interface to almost every machine learning algorithm in R.  When using caret, different learning methods like linear regression, neural networks, and support vector machines, all share a common syntax (the syntax is basically identical, except for a few minor changes).</p>
+<p>Moreover, additional parts of the machine learning workflow – like cross validation and parameter tuning – are built directly into this common interface.  </p>
+<p>To say that more simply, caret provides you with an easy-to-use toolkit for building many different model types and executing critical parts of the ML workflow.  This simple interface enables rapid, iterative modeling.  In turn, this iterative workflow will allow you to develop good models faster, with less effort, and with less frustration.</p>
+<h3>Caret’s syntax</h3>
+<p>Now that you’ve been introduced to caret, let’s return to the example above (of <inline_code>mpg</inline_code> vs <inline_code>wt</inline_code>) and see how caret works.</p>
+<p>Again, imagine you want to learn the relationship between <inline_code>mpg</inline_code> and <inline_code>wt</inline_code>.  As noted above, in mathematical terms, this means identifying a function, <img loading="lazy" decoding="async" src="data:application/octet-stream;base64," alt="f(x)" title="Rendered by QuickLaTeX.com" height="22" width="39">, that describes the relationship between <inline_code>wt</inline_code> and <inline_code>mpg</inline_code>.</p>
+<p>Here in this example, we’re going to make an additional assumption that will simplify the process somewhat: we’re going to assume that the relationship is linear; we’ll assume that that it can be described by a straight line of the form <img loading="lazy" decoding="async" src="data:application/octet-stream;base64," alt="f(x) = \beta_0 + \beta_1x" title="Rendered by QuickLaTeX.com" height="22" width="148">.</p>
+<p>In terms of our modeling effort, this means that we’ll be using linear regression to build our machine learning model.</p>
+<p>Without going into the details of linear regression (I’ll save that for another blog post), let’s look at how we implement linear regression with caret.</p>
+<h4>The <inline_code>train()</inline_code> function</h4>
+<p>The core of caret’s functionality is the <inline_code>train()</inline_code> function.</p>
+<p><inline_code>train()</inline_code> is the function that we use to “train” the model.  That is, train is the function that will “learn” the relationship between <inline_code>mpg</inline_code> and <inline_code>wt</inline_code>.</p>
+<p>Let’s take a look at this syntactically. </p>
+<p>Here is the syntax for a linear regression model, regressing <inline_code>mpg</inline_code> on <inline_code>wt</inline_code>.</p>
+<pre>#~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Build model using train()
+#~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+require(caret)
+
+model.mtcars_lm &lt;- train(mpg ~ wt
+                        ,data = mtcars
+                        ,method = "lm"
+                        )
+</pre>
+<p>&nbsp;<br>
+That's it.  The syntax for building a linear regression is extremely simple with caret.</p>
+<p>Now that we have a simple model, let's quickly extract the regression coefficients and plot the model (i.e., plot the linear function that describes the relationship between <inline_code>mpg</inline_code> and <inline_code>wt</inline_code>).</p>
+<pre>#~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Retrieve coefficients for
+#  - slope
+#  - intercept
+#~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+coef.icept &lt;- coef(model.mtcars_lm$finalModel)[1]
+coef.slope &lt;- coef(model.mtcars_lm$finalModel)[2]
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Plot scatterplot and regression line
+#  using ggplot()
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_abline(slope = coef.slope, intercept = coef.icept, color = "red")
+
+</pre>
+<p>&nbsp;<br>
+<img loading="lazy" decoding="async" src="data:application/octet-stream;base64," alt="2016-04-06_quick-intro-to-machine-learning-in-R-with-Caret__regression1" width="450" height="400"></p>
+<p>Now, let's look more closely at the syntax and how it works.</p>
+<p>When training a model using <inline_code>train()</inline_code>, you only need to tell it a few things:<br>
+- The dataset you're working with<br>
+- The target variable you're trying to predict (e.g., the <inline_code>mpg</inline_code> variable)<br>
+- The input variable (e.g., the <inline_code>wt</inline_code> variable)<br>
+- The machine learning method you want to use (in this case "linear regression")</p>
+<h4>Formula notation</h4>
+<p>In caret's syntax, you identify the target variable and input variables using the "formula notation."</p>
+<p>The basic syntax for formula notation is <inline_code>y ~ x</inline_code>, where <inline_code>y</inline_code> is your target variable, and <inline_code>x</inline_code> is your predictor.  </p>
+<p>Effectively, <inline_code>y ~ x</inline_code> tells caret "I want to predict <inline_code>y</inline_code> on the basis of a single input, <inline_code>x</inline_code>."</p>
+<p>Now, with this knowledge about caret's formula syntax, let's reexamine the above code.  Because we want to predict <inline_code>mpg</inline_code> on the basis of <inline_code>wt</inline_code>, we use the formula <inline_code>mpg ~ wt</inline_code>.  Again, this line of code is the "formula" that tells <inline_code>train()</inline_code> our target variable and our input variable.  If we translate this line of code into English, we're effectively telling <inline_code>train()</inline_code>, "build a model that predicts <inline_code>mpg</inline_code> (miles per gallon) on the basis of <inline_code>wt</inline_code> (car weight)."</p>
+<h4>The data = parameter </h4>
+<p>The <inline_code>train()</inline_code> function also has a <inline_code>data =</inline_code> parameter.  This basically tells the <inline_code>train()</inline_code> function what dataset we're using to build the model.  Said differently, if we're using the formula <inline_code>mpg ~ wt</inline_code> to indicate the target and predictor variables, then we're using the <inline_code>data =</inline_code> parameter to tell caret where to find those variables.  </p>
+<p>So basically, <inline_code>data = mtcars</inline_code> tells the caret function that the data and the relevant variables can be found in the <inline_code>mtcars</inline_code> dataset.</p>
+<h4>The <inline_code>method =</inline_code> parameter </h4>
+<p>Finally, we see the <inline_code>method =</inline_code> parameter.  This parameter indicates what machine learning method we want to use to predict <inline_code>y</inline_code>.  In this case, we're building a linear regression model, so we are using the argument <inline_code>"lm"</inline_code>.</p>
+<p>Keep in mind, however, we could select a different learning method.  Although it's beyond the scope of this blog post to discuss all of the possible learning methods that we could use here, there are many different methods we could use.  For example, if we wanted to use the k-nearest neighbor technique, we could use the <inline_code>"knn"</inline_code> argument instead.  If we did that, <inline_code>train()</inline_code> would still predict <inline_code>mpg</inline_code> on the basis of <inline_code>wt</inline_code>, but would use a different statistical technique to make that prediction.  This would yield a different model; a model that makes different predictions.  </p>
+<p>Again, it's beyond the scope of this post to discuss all of the different model types.  However, as you learn more about machine learning, and want to try out more advanced machine learning techniques, this is how you can implement them.  You simply change the learning method by changing the argument of the <inline_code>method =</inline_code> parameter.</p>
+<p>This is a good place to reiterate one of caret's primary advantages: switching between model types is extremely easy when we use caret's <inline_code>train()</inline_code> function.  Again, if you want to use  linear regression to model your data, you just type in <inline_code>"lm"</inline_code> for the argument to <inline_code>method =</inline_code>; if you want to change the learning method to k-nearest neighbor, you just replace <inline_code>"lm"</inline_code> with <inline_code>"knn"</inline_code>.</p>
+<p>Caret's syntax allows you to very easily change the learning method.  In turn, this allows you to "try out" and evaluate many different learning methods rapidly and iteratively.  You can just re-run your code with different values for the <inline_code>method</inline_code> parameter, and compare the results for each method.</p>
+<h3>Next steps</h3>
+<p>Now that you have a high-level understanding of caret, you're ready to dive deeper into machine learning in R.  </p>
+<p>Keep in mind though, if you're new to machine learning, there's still lots more to learn.  Machine learning is intricate and fascinatingly complex.  Moreover, caret has a variety of additional tools for model building.  We've just scratched the surface here.</p>
+<p>At Sharp Sight Labs, we'll be creating blog posts to teach you more of the basics, including tutorials about:<br>
+- the bias-variance tradeoff<br>
+- deeper looks at regression<br>
+- classification<br>
+- data preparation<br>
+- and more.</p>
+<p>In the mean time, send me your questions.  </p>
+<p>If you have questions about machine learning, or topics you're struggling with, sign up for the email list.  Once you're on the email list, reply directly to any of the emails and send in your questions.</p>
+		</div></div>
+  </div>
+</body>
+</html>

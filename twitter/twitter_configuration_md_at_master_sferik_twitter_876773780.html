@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>twitter/Configuration.md at master · sferik/twitter</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>twitter/Configuration.md at master · sferik/twitter</h1>
+    <p><strong>URL:</strong> <a href="https://github.com/sferik/twitter/blob/master/examples/Configuration.md">https://github.com/sferik/twitter/blob/master/examples/Configuration.md</a></p>
+    <p><strong>Tags:</strong> apis, twitter</p>
+    <p><strong>Bookmark ID:</strong> 876773780</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-hpc="true" aria-labelledby="file-name-id-wide file-name-id-mobile"><article itemprop="text">
+<p dir="auto">Twitter API version 1.1 requires authentication on all requests. Some requests
+can be made with <a href="https://dev.twitter.com/oauth/application-only" rel="nofollow">application-only authentication</a> while
+other requests require <a href="https://dev.twitter.com/oauth/overview/single-user" rel="nofollow">single-user authentication</a>.</p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Application-only Authentication</h2><a id="user-content-application-only-authentication" aria-label="Permalink: Application-only Authentication" href="#application-only-authentication"></a></p>
+<p dir="auto">To start using the Twitter API, you need to <a href="https://apps.twitter.com/" rel="nofollow">register your application with
+Twitter</a>. Registration requires you to answer some questions about
+your application and agree to the <a href="https://dev.twitter.com/overview/terms/agreement-and-policy" rel="nofollow">Twitter API Terms of Use</a>.</p>
+<p dir="auto">Once you've registered an application, it's important that you set the correct
+access level. Otherwise you may see the error:</p>
+<div data-snippet-clipboard-copy-content="Read-only application cannot POST"><pre><code>Read-only application cannot POST
+</code></pre></div>
+<p dir="auto">Your new application will be assigned a consumer key/secret pair that
+identifies your application to Twitter. This is all you need to configure your
+client for application-only authentication.</p>
+<div dir="auto" data-snippet-clipboard-copy-content="client = Twitter::REST::Client.new do |config|
+  config.consumer_key    = &quot;YOUR_CONSUMER_KEY&quot;
+  config.consumer_secret = &quot;YOUR_CONSUMER_SECRET&quot;
+end"><pre><span>client</span> <span>=</span> <span>Twitter</span>::<span>REST</span>::<span>Client</span><span>.</span><span>new</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>consumer_key</span>    <span>=</span> <span>"YOUR_CONSUMER_KEY"</span>
+  <span>config</span><span>.</span><span>consumer_secret</span> <span>=</span> <span>"YOUR_CONSUMER_SECRET"</span>
+<span>end</span></pre></div>
+<p dir="auto">If you prefer, you can pass in configuration as a <code>Hash</code>:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="config = {
+  consumer_key:    &quot;YOUR_CONSUMER_KEY&quot;,
+  consumer_secret: &quot;YOUR_CONSUMER_SECRET&quot;,
+}
+
+client = Twitter::REST::Client.new(config)"><pre><span>config</span> <span>=</span> <span>{</span>
+  <span>consumer_key</span>:    <span>"YOUR_CONSUMER_KEY"</span><span>,</span>
+  <span>consumer_secret</span>: <span>"YOUR_CONSUMER_SECRET"</span><span>,</span>
+<span>}</span>
+
+<span>client</span> <span>=</span> <span>Twitter</span>::<span>REST</span>::<span>Client</span><span>.</span><span>new</span><span>(</span><span>config</span><span>)</span></pre></div>
+<p dir="auto">Regardless of your configuration style, you should now be able to use this
+client to make any Twitter API request that does not require single-user
+authentication. For example:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="client.user(&quot;sferik&quot;)"><pre><span>client</span><span>.</span><span>user</span><span>(</span><span>"sferik"</span><span>)</span></pre></div>
+<p dir="auto">Note: The first time this method is called, it will make two API requests.
+First, it will fetch an access token to perform the request. Then, it will
+fetch the requested user. The access token will be cached for subsequent
+requests made with the same client but you may wish to manually fetch the
+access token once and use it when initializing clients to avoid making two
+requests every time.</p>
+<div dir="auto" data-snippet-clipboard-copy-content="client.bearer_token"><pre><span>client</span><span>.</span><span>bearer_token</span></pre></div>
+<p dir="auto">This token never expires and will not change unless it is invalidated. Once
+you've obtained a bearer token, you can use it to initialize clients to avoid
+making an extra request.</p>
+<div dir="auto" data-snippet-clipboard-copy-content="client = Twitter::REST::Client.new do |config|
+  config.consumer_key    = &quot;YOUR_CONSUMER_KEY&quot;
+  config.consumer_secret = &quot;YOUR_CONSUMER_SECRET&quot;
+  config.bearer_token    = &quot;YOUR_BEARER_TOKEN&quot;
+end"><pre><span>client</span> <span>=</span> <span>Twitter</span>::<span>REST</span>::<span>Client</span><span>.</span><span>new</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>consumer_key</span>    <span>=</span> <span>"YOUR_CONSUMER_KEY"</span>
+  <span>config</span><span>.</span><span>consumer_secret</span> <span>=</span> <span>"YOUR_CONSUMER_SECRET"</span>
+  <span>config</span><span>.</span><span>bearer_token</span>    <span>=</span> <span>"YOUR_BEARER_TOKEN"</span>
+<span>end</span></pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Single-user Authentication</h2><a id="user-content-single-user-authentication" aria-label="Permalink: Single-user Authentication" href="#single-user-authentication"></a></p>
+<p dir="auto">Not all Twitter API resources are accessible with application-only
+authentication. Some resources require single-user authentication tokens, which
+you can obtain from the <a href="https://dev.twitter.com/oauth/3-legged" rel="nofollow">3-legged authorization</a> flow.</p>
+<div dir="auto" data-snippet-clipboard-copy-content="client = Twitter::REST::Client.new do |config|
+  config.consumer_key        = &quot;YOUR_CONSUMER_KEY&quot;
+  config.consumer_secret     = &quot;YOUR_CONSUMER_SECRET&quot;
+  config.access_token        = &quot;YOUR_ACCESS_TOKEN&quot;
+  config.access_token_secret = &quot;YOUR_ACCESS_SECRET&quot;
+end"><pre><span>client</span> <span>=</span> <span>Twitter</span>::<span>REST</span>::<span>Client</span><span>.</span><span>new</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>consumer_key</span>        <span>=</span> <span>"YOUR_CONSUMER_KEY"</span>
+  <span>config</span><span>.</span><span>consumer_secret</span>     <span>=</span> <span>"YOUR_CONSUMER_SECRET"</span>
+  <span>config</span><span>.</span><span>access_token</span>        <span>=</span> <span>"YOUR_ACCESS_TOKEN"</span>
+  <span>config</span><span>.</span><span>access_token_secret</span> <span>=</span> <span>"YOUR_ACCESS_SECRET"</span>
+<span>end</span></pre></div>
+<p dir="auto">You can use this client to make any Twitter REST API request. For example:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="client.update(&quot;I'm tweeting with @gem!&quot;)"><pre><span>client</span><span>.</span><span>update</span><span>(</span><span>"I'm tweeting with @gem!"</span><span>)</span></pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Premium Search API</h2><a id="user-content-premium-search-api" aria-label="Permalink: Premium Search API" href="#premium-search-api"></a></p>
+<div dir="auto" data-snippet-clipboard-copy-content="client = Twitter::REST::Client.new do |config|
+  config.consumer_key        = &quot;YOUR_CONSUMER_KEY&quot;
+  config.consumer_secret     = &quot;YOUR_CONSUMER_SECRET&quot;
+  config.dev_environment     = &quot;YOUR_DEV_ENVIRONMENT&quot;
+end"><pre><span>client</span> <span>=</span> <span>Twitter</span>::<span>REST</span>::<span>Client</span><span>.</span><span>new</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>consumer_key</span>        <span>=</span> <span>"YOUR_CONSUMER_KEY"</span>
+  <span>config</span><span>.</span><span>consumer_secret</span>     <span>=</span> <span>"YOUR_CONSUMER_SECRET"</span>
+  <span>config</span><span>.</span><span>dev_environment</span>     <span>=</span> <span>"YOUR_DEV_ENVIRONMENT"</span>
+<span>end</span></pre></div>
+<p dir="auto">You can use this client to make a REST 30-Day or Fullarchive Search API request. For example:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="client.premium_search(&quot;#ruby&quot;, { maxResults: 100 }, { product: 'fullarchive' })"><pre><span>client</span><span>.</span><span>premium_search</span><span>(</span><span>"#ruby"</span><span>,</span> <span>{</span> <span>maxResults</span>: <span>100</span> <span>}</span><span>,</span> <span>{</span> <span>product</span>: <span>'fullarchive'</span> <span>}</span><span>)</span></pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Streaming Clients</h2><a id="user-content-streaming-clients" aria-label="Permalink: Streaming Clients" href="#streaming-clients"></a></p>
+<p dir="auto">Streaming clients are initialized just like single-user authenticated REST
+clients:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="client = Twitter::Streaming::Client.new do |config|
+  config.consumer_key        = &quot;YOUR_CONSUMER_KEY&quot;
+  config.consumer_secret     = &quot;YOUR_CONSUMER_SECRET&quot;
+  config.access_token        = &quot;YOUR_ACCESS_TOKEN&quot;
+  config.access_token_secret = &quot;YOUR_ACCESS_SECRET&quot;
+end"><pre><span>client</span> <span>=</span> <span>Twitter</span>::<span>Streaming</span>::<span>Client</span><span>.</span><span>new</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>consumer_key</span>        <span>=</span> <span>"YOUR_CONSUMER_KEY"</span>
+  <span>config</span><span>.</span><span>consumer_secret</span>     <span>=</span> <span>"YOUR_CONSUMER_SECRET"</span>
+  <span>config</span><span>.</span><span>access_token</span>        <span>=</span> <span>"YOUR_ACCESS_TOKEN"</span>
+  <span>config</span><span>.</span><span>access_token_secret</span> <span>=</span> <span>"YOUR_ACCESS_SECRET"</span>
+<span>end</span></pre></div>
+<div dir="auto" data-snippet-clipboard-copy-content="client.sample do |object|
+  puts object.text if object.is_a?(Twitter::Tweet)
+end"><pre><span>client</span><span>.</span><span>sample</span> <span>do</span> |<span>object</span>|
+  <span>puts</span> <span>object</span><span>.</span><span>text</span> <span>if</span> <span>object</span><span>.</span><span>is_a?</span><span>(</span><span>Twitter</span>::<span>Tweet</span><span>)</span>
+<span>end</span></pre></div>
+<p dir="auto">For more information, see the documentation for the
+<a href="http://rdoc.info/gems/twitter/Twitter/Client" rel="nofollow"><code>Twitter::Client</code></a>, <a href="http://rdoc.info/gems/twitter/Twitter/REST/Client" rel="nofollow"><code>Twitter::REST::Client</code></a>, and
+<a href="http://rdoc.info/gems/twitter/Twitter/Streaming/Client" rel="nofollow"><code>Twitter::Streaming::Client</code></a> classes.</p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Using a Proxy</h2><a id="user-content-using-a-proxy" aria-label="Permalink: Using a Proxy" href="#using-a-proxy"></a></p>
+<p dir="auto">If you'd like to connect via a proxy, a proxy can be configured by passing a
+<code>Hash</code> to your configuration:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="proxy = {
+  host: &quot;proxy.example.com&quot;,
+  port: 8080,
+  username: &quot;proxy_username&quot;,
+  password: &quot;proxy_password&quot;
+}
+
+client = Twitter::REST::Client.new do |config|
+  config.consumer_key        = &quot;YOUR_CONSUMER_KEY&quot;
+  config.consumer_secret     = &quot;YOUR_CONSUMER_SECRET&quot;
+  config.access_token        = &quot;YOUR_ACCESS_TOKEN&quot;
+  config.access_token_secret = &quot;YOUR_ACCESS_SECRET&quot;
+  config.proxy               = proxy
+end"><pre><span>proxy</span> <span>=</span> <span>{</span>
+  <span>host</span>: <span>"proxy.example.com"</span><span>,</span>
+  <span>port</span>: <span>8080</span><span>,</span>
+  <span>username</span>: <span>"proxy_username"</span><span>,</span>
+  <span>password</span>: <span>"proxy_password"</span>
+<span>}</span>
+
+<span>client</span> <span>=</span> <span>Twitter</span>::<span>REST</span>::<span>Client</span><span>.</span><span>new</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>consumer_key</span>        <span>=</span> <span>"YOUR_CONSUMER_KEY"</span>
+  <span>config</span><span>.</span><span>consumer_secret</span>     <span>=</span> <span>"YOUR_CONSUMER_SECRET"</span>
+  <span>config</span><span>.</span><span>access_token</span>        <span>=</span> <span>"YOUR_ACCESS_TOKEN"</span>
+  <span>config</span><span>.</span><span>access_token_secret</span> <span>=</span> <span>"YOUR_ACCESS_SECRET"</span>
+  <span>config</span><span>.</span><span>proxy</span>               <span>=</span> <span>proxy</span>
+<span>end</span></pre></div>
+<p dir="auto">Note that only a <code>host</code> and <code>port</code> are required, but a <code>username</code> and <code>password</code>
+can be optionally configured for an authenticated proxy server. Proxies are
+supported by both <a href="http://rdoc.info/gems/twitter/Twitter/REST/Client" rel="nofollow"><code>Twitter::REST::Client</code></a> and
+<a href="http://rdoc.info/gems/twitter/Twitter/Streaming/Client" rel="nofollow"><code>Twitter::Streaming::Client</code></a> classes.</p>
+</article></div></div>
+  </div>
+</body>
+</html>

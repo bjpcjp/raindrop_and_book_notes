@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Static domains for all ngrok users</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Static domains for all ngrok users</h1>
+    <p><strong>URL:</strong> <a href="https://ngrok.com/blog-post/free-static-domains-ngrok-users">https://ngrok.com/blog-post/free-static-domains-ngrok-users</a></p>
+    <p><strong>Tags:</strong> ngrok</p>
+    <p><strong>Bookmark ID:</strong> 876795580</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div fs-richtext-element="rich-text"><p>We are excited to announce the launch of one of our most requested features — static domains for our free users. Starting today, all users can claim one static domain for free.</p><p>Static domains are unique domains that are yours and don’t change. With your free static domain, you can focus on developing your application, and no longer need to worry about broken links caused by agent restarts. There’s no need to constantly keep updating webhook providers or mobile apps with new URLs or send new links to your team.</p><p>Our mission is to equip developers with a unified ingress platform to deliver applications and APIs across every stage of the application lifecycle - from test/dev through production environments. </p><p>Adding static domains to the free tier speeds up your dev/test flows and it also unlocks new production use cases. If you don’t require a branded domain, you can now run your first production app on ngrok’s free tier. This is suitable for pre-release versions or internal apps. You can always upgrade later to bring your own custom domain when you’re ready to put it in front of customers.</p><p><h2 id="how-do-i-claim-my-free-static-domain"><span>How do I claim my free static domain?<a href="#how-do-i-claim-my-free-static-domain"></a></span></h2></p><p>To claim your static domain, follow these steps:</p><ol start="" role="list"><li><a href="https://dashboard.ngrok.com/login">Log in to</a> your ngrok account.</li><li>Navigate to <a href="https://dashboard.ngrok.com/cloud-edge/domains">Cloud Edge &gt; Domains.</a>‍</li><li>Follow the prompts to claim your unique, static domain.</li></ol><figure><p><img src="data:application/octet-stream;base64," loading="lazy" alt=""></p><figcaption>Login, go to Cloud Edge -&gt; Domains to claim your static domain</figcaption></figure><p><h2 id="use-your-new-static-domain"><span>Use your new static domain<a href="#use-your-new-static-domain"></a></span></h2></p><p>Now with a static domain for your apps and APIs, you can use ngrok not just in test/dev environments, but also for production use-cases.&nbsp;</p><p>Here are a few examples of configuring ngrok agents with your static domain:</p><p><h3 id="ngrok-cli"><span>ngrok CLI<a href="#ngrok-cli"></a></span></h3></p><pre contenteditable="false"><code><span>ngrok http --domain=[static-domain] 80</span></code></pre><p><h3 id="ngrok-agent-sdks"><span>ngrok Agent SDKs<a href="#ngrok-agent-sdks"></a></span></h3></p><p>Another way to use ngrok and your static domains is via the ngrok Agent SDKs. Here is an example using the <a href="https://ngrok.com/blog-post/ngrok-go">ngrok-go</a> sdk:</p><pre contenteditable="false"><code><span>package</span><span> main
+</span>
+<span></span><span>import</span><span> (
+</span><span>	</span><span>"context"</span><span>
+</span><span>	</span><span>"fmt"</span><span>
+</span><span>	</span><span>"log"</span><span>
+</span><span>	</span><span>"net/http"</span><span>
+</span>
+<span>	</span><span>"golang.ngrok.com/ngrok"</span><span>
+</span><span>	</span><span>"golang.ngrok.com/ngrok/config"</span><span>
+</span>)
+
+<span></span><span>func</span><span> </span><span>main</span><span>()</span><span> {
+</span>	tun, err := ngrok.Listen(context.Background(),
+<span>		config.HTTPEndpoint(config.WithDomain(</span><span>"[static-domain]"</span><span>)),
+</span>		ngrok.WithAuthtokenFromEnv(),
+	)
+<span>	</span><span>if</span><span> err != </span><span>nil</span><span> {
+</span>		log.Fatal(err)
+	}
+<span>	log.Println(</span><span>"Application available at:"</span><span>, tun.URL())
+</span>	err := http.Serve(tun, http.HandlerFunc(handler))
+<span>	</span><span>if</span><span> err != </span><span>nil</span><span> {
+</span>		log.Fatal(err)
+	}
+}
+
+<span></span><span>func</span><span> </span><span>handler</span><span>(w http.ResponseWriter, r *http.Request)</span><span> {
+</span><span>	fmt.Fprintln(w, </span><span>"Hello from ngrok-go!"</span><span>)
+</span>}</code></pre><p><h3 id="kubernetes-ingress-controller"><span>Kubernetes Ingress Controller<a href="#kubernetes-ingress-controller"></a></span></h3></p><p>With the addition of static domains and <a href="https://ngrok.com/blog-post/cloud-edges-for-all-ngrok-users">Cloud Edges</a> in the free tier, you can also leverage ngrok’s <a href="https://ngrok.com/blog-post/ngrok-k8s">Kubernetes Ingress Controller</a> with a static domain:</p><pre contenteditable="false"><code><span>apiVersion:</span><span> </span><span>networking.k8s.io/v1</span><span>
+</span><span></span><span>kind:</span><span> </span><span>Ingress</span><span>
+</span><span></span><span>metadata:</span><span>
+</span><span>  </span><span>name:</span><span> </span><span>example-ingress</span><span>
+</span><span></span><span>spec:</span><span>
+</span><span>  </span><span>ingressClassName:</span><span> </span><span>ngrok</span><span>
+</span><span>  </span><span>rules:</span><span>
+</span><span>  </span><span>-</span><span> </span><span>host:</span><span> </span><span>${STATIC_DOMAIN}</span><span>
+</span><span>    </span><span>http:</span><span>
+</span><span>      </span><span>paths:</span><span>
+</span><span>      </span><span>-</span><span> </span><span>path:</span><span> </span><span>/</span><span>
+</span><span>        </span><span>backend:</span><span>
+</span><span>          </span><span>serviceName:</span><span> </span><span>example-service</span><span>
+</span><span>          </span><span>servicePort:</span><span> </span><span>80</span></code></pre><p><h2 id="sign-up-and-get-started-today"><span>Sign up and get started today<a href="#sign-up-and-get-started-today"></a></span></h2></p><p>In case you don’t yet have an account, you can <a href="https://dashboard.ngrok.com/signup">sign up for one</a>. Let us know if you run into any problems or have any questions. You can reach us on <a href="https://twitter.com/ngrokHQ?">Twitter</a>, the <a href="https://ngrok.com/slack">ngrok community on Slack </a>or at <a href="mailto:support@ngrok.com">support@ngrok.com</a>.</p><p>‍</p><p>‍</p><p>‍</p></div><div><p><img loading="lazy" alt="" src="data:application/octet-stream;base64,"></p><div><p><a href="https://ngrok.com/blog-post/free-static-domains-ngrok-users" aria-current="page">Nijiko Yonskai</a></p><p>Niji is a Principal Product Manager who helps shape ngrok user experience. Previously product at Kong and Postman.</p></div></div></div>
+  </div>
+</body>
+</html>

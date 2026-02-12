@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>IP addresses & routing - Julia Evans</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>IP addresses & routing - Julia Evans</h1>
+    <p><strong>URL:</strong> <a href="https://jvns.ca/blog/2018/07/24/ip-addresses-routing">https://jvns.ca/blog/2018/07/24/ip-addresses-routing</a></p>
+    <p><strong>Tags:</strong> networking</p>
+    <p><strong>Bookmark ID:</strong> 876769649</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+     <p>Hello! Tomorrow I’m running a workshop at work about the humble IP address, so here are some notes
+about IP addresses and how IP routing on Linux works!</p>
+<p>This came up because someone on my team pointed out that there’s actually a LOT going on with IP
+addresses even though it seems like a simple concept, and they said they’d like to learn more. Here
+goes!</p>
+<p>This post is only about IPv4 because I’ve still never used IPv6.</p>
+
+<p>Almost every packet your computer sends and receives (with some exceptions like <a href="https://en.wikipedia.org/wiki/Address_Resolution_Protocol">ARP packets</a>) has an IP header.</p>
+<p>There are <a href="https://en.wikipedia.org/wiki/IPv4#Header">14 fields</a> in the IP header. The only 3
+important ones for most people to know about are:</p>
+<ul>
+<li>the source IP address</li>
+<li>the destination IP address</li>
+<li>the TTL (see: <a href="https://jvns.ca/blog/2013/10/31/day-20-scapy-and-traceroute/">how traceroute works</a>)</li>
+</ul>
+<p>One thing you’ll notice <strong>isn’t</strong> in the IP header is a port! The TCP and UDP protocols both have
+ports, but that lives at a different network layer. (and is why TCP port 8080 and UDP port 8080 are
+different ports, and can run different services!)</p>
+<p>There’s also a ‘protocol’ field that tells you the protocol (like TCP/UDP).</p>
+<h3 id="what-s-a-subnet">What’s a subnet?</h3>
+<p>IP addresses are often grouped into <strong>subnets</strong>. The main useful thing to know about subnets is to
+understand CIDR notation – <code>168.23.0.0/8</code> means “all the packets that have the same first 8 bits as
+the packet <code>168.23.0.0</code>”. In this case that would be <code>168.*.*.*</code>, or any packet beginning in 168
+(since each of the 4 numbers in an IP address is 8 bits).</p>
+<h2 id="when-i-create-a-packet-on-my-computer-what-happens-to-it">When I create a packet on my computer, what happens to it?</h2>
+<p>Suppose you create a packet with IP address 1.2.3.4 on it. Where does it go? It turns out that this
+isn’t a super simple question – there are at least 3 possible systems that can affect your packet</p>
+<h3 id="system-1-the-route-table">System 1: The route table</h3>
+<p>The most likely system to affect your new packet destined to <code>1.2.3.4</code> is the <strong>route table</strong>. On
+Linux, you can view your route table with <code>ip route list table all</code>. Here’s what the route
+table on my laptop looks like:</p>
+<pre><code>$ ip route list table all
+default via 192.168.1.1 dev wlp3s0  proto static  metric 600 
+169.254.0.0/16 dev docker0  scope link  metric 1000 linkdown 
+172.17.0.0/16 dev docker0  proto kernel  scope link  src 172.17.0.1 linkdown 
+192.168.1.0/24 dev wlp3s0  proto kernel  scope link  src 192.168.1.170  metric 600 
+broadcast 127.0.0.0 dev lo  table local  proto kernel  scope link  src 127.0.0.1 
+local 127.0.0.0/8 dev lo  table local  proto kernel  scope host  src 127.0.0.1 
+</code></pre>
+<p>Each of these routes has:</p>
+<ul>
+<li>a <strong>subnet</strong> (127.0.0.0/8, 172.17.0.0/16, etc)</li>
+<li>a <strong>network device</strong> (my wireless card <code>wlp3s0</code>, the virtual loopback device <code>lo</code>, the virtual
+docker device <code>docker0</code>, etc)</li>
+<li>possibly something like <code>via 192.168.1.1</code> which means “send all packets like this to IP
+192.168.1.1’s MAC address, which happens to be Julia’s router”</li>
+<li>a bunch of other stuff which I don’t understand that well (<code>metric 600</code>, <code>scope link</code>, <code>proto kernel</code>, etc). Not understanding what those things mean hasn’t hurt me yet.</li>
+</ul>
+<p>The main things to pay attention to are the subnet and the network device. So <code>192.168.1.0/24 dev wlp3s0</code> means “send packets in the <code>192.168.1.0/24</code> range to the <code>wlp3s0</code> network device. That’s not
+so complicated!</p>
+<p>It’s useful to know a little bit about your Linux computer route table if you’re doing container
+networking, because with containers you’ll end up with one or more virtual network devices (like
+<code>docker0</code>) that packets will end up being sent to.</p>
+<p>That’s it for the route table!</p>
+<h3 id="system-2-iptables">System 2: iptables</h3>
+<p>Having read the above, you might think that the way packets get routed is:</p>
+<ol>
+<li>they come into your computer</li>
+<li>Linux looks at the route table and decides which network device to send to the packet to</li>
+<li>That’s it</li>
+</ol>
+<p>That’s often true, but not always!! There are a bunch of secret in between steps (“prerouting”,
+“output”, “postrouting”) where Linux says “hey, iptables, want to make changes to this packet
+here?”. When this happens, iptables can change the source or destination IP address on the packet to
+be something different.</p>
+<p>The two main things I’ve used this for are <strong>DNAT</strong> (“destination NAT”) and <strong>SNAT</strong> (“source NAT”)</p>
+<p><strong>destination NAT</strong></p>
+<p>Let’s start with destination NAT! One place this shows up is in this program called
+<a href="https://github.com/jtblin/kube2iam">kube2iam</a>. kube2iam is this program that you run on your host
+that pretends to be the AWS metadata endpoint (<code>169.254.169.254</code>). Why you might want this isn’t
+important right now, but – how can kube2iam pretend to be this other IP address? That would mean
+that we need to magically redirect those packets somehow? How?</p>
+<p>It turns out that forcing packets destined for 169.254.169.254 to go somewhere else is totally
+possible! Here’s the iptables rule that they suggest using:</p>
+<pre><code>iptables \
+  --append PREROUTING \
+  --protocol tcp \
+  --destination 169.254.169.254 \
+  --dport 80 \
+  --in-interface docker0 \
+  --jump DNAT \
+  --table nat \
+  --to-destination $YOUR_IP_ADDRESS:8181
+</code></pre>
+<p>Usually iptables rules make me want to hide under the couch but in the last year I’ve become a
+little less afraid of them. Here’s what’s going on with this one:</p>
+<ul>
+<li>it only applies to tcp packets to 169.254.169.254 port 80 that came from the <code>docker0</code> interface (<code>--protocol tcp</code>, <code>--dport 80</code>, <code>--destination 169.254.168.254</code>, <code>--in-interface docker0</code>)</li>
+<li>it happens at the PREROUTING stage (before the packet gets assigned a network interface)</li>
+<li>it (<code>--jump DNAT</code>, <code>--table nat</code>, <code>--to-destination $YOUR_IP_ADDRESS:8181</code>)</li>
+</ul>
+<p>What’s this DNAT thing? Basically what this means is that Linux won’t just rewrite packets to
+169.254.169.254:80 to go to $LOCAL_IP:8081, it’ll also modify the reply packets from $LOCAL_IP:8081
+to make them appear as if they came from 169.254.169.254. So from the perspective of the application
+receiving the reply, it has no idea that it’s not talking to the IP 169.254.169.254. Lies!!!</p>
+<p>To make all this work, Linux needs to keep track of connection state and remember “hey, this reply
+packet is part of this DNATed connection so I need to rewrite it”</p>
+<p>Phew. Hopefully that made any sense.</p>
+<p><strong>source NAT</strong></p>
+<p>Source NAT is like destination NAT, except instead of rewriting destination IP address,
+it rewrites source IP addresses!</p>
+<p>The place I’ve used source NAT before is also for container stuff – if you have a bunch of
+containers with weird virtual container IP addresses sending packets to the outside world, you
+can’t just let them use those IP addresses!! The outside world (like google) has no idea about your
+container IPs and will not be able to reply to those packets. So you need to pretend that they come
+from your host.</p>
+<p>If this is you, you probably want an iptables rule something like this on your host:</p>
+<pre><code>iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+</code></pre>
+<p><code>MASQUERADE</code> is a confusing way of saying “use source NAT and pretend the packet is coming from this
+host’s IP address”. What this rule does is rewrite the source IP address on every packet to pretend
+to be from the host’s IP.</p>
+<h3 id="system-3-ipsec">System 3: IPsec</h3>
+<p>I’m not going to go into this much (I wrote about <a href="https://jvns.ca/blog/2018/07/11/netdev-day-1--ipsec/">IPsec the other day</a>),
+but a third way packets can end up going to weird places is if you’re using IPsec. You can see
+what’s going on there with the <code>ip xfrm</code> command. It turns out <code>xfrm</code> stands for “transform”.</p>
+<h3 id="some-notes-on-aws-networking">some notes on AWS networking</h3>
+<p>A lot of these concepts (a route table, NAT, IPSec) have their AWS networking analogs in <a href="https://aws.amazon.com/vpc/">Amazon
+Virtual Private Cloud (VPC)</a> – much like you can control how packets
+get routed when they arrive on your Linux computer, you can use these AWS tools to control what
+happens when you send packets from an instance in a VPC. I looked at the <a href="https://aws.amazon.com/vpc/faqs/">VPC FAQ</a> today and it’s pretty good.</p>
+<p>here are some very rough mappings</p>
+<ul>
+<li>route table: <a href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Route_Tables.html">VPC route table</a>, which
+controls how packets are routed in your VPC</li>
+<li>iptables/source NAT: <a href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-nat-gateway.html">NAT gateway</a> or <a href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Internet_Gateway.html">Internet Gateway</a>. If you have
+an AWS instance with no public IP address, you need to use source NAT (for the same reasons as we
+talked about before with containers) to talk to the public internet. The way this works in AWS is you set up a NAT
+gateway/internet gateway which will rewrite your packets for you.</li>
+<li>IPsec: <a href="https://docs.aws.amazon.com/AmazonVPC/latest/PeeringGuide/Welcome.html">VPC peering</a>. This
+isn’t really the same thing (peering connections are only encrypted for cross-region traffic), but it does give you a way to
+set up private connections between two different VPCs and I think it’s useful in some of the same
+scenarios.</li>
+</ul>
+
+</div></div>
+  </div>
+</body>
+</html>

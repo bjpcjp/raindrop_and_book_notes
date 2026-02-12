@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How Upgrading Ruby Broke JavaScript</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How Upgrading Ruby Broke JavaScript</h1>
+    <p><strong>URL:</strong> <a href="https://thoughtbot.com/blog/how-upgrading-ruby-broke-javascript">https://thoughtbot.com/blog/how-upgrading-ruby-broke-javascript</a></p>
+    <p><strong>Tags:</strong> javascript, ruby</p>
+    <p><strong>Bookmark ID:</strong> 876791800</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>I was working on a Rails app and finished all my tasks. I wanted to be
+proactive, and a new Ruby minor version was available (3.2.1). It was almost 5
+PM, what better time to upgrade my app?</p>
+
+<p>These minor version upgrades are simple, right? I bumped the Ruby version and
+the CI Docker image, hit bundle install, and the tests passed locally. All good
+news. I pushed the branch to open a PR, and then… CI broke. What?</p>
+<h2 id="the-beginning-of-the-pains">
+  <a href="#the-beginning-of-the-pains">
+    The beginning of the pains
+  </a>
+</h2>
+
+<p>I checked the error in CI, and it’s a system spec failing. Weird! Everything
+passed locally. The error said Capybara couldn’t find a select option. I looked
+at Capybara’s error screenshot, and the expected text was there!</p>
+
+<p>Okay, desperate moments require desperate actions, so I used an <a href="https://tenderlovemaking.com/2016/02/05/i-am-a-puts-debuggerer.html">advanced
+debugging technique</a>: printing to the CI console.
+I printed the text of the option tag, and it… looked exactly what the test
+asserted. But strangely, it returned <code>false</code> when I compared the <code>option.text</code> to
+the expected text.</p>
+
+<p>In disbelief, I copied the option text from the CI logs to my editor when suddenly
+I saw a highlighted char. One of the spaces in the text wasn’t a normal blank
+space but a <a href="https://en.wikipedia.org/w/index.php?title=Non-breaking_space&amp;useskin=vector#Narrow_nonbreaking_space"><code>U+202f</code></a> char.</p>
+<h2 id="it39s-not-a-bug-it39s-a-feature">
+  <a href="#it39s-not-a-bug-it39s-a-feature">
+    It’s not a bug. It’s a feature!
+  </a>
+</h2>
+
+<p>Why on Earth did that character end up there? I certainly didn’t add it! I checked
+how that select options were being created. Each option content was just a
+<code>Time</code> object converted to a string with Rails translation helpers, nothing
+fancy. Except, there was a Stimulus controller attached to them. It was a
+controller called <code>local-time</code>, which allowed users to see the time values in
+their local time. This controller looked like this:</p>
+<div><pre><code><span>import</span> <span>{</span> <span>Controller</span> <span>}</span> <span>from</span> <span>"</span><span>@hotwired/stimulus</span><span>"</span>
+
+<span>const</span> <span>locale</span> <span>=</span> <span>document</span><span>.</span><span>documentElement</span><span>.</span><span>lang</span>
+<span>const</span> <span>dateFormatter</span> <span>=</span> <span>new</span> <span>Intl</span><span>.</span><span>DateTimeFormat</span><span>(</span><span>locale</span><span>,</span> <span>{</span> <span>timeStyle</span><span>:</span> <span>"</span><span>full</span><span>"</span> <span>})</span>
+
+<span>export</span> <span>default</span> <span>class</span> <span>extends</span> <span>Controller</span> <span>{</span>
+  <span>connect</span><span>()</span> <span>{</span>
+    <span>const</span> <span>datetime</span> <span>=</span> <span>new</span> <span>Date</span><span>(</span><span>this</span><span>.</span><span>element</span><span>.</span><span>value</span><span>)</span>
+    <span>const</span> <span>formattedDatetime</span> <span>=</span> <span>dateFormatter</span><span>.</span><span>format</span><span>(</span><span>datetime</span><span>)</span>
+
+    <span>this</span><span>.</span><span>element</span><span>.</span><span>textContent</span> <span>=</span> <span>formattedDatetime</span>
+  <span>}</span>
+<span>}</span>
+</code></pre></div>
+
+
+<p>So the error had something to do with JS. After some unlucky Google searches, I
+tried searching “Google Chrome U+202f” and found <a href="https://stackoverflow.com/questions/75406192/javascript-tolocaletimestring-returning-ascii-226-instead-of-space-in-latest-v/75406644#75406644">this Stack Overflow answer</a>.</p>
+
+<p>It looks like Chromium <a href="https://chromium.googlesource.com/v8/v8/+/2ada52cffbff11074abfaac18938bf02d85454f5">changed</a> how <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl"><code>Intl</code></a> date parsing worked. But it
+eventually undid that because it was causing <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1414292">too much trouble</a> (Firefox had
+done <a href="https://bugzil.la/1806042#c17">something similar</a> too).</p>
+
+<p>Well, that explained why the test passed on main (using older Chrome) and
+locally (newer Chrome) but not on that specific branch (a version of Chrome with
+that behavior).</p>
+<h2 id="the-fix">
+  <a href="#the-fix">
+    The fix
+  </a>
+</h2>
+
+<p>This is not super important for this article, but it would feel incomplete
+without it. The best solution was simply upgrading Chrome on CI, which
+eliminates that undesired behavior altogether.</p>
+
+<p>If that was not possible, for some reason, we could modify the <code>local-time</code>
+Stimulus controller to replace all instances of the <code>U+202f</code> char with a normal
+space:</p>
+<div><pre><code><span>const</span> <span>formattedDatetime</span> <span>=</span> <span>dateFormatter</span><span>.</span><span>format</span><span>(</span><span>datetime</span><span>)</span>
+                                       <span>.</span><span>replaceAll</span><span>(</span><span>"</span><span>\</span><span>u202F</span><span>"</span><span>,</span> <span>"</span><span> </span><span>"</span><span>)</span>
+<span>// ...</span>
+</code></pre></div><h2 id="the-lesson">
+  <a href="#the-lesson">
+    The lesson
+  </a>
+</h2>
+
+<p>Although there’s a chance of someone getting to this article and finding a way to
+fix their bug, I think there’s something more important for us here.</p>
+
+<p><strong>When a bug happens, oftentimes it comes from false assumptions</strong>. In this
+particular case, I had several assumptions while fixing the bug:</p>
+
+<ol>
+<li>I initially assumed that I was just upgrading Ruby, when in fact, I happened
+to upgrade CI’s Docker file, which upgraded Chrome as well.</li>
+<li>I assumed that the text in the option tag was equal to the test
+expectation just because they <em>looked</em> the same.</li>
+<li>I implicitly assumed that the browser had the same behavior in different
+versions.</li>
+<li>I also assumed my local Chrome instance behaved exactly like the one in CI.</li>
+</ol>
+
+<p>Sometimes, a bug is the culmination of a lengthy chain reaction of falling
+dominoes. We have to go back and find what caused the initial topple. That is
+why it’s important to <a href="https://thoughtbot.com/blog/debugging-listing-your-assumptions">be aware of the assumptions you’re making</a> while
+debugging. If that topic interests you, we made <a href="https://thoughtbot.com/blog/tags/debugging-series-2021">a whole series</a> about it!</p>
+
+    </div></div>
+  </div>
+</body>
+</html>

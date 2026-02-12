@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>LLVM from a Go perspective</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>LLVM from a Go perspective</h1>
+    <p><strong>URL:</strong> <a href="https://aykevl.nl/2019/04/llvm-from-go">https://aykevl.nl/2019/04/llvm-from-go</a></p>
+    <p><strong>Tags:</strong> llvm</p>
+    <p><strong>Bookmark ID:</strong> 876782028</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="content">
+<main>
+<article>
+
+
+
+<p>Developing a compiler is an enormous task. Luckily, the advent of compiler libraries such as LLVM make this a whole lot easier, making it possible for a single person to develop a new language that is close to C in terms of performance. Unfortunately, LLVM is an enormous piece of software with little documentation. To try to remedy that, I'll show some code samples in Go and show how they translate to <a href="https://godoc.org/golang.org/x/tools/go/ssa">Go SSA</a> and then to LLVM IR using the <a href="https://tinygo.org/">TinyGo</a> compiler. Both the Go SSA and the LLVM IR have been edited a bit for clarity to remove stuff that's not relevant to this explanation.</p>
+<p>The first function that I'm going to show is this simple add function:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>func</span> <span>myAdd</span><span>(</span><span>a</span><span>,</span> <span>b</span> <span>int</span><span>)</span> <span>int</span><span>{</span>
+</span></span><span><span>    <span>return</span> <span>a</span> <span>+</span> <span>b</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>It's very simple, it can't get much simpler than this. It is translated into the following Go SSA:</p>
+<pre tabindex="0"><code data-lang="gossa">func myAdd(a int, b int) int:
+entry:
+	t0 = a + b                                                          int
+	return t0
+</code></pre><p>This particular representation puts some type hints on the right, you can ignore them most of the time.</p>
+<p>This small example already highlights one aspect of SSA: every expression is broken up into its most basic forms. In this case, <code>return a + b</code> is actually two operations: adding two numbers and returning the result.</p>
+<p>Another thing you can see here are basic blocks, in this case just one: the "entry block". More on that later.</p>
+<p>This Go SSA is trivially converted to LLVM IR:</p>
+<div><pre tabindex="0"><code data-lang="llvm"><span><span><span>define</span> <span>i64</span> <span>@myAdd</span><span>(</span><span>i64</span> <span>%a</span><span>,</span> <span>i64</span> <span>%b</span><span>)</span> <span>{</span>
+</span></span><span><span><span>entry:</span>
+</span></span><span><span>  <span>%0</span> <span>=</span> <span>add</span> <span>i64</span> <span>%a</span><span>,</span> <span>%b</span>
+</span></span><span><span>  <span>ret</span> <span>i64</span> <span>%0</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>You can see that the syntax is different, but the structure of the function is basically the same. LLVM IR is a bit more like C in that it puts the return type first in a function declaration and the type of an argument comes before the name of an argument. Also, to simplify IR parsers, globals are prefixed with <code>@</code> and locals are prefixed with <code>%</code> (a function is also considered a global).</p>
+<p>One difference to note here is that the <code>int</code> type in Go, which can be either 32-bit or 64-bit depending on the compiler and target, has been decided when the LLVM IR is constructed. This is one of the many reasons why LLVM IR is not platform independent, as many people think: IR constructed for one platform cannot simply be compiled for a different platform (unless <a href="https://llvm.org/devmtg/2019-04/talks.html#Talk_21">great care is taken</a>).</p>
+<p>Another interesting bit to note here is that <code>i64</code> is not a signed integer: it is sign-agnostic. Depending on the instruction, it may be signed or unsigned. For addition, it doesn't matter<sup id="fnref:1"><a href="#fn:1" role="doc-noteref">1</a></sup> so there is no signed/unsigned difference there.</p>
+<p>What happens next with this IR is not all that important right now. It is optimized (nothing to do for such a simple example) and then emitted as machine code.</p>
+<p>The next example I'm going to show is a bit more involved. It's a function that sums a slice of integers:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>func</span> <span>sum</span><span>(</span><span>numbers</span> <span>[]</span><span>int</span><span>)</span> <span>int</span> <span>{</span>
+</span></span><span><span>    <span>n</span> <span>:=</span> <span>0</span>
+</span></span><span><span>    <span>for</span> <span>i</span> <span>:=</span> <span>0</span><span>;</span> <span>i</span> <span>&lt;</span> <span>len</span><span>(</span><span>numbers</span><span>);</span> <span>i</span><span>++</span> <span>{</span>
+</span></span><span><span>        <span>n</span> <span>+=</span> <span>numbers</span><span>[</span><span>i</span><span>]</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>    <span>return</span> <span>n</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>It is converted to the following Go SSA:</p>
+<pre tabindex="0"><code data-lang="gossa">func sum(numbers []int) int:
+entry:
+	jump for.loop
+for.loop:
+	t0 = phi [entry: 0:int, for.body: t6] #n                            int
+	t1 = phi [entry: 0:int, for.body: t7] #i                            int
+	t2 = len(numbers)                                                   int
+	t3 = t1 &lt; t2                                                       bool
+	if t3 goto for.body else for.done
+for.body:
+	t4 = &amp;numbers[t1]                                                  *int
+	t5 = *t4                                                            int
+	t6 = t0 + t5                                                        int
+	t7 = t1 + 1:int                                                     int
+	jump for.loop
+for.done:
+	return t0
+</code></pre><p>This code demonstrates a few more properties of SSA form. The most obvious one is probably that there is no structured control flow anymore. The only control flow operations available are conditional and unconditional jumps, and returns if you count that as control flow.</p>
+<p>In fact, you can see the program is not split into blocks using curly braces (like in the C family of languages), but only separated with labels like in assembly languages. SSA form calls these basic blocks. A basic block is an uninterrupted sequence of instructions that starts with a label and ends with a <em>terminator instruction</em> like <code>return</code> and <code>jump</code>.</p>
+<p>The other interesting part here is the <code>phi</code> instruction, which is a rather odd instruction and may take a while to grasp. Remember the name SSA? It stands for <em>static single assignment</em>. It means that every variable is assigned exactly once, and never changes. This is fine for trivial functions like our <code>myAdd</code> above, but does not work with more complicated functions like this <code>sum</code> function here. In particular, both the <code>i</code> variable as well as the <code>n</code> variable change while executing this loop.</p>
+<p>SSA works around this using a so-called phi instruction (from the Greek character Φ). It's a bit of magic to make SSA work with languages like C. The result of the instruction is the current value of the variable (<code>i</code> or <code>n</code>) and it lists the basic blocks that it is coming from as parameters. So take this instruction for example:</p>
+<pre tabindex="0"><code data-lang="gossa">	t0 = phi [entry: 0:int, for.body: t6] #n
+</code></pre><p>It says "if the previous basic block was the entry block, t0 is the constant 0, and if the previous block was for.body, take whatever value was in t6 in that block". This is all a bit magical and hand-wavy, but it makes SSA work. It is harder to understand for humans, but the fact that every value is only set once makes many optimizations much easier.</p>
+<p>Note that if you write your own compiler, you will generally not have to deal with this. Even Clang does not generate these <code>phi</code> instructions, it uses something called an <code>alloca</code> (which is more like a regular local variable). A LLVM optimization pass called <a href="https://llvm.org/docs/Passes.html#mem2reg-promote-memory-to-register">mem2reg</a> will then convert these allocas to SSA form. TinyGo, however, gets its input from Go SSA form which conveniently is already in SSA form.</p>
+<p>Other new things in this piece of IR are that indexing into a slice is split into calculating the address and dereferencing the resulting pointer. You can also see constants directly emitted into the IR (like <code>1:int</code>), which weren't there in the <code>myAdd</code> example. So with that, let's move on to what it looks like in LLVM IR:</p>
+<div><pre tabindex="0"><code data-lang="llvm"><span><span><span>define</span> <span>i64</span> <span>@sum</span><span>(</span><span>i64</span><span>*</span> <span>%ptr</span><span>,</span> <span>i64</span> <span>%len</span><span>,</span> <span>i64</span> <span>%cap</span><span>)</span> <span>{</span>
+</span></span><span><span><span>entry:</span>
+</span></span><span><span>  <span>br</span> <span>label</span> <span>%for.loop</span>
+</span></span><span><span>
+</span></span><span><span><span>for.loop:</span>                                         <span>; preds = %for.body, %entry
+</span></span></span><span><span><span></span>  <span>%0</span> <span>=</span> <span>phi</span> <span>i64</span> <span>[</span> <span>0</span><span>,</span> <span>%entry</span> <span>],</span> <span>[</span> <span>%5</span><span>,</span> <span>%for.body</span> <span>]</span>
+</span></span><span><span>  <span>%1</span> <span>=</span> <span>phi</span> <span>i64</span> <span>[</span> <span>0</span><span>,</span> <span>%entry</span> <span>],</span> <span>[</span> <span>%6</span><span>,</span> <span>%for.body</span> <span>]</span>
+</span></span><span><span>  <span>%2</span> <span>=</span> <span>icmp</span> <span>slt</span> <span>i64</span> <span>%1</span><span>,</span> <span>%len</span>
+</span></span><span><span>  <span>br</span> <span>i1</span> <span>%2</span><span>,</span> <span>label</span> <span>%for.body</span><span>,</span> <span>label</span> <span>%for.done</span>
+</span></span><span><span>
+</span></span><span><span><span>for.body:</span>                                         <span>; preds = %for.loop
+</span></span></span><span><span><span></span>  <span>%3</span> <span>=</span> <span>getelementptr</span> <span>i64</span><span>,</span> <span>i64</span><span>*</span> <span>%ptr</span><span>,</span> <span>i64</span> <span>%1</span>
+</span></span><span><span>  <span>%4</span> <span>=</span> <span>load</span> <span>i64</span><span>,</span> <span>i64</span><span>*</span> <span>%3</span>
+</span></span><span><span>  <span>%5</span> <span>=</span> <span>add</span> <span>i64</span> <span>%0</span><span>,</span> <span>%4</span>
+</span></span><span><span>  <span>%6</span> <span>=</span> <span>add</span> <span>i64</span> <span>%1</span><span>,</span> <span>1</span>
+</span></span><span><span>  <span>br</span> <span>label</span> <span>%for.loop</span>
+</span></span><span><span>
+</span></span><span><span><span>for.done:</span>                                         <span>; preds = %for.loop
+</span></span></span><span><span><span></span>  <span>ret</span> <span>i64</span> <span>%0</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Again, the structure is the same with slightly different syntax. For example, phi nodes have swapped the value and the label. However, there are a few things to note here.</p>
+<p>First of all, the signature is quite different. LLVM does not natively support slices, so as an optimization the TinyGo compiler (that produced this IR) has split it up in its individual pieces. It could have used a struct for the 3 elements of a slice (ptr, len, cap) but splitting it up enables some optimizations. Other compilers might represent a slice in a different way depending on the calling convention of the target platform.</p>
+<p>Another interesting thing in this IR is the <code>getelementptr</code> instruction (often shortened to GEP). This instruction does pointer arithmetic and is used to get a pointer to an element in the slice. For example, compare it with the following C code:</p>
+<div><pre tabindex="0"><code data-lang="c"><span><span><span>int</span><span>*</span> <span>sliceptr</span><span>(</span><span>int</span> <span>*</span><span>ptr</span><span>,</span> <span>int</span> <span>index</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>return</span> <span>&amp;</span><span>ptr</span><span>[</span><span>index</span><span>];</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Or the following, which is equivalent:</p>
+<div><pre tabindex="0"><code data-lang="c"><span><span><span>int</span><span>*</span> <span>sliceptr</span><span>(</span><span>int</span> <span>*</span><span>ptr</span><span>,</span> <span>int</span> <span>index</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>return</span> <span>ptr</span> <span>+</span> <span>index</span><span>;</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Most importantly, <code>getelementptr</code> does not do any dereferencing, it only calculates a new pointer based on an existing pointer. You could think of it as a <code>mul</code> and <code>add</code> at the hardware level. For more information, see <a href="https://llvm.org/docs/GetElementPtr.html">the often misunderstood GEP instruction</a>.</p>
+<p>Another interesting bit in this IR is the <code>icmp</code> instruction, which is a generic instruction to implement integer comparisons. The result is always an <code>i1</code>: a boolean. In this case, the comparison is a <code>slt</code>, which is a "signed lower than" because we're comparing two ints. If we were to compare two unsigned integers, the instruction would be <code>icmp ult</code>. Floating point comparisons use a different instruction with similar predicates: <code>fcmp</code>.</p>
+<p>And with that, I think I've covered the most important bits of LLVM IR. There is of course much more to it. The IR has many annotations to let optimization passes know of certain facts the compiler knows but cannot be expressed in a different way in the IR. Examples are an <code>inbounds</code> flag on the getelementptr instruction or a <code>nsw</code> and <code>nuw</code> flag that can be added to the add instruction. Or a <code>private</code> linkage that tells the optimizer this function will not be referred to outside of the current compilation unit, enabling lots of interesting interprocedural optimizations like dead argument elimination.</p>
+<p>For more information, see the following pages:</p>
+<ul>
+<li>The <a href="https://llvm.org/docs/LangRef.html">language reference</a>, which you will frequently refer to when developing a LLVM-based compiler.</li>
+<li>The <a href="https://llvm.org/docs/tutorial/">Kaleidoscope tutorial</a>, which shows how to implement a compiler for a very simple language.</li>
+</ul>
+<p>Both will be very valuable sources of information when you develop your own compiler.</p>
+<div role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>In C, overflowing a signed integer causes undefined behavior so the Clang frontend adds a <code>nsw</code> flag (no signed wrap) to the operation, which signals to LLVM that it can assume the addition never overflows. This can be important for some optimizations: for example adding two <code>i16</code> values on a 32-bit platform (with 32-bit registers) needs a sign-extend operation after the addition to stay in the <code>i16</code> range. Because of this, it is often more efficient to do integer operations on the native register size.&nbsp;<a href="#fnref:1" role="doc-backlink">↩︎</a></p>
+</li>
+</ol>
+</div>
+
+<p>
+  Updated: <time datetime="2019-05-14">2019-05-14</time>
+</p>
+</article>
+</main>
+</div></div>
+  </div>
+</body>
+</html>

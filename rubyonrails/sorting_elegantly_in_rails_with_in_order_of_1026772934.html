@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Sorting elegantly in Rails with in_order_of</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Sorting elegantly in Rails with in_order_of</h1>
+    <p><strong>URL:</strong> <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of">https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 1026772934</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>Prior to rails 7 sorting a column in a custom order was not straightforward, typically requiring raw SQL or complex workarounds; the <code>in_order_of</code> method offers a more elegant and efficient solution for custom sorting without resorting to raw SQL.</p>
+<h2 id="custom-sorting-without-in_order_of">
+  <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of#custom-sorting-without-in_order_of">
+    Custom Sorting Without <code>in_order_of</code>
+  </a>
+</h2>
+
+<p>Let’s take this example: You have a Task model with different statuses:</p>
+<div><pre><code><span>class</span> <span>Task</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>enum</span> <span>status: </span><span>{</span> <span>pending: </span><span>0</span><span>,</span> <span>in_progress: </span><span>1</span><span>,</span> <span>completed: </span><span>2</span><span>,</span> <span>archived: </span><span>3</span> <span>}</span>
+<span>end</span>
+</code></pre></div>
+<p>If you want tasks sorted in the order <code>['in_progress', 'pending', 'completed', 'archived']</code>. prior to rails 7 there are several ways you could achieve this:</p>
+<h3 id="1-raw-sql">
+  <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of#1-raw-sql">
+    1. Raw SQL
+  </a>
+</h3>
+<div><pre><code><span>Task</span><span>.</span><span>order</span><span>(</span><span>Arel</span><span>.</span><span>sql</span><span>(</span><span>"FIELD(status, 1, 0, 2, 3)"</span><span>))</span>
+</code></pre></div><h3 id="2-using-case-when-in-sql">
+  <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of#2-using-case-when-in-sql">
+    2. Using <code>CASE WHEN</code> in SQL
+  </a>
+</h3>
+<div><pre><code><span>Task</span><span>.</span><span>order</span><span>(</span><span>Arel</span><span>.</span><span>sql</span><span>(</span><span>"CASE status
+  WHEN 1 THEN 1  /* in_progress */
+  WHEN 0 THEN 2  /* pending */
+  WHEN 2 THEN 3  /* completed */
+  WHEN 3 THEN 4  /* archived */
+END"</span><span>))</span>
+</code></pre></div><h3 id="3-sorting-in-ruby">
+  <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of#3-sorting-in-ruby">
+    3. Sorting in Ruby
+  </a>
+</h3>
+<div><pre><code><span>custom_order</span> <span>=</span> <span>[</span><span>'in_progress'</span><span>,</span> <span>'pending'</span><span>,</span> <span>'completed'</span><span>,</span> <span>'archived'</span><span>]</span>
+<span>Task</span><span>.</span><span>all</span><span>.</span><span>sort_by</span> <span>{</span> <span>|</span><span>task</span><span>|</span> <span>custom_order</span><span>.</span><span>index</span><span>(</span><span>task</span><span>.</span><span>status</span><span>)</span> <span>}</span>
+</code></pre></div>
+<p>While all the above approaches are valid, they all have drawbacks:</p>
+
+<p>The SQL-based solutions depend on database-specific syntax and are difficult to read because of the enum numerical values in the database, while Ruby sorting, loads all records into memory, impacting performance and making it inefficient for large data sets.</p>
+<h2 id="the-rails-71-solution-in_order_of">
+  <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of#the-rails-71-solution-in_order_of">
+    The Rails 7.1 Solution: <code>in_order_of</code>
+  </a>
+</h2>
+
+<p>Rails 7.1 introduces <code>in_order_of</code>, making custom sorting effortless and database-agnostic. Here’s how you do it:</p>
+<div><pre><code><span>Task</span><span>.</span><span>in_order_of</span><span>(</span><span>:status</span><span>,</span> <span>[</span><span>:in_progress</span><span>,</span> <span>:pending</span><span>,</span> <span>:completed</span><span>,</span> <span>:archived</span><span>])</span>
+</code></pre></div><h3 id="how-in_order_of-works">
+  <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of#how-in_order_of-works">
+    How <code>in_order_of</code> works
+  </a>
+</h3>
+
+<p>The <code>in_order_of</code> method constructs a CASE statement or utilizes built-in database functions to enforce the specified order, For the example above, it would generate SQL similar to:</p>
+<div><pre><code><span>SELECT</span> <span>"tasks"</span><span>.</span><span>*</span> <span>FROM</span> <span>"tasks"</span> <span>ORDER</span> <span>BY</span> <span>CASE</span> <span>"tasks"</span><span>.</span><span>"status"</span>
+  <span>WHEN</span> <span>1</span> <span>THEN</span> <span>0</span>   <span>/* in_progress */</span>
+  <span>WHEN</span> <span>0</span> <span>THEN</span> <span>1</span>   <span>/* pending */</span>
+  <span>WHEN</span> <span>2</span> <span>THEN</span> <span>2</span>   <span>/* completed */</span>
+  <span>WHEN</span> <span>3</span> <span>THEN</span> <span>3</span>   <span>/* archived */</span>
+  <span>ELSE</span> <span>4</span>          <span>/* any other values */</span>
+<span>END</span>
+</code></pre></div><h3 id="pros">
+  <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of#pros">
+    Pros
+  </a>
+</h3>
+
+<ul>
+<li><strong>Database-agnostic</strong>: Works across different database engines without requiring database-specific syntax.</li>
+<li><strong>Rails-native</strong>: Integrates seamlessly with the Active Record query interface and can be chained with other methods like <code>where</code>, <code>limit</code>,<code>order</code> etc.</li>
+<li><strong>Type-handling</strong>: Automatically handles different data types appropriately.</li>
+<li><strong>Preserves lazy loading</strong>: Keeps the query lazy-loaded until results are needed, unlike Ruby-side sorting.</li>
+</ul>
+<h3 id="cons">
+  <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of#cons">
+    Cons
+  </a>
+</h3>
+
+<ul>
+<li><strong>Performance overhead</strong>: Generates a <code>CASE WHEN</code> SQL statement internally, which can be expensive for large ordered lists.</li>
+<li><strong>Index limitations</strong>: Database indexes aren’t effectively utilized with these custom order statements.</li>
+<li><strong>SQL complexity</strong>: The generated SQL can be complex and harder to optimize.</li>
+<li><strong>Missing values handling</strong>: Records with values not in the specified list are typically appended at the end, sometimes in unpredictable order.</li>
+</ul>
+<h2 id="conclusion">
+  <a href="https://thoughtbot.com/blog/sorting-elegantly-in-rails-with-in_order_of#conclusion">
+    Conclusion
+  </a>
+</h2>
+
+<p>If you find yourself reaching for raw SQL for custom sorting in Rails, <code>in_order_of</code> can help achieve this easily. While this method can have disadvantages in particular cases, as highlighted above, when it fits your use case, it can greatly improve the readability and maintainability of your code.</p>
+
+
+
+    </div></div>
+  </div>
+</body>
+</html>

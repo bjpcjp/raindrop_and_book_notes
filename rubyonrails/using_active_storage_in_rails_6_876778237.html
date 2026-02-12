@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using Active Storage in Rails 6</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using Active Storage in Rails 6</h1>
+    <p><strong>URL:</strong> <a href="https://pragmaticstudio.com/tutorials/using-active-storage-in-rails">https://pragmaticstudio.com/tutorials/using-active-storage-in-rails</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876778237</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+    <p>Gone are the days when you have to use external gems to handle file uploads in Rails. These days Active Storage is built into Rails with support for multiple cloud-based storage services such as Amazon S3, Google Cloud Storage, and Microsoft Azure. And in typical Rails style, the configuration is minimal.</p>
+
+<p>If you want to see how to use Active Storage in a full-featured Rails app, check out our comprehensive <a href="https://pragmaticstudio.com/courses/rails">Rails course</a>. If you simply want to know how to get it working in your own app, this tutorial will walk you through the steps.</p>
+
+<p>We’re going to arrange things such that in the <code>development</code> environment, uploaded images are stored on the local disk. But when the app is running in the <code>production</code> environment on a Heroku server, then the uploaded images are stored in an Amazon S3 bucket.</p>
+
+<h3 id="install-active-storage">Install Active Storage</h3>
+
+<ol>
+  <li>
+    <p>The first step is to install Active Storage by running the following in your Rails application directory:</p>
+
+    <div><pre><code>rails active_storage:install
+</code></pre></div>
+
+    <p>This simply copies a migration file into the <code>db/migrate</code> directory.</p>
+  </li>
+  <li>
+    <p>Then run that migration:</p>
+
+    <div><pre><code>rails db:migrate
+</code></pre></div>
+  </li>
+</ol>
+
+<p>You’ll see it creates two database tables: <code>active_storage_blobs</code> and <code>active_storage_attachments</code>.</p>
+
+<h3 id="behind-the-scenes-a-polymorphic-join-table">Behind the Scenes: A Polymorphic Join Table</h3>
+
+<p>Although you won’t use these two new database tables directly, it’s always empowering to have a cursory understanding of what’s going on behind the scenes. So crack open the generated migration file and have a peek.</p>
+
+<p>The <code>active_storage_blobs</code> table is fairly straightforward:</p>
+
+<div><pre><code><span>create_table</span> <span>:active_storage_blobs</span> <span>do</span> <span>|</span><span>t</span><span>|</span>
+  <span>t</span><span>.</span><span>string</span>   <span>:key</span><span>,</span>        <span>null: </span><span>false</span>
+  <span>t</span><span>.</span><span>string</span>   <span>:filename</span><span>,</span>   <span>null: </span><span>false</span>
+  <span>t</span><span>.</span><span>string</span>   <span>:content_type</span>
+  <span>t</span><span>.</span><span>text</span>     <span>:metadata</span>
+  <span>t</span><span>.</span><span>string</span>   <span>:service_name</span><span>,</span> <span>null: </span><span>false</span>
+  <span>t</span><span>.</span><span>bigint</span>   <span>:byte_size</span><span>,</span>  <span>null: </span><span>false</span>
+  <span>t</span><span>.</span><span>string</span>   <span>:checksum</span><span>,</span>   <span>null: </span><span>false</span>
+
+  <span>...</span>
+<span>end</span>
+</code></pre></div>
+
+<p>It stores all the details of uploaded files including their <code>filename</code>, <code>content_type</code>, <code>metadata</code>, and other such information. And the <code>key</code> is an encoded value that points to the file in the Active Storage service.</p>
+
+<p>The <code>active_storage_attachments</code> table is much more interesting:</p>
+
+<div><pre><code><span>create_table</span> <span>:active_storage_attachments</span> <span>do</span> <span>|</span><span>t</span><span>|</span>
+  <span>t</span><span>.</span><span>string</span>     <span>:name</span><span>,</span>     <span>null: </span><span>false</span>
+  <span>t</span><span>.</span><span>references</span> <span>:record</span><span>,</span>   <span>null: </span><span>false</span><span>,</span> <span>polymorphic: </span><span>true</span><span>,</span> <span>index: </span><span>false</span>
+  <span>t</span><span>.</span><span>references</span> <span>:blob</span><span>,</span>     <span>null: </span><span>false</span>
+
+  <span>...</span>
+<span>end</span>
+</code></pre></div>
+
+<p>Each row of this table references a <code>blob</code> (a row in the <code>active_storage_blobs</code> table) and also references a <code>record</code>. In other words, each row of the <code>active_storage_attachments</code> table joins a blob and a record.</p>
+
+<p>What’s particularly interesting about this join table is it’s a special type of join table: a <em>polymorphic</em> join table. You can tell because the <code>polymorphic: true</code> option is added to this line:</p>
+
+<div><pre><code><span>t</span><span>.</span><span>references</span> <span>:record</span><span>,</span> <span>null: </span><span>false</span><span>,</span> <span>polymorphic: </span><span>true</span><span>,</span> <span>index: </span><span>false</span>
+</code></pre></div>
+
+<p>This means that the <code>record</code> it’s referencing can be <em>any</em> ActiveRecord model.</p>
+
+<p>If the <code>polymorphic: true</code> option weren’t added here, then the migration would simply create a column named <code>record_id</code> which would contain a foreign key pointing to a record. But it wouldn’t know what <em>type</em> of record it’s pointing to! 😲</p>
+
+<p>By adding the <code>polymorphic: true</code> option, the migration creates two columns: a column named <code>record_id</code> which contains a foreign key and a column named <code>record_type</code> which contains the name of an ActiveRecord model class. For example, here’s a polymorphic join table that joins an event to it’s uploaded image and a user to it’s uploaded image:</p>
+
+<figure>
+<img src="data:application/octet-stream;base64," width="800" alt="Polymorphic Association">
+</figure>
+
+<p>Notice the first row in the <code>active_storage_attachments</code> table has a foreign key pointing to the event and another foreign key pointing to the blob. It knows the <code>record_id</code> is a foreign key for an event, in this case, because the <code>record_type</code> column contains <code>Event</code>.</p>
+
+<p>The second row in the <code>active_storage_attachments</code> table has a foreign key pointing to the user (because <code>User</code> is in the <code>record_type</code> column) and a foreign key pointing to the blob.</p>
+
+<p>Here’s the takeaway: The <code>active_storage_attachments</code> table joins <em>any</em> ActiveRecord model to its images (or attachments) because it’s a <code>polymorphic</code> join table. So with these two pieces of information—a foreign key and a class name—the row knows <em>exactly</em> which record it’s referencing. 👌</p>
+
+<h3 id="declare-attachment-associations">Declare Attachment Associations</h3>
+
+<p>The database is now ready to join any ActiveRecord model to a blob (an uploaded image), but we still need to declare associations in our models.</p>
+
+<p>Suppose, for example, we want our <code>Event</code> model to have one attached image—the main image for the event. To do that, we add a declaration in the appropriate model like so:</p>
+
+<div><pre><code><span>has_one_attached</span> <span>:main_image</span>
+</code></pre></div>
+
+<p>The name doesn’t correspond to any database column name, so you can name the attachment anything you want. Here we’ve named it <code>main_image</code>. If you were attaching an avatar image to a <code>User</code> model for example, then you might name the attachment <code>avatar</code>.</p>
+
+<p>So what does this <code>has_one_attached</code> declaration do? Well, using a bit of metaprogramming it effectively creates two associations like this:</p>
+
+<div><pre><code><span>has_one</span> <span>:main_image_attachment</span><span>,</span> <span>dependent: :destroy</span>
+<span>has_one</span> <span>:main_image_blob</span><span>,</span> <span>through: :main_image_attachment</span>
+</code></pre></div>
+
+<p>So our model has a <code>main_image_attachment</code> and a <code>main_image_blob</code> that it can get through the <code>main_image_attachment</code> association. If you look at the source code of the <code>has_one_attached</code> method, there’s a little more to it than that, but basically that’s what’s going on. It’s not magic!</p>
+
+<h3 id="upload-an-image">Upload an Image</h3>
+
+<p>The model is now ready to accept an image attachment. To let users choose a file to upload from their computer, we need a form which includes a file upload input field, like so:</p>
+
+<div><pre><code><span>&lt;%=</span> <span>f</span><span>.</span><span>label</span> <span>:main_image</span> <span>%&gt;</span>
+<span>&lt;%=</span> <span>f</span><span>.</span><span>file_field</span> <span>:main_image</span> <span>%&gt;</span>
+</code></pre></div>
+
+<p>Be sure to use a <code>file_field</code> and reference the <code>main_image</code> attribute (or whatever you named yours). Also, for this to work, don’t forget to add <code>main_image</code> attribute to the list of permitted parameters in the controller that handles the form.</p>
+
+<p>Now back in our app, we can use the form to select and upload an image!</p>
+
+<h3 id="display-an-uploaded-image">Display an Uploaded Image</h3>
+
+<p>To display the image that’s attached to a model, we just need to use the <code>main_image</code> attribute of the model which in our case is an <code>Event</code>. For example:</p>
+
+<div><pre><code><span>&lt;%=</span> <span>image_tag</span> <span>event</span><span>.</span><span>main_image</span> <span>%&gt;</span>
+</code></pre></div>
+
+<h3 id="find-the-uploaded-file">Find the Uploaded File</h3>
+
+<p>By default in the <code>development</code> environment, Active Storage stores all uploaded images on your local disk in the <code>storage</code> subdirectory of the Rails application directory.</p>
+
+<p>If after uploading an image you drill down into that directory, buried under a few other subdirectories you’ll find a file whose name is the same as the blob key. It’ll be something obscure like <code>8x2jhtmb33u0kcsyrb9vmwf7gp0w</code>:</p>
+
+<div><pre><code>your-app
+└── storage
+    └── 8x
+     &nbsp;&nbsp; └── 2j
+     &nbsp;&nbsp;     └── 8x2jhtmb33u0kcsyrb9vmwf7gp0w
+</code></pre></div>
+
+<p>That’s the file you uploaded!</p>
+
+<h3 id="add-validations">Add Validations</h3>
+
+<p>So what kind of files can users upload? Well, as things stand, there are no restrictions on the file type or its size. It would be foolhardy not to add some basic validations. Now you might think Active Storage would include built-in validations but that’s not the case. Thankfully it’s surprisingly easy to write <a href="https://guides.rubyonrails.org/active_record_validations.html#performing-custom-validations" target="_blank">custom validations</a>.</p>
+
+<p>Let’s say we want to restrict the image size 1MB or less and only accept JPEG and PNG files.</p>
+
+<ol>
+  <li>
+    <p>To do that, in the model we need to register a custom validation method. We’ll name it <code>acceptable_image</code>:</p>
+
+    <div><pre><code><span>validate</span> <span>:acceptable_image</span>
+</code></pre></div>
+  </li>
+  <li>
+    <p>Then we need to define that method. As a starting point, we only want our validations to run if a main image is attached. Otherwise, if one isn’t attached, there’s no need to run the validations. To check if a main image is attached, we can use the <code>attached?</code> method like so:</p>
+
+    <div><pre><code><span>def</span> <span>acceptable_image</span>
+  <span>return</span> <span>unless</span> <span>main_image</span><span>.</span><span>attached?</span>
+<span>end</span>
+</code></pre></div>
+  </li>
+  <li>
+    <p>Next, to figure out if the uploaded image is too big (over 1MB), we can read the <code>byte_size</code> attribute of the <code>main_image</code> attribute:</p>
+
+    <div><pre><code><span>def</span> <span>acceptable_image</span>
+  <span>return</span> <span>unless</span> <span>main_image</span><span>.</span><span>attached?</span>
+
+  <span>unless</span> <span>main_image</span><span>.</span><span>blob</span><span>.</span><span>byte_size</span> <span>&lt;=</span> <span>1</span><span>.</span><span>megabyte</span>
+    <span>errors</span><span>.</span><span>add</span><span>(</span><span>:main_image</span><span>,</span> <span>"is too big"</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+    <p>In cases where the image is too big, we add a validation error to the <code>main_image</code> attribute with the message "is too big".</p>
+  </li>
+  <li>
+    <p>Then to check if the uploaded image is a JPEG and PNG file, we can read the <code>content_type</code> attribute of the <code>main_image</code> attribute:</p>
+
+    <div><pre><code><span>def</span> <span>acceptable_image</span>
+  <span>return</span> <span>unless</span> <span>main_image</span><span>.</span><span>attached?</span>
+
+  <span>unless</span> <span>main_image</span><span>.</span><span>blob</span><span>.</span><span>byte_size</span> <span>&lt;=</span> <span>1</span><span>.</span><span>megabyte</span>
+    <span>errors</span><span>.</span><span>add</span><span>(</span><span>:main_image</span><span>,</span> <span>"is too big"</span><span>)</span>
+  <span>end</span>
+
+  <span>acceptable_types</span> <span>=</span> <span>[</span><span>"image/jpeg"</span><span>,</span> <span>"image/png"</span><span>]</span>
+  <span>unless</span> <span>acceptable_types</span><span>.</span><span>include?</span><span>(</span><span>main_image</span><span>.</span><span>content_type</span><span>)</span>
+    <span>errors</span><span>.</span><span>add</span><span>(</span><span>:main_image</span><span>,</span> <span>"must be a JPEG or PNG"</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+    <p>If the <code>content_type</code> isn’t one of our acceptable types, then we add a validation error to the <code>main_image</code> attribute with the message "must be a JPEG or PNG".</p>
+  </li>
+</ol>
+
+<p>Consider those validations as bare minimums. You’ll want to think carefully about what types of files can be uploaded to your app, and what size you’re willing to handle. As an alternative to writing custom validations for image uploads, check out the <a href="https://github.com/igorkasyanchuk/active_storage_validations" target="_blank">Active Storage Validations gem</a> which includes a variety of common validations you might want to perform.</p>
+
+<h3 id="create-image-variants">Create Image Variants</h3>
+
+<p>Active Storage will always store unaltered copies of uploaded files. But sometimes you need to transform those image. For example, you might want to resize an uploaded image to generate a smaller thumbnail image. Active Storage has an answer for that: it can create something it calls a <em>variant</em>. It’s a variation of the original uploaded image. For example, an original image might be 300x300 pixels and have a thumbnail variant that’s only 150x150 pixels.</p>
+
+<ol>
+  <li>
+    <p>To generate variants for images, Rails uses the <code>image_processing</code> gem. It’s not installed by default, so we need to uncomment the following line in the <code>Gemfile</code>:</p>
+
+    <div><pre><code><span>gem</span> <span>'image_processing'</span><span>,</span> <span>'~&gt; 1.2'</span>
+</code></pre></div>
+
+    <p>Then install it:</p>
+
+    <div><pre><code>bundle <span>install</span>
+</code></pre></div>
+  </li>
+  <li>
+    <p>The <code>image_processing</code> gem relies on <a href="https://imagemagick.org/" target="_blank">ImageMagick</a> to do the actual image transformation. ImageMagick isn’t a Ruby gem; it’s distributed as a binary that’s specific to your operating system. You’ll need to install it separately for your operating system:</p>
+
+    <p>For <strong>Windows</strong> use the <a href="http://www.imagemagick.org/script/binary-releases.php#windows" target="_blank">Windows binary release</a>.</p>
+
+    <p>For <strong>Mac</strong> use Homebrew:</p>
+
+    <div><pre><code>brew <span>install </span>imagemagick
+</code></pre></div>
+
+    <p>For <strong>Linux</strong> use <code>apt-get</code>:</p>
+
+    <div><pre><code><span>sudo </span>apt-get <span>install </span>imagemagick
+</code></pre></div>
+
+    <p>Then once you have ImageMagick installed, you’ll need to restart your Rails app.</p>
+  </li>
+  <li>
+    <p>Now let’s suppose we want to display a thumbnail of the main image attached to an <code>Event</code> model object. We want the thumbnail to be 150 pixels on the long side. To do that, when displaying the image we just use the <code>variant</code> method with the <code>resize_to_limit</code> option, like so:</p>
+
+    <div><pre><code><span>&lt;%=</span> <span>image_tag</span> <span>movie</span><span>.</span><span>main_image</span><span>.</span><span>variant</span><span>(</span><span>resize_to_limit: </span><span>[</span><span>150</span><span>,</span> <span>nil</span><span>])</span> <span>%&gt;</span>
+</code></pre></div>
+
+    <p>The <code>resize_to_limit</code> option will downsize the image to fit within the specified dimensions while retaining the original aspect ratio. To resize it to a 150x150 square, you can use <code>[150, 150]</code>. Of if you just want to resize one dimension, you can set the other dimension to <code>nil</code>, such as <code>[150, nil]</code>.</p>
+  </li>
+</ol>
+
+<p>You can have as many image variants as you like, and they’re automatically
+created and stored when requested. If you drill down into the <code>storage</code> directory you’ll find all the variants under the <code>va/ri/variants</code> directory. Each image’s variants are stored in a separate subdirectory whose name is the same as the image blob key, such as <code>8x2jhtmb33u0kcsyrb9vmwf7gp0w</code>:</p>
+
+<div><pre><code>your-app
+└── storage
+    └── va
+    &nbsp;&nbsp; └── ri
+    &nbsp;&nbsp;     └── variants
+     &nbsp;&nbsp;        └── 8x2jhtmb33u0kcsyrb9vmwf7gp0w
+                   └── 2e4037f1976861d1536a0e5c772f7d
+</code></pre></div>
+
+<h3 id="encrypt-your-credentials">Encrypt Your Credentials</h3>
+
+<p>We’re almost ready to turn our attention to uploading files to a cloud-based storage service when running in the <code>production</code> environment, but first a bit of setup is needed. All of the cloud-based storage services supported by Active Storage require a set of credentials. Here’s the rub: those credentials are super-secret! If they were revealed, someone could hijack our account and run up our storage bill. 😳</p>
+
+<p>To avoid that, we need Rails to encrypt our Amazon S3 credentials in a special file that gets deployed with the application. Then when the application runs, it will decrypt that encrypted file and use our credentials to communicate with Amazon S3.</p>
+
+<p>Let’s set that up…</p>
+
+<h4 id="create-an-aws-account-and-an-s3-bucket">Create an AWS Account and an S3 Bucket</h4>
+
+<p>First you’ll need to <a href="https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/" target="_blank">create and activate an Amazon Web Services account</a> if you don’t already have one.  The <a href="http://aws.amazon.com/free/" target="_blank">free tier</a> offers sufficient storage space for learning purposes.</p>
+
+<p>Access to S3 is governed by a set of credentials: an access key id and a secret access key. The access key identifies your S3 account and the secret access key should be treated like a password. Your S3 credentials can be found on the <a href="https://aws-portal.amazon.com/gp/aws/securityCredentials" target="_blank">Your Security Credentials</a> section of the <a href="https://console.aws.amazon.com/" target="_blank">AWS console</a>.</p>
+
+<p>All files in S3 are stored in <em>buckets</em> which act basically like
+directories. <a href="https://console.aws.amazon.com/s3" target="_blank">Create an S3 bucket</a> where your uploaded images will be stored. You can name the bucket anything you want, but the name must be unique across the entire Amazon S3 system. For example, if your app is named <code>quiet-thunder</code> on Heroku then you might name your bucket <code>quiet-thunder-images</code>.</p>
+
+<h4 id="encrypt-your-access-keys">Encrypt Your Access Keys</h4>
+
+<p>Now we’re ready to encrypt our secret access keys in a file that the Rails app can decrypt when its running. To do that, first run:</p>
+
+<pre><code>rails credentials:edit
+</code></pre>
+
+<p>This will open a temporary file in your default editor. It uses the value of the <code>EDITOR</code> environment variable to determine your default editor. If nothing happens, you can set the <code>EDITOR</code> variable when running the command. For example, if VS Code is your preferred editor, then run:</p>
+
+<pre><code>EDITOR="code --wait" rails credentials:edit
+</code></pre>
+
+<p>The <code>--wait</code> option prevents the command from exiting immediately. It waits until you’re done editing the credentials and you’ve closed the file.</p>
+
+<p>Once the temporary file opens you’ll see all the credentials in plaintext. Uncomment the following section, and replace the values of both keys with your AWS access keys:</p>
+
+<pre><code>aws:
+  access_key_id: your-access-key-id
+  secret_access_key: your-secret-access-key
+</code></pre>
+
+<p>Here comes the semi-magical part: Save the temporary file and close it in your editor. Doing that causes the contents of the temporary file to be encrypted and written to the <code>config/credentials.yml.enc</code> file. If you open up that file, you’ll see it’s total gibberish. That’s the result of good encryption.</p>
+
+<p>So <code>config/credentials.yml.enc</code> is obviously an important file. But on its own, this file is useless. To unlock the secrets held within that file, you need a master key.</p>
+
+<p>Where’s the master key? You guessed it: in the aptly-named <code>config/master.key</code> file. This file was generated when you initially generated the Rails app. And if you look inside, you’ll see a master key that unlocks the secrets of your app!</p>
+
+<p>If you ever want to generate a new master key, you can run</p>
+
+<div><pre><code>rails secret
+</code></pre></div>
+
+<p>And then you’d copy the resulting key into the <code>config/master.key</code> file.</p>
+
+<h4 id="super-important-warning">⚠️ Super Important Warning!</h4>
+
+<p><strong>Under no circumstances should you store the <code>config/master.key</code> file in your Git repo</strong>. Otherwise anybody with access to that repo could unlock your secret credentials. Rails helps prevent that by generating a <code>.gitignore</code> file that ignores the <code>config/master.key</code> file.</p>
+
+<p>You will, however, need to share the master key with your development team. Just be careful how you share it! Your best bet is to put it in a password manager such as <a href="https://1password.com/" target="_blank">1Password</a> that your team can access.</p>
+
+<h4 id="how-does-rails-access-those-credentials">How Does Rails Access Those Credentials?</h4>
+
+<p>And if you look in the generated <code>config/storage.yml</code> file, you’ll see that the Amazon S3 storage service is configured like this:</p>
+
+<div><pre><code>amazon:
+  service: S3
+  access_key_id: &lt;%<span>=</span> Rails.application.credentials.dig<span>(</span>:aws, :access_key_id<span>)</span> %&gt;
+  secret_access_key: &lt;%<span>=</span> Rails.application.credentials.dig<span>(</span>:aws, :secret_access_key<span>)</span> %&gt;
+</code></pre></div>
+
+<p>So when the application runs, values for <code>access_key_id</code> and <code>access_key_id</code> are substituted in using <code>Rails.application.credentials.dig</code>.</p>
+
+<p>To see how that works, hop into a Rails <code>console</code> session and give this a whirl:</p>
+
+<pre><code>Rails.application.credentials.dig(:aws, :access_key_id)
+</code></pre>
+
+<p>The result should be the value of the <code>access_key_id</code> you typed into the temporary file.</p>
+
+<p>Then try this:</p>
+
+<pre><code>Rails.application.credentials.dig(:aws, :secret_access_key)
+</code></pre>
+
+<p>No surprise, this time the result should be the value of the <code>secret_access_key</code> you typed into the temporary file.</p>
+
+<p>When you call <code>Rails.application.credentials</code>, the master key is used to unlock and return the credentials in the encrypted credentials file. Then you can use the <code>dig</code> method to “dig down” into those credentials and extract a specific value under a given sequence of keys. Dig it?</p>
+
+<h4 id="quick-summary">Quick Summary</h4>
+
+<p>The takeaway is there is <strong>one and only one way to add or edit credentials</strong> needed by an application, and that’s by running:</p>
+
+<pre><code>rails credentials:edit
+</code></pre>
+
+<p>In this way, <em>all</em> secret credentials for an application are stored in an encrypted format in the <code>config/credentials.yml.enc</code> file using the master key contained in the <code>config/master.key</code> file. And you <em>never</em> want to store that file in a Git repo!</p>
+
+<h3 id="up-up-and-away">Up, Up, and Away!</h3>
+
+<p>Now we’re ready to store uploaded images in the cloud in production! ⛅️</p>
+
+<ol>
+  <li>
+    <p>In the production environment we’ll use the storage service named <code>amazon</code>. Start by uncommenting that service in the <code>config/storage.yml</code> file and setting your <code>region</code> and the name of the <code>bucket</code> where you want uploaded images to be stored:</p>
+
+    <pre><code>amazon:
+  service: S3
+  access_key_id: &lt;%= Rails.application.credentials.dig(:aws, :access_key_id) %&gt;
+  secret_access_key: &lt;%= Rails.application.credentials.dig(:aws, :secret_access_key) %&gt;
+  region: us-east-1
+  bucket: your-bucket-name
+</code></pre>
+  </li>
+  <li>
+    <p>Then we need to configure Active Storage to use the <code>amazon</code> storage service when the application is running in the production environment. To do that, in <code>config/environments/production.rb</code> switch the ActiveStorage service from <code>local</code> to <code>amazon</code>:</p>
+
+    <div><pre><code><span>config</span><span>.</span><span>active_storage</span><span>.</span><span>service</span> <span>=</span> <span>:amazon</span>
+</code></pre></div>
+  </li>
+  <li>
+    <p>When the application runs in production on a Heroku server, the app needs to read our Amazon S3 credentials which are encrypted in the <code>config/credentials.yml.enc</code> file. And to decrypt that file, the app needs our master key.</p>
+
+    <p>But remember, the <code>master.key</code> file won’t be in our local Git repo. So when we push changes from our local Git repo to the remote Git repo on Heroku, the <code>master.key</code> file won’t go along for the ride. Instead, we have to set the master key in a Heroku application-level configuration variable named <code>RAILS_MASTER_KEY</code>.</p>
+
+    <p>To do that, use the <code>heroku</code> command like so:</p>
+
+    <pre><code>heroku config:set RAILS_MASTER_KEY=12345678
+</code></pre>
+
+    <p>Yup, you need to replace <code>12345678</code> with your application’s master key. 😉</p>
+
+    <p>When the app is deployed, Rails will first look for the master key in a <code>config/master.key</code> file. And when it doesn’t find that file, Rails then looks for the master key in the <code>RAILS_MASTER_KEY</code> variable.</p>
+
+    <p>When you set a Heroku config variable, behind the scenes an environment variable is set. So if you’re running on a non-Heroku server that you have privileged access to, then you can simply set the <code>RAILS_MASTER_KEY</code> environment variable.</p>
+
+    <p>Another way to provide the master key to a non-Heroku server is to ssh the <code>master.key</code> file to a privileged directory on the server (for example a <code>shared</code> directory), and then create a symbolic link to the <code>master.key</code> file when the app is deployed.</p>
+  </li>
+  <li>
+    <p>Since we’ll be storing images in an Amazon S3 bucket, we need to install the AWS gem by dropping this into the <code>Gemfile</code>:</p>
+
+    <div><pre><code><span>gem</span> <span>"aws-sdk-s3"</span><span>,</span> <span>require: </span><span>false</span>
+</code></pre></div>
+
+    <p>And install it:</p>
+
+    <div><pre><code><span>bundle</span> <span>install</span>
+</code></pre></div>
+  </li>
+  <li>
+    <p>Now we can commit the changes to our local Git repo and push them to the remote Git repo on Heroku, which re-deploys the app:</p>
+
+    <div><pre><code>git add <span>.</span>
+git commit <span>-m</span> <span>"Use Active Storage"</span>
+
+git push heroku master
+</code></pre></div>
+  </li>
+  <li>
+    <p>Finally, we need create the Active Storage database tables in the database that’s running on the Heroku server. The deployed code already has a migration file that creates those tables, so it’s just a matter of applying that migration to the production database:</p>
+
+    <pre><code>heroku run rails db:migrate
+</code></pre>
+  </li>
+  <li>
+    <p>And now you should now be able to upload images to your production app and the image files will be automatically stored in S3.</p>
+  </li>
+</ol>
+
+<p>Given what you now know, it’s pretty straightforward to store uploaded files in any of the supported storage services!</p>
+
+<div>
+  <h3>"I Can Now Build Pretty Much Anything in Rails!"</h3>
+  <p>
+    This is what folks say after taking our step-by-step
+    <a href="https://pragmaticstudio.com/courses/rails" target="_blank">Ruby on Rails</a> course. The same can be true for you! Once you understand how all the pieces fit together in a full-featured app, you can build whatever you want with Rails.
+  </p>
+    <p><a href="https://pragmaticstudio.com/courses/rails" target="_blank">
+      <img src="data:application/octet-stream;base64," width="300" alt="Rails Course">
+    </a>
+</p></div>
+
+  </div></div>
+  </div>
+</body>
+</html>

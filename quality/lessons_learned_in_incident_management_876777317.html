@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lessons learned in incident management</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Lessons learned in incident management</h1>
+    <p><strong>URL:</strong> <a href="https://dropbox.tech/infrastructure/lessons-learned-in-incident-management">https://dropbox.tech/infrastructure/lessons-learned-in-incident-management</a></p>
+    <p><strong>Tags:</strong> devops, execution, quality</p>
+    <p><strong>Bookmark ID:</strong> 876777317</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+    
+    <div>
+<p>At Dropbox, we view incident management as a central element of our reliability efforts. Though we also employ proactive techniques such as Chaos engineering, how we respond to incidents has a significant bearing on our users’ experience. Every minute counts for our users during a potential site outage or product issue.</p>
+<p>The key components of our incident management process have been in place for several years, but we’ve also found constant opportunities to evolve in this area. The tweaks we’ve made over time include technological, organizational, and procedural improvements.&nbsp;</p>
+<p>This post goes deeper into some of the lessons Dropbox has learned in incident management. You probably won’t find all of these in a textbook description of an incident command structure, and you shouldn’t view these improvements as a one-size-fits-all approach for every company. (Their usefulness will depend on your tech stack, org size, and other factors.) Instead, we hope this serves as a case study for how you can take a systematic view of your organization’s own incident response and evolve it to meet your users’ needs.</p>
+
+</div>
+<div id="experiencefragment-8629e48ec5">
+<div id="cta-box">
+
+<p id="cta-hed"><img src="https://cdn.prod.website-files.com/65dcd70b48edc3a7b446950e/670692ee7692f74d4834e4f4_Frame%201400006055.svg" loading="lazy"> Dropbox Dash: The AI teammate that understands your work
+</p>
+
+<p>Dash knows your context, your team, and your work, so your team can stay organized, easily find and share knowledge, and keep projects secure, all from one place. And soon, Dash is coming to Dropbox.</p>
+
+</div>
+
+<a href="https://dash.dropbox.com/?utm=blogs" target="_blank"><p>Learn more →</p></a>
+
+</div>
+<div>
+<p id="background">
+    <h2>Background</h2>
+</p>
+</div>
+<div>
+<p>The basic framework for managing incidents at Dropbox, which we call <b>SEVs </b>(as in SEVerity), is similar to the ones employed by many other SaaS companies. (For those who are less familiar with the topic, we recommend <a href="https://www.gremlin.com/community/tutorials/how-to-establish-a-high-severity-incident-management-program/">this series of tutorials</a> by Dropbox alum Tammy Butow to get an overview.)</p>
+<p>Availability SEVs, though by no means the only type of critical incident, are a useful slice to explore in more depth. No online service is immune to these incidents, and that includes Dropbox. Critical availability incidents are often the ones most disruptive to the largest number of users—just think about the last time your favorite website or SaaS app was down—so we find that these SEVs put the highest strain on the timeliness of our incident response.<b> Success means shaving every possible minute from that response.</b></p>
+<p>Not only do we closely measure the impact time for our availability SEVs, but there are real business consequences for this metric. Every minute of impact means more unhappy users, increased churn, decreased signups, and reputation damage from social media and press coverage of an outage. Beyond this, Dropbox commits to an uptime SLA<b> </b>in contracts with some of our customers, particularly in mission-critical industries. We define this based on the overall availability of the systems that serve our users, and officially cross from “up” to “down” when our availability degrades past a certain threshold. To stay within our SLA of 99.9% uptime, we must limit any down periods to roughly 43 minutes total per month. We set the bar even higher for ourselves internally, targeting 99.95% (21 minutes per month).</p>
+<p>To safeguard these targets, we have invested in a variety of incident prevention techniques. These include Chaos engineering, risk assessments, and systems to validate production requirements, to name a few. However, no matter how much we probe and work to understand our systems, SEVs will still happen. That is where incident management comes in.</p>
+
+</div>
+<div>
+<p id="-the-sev-process">
+    <h2> The SEV process</h2>
+</p>
+</div>
+<div>
+<p>The <b>SEV process </b>at Dropbox dictates how our various incident-response roles work together to mitigate a SEV, and what steps we should take to learn from the incident.</p>
+<p>Every SEV at Dropbox has several basic features:</p>
+<ul>
+<li><b>A SEV type</b>, which categorizes the incident’s impact; well-known examples include Availability, Durability, Security, and Feature Degradation</li>
+<li><b>A SEV level</b> from 0-3, to indicate criticality; 0 is the most critical</li>
+<li><b>An IMOC (Incident Manager On Call)</b>, who is responsible for spearheading a speedy mitigation, coordinating SEV respondents, and communicating the status of the incident</li>
+<li><b>A TLOC (Tech Lead On Call)</b>, who drives the investigation and makes technical decisions</li>
+</ul>
+<p>SEVs with customer impact also include <b>a BMOC (Business Manager On Call)</b>, who manages non-engineering functions to provide external updates where needed. Depending on the scenario, this might include status page updates, direct customer communication, and in rare cases, regulatory notifications.</p>
+<p>Dropbox has built its own incident management tool, which we call <b>DropSEV</b>. Any Dropboxer can declare a SEV, which triggers the assignment of the roles above and creates a set of communication channels to handle the incident. These include a Slack channel for real-time collaboration, an email thread for broader updates, a Jira ticket to collect artifacts and data points, and a pre-populated postmortem document to be used for retrospection later. Employees can also subscribe to a specific Slack channel or email list to see the stream of new SEVs that are created. Here is a sample DropSEV entry to declare a minor availability incident for our mobile app.</p>
+
+</div>
+<div>
+    <figure>
+        
+            
+    
+
+        
+
+        
+        
+        
+
+        
+        
+        
+
+        <!--optimized image webp-->
+        
+
+        
+        <!-- <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x1080px-1.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x1080px-1.png"
+             aria-hidden=""
+             alt="sample DropSEV entry"
+             class=""
+             data-sly-attribute.width="1440"
+             data-sly-attribute.height="2040"
+             data-aem-asset-id="5ec3550b-6657-4978-8da2-1b9a231727fb:Techblog-IncidentManagement-720x1080px-1.png"
+             data-trackable="true" />
+        <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x1080px-1.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x1080px-1.png"
+             aria-hidden=""
+             alt=""
+             class=""
+             data-sly-attribute.width="1440"
+             data-sly-attribute.height="2040"
+             data-aem-asset-id="5ec3550b-6657-4978-8da2-1b9a231727fb:Techblog-IncidentManagement-720x1080px-1.png"
+             data-trackable="true" /> -->
+
+        
+         <img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x1080px-1.png/_jcr_content/renditions/Techblog-IncidentManagement-720x1080px-1.webp" fallbackimage="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x1080px-1.png" onerror="window.failedAttempts=0;this.setAttribute('src',this.getAttribute('fallbackimage'));window.failedAttempts++;if(window.failedAttempts == 1)this.onerror=null" aria-hidden="false" alt="sample DropSEV entry" data-aem-asset-id="5ec3550b-6657-4978-8da2-1b9a231727fb:Techblog-IncidentManagement-720x1080px-1.png" data-trackable="true" height="2040" width="1440">
+        
+    
+
+            
+        
+    </figure>
+</div>
+<p>After a user creates an incident in DropSEV, the SEV process dictates the basic stages it will follow.</p>
+<div>
+    <figure>
+        
+            
+    
+
+        
+
+        
+        
+        
+
+        
+        
+        
+
+        <!--optimized image webp-->
+        
+
+        
+        <!-- <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-2.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-2.png"
+             aria-hidden=""
+             alt="basic stages of SEV process"
+             class=""
+             data-sly-attribute.width="1440"
+             data-sly-attribute.height="570"
+             data-aem-asset-id="6f69f685-7f9d-4f79-9313-f307eefcc0bb:Techblog-IncidentManagement-720x285px-2.png"
+             data-trackable="true" />
+        <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-2.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-2.png"
+             aria-hidden=""
+             alt=""
+             class=""
+             data-sly-attribute.width="1440"
+             data-sly-attribute.height="570"
+             data-aem-asset-id="6f69f685-7f9d-4f79-9313-f307eefcc0bb:Techblog-IncidentManagement-720x285px-2.png"
+             data-trackable="true" /> -->
+
+        
+         <img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-2.png/_jcr_content/renditions/Techblog-IncidentManagement-720x285px-2.webp" fallbackimage="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-2.png" onerror="window.failedAttempts=0;this.setAttribute('src',this.getAttribute('fallbackimage'));window.failedAttempts++;if(window.failedAttempts == 1)this.onerror=null" aria-hidden="false" alt="basic stages of SEV process" data-aem-asset-id="6f69f685-7f9d-4f79-9313-f307eefcc0bb:Techblog-IncidentManagement-720x285px-2.png" data-trackable="true" height="570" width="1440">
+        
+    
+
+            
+        
+    </figure>
+</div>
+<div>
+<p>Though there is a lot of nuance around that latter stage of generating a valuable postmortem with effective action items—see “<a href="https://landing.google.com/sre/workbook/chapters/postmortem-culture/">Postmortem</a><a href="https://landing.google.com/sre/workbook/chapters/postmortem-culture/"> Culture</a>” in the Google SRE Workbook—this post will focus more on the period before a SEV is mitigated, while the user experience is still impacted. To simplify, we break this up into three overall phases:</p>
+<ul>
+<li><b>Detection: </b>The time it takes to identify an issue and alert a responder</li>
+<li><b>Diagnosis: </b>The time it takes for responders to root-cause an issue, and/or identify a resolution approach</li>
+<li><b>Recovery: </b>The time it takes to mitigate an issue for users once we have a resolution approach</li>
+</ul>
+<p>Remember our 21-minute max target for downtime in a month? That’s not a lot of time to detect, diagnose, and recover from a complex technical issue. We found that we had to optimize all three phases to make it happen.</p>
+
+</div>
+<div>
+<p id="-detection">
+    <h2> Detection</h2>
+</p>
+</div>
+<div>
+<p><i>The time it takes to identify an issue and alert a responder</i></p>
+<p><b>A reliable and efficient monitoring system<br>
+ </b>When it comes to detecting issues at Dropbox, our monitoring systems are a key component. Over the years we’ve built and refined several systems that engineers rely on during an incident. First and foremost is Vortex, our sever-side metrics and alerting system. Vortex provides an ingestion latency on the order of seconds, a 10 second sampling rate, and a simple interface for services to define their own alerts.<b><br>
+</b></p>
+<p>These features are key to driving down the time-to-detection for issues in production. In a <a href="https://dropbox.tech/infrastructure/monitoring-server-applications-with-vortex">previous blog post </a>we unboxed the technical design, which is also shown below.</p>
+
+</div>
+<div>
+    <figure>
+        
+            
+    
+
+        
+
+        
+        
+        
+
+        
+        
+        
+
+        <!--optimized image webp-->
+        
+
+        
+        <!-- <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/vortex-diagram.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/vortex-diagram.png"
+             aria-hidden=""
+             alt="technical design of monitoring system"
+             class=""
+             data-sly-attribute.width="1492"
+             data-sly-attribute.height="1584"
+             data-aem-asset-id="fd959218-2732-4015-8534-9353164fb9b7:vortex-diagram.png"
+             data-trackable="true" />
+        <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/vortex-diagram.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/vortex-diagram.png"
+             aria-hidden=""
+             alt=""
+             class=""
+             data-sly-attribute.width="1492"
+             data-sly-attribute.height="1584"
+             data-aem-asset-id="fd959218-2732-4015-8534-9353164fb9b7:vortex-diagram.png"
+             data-trackable="true" /> -->
+
+        
+         <img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/vortex-diagram.png/_jcr_content/renditions/vortex-diagram.webp" fallbackimage="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/vortex-diagram.png" onerror="window.failedAttempts=0;this.setAttribute('src',this.getAttribute('fallbackimage'));window.failedAttempts++;if(window.failedAttempts == 1)this.onerror=null" aria-hidden="false" alt="technical design of monitoring system" data-aem-asset-id="fd959218-2732-4015-8534-9353164fb9b7:vortex-diagram.png" data-trackable="true" height="1584" width="1492">
+        
+    
+
+            <figcaption><p>An overview of the Vortex architecture. Check out our detailed <a href="https://dropbox.tech/infrastructure/monitoring-server-applications-with-vortex">blog post</a> for more on Vortex.</p>
+</figcaption>
+        
+    </figure>
+</div>
+<div>
+<p>The 2018 redesign of this system was foundational for our reliability efforts. To understand why, think about that 21-minute internal target for monthly downtime. We needed to know that within tens of seconds of an incident beginning, Vortex would pick up these signals and alert the right responders via PagerDuty. If Vortex were unreliable or slow, our response would be hindered before it even began.</p>
+<p>Your organization may not use a homegrown monitoring system like ours, but ask yourself: just how quickly will its signals trigger your incident response?</p>
+<p><b>Optimizing metrics and alerts<br>
+ </b>Vortex is key in quickly alerting on issues, but it is useless without well-defined metrics to alert on. In a lot of ways this is a hard problem to solve generally, since there will always be use case-specific metrics that teams will need to add themselves.</p>
+<p>We’ve tried to lessen the burden on service owners by providing a rich set of service, runtime, and host metrics that come for free. These metrics are baked into our RPC framework <a href="https://dropbox.tech/infrastructure/courier-dropbox-migration-to-grpc">Courier</a>, and our host-level infrastructure. In addition to a slew of standard metrics, Courier also provides distributed tracing and profiling to further aid in incident triage. Courier provides the same set of metrics in all languages we use at Dropbox (Go, Python, Rust, C++, Java).</p>
+<p>Though these out-of-the-box metrics are invaluable, noisy alerts are also a common challenge, and often make it hard to know if a page is for a real problem. We provide several tools to help alleviate this. The most powerful is an alert dependency system with which service owners can tie their alerts to other alerts, and silence a page if the problem is in some common dependency. This allows teams to avoid getting paged for issues that are not actionable by them, and act on true issues more quickly.</p>
+<p><b>Taking the human element out of filing incidents<br>
+ </b>Our teams receive a wide variety of alerts from PagerDuty about the health of their systems, but not all of these are “SEV-worthy.” Historically this meant that a Dropbox first responder receiving a page had to worry not only about fixing the issue, but whether it was worthy of filing a SEV and kicking off the formal incident management process.</p>
+<p>This distinction could be confusing, especially for those who had less experience as an on-call for their team. To make the decision simpler, we revamped DropSEV (the incident management tool described earlier) to surface SEV definitions directly to users. For example, if you selected “Availability” as a SEV type in DropSEV, it would pop up a table like this one to map the degree of global availability impact to a SEV level.</p>
+
+</div>
+<div>
+    <figure>
+        
+            
+    
+
+        
+
+        
+        
+        
+
+        
+        
+        
+
+        <!--optimized image webp-->
+        
+
+        
+        <!-- <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-3.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-3.png"
+             aria-hidden=""
+             alt="table showing degree of global availability impact by SEV level"
+             class=""
+             data-sly-attribute.width="1440"
+             data-sly-attribute.height="570"
+             data-aem-asset-id="67dc375e-c553-4878-bb94-fed0bc32bb77:Techblog-IncidentManagement-720x285px-3.png"
+             data-trackable="true" />
+        <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-3.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-3.png"
+             aria-hidden=""
+             alt=""
+             class=""
+             data-sly-attribute.width="1440"
+             data-sly-attribute.height="570"
+             data-aem-asset-id="67dc375e-c553-4878-bb94-fed0bc32bb77:Techblog-IncidentManagement-720x285px-3.png"
+             data-trackable="true" /> -->
+
+        
+         <img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-3.png/_jcr_content/renditions/Techblog-IncidentManagement-720x285px-3.webp" fallbackimage="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x285px-3.png" onerror="window.failedAttempts=0;this.setAttribute('src',this.getAttribute('fallbackimage'));window.failedAttempts++;if(window.failedAttempts == 1)this.onerror=null" aria-hidden="false" alt="table showing degree of global availability impact by SEV level" data-aem-asset-id="67dc375e-c553-4878-bb94-fed0bc32bb77:Techblog-IncidentManagement-720x285px-3.png" data-trackable="true" height="570" width="1440">
+        
+    
+
+            
+        
+    </figure>
+</div>
+<div>
+<p>This was a step forward, but we realized the “do I file a SEV?” decision was still slowing down our responders. Let’s say you were on-call for the frontend component of <a href="https://dropbox.tech/infrastructure/inside-the-magic-pocket">Magic Pocket</a>, our in-house multi-exabyte storage system, which is responsible for handling Get and Put requests for data blocks. When you received a page, you’d have to ask yourself a series of questions:</p>
+<ul>
+<li>Is availability dipping?</li>
+<li>By how much?</li>
+<li>Is this having an upstream impact on global availability? (Where’s the dashboard for that again?)</li>
+<li>By how much? How does that line up with the SEV table?</li>
+</ul>
+<p>That is not a smooth procedure, unless you are a highly trained on-call and you’ve seen your fair share of SEVs before. Even in the best case, in an outage it would cost us a couple minutes out of that critical 21-minute budget. A couple times SEVs weren’t even filed, meaning we missed out on involving the IMOC and BMOC while the technical team worked to restore availability.</p>
+<p>So this summer, we began automatically filing all availability SEVs. A service owner will still receive their own system alerts, but DropSEV will detect SEV-worthy availability impact and automatically kick off the formal incident response process. Service owners no longer have to distract themselves with filing the SEV, and we have higher confidence that all incident response roles will be involved. And critically, we shave minutes off of the response for every availability SEV.</p>
+<p>Where can you short-circuit human decision-making in your own incident response flow?</p>
+
+</div>
+<div>
+<p id="-diagnosis">
+    <h2> Diagnosis</h2>
+</p>
+</div>
+<div>
+<p><i>The time it takes for responders to root-cause an issue, and/or identify a resolution approach</i></p>
+<p><b>Common on-call standards<br>
+ </b>During the Diagnosis phase we often need to pull in additional responders to help beyond the initial recipients of an alert. We’ve built a “Page the on-call” button into our internal service directory, so a human can efficiently reach another team if needed. This is another way we’ve used PagerDuty for many years.<b><br>
+ </b></p>
+
+</div>
+<div>
+    <figure>
+        
+            
+    
+
+        
+
+        
+        
+        
+
+        
+        
+        
+
+        <!--optimized image webp-->
+        
+
+        
+        <!-- <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x460px-4.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x460px-4.png"
+             aria-hidden=""
+             alt="on-call pager button dashboard"
+             class=""
+             data-sly-attribute.width="1440"
+             data-sly-attribute.height="920"
+             data-aem-asset-id="e3ee9396-815c-4a37-b549-e18aa75a5382:Techblog-IncidentManagement-720x460px-4.png"
+             data-trackable="true" />
+        <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x460px-4.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x460px-4.png"
+             aria-hidden=""
+             alt=""
+             class=""
+             data-sly-attribute.width="1440"
+             data-sly-attribute.height="920"
+             data-aem-asset-id="e3ee9396-815c-4a37-b549-e18aa75a5382:Techblog-IncidentManagement-720x460px-4.png"
+             data-trackable="true" /> -->
+
+        
+         <img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x460px-4.png/_jcr_content/renditions/Techblog-IncidentManagement-720x460px-4.webp" fallbackimage="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/Techblog-IncidentManagement-720x460px-4.png" onerror="window.failedAttempts=0;this.setAttribute('src',this.getAttribute('fallbackimage'));window.failedAttempts++;if(window.failedAttempts == 1)this.onerror=null" aria-hidden="false" alt="on-call pager button dashboard" data-aem-asset-id="e3ee9396-815c-4a37-b549-e18aa75a5382:Techblog-IncidentManagement-720x460px-4.png" data-trackable="true" height="920" width="1440">
+        
+    
+
+            <figcaption><p>Our technical service directory includes a reference to each team’s on-call, and a button to quickly page them if needed in an emergency.</p>
+</figcaption>
+        
+    </figure>
+</div>
+<div>
+<p>However, we found a critical variable which made it impossible to consistently keep our outages below 21 minutes: How is a team’s PagerDuty setup configured? Over time, well-intentioned teams at Dropbox made very different decisions on questions like these:</p>
+<ul>
+<li>How many layers does our <a href="https://support.pagerduty.com/docs/escalation-policies">escalation policy</a> need?</li>
+<li>How much time should there be between each escalation? Across the entire escalation chain?</li>
+<li>How should our on-calls receive PagerDuty notifications? Do they need push, SMS, or phone calls set up, or a combination?</li>
+</ul>
+<p>After grappling with these inconsistencies in a few SEVs, we instituted a set of on-call checks which evaluated each team’s PagerDuty setup against common guidelines. We built an internal service that queries the PagerDuty API, runs our desired checking logic, and contacts teams about any violations.</p>
+<p>We made the hard decision to enforce these checks strictly, with zero exceptions. This was a challenging shift to make, since teams had gotten used to some flexibility, but having consistent answers to the questions above unlocked much more predictability in our incident response. After the initial buildup it was easy to iteratively add additional checks, and we found ways to make our initial set more nuanced (e.g. different standards depending on the criticality of your team’s services). In turn, your own on-call guidelines should be a function of the business requirements for incident response in your own organization.</p>
+<p>As of this post’s publication, PagerDuty has released an <a href="https://support.pagerduty.com/docs/on-call-readiness-reports">On-Call Readiness Report</a> (for some of their plans) which allows you to run some similar checks within their platform. Though the coverage is not identical to what Dropbox built internally, it may be a good place to start if you want to quickly create some consistency.</p>
+<p><b>Triage Dashboards<br>
+ </b>For our most critical services, such as the application that drives dropbox.com, we’ve built a series of triage dashboards that collect all the high-level metrics and provide a series of paths to narrow the focus of an investigation. For these critical systems, reducing the time it takes to triage is a top priority. These dashboards have reduced the effort needed to go from a general availability page, to finding the system at fault.</p>
+<p><b>Out-of-the-box dashboards for common root causes<br>
+ </b>Though no two incidents or backend services are identical, we know that certain data points are valuable to our incident responders time and time again. To name a few:<b><br>
+</b></p>
+<ul>
+<li>Client- and server-side error rates</li>
+<li>RPC latency</li>
+<li>Exception trends</li>
+<li>Queries per second (QPS)</li>
+<li>Outlier hosts (e.g. those with higher error rates)</li>
+<li>Top clients</li>
+</ul>
+<p>To shrink diagnosis time, we want these metrics to be available to <i>every</i> team when they need them most, so they don’t waste valuable minutes looking for the data that will point them to a root cause. To that end, we built an out-of-the-box dashboard that covers all of the above, and more. The build-up effort for a new service owner at Dropbox is zero, other than bookmarking the page. (We also encourage service owners to build more nuanced dashboards for their team-specific metrics.)</p>
+
+</div>
+<div>
+    <figure>
+        
+            
+    
+
+        
+
+        
+        
+        
+
+        
+        
+        
+
+        <!--optimized image webp-->
+        
+
+        
+        <!-- <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/grafana-dashboard.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/grafana-dashboard.png"
+             aria-hidden=""
+             alt="Grafana-based Courier dashboard"
+             class=""
+             data-sly-attribute.width="1592"
+             data-sly-attribute.height="1447"
+             data-aem-asset-id="725a2f1d-b464-49f6-8ba8-ff6d1fe9885f:grafana-dashboard.png"
+             data-trackable="true" />
+        <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/grafana-dashboard.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/grafana-dashboard.png"
+             aria-hidden=""
+             alt=""
+             class=""
+             data-sly-attribute.width="1592"
+             data-sly-attribute.height="1447"
+             data-aem-asset-id="725a2f1d-b464-49f6-8ba8-ff6d1fe9885f:grafana-dashboard.png"
+             data-trackable="true" /> -->
+
+        
+         <img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/grafana-dashboard.png/_jcr_content/renditions/grafana-dashboard.webp" fallbackimage="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/grafana-dashboard.png" onerror="window.failedAttempts=0;this.setAttribute('src',this.getAttribute('fallbackimage'));window.failedAttempts++;if(window.failedAttempts == 1)this.onerror=null" aria-hidden="false" alt="Grafana-based Courier dashboard" data-aem-asset-id="725a2f1d-b464-49f6-8ba8-ff6d1fe9885f:grafana-dashboard.png" data-trackable="true" height="1447" width="1592">
+        
+    
+
+            <figcaption><p>A segment of the Grafana-based Courier dashboard that service owners receive out-of-the-box.&nbsp;</p>
+</figcaption>
+        
+    </figure>
+</div>
+<div>
+<p>The power of having a common platform like this is that you can easily iterate over time. Are we seeing a new pattern of root causes in our incidents? Great—we can add a panel to the common dashboard which surfaces that data. We’ve also invested in adding annotations in Grafana, which overlay key events (code pushes, DRTs, etc.) over the metrics to help engineers with correlation. Each of these iterations shrinks diagnosis time a little bit across the company.</p>
+<p><b>Exception Tracking<br>
+ </b>One of the highest-signal tools Dropbox has for diagnosing issues is our exception tracking infrastructure. It allows any service at Dropbox to emit stack traces to a central store and tag them with useful metadata. The frontend allows developers to easily see and explore exception trends within their services. This ability to dive into exception data and analyze trends is super useful when diagnosing problems in our larger python applications.<b><br>
+ </b></p>
+
+</div>
+<div>
+    <figure>
+        
+            
+    
+
+        
+
+        
+        
+        
+
+        
+        
+        
+
+        <!--optimized image webp-->
+        
+
+        
+        <!-- <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/exception-frontend.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/exception-frontend.png"
+             aria-hidden=""
+             alt="exception tracking front-end"
+             class=""
+             data-sly-attribute.width="1397"
+             data-sly-attribute.height="1355"
+             data-aem-asset-id="9fedfdeb-6982-4efa-929d-5d66c5a6aee6:exception-frontend.png"
+             data-trackable="true" />
+        <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/exception-frontend.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/exception-frontend.png"
+             aria-hidden=""
+             alt=""
+             class=""
+             data-sly-attribute.width="1397"
+             data-sly-attribute.height="1355"
+             data-aem-asset-id="9fedfdeb-6982-4efa-929d-5d66c5a6aee6:exception-frontend.png"
+             data-trackable="true" /> -->
+
+        
+         <img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/exception-frontend.png/_jcr_content/renditions/exception-frontend.webp" fallbackimage="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/exception-frontend.png" onerror="window.failedAttempts=0;this.setAttribute('src',this.getAttribute('fallbackimage'));window.failedAttempts++;if(window.failedAttempts == 1)this.onerror=null" aria-hidden="false" alt="exception tracking front-end" data-aem-asset-id="9fedfdeb-6982-4efa-929d-5d66c5a6aee6:exception-frontend.png" data-trackable="true" height="1355" width="1397">
+        
+    
+
+            
+        
+    </figure>
+</div>
+<div>
+<p><b>The Incident Manager’s role: clearing distractions<br>
+ </b>During an outage or other critical incident, a lot of stakeholders are invested in what is going on while the SEV team is diagnosing the issue.<b><br>
+</b></p>
+<ul>
+<li>Customer-facing teams need to provide updates and an ETA for resolution.</li>
+<li>Service owners in the blast radius of the affected system are curious about the technical details.</li>
+<li>Senior leaders, who are accountable for reliability and business objectives, want to convey urgency.</li>
+<li>And senior <i>engineering</i> leaders in particular may want to roll up their sleeves and join the diagnosis efforts.</li>
+</ul>
+<p>To make matters worse, the crosstalk in your incident Slack channels may have grown in 2020 as responders began working from home and could not collaborate in-person.</p>
+<p>At Dropbox, we’ve seen all of the above unfold during our incidents. However, we’ve sometimes struggled with a key element of the IMOC’s role: to shield the SEV team from these distractions. Thanks to the training they received, IMOCs generally knew the SEV process, associated terminology and tooling, and the expectations for postmortems and incident reviews. But they did not always know how to drive a war room and optimize the efficiency of our SEV response. We heard feedback from our engineers that IMOCs were not providing them the front-line support they needed, and distractions were slowing them down from diagnosing issues.&nbsp;</p>
+<p>We realized that we had not made those aspects of the IMOC role explicit, and the tribal knowledge of “what makes a good IMOC” had faded over time. A first step was updating our training to emphasize setting urgency, clearing distractions, and consolidating communication in one place. We are now working on game-like SEV scenarios where new IMOCs can actually practice these concepts before their first shift. Finally, we plan to increase the cadence of tabletop exercises involving a broader set of IMOCs, so the group can regularly evaluate its overall readiness.</p>
+<p>In addition, we established a Backup Response Team of senior IMOCs and TLOCs that could be pulled in for our most severe incidents. We gave them a clear playbook to assess the state of the incident and determine with the existing IMOC/TLOC if they should be transferred ownership. Giving these senior players an explicit, well-known role when necessary made them a valuable support structure, not a set of extra voices in Slack.</p>
+<p>The key lesson: pay attention to the delta between how your incident response process looks on paper, and how it works in practice.</p>
+
+</div>
+<div>
+<p id="recovery">
+    <h2>Recovery</h2>
+</p>
+</div>
+<div>
+<p><i>The time it takes to mitigate an issue for users once we have a resolution approach</i></p>
+<p><b>Envision mitigation scenarios<br>
+ </b>At first, it may seem challenging to find a silver bullet for the Recovery stage. How do you optimize this part when every incident calls for a different mitigation strategy? This requires a lot of insight into how your systems behave, and the steps your incident responders would have to take in worst-case (but feasible) scenarios.</p>
+<p>As Dropbox pursued a 99.9% uptime SLA, we began running quarterly reliability risk assessments. This was a bottoms-up brainstorming process across our Infrastructure teams and others whose systems were likely to be involved in SEVs. Knowing we needed to optimize recovery times, we prompted the teams to focus on a simple question: “Which incident scenarios for your systems would take more than 20 minutes to mitigate?”&nbsp;</p>
+<p>This surfaced a variety of theoretical incidents, with varying degrees of likelihood. If any of these occurred, we were unlikely to stay within our downtime target. As we rolled up the risk assessment outputs to Infrastructure leadership, we aligned on which ones were worth investing in, and several teams set out to eliminate these scenarios. For a few examples:</p>
+<ul>
+<li>Push time for our monolithic backend service was &gt; 20 minutes. The owners of the service optimized the deployment pipeline below 20 minutes, and began running regular DRTs to ensure that push time never degraded.</li>
+<li>Promoting standby database replicas could take &gt; 20 minutes, if we lost enough primary replicas during a single-rack failure. Our metadata team improved the rack diversity of our database systems, and shored up the tooling that handles database promotions.</li>
+<li>Changes to experiments and feature gates were hard to identify, and core teams could not roll back these changes in an emergency, making it likely it would take &gt; 20 minutes to resolve an experimentation-related issue. So our experimentation team improved visibility for changes, ensured all experiments and feature gates had a clear owner, and provided rollback capabilities and a playbook to our central on-calls.</li>
+</ul>
+<p>By addressing these and other scenarios, we saw the number of lengthy availability incidents sharply decrease. We continue to use the “20-minute rule” as a measuring stick for new scenarios we uncover, and arguably should tighten this threshold over time.</p>
+<p>You can adopt a similar methodology in your own organization or team. Write down the potential incidents that will take the longest to handle, stack-rank them by likelihood, and improve the ones at the top of the list. Then, test how the scenario would actually play out with DRTs or “wheel of misfortune” exercises for your incident responders. Did the improvements reduce recovery time to a level that’s acceptable for your business?</p>
+<p><b>Holding the line at 99.9<br>
+ </b>With a tight SLA we don’t have a lot of time to react when things go wrong, but our tech stack is constantly changing underneath us. Where will the next risk pop up, and where do we focus our investments?</p>
+<p>In addition to the process changes mentioned above, to help hold the line we’ve built up authoritative data sources in two areas:</p>
+<ul>
+<li>A single source of truth for our SLA, and what incidents have affected it</li>
+<li>A dashboard tracking the relative impact of services in the critical path</li>
+</ul>
+<p>Having a single source of truth for our SLA makes it straightforward to plan around. This ensures there is no confusion across the organization for how each team’s contributions, such as internal SLAs, bubble up to our customer guarantees.</p>
+
+</div>
+<div>
+    <figure>
+        
+            
+    
+
+        
+
+        
+        
+        
+
+        
+        
+        
+
+        <!--optimized image webp-->
+        
+
+        
+        <!-- <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/distributed-tracing-frontend.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/distributed-tracing-frontend.png"
+             aria-hidden=""
+             alt="distributed tracing front-end"
+             class=""
+             data-sly-attribute.width="1600"
+             data-sly-attribute.height="861"
+             data-aem-asset-id="73dd9290-3f37-48a3-821a-8d12dec998b5:distributed-tracing-frontend.png"
+             data-trackable="true" />
+        <img data-sly-test.highRes="false"
+             srcset="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/distributed-tracing-frontend.png 2x,  1x"
+             src="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/distributed-tracing-frontend.png"
+             aria-hidden=""
+             alt=""
+             class=""
+             data-sly-attribute.width="1600"
+             data-sly-attribute.height="861"
+             data-aem-asset-id="73dd9290-3f37-48a3-821a-8d12dec998b5:distributed-tracing-frontend.png"
+             data-trackable="true" /> -->
+
+        
+         <img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/distributed-tracing-frontend.png/_jcr_content/renditions/distributed-tracing-frontend.webp" fallbackimage="/cms/content/dam/dropbox/tech-blog/en-us/2021/01/incident-management/diagrams/distributed-tracing-frontend.png" onerror="window.failedAttempts=0;this.setAttribute('src',this.getAttribute('fallbackimage'));window.failedAttempts++;if(window.failedAttempts == 1)this.onerror=null" aria-hidden="false" alt="distributed tracing front-end" data-aem-asset-id="73dd9290-3f37-48a3-821a-8d12dec998b5:distributed-tracing-frontend.png" data-trackable="true" height="861" width="1600">
+        
+    
+
+            <figcaption><p>Tracing is used to determine what is in the critical path</p>
+</figcaption>
+        
+    </figure>
+</div>
+<div>
+<p>We also track the impact of services in the critical path using distributed tracing. The tracing infrastructure is used to calculate a weight for each service. This weight is an approximation of how important a given service is to Dropbox as a whole. When a service’s weight exceeds a threshold, additional requirements are enforced to ensure rigor in its operations.</p>
+<p>These weights (and the automation around them) serve two purposes. The first is to act as another data point in our risk assessment process; knowing the relative importance of services lets us better understand how risks in different systems compare. The second is to ensure we aren’t caught by surprise when a service is added to the critical path. With a system the size of Dropbox it’s hard to keep track of every new service, so tracking the critical path automatically ensures we catch everything.</p>
+<p><b>Estimating user impact<br>
+ </b>“How painful is this SEV for our customers?” Addressing this question won’t speed up recovery, but it will allow us to communicate proactively to users through the BMOC and <a href="https://www.dropbox.com/business/trust">Be Worthy of Trust</a>, which is our first company value. Again, every minute counts for our users during an incident.</p>
+<p>This question has proven particularly tricky for availability SEVs at Dropbox. You may have noticed above, our availability SEV level definitions start with a somewhat naive assumption that lower availability is more severe. This definition provided some simplicity as the company scaled up, but it has failed us in the long run. We’ve encountered SEVs with a steep availability hit but almost no customer impact; we’ve encountered minor availability hits that barely qualified as SEVs but rendered dropbox.com completely useless. The latter case was what kept us up at night, because we ran the risk of under-serving and under-communicating to our users.</p>
+<p>As a tactical fix we zeroed in on our website, which has lower traffic than our desktop and mobile apps (meaning web-specific availability issues may stand out less in the numbers). We worked with teams across engineering to identify ~20 web routes which corresponded to key webpages and components. We started monitoring availability for these individual routes, adding these metrics to our dashboards, alerts, and SEV criteria. We trained IMOCs and BMOCs on how to interpret this data, map an availability dip to specific impact, and communicate to customers—and we practiced with a tabletop exercise. As a result, in subsequent incidents impacting our website, we quickly got a sense whether key user workflows were affected, and used this information to engage with customers.</p>
+<p>We believe we still have work to do in this area. We’re exploring a variety of other ways we can pivot from measuring 9s to measuring customer experience, and we are excited by the technical challenges these will entail:</p>
+<ul>
+<li>Can we classify all of our routes, across platforms, into criticality-based buckets which we flag to the response team?</li>
+<li>How do we use direct signals of customer impact (such as traffic to help and status pages, customer ticket inflow, and social media reaction) to rapidly trigger an engineering response?</li>
+<li>At our scale, how do we efficiently estimate the number of unique <u>users</u> affected by an availability incident in real-time? How do we get more precise data on the populations affected—regions, SKUs, etc.—after the incident?</li>
+<li>Where will we benefit most from client-side instrumentation, to measure customer experience end-to-end?</li>
+</ul>
+
+</div>
+<div>
+<p id="-continuous-improvement">
+    <h2> Continuous improvement</h2>
+</p>
+</div>
+<div>
+<p>Dropbox is not perfect at incident management—no one is. We started with a SEV process that worked great for where Dropbox was, but as our organization, systems, and user base grew, we had to constantly evolve. The lessons we outlined in this post didn’t come for free; it often took a bad SEV or two for us to realize where our incident response was lacking.</p>
+<p>That’s why it’s so critical to learn from your gaps in each incident review. You can’t fully prevent a critical incident from happening, but you can prevent the same contributing factor from coming back to bite you again.</p>
+<p>At Dropbox, this starts with a blameless culture in our incident reviews. If a responder makes a mistake during an incident, we don’t blame them. We ask what guardrails our tools were missing against human error, what training we failed to give the responder to prepare them for this situation, and whether automation could take the responder out of the loop in the first place. This culture allows all parties to feel comfortable confronting the hard lessons a SEV teaches us.</p>
+<p>Just as we don’t lay blame on individuals for our SEVs, no single person can take credit for the improvements we’ve made to Dropbox’s incident management. It truly has taken an organization-wide effort over the last several years to incorporate these lessons. But to name a few, we’d like to thank current and past members of the Reliability Frameworks, Telemetry, Metadata, Application Services, and Experimentation teams for the topics covered in this blog post.</p>
+<p>If you’re interested in helping us take incident management at Dropbox to the next level, <a href="https://www.dropbox.com/jobs/listing/2544877">we are hiring</a> for Site Reliability Engineers. With Dropbox’s announcement that we are becoming a <a href="https://blog.dropbox.com/topics/company/dropbox-goes-virtual-first">Virtual First</a> company, location is flexible for these positions long-term.&nbsp;</p>
+
+</div>
+
+    
+</div></div>
+  </div>
+</body>
+</html>

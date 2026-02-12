@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>pandas - Python Data Analysis Library</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>pandas - Python Data Analysis Library</h1>
+    <p><strong>URL:</strong> <a href="https://pandas.pydata.org/community/blog/pandas-3.0.html">https://pandas.pydata.org/community/blog/pandas-3.0.html</a></p>
+    <p><strong>Tags:</strong> pandas, python</p>
+    <p><strong>Bookmark ID:</strong> 1565567904</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div role="main">
+                <h2 id="pandas-30-released">pandas 3.0 released!<a href="https://pandas.pydata.org/community/blog/pandas-3.0.html#pandas-30-released" title="Permanent link"> #</a></h2>
+<p>We're excited to announce the release of pandas 3.0.0. This major
+long-awaited release brings significant improvements to pandas, but also
+features some potentially breaking changes.</p>
+<h2 id="highlights-of-pandas-30">Highlights of pandas 3.0<a href="https://pandas.pydata.org/community/blog/pandas-3.0.html#highlights-of-pandas-30" title="Permanent link"> #</a></h2>
+<p>pandas 3.0 introduces several major enhancements:</p>
+<ul>
+<li><strong>Dedicated string data type by default</strong>: string columns are now inferred as
+  the new <code>str</code> dtype instead of <code>object</code>, providing better performance and type
+  safety</li>
+<li><strong>Consistent copy/view behaviour with Copy-on-Write (CoW)</strong> (a.k.a. getting
+  rid of the <code>SettingWithCopyWarning</code>): more predictable and consistent behavior
+  for all operations, with improved performance through avoiding unnecessary
+  copies</li>
+<li><strong>New default resolution for datetime-like data</strong>: no longer defaulting to
+  nanoseconds, but generally microseconds (or the resolution of the input), when
+  constructing datetime or timedelta data (avoiding out-of-bounds errors
+  for dates with a year before 1678 or after 2262)</li>
+<li><strong>New <code>pd.col</code> syntax</strong>: initial support for <code>pd.col()</code> as a simplified syntax
+  for creating callables in <code>DataFrame.assign</code></li>
+</ul>
+<p>Further, pandas 3.0 includes a lot of other improvements and bug fixes. You can
+find the complete list of changes in the
+<a href="https://pandas.pydata.org/docs/dev/whatsnew/v3.0.0.html">release notes</a>.</p>
+<h2 id="upgrading-to-pandas-30">Upgrading to pandas 3.0<a href="https://pandas.pydata.org/community/blog/pandas-3.0.html#upgrading-to-pandas-30" title="Permanent link"> #</a></h2>
+<p>The pandas 3.0 release removed functionality that was deprecated in previous releases
+(see <a href="https://pandas.pydata.org/docs/whatsnew/v3.0.0.html#whatsnew-300-prior-deprecations">here</a>
+for an overview). It is recommended to first upgrade to pandas 2.3 and to ensure
+your code is working without warnings, before upgrading to pandas 3.0.</p>
+<p>Further, as a major release, pandas 3.0 includes some breaking changes that may
+require updates to your code. The two most significant changes are the new
+string dtype and the copy/view behaviour changes, detailed below. An overview of
+all potentially breaking changes can be found in the <a href="https://pandas.pydata.org/docs/whatsnew/v3.0.0.html#backwards-incompatible-api-changes">Backwards incompatible API
+changes</a>
+section of the release notes.</p>
+<h3 id="1-dedicated-string-data-type-by-default">1. Dedicated string data type by default<a href="https://pandas.pydata.org/community/blog/pandas-3.0.html#1-dedicated-string-data-type-by-default" title="Permanent link"> #</a></h3>
+<p>Starting with pandas 3.0, string columns are automatically inferred as <code>str</code>
+dtype instead of the numpy <code>object</code> (which can store any Python object).</p>
+<p><strong>Example:</strong></p>
+<div><pre><span></span><code><span># Old behavior (pandas &lt; 3.0)</span>
+<span>&gt;&gt;&gt;</span> <span>ser</span> <span>=</span> <span>pd</span><span>.</span><span>Series</span><span>([</span><span>"a"</span><span>,</span> <span>"b"</span><span>])</span>
+<span>&gt;&gt;&gt;</span> <span>ser</span>
+<span>0</span>    <span>a</span>
+<span>1</span>    <span>b</span>
+<span>dtype</span><span>:</span> <span>object</span>  <span># &lt;-- numpy object dtype</span>
+
+<span># New behavior (pandas 3.0)</span>
+<span>&gt;&gt;&gt;</span> <span>ser</span> <span>=</span> <span>pd</span><span>.</span><span>Series</span><span>([</span><span>"a"</span><span>,</span> <span>"b"</span><span>])</span>
+<span>&gt;&gt;&gt;</span> <span>ser</span><span>.</span><span>dtype</span>
+<span>&gt;&gt;&gt;</span> <span>ser</span>
+<span>0</span>    <span>a</span>
+<span>1</span>    <span>b</span>
+<span>dtype</span><span>:</span> <span>str</span>  <span># &lt;-- new string dtype</span>
+</code></pre></div>
+
+<p>This change improves performance and type safety, but may require code updates,
+especially for library code that currently looks for "object" dtype when
+expecting string data.</p>
+<p>For more details, see the
+<a href="https://pandas.pydata.org/docs/dev/user_guide/migration-3-strings.html">migration guide for the new string data type</a>.</p>
+<p>This new data type will use the <code>pyarrow</code> library under the hood, if installed,
+to provide the performance improvements. Therefore we strongly recommend to
+install <code>pyarrow</code> alongside pandas (but <code>pyarrow</code> is not a required dependency
+installed by default).</p>
+<h3 id="2-consistent-copyview-behaviour-with-copy-on-write-cow">2. Consistent copy/view behaviour with Copy-on-Write (CoW)<a href="https://pandas.pydata.org/community/blog/pandas-3.0.html#2-consistent-copyview-behaviour-with-copy-on-write-cow" title="Permanent link"> #</a></h3>
+<p>Copy-on-Write is now the default and only mode in pandas 3.0. This makes
+behavior more consistent and predictable, and avoids a lot of defensive copying
+(improving performance), but requires updates to certain coding patterns.</p>
+<p>The most impactfull change is that <strong>chained assignment will no longer work</strong>.
+As a result, the <code>SettingWithCopyWarning</code> is also removed (since there is no
+longer ambiguity whether it would work or not), and defensive <code>.copy()</code> calls
+to silence the warning are no longer needed.</p>
+<p><strong>Example:</strong></p>
+<div><pre><span></span><code><span># Old behavior (pandas &lt; 3.0) - chained assignment</span>
+<span>df</span><span>[</span><span>"foo"</span><span>][</span><span>df</span><span>[</span><span>"bar"</span><span>]</span> <span>&gt;</span> <span>5</span><span>]</span> <span>=</span>   <span># This might modify df (unpredictable)</span>
+
+<span># New behavior (pandas 3.0) - must do the modification in one step (e.g. with .loc)</span>
+<span>df</span><span>.</span><span>loc</span><span>[</span><span>df</span><span>[</span><span>"bar"</span><span>]</span> <span>&gt;</span> <span>5</span><span>,</span> <span>"foo"</span><span>]</span> <span>=</span> <span>100</span>
+</code></pre></div>
+
+<p>In general, any result of an indexing operation or method now always behaves as
+if it were a copy, so modifications of the result won't affect the original
+DataFrame.</p>
+<p>For more details, see the
+<a href="https://pandas.pydata.org/docs/dev/user_guide/copy_on_write.html#migrating-to-copy-on-write">Copy-on-Write migration guide</a>.</p>
+<h2 id="obtaining-pandas-30">Obtaining pandas 3.0<a href="https://pandas.pydata.org/community/blog/pandas-3.0.html#obtaining-pandas-30" title="Permanent link"> #</a></h2>
+<p>You can install the latest pandas 3.0 release from PyPI:</p>
+<div><pre><span></span><code>python<span> </span>-m<span> </span>pip<span> </span>install<span> </span>--upgrade<span> </span><span>pandas</span><span>==</span><span>3</span>.0.*
+</code></pre></div>
+
+<p>Or from conda-forge using conda/mamba:</p>
+<div><pre><span></span><code>conda<span> </span>install<span> </span>-c<span> </span>conda-forge<span> </span><span>pandas</span><span>=</span><span>3</span>.0
+</code></pre></div>
+
+<h2 id="running-into-an-issue-or-regression">Running into an issue or regression?<a href="https://pandas.pydata.org/community/blog/pandas-3.0.html#running-into-an-issue-or-regression" title="Permanent link"> #</a></h2>
+<p>Please report any problem you encounter with the release on the pandas <a href="https://github.com/pandas-dev/pandas/issues">issue tracker</a>.</p>
+<p>Thanks to all the contributors who made this release possible!</p>
+            </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>https://blog.openai.com/openai-baselines-ppo/</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>https://blog.openai.com/openai-baselines-ppo/</h1>
+    <p><strong>URL:</strong> <a href="https://blog.openai.com/openai-baselines-ppo">https://blog.openai.com/openai-baselines-ppo</a></p>
+    <p><strong>Tags:</strong> deep-learning</p>
+    <p><strong>Bookmark ID:</strong> 876769106</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="openai-baselines-ppo">
+    
+
+
+
+
+
+
+    
+
+<section id="content">
+<video autoplay="" src="http://web.archive.org/web/20190309021050im_/https://d4mucfpksywv.cloudfront.net/openai-baselines-ppo/knocked-over-stand-up.mp4" loop="" controls="">
+</video>
+<p><em>PPO lets us train AI policies in challenging environments, like the <a href="http://web.archive.org/web/20190309021050/https://github.com/openai/roboschool">Roboschool</a> one shown above where an agent tries to reach a target (the pink sphere), learning to walk, run, turn, use its momentum to recover from minor hits, and how to stand up from the ground when it is knocked over.</em></p>
+<p><a href="http://web.archive.org/web/20190309021050/http://karpathy.github.io/2016/05/31/rl/">Policy gradient methods</a> are fundamental to recent breakthroughs in using deep neural networks for control, from <a href="http://web.archive.org/web/20190309021050/https://www.nature.com/nature/journal/v518/n7540/full/nature14236.html">video games</a>, to <a href="http://web.archive.org/web/20190309021050/https://arxiv.org/abs/1506.02438">3D locomotion</a>, to <a href="http://web.archive.org/web/20190309021050/https://www.nature.com/nature/journal/v529/n7587/full/nature16961.html">Go</a>. But getting good results via policy gradient methods is challenging because they are sensitive to the choice of stepsize — too small, and progress is hopelessly slow; too large and the signal is overwhelmed by the noise, or one might see catastrophic drops in performance. They also often have very poor sample efficiency, taking millions (or billions) of timesteps to learn simple tasks.</p>
+<p>Researchers have sought to eliminate these flaws with approaches like <a href="http://web.archive.org/web/20190309021050/https://arxiv.org/abs/1502.05477">TRPO</a> and <a href="http://web.archive.org/web/20190309021050/https://arxiv.org/abs/1611.01224">ACER</a>, by constraining or otherwise optimizing the size of a policy update. These methods have their own trade-offs — ACER is far more complicated than PPO, requiring the addition of code for off-policy corrections and a replay buffer, while only doing marginally better than PPO on the Atari benchmark; TRPO — though useful for continuous control tasks — isn't easily compatible with algorithms that share parameters between a policy and value function or auxiliary losses, like those used to solve problems in Atari and other domains where the visual input is significant.</p>
+<h2 id="ppo">PPO</h2>
+<p>With supervised learning, we can easily implement the cost function, run gradient descent on it, and be very confident that we'll get excellent results with relatively little hyperparameter tuning. The route to success in reinforcement learning isn't as obvious -  the algorithms have many moving parts that are hard to debug, and they require substantial effort in tuning in order to get good results. PPO strikes a balance between ease of implementation, sample complexity, and ease of tuning, trying to compute an update at each step that minimizes the cost function while ensuring the deviation from the previous policy is relatively small.</p>
+<p>We've <a href="http://web.archive.org/web/20190309021050/https://channel9.msdn.com/Events/Neural-Information-Processing-Systems-Conference/Neural-Information-Processing-Systems-Conference-NIPS-2016/Deep-Reinforcement-Learning-Through-Policy-Optimization">previously</a> detailed a variant of PPO that uses an adaptive <a href="http://web.archive.org/web/20190309021050/https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">KL</a> penalty to control the change of the policy at each iteration. The new variant uses a novel objective function not typically found in other algorithms:</p>
+<p><img src="https://blog.openai.com/web/20190309021050im_/https://blog.openai.com/content/images/2017/07/math_PPO_5-1.png" alt=""></p>
+<p>This objective implements a way to do a Trust Region update which is compatible with Stochastic Gradient Descent, and simplifies the algorithm by removing the KL penalty and need to make adaptive updates. In tests, this algorithm has displayed the best performance on continuous control tasks and almost matches ACER's performance on Atari, despite being far simpler to implement.</p>
+<hr>
+<h2 id="controllablecomplicatedrobots">Controllable, Complicated Robots</h2>
+<video src="http://web.archive.org/web/20190309021050im_/https://d4mucfpksywv.cloudfront.net/openai-baselines-ppo/flagrun-no-bombardment-awesome-camera-work.mp4" loop="" controls="">
+</video>
+<p><em>Agents trained with PPO develop flexible movement policies that let them improvise turns and tilts as they head towards a target location.</em></p>
+<p>We've created interactive agents based on policies trained by PPO — we can <a href="http://web.archive.org/web/20190309021050/https://github.com/openai/roboschool/blob/master/agent_zoo/demo_keyboard_humanoid1.py">use the keyboard</a> to set new target positions for a robot in an environment within Roboschool; though the input sequences are different from what the agent was trained on, it manages to generalize.</p>
+<video src="http://web.archive.org/web/20190309021050im_/https://d4mucfpksywv.cloudfront.net/openai-baselines-ppo/flagrun-keyboard-control.mp4" loop="" controls="">
+</video>
+<p>We've also used PPO to teach complicated, simulated robots to walk, like the 'Atlas' model from  Boston Dynamics shown below; the model has 30 distinct joints, versus 17 for the bipedal robot. <a href="http://web.archive.org/web/20190309021050/https://arxiv.org/abs/1707.02286">Other researchers</a> have used PPO to train simulated robots to perform impressive feats of parkour while running over obstacles.</p>
+<video src="http://web.archive.org/web/20190309021050im_/https://d4mucfpksywv.cloudfront.net/openai-baselines-ppo/atlas.mp4" loop="" controls="">
+</video> 
+<h2 id="baselinesppoppo2acerandtrpo">Baselines: PPO, PPO2, ACER, and TRPO</h2>
+<p>This release of <a href="http://web.archive.org/web/20190309021050/https://github.com/openai/baselines">baselines</a> includes scalable, parallel implementations of PPO and TRPO which both use MPI for data passing. Both use Python3 and TensorFlow. We're also adding pre-trained versions of the policies used to train the above robots to the <a href="http://web.archive.org/web/20190309021050/https://blog.openai.com/roboschool/">Roboschool</a> <a href="http://web.archive.org/web/20190309021050/https://github.com/openai/roboschool/tree/master/agent_zoo">agent zoo</a>.</p>
+<p><strong>Update:</strong> We're also releasing a GPU-enabled implementation of PPO, called PPO2. This runs approximately 3X faster than the current PPO baseline on Atari. In addition, we're releasing an implementation of Actor Critic with Experience Replay (ACER),  a sample-efficient policy gradient algorithm. ACER makes use of a replay buffer, enabling it to perform more than one gradient update using each piece of sampled experience, as well as a Q-Function approximate trained with the Retrace algorithm.</p>
+<hr>
+<p>We’re looking for people to help build and optimize our reinforcement learning algorithm codebase. If you’re excited about RL, benchmarking, thorough experimentation, and open source, please <a href="http://web.archive.org/web/20190309021050/https://jobs.lever.co/openai/5c1b2c12-2d18-42f0-836e-96af2cfca5ef">apply</a>, and mention that you read the baselines PPO post in your application.</p>
+
+
+    </section>
+
+    </article></div>
+  </div>
+</body>
+</html>

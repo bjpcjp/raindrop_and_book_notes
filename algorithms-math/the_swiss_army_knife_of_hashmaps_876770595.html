@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Swiss Army Knife of Hashmaps</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The Swiss Army Knife of Hashmaps</h1>
+    <p><strong>URL:</strong> <a href="https://blog.waffles.space/2018/12/07/deep-dive-into-hashbrown">https://blog.waffles.space/2018/12/07/deep-dive-into-hashbrown</a></p>
+    <p><strong>Tags:</strong> algorithms-math, machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876770595</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div aria-label="Content">
+<article itemscope="" itemtype="http://schema.org/BlogPosting">
+
+<div itemprop="articleBody">
+<p>A while back, there was <a href="https://github.com/rust-lang/rust/issues/55514">a discussion</a> comparing the performance of using the <a href="https://github.com/Amanieu/hashbrown">hashbrown crate</a> (based on <a href="https://www.youtube.com/watch?v=ncHmEUmJZf4">Google’s SwissTable</a> implementation<sup id="fnref:1"><a href="#fn:1">1</a></sup>) in the Rust compiler. In the <a href="https://rome.rustfest.eu/">last RustFest</a>, Amanieu was <a href="https://github.com/rust-lang/rust/pull/56241">experimenting on integrating</a> his crate into stdlib, which turned out to have <a href="https://twitter.com/Gankro/status/1067816516652015616">some really promising results</a>. As a result, it’s being planned to move the crate into stdlib.</p>
+<p>While the integration is still ongoing, there’s currently no blog post out there explaining SwissTable at the moment. So, I thought I’d dig deeper into the Rust implementation to try and explain how its (almost) identical twin <code>hashbrown::HashMap</code> works.</p>
+
+<h2 id="hashing-and-hashmaps">Hashing and Hashmaps</h2>
+<p>In order to establish some terminology, I’m gonna start from scratch. If you know about hashing, hashmaps, open-addressing and cache performance in general, feel free to <a href="#robin-hood-hashing">skip this section</a>.</p>
+<p>While arrays and linked lists hold a sequence of items, hashmaps (or tables) hold key/value pairs i.e., they bind <em>values</em> to <em>keys</em>. So, you insert a value for a key and you can later address those values (fetch/remove/whatever) <strong>using the same key</strong>.</p>
+<p><em>Hashing</em> is basically computing a special number (the <em>hash</em>) for some <em>hashable</em> object, provided that if two objects are equal, their hashes <em>must</em> be equal. When a <em>hash function</em> produces the same hash for two different objects, we call it a <em>hash collision</em>. A perfect hash function doesn’t result in collisions, but since we’re not in an ideal world, collisions happen (the <em>rate</em> depends on the algorithm).</p>
+<p>Hashmaps use arrays as their backend. In the context of hashmaps, the array elements are called <em>buckets</em> or <em>slots</em> (I’ll be using this interchangeably). Let’s take the following array:</p>
+<div><pre><code> index |  0  |  1  |  2  |  3  |
+-------|-----|-----|-----|-----|
+ value |     |     |     |     |
+</code></pre></div>
+<blockquote>
+<p>The <em>value</em> here is the array’s element in that index (usually, it’s the key/value pair as a whole!).</p>
+</blockquote>
+<p>This array has 4 slots (it could be just one!). We wish to insert a key/value pair <code>(4, 8)</code>, for which we use a hash function <code>H(x)</code>. In order to find the index at which the key/value pair should be inserted, the <strong>key is hashed</strong> using the hash function <code>H(K)</code>, and the index is obtained by modulo’ing the hash using the length of the array.</p>
+<div><pre><code>H(4) = 12638164110811449565
+i = H(4) % 4 = 3
+</code></pre></div>
+<p>For the sake of keeping this post simple, I’ve used an <em>unspecified</em> hash function<sup id="fnref:2"><a href="#fn:2">2</a></sup> (so don’t worry about it) - only the actual hashes matter as far as we’re concerned. And, note that the hash is 64 bits - we’ll be sticking with this size throughout the post. Again for simplicity, we’re only focusing on 64-bit machines.</p>
+<p>Anyway, now that we’ve found the index of the bucket, let’s insert the key/value pair. Our array now looks like this:</p>
+<div><pre><code> index |  0  |  1  |  2  |  3  |
+-------|-----|-----|-----|-----|
+ value |     |     |     | 4,8 |
+</code></pre></div>
+<p>But, why did we have to add both the key and value <code>(4, 8)</code>, instead of just the value <code>8</code>?</p>
+<h3 id="dealing-with-collisions">Dealing with collisions</h3>
+<p>Right now, for performing an operation on a key/value pair in the map, we <em>find</em> it by following the same steps - hash the key, modulo <code>N</code>, land on the index and perform the desired action.</p>
+<p>Hashing functions, despite that they have a whole 8 bytes, encounter hash collisions. By doing the <em>modulo</em> operation, we’ve greatly reduced their range. Let’s try inserting <code>(8, 2)</code> into our map;</p>
+<div><pre><code>H(8) = 12638161911788193143
+i = H(8) % 4 = 3
+</code></pre></div>
+<p>But, we already have an element at index 3!</p>
+<p>In order to deal with these collisions, we group similar data together. One way is to assign a linked list to <strong>each bucket</strong>. Now, our map will look like:</p>
+<div><pre><code> index |  0  |  1  |  2  |  3  |
+-------|-----|-----|-----|-----|
+ value |     |     |     | |o| |
+                          __|__
+                         | 4,8 |
+                         |-----|
+                         | 8,2 |
+                         -------
+</code></pre></div>
+<p>… and when we wish to find an element, we stop at the bucket, traverse through the linked list and <strong>compare the keys</strong> for locating the value. This method of using another data structure for storing the values in each bucket is called <em>separate chaining</em>. So, if we keep getting collisions for subsequent insertions, our linked list will get bigger and that will impact our performance, right?</p>
+<p>Not exactly. This is where we talk about the <em>load factor</em>. Just like all other dynamic data structures, hashmaps should be able to resize at will! Load factor is the ratio of the number of elements in the hashmap to the number of buckets. Once we reach a certain load factor (say, 50%, 70% or 90% depending on your configuration), hashmaps will resize and <em>rehash</em> all the key/value pairs.</p>
+<p>Let’s say that our hashmap <em>doubles</em> in size at a load factor of 60%. This means, once we add a third element <code>(5, 7)</code>, our new hashmap will resize (regardless of whether it’s colliding). It will now look something like:</p>
+<div><pre><code> index |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |
+-------|-----|-----|-----|-----|-----|-----|-----|-----|
+ value | |o| |     |     | |o| |     |     |     | |o| |
+        __|__             __|__                   __|__
+       | 5,7 |           | 4,8 |                 | 8,2 |
+       -------           -------                 -------
+</code></pre></div>
+<p>The choice of the load factor depends entirely on the internals of your map i.e., how it hashes and determines buckets. For example, you have a weaker hash function which results in adding a number of elements to the same bucket, and in order to reduce traversal, you’d probably go for a resize / rehash when you hit a <em>relatively lesser</em> load factor (the choice is based on a gazillion performance tests!).</p>
+<p>However, we have a major performance bottleneck. Firstly, the usage of external data structures require additional allocations / pointers which themselves consume some memory <strong>per element</strong>. And second, when it comes to linked lists, they have worse <em>processor</em> cache performance.</p>
+<p>Okay, what does that mean?</p>
+<h3 id="cpu-cache">CPU Cache</h3>
+<p>Our RAM is faster than say, our SSD (like, a hundred times!), but it’s also a hundred times slower than the CPU<sup id="fnref:3"><a href="#fn:3">3</a></sup>. That’s why CPUs have their own caches (L1, L2, L3, etc.). Data flows from memory to the CPU cache in fixed sized blocks called <em>cache lines</em>. This fetch can take up to a 100 ns (~200-300 clock cycles). In contrast, L1 cache reference is ~1-2 ns, whereas for L2, it’s ~8-12ns (CPU caches are hierarchical, think of L1 as close to the CPU and smaller in size compared to L2).</p>
+<p>What this means is that, whenever the CPU needs to read/write to a memory location, it checks the cache(s), and if it’s present, it’s a <em>cache hit</em>, otherwise it’s a <em>cache miss</em>. Whenever a cache miss occurs, we pay the cost of fetching the data from main memory (thereby losing a few hundred CPU cycles by <strong>waiting</strong>).</p>
+<p>Coming back to linked lists, the pointers of subsequent nodes could be anywhere, which results in fetching cache lines randomly. This indirection leads to the poor cache performance of linked lists.</p>
+<h3 id="the-other-way">The other way</h3>
+<p>The second way (for our hashmap) is to get rid of using external data structures completely, and use the same array for storing values alongside buckets. With another element <code>(12,9)</code>, our map will look like this:</p>
+<div><pre><code> index |  0  |  1  |  2  |  3  |  4   |  5  |  6  |  7  |
+-------|-----|-----|-----|-----|------|-----|-----|-----|
+ value | 5,7 |     |     | 4,8 | 12,9 |     |     | 8,2 |
+-------|-----|-----|-----|-----|------|-----|-----|-----|
+ slot  |  0  |     |     |  3  |  3   |     |     |  7  |
+</code></pre></div>
+<blockquote>
+<p>I’ve added another row to indicate the buckets/slots computed from the hashes.</p>
+</blockquote>
+<p>Note that the new key/value pair is on index 4, even though its slot index is 3. This way, we sequentially fill the empty slots. Also, the ordering is unnecessary.</p>
+<p>Let’s try and add a few more elements…</p>
+<div><pre><code> index |  0  |  1   |  2  |  3  |  4   |  5  |  6  |  7  |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ value | 5,7 | 29,7 | 6,6 | 4,8 | 12,9 | 3,4 |     | 8,2 |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ slot  |  0  |  0   |  1  |  3  |  3   |  2  |     |  7  |
+</code></pre></div>
+<p>As you can see, <code>(3, 4)</code> has a slot index of 2, but since that index already has an element, we’re inserting it into the first empty element we find (which is at 5). During fetching, we land on a slot (based on the hash), compare the keys one by one, and traverse all the way until we either <strong>find a matching pair or an empty slot</strong> (<em>probing</em>).</p>
+<p>Here’s the catch. When you remove an element, you can’t simply remove the key/value pair from a slot and be done with it. If you do that, then you’ve created an empty slot, which could result in the map complaining existing values to be non-existent (because the search has encountered an empty slot). So, you have two choices:</p>
+<ol>
+<li>In addition to removing a pair, we also move the next pair to that slot (shift backwards).<sup id="fnref:4"><a href="#fn:4">4</a></sup> For example, if we removed <code>(4, 8)</code> in the above map, then we move <code>(3, 4)</code> to its position (which has the lowest slot index), and the table will now look like:</li>
+</ol>
+<div><pre><code> index |  0  |  1   |  2  |  3  |  4   |  5  |  6  |  7  |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ value | 5,7 | 29,7 | 6,6 | 3,4 | 12,9 |     |     | 8,2 |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ slot  |  0  |  0   |  1  |  2  |  3   |     |     |  7  |
+</code></pre></div>
+<ol>
+<li>Or, you add a special flag (<em>tombstone</em>) to the removed slots, and when you probe, you skip the slots containing that flag. But, this will also affect the load factor of the hashmap - removing a number of elements in a map followed by inserting a few could trigger a <em>rehash</em>.</li>
+</ol>
+<p>There are other ways to resolve hash collisions in open addressing (<em>quadratic probing</em>, where we quadratically address the elements instead of sequentially, and <em>double hashing</em> where we use another hash function to land on the slot), but they’re out of scope of this post.</p>
+<p>The advantage of linear probing is that it has the best cache performance - if you think about it, linear probing sequentially visits the elements, which means, (most often, depending on the size of the object) the data is part of a cache line, which is great, because we don’t waste CPU cycles (in contrast, quadratic probing doesn’t offer such cache performance and double hashing uses another hash function, which by definition means that we’re spending more work on computing another hash).</p>
+<p>Although, we do have a problem with openly addressed maps (linear probing in particular) - <em>clustering</em>. Whenever a collision occurs, we start queueing the key/value pairs. For example, in the above table, because <code>(29, 7)</code> has the same slot as <code>(5, 7)</code>, it’s at index 1, and we had to place <code>(6, 6)</code> at 2 (even though its slot index is 1), and other elements follow.</p>
+<p>This way, as the table grows, more elements get pushed away from their actual index (which elongages the search/probe sequence, thereby increasing the cache misses). It also depends on the hash function, in that, a weaker hash function can lead to more collisions, and hence, more clusters.</p>
+<h2 id="robin-hood-hashing">Robin Hood hashing</h2>
+<p>I’m also going through Robin Hood hashing, because it’s a nice optimization and at the time of writing of this post, Rust used this in <code>std::collections::HashMap</code>, but again if you know this, feel free to <a href="#hashbrown">skip this section</a>. It has nothing to do with hashbrown itself.</p>
+<p>This is one of the few methods to improve the overall efficiency of openly addressed hashmaps. It offers a way to redistribute an existing key/value pair during the insertion of a new pair. For example, let’s take this <em>openly addressed</em> map:</p>
+<div><pre><code> index |  0  |  1   |  2  |  3  |  4   |  5  |  6  |  7  |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ value | 5,7 | 29,7 | 6,6 | 3,4 | 12,9 |     |     | 8,2 |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ slot  |  0  |  0   |  1  |  2  |  3   |     |     |  7  |
+</code></pre></div>
+<p>We’re interested in a variable called <em>distance to the actual slot</em> - I’ll call it <code>D(value)</code>. For example, the actual slot of <code>(5, 7)</code> is 0, and it’s located at 0, so the distance is 0. For <code>(29, 7)</code> on the other hand, the distance is 1, because it’s at 1, even though it should’ve been at 0.</p>
+<p>In robin hood hashing, you follow one rule - if the distance to the actual slot of the current element in the slot is <em>less than</em> the distance to the actual slot of the element to be inserted, then we swap both the elements and proceed.</p>
+<p>Okay, that was ugly. An example will really help us.</p>
+<p>We’d like to insert <code>(13, 3)</code> into this map. The slot index for 13 is 0. So, let’s start at 0. We already have <code>(5, 7)</code> located there, which also has a slot index 0.</p>
+<div><pre><code> index |  0  |  1   |  2  |  3  |  4   |  5  |  6  |  7  |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ value | 5,7 | 29,7 | 6,6 | 3,4 | 12,9 |     |     | 8,2 |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ slot  |  0  |  0   |  1  |  2  |  3   |     |     |  7  |
+          ^
+          | D(13) == 0
+        (13,3)
+</code></pre></div>
+<p>Both have the same distances i.e., <code>D(5) == D(13) == 0</code>. We move forward.</p>
+<div><pre><code> index |  0  |  1   |  2  |  3  |  4   |  5  |  6  |  7  |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ value | 5,7 | 29,7 | 6,6 | 3,4 | 12,9 |     |     | 8,2 |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ slot  |  0  |  0   |  1  |  2  |  3   |     |     |  7  |
+                ^
+                | D(13) == 1
+              (13,3)
+</code></pre></div>
+<p>Still the same. <code>D(29) == D(13) == 1</code> (both are 1 slot away from their actual slots). Moving on…</p>
+<div><pre><code> index |  0  |  1   |  2  |  3  |  4   |  5  |  6  |  7  |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ value | 5,7 | 29,7 | 6,6 | 3,4 | 12,9 |     |     | 8,2 |
+-------|-----|------|-----|-----|------|-----|-----|-----|
+ slot  |  0  |  0   |  1  |  2  |  3   |     |     |  7  |
+                       ^
+                       | D(13) == 2
+                     (13,3)
+</code></pre></div>
+<p>In the next stop, we see something. <code>D(13) == 2</code> whereas <code>D(6) == 1</code> and hence <code>D(6) &lt; D(13)</code>, which means we should <strong>swap the pairs</strong> and proceed.</p>
+<div><pre><code> index |  0  |  1   |  2   |  3  |  4   |  5  |  6  |  7  |
+-------|-----|------|------|-----|------|-----|-----|-----|
+ value | 5,7 | 29,7 | 13,3 | 3,4 | 12,9 |     |     | 8,2 |
+-------|-----|------|------|-----|------|-----|-----|-----|
+ slot  |  0  |  0   |  0   |  2  |  3   |     |     |  7  |
+                       ^
+                       | D(6) == 1
+                     (6, 6)
+</code></pre></div>
+<p>Now, we go looking for a place to insert <code>(6, 6)</code>. This way, we compare and swap the key/value pairs based on their distances. In the end, we have this nicely distributed hashmap:</p>
+<div><pre><code> index |  0  |  1   |  2   |  3  |  4  |  5   |  6  |  7  |
+-------|-----|------|------|-----|-----|------|-----|-----|
+ value | 5,7 | 29,7 | 13,3 | 6,6 | 3,4 | 12,9 |     | 8,2 |
+-------|-----|------|------|-----|-----|------|-----|-----|
+ slot  |  0  |  0   |  0   |  1  |  2  |  3   |     |  7  |
+</code></pre></div>
+<p>Since the hashmap has reached almost its capacity, you might be wondering whether this would’ve already triggered a <em>rehash</em>. But, the resize/rehash depends on the load factor, and because this method redistributes the key/value pairs regardless of when they get inserted (<strong>takes away from the rich and gives it to the poor</strong>, hence the name), the hashmaps could now have higher load factors of even 90-95%.</p>
+<p>This also brings another improvement to searching. We don’t have to probe all the way until we find an empty slot. We can stop when <code>D(slot value) &lt; D(query value)</code>, since our rule guarantees that this shouldn’t happen for the key we’re looking for. For example, in the above table, if we wanna query for the key <code>21</code> (whose slot index is 0), then we can stop at index 3, because at that point <code>D(6) == 2</code> which is less than <code>D(21) == 3</code> which wouldn’t have happened if the key/value pair were there. So, we can safely declare that the key doesn’t exist.</p>
+<p>Now that we’ve grazed over a lot of things associated with openly-addressed hashmaps<sup id="fnref:5"><a href="#fn:5">5</a></sup>, let’s proceed to hashbrown.</p>
+<h2 id="hashbrown">Hashbrown</h2>
+<p>I’m not gonna call it “SwissTable” from here on because firstly, even though hashbrown was a port of SwissTable, the author has made a few changes to improve its performance, and second, I didn’t read the C++ code at all - I followed the <code>hashbrown</code> crate.</p>
+<p>An optimization for linear probing is storing some metadata for each key/value pair. The first thing that comes to mind is the check for <em>equality</em> - once we’ve landed on a slot, we probe by comparing the keys in the slots one by one. While this is easier for integers, it gets expensive for bigger objects. We could store the hash, but, that’s another <strong>8 bytes per slot</strong>, which is a huge deal for memory-eating hashmaps!</p>
+<p>Let’s reset our map and make some changes to its behavior.</p>
+<ol>
+<li>Let’s make the initial size of the internal array to <strong>16</strong> (I’ll get into why we’re doing that in a bit, trust me for now). We call this group of 16 elements a <em>group</em>.<sup id="fnref:6"><a href="#fn:6">6</a></sup> So, a map is made of a number of consecutive groups.</li>
+<li>For each slot in a group, let’s assign <strong>a byte for metadata</strong> and call it <em>control byte</em>. Again, we’ll see what it is soon.</li>
+</ol>
+<p>It will now look something like this:</p>
+<div><pre><code> index |   0    |   1    |   2    |   3    |   4    | ... |   15   |
+-------|--------|--------|--------|--------|--------|     |--------|
+ value |        |        |        |        |        | ... |        |
+-------|--------|--------|--------|--------|--------|     |--------|
+ ctrl  |00000000|00000000|00000000|00000000|00000000| ... |00000000|
+</code></pre></div>
+<p>I’m skipping a number of elements (irrelevant to us) so that it fits to the screen. I’m also representing the “control byte” in bits, because we’ll be playing with bits. As a result, there are 128 bits in this group - a nice round number (we’ll see why).</p>
+<p>Our first candidate for insertion is <code>(5, 7)</code>.</p>
+<div><pre><code>H(5) = 12638147618137026400
+</code></pre></div>
+<p>Taking the top (<em>most significant</em>) 7 bits of this hash<sup id="fnref:7"><a href="#fn:7">7</a></sup> and calling it <code>H2(x)</code>, we get:</p>
+<div><pre><code>H2(5) = H(5) &gt;&gt; 57 = 87 = 0b1010111
+</code></pre></div>
+<p>These will be the <em>bottom</em> 7 bits of our control byte.<sup id="fnref:8"><a href="#fn:8">8</a></sup> Then, we use a special bit for our own purposes (to indicate whether the slot value is empty, full or deleted) and this will be the top bit. The states are now represented as follows:<sup id="fnref:9"><a href="#fn:9">9</a></sup></p>
+<div><pre><code>0b11111111  // EMPTY (all bits are set)
+0b10000000  // DELETED (top bit is set)
+0b0.......  // FULL (whenever the top bit isn't set)
+</code></pre></div>
+<p>In light of this information, all the slots are empty, so our map will look like:</p>
+<div><pre><code> index |   0    |   1    |   2    |   3    |   4    | ... |   15   |
+-------|--------|--------|--------|--------|--------|     |--------|
+ value |        |        |        |        |        | ... |        |
+-------|--------|--------|--------|--------|--------|     |--------|
+ ctrl  |11111111|11111111|11111111|11111111|11111111| ... |11111111|
+</code></pre></div>
+<p>To recall what we’ve done so far, we’re storing the top 7 bits of our key’s hash in our control byte, and in addition to that, we use the top bit of the control byte to indicate whether the slot is full, empty or deleted.</p>
+<p>Going back to our candidate <code>(5, 7)</code>, its slot index is 0 i.e., <code>H(5) % 16 == 0</code>.</p>
+<div><pre><code> index |   0    |   1    |   2    |   3    |   4    | ... |   15   |
+-------|--------|--------|--------|--------|--------|     |--------|
+ value | (5,7)  |        |        |        |        | ... |        |
+-------|--------|--------|--------|--------|--------|     |--------|
+ ctrl  |01010111|11111111|11111111|11111111|11111111| ... |11111111|
+</code></pre></div>
+<p>Once the pair is inserted, we’ve also set its control byte to <code>H2(5)</code>, since the top bit is zero anyway (because it’s now <code>FULL</code>). Now, let’s try inserting <code>(39, 8)</code>.</p>
+<div><pre><code>H(39) = 17050702200253021726
+i = H(39) % 16 = 2
+H2(39) = H(39) &gt;&gt; 57 = 54 = 0b110110
+</code></pre></div>
+<p>And, we do the same thing.</p>
+<div><pre><code> index |   0    |   1    |   2    |   3    |   4    | ... |   15   |
+-------|--------|--------|--------|--------|--------|     |--------|
+ value | (5,7)  |        | (39,8) |        |        | ... |        |
+-------|--------|--------|--------|--------|--------|     |--------|
+ ctrl  |01010111|11111111|00110110|11111111|11111111| ... |11111111|
+</code></pre></div>
+<p>Now, we’re all set. Let’s start addressing the reasons behind whatever we’ve done.</p>
+<h3 id="why-the-round-number">Why the round number?</h3>
+<p>Each group contains 16 slots summing up to 8 control bytes. The first natural question is why we’ve restricted the group size to 128 bits.</p>
+<p>When we query for a key in the map, we first use the hash to land on the group corresponding to a slot, find the offset of the slot inside that group and start probing by comparing against the 7-bit hashes in the control byte.</p>
+<p>The boost here is that the control bytes (being 128 bits) can fit into an L1 cache line. This means, we can probe an <em>entire</em> group really quickly, before having to fetch another group from L2 or L3 or whatever. And, we don’t have to worry about comparing the keys at all, until we encounter all 7 bits matching in a control byte.</p>
+<p>There’s one other cool optimization for modern processors. Modern CPUs support SIMD instructions, which basically means that we can do some operation (add or multiple or compare, etc.) on multiple values at the same time in a processor! <a href="https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions">SSE</a> is a subset of that where we can work on different types such as two 64-bit floats, four 32-bit integers or <strong>sixteen 8-bit integers</strong>.</p>
+<p>Now, our workflow will simply be:</p>
+<ol>
+<li><a href="https://doc.rust-lang.org/nightly/core/arch/x86/fn._mm_set1_epi8.html?search=_mm_load%20si128">Load up</a> these bytes from an array.</li>
+<li><a href="https://doc.rust-lang.org/nightly/core/arch/x86_64/fn._mm_set1_epi8.html">Set the byte</a> to compare.</li>
+<li><a href="https://doc.rust-lang.org/nightly/core/arch/x86_64/fn._mm_cmpeq_epi8.html">Compare</a> both the values.</li>
+<li><a href="https://doc.rust-lang.org/nightly/core/arch/x86_64/fn._mm_movemask_epi8.html">Mask</a> the values from comparison to true or false.</li>
+</ol>
+<p>And, that’s finding the results from 16 slots in <strong>four CPU instructions!</strong></p>
+<p>In the above example, if we wish to find <code>39</code>, then all we have to do is find the position of the group using the hash, find the 7-bit value <code>0b110110</code> from the hash, and do this:</p>
+<div><pre><code>1. Load group (A)
+
+---------------------------------------------     ------------
+| 01010111 | 11111111 | 00110110 | 11111111 | ... | 11111111 |
+---------------------------------------------     ------------
+
+2. Set comparable 0b110110 (B)
+
+---------------------------------------------     ------------
+| 00110110 | 00110110 | 00110110 | 00110110 | ... | 00110110 |
+---------------------------------------------     ------------
+
+3. Compare A and B
+
+---------------------------------------------     ------------
+| 00000000 | 00000000 | 11111111 | 00000000 | ... | 00000000 |
+---------------------------------------------     ------------
+                       (success!)
+4. Mask values
+
+---------------------------------------------     ------------
+|    0     |    0     |    1     |    0     | ... |    0     |
+---------------------------------------------     ------------
+                         (true)
+</code></pre></div>
+<p>After masking, we actually get an integer, because the final result for each group is either <code>0</code> or <code>1</code>, which could all be accumulated into an integer. In other words, the value and position of each bit in the returned integer corresponds to a match of a slot in the group.</p>
+<p>So, we have the results! Now, all we need to do is check the indices of bits that are set in the final integer, compare the key(s) in those slots against the querying key (for equality), find the corresponding value, and we’ll land on <code>(39, 8)</code>.</p>
+<h3 id="hints-to-compiler">Hints to compiler!</h3>
+<p>Futher optimizations can be done on this implementation. If we’ve used a good hash function that distributes the bits reasonably well, then we can hint the compiler that the final equality check (for the key) will almost always be true. In Rust, we have <a href="https://doc.rust-lang.org/nightly/core/intrinsics/fn.likely.html"><code>likely</code></a> and <a href="https://doc.rust-lang.org/nightly/core/intrinsics/fn.unlikely.html"><code>unlikely</code></a> to achieve this. So, we can <a href="https://github.com/Amanieu/hashbrown/blob/6b9cc4e01090553c5928ccc0ee4568319ee0ed33/src/raw/mod.rs#L666">tell the compiler</a> that the equality is <em>likely</em> to be true.</p>
+<p>The next hint is on whether we should probe to the next group looking for that key. Again, if our hash function is good enough, then the odds of that happening is very <em>very</em> low.<sup id="fnref:10"><a href="#fn:10">10</a></sup> So, we can <a href="https://github.com/Amanieu/hashbrown/blob/6b9cc4e01090553c5928ccc0ee4568319ee0ed33/src/raw/mod.rs#L670">hint the compiler again</a> that it’s <em>likely</em> to stop probing.</p>
+<p>When we remove a key/value pair, we can follow the tombstone method - we query the key as usual, find the slot (in some group), set a tombstone (by marking the control byte as <code>DELETED</code>) and later mark it back as <code>EMPTY</code> (when we resize, for example). But, we could take advantage of the previous fact and say that if the group had at least one empty element, then we don’t have to add a tombstone. We could simply set it to <code>EMPTY</code>, because the probing is gonna stop with this group anyway (because the probing would’ve encountered an <code>EMPTY</code>).</p>
+<p>Amanieu has added more stuff like making the hashmap efficient for 32-bit platforms, supporting maps smaller than a group, and a ton of other features to make it compatible with <code>std</code>, which is pretty cool!</p>
+<p>I hope you found this post interesting. As always, feel free to drop any comment if you have anything to add.</p>
+<hr>
+<p><small>A huge thanks to <a href="https://github.com/Hoverbear">Ana</a> and <a href="https://github.com/Amanieu">Amanieu</a> for reviewing this post!</small></p>
+<div>
+<ol>
+<li id="fn:1">
+<p>I insist on watching this talk when you have some free time!&nbsp;<a href="#fnref:1">↩</a></p>
+</li>
+<li id="fn:2">
+<p>Although, hashbrown uses FX hash.&nbsp;<a href="#fnref:2">↩</a></p>
+</li>
+<li id="fn:3">
+<p><a href="https://akkadia.org/drepper/cpumemory.pdf">What Every Programmer Should Know About Memory</a>.&nbsp;<a href="#fnref:3">↩</a></p>
+</li>
+<li id="fn:4">
+<p>This is what Rust used in its Robin hood hashing implementation.&nbsp;<a href="#fnref:4">↩</a></p>
+</li>
+<li id="fn:5">
+<p>I haven’t talked about a number of improvements that could be made to Robin Hood hashing - backward shifting entries during deletion (instead of tombstones), caching hashes, slot indices or “distances” to improve probing, etc. all improve the performance of the hashmap.&nbsp;<a href="#fnref:5">↩</a></p>
+</li>
+<li id="fn:6">
+<p>This doesn’t mean that a hashmap that contains, say 2 elements <em>should</em> have a 16 element array (for the values) - only the group has 16 elements, the actual array containing the key/value pairs will still be 2 elements.&nbsp;<a href="#fnref:6">↩</a></p>
+</li>
+<li id="fn:7">
+<p>In the SwissTable implementation, the bottom (<em>least significant</em>) 7 bits were used for <code>H2</code>, but Amanieu has claimed that his choice lead to slightly more efficient code.&nbsp;<a href="#fnref:7">↩</a></p>
+</li>
+<li id="fn:8">
+<p>Again, this is how hashbrown is implemented. SwissTable used the top 7 bits.&nbsp;<a href="#fnref:8">↩</a></p>
+</li>
+<li id="fn:9">
+<p>One more Rust-specific enhancement - SwissTable had <code>kSentinel</code> to deal with C++ iterators, which wasn’t required in Rust.&nbsp;<a href="#fnref:9">↩</a></p>
+</li>
+<li id="fn:10">
+<p>According to the talk, it’d take a load factor of 94% for an ideal map to reach that situation.&nbsp;<a href="#fnref:10">↩</a></p>
+</li>
+</ol>
+</div>
+</div>
+</article>
+</div></div>
+  </div>
+</body>
+</html>

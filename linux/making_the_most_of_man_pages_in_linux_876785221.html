@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Making the Most of man pages in Linux</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Making the Most of man pages in Linux</h1>
+    <p><strong>URL:</strong> <a href="https://linuxhandbook.com/man-pages">https://linuxhandbook.com/man-pages</a></p>
+    <p><strong>Tags:</strong> command-line, linux</p>
+    <p><strong>Bookmark ID:</strong> 876785221</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><a href="https://www.warp.dev/?utm_source=linux_handbook&amp;utm_medium=display&amp;utm_campaign=linux_launch" target="_blank"><img src="data:application/octet-stream;base64," alt="Warp Terminal"></a></p><p>In the *nix world, the manual pages, aka man pages, are considered the absolute reference for advanced users. There is also the occasional pedantry of RTFM rudely insisting its importance. The <code>man</code> command is even part of the POSIX specification – the basis for most modern implementations of *nix systems. So is this notion justifiable after all? </p><h2 id="advantages-of-manual-pages">Advantages of manual pages</h2><ul><li>Do not require an internet connection</li><li>Written by the developers/maintainers enabling extensive information and accuracy</li><li>Are self-contained without needing external resources</li><li>Always apply to the installed version of the app and the current distribution</li></ul><p>However, even if they may be useful, man pages are daunting at first. This article aims to make it a bit easier to peruse manuals and quickly get the help you need.</p><h2 id="what-are-manual-pages">What are manual pages?</h2><p>Born in the days of Unix, man – short for <strong>manual</strong> – pages were the primary source of user documentation. They were written by the developers of the software and shipped with it.</p><p>Today, in Linux distributions, when one installs a package through the package manager – <em>apt</em>, <em>dnf</em>, <em>pacman</em>, or others, the manuals are installed to the <code>/usr/share/man</code> directory.</p><p>Picking one of those files and using <code>cat</code> to view it… has unintended effects</p><pre><code>$ cat /usr/share/man/man1/man.1.gz
+�[ks�F���_�Ś�IS$m�Ig&amp;��2��b=V��I�6%�
+@�F����߾�&gt;��$e�nmR�C��}��}{n�`�3M2Ŀ�
+���X�Ϋ;k�����Tm�0˪άi�i*3�f]�u]eֹ��{��
+YZ�uzm�q�JK��7N��C�_�4�����|�U����
+... # truncated output
+</code></pre><p>It must be because the file is compressed. Let's try <code>zcat</code></p><pre><code>$ zcat /usr/share/man/man1/man.1.gz
+'\" t
+.\" ** The above line should force tbl to be a preprocessor **
+.\" Man page for man
+.\"
+.\" Copyright (C) 1994, 1995, Graeme W. Wilford. (Wilf.)
+.\" Copyright (C) 2001-2019 Colin Watson.
+.\"
+.\" You may distribute under the terms of the GNU General Public
+... # truncated output
+</code></pre><p>Okay, that gives text. But it's still filled with weird syntaxes; also so long that it fills up the entire terminal.</p><p>Let's move from adventuring and view the man page as intended—with the <span data-ez-ph-id="105"></span><code>man</code> command.</p><pre><code>$ man man
+</code></pre><figure><img src="https://linuxhandbook.com/content/images/2022/07/man-page-linux.png" alt="man page in Linux" loading="lazy" width="884" height="565" srcset="https://linuxhandbook.com/content/images/size/w600/2022/07/man-page-linux.png 600w, https://linuxhandbook.com/content/images/2022/07/man-page-linux.png 884w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 884w" data-cfsrc="https://linuxhandbook.com/content/images/2022/07/man-page-linux.png"></figure><p>When a man page is accessed using the <code>man</code> command, it still fills the terminal window. But now it's easier to read. Additionally, there is a lot of formatting: headings, bold text, italic text or underlined text.</p><h2 id="how-are-man-pages-are-rendered">How are man pages are rendered?</h2><p>Man pages are markup files written using a descendant of the roff syntax such as <a href="https://www.gnu.org/software/groff/">groff from the GNU Project</a>. The syntax is a typesetting system that establishes the structure and formatting of the manual pages. This is similar to semantic HTML for webpages.</p><p><code>man</code> finds the raw roff file in the filesystem and processes it to generate output suited for the current terminal. The processing involves setting the page width, text encoding, font weights and styles according to terminal support. The output is then displayed using a pager.</p><p>The <code>man</code> command in Linux is part of the <code><a href="https://gitlab.com/cjwatson/man-db">man-db</a></code><a href="https://gitlab.com/cjwatson/man-db"> suite of packages</a>. There are packages in the collection to handle the various processes and also maintain an index of the installed manuals.</p><p>In most BSD systems, the <a href="https://mandoc.bsd.lv/"><code>mandoc</code> project</a> project is used instead. And it differs from <code>man-db</code> in various aspects. The rest of the article will focus only on <code>man-db</code> and its features and options.</p><h2 id="the-man-program">The <code>man</code> program</h2><p>As established earlier, to access a manual page, we use the <code>man</code> command. The simplest invocation of the command is <code>man</code> followed by the name of the page you want to access. So to access the manual for <em>ssh</em><span data-ez-ph-id="116"></span></p><pre><code>$ man ssh
+</code></pre><p>The elements of the <code>man-db</code> suite maintain a shared database of all manual pages that are installed on the system. This database, most likely located at <code>/var/cache/man/index.db</code>, acts as a cached index of manual pages. It also provides the information needed by other the other tools in <code>man-db</code>. If there is no page in the index with the name <em>ssh</em>, the man command searches through a list of directories defined in <code>/etc/manpath.config</code> or by the environment variable <code>$MANPATH</code>.</p><h3 id="navigation">Navigation</h3><p>Navigation in a man page is handled entirely by the pager that is being used. By default, <code>man</code> uses the <span data-ez-ph-id="109"></span><code>pager</code> command. And in most modern Linux systems <code>pager</code> is a <a href="https://linuxhandbook.com/symbolic-link-linux/">symbolic link</a> to <a href="https://linuxhandbook.com/less-command/">less</a>.</p><p>To <strong>close</strong> the manual at any time, simply <strong>press q</strong> on your keyboard. This quits the pager and returns to the shell.</p><h3 id="scrolling">Scrolling</h3><p>In most pagers, including <code>less</code> it is very easy to scroll through the page using the scroll wheel, scroll gestures and also arrow keys. Home and End are also supported.</p><p>Users familiar with Vim can also use the standard keybindings for motions to navigate through the pager. Holding down the j key scrolls down and k scrolls up one line at a time. g and G can be used for the beginning and end of the page respectively.</p><p>It is also possible to scroll more at a time using the keyboard, but it often makes reading difficult. But if you wish, you can press the h key to bring up <code>less</code>'s help screen for all the keybindings.</p><figure><img src="https://linuxhandbook.com/content/images/2022/07/h_for_help.jpg" alt="prompt at the bottom of man page instructing the user to press the H key for help and the Q key to quit" loading="lazy" width="722" height="33" srcset="https://linuxhandbook.com/content/images/size/w600/2022/07/h_for_help.jpg 600w, https://linuxhandbook.com/content/images/2022/07/h_for_help.jpg 722w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 722w" data-cfsrc="https://linuxhandbook.com/content/images/2022/07/h_for_help.jpg"></figure><p>Being comfortable with scrolling is the first step to using documentation to find information. But even so it would not be easy going through it line by line. That is where the pager's search functionality comes into play.</p><figure><a href="https://codemonkey.sjv.io/ZdW9d1"><div><p>Coding for Kids | Game-Based Programming | CodeMonkey</p><p>CodeMonkey is a fun and educational game environment where students learn to code in real programming languages, no previous experience needed.</p></div><p><img src="https://s3-us-west-2.amazonaws.com/cm-wordpress-media/wp-content/uploads/2018/06/12113810/CodeMonkey-Square-Logo.png" alt="" data-cfsrc="https://s3-us-west-2.amazonaws.com/cm-wordpress-media/wp-content/uploads/2018/06/12113810/CodeMonkey-Square-Logo.png"></p></a></figure><h3 id="searching">Searching</h3><p>The quickest way to find a particular feature or option in a man page is to search for the word. To initiate a search in the manual press the (forward slash)/ key, type the pattern (regular expressions are supported!) and press Enter</p><p>This is useful when you are looking for an approximate "topic." For example, you could open the manual page for <code>rsync</code> and search for the word <span data-ez-ph-id="106"></span><strong>partial</strong> to quickly jump to the first occurrence of the word. You can then press the n key to move to the next instance or N (shift + n) to go back to the previous one. Using ? you can also search backward.</p><p>By default, the case (upper or lower) of the pattern is ignored. But if there is an uppercase letter, the pattern is treated with case sensitivity. This behavior makes it impossible to search for a fully lowercase pattern. And so it is sometimes useful to enable case-sensitive searches. This can be done by pressing the hyphen-i sequence - i to toggle the feature.</p><p>Cycling through the instances of the search pattern and scrolling up and down around them is a neat way to get information on a particular topic.</p><p>Another good use of the search function is with flags. Performing a search for the pattern that begins the line with spaces and a pattern is useful to jump to the flag.</p><p>/<code>^\s+--compress</code></p><p>This would also be useful when auditing commands from the internet before running them. Jumping to the flag and verifying what it does. Search can also be used to quickly scroll down to a particular section of the man page.</p><h2 id="sections-of-a-man-page">Sections of a man page</h2><p>The manuals are typically divided into multiple sections indicated by the headings displayed in <strong>BOLD UPPERCASE</strong> text. There is a list of sections that are found in most pages. But the common and important ones are name, synopsis, environment and files.</p><figure><img src="https://linuxhandbook.com/content/images/2022/07/man-page-elements-linux.png" alt="man page elements in Linux" loading="lazy" width="884" height="565" srcset="https://linuxhandbook.com/content/images/size/w600/2022/07/man-page-elements-linux.png 600w, https://linuxhandbook.com/content/images/2022/07/man-page-elements-linux.png 884w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 884w" data-cfsrc="https://linuxhandbook.com/content/images/2022/07/man-page-elements-linux.png"></figure><h3 id="name">NAME</h3><p>This section has the name of the application (or manual topic) and a short description. A summary of sorts.</p><h3 id="synopsis">SYNOPSIS</h3><p>The synopsis section is a quick start guide. For applications, it is a description of the command line syntax.</p><p>It is useful to know the conventions used in the synopsis section that illustrates how the command may be used.</p><pre><code>command [--optional-flag] [-a -b] [ -c argument ] [-A|-B] filename ...
+</code></pre><ul><li>The first word is the name of the command</li><li>Arguments that are surrounded by <code>[ ]</code> are optional</li><li>Flags or options with <code>|</code> between them cannot be used together</li><li>Arguments followed by <code>...</code> can repeated</li><li>Arguments without <code>[ ]</code> are required</li></ul><p>With the sample above, <code>command /etc/passwd</code> and <code>command /etc/passwd /etc/group</code> are the simplest valid invocations having all the required elements.</p><p>All the flags listed are optional, but <code>-A</code> cannot be used with <code>-B</code>. Only one of the two may be used.</p><p>Also note that <code>-c argument</code> means that <strong>argument</strong> is required if the <code>-c</code> flag is used. And only one argument may be passed to <code>-c</code>.</p><h3 id="environment">ENVIRONMENT</h3><figure><img src="https://linuxhandbook.com/content/images/2022/07/ENVIRONMENT-section-man-page-Linux.png" alt="ENVIRONMENT section of a man page" loading="lazy" width="859" height="383" srcset="https://linuxhandbook.com/content/images/size/w600/2022/07/ENVIRONMENT-section-man-page-Linux.png 600w, https://linuxhandbook.com/content/images/2022/07/ENVIRONMENT-section-man-page-Linux.png 859w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 859w" data-cfsrc="https://linuxhandbook.com/content/images/2022/07/ENVIRONMENT-section-man-page-Linux.png"></figure><p>Environment variables are useful for controlling the behaviour of an application. The environment section of a man page lists the variables that affect a given command and also their effect. The variables that are set by the software for use by other apps are also listed.</p><p>You can read more about using environment variables in <a href="https://linuxhandbook.com/export-command/">our guide on the <code>export</code> command</a></p><h3 id="files">FILES</h3><figure><img src="https://linuxhandbook.com/content/images/2022/07/FILES-element-man-page.png" alt="FILES section of a man page" loading="lazy" width="859" height="348" srcset="https://linuxhandbook.com/content/images/size/w600/2022/07/FILES-element-man-page.png 600w, https://linuxhandbook.com/content/images/2022/07/FILES-element-man-page.png 859w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 859w" data-cfsrc="https://linuxhandbook.com/content/images/2022/07/FILES-element-man-page.png"></figure><p>The files section of a man page lists and describes paths in the filesystem that are relevant to the software. The paths are typically those of configuration files. The manual page for <code>bash</code> lists the initialization files that are parsed by the shell.</p><div><p>💡</p><p>Search for the pattern <code>^ENV</code> or <code>^SYN</code> to quickly scroll to sections without typing the full word!</p></div><h2 id="man-sections">man sections</h2><p><strong><em>The sections within a manual are not to be confused with the different sections of man pages.</em></strong></p><p>Essentially all the manuals available on a system are categorized under sections numbered 1 through 8. And are installed to their respective folders, <code>man1</code> - <code>man8</code>. As you can see in the screenshot below, the ls command is in section 1.</p><figure><img src="https://linuxhandbook.com/content/images/2022/07/man-sections-linux.png" alt="sections of man command" loading="lazy" width="859" height="491" srcset="https://linuxhandbook.com/content/images/size/w600/2022/07/man-sections-linux.png 600w, https://linuxhandbook.com/content/images/2022/07/man-sections-linux.png 859w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 859w" data-cfsrc="https://linuxhandbook.com/content/images/2022/07/man-sections-linux.png"></figure><p>Sometimes a few additional sections also exist. The best description of each section is in the man page for <code>man</code> itself.</p><table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Executable programs or shell commands</td>
+<td>general commands. e.g. cat, man, ssh, cp</td>
+</tr>
+<tr>
+<td>2</td>
+<td>System calls</td>
+<td>functions provided by the kernel</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Library calls</td>
+<td>functions within program libraries</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Special files</td>
+<td>usually found in /dev</td>
+</tr>
+<tr>
+<td>5</td>
+<td>File formats and conventions</td>
+<td>e.g. /etc/passwd</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Games</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Miscellaneous</td>
+<td>including macro packages and conventions, e.g. man(7), groff(7)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>System administration commands</td>
+<td>usually only for root</td>
+</tr>
+</tbody>
+</table><p>In most cases, it would not be necessary to specify the section. <code>man</code> automatically goes through all the sections in a predefined order. But it is possible to specify the section.</p><pre><code>man 5 ssh_config
+man rsync.1
+man "passwd(5)"
+</code></pre><p>All the above are valid syntaxes of the command. And the last one – <code>passwd(5)</code> refers to the man page for <code>/etc/passwd</code>. On the other hand, <code>passwd(1)</code> would to the application to change a user's password. In cases like these, it is useful to specify the section.</p><p>Often manuals direct the user to refer other related manuals. These references are written in the <code>name(section number)</code> format and can be easily copied and pasted into a terminal. But need to be wraped in quotes to prevent the shell from interpreting them.</p><h2 id="using-man-command-with-additional-options">Using man command with additional options</h2><p>While the simplest invocation of <code>man</code> is <code>man name</code>, it is also possible to use flags to get different results.</p><h4 id="thef-flag-for-short-descriptions">The <code>-f</code> flag for short descriptions</h4><p><code>man -f name</code> is an alias to <code>whatis name</code>, another command available as part of the <code>man-db</code> suite. The whatis command prints the short description from the manual page's <strong>NAME</strong> section. The descriptions are extracted and cached in the database that is shared by all <code>man-db</code> utilities.</p><pre><code>$ man -f whatis
+whatis (1)	- display one-line manual page descriptions
+
+$ whatis whatis
+whatis (1)	- display one-line manual page descriptions
+</code></pre><h4 id="thek-flag-to-search-topics">The <code>-k</code> flag to search topics</h4><p>Similarly, <code>man -k name</code> is an alias to <code>apropos name</code>. The command searches for <strong>name</strong> in the <code>man-db</code> database of descriptions and prints those that have a match. As it searches name and description of each manual, this flag would be useful to find all manuals on a topic.</p><pre><code>$ man -k apropos
+apropos (1)	- search the manual page names and descriptions
+
+$ apropos apropos
+apropos (1)	- search the manual page names and descriptions
+
+$ man -k password
+chage (1)	- change user password expiry information
+chgpasswd (8)	- update group passwords in batch mode
+chpasswd (8)	- update passwords in batch mode
+... #truncated
+</code></pre><h4 id="view-withhtml">View with <code>--html</code></h4><pre><code>$ man --html
+</code></pre><p>The <code>--html</code> flag can be used to generate html output! <code>man</code> will even open the browser and display the html version of the manual. Note that this depends on the <code>$BROWSER</code> environment variable being valid.</p><p>There are other CLI options that are listed in <code>man(1)</code> and they can be viewed using the command <code>man man</code>. 😉</p><h3 id="alternative-documentation">Alternative documentation</h3><p>Despite its utility, <code>man</code> is not always the answer. Sometimes grepping the help prompt for a term is all one needs.</p><pre><code>$ command --help | grep -i 'term'
+</code></pre><p>Most programs have a help prompt accessible using the <code>--help</code> flag. However, <code>man</code> remains the best way to get in-depth information.</p><p>But <code>man</code> is not the only answer. There have been various competing standards for software documentation. <a href="https://www.gnu.org/software/texinfo/">GNU's texinfo</a>, web-only documentation that is published on websites or on GitHub are not uncommon.</p><figure><img src="https://imgs.xkcd.com/comics/standards.png" alt="How Standards Proliferate (See: A/C chargers, character encodings, instant messaging, etc.) Situation: There are 14 competing standards. Cueball: 14?! Ridiculous! We need to develop one universal standard that covers everyone's use cases. Ponytail: Yeah! Soon: Situation: There are 15 competing standards." loading="lazy" data-cfsrc="https://imgs.xkcd.com/comics/standards.png"><figcaption>Image source: <a href="https://imgs.xkcd.com/comics/standards.png">xkcd</a></figcaption></figure><p>Despite it all <code>man</code> has stood the tests of time and persists today. Its flexibility and availability play a large role. The depth of information has an equally big role. Hopefully, this article has guided you to embrace it. And next time, maybe you too will reach for the man pages before a search engine.</p><p><em>This article has been contributed by <a href="https://kevinnlsamuel.com/">Kevin Samuel</a>.</em></p>
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Best Regex Trick</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The Best Regex Trick</h1>
+    <p><strong>URL:</strong> <a href="http://rexegg.com/regex-best-trick.html">http://rexegg.com/regex-best-trick.html</a></p>
+    <p><strong>Tags:</strong> regexes</p>
+    <p><strong>Bookmark ID:</strong> 876779352</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<article id="the_article" onclick="close_left_menu()"><br>
+    <h2>The Greatest Regex Trick Ever</h2><p><a rel="nofollow" href="http://www.copyscape.com/" target="_blank">
+        <img src="data:application/octet-stream;base64," alt="Page copy protected against web site content
+        infringement by Copyscape" title="Do not copy content from the page.
+        Plagiarism will be detected by Copyscape." width="234" height="16">
+        </a></p><br>
+
+
+<a id="top"></a>
+So you're doubtful at the mention of a "best regex trick"? <p>
+
+Fine. I'll concede right away that deciding what constitutes the best technique in any field is a curly matter. When you start out with regex, learning that the lazy question mark in <code>&lt;tag&gt;.*?&lt;/tag&gt;</code> prevents you from <a href="https://www.rexegg.com/regex-quantifiers.html#greedytrap">steamrolling from the start to the end</a> of a string such as <i>&lt;tag&gt;Tarzan&lt;/tag&gt; likes &lt;tag&gt;Jane&lt;/tag&gt;</i> may seem like the best regex trick ever. At other points in your career, you'll surely fall in love with regex bits such as <code>[^"]+</code> to <a href="https://www.rexegg.com/regex-cookbook.html#captureparen">match all the content between certain delimiters</a> (in this case double quotes), or with atomic groups. 
+</p><p>
+However, as you mature as a regex practitioner, you come to regard these techniques for what they are: language features rather than tricks. They are neat, to be sure, but they are how regex works, and nothing more.
+</p><p>
+In contrast, a "trick" is not a single point of syntax such as a negated character class or a lazy quantifier. A regex trick uses regex grammar to compose a "phrase" that achieves certain goals. </p><p>
+
+With regex there's always more to learn, and there's always a more clever person than you (unless you're the lone guy sitting on top of the mountain), so I've often been exposed to awesome tricks that were out of my league—for instance the famous regex to validate that a number is prime, or some fiendish uses of recursion. But however clever these tricks, I would not call any of them the "best regex trick ever", for the simple reason that they are one-off techniques with limited scope. You are unlikely to ever use them.
+</p><p>
+
+In contrast, the reason I drum up the technique on this page as the "best regex trick ever" is that it has several properties:
+</p><p>
+
+✽ Anyone can learn it. You don't have to be a regex master.<br>
+✽ It answers not <i>one</i>, but <i>several</i> common and practical regex questions.<br>
+✽ These questions are ones that even competent regex coders often have trouble answering gracefully.<br>
+✽ It is simple to implement in most programming languages.<br>
+✽ It is easy to extend when requirements change.<br>
+✽ It is portable over numerous regex flavors.<br>
+✽ It is usually more efficient than competing methods.<br>
+✽ It is too little-known. At least, until now.</p><p>
+
+Do I have your attention yet?</p><p>
+
+Before we proceed, I should point out some limitations of the technique:</p><p>
+✽ It will not butter the reverse side of a toast.<br>
+✽ It will not make small talk with your mother-in-law.<br>
+✽ It relies on your ability to inspect Group 1 captures (at least in the generic flavor), so it will not work in a non-programming environment, such as a text editor's search-and-replace function or a <i>grep</i> command.<br>
+✽ The point above also means that you may have to write one or two extra lines of code, but that is a light price to pay for a much cleaner, lighter and easier to maintain regex. <a href="#codesamples">Code samples</a> for the six typical situations are provided below.<br>
+✽ There is an edge case to keep in mind. The regex engine dumps unwanted content into a trash can. In a typical context that is no problem, but if you are working with an enormous file, the trash can may get so large that you could run into memory issues. 
+</p><p>
+
+Other than that, it's awesome. Okay, let's dive in. No need to buckle up, the technique itself is delightfully simple. 
+</p><h2>Excluding certain Contexts while Matching or Replacing</h2>
+
+Here are some of the questions that our regex trick is able to answer with speed and grace:<p>
+✽ <b>How do I match a word unless it's surrounded by quotes?</b><br>
+✽ <b>How do I match <i>xyz</i> except in contexts a, b or c?</b><br>
+✽ <b>How do I match every word except those on a blacklist (or other contexts)?</b><br>
+✽ <b>How do I ignore all content that is bolded (… and other contexts)?</b></p><p>
+
+
+Once you grasp the technique, you will see that under a certain light, these are all nearly the same question.
+</p><p>
+
+For convenience, here are some jumping points. For full potency, I recommend you read the whole article in sequence. But if you don't care about the typical solutions to the problems addressed by the technique, you can skip directly to the description of <a href="#thetrick">the trick</a>.
+</p><p>
+
+
+<a id="toc"></a>
+<a href="#top">What do you mean by "Best Regex Trick"? [top]</a><br>
+<a href="#typical">Typical Solutions to "Unless" Problems</a><br>
+<a href="#thetrick">The Trick</a><br>
+<a href="#notarzan">Match a Word Unless it's in Quotes</a><br>
+<a href="#howitworks">How Does the Technique Work?</a><br>
+<a href="#pseudoregex">The Technique in Pseudo-Regex</a><br>
+<a href="#lookout">One Small Thing to Look Out For</a><br>
+<a href="#nocontext">Match Pattern Except in Context X</a><br>
+<a href="#nocontexts">Match Pattern Except in Contexts A, B, C</a><br>
+<a href="#allbutx">Match Everything Except X</a><br>
+<a href="#blacklist">Match Every Word Except Black List</a><br>
+<a href="#ignore">Ignore Content of This Kind</a><br>
+<a href="#deletevariation">A Variation: Deleting the Matches</a><br>
+<a href="#pcrevariation">Variation for Perl, PCRE and Python</a><br>
+<a href="#codesamples">Code Samples</a><br>
+<a href="#translators">Code Translators Needed</a></p><p>This is a long page. It's sure to have typos and perhaps bugs. Will you do me a favor and <a href="#comform">report</a> any typos or bugs you find? Thanks!</p><h2>The Typical Solutions</h2>
+
+To see how convenient the trick is, it helps to first see how inconvenient some matching tasks can be when you don't know it. So let's see what other solutions exist. We'll look at two broad cases:
+<p>
+
+<a href="#simplecase">A. The "simple" case</a><br>
+<a href="#generalcase">B. The general case</a></p><p>
+
+
+<a id="simplecase"></a>
+<b>A. Simple Case:</b> fixed-width non-match, as in <i>"Tarzan"</i><br>
+
+First, let's examine a "simple case": we want to match <i>Tarzan</i> except when this exact word is in double-quotes. In other words, we want to exclude <i>"Tarzan"</i>.
+</p><p>
+
+
+<b>Option 1: Lookarounds</b><br>
+At first you may think of framing <i>Tarzan</i> between a negative lookbehind and a negative lookahead:</p><p>
+
+<code>(?&lt;!")Tarzan(?!")</code><br>
+
+However, this does not work because it also excludes valid strings such as <i>"Tarzan and Jane"</i> and <i>"Jane and Tarzan"</i>, whereas we only wanted to exclude <i>"Tarzan"</i>.</p><p>
+
+<b>Back to the Future Regex I</b><br>
+<a id="backtothefuture1"></a>
+To account for this, you might inject a lookahead inside your negative lookbehind. This is what I call a <i>"Back to the Future"</i> regex. The lookahead inside the lookbehind asserts that after we've found the opening double quote behind <i>Tarzan</i>, we can find <i>Tarzan</i> (surprise) and a closing double quote. Since we're inside a negative lookbehind, this whole package is what we don't want.</p><p>
+
+<code>(?&lt;!"(?=Tarzan"))Tarzan</code><br>
+
+
+<b>Step Forward then Backflip</b><br>
+This approach is closely related to the <i>Back to the Future</i> approach. You match <i>Tarzan</i>, then you exclude the match if it is followed by a double quote (lookahead) that is preceded by the string <i>"Tarzan"</i>.</p><p>
+
+<code>Tarzan(?!"(?&lt;="Tarzan"))</code></p><p>
+
+
+<b>Conditional</b><br>
+Alternately, you might first turn the negative lookbehind into a positive lookbehind that captures the opening quote if found, then tag a conditional at the end to assert that if Group 1 was set, the following character cannot be a double quote.</p><p>
+
+<code>(?&gt;(?&lt;=(")|))Tarzan(?(1)(?!"))</code><br>
+
+<b>Logic à la Lewis Carroll</b><br>
+For this simple sample problem, you can modifiy the faulty <i>lookarounds</i> solution with a bit of logic:</p><p>
+
+<code>(?&lt;!")Tarzan|Tarzan(?!")</code><br>
+
+The left side of the alternation excludes <i>"Tarzan</i>, but the right side allows it. The right side of the alternation excludes <i>Tarzan"</i>, but the left side allows it. As desired, this expression can match <i>Tarzan</i>, <i>"Tarzan</i>, <i>Tarzan"</i> but not <i>"Tarzan"</i>. This is neat, but is it obvious? You might find the logic immediate, but most people will need to think about it for a moment to see how this works (I'm in that camp).
+</p><p>
+
+The four options above work… but good luck explaining them to your boss.</p><p>
+
+
+<b>Option 2: Parity Check</b></p><p>
+You can check that Tarzan is not inside quotes by checking that it is not followed by one quote followed by an even number of quotes. That's a bit of a hack.</p><p>
+<code>Tarzan(?!"(?:(?:[^"]*"){2})*[^"]*)</code><br>
+
+Simple, right? Er… Not really. There's plenty of room to introduce bugs here. And indeed, this regex will not properly handle <i>"Jane and Tarzan"</i>, where we would like <i>Tarzan</i> to match (you could get around this with a lookbehind and an alternation). In contrast, the <a href="#notarzan">solution to <i>don't match "Tarzan"</i></a> that uses the regex trick on this page will be hauntingly simple.
+</p><p>
+
+<a id="threestep1"></a>
+<b>Option 3: The Two- or Three-Step Dance (Replace before Matching)</b><br>
+I'll expand on this option <a href="#threestep2">below</a> when we look at cases more complex than <i>"Tarzan"</i>. In the meantime, here is the idea:</p><p>
+
+1. Replace all instances of the bad string (here <i>"Tarzan"</i>). If you're just trying to match, your replacement can be <i>""</i> (you can remove the string). If you want to replace the good strings but leave the bad strings, replace the bad strings with something distinctive, such as <i>"T~a~r~z~a~n"</i><br>
+2. Simply match or replace the string you want (here <i>Tarzan</i>), which is now safe to do as you know that all the bad strings have been neutralized.<br>
+3. If you are replacing rather than simply matching, there is one more step: you now need to revert the distinctive strings (<i>"T~a~r~z~a~n"</i>) to their original form.
+</p><p>
+
+When you're working with a text editor and want to perform replacements, this is often your best bet. The technique on this page is for when you are working in a programming language that allows you to inspect your Group 1 captures, so it won't help you in EditPad Pro or Notepad++.
+</p><p>
+
+<b>Option 4 for Perl, PCRE, Ruby, Python: <span>\K</span></b><br>
+I'll also expand on this option <a href="#bsk">below</a> when we look at more complex cases than <i>"Tarzan"</i>. This option works in Perl, PCRE (C, PHP, R, …), Ruby 1.9+ and Python's alternate <a href="https://pypi.python.org/pypi/regex" target="_blank"><i>regex</i> engine</a>. In these regex flavors, the <span>\K</span> token tells the engine to discard the characters matched up to its appearance when preparing the overall match.
+</p><p>
+
+We can use this feature to match unwanted content (here <i>"Tarzan"</i> and other characters that are not <i>Tarzan</i>) up to the very point where a wanted string begins (here <i>Tarzan</i>). At that point, the <span>\K</span> discards the unwanted content, and the engine proceeds to match the content we really want.
+</p><p>
+This solution looks like this:</p><p>
+<code>(?:"Tarzan".*?)*\KTarzan</code></p><p>
+
+
+
+This is a compact option if you use the engines that support it, but if you're aware of <a href="https://www.rexegg.com/regex-explosive-quantifiers.html">explosive quantifiers</a>, the double star will make you cringe. And it's not as compact as the <a href="#notarzan">solution to <i>don't match "Tarzan"</i></a> that you'll see below.
+</p><p>
+
+Okay, that was the simple case. Here the context to avoid had a fixed width: a single double-quote character on either side of the word <i>Tarzan</i>. Now let's look at the general case, where the content to exclude has a variable width.
+</p><p>
+
+<a id="generalcase"></a>
+<b>B. General Case:</b> variable-width exclusion (for instance between tags)<br>
+
+More often than not, the context we want to exclude has a width we cannot predict. For instance, suppose we want to avoid matching the string <i>Tarzan</i> somewhere between <i>[a]</i> tags, as in <i>[a class="variable"]Jane and Tarzan[/a]</i>. Not only will the string between the tags be variable (here <i>Jane and Tarzan</i>), but the tag itself may also vary, as in <i>[a class="variable"]</i>.
+</p><p>
+
+
+In such situations, you often see the big guns come out.</p><p>
+
+<b>Option 1: Variable-Width Lookbehind</b><br>
+In most regex flavors, a lookbehind must have a fixed number of characters, or at least a number of characters within a specified range. However, a handful of flavors allow true variable-width lookbehinds. Among the chosen few are .NET, Matthew Barnett's alternate <i>regex</i> module for Python and JGSoft (available in RegexBuddy and EditPad).</p><p>
+
+In .NET, the question "match <i>Tarzan</i> except inside curly braces" (e.g., not in "{Jane loved Tarzan's curly hair}") can <i>almost</i> be gracefully handled with:</p><p>
+<code>(?&lt;!{[^}]*)Tarzan</code><br>
+
+
+<a id="backtothefuture2"></a>
+<b>Back to the Future Regex II</b><br>
+Why almost? Because "Tarzan" should be allowed in <i>{ Jane and Tarzan...</i>, where the left brace is left open. To check both sides, we'll need to inject a positive lookahead inside the lookbehind—stepping into <em>Back to the Future</em> territory—to assert that after we've found what we were looking for behind <i>Tarzan</i>, we can find <i>Tarzan</i> (surprise) and optional characters up to a closing curly brace. Since we're inside a negative lookbehind, this whole package is what we're trying to avoid. This is the adult version of our earlier <a href="#backtothefuture1"><i>Back to the Future Regex I</i></a>, and it looks like this:</p><p>
+<code>(?&lt;!{[^}]*?(?=Tarzan[^{}]*}))Tarzan</code><br>
+
+What if you need more restrictions—such as also forbidding Tarzan from appearing in <code>[i][/i]</code> tags inside of <code>[p][/p]</code> tags? Yes, you can add more variable-length lookbehinds. Good luck to you as the restrictions become more numerous and complex.
+</p><p>
+
+Also, if the pattern to be matched is more complex than the literal <i>Tarzan</i>, the expression can fast become unmanageable.
+</p><p>
+
+
+And in Java, PHP, Ruby and Python's <i>re</i> module, you can forget about this technique altogether because infinite-width lookbehinds do not exist in these flavors.
+</p><p>
+
+
+<a id="threestep2"></a>
+<b>Option 2: The Two- or Three-Step Dance (Replace before Matching)</b><br>
+To match all instances of <i>Tarzan</i> unless they are embedded in a string inside curly braces, one fairly heavy but simple solution is to perform a two-step dance: Replace then Match.</p><p>
+
+If we also want to <b>replace</b> all these matches, we need a third-step: a final replacement.
+</p><p>
+
+<b>Step 1:</b> You positively match all instances of <i>Tarzan</i> embedded in curly braces. If you're just trying to match, your replacement can be <i>""</i> (you can remove the string). If you want to replace the good strings but leave the bad strings, replace the word <i>Tarzan</i> with something distinctive, such as <i>"T~a~r~z~a~n"</i>. To perform the match, this simple regex would do: </p><p>
+<code>({[^{}]*?)(Tarzan)([^}]*})</code></p><p>
+
+The string is captured into three groups: the beginning, <i>Tarzan</i>, and the end. If you're removing the bad strings before matching, your replacement would be <code>\1\3</code> or <code>$1$3</code> depending on your regex flavor. If you're replacing the bad strings before replacing the good strings, your replacement would be <code>\1T~a~r~z~a~n\3</code> or <code>$1T~a~r~z~a~n$3</code>.</p><p>
+
+If there are other contexts in which you want to avoid matching <i>Tarzan</i>, you probably have to repeat Step 1, as attempting to match all the bad strings in one big regex is fraught with risk. 
+</p><p>
+
+<b>Step 2:</b> All the unwanted instances of <i>Tarzan</i> have been neutralized, so you can now match <i>Tarzan</i> without worrying about context. I realize that matching <i>Tarzan</i> in a vacuum is not that interesting. In real life you might be looking for <i>Tarzan</i> and the phone number that follows.</p><p>
+
+<b>Optional Step 3:</b> If the point of Step 2 was not only to match but also to perform a replacement on the acceptable <i>Tarzan</i> strings, then once that replacement is made we also need to turn all the <i>T~a~r~z~a~n</i> strings back into <i>Tarzan</i>, which is easily accomplished.
+</p><p>
+
+
+<a id="bsk"></a>
+<b>Option 3 for Perl, PCRE, Ruby and Python: <span>\K</span></b><br>
+This option works in Perl, PCRE (C, PHP, R, …), Ruby 1.9+ and Python's alternate <a href="https://pypi.python.org/pypi/regex" target="_blank"><i>regex</i> engine</a>. In these engines, the <span>\K</span> token causes the engine to drop all it has matched up to the <span>\K</span> from the overall match it returns. This opens a strategy for us: we can (i) match any unwanted content (if present) up to the beginning of a wanted <i>Tarzan</i> instance, (ii) throw away that portion of the match using <span>\K</span>, then (iii) match <i>Tarzan</i>. This option could look like this:</p><p>
+
+<code>(?:(?&gt;{[^}]*?})[^{}]*?)*\KTarzan</code><br>
+
+Note that while we try to match unwanted content, we swallow entire sets of <i>{strings in curly braces}</i> without bothering to check if they contain Tarzan. We do not need to care, because we know that if something is inside curly braces, we don't want it.
+</p><p>
+
+Compared with the other options we've seen so far, this is fairly economical. But if you need to add conditions in which <i>Tarzan</i> cannot be matched, it can become very hard to manage.
+</p><p>
+
+Besides, it's still too much work compared with… (<i>drum roll…</i>)
+</p><h2>The Best Regex Trick Ever (at last!)</h2>
+If you've read up to here, well done! Without further ado, let's plunge into this technique I have been relentlessly selling you. I'm hopeful that this won't be counter-climactic in the least.
+<p>
+
+One key to this technique, a key to which I'll return several times, is that we completely disregard the overall matches returned by the regex engine: that's the trash bin. Instead, we inspect the Group 1 matches, which, when set, contain what we are looking for.
+</p><p>
+
+This means that you may have to write one or two extra lines of code, but that is a light price to pay for a much cleaner, lighter and easier to maintain regex. <a href="#codesamples">Code samples</a> for the six typical situations are provided below.</p><p>
+
+An example is worth a picture-and-a-half, so let's revisit our first example.
+</p><h2>Match <i>Tarzan</i> but not <i>"Tarzan"</i></h2>
+You remember the simple case where we tried to match all instances of <i>Tarzan</i> except those enclosed in double quotes? It turned out to yield solutions in varying shades of obscure, such as <p>
+<code>((?&lt;=")?)Tarzan(?(1)(?!"))</code>
+and<br>
+<code>Tarzan(?!"(?:(?:[^"]*"){2})+[^"]*?(?:$|[\r\n]))</code>
+and
+<br>
+<code>(?:"Tarzan".*?)*\KTarzan</code><br>
+
+Well, you'll now see how simple the problem becomes when you use the best regex trick ever:</p><p>
+
+<code>"Tarzan"|(Tarzan)</code><br>
+
+Really? That's it?</p><p>
+
+Yes. The trick is that we match what we don't want on the left side of the alternation (the <span>|</span>), then we capture what we <i>do</i> want on the right side. When our programming language returns the results, we ignore the overall matches (that's the trash bin) and instead turn our whole attention to Group 1 matches, which contain what we were after.</p><p>
+
+<b>Adding exclusions is a breeze</b><br>
+When there's another context we want to exclude, we simply add it as an alternation on the left, where we match it in order to neutralize it—if it's matched, it's in the trash. For instance, if we also had to exclude <i>Tarzan</i> in <i>Tarzania</i> and <i>--Tarzan--</i>, our regex would become:</p><p>
+
+<code>Tarzania|--Tarzan--|"Tarzan"|(Tarzan)</code><br>
+
+Adding exclusions is a breeze, isn't it?</p><p>
+
+Again, the only instances of <i>Tarzan</i> we care about will be those captured by Group 1.
+</p><h2>How Does the Technique Work?</h2>
+This is simple, but it may not be entirely intuitive, so it's worth reviewing how the regex engine handles this pattern. If you feel very confident you understand the mechanics of this match, feel free to skip to the next section, <a href="#pseudoregex">the Technique in Pseudo-Regex</a>.
+<p>
+
+<b>A quick refresher about the regex engine</b><br>
+Remember that the engine has two "reading heads" which both move from left to right: one moves in the string, one moves in the regex pattern. The main thing to understand is that at the start, with the string reading head at the very beginning of the string, the engine tries to match the entire pattern at that position. If that fails, the string reading head advances by one character, and the engine again tries to match the entire pattern. Thus the engine can advance in the string one character at a time, and at each of these characters attempt an overall match, and fail, until at one starting point in the string, perhaps, an overall match is returned. Let's look at this in more detail.
+
+</p><p>
+When we fire up the engine, both reading heads are at the very left. At the string reading head's current position (i.e. the very left), the engine attempts to match the entire pattern. To do so, it tries to match the pattern's first token against the string's first character. If that fails, the engine's string reading head advances to the position immediately past the first character (i.e. between the first and the second character), and the pattern reading head resets to the very left. At that position, the engine once again attempts to match the whole pattern. At that stage, if the first token matches the second character, both reading heads advance, and the engine tries to match the second token against the next character.
+</p><p>
+Of course some tokens have quantifiers and match multiple characters; and within a match attempt from a given starting position in the string, the pattern reading heads often have to backtrack. But the principle remains the same: if an overall match fails, then the string reading head moves to the next position, the pattern reading head resets to the very left, and the engine once again attempts an entire match. </p><p>
+
+In "multiple matches mode", when the engine succeeds in matching the entire pattern, it records the current match, then attempts the next match starting from the position that immediately follows the last character that was just included in the match.
+</p><p>
+
+
+
+<b>A Walk-Through</b><br>
+So let's say we are trying the original pattern <code>"Tarzan"|(Tarzan)</code> against this string:</p><p><i>Now Tarzan says to Jane: "Tarzan".</i></p><br>
+
+1. The engine's string reading head positions itself at the head of the string, before the "N" in "Now". At this position, the engine attempts to match the entire pattern <code>"Tarzan"|(Tarzan)</code><p>
+
+2. At this position, the engine is unable to match the opening double quote in <i>"Tarzan"</i> because the next character is "N", so the left side of the alternation immediately fails. The engine's pattern reading head then jumps to the right side of the alternation and tries to match the initial <i>T</i> in <i>Tarzan</i>, but fails, again because the next character in the string is "N".</p><p>
+
+3. At this position in the string, the match has failed. The string reading head advances one character in the string (positioning itself between the "N" and the "o" in "Now"), and the pattern reading head resets to the very left. At this new position, the engine again attempts to match then entire pattern <code>"Tarzan"|(Tarzan)</code></p><p>
+
+4. At this position, the engine is unable to match the opening double quote in <i>"Tarzan"</i> because the next character is "o". Likewise, the right side of the alternation fails because "T" is not "o".</p><p>
+
+5. The string reading head again advances in the string and attempts two matches that fail, the first before the "w" in "Now", the second before the space character preceding "Tarzan". The string reading head then advances in the string to the position preceding the <i>T</i>.</p><p>
+
+6. The left side of the alternation fails because the next character is not a double quote. The pattern reading head jumps to right side of the alternation, and the engine is able to match the <i>T</i>. The string reading head advances by one character, the pattern reading head advances by one token. The engine is able to match <i>a</i>, then, as the reading heads continue to advance in parallel, the engine matches <i>r</i>, <i>z</i>, <i>a</i> and <i>n</i>. The match succeeds, <i>Tarzan</i> is added to the list of matches, and since it was in parentheses it is also recorded as the Group 1 capture for this match.</p><p>
+
+7. The string reading head advances to the position after the "n" in the initial <i>Tarzan</i>, and the pattern reading head resets to the very left. At this position the engine starts a new match attempt, and fails. The string reading head advances to each position in "says to Jane: ", and as it does so, at each position the engine attempts a new match, and fails. The string reading head then advances to the position preceding the first double quote.</p><p>
+
+8. At this position, before the opening double quote, the engine attempts to match a double quote and succeeds. The string reading head advances by one character, the pattern reading head advances by one token. The engine matches the <i>T</i>, and both reading heads keep advancing in parallel until all the characters in <i>"Tarzan"</i> have been matched.</p><p>
+
+9. The match succeeds, <i>"Tarzan"</i> is added to the list of matches, but it is not captured in any capturing group as it was not surrounded by parentheses.</p><p>
+
+10. The engine returns two matches: <i>Tarzan</i> and <i>"Tarzan"</i>. We don't pay attention to the matches, but for each match we look at capturing Group 1 using our programming language. (You'll see code samples in several languages below.) For the first match, we have a non-empty capturing Group 1: <i>Tarzan</i>. That is what we were after.
+</p><h2>The Technique in Pseudo-Regex</h2>
+
+Here is the recipe in "pseudo-regex":<p>
+<code>NotThis|NotThat|GoAway|(WeWantThis)</code><br>
+
+This is a game of good cop / bad cop.</p><p>
+
+<b>Bad string</b><br>
+As in any good cop / bad cop routine, the bad cop comes in first. The idea is to use a series of alternations on the left to specify the contexts we want to exclude. By doing so, we force the engine to match these "bad strings". We won't even look at the overall matches—think of the set of overall matches as a garbage bin. After matching a bad string, the engine attempts the next overall match starting at the string position that immediately follows the bad string. In effect, that bad string has been skipped: this is how we manage to exclude unwanted context.
+</p><p>
+
+<b>Good string</b><br>
+When the engine starts a match attempt at the beginning of a "good string", it can safely match it, because we know that if that string had been embedded in context we want to exclude… the engine would already have matched it and placed it in the garbage bin! Since we do match the good strings, they too go in the garbage bin. The difference is that by using capturing parentheses when we match the good strings, we capture them into Group 1.</p><p>
+
+<b>One or two lines of code</b><br>
+In our code, we'll only examine these Group 1 captures. Examining Group 1 may take one or two more lines of code than examining "Group 0" (the overall matches), but that's a small price to pay for a regex that is crystal-clear and extremely easy to maintain. The code samples lower in the page will show you how to use this technique in a variety of languages for the six most common regex tasks: (i) checking if there is a match, (ii) counting matches, (iii) retrieving the first match, (iv) retrieving all matches, (v) replacing, and (vi) splitting.
+</p><p>
+
+This is a simple but extremely potent regex technique, don't you think?</p><h2>One small thing to look out for</h2>
+There are not many <i>bewares</i> with this technique, but there is one small thing to look out for. It may sound obvious, but do make sure that the expression in <code>(GetThis)</code> is not so broad that it can swallow strings that contain bad strings—specifically, strings that start one or more characters before a bad string. 
+<p>
+
+For instance, suppose you want to match all words that are not inside an <i>&lt;img&gt;</i> tag. Let's apply our <code>NotThis|(GetThis)</code> recipe.</p><p>
+
+1. Your <i>NotThis</i> rule could look like this: <code>&lt;img[^&gt;]+&gt;</code></p><p>
+2. What about the <i>GetThis</i> rule? Don't use a dot-star, as on the right side of the alternation in <code>&lt;img[^&gt;]+&gt;|(.*)</code></p><p>
+
+Why not? The engine starts a match attempt at the beginning of the string. First, it tries a <code>&lt;</code> against the first character. Say the first character is "S": the <code>&lt;</code> fails to match. The string reading head stays at the start of the string, but the pattern reading head now moves to the right side of the alternation. The engine tries the <code>.*</code> … and the naughty dot-star swallows the "S" and the rest of the string, exclusions and all.</p><p>
+
+We are relying on the exclusion rules to remove unwanted context. But on the <i>GetThis</i> side, you can't have an expression that swallows the same context you are trying to remove! That stands to reason, but it needs to be said—and seen. I sometimes mess this up when building expressions fast, and it's good to be able to instantly spot what is going wrong.
+</p><p>
+
+Note that the problem only arises if the <i>GetThis</i> regex is able to match one or more characters <i>before</i> it matches a bad string. That is because at a string position that precedes a bad string by one or more characters, the exclusion rule is not able to fire, and the engine switches over to the hungry <i>GetThis</i>.</p><p>
+
+On the other hand, it is perfectly acceptable for the <i>GetThis</i> expression to have the <i>potential</i> to match a bad string, as long as it only has that potential at the very start of a bad string. Why? Because this potential never has a chance to come to fruition. Since the exclusion regex patterns are on the left of the alternation, these patterns neutralize bad strings before the <i>GetThis</i> regex can ever get to them.
+</p><p>
+
+In our example, this regex would do the job: <code>&lt;img[^&gt;]+&gt;|(\w+)</code></p><h2>More Applications of the Technique</h2>
+
+Let's now explore other examples using the technique. At the very end, we'll also look at a neat <a href="#pcrevariation">variation for Perl and the PCRE engine</a> (which PHP and Apache use).
+<h2>Match <i>Tarzan</i> but not in <i>{Tarzan's curly braces}</i></h2>
+
+Remember how complex the <a href="https://www.rexegg.com/generalcase">typical case</a> was before? The task was to match <i>Tarzan</i>, except when it lives somewhere between curly braces.<p>
+
+Now all we have to do is apply our recipe: </p><p>
+
+<code>Not_this_context|(WeWantThis)</code></p><p>
+
+Okay, first off, we know that <i>(WeWantThis)</i> is simply <code>(Tarzan)</code>.</p><p>
+Now how can we express <i>Not_this_context</i>? The unwanted context is <i>Tarzan</i> inside curly braces. Delightfully, for this, we use something as compact as <code>{[^}]*}</code>, and I'll explain why <a href="#skipitsimple">in a short moment</a>. This small expression simply matches the entire content of a pair of curly braces. For this example, we're assuming that braces are {never {nested}}.</p><p>
+
+This gives us:</p><p>
+<code>{[^}]*}|(Tarzan)</code><br>
+
+All we have to do is retrieve the matches from Group 1. Too easy!!
+
+Of course in real life we would probably not look just for the word <i>Tarzan</i>, but for some variable content, such as <code>Tarzan\d+</code></p><p>
+
+<a id="skipitsimple"></a>
+<b>Please skip it simple!</b><br>
+Please note this trick within a trick: to specify the exclusion rule, we did not bother to write a whole expression to match <i>Tarzan</i> inside curly braces, such as:</p><p>
+
+<code>{[^}]*?Tarzan[^}]*}</code><br>
+
+Instead, we just matched the content of <i>any</i> curly braces:</p><p>
+
+<code>{[^}]*}</code><br>
+
+Why? Because if something is inside curly braces, we know that we don't want anything to do with it. So we can go ahead and skip all sets of curly braces without bothering to look inside!
+</p><p>
+
+This is what I call "skipping it simple".
+</p><p>
+
+Now let's take it up a notch.
+</p><h2>Match <i>Tarzan</i> but not in contexts A, B and C</h2>
+
+Your boss just told you that not only do we want to avoid <i>Tarzan</i> inside curly braces, we also want to leave the muscular vine hopper in his jungle when he appears within sections that start with <i>BEGIN</i> and end with <i>END</i>. Also, sentences starting with "Therefore" are definitely excluded. <p>
+
+How is that for a change of specs? Is she trying to make you break a sweat? You must have solved the first assignment too fast. If you had done it with one of the typical techniques, at this stage you might be pulling your hair. Instead, this is what you do:</p><p>
+
+<b>Step 1:</b> spend 57 seconds revising the original expression to this:</p><p>
+<code>\bBEGIN\b.*?\bEND\b|Therefore.*?[.!?]|{[^}]*}|(Tarzan)</code></p><p>
+
+
+<b>Step 2:</b> clean up your inbox for a couple of hours before announcing to your boss that it was curly, but that <i>by gawd…</i> you've wrestled that regex to the ground!
+</p><p>
+
+So what have we done? We've just followed the recipe and added two exclusions to the original regex in alternations at the left. The first exclusion, which could have been a simple <code>BEGIN.*?END</code>, matches any sequence starting with <i>BEGIN</i> and ending with <i>END</i>. You've added the <code>\b</code> boundaries because you're nice and you want to give your boss a real <i>END</i>, not just any old <i>WENDY</i>. The second exclusion swallows any string that starts with <i>Therefore</i> and ends with the three characters in the <code>[.!?]</code> character class—so chosen because your boss told you to assume that all sentences end with periods, question marks or bangs.
+</p><p>
+
+Okay, we're feeling great. What's the next use of our golden technique? 
+</p><h2>Match every word except <i>Tarzan</i></h2>
+
+So far, we've been looking at questions of the form:<blockquote><p>
+Match X unless it is in contexts a, b and c.	
+</p></blockquote><br>
+ 
+ Now let's look at a family of questions that sound quite different but reduce to the same:<blockquote><p>
+Match every word except words a, b and c.	
+</p></blockquote><br>
+
+To start easy, let's try to match every word except <i>Tarzan</i>. Hey, that's simple:
+<p>
+
+<code>\bTarzan\b|(\w+)</code><br>
+
+By the way, this is an interesting case because by itself, the <code>\w+</code> would be able to match <i>Tarzan</i>. However, it is never able to fire in that situation, because by the time we get to an instance of <i>Tarzan</i>, the exclusion rule has already matched it. This is explained in more detail in the section about <a href="#lookout">one small thing to look out for</a>.</p><p>
+
+Note also that as it is, the regex will capture <i>antiTarzan</i> and <i>Tarzania</i>. That's a feature, not a bug (see the <code>\b</code> boundaries.)
+</p><p>
+
+
+Let's take it up a notch and talk about blacklists, a commonly requested regex task.</p><h2>Match every word except those on a blacklist</h2>
+
+This time we want to blacklist the words <i>Tarzan</i>, <i>Jane</i> and <i>Superman</i>. Hey, no problem. We add exclusions on the left, and our regex becomes: <p>
+<code>\bTarzan\b|\bJane\b|\bSuperman\b|(\w+)</code><br>
+or, more gracefully:</p><p>
+<code>\b(?:Tarzan|Jane|Superman)\b|(\w+)</code><br>
+
+You can try it online with <a href="https://regex101.com/r/dN2xH3/25" target="_blank">"Tarzan, Jane and Superman hopped from vine to vine."</a> Remember that what we're looking at is the Group 1 matches, which are shown in the lower right-hand panel and highlighted differently from the plain matches.
+</p><p>
+
+Let's now talk about an application of the technique which, to untrained ears, sounds completely different:
+</p><h2>Ignore Content of This Kind</h2>
+
+Sometimes someone may present you with a regex problem and phrase it in this manner:<blockquote><p>
+I want to ignore A.
+</p></blockquote><br>
+
+It's useful to notice that this wording is just a variation on<blockquote><p>
+Match everything except A
+</p></blockquote><br>
+
+Didn't we just see that one? We did. Even so, let's stay sharp by practicing one more time, using this assignment: <i>ignore bolded content</i>. <p>
+
+Maybe you can convince your boss to reword this as "match all content except anything in bold". By "in bold", let's say we're talking about content within <i>&lt;b&gt;</i> tags. And by "content", let's say we're talking about sequences of word and whitespace characters. 
+</p><p>
+
+Using our recipe, we can translate the assignment like so:</p><p>
+
+<code>&lt;b&gt;[^&lt;]*&lt;/b&gt;|([\w\s]+)</code><br>
+
+As a reminder (see the <a href="#lookout">lookout section</a> for details), it would not do to use a <code>(.*)</code> in the <i>GetThis</i> section, because at any point in the string prior to a bolded section, the exclusion rule would fail, while the naughty dot-star would swallow the entire string from that point to the end—including any bolded sections.
+</p><p>
+
+
+In that case, how about the lazy quantifier <code>(.*?)</code>, you might wonder? You could do that—but make sure to see the section explaining why <a href="https://www.rexegg.com/regex-quantifiers.html#lazy_expensive">lazy quantifiers are expensive</a> on the <i>Mastering Quantifiers</i> page.
+</p><p>
+
+
+<a href="#toc">Back the the article's Table of Contents</a></p><h2>A Variation: Deleting the Matches</h2>
+Sometimes, you want to match content in order to delete it. In this case, there is a simple tweak to our usual recipe that allows us to delete the matches directly without inspecting Group 1 captures. To search, instead of our usual recipe:<p>
+<code>NotThis|NotThat|GoAway|(WeWantThis)</code><br>
+
+We use:</p><p>
+<code>(KeepThis|KeepThat|KeepTheOther)|DeleteThis</code><br>
+
+As you can see, the location of the parentheses has been inverted. We can now replace the match with Group 1. There are two cases:<br>
+- If the match took place on the left branch of the alternation, and therefore captured to Group 1, the match is replaced with itself (no change);<br>
+- If the match took place on the right side of the alternation, the match is replaced with Group 1, which is empty: it is therefore deleted.
+</p><p>
+
+
+Here is an interesting variation to do the same:</p><p>
+<code>(KeepThis)|(KeepThat)|(KeepTheOther)|DeleteThis</code><br>
+
+For the replacement, we concatenate Groups 1, 2 and 3 (in any order). Since only one of those groups is ever captured (if any), the other two groups contain empty strings. Once again, the match is replaced with itself (if captured) or with an empty string.</p><p>
+
+There is no standard for replacement syntax, so in one language this may look like <span>\1\2\3</span>, <span>$1$2$3</span> or <span>m.group(1) + m.group(2) + m.group(3)</span>.
+</p><h2>Variation for Perl, PCRE and Python: <span>(*SKIP)(*FAIL)</span></h2>
+Perl, PCRE (C, PHP, R…) and Python's alternate <a href="https://pypi.python.org/pypi/regex" target="_blank"><i>regex</i> engine</a> have a variation that uses almost entirely the same syntax, but that returns the desired matches as the overall match instead of returning them in capture Group 1. In these flavors, this is a neat trick to know as it can save us one or two lines of code.
+<p>
+
+Remember that in our technique, when we express a series of unwanted contexts in alternations to be matched and thrown in the garbage bin, such as <span>NotThis|NotThat</span>, the key to success is that when such undesirable areas of the strings are matched, they are in effect SKIPPED. After matching them, the engine attempts the next match starting at the position immediately following the preceding match. The entire area to be excluded has been gobbled up, and therefore skipped.
+</p><p>
+
+Well, with Perl, PCRE and Python's alternate <a href="https://pypi.python.org/pypi/regex" target="_blank"><i>regex</i> engine</a>, you can use a construct that makes the engine to match that undesirable content, then fail the match… after which the engine skips the entire substring that just failed and starts the next match attempt at the position immediately following the bad string. This allows us to do the same as we've been doing, but we no longer need parentheses to capture the content we want because there is no longer a garbage bin full of unwanted matches to be ignored. We can inspect the matches directly, because the pattern only matches what we want.</p><p>
+
+That syntax can either be written as <span>(*SKIP)(*FAIL)</span>, <span>(*SKIP)(*F)</span> or <span>(*SKIP)(?!)</span>. That's because <span>(*FAIL)</span> and <span>(*F)</span> are both synonyms for <span>(?!)</span>, which, as we saw <a href="https://www.rexegg.com/regex-tricks.html#fail">on the tricks page</a>, is an expression that never matches, forcing the engine to backtrack in search of a different match.</p><p>
+
+As for <span>(*SKIP)</span>, it's a <i>backtracking control verb</i> in Perl, PCRE and  Python's alternate <a href="https://pypi.python.org/pypi/regex" target="_blank"><i>regex</i> engine</a>. You can read all about it on my page about <a href="https://www.rexegg.com/backtracking-control-verbs.html">backtracking control verbs</a>. When the engine tries to backtrack across <span>(*SKIP)</span>, the match attempt explodes. Instead of starting the next match attempt at the next starting position in the string, the engine advances to the string position corresponding to where <span>(*SKIP)</span> was encountered. This means that anything to the left of <span>(*SKIP)</span> is never visited again. Apart from time-saving benefits, this technique allows us to reject entire chunks of text in one go.
+</p><p>
+
+Remember the overall recipe to avoid context X? It was</p><p>
+
+<code>Not_X|(GetThis)</code><br>
+
+
+Using Perl, PCRE (PHP, R, C…) or Python's alternate <a href="https://pypi.python.org/pypi/regex" target="_blank"><i>regex</i> engine</a>, we can accomplish the same with either of these:</p><p>
+
+<code>Not_A(*SKIP)(*FAIL)|GetThis</code>
+<code>Not_A(*SKIP)(*F)|GetThis</code>
+<code>Not_A(*SKIP)(?!)|GetThis</code><br>
+
+Note that the parentheses around <i>GetThis</i> have disappeared. Whenever the engine is able to match <i>Not_A</i>, the <span>(*SKIP)(*FAIL)</span> construct causes it to reject that entire chunk of text and start the next match attempt immediately afterwards. Whenever the engine is <b>not</b> able to match <i>Not_A</i>, it jumps to the right branch of the alternation <span>|</span> and tries to match <i>GetThis</i>. If this fails, the engine starts the next match attempt at the next starting position in the subject text, as always.
+
+</p><p>
+
+If we want to avoid three contexts A, B and C, our technique used to do this:
+
+<code>Not_A|Not_B|Not_C|(GetThis)</code><br>
+
+In Perl and PHP, we can instead say something like one of these:</p><p>
+<code>Not_A(*SKIP)(*FAIL)|Not_B(*SKIP)(*F)|Not_C(*SKIP)(?!)|GetThis</code>
+<code>(?:Not_A|Not_B|Not_C)(*SKIP)(*FAIL)|(GetThis)</code></p><p>
+
+
+<a href="#toc">Back the the article's Table of Contents</a></p><h2>Code Samples</h2>
+
+To complete this article, I'd like to provide a full implementation in several common languages.<p><b>A Call to Help</b><br>May 2014. I'm calling for your help to translate the examples provided to languages in which you are fluent (see <a href="#translators">code translators needed</a>). <b>In advance, thank you.</b></p><br>
+
+<b>The six tasks performed by the code samples</b><br>
+The code performs the six most common regex tasks. The first four tasks answer the most common questions we use regex for:<p>
+
+✽ Does the string match?<br>
+✽ How many matches are there?<br>
+✽ What is the first match?<br>
+✽ What are all the matches?</p><p>
+
+The last two tasks perform two other common regex tasks:</p><p>
+✽ Replace all matches<br>
+✽ Split the string</p><p>
+
+
+<b>Learn a new engine!</b><br>
+The code samples should allow even complete beginners to pick code fragments that suit their needs and tweak them to their liking.
+</p><p>
+Please rest assured that <i>beginner</i> is not a condescending term here, and I am expecting "advanced beginners" to take advantage of the code. If you are proficient in regex in the context of one programming language, you may be curious to test out other engines, but also worried about the learning curve. Apart from illustrating various uses of the technique, the code samples allow you to start experimenting in a variety of regex flavors.
+</p><p>
+
+<b>The assignment for the code samples</b><br>
+All the code samples tackle the same assignment. Our assignment is to match <i>Tarzan</i> followed by any number of digits, for instance <i>Tarzan111</i>, <b>except:</b></p><p>
+1. between quotes, as in <i>"Tarzan123"</i>,<br>
+2. somewhere inside curly braces, as in <i>{ Jane Tarzan123 }</i></p><p>
+
+For this assignment, I will use <code>\d</code> without attempting to distinguish between ASCII digits and Unicode digits, as that is not the point of the exercise. Just be aware that in some engines <code>\d</code> only matches the ASCII digits 0 to 9, while in others it also matches digits in other alphabets. If you want to be consistent, use <code>[0-9]</code></p><p>
+
+<b>The Test Strings</b><br>
+To test the code, we'll use one string that produces two matches and a small variation that should produce none.</p><p>
+
+1. The string below should produce two matches: <i>Tarzan11</i> and <i>Tarzan22</i></p><blockquote><p>
+Jane" "Tarzan12" Tarzan11@Tarzan22 {4 Tarzan34}	
+</p></blockquote><br>
+
+2. To test failure cases, I suggest you capitalize two <i>z</i> characters as in the string below, which should produce no matches:<br>
+<i>Jane" "Tarzan12" TarZan11@TarZan22 {4 Tarzan34}</i>
+<p>
+
+<b>The Regex</b><br>
+Here is the regex we'll use:<br>
+<code>{[^}]+}|"Tarzan\d+"|(Tarzan\d+)</code><br>
+
+1. The first part of the alternation <code>{[^}]+}</code> matches and neutralizes any content between curly quotes.</p><p>
+
+2. The second part of the alternation <code>"Tarzan\d+"</code> matches and neutralizes instances where the sought string is embedded within double quotes. You may ask why I didn't simply neutralize <i>any</i> content between double quotes in similar fashion to the first part of the alternation, using <code>"[^"]+"</code>. For most strings, that would have worked, but if you carefully inspect the test string, you'll see that I sneaked in an extra double quote after <i>Jane</i>. I did so to illustrate a safe regex work practice. See, if for any reason the subject string has an odd number of double quotes as is the case here, you cannot be sure that two quotes matched by <code>"[^"]+"</code> belong together. Indeed, for our test string, that code would match a single space within double quotes, and the regex would (wrongly) capture <i>Tarzan12</i> into Group 1. Therefore, when working with quotes, being specific as in <code>"Tarzan\d+"</code> is safer. In the case of braces (where there are distinct characters for the left and right sides), the risk of mismatches is far lower. 
+</p><p>
+
+3. The third part of the alternation <code>(Tarzan\d+)</code> matches <i>Tarzan</i> and the following digits and captures the match into Group 1.
+</p><p>
+
+<a id="languages"></a>
+Here are jump points to code samples in various languages.</p><p>
+
+<b>Implemented</b><br>
+<a href="#phpcode">PHP</a><br>
+<a href="#csharpcode">C#</a><br>
+<a href="#pythoncode">Python</a><br>
+<a href="#javacode">Java</a><br>
+<a href="#javascriptcode">JavaScript</a><br>
+<a href="#rubycode">Ruby</a><br>
+<a href="#perlcode">Perl</a><br>
+<a href="#vbcode">VB.NET</a></p><p>
+
+
+<b>Not Yet Implemented</b><br>
+<a href="#translators">Visual C++</a><br>
+<a href="#translators">Scala</a><br>
+<a href="#translators">Other language of your choice</a></p><h2>PHP Code Sample</h2>
+
+For PHP, I'll provide two samples. The first illustrates the main technique on this page. The second illustrates the <i>(*SKIP)(*F)</i> variation specific to Perl and PHP, which is a little lighter.<p>
+
+
+
+<b>Sample #1: The Core Technique</b><br>
+
+If you see ways to improve the code, please <a href="#comform">leave a comment</a>.
+</p><p>Please note that usually you will choose to perform <b>only one</b> of the six tasks in the code, so your own code will be much shorter.</p><br>
+
+
+<div><pre>&lt;?php
+$regex = '~{[^}]+}|"Tarzan\d+"|(Tarzan\d+)~';
+$subject = 'Jane" "Tarzan12" Tarzan11@Tarzan22 {4 Tarzan34}';
+$count = preg_match_all($regex, $subject, $m);
+
+// build array of non-empty Group 1 captures
+$matches=array_filter($m[1]);                           
+
+<b>///////// The six main tasks we're likely to have ////////</b>
+
+<b>// Task 1: Is there a match?</b>
+echo "*** Is there a Match? ***&lt;br /&gt;\n";
+if(empty($matches)) echo "No&lt;br /&gt;\n";
+else echo "Yes&lt;br /&gt;\n";
+
+<b>// Task 2: How many matches are there?</b>
+echo "\n&lt;br /&gt;*** Number of Matches ***&lt;br /&gt;\n";
+echo count($matches)."&lt;br /&gt;\n";
+
+<b>// Task 3: What is the first match?</b>
+echo "\n&lt;br /&gt;*** First Match ***&lt;br /&gt;\n";
+if(!empty($matches)) echo array_values($matches)[0]."&lt;br /&gt;\n";
+
+<b>// Task 4: What are all the matches?</b>
+echo "\n&lt;br /&gt;*** Matches ***&lt;br /&gt;\n";
+if(!empty($matches)) {
+	foreach ($matches as $match) echo $match."&lt;br /&gt;\n";
+}
+
+<b>// Task 5: Replace the matches</b>
+$replaced = preg_replace_callback(
+	$regex,
+	// in the callback function, if Group 1 is empty,
+	// set the replacement to the whole match,
+	// i.e. don't replace
+	function($m) { if(empty($m[1])) return $m[0];
+					else return "Superman";},
+	$subject);
+echo "\n&lt;br /&gt;*** Replacements ***&lt;br /&gt;\n";
+echo $replaced."&lt;br /&gt;\n";
+
+<b>// Task 6: Split</b>
+// Start by replacing by something distinctive,
+// as in Step 5. Then split.
+$splits = explode("Superman",$replaced);
+echo "\n&lt;br /&gt;*** Splits ***&lt;br /&gt;\n";
+echo "&lt;pre&gt;"; print_r($splits); echo "&lt;/pre&gt;"; 
+?&gt;
+</pre></div>
+<br>
+
+<b>Sample #2: The (*SKIP)(*F) Variation</b><br>
+This sample implements the technique explained in the <a href="#pcrevariation">Variation for Perl and PCRE</a> section.
+<p>Please note that usually you will choose to perform <b>only one</b> of the six tasks in the code, so your own code will be much shorter.</p><br>
+
+
+<div><pre>&lt;?php
+$regex = '~(?:{[^}]+}|"Tarzan\d+")(*SKIP)(*F)|Tarzan\d+~';
+$subject = 'Jane" "Tarzan12" Tarzan11@Tarzan22 {4 Tarzan34}';
+$count = preg_match_all($regex, $subject, $matches);
+// $matches[0] contains the matches, if any
+
+<b>///////// The six main tasks we're likely to have ////////</b>
+
+<b>// Task 1: Is there a match?</b>
+echo "*** Is there a Match? ***&lt;br /&gt;\n";
+if($count) echo "Yes&lt;br /&gt;\n";
+else echo "No&lt;br /&gt;\n";
+
+<b>// Task 2: How many matches are there?</b>
+echo "\n&lt;br /&gt;*** Number of Matches ***&lt;br /&gt;\n";
+if($count) echo count($matches[0])."&lt;br /&gt;\n";
+else echo "0&lt;br /&gt;\n";
+
+<b>// Task 3: What is the first match?</b>
+echo "\n&lt;br /&gt;*** First Match ***&lt;br /&gt;\n";
+if($count) echo $matches[0][0]."&lt;br /&gt;\n";
+
+<b>// Task 4: What are all the matches?</b>
+echo "\n&lt;br /&gt;*** Matches ***&lt;br /&gt;\n";
+if($count) {
+	foreach ($matches[0] as $match) echo $match."&lt;br /&gt;\n";
+}
+
+<b>// Task 5: Replace the matches</b>
+$replaced = preg_replace($regex,"Superman",$subject);
+echo "\n&lt;br /&gt;*** Replacements ***&lt;br /&gt;\n";
+echo $replaced."&lt;br /&gt;\n";
+
+<b>// Task 6: Split</b>
+$splits = preg_split($regex,$subject);
+echo "\n&lt;br /&gt;*** Splits ***&lt;br /&gt;\n";
+echo "&lt;pre&gt;"; print_r($splits); echo "&lt;/pre&gt;"; 
+?&gt;
+</pre></div>
+<br>
+Back to the Code Samples <a href="#codesamples">explanation</a> and <a href="#languages">languages</a><br>
+<a href="#toc">Back the the article's Table of Contents</a><h2>C# Code Sample</h2>
+
+If you see ways to improve the code, please <a href="#comform">leave a comment</a>.<p>Please note that usually you will choose to perform <b>only one</b> of the six tasks in the code, so your own code will be much shorter.</p><br>
+
+
+<div><pre>using System;
+using System.Text.RegularExpressions;
+using System.Linq;
+using System.Collections.Generic;
+class Program
+{
+static void Main()  {
+string s1 = @"Jane"" ""Tarzan12"" Tarzan11@Tarzan22 {4 Tarzan34}";
+var myRegex = new Regex(@"{[^}]+}|""Tarzan\d+""|(Tarzan\d+)");
+var group1Caps = new List&lt;string&gt;();
+
+Match matchResult = myRegex.Match(s1);
+// put Group 1 captures in a list
+while (matchResult.Success) {
+   if (matchResult.Groups[1].Value != "") {
+        group1Caps.Add(matchResult.Groups[1].Value);
+        }
+  matchResult = matchResult.NextMatch();
+}
+
+<b>///////// The six main tasks we're likely to have ////////</b>
+
+<b>// Task 1: Is there a match?</b>
+Console.WriteLine("*** Is there a Match? ***");
+if(group1Caps.Any()) Console.WriteLine("Yes");
+else Console.WriteLine("No");
+
+<b>// Task 2: How many matches are there?</b>
+Console.WriteLine("\n" + "*** Number of Matches ***");
+Console.WriteLine(group1Caps.Count);
+
+<b>// Task 3: What is the first match?</b>
+Console.WriteLine("\n" + "*** First Match ***");
+if(group1Caps.Any()) Console.WriteLine(group1Caps[0]);
+
+<b>// Task 4: What are all the matches?</b>
+Console.WriteLine("\n" + "*** Matches ***");
+if (group1Caps.Any()) {
+   foreach (string match in group1Caps) Console.WriteLine(match);
+   }
+
+<b>// Task 5: Replace the matches</b>
+string replaced = myRegex.Replace(s1, delegate(Match m) {
+    // m.Value is the same as m.Groups[0].Value
+    if (m.Groups[1].Value == "") return m.Value;
+    else return "Superman";
+    });
+Console.WriteLine("\n" + "*** Replacements ***");
+Console.WriteLine(replaced);
+
+<b>// Task 6: Split</b>
+// Start by replacing by something distinctive,
+// as in Step 5. Then split.
+string[] splits = Regex.Split(replaced,"Superman");
+Console.WriteLine("\n" + "*** Splits ***");
+foreach (string split in splits) Console.WriteLine(split);
+
+Console.WriteLine("\nPress Any Key to Exit.");
+Console.ReadKey();
+
+} // END Main
+} // END Program
+</pre></div>
+
+<br>
+
+Back to the Code Samples <a href="#codesamples">explanation</a> and <a href="#languages">languages</a><br>
+<a href="#toc">Back the the article's Table of Contents</a><h2>Python Code Sample</h2>
+
+If you see ways to improve the code, please <a href="#comform">leave a comment</a>.<p>Please note that usually you will choose to perform <b>only one</b> of the six tasks in the code, so your own code will be much shorter.</p><br>
+
+
+<div><pre>import re
+# import regex # if you like good times
+# intended to replace `re`, the regex module has many advanced
+# features for regex lovers. http://pypi.python.org/pypi/regex
+subject = 'Jane"" ""Tarzan12"" Tarzan11@Tarzan22 {4 Tarzan34}'
+regex = re.compile(r'{[^}]+}|"Tarzan\d+"|(Tarzan\d+)')
+# put Group 1 captures in a list
+matches = [group for group in re.findall(regex, subject) if group]
+
+<b>######## The six main tasks we're likely to have ########</b>
+
+<b># Task 1: Is there a match?</b>
+print("*** Is there a Match? ***")
+if len(matches)&gt;0:
+	print ("Yes")
+else:
+	print ("No")
+
+<b># Task 2: How many matches are there?</b>
+print("\n" + "*** Number of Matches ***")
+print(len(matches))
+
+<b># Task 3: What is the first match?</b>
+print("\n" + "*** First Match ***")
+if len(matches)&gt;0:
+	print (matches[0])
+	
+<b># Task 4: What are all the matches?</b>
+print("\n" + "*** Matches ***")
+if len(matches)&gt;0:
+	for match in matches:
+	    print (match)
+		
+<b># Task 5: Replace the matches</b>
+def myreplacement(m):
+    if m.group(1):
+        return "Superman"
+    else:
+        return m.group(0)
+replaced = regex.sub(myreplacement, subject)
+print("\n" + "*** Replacements ***")
+print(replaced)
+
+<b># Task 6: Split</b>
+# Start by replacing by something distinctive,
+# as in Step 5. Then split.
+splits = replaced.split('Superman')
+print("\n" + "*** Splits ***")
+for split in splits:
+	    print (split)
+</pre></div>
+
+<br>
+
+Back to the Code Samples <a href="#codesamples">explanation</a> and <a href="#languages">languages</a><br>
+<a href="#toc">Back the the article's Table of Contents</a><h2>Java Code Sample</h2>
+
+If you see ways to improve the code, please <a href="#comform">leave a comment</a>.<p>Please note that usually you will choose to perform <b>only one</b> of the six tasks in the code, so your own code will be much shorter.</p><br>
+
+
+<div><pre>import java.util.*;
+import java.io.*;
+import java.util.regex.*;
+import java.util.List;
+
+class Program {
+public static void main (String[] args) throws java.lang.Exception	{
+
+String subject = "Jane\" \"Tarzan12\" Tarzan11@Tarzan22 {4 Tarzan34}";
+Pattern regex = Pattern.compile("\\{[^}]+\\}|\"Tarzan\\d+\"|(Tarzan\\d+)");
+Matcher regexMatcher = regex.matcher(subject);
+List&lt;String&gt; group1Caps = new ArrayList&lt;String&gt;();
+
+// put Group 1 captures in a list
+while (regexMatcher.find()) {
+	if(regexMatcher.group(1) != null) {
+		group1Caps.add(regexMatcher.group(1));
+		}
+	} // end of building the list
+
+<b>///////// The six main tasks we're likely to have ////////</b>
+
+<b>// Task 1: Is there a match?</b>
+System.out.println("*** Is there a Match? ***");
+if(group1Caps.size()&gt;0) System.out.println("Yes");
+else System.out.println("No");
+
+<b>// Task 2: How many matches are there?</b>
+System.out.println("\n" + "*** Number of Matches ***");
+System.out.println(group1Caps.size());
+
+<b>// Task 3: What is the first match?</b>
+System.out.println("\n" + "*** First Match ***");
+if(group1Caps.size()&gt;0) System.out.println(group1Caps.get(0));
+
+<b>// Task 4: What are all the matches?</b>
+System.out.println("\n" + "*** Matches ***");
+if(group1Caps.size()&gt;0) {
+   for (String match : group1Caps) System.out.println(match);
+   }
+
+<b>// Task 5: Replace the matches</b>
+// if only replacing, delete the line with the first matcher
+// also delete the section that creates the list of captures
+Matcher m = regex.matcher(subject);
+StringBuffer b= new StringBuffer();
+while (m.find()) {
+    if(m.group(1) != null) m.appendReplacement(b, "Superman");
+    else m.appendReplacement(b, m.group(0));
+}
+m.appendTail(b);
+String replaced = b.toString();
+System.out.println("\n" + "*** Replacements ***");
+System.out.println(replaced);
+
+<b>// Task 6: Split</b>
+// Start by replacing by something distinctive,
+// as in Step 5. Then split.
+String[] splits = replaced.split("Superman");
+System.out.println("\n" + "*** Splits ***");
+for (String split : splits) System.out.println(split);
+
+} // end main
+} // end Program
+</pre></div>
+
+<br>
+
+Back to the Code Samples <a href="#codesamples">explanation</a> and <a href="#languages">languages</a><br>
+<a href="#toc">Back the the article's Table of Contents</a><h2>JavaScript Code Sample</h2>
+
+If you see ways to improve the code, please <a href="#comform">leave a comment</a>.<p>Please note that usually you will choose to perform <b>only one</b> of the six tasks in the code, so your own code will be much shorter.</p><br>
+
+
+<div><pre>&lt;script&gt;
+var subject = 'Jane" "Tarzan12" Tarzan11@Tarzan22 {4 Tarzan34} ';
+var regex = /{[^}]+}|"Tarzan\d+"|(Tarzan\d+)/g;
+var group1Caps = [];
+var match = regex.exec(subject);
+
+// put Group 1 captures in an array
+while (match != null) {
+	if( match[1] != null ) group1Caps.push(match[1]);
+    match = regex.exec(subject);
+}
+
+<b>///////// The six main tasks we're likely to have ////////</b>
+
+<b>// Task 1: Is there a match?</b>
+document.write("*** Is there a Match? ***&lt;br&gt;");
+if(group1Caps.length &gt; 0) document.write("Yes&lt;br&gt;");
+else document.write("No&lt;br&gt;");
+
+<b>// Task 2: How many matches are there?</b>
+document.write("&lt;br&gt;*** Number of Matches ***&lt;br&gt;");
+document.write(group1Caps.length);
+
+<b>// Task 3: What is the first match?</b>
+document.write("&lt;br&gt;&lt;br&gt;*** First Match ***&lt;br&gt;");
+if(group1Caps.length &gt; 0) document.write(group1Caps[0],"&lt;br&gt;");
+
+<b>// Task 4: What are all the matches?</b>
+document.write("&lt;br&gt;*** Matches ***&lt;br&gt;");
+if (group1Caps.length &gt; 0) {
+   for (key in group1Caps) document.write(group1Caps[key],"&lt;br&gt;");
+   }
+
+<b>// Task 5: Replace the matches</b>
+// see callback parameters http://tinyurl.com/ocddsuk
+replaced = subject.replace(regex, function(m, group1) {
+    // pick one of those two depending on JS version
+    // if (group1 == "" ) return m;
+    if (group1 == undefined ) return m;
+    else return "Superman";
+});
+document.write("&lt;br&gt;*** Replacements ***&lt;br&gt;");
+document.write(replaced);
+
+<b>// Task 6: Split</b>
+// Start by replacing by something distinctive,
+// as in Step 5. Then split.
+splits = replaced.split("Superman");
+document.write("&lt;br&gt;&lt;br&gt;*** Splits ***&lt;br&gt;");
+for (key in splits) document.write(splits[key],"&lt;br&gt;");
+&lt;/script&gt;
+</pre></div>
+
+<br>
+
+Back to the Code Samples <a href="#codesamples">explanation</a> and <a href="#languages">languages</a><br>
+<a href="#toc">Back the the article's Table of Contents</a><h2>Ruby Code Sample</h2>
+
+If you see ways to improve the code, please <a href="#comform">leave a comment</a>.<p>Please note that usually you will choose to perform <b>only one</b> of the six tasks in the code, so your own code will be much shorter.</p><br>
+
+
+<div><pre>subject = 'Jane"" ""Tarzan12"" Tarzan11@Tarzan22 {4 Tarzan34}'
+regex = /{[^}]+}|"Tarzan\d+"|(Tarzan\d+)/
+# put Group 1 captures in an array
+group1Caps = []
+subject.scan(regex) {|m|
+	group1Caps &lt;&lt; $1 if !$1.nil?
+}
+
+<b>######## The six main tasks we're likely to have ########</b>
+
+<b># Task 1: Is there a match?</b>
+puts("*** Is there a Match? ***")
+if group1Caps.length &gt; 0
+	puts "Yes"
+else
+	puts "No"
+end	
+
+<b># Task 2: How many matches are there?</b>
+puts "\n*** Number of Matches ***"
+puts group1Caps.length
+
+<b># Task 3: What is the first match?</b>
+puts "\n*** First Match ***"
+if group1Caps.length &gt; 0 
+	puts group1Caps[0]
+end	
+
+<b># Task 4: What are all the matches?</b>
+puts "\n*** Matches ***"
+if group1Caps.length &gt; 0 
+	group1Caps.each { |x| puts x }
+end	
+
+<b># Task 5: Replace the matches</b>
+replaced = subject.gsub(regex) {|m| 
+	if $1.nil?
+		m
+	else
+		"Superman"
+	end
+	}
+puts "\n*** Replacements ***"
+puts replaced
+
+<b># Task 6: Split</b>
+# Start by replacing by something distinctive,
+# as in Step 5. Then split.
+splits = replaced.split(/Superman/)
+puts "\n*** Splits ***"
+splits.each { |x| puts x }
+</pre></div>
+
+<br>
+
+Back to the Code Samples <a href="#codesamples">explanation</a> and <a href="#languages">languages</a><br>
+<a href="#toc">Back the the article's Table of Contents</a><h2>Perl Code Sample</h2>
+
+If you see ways to improve the code, please <a href="#comform">leave a comment</a>.<p>Please note that usually you will choose to perform <b>only one</b> of the six tasks in the code, so your own code will be much shorter.</p><br>
+
+
+<div><pre>#!/usr/bin/perl
+$regex = '{[^}]+}|"Tarzan\d+"|(Tarzan\d+)';
+$subject = 'Jane" "Tarzan12" Tarzan11@Tarzan22 {4 Tarzan34}';
+# put Group 1 captures in an array
+my @group1Caps = ();
+while ($subject =~ m/$regex/g) {
+	print $1 . "\n";
+	if (defined $1) {push(@group1Caps,$1);	}
+}
+
+<b>######## The six main tasks we're likely to have ########</b>
+
+<b># Task 1: Is there a match?</b>
+print "*** Is there a Match? ***\n";
+if ( @group1Caps &gt; 0)  { print "Yes\n"; }
+else { print ("No\n"); }
+
+<b># Task 2: How many matches are there?</b>
+print "\n*** Number of Matches ***\n";
+print scalar(@group1Caps);
+
+<b># Task 3: What is the first match?</b>
+print "\n\n*** First Match ***\n";
+if ( @group1Caps &gt; 0)  { print $group1Caps[0]; }
+
+<b># Task 4: What are all the matches?</b>
+print "\n\n*** Matches ***\n";
+if ( @group1Caps &gt; 0)  { 
+	foreach(@group1Caps) { print "$_\n"; } 
+	}
+
+<b># Task 5: Replace the matches</b>
+# or: s/$regex/$1? "Superman":$&amp;/eg
+($replaced = $subject) =~ s/$regex/
+		if (defined $1) { "Superman"; } else {$&amp;;} /eg;
+print "\n*** Replacements ***\n";
+print $replaced . "\n";
+
+<b># Task 6: Split</b>
+# Start by replacing by something distinctive,
+# as in Step 5. Then split.
+@splits = split(/Superman/, $replaced);
+print "\n*** Splits ***\n";
+foreach(@splits) { print "$_\n"; } 
+</pre></div>
+
+<br>
+
+Back to the Code Samples <a href="#codesamples">explanation</a> and <a href="#languages">languages</a><br>
+<a href="#toc">Back the the article's Table of Contents</a><h2>VB.NET Code Sample</h2>
+
+If you see ways to improve the code, please <a href="#comform">leave a comment</a>.<p>Please note that usually you will choose to perform <b>only one</b> of the six tasks in the code, so your own code will be much shorter.</p>
+<p><span><b>Click to Show / Hide code</b></span><br>
+(The code compiles perfectly in VS2015, but no online demo supplied<br>
+because the VB.NET in ideone chokes on anonymous functions.)<br>
+</p>
+
+<div><pre>Imports System.Text.RegularExpressions
+
+Module Module1
+Sub Main()
+Dim MyRegex As New Regex("{[^}]+}|""Tarzan\d+""|(Tarzan\d+)")
+Dim Subject As String = "Jane"" ""Tarzan12"" Tarzan11@Tarzan22 {4 Tarzan34} "
+Dim Group1Caps As New List(Of String)()
+Dim MatchResult As Match = MyRegex.Match(Subject)
+
+' put Group 1 captures in a list
+While MatchResult.Success
+    If MatchResult.Groups(1).Value &lt;&gt; "" Then
+        Group1Caps.Add(MatchResult.Groups(1).Value)
+    End If
+    MatchResult = MatchResult.NextMatch()
+End While
+
+<b>'///////// The six main tasks we're likely to have ////////</b>
+
+<b>'// Task 1: Is there a match?</b>
+Console.WriteLine("*** Is there a Match? ***")
+If(Group1Caps.Any()) Then
+    Console.WriteLine("Yes")
+Else 
+    Console.WriteLine("No")
+End If
+
+<b>'// Task 2: How many matches are there?</b>
+Console.WriteLine(vbCrLf &amp; "*** Number of Matches ***")
+Console.WriteLine(Group1Caps.Count)
+
+<b>'// Task 3: What is the first match?</b>
+Console.WriteLine(vbCrLf &amp; "*** First Match ***")
+If(Group1Caps.Any()) Then Console.WriteLine(Group1Caps(0))
+
+
+<b>'// Task 4: What are all the matches?</b>
+Console.WriteLine(vbCrLf &amp; "*** Matches ***")
+If (Group1Caps.Any()) Then
+   For Each match as String in Group1Caps
+       Console.WriteLine(match)
+   Next
+End If   
+
+<b>'// Task 5: Replace the matches</b>
+Dim Replaced As String = myRegex.Replace(Subject, 
+                     Function(m As Match)
+                        If (m.Groups(1).Value = "") Then
+                            Return m.Groups(0).Value
+                        Else 
+                            Return "Superman"
+                        End If
+                     End Function)
+Console.WriteLine(vbCrLf &amp; "*** Replacements ***")
+Console.WriteLine(Replaced)
+
+<b>' Task 6: Split</b>
+' Start by replacing by something distinctive,
+' as in Step 5. Then split.
+Dim Splits As Array = Regex.Split(replaced,"Superman")
+Console.WriteLine(vbCrLf &amp; "*** Splits ***")
+For Each Split as String in Splits
+    Console.WriteLine(Split)
+Next
+
+Console.WriteLine(vbCrLf &amp; "Press Any Key to Exit.")
+Console.ReadKey()
+End Sub
+End Module
+</pre></div>
+
+<br>
+
+Back to the Code Samples <a href="#codesamples">explanation</a> and <a href="#languages">languages</a><br>
+<a href="#toc">Back the the article's Table of Contents</a><h2>Code Translators Needed</h2>
+I would love to enlist your help so the page can provide working code in more languages. Please see the <a href="#languages">list of languages</a> for languages currently implemented and missing.<p>
+
+If you wish, you will be duly acknowledged with your name or an alias of your choice.</p><p>
+
+Are you willing to help? Fantastic. To make things easy for me, your code needs to mirror the specs of the other samples. Here are the requirements that come to mind:</p><p>
+
+✽ <b>Completeness.</b> The idea is to provide code that someone who has never used your language is able to plug in to an IDE, compile (if needed) and run. So please  include any opening braces and the few needed lines to import any relevant libraries.</p><p>
+
+✽ <b>Conciseness.</b> By the same token, please ommit any unneeded fluff, such as unneeded libraries and classes.</p><p>
+
+✽ <b>Same example.</b> To keep things consistent, please use the regex and subject string provided.</p><p>
+
+✽ <b>Six tasks.</b> The code must include separate sections that could be run separately if needed, addressing the four common tasks illustrated by the code already on the page: (i) checking whether there is a match, (ii) counting the matches, (iii) returning the first match, (iv) returning all matches, (v) replacing all matches, (vi) splitting the string.</p><p>
+
+✽ <b>Formatted output.</b> If you run the existing demos, you'll see that they output certain strings at each step to inform us of where we are in the code. Your code should output those same strings.</p><p>
+
+✽ <b>Link to a working demo.</b> For consistency, if ideone.com supports your language, please use it. 
+</p><p>
+If you paste your code in the <a href="#comform">comment form</a> it may not make it to me intact, but you can paste an ideone.com link or a brief message. I'll reply. Html won't work in the comment form.
+</p><p>
+A million thanks in advance!
+</p><p>
+
+
+Well, I think that's about all I have to say about this technique at the moment. Writing it was a big journey. I hope you had a blast reading it.</p><p>
+
+Wishing you loads of fun on your travels in regexland, </p><p>
+
+Rex</p><p>
+
+At this stage you might like to treat yourself to some</p>
+<p>
+
+…or just visit the next page.</p><p>
+
+
+<a href="https://www.rexegg.com/regex-cookbook.html">
+<img src="data:application/octet-stream;base64," width="125" height="40" alt="next"><br>
+<b>&nbsp;Regex Cookbook</b>
+</a></p><p><a target="_blank" href="https://www.buymeacoffee.com/lutfen"><img src="data:image/gif;base64,R0lGODlh+gBAANU/AP/dAAAAABsYIA0MIhwZAMSqAIh2AIJxAF5SAFRJAE9FAEY9AC8pACciAP/xk//5zf7cAPzaAPvZAPjWAPbVAPTTAPDQAOzMAOfIAOHDAN/BANm8ANW4ANG1AMywAMmuAMGnALuiALKaAKuUAKSOAJqFAJN/AI57AH5tAHZmAGlbADoyAP/dBcKpCI98D//hIIV0EYBvEXRlE2teFP/nTf/qZv/74l1RF1dLF1FGGEU9GjozGzQuHCsmHf///////yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4zLWMwMTEgNjYuMTQ1NjYxLCAyMDEyLzAyLzA2LTE0OjU2OjI3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoyQjY3MkZFOTM5NkExMUVFOEU3MUMxNzlGODcxMTM5OCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoyQjY3MkZFQTM5NkExMUVFOEU3MUMxNzlGODcxMTM5OCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjJCNjcyRkU3Mzk2QTExRUU4RTcxQzE3OUY4NzExMzk4IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjJCNjcyRkU4Mzk2QTExRUU4RTcxQzE3OUY4NzExMzk4Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAQAAPwAsAAAAAPoAQAAABv/An3A4BBiPyKRyyWw6n9CodEqtWq/Y7ITI7Uqy4LB4TC6bz89uF81uu9/wODOiFsrv+Lx+n1Tz/4CBgldcg4aHiINFiYyNjm2Lj5KTlFN2lZiZmkY/m56fjZ2go6R/oqWoqW+nqq2uYhevsrOILCMyOgIDuwM7MyK0wbI4vMXGvDEQwsugLCS8OC0bSCwYI8S7N8zbmx3GOjo5MTAzPbsaFrvc65XVOsfHJADqVRAd7HgfykgV08IbJGDAINEiAwsALFjQo7IiAD45BAIgQAIiQIAJrVrkmNHiSEKEB5O8E5BhygWLBlKSsPAQjYoAGBgciRCAAIICqlzA2wlvRMj/JhgaWAyQYsHQAAr2tQxDIUADADKNnAiwoYO8VLtGlLhhjucuAThIxFjIxOiIFBaPQEAxtORSMCUCnACw4EhagKp2JWQBQSmTvgnJKnk596VDJCctfnmLxegGCgaUnVQB4MM9rAOwCE5i0QOEl0+TdLCIgvEVCBYjhPAXF2cKCnmL6RjYAoORCRc0dGjhAocuXk4sKjMalXOAuqarNHW44khDlgRaQejqdWePKUaRJ2EQgHJyKqMXWPAOIG2GudKVWcNVTEAPHThmuGixq0NfKdmXCMVpJARsJCL4VUISFVzWhH+gVFACf0fElYIKsE0gQgAMQJAARq5AoAMJPxnR/9d9R2zmBARGkXfEBGkZEZE/KgbwHwbCHUHCcU5E5IERDTVnhFHRIUHiUApAEZdFKawVAEtPNGSRiRXwqOQRJjRUwkTlDcWBiRhEZNFVHhplUZCS6MUECzTU8MI8mVHBnQoQbIAAAh8AkEAAsVRJ5xGG3TbUERYs6RcSQ2Hw2VCxcDAUixVYBJtR+jShAIUSaHBUnUzAGEAEAESEoQfHXQRBCAFoAAEBBmj531EBKFXRCphahGGiLtIVQKOObAaBAz7kmiuaVIza3YR9ecninkdwd1gGXx6R2AhNDAWBpMZekKiXlEYUJwAHBMClEjOG1uJhf1lUEgRCwUbTCi/Ztf9ABgmgtqWHjw61wALG/sddndYake22jKij678A80qFn9kitUFqRlh0AKAB8HcwVUc8bIQE4NrVHQXRFWCRCNE9/F9cOgIgFIYJJNFnxVB1pxaVRxhVZMJXCZUBAgEYYMScDwsHEwATHnnCwrKiRxMByoB8xMg3N+IvwEwLPMWSSjxaWpUhzCSuEQ8jCcAIaZFLqcUHJGCbxjUpQ7Zzchkx41UThGxEXCUzzOzb11rMgRIougjrChqghWoISu4ZEwDuuvWobSmjt/Ztbh9iDgZMA2zDBgPwUIWfSYAq03IszngnAKBWbNFTCJDw53IHvOx5BphWBK5FBcQUQNVGqFD/txE0s3mEoQ3bZbKiSvB+m7ExzjkUARTAmjAAy1GgMQGUwi477QDY3sgNA4jwQOS6PjDCADNcrnISB1d4cvTA/wiuBxGtQAKYSSx3KeGeezhjjycjdXuiSpSolrBqGxASPBY14CFhTv2hEOEccrDQXCQxBFCBoDzUM/3xA2WH0EkMcMU9H9RABgMoQYegQCRuSQQAifnPCAoGmwto6QgEKBgBMKWExJCnYEfI1gKUES/0IKEBBjrCnEKWJYtMAzV/etgEd6elDfhlfFPZIVQuoDEpNuACidEADSc2FB8eLYiIoE8OatBBH9DgHTeagq9sZhwNAICANOFUrAjgNyMY/+BnFtEa+Swyt0EdZlCUKcAKnoQEFMBPLQaIEYlCNw0EAON3AZgaFy3FMgAgC3FoqctnNhAX7zDANhapJATcR8gjGPIRFBiAAGhQxheISQxGQc/DnBiqDyhKBQjAIcck8BKgLYFsDPJSy7rTpwqEjmUJIMAE/gQASREFAiCAnhFJ4K0kaMktkpJHIne2QHDlThkHKABaUrCjRvLxNgQI0jGFqExmHmJp3HOaFICEOLI9EgB5s8gJIGBLZ4XOIrHgDr+Q4Dn+qA9eQ5GH+o6CISVAIF7iyl8AKsCEnA3FBDC0CAOUdLcdjY8EBZgT0BbgD1TRiHBeYugk4Bk5eUbBc/+oEiAStnmVUTrlaDWBDc201QQLRKSjALjfPng3N8JNxSLU+8tO3QiAnf6HCS60yAIoigTDBMCXRuAO0EBqlKuQVIijc4uHjjq7SrC0aSJiA4gcagAFcIdBDnWnIdY6sKuqrQACzerXWnHWgKU1DySIjkXAyAyFqe1hV0HeLHYBgTJK4K93MBRsjIgPw2LLUlfBoCre0YEyemAAOghEokKgDIBW1q7Vg9XCKNAAuZICAiB0AQeZ5oASDCAGgSBAj6qkx20YlkRVWtgHyDmLEKhjewB7AAB0IdY9TIh2y3EtLSybKj8hQFSyOMgudrCEDZhDAIHgDpIS8xDDTqBkFlmhwQR2O4sLVEcAdNVDHo1Qkbixw7AeYBbXLII4YVxABjnoigDEwdRAwA53syqvyhSAIQmAQLrLgPAd2AKTGa1AwrLwUglM9B1D7DcAGG2JBIRyyA6b+MQoTrEkWKHiFueBxS6OMRxgLOMao+EHGLaxjqsggUvs+MdiGAJVgUxkQkSiyEiOwhqSzOQm1KHJUEZCHYSwmCgnecpLtrKNt1CHIAAAOw==" width="250" height="64" alt="Buy me a coffee"></a><br></p><p><a target="_blank" href="https://www.buymeacoffee.com/lutfen"><img src="data:image/gif;base64,R0lGODlh+gBAANU/AP/dAAAAABsYIA0MIhwZAMSqAIh2AIJxAF5SAFRJAE9FAEY9AC8pACciAP/xk//5zf7cAPzaAPvZAPjWAPbVAPTTAPDQAOzMAOfIAOHDAN/BANm8ANW4ANG1AMywAMmuAMGnALuiALKaAKuUAKSOAJqFAJN/AI57AH5tAHZmAGlbADoyAP/dBcKpCI98D//hIIV0EYBvEXRlE2teFP/nTf/qZv/74l1RF1dLF1FGGEU9GjozGzQuHCsmHf///////yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4zLWMwMTEgNjYuMTQ1NjYxLCAyMDEyLzAyLzA2LTE0OjU2OjI3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoyQjY3MkZFOTM5NkExMUVFOEU3MUMxNzlGODcxMTM5OCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoyQjY3MkZFQTM5NkExMUVFOEU3MUMxNzlGODcxMTM5OCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjJCNjcyRkU3Mzk2QTExRUU4RTcxQzE3OUY4NzExMzk4IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlk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" width="250" height="64" alt="Buy me a coffee"></a><br></p><br>
+	
+</article>
+
+</div></div>
+  </div>
+</body>
+</html>

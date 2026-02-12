@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Use Redis with Python</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Use Redis with Python</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2025/08/20/how-to-use-redis-with-python.html">https://blog.appsignal.com/2025/08/20/how-to-use-redis-with-python.html</a></p>
+    <p><strong>Tags:</strong> redis, python</p>
+    <p><strong>Bookmark ID:</strong> 1306423858</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>When it comes to data-driven applications, developers and data engineers are always trying to balance factors such as scalability, speed, flexibility, latency, and availability.</p>
+<p>In other words, databases and infrastructure are the foundations for well-structured applications: just like bricks are for houses.</p>
+<p>This article explores Redis' data store features and includes use cases. We'll learn how to use Redis in Python with a step-by-step tutorial.</p>
+<p>Let's get started!</p>
+<h2 id="what-is-redis">What Is Redis?</h2>
+<p><a href="https://redis.io/">Redis</a> (short for Remote Dictionary Server) is an open-source, in-memory data structure store that can be used as a database, cache, message broker, or queue. It is known for its high performance, low latency, and versatility as it stores data in memory (on the RAM) rather than on disk, which makes it extremely fast for read and write operations.</p>
+<p>Redis is often referred to as a data structure server because it provides access to mutable data structures via a set of commands, which are sent using a server-client model with TCP sockets and a simple protocol. This means that different processes can query and modify the same data structures in a shared way.</p>
+<h2 id="why-use-redis">Why Use Redis?</h2>
+<p>Before describing Redis' most common use cases, let's explore its main features:</p>
+<ul>
+<li><strong>In-memory storage</strong>: In Redis, data is stored in RAM, providing response times in sub-milliseconds.</li>
+<li><strong>Persistence options</strong>: While data is stored in memory, Redis also offers persistance options like RDB (Redis Database Backup) — periodic dataset snapshots — and AOF (Append-Only File), which logs every write operation for durability. This allows data to be saved to disk and replicated across multiple servers to ensure data durability and availability.</li>
+<li><strong>Pub/sub messaging</strong>: It supports publish/subscribe messaging patterns for real-time communication.</li>
+<li><strong>Clustering and replication</strong>: Redis supports clustering and primary-secondary replication, providing scalability and high availability.</li>
+</ul>
+<p>Finally, at its core, Redis is a key-value store, meaning it stores data as a collection of keys and their associated values.</p>
+<p>A key in Redis is a unique string that acts as an identifier for the associated value. Keys are case-sensitive and can contain any binary sequence (e.g., strings, numbers, or special characters).</p>
+<p>A value in Redis can be one of several data types:</p>
+<ul>
+<li>Strings</li>
+<li>Hashes</li>
+<li>Lists</li>
+<li>Sets</li>
+<li>Sorted Sets</li>
+<li>Bitmaps</li>
+<li>HyperLogLogs</li>
+<li>Streams</li>
+</ul>
+<p>Redis provides a wide set of commands for working with key-value pairs, such as <code>SET</code>, <code>GET</code>, and <code>DEL</code> for strings, <code>HSET</code>, <code>HGET</code>, and <code>HDEL</code> for hashes, and <code>LPUSH</code>, <code>LGET</code>, and <code>LREM</code> for lists. Here are some examples of key-value pairs:</p>
+<ul>
+<li><code>SET user:1001 "John Doe"</code></li>
+<li><code>HSET user:1001 name "John Doe" age 30 email "john@example.com"</code></li>
+<li><code>LPUSH tasks "task1" "task2" "task3"</code></li>
+</ul>
+<p>The management of such data structures in Redis is important because:</p>
+<ul>
+<li>Redis stores them on disk, even if they are always served and modified into server memory. This means that Redis is fast, but also non-volatile.</li>
+<li>The implementation of data structures emphasizes memory efficiency, so data structures inside Redis will likely use less memory compared to the same data structure modelled using a high-level programming language.</li>
+<li>Redis offers a number of features commonly found in databases, such as replication, tunable durability levels, clustering, and high availability.</li>
+</ul>
+<p>With this in mind, here are some common applications of Redis:</p>
+<ul>
+<li><strong>Caching</strong>: As it stores data in memory, one of the main uses of Redis is as a caching system for web applications, since it reduces server load and improves page loading times.</li>
+</ul>
+<figure><p><img alt="How Redis caches web requests by Federico Trotta" loading="lazy" width="1495" height="423" decoding="async" data-nimg="1" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fblog%2F2025-08%2Fredis.png&amp;w=3840&amp;q=90"></p></figure>
+<ul>
+<li><strong>Real-time applications</strong>: Given its speed and reliability, Redis is perfect for real-time use cases like chat applications, real-time analytics, and live notifications.</li>
+<li><strong>Session management</strong>: Another common use of Redis is storing user session data in web applications because of its speed and ability to handle expiration policies.</li>
+<li><strong>Message queues</strong>: Redis can act as a lightweight message broker using its pub/sub or streams features, making it suitable for event-driven architectures.</li>
+<li><strong>Advanced data structures management</strong>: Redis supports advanced data structures that are not available in traditional databases, making it useful for tasks like counting unique visitors (HyperLogLog), storing time-series data (Streams), and implementing priority queues (Sorted Sets).</li>
+</ul>
+<h2 id="how-to-use-redis-in-python-a-step-by-step-tutorial">How to Use Redis in Python: A Step-By-Step Tutorial</h2>
+<p>Now that we've covered the theory, it's time to see how to use Redis in Python.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>To replicate this tutorial, your system must have the following prerequisites:</p>
+<ul>
+<li><strong><a href="https://www.python.org/downloads/">Python 3.6 or higher</a></strong>: Any Python version higher than 3.6 will do. Specifically, we will install dependencies via pip (already included in any Python version from 3.4+).</li>
+</ul>
+<h3 id="step-1-setting-up-the-environment-and-installing-dependencies">Step 1: Setting Up the Environment and Installing Dependencies</h3>
+<p>Suppose you call the main folder of your project <code>redis</code>. The project structure will be as follows:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Where:</p>
+<ul>
+<li>The <code>.py</code> files will contain the logic described in the next steps.</li>
+<li><code>venv/</code> contains the virtual environment.</li>
+</ul>
+<p>You can create the <a href="https://docs.python.org/3/library/venv.html"><code>venv/</code> virtual environment</a> directory like so:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>To activate it on Windows, run:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>On macOS/Linux, execute:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>In the activated virtual environment, install Redis:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<h2 id="step-2-testing-the-connection-to-redis">Step 2: Testing The Connection to Redis</h2>
+<p>To establish a connection to a Redis server using <code>redis-py</code>, type the following code into the <code>basic_connection.py</code> file:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>When you run it via <code>python3 basic_connection.py</code>, if everything works fine, you will receive:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<h3 id="step-3-managing-data-structures">Step 3: Managing Data Structures</h3>
+<p>We've learned that Redis stores data as key-value pairs, and the values can be different data structures. Now it's time to see how this works.</p>
+<p>To manage strings, type the following in <code>strings_example.py</code>:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Which, as expected, returns:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>To manage hashes, type the following in the <code>hashes_example.py</code> file:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Which returns:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>To manage sets, write the following into the <code>sets_example.py</code> file:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Which returns:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<h3 id="step-4-using-advanced-redis-features">Step 4: Using Advanced Redis Features</h3>
+<p>Redis provides various advanced features, including pipelines.</p>
+<p>A <a href="https://redis.io/docs/latest/develop/use/pipelining/">pipeline in Redis</a> is a way to batch multiple commands together and send them to the Redis server in a single network request. This reduces the overhead of multiple round trips between the client and the server, improving performance, especially when executing multiple commands.</p>
+<p>For example, if you want to create a pipeline object (pipe) that queues commands instead of executing them immediately, type the following into the <code>transactions_example.py</code> file:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>The <code>pipe.execute()</code> method sends all the queued commands in the pipeline to the Redis server in a single request. Then, the server processes the commands in the order they are queued.</p>
+<p>Another advanced feature of Redis is the possibility to set keys with expiration times, retrieve them before and after expiration, and handle scenarios where the keys no longer exist. To do so, write the following into the <code>expiration.py</code> file:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Here is what this code does:</p>
+<ul>
+<li>The <code>setex(name, time, value)</code> method sets a key with a specific expiration time (in seconds). In the provided example, the keys have different expiration times.</li>
+<li>The <code>get()</code> method retrieves the value of a key. Before the expiration time, the keys return their respective values.</li>
+<li>The <code>ttl()</code> method retrieves the remaining time (in seconds) before a key expires.</li>
+</ul>
+<p>Here is the expected result after the whole process is completed:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<h2 id="how-to-use-redis-in-python-for-monitoring">How to Use Redis in Python for Monitoring</h2>
+<p>Monitoring a Redis server is an essential aspect of managing a production system, for more than just checking general statistics.</p>
+<p>Redis offers built-in methods for monitoring, like:</p>
+<ul>
+<li><code>info()</code>: Providing comprehensive details about memory usage, client connections, CPU utilization, and other important statistics.</li>
+<li><code>monitor()</code>: Streaming every command processed by the Redis server in real time. (However, consider that using this in a production environment can be resource-intensive and may impact performance.)</li>
+<li><code>client_list()</code>: Returning details about connected clients, which is useful for identifying unusual client behavior or ensuring your connection pools are behaving as expected.</li>
+<li><code>slowlog_get()</code>: Allowing you to track slow-executing commands to pinpoint potential bottlenecks or inefficient queries.</li>
+</ul>
+<p>Here's how to implement the above monitoring methods:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>This code does the following:</p>
+<ul>
+<li>It prints server statistics every ten seconds using the <code>info()</code> method.</li>
+<li><code>slowlog_get()</code> gets slow log entries, if any. Each entry is typically a dictionary containing an identifier, start time, duration (in microseconds), and the command that ran slowly. This helps you to identify any commands that might be causing performance issues.</li>
+<li>The <code>client_list()</code> gets the connected clients' status. The returned result is a list of dictionaries, each containing details such as the client's address, idle time, connected database, and other flags. Monitoring these details can help you find issues with idle or misbehaving clients.</li>
+<li>An optional real-time monitor using <code>monitor()</code> is provided to get real time data.</li>
+</ul>
+<p>The expected result is something like this:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>But, of course, it will continue to provide statistics in a loop:</p>
+<figure><p><img alt="Monitoring Redis" loading="lazy" width="467" height="448" decoding="async" data-nimg="1" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fblog%2F2025-08%2Fredis-monitoring.png&amp;w=3840&amp;q=90"></p></figure>
+<h3 id="monitoring-redis-with-appsignal">Monitoring Redis with AppSignal</h3>
+<p>While Redis provides built-in monitoring features, they are low-level, infrastructure-focused metrics for understanding raw performance, resource consumption, and debugging specific issues within the Redis server itself.</p>
+<p>If you want to develop a more detailed understanding of your application's overall health, you can use <a href="https://docs.appsignal.com/python/instrumentations/redis.html">AppSignal's integration with Redis</a>.</p>
+<p>AppSignal provides performance metrics, error tracking, and logging for your applications.</p>
+<p>To use AppSignal, first <a href="https://appsignal.com/users/sign_up">sign up for a 30-day free trial</a>, use the <a href="https://docs.appsignal.com/python/installation.html">Python installation guide</a> and <a href="https://docs.appsignal.com/python/configuration">configuration guide</a>.</p>
+<p>Then you can integrate AppSignal with Redis like so:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>This example instantiates the <code>Appsignal()</code> class to send Redis monitoring metrics directly to AppSignal. This approach allows you to:</p>
+<ul>
+<li>Correlate Redis data with transaction traces and error reports from the rest of your application. For example, if a spike in <code>redis.slowlog_count</code> coincides with a surge in request latency or error notifications, you have immediate insight into a potential bottleneck or failure point.</li>
+<li>Visualize metric history over time, as AppSignal stores historical data. This allows you to identify trends, seasonal variations, or gradual degradations in Redis performance — insights that are not as obvious when only using Redis’s native monitoring features.</li>
+<li>Set up <a href="https://docs.appsignal.com/application/notification-settings.html">custom alerts in AppSignal</a> that are triggered when certain thresholds are breached.</li>
+</ul>
+<p>Here is an example of an error you might see in AppSignal's Errors dashboard:</p>
+<figure><p><img alt="AppSignal Errors dashboard" loading="lazy" width="2560" height="1404" decoding="async" data-nimg="1" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fblog%2F2025-08%2Fappsignal-ui.png&amp;w=3840&amp;q=90"></p></figure>
+<p>And that's it for this post!</p>
+<h2 id="wrapping-up">Wrapping Up</h2>
+<p>In this article, you learned what Redis is, why you should use it, and how to use it with Python.</p>
+<p>We also explored how to use Redis' monitoring features and set up AppSignal to monitor Redis for more in-depth insights into your application.</p>
+<p>Happy coding!</p></div><div id="authors"><figure><img alt="Federico Trotta" decoding="async" data-nimg="fill" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fauthors%2Ffederico.jpg&amp;w=3840&amp;q=90" width="80" height="80"></figure><div><h2>Federico Trotta</h2><div><p>Guest author Federico is a freelance Technical Writer who specializes in writing technical articles and documenting digital products. His mission is to democratize software through technical content.</p><p><span><a href="https://blog.appsignal.com/authors/federico-trotta.html">All articles by <!-- -->Federico Trotta</a></span></p></div></div></div></div>
+  </div>
+</body>
+</html>

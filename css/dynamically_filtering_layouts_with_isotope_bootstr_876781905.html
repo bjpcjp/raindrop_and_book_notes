@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamically Filtering Layouts with Isotope & Bootstrap – Speckyboy</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Dynamically Filtering Layouts with Isotope & Bootstrap – Speckyboy</h1>
+    <p><strong>URL:</strong> <a href="https://speckyboy.com/dynamically-filtering-layouts-isotope-bootstrap">https://speckyboy.com/dynamically-filtering-layouts-isotope-bootstrap</a></p>
+    <p><strong>Tags:</strong> css</p>
+    <p><strong>Bookmark ID:</strong> 876781905</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+<p>I’m sure pretty much anyone who makes websites has stumbled upon jQuery Masonry at some point or other. Some people haven’t though, so here’s what Masonry is – it’s a fantastic plugin by David DeSandro that allows for extremely creative layouts.</p>
+<p>You specify which HTML element for Masonry to do its magic on, and the children of that element are all positioned the way a mason positions stones.</p>
+<p>Now, while Masonry is absolutely fantastic, it is lacking a few features. One of the biggest is the fact that it is not possible to dynamically filter elements by class name. You can’t say, “Only show elements with class ‘show'”.</p>
+<p>Now, imagine a plugin that has that, and some more mixed in. That plugin is called Isotope. <a href="https://isotope.metafizzy.co/">Isotope</a> is essentially Masonry, but with some nifty features thrown in, such as filtering and custom layout modes.</p>
+<p><img decoding="async" alt="Dynamically Filtering Layouts with Isotope and Bootstrap portfolio filter custom layout" src="data:application/octet-stream;base64,"></p>
+<p>In this post, I will show you how to use Isotope to create a magical layout of your own, and how to dynamically filter which elements are displayed.</p>
+<p>You’ll learn to:</p>
+<ul>
+<li>Apply isotope to an element correctly</li>
+<li>Make it responsive</li>
+<li>Be able to dynamically filter an element with more than one filter</li>
+<li>Use hash history to save the current state</li>
+</ul>
+<p>Before you begin, download <a target="_blank" href="https://getbootstrap.com/2.3.2/" rel="noopener noreferrer">Bootstrap</a>, because we’ll use that to make a navigation bar that will control the stuff on the page.</p>
+<h2><span id="Step_1_The_HTML">Step 1: The HTML</span></h2>
+<p>Before we can use Isotope, we need to create a<code>container</code> div that will hold some child elements.</p>
+<pre><code>&lt;section id="main" class="container"&gt;
+
+&lt;/section&gt;
+</code></pre>
+<p>Now, just add a bunch of divs with different classes and text.</p>
+<pre><code>&lt;section id="main" class="container"&gt;
+    &lt;div class="box cat1 cat2"&gt;
+    Odd future 3 wolf moon twee, cliche marfa post-ironic pop-up master cleanse next level pickled gentrify. Direct trade small batch YOLO, pitchfork lomo PBR high life intelligentsia readymade letterpress flexitarian tousled. Direct trade pitchfork hoodie twee, yr pour-over Austin marfa 90's flexitarian food truck mlkshk helvetica +1 trust fund.
+    &lt;/div&gt;
+
+    &lt;div class="box cat3"&gt;
+    Bushwick marfa craft beer, wes anderson you probably haven't heard of them locavore tousled carles pork belly synth DIY blog cray. Farm-to-table craft beer typewriter, polaroid keytar intelligentsia cliche mcsweeney's ethnic mustache cred DIY. Typewriter semiotics raw denim, organic vinyl sustainable meggings beard carles banh mi you probably haven't heard of them. Vinyl salvia brooklyn, four loko biodiesel meh scenester lomo.
+    &lt;/div&gt;
+
+    &lt;div class="box cat1"&gt;
+    Try-hard thundercats food truck, shoreditch mlkshk polaroid truffaut ugh small batch cred vice mixtape williamsburg stumptown street art. Cliche intelligentsia cred high life, trust fund meggings leggings. Blog swag banksy freegan, ethical selfies ennui cray helvetica cliche literally umami vinyl. Banh mi post-ironic mixtape, food truck PBR pickled vinyl umami.
+    &lt;/div&gt;
+
+    &lt;div class="box cat2"&gt;
+    Dreamcatcher actually pug, bushwick occupy semiotics banjo. Sartorial pop-up PBR, etsy truffaut post-ironic marfa carles banksy helvetica. Leggings mixtape chambray gluten-free pickled cred american apparel, shoreditch church-key synth gastropub pinterest semiotics twee messenger bag.
+    &lt;/div&gt;
+
+    &lt;div class="box cat2 cat3"&gt;
+    Odd future sriracha fixie disrupt, helvetica ugh ennui semiotics selfies. Pitchfork blog food truck art party ethical, skateboard flannel hella. Wes anderson thundercats squid four loko art party chillwave +1, leggings scenester fashion axe trust fund photo booth meggings direct trade 90's. Squid sriracha 3 wolf moon, Austin wayfarers biodiesel put a bird on it food truck try-hard street art pop-up mustache retro.
+    &lt;/div&gt;
+
+    &lt;div class="box cat2"&gt;
+    Mustache flannel whatever blue bottle stumptown terry richardson swag scenester, retro ugh pop-up tonx ennui kogi chillwave. Craft beer skateboard tattooed cray, high life scenester marfa salvia american apparel twee pitchfork master cleanse leggings banksy four loko. You probably haven't heard of them skateboard banksy beard.
+    &lt;/div&gt;
+
+    &lt;div class="box cat1 cat3"&gt;
+    Butcher etsy vinyl skateboard photo booth, wolf gastropub twee. Pork belly williamsburg disrupt, art party deep v mcsweeney's flannel vinyl master cleanse cliche. PBR intelligentsia vice small batch.
+    &lt;/div&gt;
+
+    &lt;div class="box cat3"&gt;
+    Mcsweeney's freegan readymade, fingerstache pitchfork organic food truck mixtape odd future single-origin coffee PBR. Four loko selfies PBR church-key, twee vice locavore art party. Brunch blog beard direct trade, fixie readymade cosby sweater. Marfa wayfarers fixie, squid selfies hashtag trust fund cliche.
+    &lt;/div&gt;
+
+
+    &lt;div class="box cat1 cat3"&gt;
+    Odd future 3 wolf moon twee, cliche marfa post-ironic pop-up master cleanse next level pickled gentrify. Direct trade small batch YOLO, pitchfork lomo PBR high life intelligentsia readymade letterpress flexitarian tousled. Direct trade pitchfork hoodie twee, yr pour-over Austin marfa 90's flexitarian food truck mlkshk helvetica +1 trust fund.
+    &lt;/div&gt;
+
+    &lt;div class="box cat2"&gt;
+    Bushwick marfa craft beer, wes anderson you probably haven't heard of them locavore tousled carles pork belly synth DIY blog cray. Farm-to-table craft beer typewriter, polaroid keytar intelligentsia cliche mcsweeney's ethnic mustache cred DIY. Typewriter semiotics raw denim, organic vinyl sustainable meggings beard carles banh mi you probably haven't heard of them. Vinyl salvia brooklyn, four loko biodiesel meh scenester lomo.
+    &lt;/div&gt;
+
+    &lt;div class="box cat3"&gt;
+    Try-hard thundercats food truck, shoreditch mlkshk polaroid truffaut ugh small batch cred vice mixtape williamsburg stumptown street art. Cliche intelligentsia cred high life, trust fund meggings leggings. Blog swag banksy freegan, ethical selfies ennui cray helvetica cliche literally umami vinyl. Banh mi post-ironic mixtape, food truck PBR pickled vinyl umami.
+    &lt;/div&gt;
+
+    &lt;div class="box cat1"&gt;
+    Dreamcatcher actually pug, bushwick occupy semiotics banjo. Sartorial pop-up PBR, etsy truffaut post-ironic marfa carles banksy helvetica. Leggings mixtape chambray gluten-free pickled cred american apparel, shoreditch church-key synth gastropub pinterest semiotics twee messenger bag.
+    &lt;/div&gt;
+
+    &lt;div class="box cat2 cat1"&gt;
+    Odd future sriracha fixie disrupt, helvetica ugh ennui semiotics selfies. Pitchfork blog food truck art party ethical, skateboard flannel hella. Wes anderson thundercats squid four loko art party chillwave +1, leggings scenester fashion axe trust fund photo booth meggings direct trade 90's. Squid sriracha 3 wolf moon, Austin wayfarers biodiesel put a bird on it food truck try-hard street art pop-up mustache retro.
+    &lt;/div&gt;
+
+    &lt;div class="box cat3"&gt;
+    Mustache flannel whatever blue bottle stumptown terry richardson swag scenester, retro ugh pop-up tonx ennui kogi chillwave. Craft beer skateboard tattooed cray, high life scenester marfa salvia american apparel twee pitchfork master cleanse leggings banksy four loko. You probably haven't heard of them skateboard banksy beard.
+    &lt;/div&gt;
+
+    &lt;div class="box cat2 cat3"&gt;
+    Butcher etsy vinyl skateboard photo booth, wolf gastropub twee. Pork belly williamsburg disrupt, art party deep v mcsweeney's flannel vinyl master cleanse cliche. PBR intelligentsia vice small batch.
+    &lt;/div&gt;
+
+    &lt;div class="box cat1"&gt;
+    Mcsweeney's freegan readymade, fingerstache pitchfork organic food truck mixtape odd future single-origin coffee PBR. Four loko selfies PBR church-key, twee vice locavore art party. Brunch blog beard direct trade, fixie readymade cosby sweater. Marfa wayfarers fixie, squid selfies hashtag trust fund cliche.
+    &lt;/div&gt;
+
+    &lt;div class="box cat2 cat1"&gt;
+    Odd future 3 wolf moon twee, cliche marfa post-ironic pop-up master cleanse next level pickled gentrify. Direct trade small batch YOLO, pitchfork lomo PBR high life intelligentsia readymade letterpress flexitarian tousled. Direct trade pitchfork hoodie twee, yr pour-over Austin marfa 90's flexitarian food truck mlkshk helvetica +1 trust fund.
+    &lt;/div&gt;
+
+    &lt;div class="box cat2"&gt;
+    Bushwick marfa craft beer, wes anderson you probably haven't heard of them locavore tousled carles pork belly synth DIY blog cray. Farm-to-table craft beer typewriter, polaroid keytar intelligentsia cliche mcsweeney's ethnic mustache cred DIY. Typewriter semiotics raw denim, organic vinyl sustainable meggings beard carles banh mi you probably haven't heard of them. Vinyl salvia brooklyn, four loko biodiesel meh scenester lomo.
+    &lt;/div&gt;
+
+    &lt;div class="box cat1"&gt;
+    Try-hard thundercats food truck, shoreditch mlkshk polaroid truffaut ugh small batch cred vice mixtape williamsburg stumptown street art. Cliche intelligentsia cred high life, trust fund meggings leggings. Blog swag banksy freegan, ethical selfies ennui cray helvetica cliche literally umami vinyl. Banh mi post-ironic mixtape, food truck PBR pickled vinyl umami.
+    &lt;/div&gt;
+
+    &lt;div class="box cat3"&gt;
+    Dreamcatcher actually pug, bushwick occupy semiotics banjo. Sartorial pop-up PBR, etsy truffaut post-ironic marfa carles banksy helvetica. Leggings mixtape chambray gluten-free pickled cred american apparel, shoreditch church-key synth gastropub pinterest semiotics twee messenger bag.
+    &lt;/div&gt;
+
+    &lt;div class="box cat1 cat3"&gt;
+    Odd future sriracha fixie disrupt, helvetica ugh ennui semiotics selfies. Pitchfork blog food truck art party ethical, skateboard flannel hella. Wes anderson thundercats squid four loko art party chillwave +1, leggings scenester fashion axe trust fund photo booth meggings direct trade 90's. Squid sriracha 3 wolf moon, Austin wayfarers biodiesel put a bird on it food truck try-hard street art pop-up mustache retro.
+    &lt;/div&gt;
+
+    &lt;div class="box cat3"&gt;
+    Mustache flannel whatever blue bottle stumptown terry richardson swag scenester, retro ugh pop-up tonx ennui kogi chillwave. Craft beer skateboard tattooed cray, high life scenester marfa salvia american apparel twee pitchfork master cleanse leggings banksy four loko. You probably haven't heard of them skateboard banksy beard.
+    &lt;/div&gt;
+
+    &lt;div class="box cat1 cat3"&gt;
+    Butcher etsy vinyl skateboard photo booth, wolf gastropub twee. Pork belly williamsburg disrupt, art party deep v mcsweeney's flannel vinyl master cleanse cliche. PBR intelligentsia vice small batch.
+    &lt;/div&gt;
+
+    &lt;div class="box cat3"&gt;
+    Mcsweeney's freegan readymade, fingerstache pitchfork organic food truck mixtape odd future single-origin coffee PBR. Four loko selfies PBR church-key, twee vice locavore art party. Brunch blog beard direct trade, fixie readymade cosby sweater. Marfa wayfarers fixie, squid selfies hashtag trust fund cliche.
+    &lt;/div&gt;
+
+&lt;/section&gt;
+</code></pre>
+<p>Now, you have a big page full of text. Each div has a class of <code>box</code> so that we can style each one appropriately. Now, look at the other classes – either <code>cat1</code>, <code>cat2</code>, or <code>cat3</code>. These are the classes based on which we’ll be filtering.</p>
+<p>Let’s add the navigation bar which will contain the links that filter the content.</p>
+<pre><code>&lt;nav class="navbar navbar-default" role="navigation"&gt;
+        &lt;div class="container group"&gt;
+
+            &lt;a class="navbar-brand" href="#"&gt;Learning to use Isotope.js&lt;/a&gt;
+            
+            &lt;ul class="nav navbar-nav navbar-left" id="controls"&gt;
+                &lt;li&gt;&lt;a href="#cat1"&gt;Category 1&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#cat2"&gt;Category 2&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#cat3"&gt;Category 3&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+&lt;/nav&gt;
+
+&lt;!-- the boxes are after this --&gt;
+</code></pre>
+<p>This is just a typical Bootstrap navbar, take a look <a target="_blank" href="https://getbootstrap.com/components/" rel="noopener noreferrer">at the bootstrap page</a> for more info.</p>
+<p>At this point, we have all the HTML necessary – now, we can make it look pretty.</p>
+<h2><span id="Step_2_The_CSS">Step 2: The CSS</span></h2>
+<p>The first thing you want to do, <strong>always</strong>, before you start writing CSS, is include a CSS reset. I personally like to use <a target="_blank" href="https://meyerweb.com/eric/tools/css/reset/" rel="noopener noreferrer">Eric Meyer’s fantastic CSS reset</a>, but it’s up to you what you would like to use.</p>
+<p>Next, we can make the typography look a bit better.</p>
+<pre><code>body {
+font-family: arial;
+font-size: 15px;
+line-height: 25px;
+color: #515151;
+}
+</code></pre>
+<p>While the text looks fine, the boxes themselves… don’t even really look like boxes. Let’s make them look good as well.</p>
+<pre><code>.box {
+/* if not using border-box 
+width: 218px; 
+*/
+width: 250px;
+background: #ffffff;
+border: 1px solid #999;
+padding: 15px;
+margin: 10px;
+float: left;
+
+-webkit-border-radius: 5px;
+border-radius: 5px;
+
+-webkit-box-shadow: 0px 0px 5px 1px #aaa;
+box-shadow: 0px 0px 5px 1px #aaa;
+}
+</code></pre>
+<p>We want the boxes to be 250px wide, so that’s what we set. Keep in mind, however, that Bootstrap applies <code>box-sizing: border-box</code> by default – this allows everything to work a bit more intuitively.</p>
+<p>I write <code>width: 250px</code> and that’s how wide the box is. However, in case you don’t want to use that property, use <code>width: 218px</code> instead. Check out <a target="_blank" href="https://css-tricks.com/box-sizing/" rel="noopener noreferrer">CSS-Tricks’ explanation</a> for more details.</p>
+<p>The page seems a little cramped; let’s shift the boxes down just a bit.</p>
+<pre><code>#main {
+margin-top: 10px;
+}
+</code></pre>
+<p>The last thing we need to do with the CSS is add some styles to the isotope boxes so that they animate properly.</p>
+<pre><code>.isotope-item {
+  z-index: 2;
+}
+ 
+.isotope-hidden.isotope-item {
+  pointer-events: none;
+  z-index: 1;
+}
+ 
+.isotope,
+.isotope .isotope-item {
+  /* change duration value to whatever you like */
+  -webkit-transition-duration: 0.8s;
+     -moz-transition-duration: 0.8s;
+          transition-duration: 0.8s;
+}
+ 
+.isotope {
+  -webkit-transition-property: height, width;
+     -moz-transition-property: height, width;
+          transition-property: height, width;
+}
+ 
+.isotope .isotope-item {
+  -webkit-transition-property: -webkit-transform, opacity;
+     -moz-transition-property:    -moz-transform, opacity;
+          transition-property:         transform, opacity;
+}
+</code></pre>
+<p>Now, the page should look good.</p>
+<h2><span id="Step_3_The_JavaScript">Step 3: The JavaScript</span></h2>
+<p>Now, the fun begins.</p>
+<pre><code>$(document).ready(function(){
+
+//substr so there isn't a '#'
+var hashFilter = location.hash.substr(1);
+
+var mainEl = $('#main');
+var transitionDuration = 800;
+var columnWidth = 270;
+
+mainEl.isotope({
+    filter: hashFilter,
+    animationEngine: 'best-available', //CSS3 if browser supports it, jQuery otherwise
+    animationOptions: {
+        duration: transitionDuration
+    },
+    containerStyle: {
+        position: 'relative',
+        overflow: 'visible'
+    },
+    masonry: {
+        columnWidth: columnWidth
+    }
+});     
+</code></pre>
+<p>Let me explain, step by step. <code>hashFilter</code> takes the hash and gets rid of the ‘<em>#</em>‘ character.</p>
+<p>For example, if the hash was <code>#.cat1</code>, <code>hashFilter</code> would be <code>.cat1</code>. If the hash is just ‘<em>#</em>‘ or even just an empty string, ”, <code>hashFilter</code> would also be an empty string. If the <code>filter</code> option receives an empty string, <code>''</code>, as the value, then Isotope just displays everything.</p>
+<p><code>mainEl</code> is the element that we want to isotope. <code>transitionDuration</code> is, unsurprisingly, the duration of the animation when the boxes are dynamically filtered. <code>columnWidth</code> is the width of each column. </p>
+<p>The next code block actually isotopes the element. It filters it by the hash, since we will implement hash history functionality. <code>animationEngine</code> is set to <code>best-available</code>, which means that isotope uses CSS3 to animate the boxes if the browser supports it, and jQuery if the browser does not support CSS3.</p>
+<p>Isotope knows what the browser supports or doesn’t support by using <a target="_blank" href="https://modernizr.com/" rel="noopener noreferrer">modernizr</a>. In <code>animationOptions</code>, we say that the duration is <code>transitionDuration</code>. The defaults in <code>containerStyle</code> are <code>position: relative</code> and <code>overflow: hidden</code>, but we tell overflow to be visible, because if the overflow is hidden, that makes for some ugly-looking animations where boxes pop out of nowhere.</p>
+<p>Lastly, under “masonry”, we say that the <code>columnWidth</code> is <code>columnWidth</code>.</p>
+<p>Next, we create a function that resizes the “isotoped” element and the navbar so that they are both centered on the page.</p>
+<pre><code>function setSizes(){
+    var availableSpace = $(window).width();
+    var potentialColumns = availableSpace/columnWidth;
+    potentialColumns = Math.floor(potentialColumns);
+    
+    var newWidth = potentialColumns * columnWidth;
+    $('.container').width(newWidth);
+}
+
+setSizes();
+</code></pre>
+<p>Here, <code>availableSpace</code> is the width of the window, because that’s the only thing that might constrain the size of the main element. <code>potentialColumns</code> is simply the amount of columns that would be able to fit.</p>
+<p>However, we can’t have a decimal number of columns, so we’re going to have to round down. That’s what <code>Math.floor</code> does. Rounding up would not work since then we’d have more columns than actually fit. <code>newWidth</code> takes the number of columns and multiplies it by the width of each column to get the total width.</p>
+<p>Lastly, we give <code>$('.container')</code> the new width. Both the navigation bar and the main container have a class of <code>.container</code> so we can modify them both together. Lastly, we actually call the <code>setSizes()</code> function so that when the page loads, everything has the correct width.</p>
+<p>Before we continue, I would like for you to try something. Resize your browser so that only 3 columns fit. Now, quickly make your browser wider to the point where 4 columns would be able to fit.</p>
+<p>Notice how there are still only 3 columns? This is because <code>mainEl</code>, the “isotoped” container uses CSS3 transitions to smoothly change its width, and when you finish moving your mouse to make the browser window wider, the animation hasn’t finished yet, so Isotope thinks that the <code>mainEl</code> isn’t wide enough for there to be another column.</p>
+<pre><code>function layoutTimer(){
+
+        setTimeout(function(){
+        mainEl.isotope('reLayout');
+    }, transitionDuration);
+    
+}
+
+layoutTimer();
+</code></pre>
+<p>This code waits the duration of <code>transitionDuration</code>, and then executes isotope’s <code>reLayout</code> function. By waiting the duration of the animation of the main container resizing, this guarantees that the element will have completed the animation by the time isotope “reLayouts” again.</p>
+<p>However, the code snippet above is kind of useless the way it is now. This snippet needs to happen every time the window is resized.</p>
+<pre><code>$(window).resize(function(){
+    
+    setSizes();
+        
+    layoutTimer();
+        
+});
+</code></pre>
+<p>I also added <code>setSizes()</code> into there so that that works when the window is resized.</p>
+<p>At this point, everything works except for the part that actually filters the content – clicking the links doesn’t do anything right now.</p>
+<p>We’ll make multiple filtering work by using an array to store what <code>mainEl</code> is currently being filtered by. One possibility that the array might look like is “[“.cat1”, “.cat2”, “.cat3″]”.</p>
+<p>We’ll store this array in the hash every time a link is clicked, and will withdraw the value from the hash whenever the page is loaded.</p>
+<p>When the page loads, we need to create an array based on what the hash is.</p>
+<pre><code>var currentCats = hashFilter.split(".");
+</code></pre>
+<p>Remember the <code>hashFilter</code> variable we used above to filter the <code>mainEl</code> when the page loads? Here, we’re taking that and converting it into array. Basically, every time the browser sees a “.” inside the <code>hashFilter</code> string, it creates a new array element at the point.</p>
+<p>For example, if <code>hashFilter</code> was <code>.cat1.cat2</code>, the <code>split()</code> function would create an array that looks like this: “[“”, “cat1”, “cat2″]”. There are two things that are wrong with this: there’s an empty element at the beginning, and the other elements inside the array have no dots. Fortunately, both of these issues are easy to fix.</p>
+<pre><code>var currentCats = hashFilter.split(".");
+//splice because the first element will be just an empty '', so we get rid of it
+currentCats.splice(0, 1);
+
+for (current in currentCats){
+    currentCat = currentCats[current];
+    
+    //Since it splices based on the '.', each '.' disappears, so we need to re-add it
+    currentCats[current] = '.' + currentCat;
+
+}
+</code></pre>
+<p>In order to get rid of the first empty element, we use the <code>split</code> function. The two parameters are <code>position, length</code>. In this case, we are starting to delete stuff at position 0, and we only delete 1 thing.</p>
+<p>The next thing is a <code>for</code> loop. Basically, it goes through each element inside the <code>currentCats</code> array where <code>current</code> is the current position in the for loop. <code>currentCat</code> is the text at the “current” position, for example “cat1”.</p>
+<p>Then, we take the current text, add a dot to the beginning and put it back into the array at the same position. This way, an array that looks like “[“cat1”, “cat2”, “cat3″]” is converted into “[“.cat1”, “.cat2”, “.cat3″]”.</p>
+<p>The last thing we need to do is handle clicks on the links in the navbar.</p>
+<pre><code>$('#controls a').click(function(){
+    //Change '#cat1' into '.cat1'
+    var catClass = '.'+$(this).attr('href').substr(1);
+        
+    //If the current category is not in the array, add it and make the link active
+    if($.inArray(catClass, currentCats)==-1){ 
+        currentCats.push(catClass);
+        $(this).parent().addClass('active');
+    }
+    //If the current category is in the array, get rid of it and remove the 'active' class
+    else {
+        //position of the current category in the array
+        position = $.inArray(catClass, currentCats); 
+        currentCats.splice(position,1);
+        $(this).parent().removeClass('active');
+    }
+});
+</code></pre>
+<p>Whenever a link inside the “controls” is clicked, <code>catClass</code> takes its <code>href</code> attribute, for example <code>#cat1</code>, and turns it into <code>.cat1</code> by getting rid of the first character, <code>#</code>, and prepending a dot.</p>
+<p>Next, we use jQuery’s <code>inArray</code> function to check whether or not <code>catClass</code> is inside the <code>currentCats</code> array. If the <code>inArray</code> function returns a value of “-1”, that means that <code>catClass</code> is not inside the array.</p>
+<p>Otherwise, <code>inArray</code> returns the position of the element inside the array. If <code>currentClass</code> is not inside the array, we add it by using the <code>push</code> function, and we take the parent <code>li</code> of the link and make it active.</p>
+<p>If it is in the array, we remove it by using the <code>splice</code> function and we remove the <code>active</code> class from its parent.</p>
+<p>Now, we need to actually filter <code>mainEl</code>.</p>
+<pre><code>$('#controls a').click(function(){
+    //Change '#cat1' into '.cat1'
+    var catClass = '.'+$(this).attr('href').substr(1);
+        
+    //If the current category is not in the array, add it and make the link active
+    if($.inArray(catClass, currentCats)==-1){ 
+        currentCats.push(catClass);
+        $(this).parent().addClass('active');
+    }
+    //If the current category is in the array, get rid of it and remove the 'active' class
+    else {
+        //position of the current category in the array
+        position = $.inArray(catClass, currentCats); 
+        currentCats.splice(position,1);
+        $(this).parent().removeClass('active');
+    }
+        
+    var newFilter = "";
+        
+    //generate a 'newFilter' string that will be saved into the hash
+    for (current in currentCats){
+        currentCat = currentCats[current];
+        newFilter = newFilter + currentCat;
+    }
+        
+    location.hash = newFilter;
+        
+    mainEl.isotope({
+        filter: newFilter
+    });
+        
+    return false;
+        
+});
+</code></pre>
+<p>The last part creates a string, “<code>newFilter</code>“, and appends each element of the array onto it. It then sets “<code>newFilter</code>” as the hash of the page, and filters the “<code>mainEl</code>” based on that. Then, it returns false so that the browser doesn’t actually follow the link.</p>
+<h2><span id="Finished">Finished!</span></h2>
+<p>Congratulations; you have reached the end of this tutorial! Hopefully, this helped you learn how to use <a target="_blank" href="https://isotope.metafizzy.co/" rel="noopener noreferrer">isotope</a>. If you have any questions or comments, please post them below :)</p>
+
+<p><i></i><br>Top</p>
+</div></div>
+  </div>
+</body>
+</html>

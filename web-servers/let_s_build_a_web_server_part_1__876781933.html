@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Let’s Build A Web Server. Part 1.</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Let’s Build A Web Server. Part 1.</h1>
+    <p><strong>URL:</strong> <a href="https://ruslanspivak.com/lsbaws-part1">https://ruslanspivak.com/lsbaws-part1</a></p>
+    <p><strong>Tags:</strong> web-servers</p>
+    <p><strong>Bookmark ID:</strong> 876781933</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+                
+                    <p>Out for a walk one day, a woman came across a construction site and saw three men working.
+She asked the first man, “What are you doing?”
+Annoyed by the question, the first man barked, “Can’t you see that I’m laying bricks?” Not satisfied with the answer, she asked the second man what he was doing.
+The second man answered, “I’m building a brick wall.” Then, turning his attention to the first man, he said, “Hey, you just passed the end of the wall. You need to take off that last brick.” Again not satisfied with the answer, she asked the third man what he was doing. And the man said to her while looking up in the sky, “I am building the biggest cathedral this world has ever known.” While he was standing there and looking up in the sky the other two men started arguing about the errant brick. The man turned to the first two men and said, “Hey guys, don’t worry about that brick. It’s an inside wall, it will get plastered over and no one will ever see that brick. Just move on to another&nbsp;layer.”</p>
+<p>The moral of the story is that when you know the whole system and understand how different pieces fit together (bricks, walls, cathedral), you can identify and fix problems faster (errant&nbsp;brick).</p>
+<p>What does it have to do with creating your own Web server from&nbsp;scratch?</p>
+<p><strong>I believe to become a better developer you <span>MUST</span> get a better understanding of the underlying software systems you use on a daily basis and that includes programming languages, compilers and interpreters, databases and operating systems, web servers and web frameworks. And, to get a better and deeper understanding of those systems you <span>MUST</span> re-build them from scratch, brick by brick, wall by&nbsp;wall.</strong></p>
+<p>Confucius put it this&nbsp;way:</p>
+<blockquote>
+<p><em><span>“</span>I hear and I&nbsp;forget.”</em></p>
+</blockquote>
+<p><img alt="Hear" src="data:application/octet-stream;base64," width="640"></p>
+<blockquote>
+<p><em><span>“</span>I see and I&nbsp;remember.”</em></p>
+</blockquote>
+<p><img alt="See" src="data:application/octet-stream;base64," width="640"></p>
+<blockquote>
+<p><em><span>“</span>I do and I&nbsp;understand.”</em></p>
+</blockquote>
+<p><img alt="Do" src="data:application/octet-stream;base64," width="640"></p>
+<p>I hope at this point you’re convinced that it’s a good idea to start re-building different software systems to learn how they&nbsp;work.</p>
+<p>In this three-part series I will show you how to build your own basic Web server. Let’s get&nbsp;started.</p>
+<p>First things first, what is a Web&nbsp;server?</p>
+<p><img alt="HTTP Request/Response" src="data:application/octet-stream;base64,"></p>
+<p>In a nutshell it’s a networking server that sits on a physical server (oops, a server on a server) and waits for a client to send a request. When it receives a request, it generates a response and sends it back to the client. The communication between a client and a server happens using <span>HTTP</span> protocol. A client can be your browser or any other software that speaks <span>HTTP</span>.</p>
+<p>What would a very simple implementation of a Web server look like?
+Here is my take on it. The example is in Python (tested on Python3.7+) but even if you don’t know Python (it’s a very easy language to pick up, try it!) you still should be able to understand concepts from the code and explanations&nbsp;below:</p>
+<div><pre><span></span><span># Python3.7+</span>
+<span>import</span> <span>socket</span>
+
+<span>HOST</span><span>,</span> <span>PORT</span> <span>=</span> <span>''</span><span>,</span> <span>8888</span>
+
+<span>listen_socket</span> <span>=</span> <span>socket</span><span>.</span><span>socket</span><span>(</span><span>socket</span><span>.</span><span>AF_INET</span><span>,</span> <span>socket</span><span>.</span><span>SOCK_STREAM</span><span>)</span>
+<span>listen_socket</span><span>.</span><span>setsockopt</span><span>(</span><span>socket</span><span>.</span><span>SOL_SOCKET</span><span>,</span> <span>socket</span><span>.</span><span>SO_REUSEADDR</span><span>,</span> <span>1</span><span>)</span>
+<span>listen_socket</span><span>.</span><span>bind</span><span>((</span><span>HOST</span><span>,</span> <span>PORT</span><span>))</span>
+<span>listen_socket</span><span>.</span><span>listen</span><span>(</span><span>1</span><span>)</span>
+<span>print</span><span>(</span><span>f</span><span>'Serving HTTP on port </span><span>{</span><span>PORT</span><span>}</span><span> ...'</span><span>)</span>
+<span>while</span> <span>True</span><span>:</span>
+    <span>client_connection</span><span>,</span> <span>client_address</span> <span>=</span> <span>listen_socket</span><span>.</span><span>accept</span><span>()</span>
+    <span>request_data</span> <span>=</span> <span>client_connection</span><span>.</span><span>recv</span><span>(</span><span>1024</span><span>)</span>
+    <span>print</span><span>(</span><span>request_data</span><span>.</span><span>decode</span><span>(</span><span>'utf-8'</span><span>))</span>
+
+    <span>http_response</span> <span>=</span> <span>b</span><span>"""</span><span>\</span>
+<span>HTTP/1.1 200 OK</span>
+
+<span>Hello, World!</span>
+<span>"""</span>
+    <span>client_connection</span><span>.</span><span>sendall</span><span>(</span><span>http_response</span><span>)</span>
+    <span>client_connection</span><span>.</span><span>close</span><span>()</span>
+</pre></div>
+
+
+<p>Save the above code as <em>webserver1.py</em> or download it directly from <a href="https://github.com/rspivak/lsbaws/blob/master/part1/webserver1.py" title="GitHub">GitHub</a> and run it on the command line like&nbsp;this</p>
+<div><pre><span></span>$<span> </span>python<span> </span>webserver1.py
+Serving<span> </span>HTTP<span> </span>on<span> </span>port<span> </span><span>8888</span><span> </span>…
+</pre></div>
+
+
+<p>Now type in the following <span>URL</span> in your Web browser’s address bar <a href="http://localhost:8888/hello" title="Hello">http://localhost:8888/hello</a>, hit Enter, and see magic in action. You should see <em>“Hello, World!”</em> displayed in your  browser like&nbsp;this:</p>
+<p><img alt="Browser &quot;Hello, World!&quot;" src="data:application/octet-stream;base64,"></p>
+<p>Just do it, seriously. I will wait for you while you’re testing&nbsp;it.</p>
+<p>Done? Great. Now let’s discuss how it all actually&nbsp;works.</p>
+<p>First let’s start with the Web address you’ve entered. It’s called an <a href="http://en.wikipedia.org/wiki/Uniform_resource_locator"><span>URL</span></a> and here is its basic&nbsp;structure:</p>
+<p><img alt="URL Structure" src="data:application/octet-stream;base64," width="480"></p>
+<p>This is how you tell your browser the address of the Web server it needs to find and connect to and the page (path) on the server to fetch for you.
+Before your browser can send a <span>HTTP</span> request though, it first needs to establish a <span>TCP</span> connection with the Web server. Then it sends an <span>HTTP</span> request over the <span>TCP</span> connection to the server and waits for the server to send an <span>HTTP</span> response back. And when your browser receives the response it displays it, in this case it displays “Hello,&nbsp;World!”</p>
+<p>Let’s explore in more detail how the client and the server establish a <span>TCP</span> connection before sending <span>HTTP</span> requests and responses. To do that they both use so-called <em>sockets</em>. Instead of using a browser directly you are going to simulate your browser manually by using <em>telnet</em> on the command&nbsp;line.</p>
+<p>On the same computer you’re running the Web server fire up a telnet session on the command line specifying a host to connect to <em>localhost</em> and the port to connect to <em>8888</em> and then press&nbsp;Enter:</p>
+<div><pre><span></span>$<span> </span>telnet<span> </span>localhost<span> </span><span>8888</span>
+Trying<span> </span><span>127</span>.0.0.1<span> </span>…
+Connected<span> </span>to<span> </span>localhost.
+</pre></div>
+
+
+<p>At this point you’ve established a <span>TCP</span> connection with the server running on your local host and ready to send and receive <span>HTTP</span> messages. In the picture below you can see a standard procedure a server has to go through to be able to accept new <span>TCP</span> connections.
+    <img alt="Socket accept" src="data:application/octet-stream;base64," width="780"></p>
+<p>In the same telnet session type <strong><em><span>GET</span> /hello <span>HTTP</span>/1.1</em></strong> and hit&nbsp;Enter:</p>
+<div><pre><span></span>$<span> </span>telnet<span> </span>localhost<span> </span><span>8888</span>
+Trying<span> </span><span>127</span>.0.0.1<span> </span>…
+Connected<span> </span>to<span> </span>localhost.
+GET<span> </span>/hello<span> </span>HTTP/1.1
+
+HTTP/1.1<span> </span><span>200</span><span> </span>OK
+Hello,<span> </span>World!
+</pre></div>
+
+
+<p>You’ve just manually simulated your browser! You sent an <span>HTTP</span> request and got an <span>HTTP</span> response back. This is the basic structure of an <span>HTTP</span>&nbsp;request:</p>
+<p><img alt="HTTP Request Aanatomy" src="data:application/octet-stream;base64," width="560"></p>
+<p>The <span>HTTP</span> request consists of the line indicating the <span>HTTP</span> method (<strong><em><span>GET</span></em></strong>, because we are asking our server to return us something), the path <em>/hello</em> that indicates a <em>“page”</em> on the server we want and the protocol&nbsp;version.</p>
+<p>For simplicity’s sake our Web server at this point completely ignores the above request line. You could just as well type in any garbage instead of <em>“<span>GET</span> /hello <span>HTTP</span>/1.1”</em> and you would still get back a <em>“Hello, World!”</em>&nbsp;response.</p>
+<p>Once you’ve typed the request line and hit Enter the client sends the request to the server, the server reads the request line, prints it and returns the proper <span>HTTP</span>&nbsp;response.</p>
+<p>Here is the <span>HTTP</span> response that the server sends back to your client (<em>telnet</em> in this case):
+<img alt="HTTP Response Anatomy" src="data:application/octet-stream;base64," width="560"></p>
+<p>Let’s dissect it. The response consists of a status line <em><span>HTTP</span>/1.1 200 <span>OK</span></em>, followed by a required empty line, and then the <span>HTTP</span> response&nbsp;body.</p>
+<p>The response status line <em><span>HTTP</span>/1.1 200 <span>OK</span></em> consists of the <em><span>HTTP</span> Version</em>, the <em><span>HTTP</span> status code</em> and the <em><span>HTTP</span> status code reason</em> phrase <em><span>OK</span></em>. When the browser gets the response, it displays the body of the response and that’s why you see <em>“Hello, World!”</em> in your&nbsp;browser.</p>
+<p>And that’s the basic model of how a Web server works. To sum it up: The Web server creates a listening socket and starts accepting new connections in a loop. The client initiates a <span>TCP</span> connection and, after successfully establishing it, the client sends an <span>HTTP</span> request to the server and the server responds with an <span>HTTP</span> response that gets displayed to the user. To establish a <span>TCP</span> connection both clients and servers use <em>sockets</em>.</p>
+<p>Now you have a very basic working Web server that you can test with your browser or some other <span>HTTP</span> client. As you’ve seen and hopefully tried, you can also be a human <span>HTTP</span> client too, by using <em>telnet</em> and typing <span>HTTP</span> requests&nbsp;manually.</p>
+<p>Here’s a question for you: “How do you run a Django application, Flask application, and Pyramid application under your freshly minted Web server without making a single change to the server to accommodate all those different Web&nbsp;frameworks?”</p>
+<p>I will show you exactly how in <a href="https://ruslanspivak.com/lsbaws-part2/">Part 2</a> of the series. Stay&nbsp;tuned.</p>
+<p><br>
+<em>Resources used in preparation for this article (links are affiliate&nbsp;links):</em></p>
+<ol>
+<li>
+<p><a href="http://www.amazon.com/gp/product/0131411551/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0131411551&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=2F4NYRBND566JJQL">Unix Network Programming, Volume 1: The Sockets Networking <span>API</span> (3rd Edition)</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></p>
+</li>
+<li>
+<p><a href="http://www.amazon.com/gp/product/0321637739/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0321637739&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=3ZYAKB537G6TM22J">Advanced Programming in the <span>UNIX</span> Environment, 3rd Edition</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></p>
+</li>
+<li>
+<p><a href="http://www.amazon.com/gp/product/1593272200/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1593272200&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=CHFOMNYXN35I2MON">The Linux Programming Interface: A Linux and <span>UNIX</span> System Programming Handbook</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></p>
+</li>
+<li>
+<p><a href="http://www.amazon.com/gp/product/0814420303/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0814420303&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=HY2LNXTSGPPFZ2EV">Lead with a Story</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></p>
+</li>
+</ol>
+
+<blockquote>
+<p><em><strong><span>UPDATE</span>: Sat, July 13,&nbsp;2019</strong></em></p>
+<ul>
+<li>
+<p>Updated the server code to run under Python&nbsp;3.7+</p>
+</li>
+<li>
+<p>Added resources used in preparation for the&nbsp;article</p>
+</li>
+</ul>
+</blockquote>
+<p>Get the edge and stay sharp. Subscribe to Beyond Basics for free and get new posts without missing a beat!</p>
+
+
+
+
+<p><br>
+<strong>All articles in this&nbsp;series:</strong></p>
+<ul>
+<li><a href="https://ruslanspivak.com/lsbaws-part1/">Let’s Build A Web Server. Part&nbsp;1.</a></li>
+<li><a href="https://ruslanspivak.com/lsbaws-part2/">Let’s Build A Web Server. Part&nbsp;2.</a></li>
+<li><a href="https://ruslanspivak.com/lsbaws-part3/">Let’s Build A Web Server. Part&nbsp;3.</a></li>
+</ul>
+            </div></div>
+  </div>
+</body>
+</html>

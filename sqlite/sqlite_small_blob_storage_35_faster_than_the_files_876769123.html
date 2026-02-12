@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SQLite small blob storage: 35% Faster Than the Filesystem</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>SQLite small blob storage: 35% Faster Than the Filesystem</h1>
+    <p><strong>URL:</strong> <a href="https://www.sqlite.org/fasterthanfs.html">https://www.sqlite.org/fasterthanfs.html</a></p>
+    <p><strong>Tags:</strong> sqlite</p>
+    <p><strong>Bookmark ID:</strong> 876769123</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+<div>
+<p>
+35% Faster Than The Filesystem
+</p>
+
+
+</div>
+
+
+
+
+
+<h2 id="summary"><span>1. </span>Summary</h2>
+
+<p>SQLite reads and writes small blobs (for example, thumbnail images)
+<a href="#approx">35% faster¹</a> than the same blobs
+can be read from or written to individual files on disk using
+fread() or fwrite().
+
+</p><p>Furthermore, a single SQLite database holding
+10-kilobyte blobs uses about 20% less disk space than
+storing the blobs in individual files.
+
+</p><p>The performance difference arises (we believe) because when
+working from an SQLite database, the open() and close() system calls
+are invoked only once, whereas
+open() and close() are invoked once for each blob
+when using blobs stored in individual files.  It appears that the
+overhead of calling open() and close() is greater than the overhead
+of using the database.  The size reduction arises from the fact that
+individual files are padded out to the next multiple of the filesystem
+block size, whereas the blobs are packed more tightly into an SQLite
+database.
+
+</p><p>
+The measurements in this article were made during the week of 2017-06-05
+using a version of SQLite in between 3.19.2 and 3.20.0.  You may expect
+future versions of SQLite to perform even better.
+
+</p><h2 id="caveats"><span>1.1. </span>Caveats</h2>
+
+<p>
+¹The 35% figure above is approximate.  Actual timings vary
+depending on hardware, operating system, and the
+details of the experiment, and due to random performance fluctuations
+on real-world hardware.  See the text below for more detail.
+Try the experiments yourself.  Report significant deviations on
+the <a href="https://www.sqlite.org/support.html#fx">SQLite forum</a>.
+</p>
+
+<p>
+The 35% figure is based on running tests on every machine
+that the author has easily at hand.
+Some reviewers of this article report that SQLite has higher 
+latency than direct I/O on their systems.  We do not yet understand
+the difference.  We also see indications that SQLite does not
+perform as well as direct I/O when experiments are run using
+a cold filesystem cache.
+
+</p><p>
+So let your take-away be this: read/write latency for
+SQLite is competitive with read/write latency of individual files on
+disk.  Often SQLite is faster.  Sometimes SQLite is almost
+as fast.  Either way, this article disproves the common
+assumption that a relational database must be slower than direct
+filesystem I/O.
+
+</p>
+
+<p>
+A <a href="https://golangexample.com/an-unscientific-benchmark-of-sqlite-vs-the-file-system-btrfs/">2022 study</a>
+(<a href="https://github.com/chrisdavies/dbench">alternative link on GitHub</a>) found that
+SQLite is <i>roughly</i> twice as fast at real-world workloads compared to Btrfs and Ext4 on Linux.
+
+</p><p>
+<a href="https://www.microsoft.com/en-us/research/people/gray/">Jim Gray</a>
+and others studied the read performance of BLOBs
+versus file I/O for Microsoft SQL Server and found that reading BLOBs 
+out of the 
+database was faster for BLOB sizes less than between 250KiB and 1MiB.
+(<a href="https://www.microsoft.com/en-us/research/publication/to-blob-or-not-to-blob-large-object-storage-in-a-database-or-a-filesystem/">Paper</a>).
+In that study, the database still stores the filename of the content even
+if the content is held in a separate file.  So the database is consulted
+for every BLOB, even if it is only to extract the filename.  In this
+article, the key for the BLOB is the filename, so no preliminary database
+access is required.  Because the database is never used at all when
+reading content from individual files in this article, the threshold
+at which direct file I/O becomes faster is smaller than it is in Gray's
+paper.
+
+</p><p>
+The <a href="https://www.sqlite.org/intern-v-extern-blob.html">Internal Versus External BLOBs</a> article on this website is an
+earlier investigation (circa 2011) that uses the same approach as the
+Jim Gray paper — storing the blob filenames as entries in the
+database — but for SQLite instead of SQL Server.
+
+
+
+</p><h2 id="how_these_measurements_are_made"><span>2. </span>How These Measurements Are Made</h2>
+
+<p>I/O performance is measured using the
+<a href="https://www.sqlite.org/src/file/test/kvtest.c">kvtest.c</a> program
+from the SQLite source tree.
+To compile this test program, first gather the kvtest.c source file
+into a directory with the <a href="https://www.sqlite.org/amalgamation.html">SQLite amalgamation</a> source
+files "sqlite3.c" and "sqlite3.h".  Then on unix, run a command like
+the following:
+
+</p><div><pre>gcc -Os -I. -DSQLITE_DIRECT_OVERFLOW_READ \
+  kvtest.c sqlite3.c -o kvtest -ldl -lpthread
+</pre></div>
+
+<p>Or on Windows with MSVC:
+
+</p><div><pre>cl -I. -DSQLITE_DIRECT_OVERFLOW_READ kvtest.c sqlite3.c
+</pre></div>
+
+<p>Instructions for compiling for Android
+are <a href="#compile-android">shown below</a>.
+
+</p><p>
+Use the resulting "kvtest" program to
+generate a test database with 100,000 random uncompressible
+blobs, each with a random
+size between 8,000 and 12,000 bytes
+using a command like this:
+
+</p><div><pre>./kvtest init test1.db --count 100k --size 10k --variance 2k
+</pre></div>
+
+<p>
+If desired, you can verify the new database by running this command:
+
+</p><div><pre>./kvtest stat test1.db
+</pre></div>
+
+<p>
+Next, make copies of all the blobs into individual files in a directory
+using a command like this:
+
+</p><div><pre>./kvtest export test1.db test1.dir
+</pre></div>
+
+<p>
+At this point, you can measure the amount of disk space used by
+the test1.db database and the space used by the test1.dir directory
+and all of its content.  On a standard Ubuntu Linux desktop, the
+database file will be 1,024,512,000 bytes in size and the test1.dir
+directory will use 1,228,800,000 bytes of space (according to "du -k"),
+about 20% more than the database.
+
+</p><p>
+The "test1.dir" directory created above puts all the blobs into a single
+folder.  It was conjectured that some operating systems would perform 
+poorly when a single directory contains 100,000 objects.  To test this,
+the kvtest program can also store the blobs in a hierarchy of folders with no
+more than 100 files and/or subdirectories per folder.  The alternative
+on-disk representation of the blobs can be created using the --tree
+command-line option to the "export" command, like this:
+
+</p><div><pre>./kvtest export test1.db test1.tree --tree
+</pre></div>
+
+<p>
+The test1.dir directory will contain 100,000 files
+with names like "000000", "000001", "000002" and so forth but the
+test1.tree directory will contain the same files in subdirectories like
+"00/00/00", "00/00/01", and so on.  The test1.dir and test1.test
+directories take up approximately the same amount of space, though
+test1.test is very slightly larger due to the extra directory entries.
+
+</p><p>
+All of the experiments that follow operate the same with either 
+"test1.dir" or "test1.tree".  Very little performance difference is
+measured in either case, regardless of operating system.
+
+</p><p>
+Measure the performance for reading blobs from the database and from
+individual files using these commands:
+
+</p><div><pre>./kvtest run test1.db --count 100k --blob-api
+./kvtest run test1.dir --count 100k --blob-api
+./kvtest run test1.tree --count 100k --blob-api
+</pre></div>
+
+<p>
+Depending on your hardware and operating system, you should see that reads 
+from the test1.db database file are about 35% faster than reads from 
+individual files in the test1.dir or test1.tree folders.  Results can vary
+significantly from one run to the next due to caching, so it is advisable
+to run tests multiple times and take an average or a worst case or a best
+case, depending on your requirements.
+
+</p><p>The --blob-api option on the database read test causes kvtest to use
+the <a href="https://www.sqlite.org/c3ref/blob_read.html">sqlite3_blob_read()</a> feature of SQLite to load the content of the
+blobs, rather than running pure SQL statements.  This helps SQLite to run
+a little faster on read tests.  You can omit that option to compare the
+performance of SQLite running SQL statements.
+In that case, the SQLite still out-performs direct reads, though
+by not as much as when using <a href="https://www.sqlite.org/c3ref/blob_read.html">sqlite3_blob_read()</a>.
+The --blob-api option is ignored for tests that read from individual disk
+files.
+
+</p><p>
+Measure write performance by adding the --update option.  This causes
+the blobs are overwritten in place with another random blob of
+exactly the same size.
+
+</p><div><pre>./kvtest run test1.db --count 100k --update
+./kvtest run test1.dir --count 100k --update
+./kvtest run test1.tree --count 100k --update
+</pre></div>
+
+<p>
+The writing test above is not completely fair, since SQLite is doing
+<a href="https://www.sqlite.org/transactional.html">power-safe transactions</a> whereas the direct-to-disk writing is not.
+To put the tests on a more equal footing, add either the --nosync
+option to the SQLite writes to disable calling fsync() or
+FlushFileBuffers() to force content to disk, or using the --fsync option
+for the direct-to-disk tests to force them to invoke fsync() or
+FlushFileBuffers() when updating disk files.
+
+</p><p>
+By default, kvtest runs the database I/O measurements all within
+a single transaction.  Use the --multitrans option to run each blob
+read or write in a separate transaction.  The --multitrans option makes
+SQLite much slower, and uncompetitive with direct disk I/O.  This
+option proves, yet again, that to get the most performance out of
+SQLite, you should group as much database interaction as possible within
+a single transaction.
+
+</p><p>
+There are many other testing options, which can be seen by running
+the command:
+
+</p><div><pre>./kvtest help
+</pre></div>
+
+<h2 id="read_performance_measurements"><span>2.1. </span>Read Performance Measurements</h2>
+
+<p>The chart below shows data collected using 
+<a href="https://www.sqlite.org/src/file/test/kvtest.c">kvtest.c</a> on five different
+systems:
+
+</p><ul>
+<li><b>Win7</b>: A circa-2009 Dell Inspiron laptop, Pentium dual-core
+    at 2.30GHz, 4GiB RAM, Windows7.
+</li><li><b>Win10</b>: A 2016 Lenovo YOGA 910, Intel i7-7500 at 2.70GHz,
+    16GiB RAM, Windows10.
+</li><li><b>Mac</b>: A 2015 MacBook Pro, 3.1GHz intel Core i7, 16GiB RAM,
+    MacOS 10.12.5
+</li><li><b>Ubuntu</b>: Desktop built from Intel i7-4770K at 3.50GHz, 32GiB RAM,
+    Ubuntu 16.04.2 LTS
+</li><li><b>Android</b>: Galaxy S3, ARMv7, 2GiB RAM
+</li></ul>
+
+<p>All machines use SSD except Win7 which has a
+hard-drive. The test database is 100K blobs with sizes uniformly
+distributed between 8K and 12K, for a total of about 1 gigabyte
+of content.  The database page size
+is 4KiB.  The -DSQLITE_DIRECT_OVERFLOW_READ compile-time option was
+used for all of these tests.
+Tests were run multiple times.
+The first run was used to warm up the cache and its timings were discarded.
+
+</p><p>
+The chart below shows average time to read a blob directly from the
+filesystem versus the time needed to read the same blob from the SQLite 
+database.
+The actual timings vary considerably from one system to another 
+(the Ubuntu desktop is much
+faster than the Galaxy S3 phone, for example).  
+This chart shows the ratio of the
+times needed to read blobs from a file divided by the time needed to
+from the database.  The left-most column in the chart is the normalized
+time to read from the database, for reference.
+
+</p><p>
+In this chart, an SQL statement ("SELECT v FROM kv WHERE k=?1") 
+is prepared once.  Then for each blob, the blob key value is bound 
+to the ?1 parameter and the statement is evaluated to extract the
+blob content.
+
+</p><p>
+The chart shows that on Windows10, content can be read from the SQLite
+database about 5 times faster than it can be read directly from disk.
+On Android, SQLite is only about 35% faster than reading from disk.
+
+</p><center>
+<p><img src="data:application/octet-stream;base64,">
+</p>
+<br>
+Chart 1:  SQLite read latency relative to direct filesystem reads.<br>
+100K blobs, avg 10KB each, random order using SQL
+</center>
+
+<p>
+The performance can be improved slightly by bypassing the SQL layer
+and reading the blob content directly using the
+<a href="https://www.sqlite.org/c3ref/blob_read.html">sqlite3_blob_read()</a> interface, as shown in the next chart:
+
+</p><center>
+<p><img src="data:application/octet-stream;base64,">
+</p>
+<br>
+Chart 2:  SQLite read latency relative to direct filesystem reads.<br>
+100K blobs, avg size 10KB, random order<br>
+using sqlite3_blob_read().
+</center>
+
+<p>
+Further performance improves can be made by using the
+<a href="https://www.sqlite.org/mmap.html">memory-mapped I/O</a> feature of SQLite.  In the next chart, the
+entire 1GB database file is memory mapped and blobs are read
+(in random order) using the <a href="https://www.sqlite.org/c3ref/blob_read.html">sqlite3_blob_read()</a> interface.
+With these optimizations, SQLite is twice as fast as Android
+or MacOS-X and over 10 times faster than Windows.
+
+</p><center>
+<p><img src="data:application/octet-stream;base64,">
+</p>
+<br>
+Chart 3:  SQLite read latency relative to direct filesystem reads.<br>
+100K blobs, avg size 10KB, random order<br>
+using sqlite3_blob_read() from a memory-mapped database.
+</center>
+
+<p>
+The third chart shows that reading blob content out of SQLite can be
+twice as fast as reading from individual files on disk for Mac and
+Android, and an amazing ten times faster for Windows.
+
+</p><h2 id="write_performance_measurements"><span>2.2. </span>Write Performance Measurements</h2>
+
+<p>
+Writes are slower.
+On all systems, using both direct I/O and SQLite, write performance is
+between 5 and 15 times slower than reads.
+
+</p><p>
+Write performance measurements were made by replacing (overwriting)
+an entire blob with a different blob.  All of the blobs in these
+experiment are random and incompressible.  Because writes are so much
+slower than reads, only 10,000 of the 100,000 blobs in the database
+are replaced.  The blobs to be replaced are selected at random and
+are in no particular order.
+
+</p><p>
+The direct-to-disk writes are accomplished using fopen()/fwrite()/fclose().
+By default, and in all the results shown below, the OS filesystem buffers are
+never flushed to persistent storage using fsync() or
+FlushFileBuffers().  In other words, there is no attempt to make the
+direct-to-disk writes transactional or power-safe.
+We found that invoking fsync() or FlushFileBuffers() on each file
+written causes direct-to-disk storage
+to be about 10 times or more slower than writes to SQLite.
+
+</p><p>
+The next chart compares SQLite database updates in <a href="https://www.sqlite.org/wal.html">WAL mode</a>
+against raw direct-to-disk overwrites of separate files on disk.
+The <a href="https://www.sqlite.org/pragma.html#pragma_synchronous">PRAGMA synchronous</a> setting is NORMAL.
+All database writes are in a single transaction.
+The timer for the database writes is stopped after the transaction
+commits, but before a <a href="https://www.sqlite.org/wal.html#ckpt">checkpoint</a> is run.
+Note that the SQLite writes, unlike the direct-to-disk writes,
+are <a href="https://www.sqlite.org/transactional.html">transactional</a> and <a href="https://www.sqlite.org/transactional.html">power-safe</a>, though because the synchronous
+setting is NORMAL instead of FULL, the transactions are not durable.
+
+</p><center>
+<p><img src="data:application/octet-stream;base64,">
+</p>
+<br>
+Chart 4:  SQLite write latency relative to direct filesystem writes.<br>
+10K blobs, avg size 10KB, random order,<br>
+WAL mode with synchronous NORMAL,<br>
+exclusive of checkpoint time
+</center>
+
+<p>
+The android performance numbers for the write experiments are omitted
+because the performance tests on the Galaxy S3 are so random.  Two
+consecutive runs of the exact same experiment would give wildly different
+times.  And, to be fair, the performance of SQLite on android is slightly
+slower than writing directly to disk.
+
+</p><p>
+The next chart shows the performance of SQLite versus direct-to-disk
+when transactions are disabled (<a href="https://www.sqlite.org/pragma.html#pragma_journal_mode">PRAGMA journal_mode=OFF</a>)
+and <a href="https://www.sqlite.org/pragma.html#pragma_synchronous">PRAGMA synchronous</a> is set to OFF.  These settings put SQLite on an
+equal footing with direct-to-disk writes, which is to say they make the
+data prone to corruption due to system crashes and power failures.
+
+</p><center>
+<p><img src="data:image/jpeg;base64,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">
+</p>
+<br>
+Chart 5:  SQLite write latency relative to direct filesystem writes.<br>
+10K blobs, avg size 10KB, random order,<br>
+journaling disabled, synchronous OFF.
+</center>
+
+<p>
+In all of the write tests, it is important to disable anti-virus software
+prior to running the direct-to-disk performance tests.  We found that
+anti-virus software slows down direct-to-disk by an order of magnitude
+whereas it impacts SQLite writes very little.  This is probably due to the
+fact that direct-to-disk changes thousands of separate files which all need
+to be checked by anti-virus, whereas SQLite writes only changes the single
+database file.
+
+</p><h2 id="variations"><span>2.3. </span>Variations</h2>
+
+<p>The <a href="https://www.sqlite.org/compile.html#direct_overflow_read">-DSQLITE_DIRECT_OVERFLOW_READ</a> compile-time option causes SQLite
+to bypass its page cache when reading content from overflow pages.  This
+helps database reads of 10K blobs run a little faster, but not all that much
+faster.  SQLite still holds a speed advantage over direct filesystem reads
+without the SQLITE_DIRECT_OVERFLOW_READ compile-time option.
+
+</p><p>Other compile-time options such as using -O3 instead of -Os or
+using <a href="https://www.sqlite.org/compile.html#threadsafe">-DSQLITE_THREADSAFE=0</a> and/or some of the other
+<a href="https://www.sqlite.org/compile.html#rcmd">recommended compile-time options</a> might help SQLite to run even faster
+relative to direct filesystem reads.
+
+</p><p>The size of the blobs in the test data affects performance.
+The filesystem will generally be faster for larger blobs, since
+the overhead of open() and close() is amortized over more bytes of I/O,
+whereas the database will be more efficient in both speed and space
+as the average blob size decreases.
+
+
+</p><h2 id="general_findings"><span>3. </span>General Findings</h2>
+
+<ol type="A">
+<li>
+<p>SQLite is competitive with, and usually faster than, blobs stored in
+separate files on disk, for both reading and writing.
+
+</p></li><li>
+<p>SQLite is much faster than direct writes to disk on Windows
+when anti-virus protection is turned on.  Since anti-virus software
+is and should be on by default in Windows, that means that SQLite
+is generally much faster than direct disk writes on Windows.
+
+</p></li><li>
+<p>Reading is about an order of magnitude faster than writing, for all
+systems and for both SQLite and direct-to-disk I/O.
+
+</p></li><li>
+<p>I/O performance varies widely depending on operating system and hardware.
+Make your own measurements before drawing conclusions.
+
+</p></li><li>
+<p>Some other SQL database engines advise developers to store blobs in separate
+files and then store the filename in the database.  In that case, where
+the database must first be consulted to find the filename before opening
+and reading the file, simply storing the entire blob in the database
+gives much faster read and write performance with SQLite.
+See the <a href="https://www.sqlite.org/intern-v-extern-blob.html">Internal Versus External BLOBs</a> article for more information.
+</p></li></ol>
+
+
+<h2 id="additional_notes"><span>4. </span>Additional Notes</h2>
+
+<h2 id="compiling_and_testing_on_android"><span>4.1. </span>Compiling And Testing on Android</h2>
+
+<p>
+The kvtest program is compiled and run on Android as follows.
+First install the Android SDK and NDK.  Then prepare a script
+named "android-gcc" that looks approximately like this:
+
+</p><div><pre>#!/bin/sh
+#
+NDK=/home/drh/Android/Sdk/ndk-bundle
+SYSROOT=$NDK/platforms/android-16/arch-arm
+ABIN=$NDK/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin
+GCC=$ABIN/arm-linux-androideabi-gcc
+$GCC --sysroot=$SYSROOT -fPIC -pie $*
+</pre></div>
+
+<p>Make that script executable and put it on your $PATH.  Then
+compile the kvtest program as follows:
+
+</p><div><pre>android-gcc -Os -I. kvtest.c sqlite3.c -o kvtest-android
+</pre></div>
+
+<p>Next, move the resulting kvtest-android executable to the Android
+device:
+
+</p><div><pre>adb push kvtest-android /data/local/tmp
+</pre></div>
+
+<p>Finally use "adb shell" to get a shell prompt on the Android device,
+cd into the /data/local/tmp directory, and begin running the tests
+as with any other unix host.
+</p><p><small><i>This page last modified on  <a href="https://sqlite.org/docsrc/honeypot" id="mtimelink" data-href="https://sqlite.org/docsrc/finfo/pages/fasterthanfs.in?m=0f7552234f">2023-12-05 14:43:20</a> UTC </i></small></p>
+
+</div></div>
+  </div>
+</body>
+</html>

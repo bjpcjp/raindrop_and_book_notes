@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>functools — Higher-order functions and operations on callable objects</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>functools — Higher-order functions and operations on callable objects</h1>
+    <p><strong>URL:</strong> <a href="https://docs.python.org/3/library/functools.html">https://docs.python.org/3/library/functools.html</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876779994</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section id="module-functools" role="main">
+<span id="functools-higher-order-functions-and-operations-on-callable-objects"></span>
+<p><strong>Source code:</strong> <a href="https://github.com/python/cpython/tree/3.13/Lib/functools.py">Lib/functools.py</a></p>
+<hr>
+<p>The <a href="#module-functools" title="functools: Higher-order functions and operations on callable objects."><code><span>functools</span></code></a> module is for higher-order functions: functions that act on
+or return other functions. In general, any callable object can be treated as a
+function for the purposes of this module.</p>
+<p>The <a href="#module-functools" title="functools: Higher-order functions and operations on callable objects."><code><span>functools</span></code></a> module defines the following functions:</p>
+<dl>
+<dt id="functools.cache">
+<span><span>@</span></span><span><span>functools.</span></span><span><span>cache</span></span><span>(</span><em><span><span>user_function</span></span></em><span>)</span><a href="#functools.cache" title="Link to this definition">¶</a></dt>
+<dd><p>Simple lightweight unbounded function cache.  Sometimes called
+<a href="https://en.wikipedia.org/wiki/Memoization">“memoize”</a>.</p>
+<p>Returns the same as <code><span>lru_cache(maxsize=None)</span></code>, creating a thin
+wrapper around a dictionary lookup for the function arguments.  Because it
+never needs to evict old values, this is smaller and faster than
+<a href="#functools.lru_cache" title="functools.lru_cache"><code><span>lru_cache()</span></code></a> with a size limit.</p>
+<p>For example:</p>
+<div><pre><span></span><span>@cache</span>
+<span>def</span> <span>factorial</span><span>(</span><span>n</span><span>):</span>
+    <span>return</span> <span>n</span> <span>*</span> <span>factorial</span><span>(</span><span>n</span><span>-</span><span>1</span><span>)</span> <span>if</span> <span>n</span> <span>else</span> <span>1</span>
+
+<span>&gt;&gt;&gt;</span> <span>factorial</span><span>(</span><span>10</span><span>)</span>      <span># no previously cached result, makes 11 recursive calls</span>
+<span>3628800</span>
+<span>&gt;&gt;&gt;</span> <span>factorial</span><span>(</span><span>5</span><span>)</span>       <span># just looks up cached value result</span>
+<span>120</span>
+<span>&gt;&gt;&gt;</span> <span>factorial</span><span>(</span><span>12</span><span>)</span>      <span># makes two new recursive calls, the other 10 are cached</span>
+<span>479001600</span>
+</pre></div>
+<p>The cache is threadsafe so that the wrapped function can be used in
+multiple threads.  This means that the underlying data structure will
+remain coherent during concurrent updates.</p>
+<p>It is possible for the wrapped function to be called more than once if
+another thread makes an additional call before the initial call has been
+completed and cached.</p>
+<p><span>Added in version 3.9.</span></p>
+</dd></dl>
+
+<dl>
+<dt id="functools.cached_property">
+<span><span>@</span></span><span><span>functools.</span></span><span><span>cached_property</span></span><span>(</span><em><span><span>func</span></span></em><span>)</span><a href="#functools.cached_property" title="Link to this definition">¶</a></dt>
+<dd><p>Transform a method of a class into a property whose value is computed once
+and then cached as a normal attribute for the life of the instance. Similar
+to <a href="https://docs.python.org/3/library/functions.html#property" title="property"><code><span>property()</span></code></a>, with the addition of caching. Useful for expensive
+computed properties of instances that are otherwise effectively immutable.</p>
+<p>Example:</p>
+<div><pre><span></span><span>class</span> <span>DataSet</span><span>:</span>
+
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>sequence_of_numbers</span><span>):</span>
+        <span>self</span><span>.</span><span>_data</span> <span>=</span> <span>tuple</span><span>(</span><span>sequence_of_numbers</span><span>)</span>
+
+    <span>@cached_property</span>
+    <span>def</span> <span>stdev</span><span>(</span><span>self</span><span>):</span>
+        <span>return</span> <span>statistics</span><span>.</span><span>stdev</span><span>(</span><span>self</span><span>.</span><span>_data</span><span>)</span>
+</pre></div>
+<p>The mechanics of <a href="#functools.cached_property" title="functools.cached_property"><code><span>cached_property()</span></code></a> are somewhat different from
+<a href="https://docs.python.org/3/library/functions.html#property" title="property"><code><span>property()</span></code></a>.  A regular property blocks attribute writes unless a
+setter is defined. In contrast, a <em>cached_property</em> allows writes.</p>
+<p>The <em>cached_property</em> decorator only runs on lookups and only when an
+attribute of the same name doesn’t exist.  When it does run, the
+<em>cached_property</em> writes to the attribute with the same name. Subsequent
+attribute reads and writes take precedence over the <em>cached_property</em>
+method and it works like a normal attribute.</p>
+<p>The cached value can be cleared by deleting the attribute.  This
+allows the <em>cached_property</em> method to run again.</p>
+<p>The <em>cached_property</em> does not prevent a possible race condition in
+multi-threaded usage. The getter function could run more than once on the
+same instance, with the latest run setting the cached value. If the cached
+property is idempotent or otherwise not harmful to run more than once on an
+instance, this is fine. If synchronization is needed, implement the necessary
+locking inside the decorated getter function or around the cached property
+access.</p>
+<p>Note, this decorator interferes with the operation of <span id="index-0"></span><a href="https://peps.python.org/pep-0412/"><strong>PEP 412</strong></a>
+key-sharing dictionaries.  This means that instance dictionaries
+can take more space than usual.</p>
+<p>Also, this decorator requires that the <code><span>__dict__</span></code> attribute on each instance
+be a mutable mapping. This means it will not work with some types, such as
+metaclasses (since the <code><span>__dict__</span></code> attributes on type instances are
+read-only proxies for the class namespace), and those that specify
+<code><span>__slots__</span></code> without including <code><span>__dict__</span></code> as one of the defined slots
+(as such classes don’t provide a <code><span>__dict__</span></code> attribute at all).</p>
+<p>If a mutable mapping is not available or if space-efficient key sharing is
+desired, an effect similar to <a href="#functools.cached_property" title="functools.cached_property"><code><span>cached_property()</span></code></a> can also be achieved by
+stacking <a href="https://docs.python.org/3/library/functions.html#property" title="property"><code><span>property()</span></code></a> on top of <a href="#functools.lru_cache" title="functools.lru_cache"><code><span>lru_cache()</span></code></a>. See
+<a href="https://docs.python.org/3/faq/programming.html#faq-cache-method-calls"><span>How do I cache method calls?</span></a> for more details on how this differs from <a href="#functools.cached_property" title="functools.cached_property"><code><span>cached_property()</span></code></a>.</p>
+<p><span>Added in version 3.8.</span></p>
+<p><span>Changed in version 3.12: </span>Prior to Python 3.12, <code><span>cached_property</span></code> included an undocumented lock to
+ensure that in multi-threaded usage the getter function was guaranteed to
+run only once per instance. However, the lock was per-property, not
+per-instance, which could result in unacceptably high lock contention. In
+Python 3.12+ this locking is removed.</p>
+</dd></dl>
+
+<dl>
+<dt id="functools.cmp_to_key">
+<span><span>functools.</span></span><span><span>cmp_to_key</span></span><span>(</span><em><span><span>func</span></span></em><span>)</span><a href="#functools.cmp_to_key" title="Link to this definition">¶</a></dt>
+<dd><p>Transform an old-style comparison function to a <a href="https://docs.python.org/3/glossary.html#term-key-function"><span>key function</span></a>.  Used
+with tools that accept key functions (such as <a href="https://docs.python.org/3/library/functions.html#sorted" title="sorted"><code><span>sorted()</span></code></a>, <a href="https://docs.python.org/3/library/functions.html#min" title="min"><code><span>min()</span></code></a>,
+<a href="https://docs.python.org/3/library/functions.html#max" title="max"><code><span>max()</span></code></a>, <a href="https://docs.python.org/3/library/heapq.html#heapq.nlargest" title="heapq.nlargest"><code><span>heapq.nlargest()</span></code></a>, <a href="https://docs.python.org/3/library/heapq.html#heapq.nsmallest" title="heapq.nsmallest"><code><span>heapq.nsmallest()</span></code></a>,
+<a href="https://docs.python.org/3/library/itertools.html#itertools.groupby" title="itertools.groupby"><code><span>itertools.groupby()</span></code></a>).  This function is primarily used as a transition
+tool for programs being converted from Python 2 which supported the use of
+comparison functions.</p>
+<p>A comparison function is any callable that accepts two arguments, compares them,
+and returns a negative number for less-than, zero for equality, or a positive
+number for greater-than.  A key function is a callable that accepts one
+argument and returns another value to be used as the sort key.</p>
+<p>Example:</p>
+<div><pre><span></span><span>sorted</span><span>(</span><span>iterable</span><span>,</span> <span>key</span><span>=</span><span>cmp_to_key</span><span>(</span><span>locale</span><span>.</span><span>strcoll</span><span>))</span>  <span># locale-aware sort order</span>
+</pre></div>
+<p>For sorting examples and a brief sorting tutorial, see <a href="https://docs.python.org/3/howto/sorting.html#sortinghowto"><span>Sorting Techniques</span></a>.</p>
+<p><span>Added in version 3.2.</span></p>
+</dd></dl>
+
+<dl>
+<dt id="functools.lru_cache">
+<span><span>@</span></span><span><span>functools.</span></span><span><span>lru_cache</span></span><span>(</span><em><span><span>user_function</span></span></em><span>)</span><a href="#functools.lru_cache" title="Link to this definition">¶</a></dt>
+<dt>
+<span><span>@</span></span><span><span>functools.</span></span><span><span>lru_cache</span></span><span>(</span><em><span><span>maxsize</span></span><span><span>=</span></span><span><span>128</span></span></em>, <em><span><span>typed</span></span><span><span>=</span></span><span><span>False</span></span></em><span>)</span></dt>
+<dd><p>Decorator to wrap a function with a memoizing callable that saves up to the
+<em>maxsize</em> most recent calls.  It can save time when an expensive or I/O bound
+function is periodically called with the same arguments.</p>
+<p>The cache is threadsafe so that the wrapped function can be used in
+multiple threads.  This means that the underlying data structure will
+remain coherent during concurrent updates.</p>
+<p>It is possible for the wrapped function to be called more than once if
+another thread makes an additional call before the initial call has been
+completed and cached.</p>
+<p>Since a dictionary is used to cache results, the positional and keyword
+arguments to the function must be <a href="https://docs.python.org/3/glossary.html#term-hashable"><span>hashable</span></a>.</p>
+<p>Distinct argument patterns may be considered to be distinct calls with
+separate cache entries.  For example, <code><span>f(a=1,</span> <span>b=2)</span></code> and <code><span>f(b=2,</span> <span>a=1)</span></code>
+differ in their keyword argument order and may have two separate cache
+entries.</p>
+<p>If <em>user_function</em> is specified, it must be a callable. This allows the
+<em>lru_cache</em> decorator to be applied directly to a user function, leaving
+the <em>maxsize</em> at its default value of 128:</p>
+<div><pre><span></span><span>@lru_cache</span>
+<span>def</span> <span>count_vowels</span><span>(</span><span>sentence</span><span>):</span>
+    <span>return</span> <span>sum</span><span>(</span><span>sentence</span><span>.</span><span>count</span><span>(</span><span>vowel</span><span>)</span> <span>for</span> <span>vowel</span> <span>in</span> <span>'AEIOUaeiou'</span><span>)</span>
+</pre></div>
+<p>If <em>maxsize</em> is set to <code><span>None</span></code>, the LRU feature is disabled and the cache can
+grow without bound.</p>
+<p>If <em>typed</em> is set to true, function arguments of different types will be
+cached separately.  If <em>typed</em> is false, the implementation will usually
+regard them as equivalent calls and only cache a single result. (Some
+types such as <em>str</em> and <em>int</em> may be cached separately even when <em>typed</em>
+is false.)</p>
+<p>Note, type specificity applies only to the function’s immediate arguments
+rather than their contents.  The scalar arguments, <code><span>Decimal(42)</span></code> and
+<code><span>Fraction(42)</span></code> are be treated as distinct calls with distinct results.
+In contrast, the tuple arguments <code><span>('answer',</span> <span>Decimal(42))</span></code> and
+<code><span>('answer',</span> <span>Fraction(42))</span></code> are treated as equivalent.</p>
+<p>The wrapped function is instrumented with a <code><span>cache_parameters()</span></code>
+function that returns a new <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="dict"><code><span>dict</span></code></a> showing the values for <em>maxsize</em>
+and <em>typed</em>.  This is for information purposes only.  Mutating the values
+has no effect.</p>
+<p>To help measure the effectiveness of the cache and tune the <em>maxsize</em>
+parameter, the wrapped function is instrumented with a <code><span>cache_info()</span></code>
+function that returns a <a href="https://docs.python.org/3/glossary.html#term-named-tuple"><span>named tuple</span></a> showing <em>hits</em>, <em>misses</em>,
+<em>maxsize</em> and <em>currsize</em>.</p>
+<p>The decorator also provides a <code><span>cache_clear()</span></code> function for clearing or
+invalidating the cache.</p>
+<p>The original underlying function is accessible through the
+<code><span>__wrapped__</span></code> attribute.  This is useful for introspection, for
+bypassing the cache, or for rewrapping the function with a different cache.</p>
+<p>The cache keeps references to the arguments and return values until they age
+out of the cache or until the cache is cleared.</p>
+<p>If a method is cached, the <code><span>self</span></code> instance argument is included in the
+cache.  See <a href="https://docs.python.org/3/faq/programming.html#faq-cache-method-calls"><span>How do I cache method calls?</span></a></p>
+<p>An <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_(LRU)">LRU (least recently used) cache</a>
+works best when the most recent calls are the best predictors of upcoming
+calls (for example, the most popular articles on a news server tend to
+change each day).  The cache’s size limit assures that the cache does not
+grow without bound on long-running processes such as web servers.</p>
+<p>In general, the LRU cache should only be used when you want to reuse
+previously computed values.  Accordingly, it doesn’t make sense to cache
+functions with side-effects, functions that need to create
+distinct mutable objects on each call (such as generators and async functions),
+or impure functions such as time() or random().</p>
+<p>Example of an LRU cache for static web content:</p>
+<div><pre><span></span><span>@lru_cache</span><span>(</span><span>maxsize</span><span>=</span><span>32</span><span>)</span>
+<span>def</span> <span>get_pep</span><span>(</span><span>num</span><span>):</span>
+    <span>'Retrieve text of a Python Enhancement Proposal'</span>
+    <span>resource</span> <span>=</span> <span>f</span><span>'https://peps.python.org/pep-</span><span>{</span><span>num</span><span>:</span><span>04d</span><span>}</span><span>'</span>
+    <span>try</span><span>:</span>
+        <span>with</span> <span>urllib</span><span>.</span><span>request</span><span>.</span><span>urlopen</span><span>(</span><span>resource</span><span>)</span> <span>as</span> <span>s</span><span>:</span>
+            <span>return</span> <span>s</span><span>.</span><span>read</span><span>()</span>
+    <span>except</span> <span>urllib</span><span>.</span><span>error</span><span>.</span><span>HTTPError</span><span>:</span>
+        <span>return</span> <span>'Not Found'</span>
+
+<span>&gt;&gt;&gt;</span> <span>for</span> <span>n</span> <span>in</span> <span>8</span><span>,</span> <span>290</span><span>,</span> <span>308</span><span>,</span> <span>320</span><span>,</span> <span>8</span><span>,</span> <span>218</span><span>,</span> <span>320</span><span>,</span> <span>279</span><span>,</span> <span>289</span><span>,</span> <span>320</span><span>,</span> <span>9991</span><span>:</span>
+<span>...</span>     <span>pep</span> <span>=</span> <span>get_pep</span><span>(</span><span>n</span><span>)</span>
+<span>...</span>     <span>print</span><span>(</span><span>n</span><span>,</span> <span>len</span><span>(</span><span>pep</span><span>))</span>
+
+<span>&gt;&gt;&gt;</span> <span>get_pep</span><span>.</span><span>cache_info</span><span>()</span>
+<span>CacheInfo</span><span>(</span><span>hits</span><span>=</span><span>3</span><span>,</span> <span>misses</span><span>=</span><span>8</span><span>,</span> <span>maxsize</span><span>=</span><span>32</span><span>,</span> <span>currsize</span><span>=</span><span>8</span><span>)</span>
+</pre></div>
+<p>Example of efficiently computing
+<a href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci numbers</a>
+using a cache to implement a
+<a href="https://en.wikipedia.org/wiki/Dynamic_programming">dynamic programming</a>
+technique:</p>
+<div><pre><span></span><span>@lru_cache</span><span>(</span><span>maxsize</span><span>=</span><span>None</span><span>)</span>
+<span>def</span> <span>fib</span><span>(</span><span>n</span><span>):</span>
+    <span>if</span> <span>n</span> <span>&lt;</span> <span>2</span><span>:</span>
+        <span>return</span> <span>n</span>
+    <span>return</span> <span>fib</span><span>(</span><span>n</span><span>-</span><span>1</span><span>)</span> <span>+</span> <span>fib</span><span>(</span><span>n</span><span>-</span><span>2</span><span>)</span>
+
+<span>&gt;&gt;&gt;</span> <span>[</span><span>fib</span><span>(</span><span>n</span><span>)</span> <span>for</span> <span>n</span> <span>in</span> <span>range</span><span>(</span><span>16</span><span>)]</span>
+<span>[</span><span>0</span><span>,</span> <span>1</span><span>,</span> <span>1</span><span>,</span> <span>2</span><span>,</span> <span>3</span><span>,</span> <span>5</span><span>,</span> <span>8</span><span>,</span> <span>13</span><span>,</span> <span>21</span><span>,</span> <span>34</span><span>,</span> <span>55</span><span>,</span> <span>89</span><span>,</span> <span>144</span><span>,</span> <span>233</span><span>,</span> <span>377</span><span>,</span> <span>610</span><span>]</span>
+
+<span>&gt;&gt;&gt;</span> <span>fib</span><span>.</span><span>cache_info</span><span>()</span>
+<span>CacheInfo</span><span>(</span><span>hits</span><span>=</span><span>28</span><span>,</span> <span>misses</span><span>=</span><span>16</span><span>,</span> <span>maxsize</span><span>=</span><span>None</span><span>,</span> <span>currsize</span><span>=</span><span>16</span><span>)</span>
+</pre></div>
+<p><span>Added in version 3.2.</span></p>
+<p><span>Changed in version 3.3: </span>Added the <em>typed</em> option.</p>
+<p><span>Changed in version 3.8: </span>Added the <em>user_function</em> option.</p>
+<p><span>Changed in version 3.9: </span>Added the function <code><span>cache_parameters()</span></code></p>
+</dd></dl>
+
+<dl>
+<dt id="functools.total_ordering">
+<span><span>@</span></span><span><span>functools.</span></span><span><span>total_ordering</span></span><a href="#functools.total_ordering" title="Link to this definition">¶</a></dt>
+<dd><p>Given a class defining one or more rich comparison ordering methods, this
+class decorator supplies the rest.  This simplifies the effort involved
+in specifying all of the possible rich comparison operations:</p>
+<p>The class must define one of <code><span>__lt__()</span></code>, <code><span>__le__()</span></code>,
+<code><span>__gt__()</span></code>, or <code><span>__ge__()</span></code>.
+In addition, the class should supply an <code><span>__eq__()</span></code> method.</p>
+<p>For example:</p>
+<div><pre><span></span><span>@total_ordering</span>
+<span>class</span> <span>Student</span><span>:</span>
+    <span>def</span> <span>_is_valid_operand</span><span>(</span><span>self</span><span>,</span> <span>other</span><span>):</span>
+        <span>return</span> <span>(</span><span>hasattr</span><span>(</span><span>other</span><span>,</span> <span>"lastname"</span><span>)</span> <span>and</span>
+                <span>hasattr</span><span>(</span><span>other</span><span>,</span> <span>"firstname"</span><span>))</span>
+    <span>def</span> <span>__eq__</span><span>(</span><span>self</span><span>,</span> <span>other</span><span>):</span>
+        <span>if</span> <span>not</span> <span>self</span><span>.</span><span>_is_valid_operand</span><span>(</span><span>other</span><span>):</span>
+            <span>return</span> <span>NotImplemented</span>
+        <span>return</span> <span>((</span><span>self</span><span>.</span><span>lastname</span><span>.</span><span>lower</span><span>(),</span> <span>self</span><span>.</span><span>firstname</span><span>.</span><span>lower</span><span>())</span> <span>==</span>
+                <span>(</span><span>other</span><span>.</span><span>lastname</span><span>.</span><span>lower</span><span>(),</span> <span>other</span><span>.</span><span>firstname</span><span>.</span><span>lower</span><span>()))</span>
+    <span>def</span> <span>__lt__</span><span>(</span><span>self</span><span>,</span> <span>other</span><span>):</span>
+        <span>if</span> <span>not</span> <span>self</span><span>.</span><span>_is_valid_operand</span><span>(</span><span>other</span><span>):</span>
+            <span>return</span> <span>NotImplemented</span>
+        <span>return</span> <span>((</span><span>self</span><span>.</span><span>lastname</span><span>.</span><span>lower</span><span>(),</span> <span>self</span><span>.</span><span>firstname</span><span>.</span><span>lower</span><span>())</span> <span>&lt;</span>
+                <span>(</span><span>other</span><span>.</span><span>lastname</span><span>.</span><span>lower</span><span>(),</span> <span>other</span><span>.</span><span>firstname</span><span>.</span><span>lower</span><span>()))</span>
+</pre></div>
+<div>
+<p>Note</p>
+<p>While this decorator makes it easy to create well behaved totally
+ordered types, it <em>does</em> come at the cost of slower execution and
+more complex stack traces for the derived comparison methods. If
+performance benchmarking indicates this is a bottleneck for a given
+application, implementing all six rich comparison methods instead is
+likely to provide an easy speed boost.</p>
+</div>
+<div>
+<p>Note</p>
+<p>This decorator makes no attempt to override methods that have been
+declared in the class <em>or its superclasses</em>. Meaning that if a
+superclass defines a comparison operator, <em>total_ordering</em> will not
+implement it again, even if the original method is abstract.</p>
+</div>
+<p><span>Added in version 3.2.</span></p>
+<p><span>Changed in version 3.4: </span>Returning <code><span>NotImplemented</span></code> from the underlying comparison function for
+unrecognised types is now supported.</p>
+</dd></dl>
+
+<dl>
+<dt id="functools.partial">
+<span><span>functools.</span></span><span><span>partial</span></span><span>(</span><em><span><span>func</span></span></em>, <em><span><span>/</span></span></em>, <em><span><span>*</span></span><span><span>args</span></span></em>, <em><span><span>**</span></span><span><span>keywords</span></span></em><span>)</span><a href="#functools.partial" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new <a href="#partial-objects"><span>partial object</span></a> which when called
+will behave like <em>func</em> called with the positional arguments <em>args</em>
+and keyword arguments <em>keywords</em>. If more arguments are supplied to the
+call, they are appended to <em>args</em>. If additional keyword arguments are
+supplied, they extend and override <em>keywords</em>.
+Roughly equivalent to:</p>
+<div><pre><span></span><span>def</span> <span>partial</span><span>(</span><span>func</span><span>,</span> <span>/</span><span>,</span> <span>*</span><span>args</span><span>,</span> <span>**</span><span>keywords</span><span>):</span>
+    <span>def</span> <span>newfunc</span><span>(</span><span>*</span><span>fargs</span><span>,</span> <span>**</span><span>fkeywords</span><span>):</span>
+        <span>newkeywords</span> <span>=</span> <span>{</span><span>**</span><span>keywords</span><span>,</span> <span>**</span><span>fkeywords</span><span>}</span>
+        <span>return</span> <span>func</span><span>(</span><span>*</span><span>args</span><span>,</span> <span>*</span><span>fargs</span><span>,</span> <span>**</span><span>newkeywords</span><span>)</span>
+    <span>newfunc</span><span>.</span><span>func</span> <span>=</span> <span>func</span>
+    <span>newfunc</span><span>.</span><span>args</span> <span>=</span> <span>args</span>
+    <span>newfunc</span><span>.</span><span>keywords</span> <span>=</span> <span>keywords</span>
+    <span>return</span> <span>newfunc</span>
+</pre></div>
+<p>The <a href="#functools.partial" title="functools.partial"><code><span>partial()</span></code></a> is used for partial function application which “freezes”
+some portion of a function’s arguments and/or keywords resulting in a new object
+with a simplified signature.  For example, <a href="#functools.partial" title="functools.partial"><code><span>partial()</span></code></a> can be used to create
+a callable that behaves like the <a href="https://docs.python.org/3/library/functions.html#int" title="int"><code><span>int()</span></code></a> function where the <em>base</em> argument
+defaults to two:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>from</span> <span>functools</span> <span>import</span> <span>partial</span>
+<span>&gt;&gt;&gt; </span><span>basetwo</span> <span>=</span> <span>partial</span><span>(</span><span>int</span><span>,</span> <span>base</span><span>=</span><span>2</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span>basetwo</span><span>.</span><span>__doc__</span> <span>=</span> <span>'Convert base 2 string to an int.'</span>
+<span>&gt;&gt;&gt; </span><span>basetwo</span><span>(</span><span>'10010'</span><span>)</span>
+<span>18</span>
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt id="functools.partialmethod">
+<em><span>class</span><span> </span></em><span><span>functools.</span></span><span><span>partialmethod</span></span><span>(</span><em><span><span>func</span></span></em>, <em><span><span>/</span></span></em>, <em><span><span>*</span></span><span><span>args</span></span></em>, <em><span><span>**</span></span><span><span>keywords</span></span></em><span>)</span><a href="#functools.partialmethod" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new <a href="#functools.partialmethod" title="functools.partialmethod"><code><span>partialmethod</span></code></a> descriptor which behaves
+like <a href="#functools.partial" title="functools.partial"><code><span>partial</span></code></a> except that it is designed to be used as a method
+definition rather than being directly callable.</p>
+<p><em>func</em> must be a <a href="https://docs.python.org/3/glossary.html#term-descriptor"><span>descriptor</span></a> or a callable (objects which are both,
+like normal functions, are handled as descriptors).</p>
+<p>When <em>func</em> is a descriptor (such as a normal Python function,
+<a href="https://docs.python.org/3/library/functions.html#classmethod" title="classmethod"><code><span>classmethod()</span></code></a>, <a href="https://docs.python.org/3/library/functions.html#staticmethod" title="staticmethod"><code><span>staticmethod()</span></code></a>, <code><span>abstractmethod()</span></code> or
+another instance of <a href="#functools.partialmethod" title="functools.partialmethod"><code><span>partialmethod</span></code></a>), calls to <code><span>__get__</span></code> are
+delegated to the underlying descriptor, and an appropriate
+<a href="#partial-objects"><span>partial object</span></a> returned as the result.</p>
+<p>When <em>func</em> is a non-descriptor callable, an appropriate bound method is
+created dynamically. This behaves like a normal Python function when
+used as a method: the <em>self</em> argument will be inserted as the first
+positional argument, even before the <em>args</em> and <em>keywords</em> supplied to
+the <a href="#functools.partialmethod" title="functools.partialmethod"><code><span>partialmethod</span></code></a> constructor.</p>
+<p>Example:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>class</span> <span>Cell</span><span>:</span>
+<span>... </span>    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>):</span>
+<span>... </span>        <span>self</span><span>.</span><span>_alive</span> <span>=</span> <span>False</span>
+<span>... </span>    <span>@property</span>
+<span>... </span>    <span>def</span> <span>alive</span><span>(</span><span>self</span><span>):</span>
+<span>... </span>        <span>return</span> <span>self</span><span>.</span><span>_alive</span>
+<span>... </span>    <span>def</span> <span>set_state</span><span>(</span><span>self</span><span>,</span> <span>state</span><span>):</span>
+<span>... </span>        <span>self</span><span>.</span><span>_alive</span> <span>=</span> <span>bool</span><span>(</span><span>state</span><span>)</span>
+<span>... </span>    <span>set_alive</span> <span>=</span> <span>partialmethod</span><span>(</span><span>set_state</span><span>,</span> <span>True</span><span>)</span>
+<span>... </span>    <span>set_dead</span> <span>=</span> <span>partialmethod</span><span>(</span><span>set_state</span><span>,</span> <span>False</span><span>)</span>
+<span>...</span>
+<span>&gt;&gt;&gt; </span><span>c</span> <span>=</span> <span>Cell</span><span>()</span>
+<span>&gt;&gt;&gt; </span><span>c</span><span>.</span><span>alive</span>
+<span>False</span>
+<span>&gt;&gt;&gt; </span><span>c</span><span>.</span><span>set_alive</span><span>()</span>
+<span>&gt;&gt;&gt; </span><span>c</span><span>.</span><span>alive</span>
+<span>True</span>
+</pre></div>
+<p><span>Added in version 3.4.</span></p>
+</dd></dl>
+
+<dl>
+<dt id="functools.reduce">
+<span><span>functools.</span></span><span><span>reduce</span></span><span>(</span><em><span><span>function</span></span></em>, <em><span><span>iterable</span></span></em>, <span>[</span><em><span><span>initial</span></span></em>, <span>]</span><em><span><span>/</span></span></em><span>)</span><a href="#functools.reduce" title="Link to this definition">¶</a></dt>
+<dd><p>Apply <em>function</em> of two arguments cumulatively to the items of <em>iterable</em>, from
+left to right, so as to reduce the iterable to a single value.  For example,
+<code><span>reduce(lambda</span> <span>x,</span> <span>y:</span> <span>x+y,</span> <span>[1,</span> <span>2,</span> <span>3,</span> <span>4,</span> <span>5])</span></code> calculates <code><span>((((1+2)+3)+4)+5)</span></code>.
+The left argument, <em>x</em>, is the accumulated value and the right argument, <em>y</em>, is
+the update value from the <em>iterable</em>.  If the optional <em>initial</em> is present,
+it is placed before the items of the iterable in the calculation, and serves as
+a default when the iterable is empty.  If <em>initial</em> is not given and
+<em>iterable</em> contains only one item, the first item is returned.</p>
+<p>Roughly equivalent to:</p>
+<div><pre><span></span><span>initial_missing</span> <span>=</span> <span>object</span><span>()</span>
+
+<span>def</span> <span>reduce</span><span>(</span><span>function</span><span>,</span> <span>iterable</span><span>,</span> <span>initial</span><span>=</span><span>initial_missing</span><span>,</span> <span>/</span><span>):</span>
+    <span>it</span> <span>=</span> <span>iter</span><span>(</span><span>iterable</span><span>)</span>
+    <span>if</span> <span>initial</span> <span>is</span> <span>initial_missing</span><span>:</span>
+        <span>value</span> <span>=</span> <span>next</span><span>(</span><span>it</span><span>)</span>
+    <span>else</span><span>:</span>
+        <span>value</span> <span>=</span> <span>initial</span>
+    <span>for</span> <span>element</span> <span>in</span> <span>it</span><span>:</span>
+        <span>value</span> <span>=</span> <span>function</span><span>(</span><span>value</span><span>,</span> <span>element</span><span>)</span>
+    <span>return</span> <span>value</span>
+</pre></div>
+<p>See <a href="https://docs.python.org/3/library/itertools.html#itertools.accumulate" title="itertools.accumulate"><code><span>itertools.accumulate()</span></code></a> for an iterator that yields all intermediate
+values.</p>
+</dd></dl>
+
+<dl>
+<dt id="functools.singledispatch">
+<span><span>@</span></span><span><span>functools.</span></span><span><span>singledispatch</span></span><a href="#functools.singledispatch" title="Link to this definition">¶</a></dt>
+<dd><p>Transform a function into a <a href="https://docs.python.org/3/glossary.html#term-single-dispatch"><span>single-dispatch</span></a> <a href="https://docs.python.org/3/glossary.html#term-generic-function"><span>generic function</span></a>.</p>
+<p>To define a generic function, decorate it with the <code><span>@singledispatch</span></code>
+decorator. When defining a function using <code><span>@singledispatch</span></code>, note that the
+dispatch happens on the type of the first argument:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>from</span> <span>functools</span> <span>import</span> <span>singledispatch</span>
+<span>&gt;&gt;&gt; </span><span>@singledispatch</span>
+<span>... </span><span>def</span> <span>fun</span><span>(</span><span>arg</span><span>,</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>if</span> <span>verbose</span><span>:</span>
+<span>... </span>        <span>print</span><span>(</span><span>"Let me just say,"</span><span>,</span> <span>end</span><span>=</span><span>" "</span><span>)</span>
+<span>... </span>    <span>print</span><span>(</span><span>arg</span><span>)</span>
+</pre></div>
+<p>To add overloaded implementations to the function, use the <code><span>register()</span></code>
+attribute of the generic function, which can be used as a decorator.  For
+functions annotated with types, the decorator will infer the type of the
+first argument automatically:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>@fun</span><span>.</span><span>register</span>
+<span>... </span><span>def</span> <span>_</span><span>(</span><span>arg</span><span>:</span> <span>int</span><span>,</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>if</span> <span>verbose</span><span>:</span>
+<span>... </span>        <span>print</span><span>(</span><span>"Strength in numbers, eh?"</span><span>,</span> <span>end</span><span>=</span><span>" "</span><span>)</span>
+<span>... </span>    <span>print</span><span>(</span><span>arg</span><span>)</span>
+<span>...</span>
+<span>&gt;&gt;&gt; </span><span>@fun</span><span>.</span><span>register</span>
+<span>... </span><span>def</span> <span>_</span><span>(</span><span>arg</span><span>:</span> <span>list</span><span>,</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>if</span> <span>verbose</span><span>:</span>
+<span>... </span>        <span>print</span><span>(</span><span>"Enumerate this:"</span><span>)</span>
+<span>... </span>    <span>for</span> <span>i</span><span>,</span> <span>elem</span> <span>in</span> <span>enumerate</span><span>(</span><span>arg</span><span>):</span>
+<span>... </span>        <span>print</span><span>(</span><span>i</span><span>,</span> <span>elem</span><span>)</span>
+</pre></div>
+<p><a href="https://docs.python.org/3/library/types.html#types.UnionType" title="types.UnionType"><code><span>types.UnionType</span></code></a> and <a href="https://docs.python.org/3/library/typing.html#typing.Union" title="typing.Union"><code><span>typing.Union</span></code></a> can also be used:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>@fun</span><span>.</span><span>register</span>
+<span>... </span><span>def</span> <span>_</span><span>(</span><span>arg</span><span>:</span> <span>int</span> <span>|</span> <span>float</span><span>,</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>if</span> <span>verbose</span><span>:</span>
+<span>... </span>        <span>print</span><span>(</span><span>"Strength in numbers, eh?"</span><span>,</span> <span>end</span><span>=</span><span>" "</span><span>)</span>
+<span>... </span>    <span>print</span><span>(</span><span>arg</span><span>)</span>
+<span>...</span>
+<span>&gt;&gt;&gt; </span><span>from</span> <span>typing</span> <span>import</span> <span>Union</span>
+<span>&gt;&gt;&gt; </span><span>@fun</span><span>.</span><span>register</span>
+<span>... </span><span>def</span> <span>_</span><span>(</span><span>arg</span><span>:</span> <span>Union</span><span>[</span><span>list</span><span>,</span> <span>set</span><span>],</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>if</span> <span>verbose</span><span>:</span>
+<span>... </span>        <span>print</span><span>(</span><span>"Enumerate this:"</span><span>)</span>
+<span>... </span>    <span>for</span> <span>i</span><span>,</span> <span>elem</span> <span>in</span> <span>enumerate</span><span>(</span><span>arg</span><span>):</span>
+<span>... </span>        <span>print</span><span>(</span><span>i</span><span>,</span> <span>elem</span><span>)</span>
+<span>...</span>
+</pre></div>
+<p>For code which doesn’t use type annotations, the appropriate type
+argument can be passed explicitly to the decorator itself:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>@fun</span><span>.</span><span>register</span><span>(</span><span>complex</span><span>)</span>
+<span>... </span><span>def</span> <span>_</span><span>(</span><span>arg</span><span>,</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>if</span> <span>verbose</span><span>:</span>
+<span>... </span>        <span>print</span><span>(</span><span>"Better than complicated."</span><span>,</span> <span>end</span><span>=</span><span>" "</span><span>)</span>
+<span>... </span>    <span>print</span><span>(</span><span>arg</span><span>.</span><span>real</span><span>,</span> <span>arg</span><span>.</span><span>imag</span><span>)</span>
+<span>...</span>
+</pre></div>
+<p>For code that dispatches on a collections type (e.g., <code><span>list</span></code>), but wants
+to typehint the items of the collection (e.g., <code><span>list[int]</span></code>), the
+dispatch type should be passed explicitly to the decorator itself with the
+typehint going into the function definition:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>@fun</span><span>.</span><span>register</span><span>(</span><span>list</span><span>)</span>
+<span>... </span><span>def</span> <span>_</span><span>(</span><span>arg</span><span>:</span> <span>list</span><span>[</span><span>int</span><span>],</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>if</span> <span>verbose</span><span>:</span>
+<span>... </span>        <span>print</span><span>(</span><span>"Enumerate this:"</span><span>)</span>
+<span>... </span>    <span>for</span> <span>i</span><span>,</span> <span>elem</span> <span>in</span> <span>enumerate</span><span>(</span><span>arg</span><span>):</span>
+<span>... </span>        <span>print</span><span>(</span><span>i</span><span>,</span> <span>elem</span><span>)</span>
+</pre></div>
+<div>
+<p>Note</p>
+<p>At runtime the function will dispatch on an instance of a list regardless
+of the type contained within the list i.e. <code><span>[1,2,3]</span></code> will be
+dispatched the same as <code><span>["foo",</span> <span>"bar",</span> <span>"baz"]</span></code>. The annotation
+provided in this example is for static type checkers only and has no
+runtime impact.</p>
+</div>
+<p>To enable registering <a href="https://docs.python.org/3/glossary.html#term-lambda"><span>lambdas</span></a> and pre-existing functions,
+the <code><span>register()</span></code> attribute can also be used in a functional form:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>def</span> <span>nothing</span><span>(</span><span>arg</span><span>,</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>print</span><span>(</span><span>"Nothing."</span><span>)</span>
+<span>...</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>.</span><span>register</span><span>(</span><span>type</span><span>(</span><span>None</span><span>),</span> <span>nothing</span><span>)</span>
+</pre></div>
+<p>The <code><span>register()</span></code> attribute returns the undecorated function. This
+enables decorator stacking, <a href="https://docs.python.org/3/library/pickle.html#module-pickle" title="pickle: Convert Python objects to streams of bytes and back."><code><span>pickling</span></code></a>, and the creation
+of unit tests for each variant independently:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>@fun</span><span>.</span><span>register</span><span>(</span><span>float</span><span>)</span>
+<span>... </span><span>@fun</span><span>.</span><span>register</span><span>(</span><span>Decimal</span><span>)</span>
+<span>... </span><span>def</span> <span>fun_num</span><span>(</span><span>arg</span><span>,</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>if</span> <span>verbose</span><span>:</span>
+<span>... </span>        <span>print</span><span>(</span><span>"Half of your number:"</span><span>,</span> <span>end</span><span>=</span><span>" "</span><span>)</span>
+<span>... </span>    <span>print</span><span>(</span><span>arg</span> <span>/</span> <span>2</span><span>)</span>
+<span>...</span>
+<span>&gt;&gt;&gt; </span><span>fun_num</span> <span>is</span> <span>fun</span>
+<span>False</span>
+</pre></div>
+<p>When called, the generic function dispatches on the type of the first
+argument:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>fun</span><span>(</span><span>"Hello, world."</span><span>)</span>
+<span>Hello, world.</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>(</span><span>"test."</span><span>,</span> <span>verbose</span><span>=</span><span>True</span><span>)</span>
+<span>Let me just say, test.</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>(</span><span>42</span><span>,</span> <span>verbose</span><span>=</span><span>True</span><span>)</span>
+<span>Strength in numbers, eh? 42</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>([</span><span>'spam'</span><span>,</span> <span>'spam'</span><span>,</span> <span>'eggs'</span><span>,</span> <span>'spam'</span><span>],</span> <span>verbose</span><span>=</span><span>True</span><span>)</span>
+<span>Enumerate this:</span>
+<span>0 spam</span>
+<span>1 spam</span>
+<span>2 eggs</span>
+<span>3 spam</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>(</span><span>None</span><span>)</span>
+<span>Nothing.</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>(</span><span>1.23</span><span>)</span>
+<span>0.615</span>
+</pre></div>
+<p>Where there is no registered implementation for a specific type, its
+method resolution order is used to find a more generic implementation.
+The original function decorated with <code><span>@singledispatch</span></code> is registered
+for the base <a href="https://docs.python.org/3/library/functions.html#object" title="object"><code><span>object</span></code></a> type, which means it is used if no better
+implementation is found.</p>
+<p>If an implementation is registered to an <a href="https://docs.python.org/3/glossary.html#term-abstract-base-class"><span>abstract base class</span></a>,
+virtual subclasses of the base class will be dispatched to that
+implementation:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>from</span> <span>collections.abc</span> <span>import</span> <span>Mapping</span>
+<span>&gt;&gt;&gt; </span><span>@fun</span><span>.</span><span>register</span>
+<span>... </span><span>def</span> <span>_</span><span>(</span><span>arg</span><span>:</span> <span>Mapping</span><span>,</span> <span>verbose</span><span>=</span><span>False</span><span>):</span>
+<span>... </span>    <span>if</span> <span>verbose</span><span>:</span>
+<span>... </span>        <span>print</span><span>(</span><span>"Keys &amp; Values"</span><span>)</span>
+<span>... </span>    <span>for</span> <span>key</span><span>,</span> <span>value</span> <span>in</span> <span>arg</span><span>.</span><span>items</span><span>():</span>
+<span>... </span>        <span>print</span><span>(</span><span>key</span><span>,</span> <span>"=&gt;"</span><span>,</span> <span>value</span><span>)</span>
+<span>...</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>({</span><span>"a"</span><span>:</span> <span>"b"</span><span>})</span>
+<span>a =&gt; b</span>
+</pre></div>
+<p>To check which implementation the generic function will choose for
+a given type, use the <code><span>dispatch()</span></code> attribute:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>fun</span><span>.</span><span>dispatch</span><span>(</span><span>float</span><span>)</span>
+<span>&lt;function fun_num at 0x1035a2840&gt;</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>.</span><span>dispatch</span><span>(</span><span>dict</span><span>)</span>    <span># note: default implementation</span>
+<span>&lt;function fun at 0x103fe0000&gt;</span>
+</pre></div>
+<p>To access all registered implementations, use the read-only <code><span>registry</span></code>
+attribute:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>fun</span><span>.</span><span>registry</span><span>.</span><span>keys</span><span>()</span>
+<span>dict_keys([&lt;class 'NoneType'&gt;, &lt;class 'int'&gt;, &lt;class 'object'&gt;,</span>
+<span>          &lt;class 'decimal.Decimal'&gt;, &lt;class 'list'&gt;,</span>
+<span>          &lt;class 'float'&gt;])</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>.</span><span>registry</span><span>[</span><span>float</span><span>]</span>
+<span>&lt;function fun_num at 0x1035a2840&gt;</span>
+<span>&gt;&gt;&gt; </span><span>fun</span><span>.</span><span>registry</span><span>[</span><span>object</span><span>]</span>
+<span>&lt;function fun at 0x103fe0000&gt;</span>
+</pre></div>
+<p><span>Added in version 3.4.</span></p>
+<p><span>Changed in version 3.7: </span>The <code><span>register()</span></code> attribute now supports using type annotations.</p>
+<p><span>Changed in version 3.11: </span>The <code><span>register()</span></code> attribute now supports <a href="https://docs.python.org/3/library/types.html#types.UnionType" title="types.UnionType"><code><span>types.UnionType</span></code></a>
+and <a href="https://docs.python.org/3/library/typing.html#typing.Union" title="typing.Union"><code><span>typing.Union</span></code></a> as type annotations.</p>
+</dd></dl>
+
+<dl>
+<dt id="functools.singledispatchmethod">
+<em><span>class</span><span> </span></em><span><span>functools.</span></span><span><span>singledispatchmethod</span></span><span>(</span><em><span><span>func</span></span></em><span>)</span><a href="#functools.singledispatchmethod" title="Link to this definition">¶</a></dt>
+<dd><p>Transform a method into a <a href="https://docs.python.org/3/glossary.html#term-single-dispatch"><span>single-dispatch</span></a> <a href="https://docs.python.org/3/glossary.html#term-generic-function"><span>generic function</span></a>.</p>
+<p>To define a generic method, decorate it with the <code><span>@singledispatchmethod</span></code>
+decorator. When defining a function using <code><span>@singledispatchmethod</span></code>, note
+that the dispatch happens on the type of the first non-<em>self</em> or non-<em>cls</em>
+argument:</p>
+<div><pre><span></span><span>class</span> <span>Negator</span><span>:</span>
+    <span>@singledispatchmethod</span>
+    <span>def</span> <span>neg</span><span>(</span><span>self</span><span>,</span> <span>arg</span><span>):</span>
+        <span>raise</span> <span>NotImplementedError</span><span>(</span><span>"Cannot negate a"</span><span>)</span>
+
+    <span>@neg</span><span>.</span><span>register</span>
+    <span>def</span> <span>_</span><span>(</span><span>self</span><span>,</span> <span>arg</span><span>:</span> <span>int</span><span>):</span>
+        <span>return</span> <span>-</span><span>arg</span>
+
+    <span>@neg</span><span>.</span><span>register</span>
+    <span>def</span> <span>_</span><span>(</span><span>self</span><span>,</span> <span>arg</span><span>:</span> <span>bool</span><span>):</span>
+        <span>return</span> <span>not</span> <span>arg</span>
+</pre></div>
+<p><code><span>@singledispatchmethod</span></code> supports nesting with other decorators such as
+<a href="https://docs.python.org/3/library/functions.html#classmethod" title="classmethod"><code><span>@classmethod</span></code></a>. Note that to allow for
+<code><span>dispatcher.register</span></code>, <code><span>singledispatchmethod</span></code> must be the <em>outer most</em>
+decorator. Here is the <code><span>Negator</span></code> class with the <code><span>neg</span></code> methods bound to
+the class, rather than an instance of the class:</p>
+<div><pre><span></span><span>class</span> <span>Negator</span><span>:</span>
+    <span>@singledispatchmethod</span>
+    <span>@classmethod</span>
+    <span>def</span> <span>neg</span><span>(</span><span>cls</span><span>,</span> <span>arg</span><span>):</span>
+        <span>raise</span> <span>NotImplementedError</span><span>(</span><span>"Cannot negate a"</span><span>)</span>
+
+    <span>@neg</span><span>.</span><span>register</span>
+    <span>@classmethod</span>
+    <span>def</span> <span>_</span><span>(</span><span>cls</span><span>,</span> <span>arg</span><span>:</span> <span>int</span><span>):</span>
+        <span>return</span> <span>-</span><span>arg</span>
+
+    <span>@neg</span><span>.</span><span>register</span>
+    <span>@classmethod</span>
+    <span>def</span> <span>_</span><span>(</span><span>cls</span><span>,</span> <span>arg</span><span>:</span> <span>bool</span><span>):</span>
+        <span>return</span> <span>not</span> <span>arg</span>
+</pre></div>
+<p>The same pattern can be used for other similar decorators:
+<a href="https://docs.python.org/3/library/functions.html#staticmethod" title="staticmethod"><code><span>@staticmethod</span></code></a>,
+<a href="https://docs.python.org/3/library/abc.html#abc.abstractmethod" title="abc.abstractmethod"><code><span>@abstractmethod</span></code></a>, and others.</p>
+<p><span>Added in version 3.8.</span></p>
+</dd></dl>
+
+<dl>
+<dt id="functools.update_wrapper">
+<span><span>functools.</span></span><span><span>update_wrapper</span></span><span>(</span><em><span><span>wrapper</span></span></em>, <em><span><span>wrapped</span></span></em>, <em><span><span>assigned</span></span><span><span>=</span></span><span><span>WRAPPER_ASSIGNMENTS</span></span></em>, <em><span><span>updated</span></span><span><span>=</span></span><span><span>WRAPPER_UPDATES</span></span></em><span>)</span><a href="#functools.update_wrapper" title="Link to this definition">¶</a></dt>
+<dd><p>Update a <em>wrapper</em> function to look like the <em>wrapped</em> function. The optional
+arguments are tuples to specify which attributes of the original function are
+assigned directly to the matching attributes on the wrapper function and which
+attributes of the wrapper function are updated with the corresponding attributes
+from the original function. The default values for these arguments are the
+module level constants <code><span>WRAPPER_ASSIGNMENTS</span></code> (which assigns to the wrapper
+function’s <a href="https://docs.python.org/3/reference/datamodel.html#function.__module__" title="function.__module__"><code><span>__module__</span></code></a>, <a href="https://docs.python.org/3/reference/datamodel.html#function.__name__" title="function.__name__"><code><span>__name__</span></code></a>,
+<a href="https://docs.python.org/3/reference/datamodel.html#function.__qualname__" title="function.__qualname__"><code><span>__qualname__</span></code></a>, <a href="https://docs.python.org/3/reference/datamodel.html#function.__annotations__" title="function.__annotations__"><code><span>__annotations__</span></code></a>,
+<a href="https://docs.python.org/3/reference/datamodel.html#function.__type_params__" title="function.__type_params__"><code><span>__type_params__</span></code></a>, and <a href="https://docs.python.org/3/reference/datamodel.html#function.__doc__" title="function.__doc__"><code><span>__doc__</span></code></a>, the
+documentation string) and <code><span>WRAPPER_UPDATES</span></code> (which updates the wrapper
+function’s <a href="https://docs.python.org/3/reference/datamodel.html#function.__dict__" title="function.__dict__"><code><span>__dict__</span></code></a>, i.e. the instance dictionary).</p>
+<p>To allow access to the original function for introspection and other purposes
+(e.g. bypassing a caching decorator such as <a href="#functools.lru_cache" title="functools.lru_cache"><code><span>lru_cache()</span></code></a>), this function
+automatically adds a <code><span>__wrapped__</span></code> attribute to the wrapper that refers to
+the function being wrapped.</p>
+<p>The main intended use for this function is in <a href="https://docs.python.org/3/glossary.html#term-decorator"><span>decorator</span></a> functions which
+wrap the decorated function and return the wrapper. If the wrapper function is
+not updated, the metadata of the returned function will reflect the wrapper
+definition rather than the original function definition, which is typically less
+than helpful.</p>
+<p><a href="#functools.update_wrapper" title="functools.update_wrapper"><code><span>update_wrapper()</span></code></a> may be used with callables other than functions. Any
+attributes named in <em>assigned</em> or <em>updated</em> that are missing from the object
+being wrapped are ignored (i.e. this function will not attempt to set them
+on the wrapper function). <a href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="AttributeError"><code><span>AttributeError</span></code></a> is still raised if the
+wrapper function itself is missing any attributes named in <em>updated</em>.</p>
+<p><span>Changed in version 3.2: </span>The <code><span>__wrapped__</span></code> attribute is now automatically added.
+The <a href="https://docs.python.org/3/reference/datamodel.html#function.__annotations__" title="function.__annotations__"><code><span>__annotations__</span></code></a> attribute is now copied by default.
+Missing attributes no longer trigger an <a href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="AttributeError"><code><span>AttributeError</span></code></a>.</p>
+<p><span>Changed in version 3.4: </span>The <code><span>__wrapped__</span></code> attribute now always refers to the wrapped
+function, even if that function defined a <code><span>__wrapped__</span></code> attribute.
+(see <a href="https://bugs.python.org/issue?@action=redirect&amp;bpo=17482">bpo-17482</a>)</p>
+<p><span>Changed in version 3.12: </span>The <a href="https://docs.python.org/3/reference/datamodel.html#function.__type_params__" title="function.__type_params__"><code><span>__type_params__</span></code></a> attribute is now copied by default.</p>
+</dd></dl>
+
+<dl>
+<dt id="functools.wraps">
+<span><span>@</span></span><span><span>functools.</span></span><span><span>wraps</span></span><span>(</span><em><span><span>wrapped</span></span></em>, <em><span><span>assigned</span></span><span><span>=</span></span><span><span>WRAPPER_ASSIGNMENTS</span></span></em>, <em><span><span>updated</span></span><span><span>=</span></span><span><span>WRAPPER_UPDATES</span></span></em><span>)</span><a href="#functools.wraps" title="Link to this definition">¶</a></dt>
+<dd><p>This is a convenience function for invoking <a href="#functools.update_wrapper" title="functools.update_wrapper"><code><span>update_wrapper()</span></code></a> as a
+function decorator when defining a wrapper function.  It is equivalent to
+<code><span>partial(update_wrapper,</span> <span>wrapped=wrapped,</span> <span>assigned=assigned,</span> <span>updated=updated)</span></code>.
+For example:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>from</span> <span>functools</span> <span>import</span> <span>wraps</span>
+<span>&gt;&gt;&gt; </span><span>def</span> <span>my_decorator</span><span>(</span><span>f</span><span>):</span>
+<span>... </span>    <span>@wraps</span><span>(</span><span>f</span><span>)</span>
+<span>... </span>    <span>def</span> <span>wrapper</span><span>(</span><span>*</span><span>args</span><span>,</span> <span>**</span><span>kwds</span><span>):</span>
+<span>... </span>        <span>print</span><span>(</span><span>'Calling decorated function'</span><span>)</span>
+<span>... </span>        <span>return</span> <span>f</span><span>(</span><span>*</span><span>args</span><span>,</span> <span>**</span><span>kwds</span><span>)</span>
+<span>... </span>    <span>return</span> <span>wrapper</span>
+<span>...</span>
+<span>&gt;&gt;&gt; </span><span>@my_decorator</span>
+<span>... </span><span>def</span> <span>example</span><span>():</span>
+<span>... </span><span>    </span><span>"""Docstring"""</span>
+<span>... </span>    <span>print</span><span>(</span><span>'Called example function'</span><span>)</span>
+<span>...</span>
+<span>&gt;&gt;&gt; </span><span>example</span><span>()</span>
+<span>Calling decorated function</span>
+<span>Called example function</span>
+<span>&gt;&gt;&gt; </span><span>example</span><span>.</span><span>__name__</span>
+<span>'example'</span>
+<span>&gt;&gt;&gt; </span><span>example</span><span>.</span><span>__doc__</span>
+<span>'Docstring'</span>
+</pre></div>
+<p>Without the use of this decorator factory, the name of the example function
+would have been <code><span>'wrapper'</span></code>, and the docstring of the original <code><span>example()</span></code>
+would have been lost.</p>
+</dd></dl>
+
+<section id="partial-objects">
+<span id="id1"></span><h2><a href="#functools.partial" title="functools.partial"><code><span>partial</span></code></a> Objects<a href="#partial-objects" title="Link to this heading">¶</a></h2>
+<p><a href="#functools.partial" title="functools.partial"><code><span>partial</span></code></a> objects are callable objects created by <a href="#functools.partial" title="functools.partial"><code><span>partial()</span></code></a>. They
+have three read-only attributes:</p>
+<dl>
+<dt id="functools.partial.func">
+<span><span>partial.</span></span><span><span>func</span></span><a href="#functools.partial.func" title="Link to this definition">¶</a></dt>
+<dd><p>A callable object or function.  Calls to the <a href="#functools.partial" title="functools.partial"><code><span>partial</span></code></a> object will be
+forwarded to <a href="#functools.partial.func" title="functools.partial.func"><code><span>func</span></code></a> with new arguments and keywords.</p>
+</dd></dl>
+
+<dl>
+<dt id="functools.partial.args">
+<span><span>partial.</span></span><span><span>args</span></span><a href="#functools.partial.args" title="Link to this definition">¶</a></dt>
+<dd><p>The leftmost positional arguments that will be prepended to the positional
+arguments provided to a <a href="#functools.partial" title="functools.partial"><code><span>partial</span></code></a> object call.</p>
+</dd></dl>
+
+<dl>
+<dt id="functools.partial.keywords">
+<span><span>partial.</span></span><span><span>keywords</span></span><a href="#functools.partial.keywords" title="Link to this definition">¶</a></dt>
+<dd><p>The keyword arguments that will be supplied when the <a href="#functools.partial" title="functools.partial"><code><span>partial</span></code></a> object is
+called.</p>
+</dd></dl>
+
+<p><a href="#functools.partial" title="functools.partial"><code><span>partial</span></code></a> objects are like <a href="https://docs.python.org/3/reference/datamodel.html#user-defined-funcs"><span>function objects</span></a>
+in that they are callable, weak referenceable, and can have attributes.
+There are some important differences.  For instance, the
+<a href="https://docs.python.org/3/reference/datamodel.html#function.__name__" title="function.__name__"><code><span>__name__</span></code></a> and <a href="https://docs.python.org/3/reference/datamodel.html#function.__doc__" title="function.__doc__"><code><span>function.__doc__</span></code></a> attributes
+are not created automatically.  Also, <a href="#functools.partial" title="functools.partial"><code><span>partial</span></code></a> objects defined in
+classes behave like static methods and do not transform into bound methods
+during instance attribute look-up.</p>
+</section>
+</section></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>content_for -- What is it good_for?</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>content_for -- What is it good_for?</h1>
+    <p><strong>URL:</strong> <a href="https://feed.thoughtbot.com/link/24077/16990127/content-for-what-is-it-good-for">https://feed.thoughtbot.com/link/24077/16990127/content-for-what-is-it-good-for</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 998412547</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>Sometimes, you need to include HTML but you can’t figure out where to do it,
+especially if you’re trying to push something <em>up</em> the view hierarchy.</p>
+
+<p>The answer to your challenge is often
+<a href="https://guides.rubyonrails.org/layouts_and_rendering.html#using-the-content-for-method">#content_for</a>.</p>
+
+<p>Content what?</p>
+
+<p>As described in the Rails guides:</p>
+
+<blockquote>
+<p>The content_for method allows you to insert content into a named yield block in your layout.</p>
+</blockquote>
+<h2 id="how-does-it-work">
+  <a href="https://thoughtbot.com/blog/content-for-what-is-it-good-for#how-does-it-work">
+    How does it work?
+  </a>
+</h2>
+
+<p>Step 1: A view has a <code>#content_for</code> line or block. This is the “input”.</p>
+<div><pre><code><span>&lt;!-- app/views/posts/index.html.erb --&gt;</span>
+
+<span>&lt;%</span> <span>content_for</span> <span>:title</span><span>,</span> <span>"All the Posts"</span> <span>%&gt;</span>
+
+<span>&lt;%</span> <span>content_for</span> <span>:something</span> <span>do</span> <span>%&gt;</span>
+  <span>&lt;script&gt;</span><span>function</span> <span>hello</span><span>()</span> <span>{}</span><span>&lt;/script&gt;</span>
+  <span>&lt;style&gt;h1</span> <span>{</span><span>color</span><span>:</span> <span>blue</span><span>;}</span><span>&lt;/style&gt;</span>
+  I will appear in the :something block!
+<span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+</code></pre></div>
+<p>Step 2: The content in the line or block is picked up by a layout. You can either use
+<code>content_for</code> again or <code>yield</code>. This is the “output”.</p>
+<div><pre><code><span>&lt;!-- app/views/layouts/application.html.erb --&gt;</span>
+
+<span>&lt;!DOCTYPE html&gt;</span>
+<span>&lt;html</span> <span>lang=</span><span>"en"</span><span>&gt;</span>
+  <span>&lt;head&gt;</span>
+    <span>&lt;title&gt;</span><span>&lt;%=</span> <span>content_for</span><span>(</span><span>:title</span><span>)</span> <span>||</span> <span>"My App Name"</span> <span>%&gt;</span><span>&lt;/title&gt;</span>
+  <span>&lt;/head&gt;</span>
+
+  <span>&lt;body&gt;</span>
+    <span>&lt;%=</span> <span>content_for</span> <span>:something</span> <span>%&gt;</span>
+
+    <span>&lt;!-- OR --&gt;</span>
+
+    <span>&lt;%=</span> <span>yield</span> <span>:something</span> <span>%&gt;</span>
+  <span>&lt;/body&gt;</span>
+</code></pre></div>
+<p>The <code>content_for(:title)</code> in the default Application layout was added to Rails
+at the beginning of
+<a href="https://github.com/rails/rails/pull/49702">2024</a>.</p>
+
+<p>Let’s look at some other examples of how we can use <code>content_for</code>!</p>
+<h2 id="moving-content-out-of-a-partial">
+  <a href="https://thoughtbot.com/blog/content-for-what-is-it-good-for#moving-content-out-of-a-partial">
+    Moving content out of a partial
+  </a>
+</h2>
+
+<p>Imagine we have a partial like this:</p>
+<div><pre><code><span>&lt;!-- app/views/posts/_post.html.erb --&gt;</span>
+
+<span>&lt;%=</span> <span>turbo_stream_from</span> <span>post</span> <span>%&gt;</span>
+
+<span>&lt;li</span> <span>id=</span><span>"</span><span>&lt;%=</span> <span>dom_id</span><span>(</span><span>post</span><span>)</span> <span>%&gt;</span><span>"</span><span>&gt;</span>
+  <span>&lt;%=</span> <span>link_to</span> <span>post</span><span>.</span><span>title</span><span>,</span> <span>post_path</span><span>(</span><span>post</span><span>)</span> <span>%&gt;</span>
+<span>&lt;/li&gt;</span>
+</code></pre></div>
+<p>This will fail an
+<a href="https://github.com/thoughtbot/capybara_accessibility_audit">accessibility audit</a>
+because the parent wraps the partial in a <code>&lt;ul&gt;</code> block, which
+<a href="https://dequeuniversity.com/rules/axe/4.1/list">only allows li, script, or template</a> tags,
+and this will add a <code>&lt;turbo-cable-stream-source&gt;</code> element inside the <code>&lt;ul&gt;</code>.</p>
+
+<p>We <em>could</em> do this:</p>
+<div><pre><code><span>&lt;li</span> <span>id=</span><span>"</span><span>&lt;%=</span> <span>dom_id</span><span>(</span><span>post</span><span>)</span> <span>%&gt;</span><span>"</span><span>&gt;</span>
+  <span>&lt;%=</span> <span>turbo_stream_from</span> <span>post</span> <span>%&gt;</span>
+
+  <span>&lt;%=</span> <span>link_to</span> <span>post</span><span>.</span><span>title</span><span>,</span> <span>post_path</span><span>(</span><span>post</span><span>)</span> <span>%&gt;</span>
+<span>&lt;/li&gt;</span>
+</code></pre></div>
+<p>but that feels…icky, because the Turbo stream elements are spread out and
+intermingled with our with UI content. Why should our <code>&lt;li&gt;</code> tags have extra
+stuff in them?</p>
+
+<p>Where the Turbo stream elements <em>really</em> should go is in the <code>&lt;body&gt;</code> element
+of the page. Let’s put them away where they belong!</p>
+<div><pre><code><span>&lt;!-- app/views/posts/_post.html.erb --&gt;</span>
+
+<span>&lt;%</span> <span>content_for</span> <span>:body</span> <span>do</span> <span>%&gt;</span>
+  <span>&lt;%=</span> <span>turbo_stream_from</span> <span>post</span> <span>%&gt;</span>
+<span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+
+<span>&lt;li</span> <span>id=</span><span>"</span><span>&lt;%=</span> <span>dom_id</span><span>(</span><span>post</span><span>)</span> <span>%&gt;</span><span>"</span><span>&gt;</span>
+  <span>&lt;%=</span> <span>link_to</span> <span>post</span><span>.</span><span>title</span><span>,</span> <span>post_path</span><span>(</span><span>post</span><span>)</span> <span>%&gt;</span>
+<span>&lt;/li&gt;</span>
+</code></pre></div>
+<p>To support this, we must include the <code>content_for</code> in the layout:</p>
+<div><pre><code><span>&lt;!-- app/views/layouts/application.html.erb --&gt;</span>
+
+<span>&lt;body&gt;</span>
+   <span>&lt;%=</span> <span>content_for</span> <span>:body</span> <span>%&gt;</span> <span>&lt;!-- or yield :body --&gt;</span>
+
+   <span>&lt;%</span> <span>yield</span> <span>%&gt;</span>
+<span>&lt;/body&gt;</span>
+</code></pre></div>
+<p>Now our <code>&lt;li&gt;</code> elements are focused, and our <code>&lt;body&gt;</code> element has all the Turbo
+refreshing elements grouped together.</p>
+<h2 id="overriding-something-at-the-top-of-the-view-hierarchy">
+  <a href="https://thoughtbot.com/blog/content-for-what-is-it-good-for#overriding-something-at-the-top-of-the-view-hierarchy">
+    Overriding something at the top of the view hierarchy
+  </a>
+</h2>
+
+<p>Let’s take a different example. Here, imagine our Application layout
+specifies styling for the <code>&lt;body&gt;</code> element:</p>
+<div><pre><code><span>&lt;!-- app/views/layouts/application.html.erb --&gt;</span>
+
+<span>&lt;html</span> <span>lang=</span><span>"en"</span><span>&gt;</span>
+  <span>&lt;head&gt;</span>
+    <span>&lt;!-- head stuff --&gt;</span>
+  <span>&lt;/head&gt;</span>
+
+  <span>&lt;body</span> <span>class=</span><span>"some_style"</span><span>&gt;</span>
+    <span>&lt;main&gt;</span>
+      <span>&lt;%=</span> <span>yield</span> <span>%&gt;</span>
+    <span>&lt;/main&gt;</span>
+  <span>&lt;/body&gt;</span>
+<span>&lt;/html&gt;</span>
+</code></pre></div>
+<p>What if we determine that some views need to amend or replace that style, but we don’t
+want to maintain an entirely different layout (or multiple layouts)
+for that one customization?</p>
+
+<p>If you guessed <code>#content_for</code>, you win…a new car! No. But you would if I had an
+HTML game show and we asked that question.</p>
+
+<p>So, what would this approach look like? (The HTML, not the game show.)</p>
+
+<p>First, we update our layout file to accept a new <code>#content_for</code> block:</p>
+<div><pre><code><span>&lt;!-- app/views/layouts/application.html.erb --&gt;</span>
+
+<span>&lt;body</span> <span>class=</span><span>"some_style </span><span>&lt;%=</span> <span>content_for</span><span>(</span><span>:body_class</span><span>)</span> <span>%&gt;</span><span>"</span><span>&gt;</span>
+  <span>&lt;main&gt;</span>
+    <span>&lt;%=</span> <span>yield</span> <span>%&gt;</span>
+  <span>&lt;/main&gt;</span>
+<span>&lt;/body&gt;</span>
+</code></pre></div>
+<p>And now, a view that wants to add extra styling way up there can do this:</p>
+<div><pre><code><span>&lt;!-- app/views/gangnams/index.html.erb --&gt;</span>
+
+<span>&lt;%</span> <span>content_for</span> <span>:body_class</span><span>,</span> <span>"gangnam_style flex flex-row"</span> <span>%&gt;</span>
+</code></pre></div>
+<p>which will result in the <code>&lt;body&gt;</code> element rendering:</p>
+
+<p><code>&lt;body class="some_style gangnam_style flex flex-row"&gt;</code></p>
+
+
+
+<p>If we instead need to be able to <em>overwrite</em> the parent style, we could leverage
+<code>#presence</code> after the <code>#content_for</code> call:</p>
+<div><pre><code><span>&lt;!-- app/views/layouts/application.html.erb --&gt;</span>
+
+<span>&lt;body</span> <span>class=</span><span>"</span><span>&lt;%=</span> <span>content_for</span><span>(</span><span>:main_classes</span><span>).</span><span>presence</span> <span>||</span> <span>'some_style'</span> <span>%&gt;</span><span>"</span><span>&gt;</span>
+  <span>&lt;main&gt;</span>
+    <span>&lt;%=</span> <span>yield</span> <span>%&gt;</span>
+  <span>&lt;/main&gt;</span>
+<span>&lt;/body&gt;</span>
+</code></pre></div>
+<p>so that if a view <em>doesn’t</em> specify <code>content_for :main_classes</code>, it will default to
+<code>some_style</code>, but if it <em>does</em> specify <code>:main_classes</code>, they will be the only classes
+on the <code>&lt;body&gt;</code> element.</p>
+<h2 id="multiple-ltmaingt-elements">
+  <a href="https://thoughtbot.com/blog/content-for-what-is-it-good-for#multiple-ltmaingt-elements">
+    Multiple <code>&lt;main&gt;</code> elements
+  </a>
+</h2>
+
+<p>In a view that incorporates an iframe of another view or site, it is quite
+possible to end up with multiple <code>&lt;main&gt;</code> elements.</p>
+
+<p>Like the <code>&lt;li&gt;</code> example, above, this will lead to an accessibility violation:
+<a href="https://dequeuniversity.com/rules/axe/4.1/landmark-no-duplicate-main">the document has at most one main landmark</a>.</p>
+
+<p>We <em>could</em> set our <code>&lt;main&gt;</code> element to have a <code>title</code> property, but if we’re
+showing an iframe of our own site, that won’t work, as the view and the iframe
+will have the same value for the <code>title</code>.</p>
+
+<p>Unless…</p>
+
+<p>That’s right! Unless we call on <code>#content_for</code> again:</p>
+<div><pre><code><span>&lt;!-- app/views/layouts/application.html.erb --&gt;</span>
+
+<span>&lt;body&gt;</span>
+  <span>&lt;main</span> <span>title=</span><span>"</span><span>&lt;%=</span> <span>content_for</span><span>(</span><span>:main_title</span><span>)</span> <span>%&gt;</span><span>"</span><span>&gt;</span>
+    <span>&lt;%=</span> <span>yield</span> <span>%&gt;</span>
+  <span>&lt;/main&gt;</span>
+<span>&lt;/body&gt;</span>
+</code></pre></div>
+<p>Now our views can specify a unique title property
+to make them more accessible.</p>
+<h2 id="selective-turbo-morphing">
+  <a href="https://thoughtbot.com/blog/content-for-what-is-it-good-for#selective-turbo-morphing">
+    Selective Turbo morphing
+  </a>
+</h2>
+
+<p>Here’s one last example before we go our separate ways today.</p>
+
+<p>As I mentioned last week in
+<a href="https://thoughtbot.com/blog/hotwire-and-that-syncing-feeling#using-content_for-instead-of-an-application-wide-layout">Hotwire and That Syncing Feeling</a>,
+you may not want
+<a href="https://turbo.hotwired.dev/handbook/page_refreshes">Turbo morphing</a>
+on every page.</p>
+
+<p>In that case, we can use <code>#content for</code> to apply the morphing and scrolling helpers
+to the <code>&lt;head&gt;</code> element of a particular view to request the behavior:</p>
+<div><pre><code><span>&lt;!-- app/views/posts/index.html.erb --&gt;</span>
+
+<span>&lt;%</span> <span>content_for</span> <span>:head</span> <span>do</span> <span>%&gt;</span>
+  <span>&lt;%=</span> <span>turbo_refresh_method_tag</span> <span>:morph</span> <span>%&gt;</span>
+  <span>&lt;%=</span> <span>turbo_refresh_scroll_tag</span> <span>:preserve</span> <span>%&gt;</span>
+<span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+</code></pre></div>
+<p>But wait, it gets better!</p>
+
+<p>There’s a helper that <em>already</em> uses <code>#content_for :head</code> under the hood: <code>#turbo_refreshes_with</code>.
+So if we do this instead:</p>
+<div><pre><code><span>&lt;!-- app/views/posts/index.html.erb --&gt;</span>
+
+<span>&lt;%=</span> <span>turbo_refreshes_with</span> <span>method: :morph</span><span>,</span> <span>scroll: :preserve</span> <span>%&gt;</span>
+</code></pre></div>
+<p>it will automatically add the <code>turbo_refresh_method_tag</code> and <code>turbo_refresh_scroll_tag</code> elements
+to the <code>&lt;head&gt;</code> element of that view, without us needing to explicitly call <code>#content_for</code>.</p>
+<h2 id="bringing-it-home">
+  <a href="https://thoughtbot.com/blog/content-for-what-is-it-good-for#bringing-it-home">
+    Bringing it home
+  </a>
+</h2>
+
+<p><code>#content_for</code> is the decluttering friend that solves HTML problems
+with elegance and simplicity, leaving you with tidy layouts that spark joy.
+You may not need it often, but when you do, it’s the perfect tool for the job!</p>
+
+
+
+    </div></div>
+  </div>
+</body>
+</html>

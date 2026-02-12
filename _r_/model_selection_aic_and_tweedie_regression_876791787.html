@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Model selection, AIC and Tweedie regression</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Model selection, AIC and Tweedie regression</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/2023/04/model-selection-aic-and-tweedie-regression">https://www.r-bloggers.com/2023/04/model-selection-aic-and-tweedie-regression</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876791787</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					<!-- 
+<div style="min-height: 30px;">
+[social4i size="small" align="align-left"]
+</div>
+-->
+
+
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.8-->
+
+	<p>Just some simple codes to illustrate some points we will discuss this week, for the last course on GLMs, before the final exam.&nbsp; We have mentioned that the Gamma distribution belongs to the exponential, so we can run a regression, and compute the associated AIC,</p>
+<pre>&gt; set.seed(123)
+&gt; test.data = rgamma(n=2000, scale=1, shape=1)
+&gt; m1 = glm( test.data~1, family=Gamma(link=log))
+&gt; AIC(m1)
+[1] 3997.332
+</pre>
+<p>The Gamma distribution is also a special case of the <a href="https://en.wikipedia.org/wiki/Tweedie_distribution" rel="nofollow" target="_blank">Tweedie distribution</a>, with power 2</p>
+<pre>&gt; library(statmod)
+&gt; library(tweedie)
+&gt; m2 = glm( test.data~1, family=tweedie(link.power=0, var.power=2) )
+&gt; AIC(m2)
+[1] NA
+</pre>
+<p>Unfortunately, we cannot compute the AIC, and we need a trick (with the appropriate R function).</p>
+<pre>&gt; AICtweedie(m2)
+[1] 3997.332
+</pre>
+<p>Of course, we can do the same with the Poisson distribution, which also belongs to the <a href="https://en.wikipedia.org/wiki/Exponential_family" rel="nofollow" target="_blank">exponential family</a></p>
+<pre>&gt; test.data = rpois(n=2000, lambda=1)
+&gt; m3 = glm( test.data~1, family=poisson(link=log))
+&gt; m4 = glm( test.data~1, family=tweedie(link.power=0, var.power=1) )
+&gt; AIC(m3)
+[1] 5124.61
+</pre>
+<p>Here, we have a problem with the <a href="https://www.rdocumentation.org/packages/tweedie/versions/2.3.5/topics/AICtweedie" rel="nofollow" target="_blank">AICtweedie</a> function</p>
+<pre>&gt; AICtweedie(m4)
+[1] Inf
+</pre>
+<p>because we need to specify the dispersion parameter</p>
+<pre>&gt; AICtweedie(m4, dispersion=1)
+[1] 5124.61
+</pre>
+<p>We can now check: we generate some Gamma sample, and fit various Tweedie distribution, changing simply the variance function (which is a power function)</p>
+<pre>&gt; set.seed(123)
+&gt; test.data = rgamma(n=2000, scale=1, shape=1)
+&gt; glmtw = function(t){
++ m1 = glm( test.data~1, family=tweedie(link.power=0, var.power=t) )
++ d = NULL
++ if(t == 1) d = 1
++ AICtweedie(m1, dispersion = d)
++ 
++ }
+&gt; vt = seq(1,2.7,length=100)
+&gt; vg = Vectorize(glmtw)(vt)
+&gt; plot(vt,vg,log="y",type="l")
+</pre>
+<p>The minimum of the AIC is close to 2, corresponding to the Gamma distribution</p>
+<p><img src="https://i0.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-1.png?w=584&amp;ssl=1" alt="" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i0.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-1.png?w=584&amp;ssl=1"></p>
+<p>We can also try with a Poisson</p>
+<pre>&gt; set.seed(123)
+&gt; test.data = rpois(n=2000, lambda=1)
+&gt; glmtw = function(t){
++ m1 = glm( test.data~1, family=tweedie(link.power=0, var.power=t) )
++ d = NULL
++ if(t == 1) d = 1
++ AICtweedie(m1, dispersion = d)
++ 
++ }
+&gt; vt = seq(1,2,length=100)
+&gt; vg = Vectorize(glmtw)(vt)
+&gt; plot(vt,vg,log="y",type="l")
+</pre>
+<p>The minimum is now close to 1, corresponding to the Poisson distriubtion (the variance is equal to the average)</p>
+<p><img src="https://i2.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-2.png?w=584&amp;ssl=1" alt="" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i2.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-2.png?w=584&amp;ssl=1"></p>
+<p>Let us now try some <a href="https://en.wikipedia.org/wiki/Compound_Poisson_distribution" rel="nofollow" target="_blank">compound Poisson distribution</a>,</p>
+<pre>&gt; rcpd=function(n,lambda,shape,scale){
++ N=rpois(n,lambda)
++ X=rgamma(sum(N),shape=shape, scale=scale)
++ I=as.factor(rep(1:n,N))
++ S=tapply(X,I,sum)
++ V=as.numeric(S[as.character(1:n)])
++ V[is.na(V)]=0
++ return(V)}
+</pre>
+<p>Let us generate some compound Poisson random variables, with Poisson distribution with average 1, and with Gamma jumps, with average and variance 1,</p>
+<pre>&gt; set.seed(123)
+&gt; test.data = rcpd(n=2000, 1,1,1)
+&gt; glmtw = function(t){
++ m1 = glm( test.data~1, family=tweedie(link.power=0, var.power=t) )
++ d = NULL
++ if(t == 1) d = 1
++ AICtweedie(m1, dispersion = d)
++ }
+&gt; vt = seq(1.1,1.9,length=100)
+&gt; vg = Vectorize(glmtw)(vt)
+&gt; plot(vt,vg,log="y",type="l")
+</pre>
+<p>The optimal value for the power function is here 1.5, based on the AIC (relationships between Tweedie parameters and the compound Poisson ones are given in <a href="https://github.com/freakonometrics/STT5100/blob/master/archives/H2020/covid/STT5100-16.pdf" rel="nofollow" target="_blank">the slides</a>)</p>
+<p><img src="https://i1.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-3.png?w=584&amp;ssl=1" alt="" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i1.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-3.png?w=584&amp;ssl=1"></p>
+<p>We can now play a little bit with the variance of the jumps: they still have aveage 1, but they now have a smaller variance</p>
+<pre>&gt; set.seed(123)
+&gt; test.data = rcpd(n=2000, 1,3,1/3)
+&gt; vt = seq(1.05,1.95,length=100)
+&gt; vg = Vectorize(glmtw)(vt)
+&gt; plot(vt,vg,log="y",type="l")
+</pre>
+<p>The optimal power for the Tweedie is closer to one, closer to the Poison case</p>
+<p><img src="https://i1.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-4.png?w=584&amp;ssl=1" alt="" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i1.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-4.png?w=584&amp;ssl=1"></p>
+<p>while if we increase the variance of the jumps</p>
+<pre>&gt; set.seed(123)
+&gt; test.data = rcpd(n=2000, 1,1/3,3)
+&gt; vt = seq(1.05,1.95,length=100)
+&gt; vg = Vectorize(glmtw)(vt)
+&gt; plot(vt,vg,log="y",type="l")
+</pre>
+<p>the optimal power is higher, closer to the Gamma distribution.</p>
+<p><img src="https://i1.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-5.png?w=584&amp;ssl=1" alt="" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i1.wp.com/freakonometrics.hypotheses.org/files/2023/04/twd-5.png?w=584&amp;ssl=1"></p>
+
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.8-->
+							</div></div>
+  </div>
+</body>
+</html>

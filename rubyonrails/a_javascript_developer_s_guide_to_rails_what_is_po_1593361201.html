@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A JavaScript developer's guide to Rails: What is Polymorphic Rails Model?</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A JavaScript developer's guide to Rails: What is Polymorphic Rails Model?</h1>
+    <p><strong>URL:</strong> <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model">https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model</a></p>
+    <p><strong>Tags:</strong> rubyonrails, sql</p>
+    <p><strong>Bookmark ID:</strong> 1593361201</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>Coming from JavaScript, I’m used to flexible object relationships. Need comments on different things? Add a <code>commentableId</code> and <code>commentableType</code> field, write some conditional logic, done. Rails has the same pattern, but codifies it into the framework: <a href="https://guides.rubyonrails.org/association_basics.html#polymorphic-associations"><strong>polymorphic associations</strong></a>.</p>
+
+<p>The database columns work identically to what you’d do in MongoDB or PostgreSQL with a JavaScript backend. What confused me wasn’t the columns themselves—it was the Rails magic layered on top. When I saw <code>belongs_to :commentable, polymorphic: true</code> in a model, I had no idea how Rails knew which table to query. There’s no import, no explicit configuration, just a symbol and an option.</p>
+
+<p>This article walks through the database schema and Rails internals so you can understand what’s actually happening.</p>
+<form action="https://thoughtbot.us2.list-manage.com/subscribe/post?u=e801d7e43bc155cd5c33729b9&amp;id=c0a5e23629" method="POST">
+
+  <div>
+    <h2>Sign up to receive a weekly recap from thoughtbot</h2>
+
+    
+
+    <div>
+      <p><label for="email">Your email address</label>
+        
+        
+      </p>
+      </div>
+  </div>
+
+  <div>
+    <p>Looking for even more ways to stay connected?</p>
+    <p>
+      <a href="https://thoughtbot.com/feeds">
+        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none" role="img" aria-labelledby="alvqh10uh3mkt3o2tm8hq5dnix5wot1a"><title id="alvqh10uh3mkt3o2tm8hq5dnix5wot1a">RSS feed</title>
+<path d="M1.06889 5.71207C0.793894 5.70007 0.566895 5.92407 0.566895 6.20107V8.25407C0.566895 8.53007 0.793894 8.75307 1.06889 8.77207C2.87589 8.89307 4.56889 9.65807 5.86089 10.9541C7.15589 12.2451 7.91889 13.9451 8.03989 15.7641C8.05789 16.0381 8.28089 16.2681 8.55689 16.2681H10.6239C10.8999 16.2681 11.1239 16.0381 11.1109 15.7621C10.9809 13.0511 9.82789 10.6041 8.02389 8.79907C6.22489 6.99707 3.77989 5.83907 1.06889 5.71207Z"></path>
+<path d="M2.56589 12.2441C2.01289 12.2441 1.51889 12.4541 1.15389 12.8181C0.792895 13.1781 0.566895 13.6481 0.566895 14.1981C0.566895 14.7471 0.792895 15.1911 1.15389 15.5521C1.51889 15.9151 2.01289 16.0451 2.56589 16.0451C3.11989 16.0451 3.61689 16.2681 3.97889 15.2681H3.98089C4.34389 15.2681 4.56589 14.6041 4.56689 14.0551C4.56589 13.5061 4.34389 13.1001 3.97889 12.7401C3.61389 12.3751 3.11989 12.2441 2.56589 12.2441Z"></path>
+<path d="M11.8729 4.95508C9.08489 2.16408 5.28189 0.401083 1.07289 0.268083C0.795895 0.259083 0.566895 0.484083 0.566895 0.760083V2.81408C0.566895 3.09008 0.795895 3.31308 1.07289 3.32408C7.80189 3.58508 13.2349 9.02408 13.4929 15.7621C13.5039 16.0381 13.7259 16.2681 14.0029 16.2681H16.0669C16.3429 16.2681 16.5669 16.0381 16.5579 15.7621C16.4259 11.5511 14.6599 7.74108 11.8729 4.95508Z"></path>
+</svg>Check out our feeds</a>
+    </p>
+  </div>
+</form><h2 id="the-problem-polymorphic-associations-solve">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#the-problem-polymorphic-associations-solve">
+    The Problem Polymorphic Associations Solve
+  </a>
+</h2>
+
+<p>You’re building a social app where users can comment on Posts, Photos, and Videos.</p>
+<h3 id="the-javascript-approach">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#the-javascript-approach">
+    The JavaScript Approach
+  </a>
+</h3>
+
+<p>In JavaScript with MongoDB, you might do:</p>
+<div><pre><code><span>// Comment document</span>
+<span>{</span>
+  <span>id</span><span>:</span> <span>1</span><span>,</span>
+  <span>body</span><span>:</span> <span>"</span><span>Great post!</span><span>"</span><span>,</span>
+  <span>userId</span><span>:</span> <span>42</span><span>,</span>
+  <span>commentableType</span><span>:</span> <span>"</span><span>Post</span><span>"</span><span>,</span>  <span>// or "Photo" or "Video"</span>
+  <span>commentableId</span><span>:</span> <span>123</span>
+<span>}</span>
+
+<span>// Then when fetching:</span>
+<span>async</span> <span>function</span> <span>getCommentable</span><span>(</span><span>comment</span><span>)</span> <span>{</span>
+  <span>if </span><span>(</span><span>comment</span><span>.</span><span>commentableType</span> <span>===</span> <span>"</span><span>Post</span><span>"</span><span>)</span> <span>{</span>
+    <span>return</span> <span>await</span> <span>Post</span><span>.</span><span>findById</span><span>(</span><span>comment</span><span>.</span><span>commentableId</span><span>);</span>
+  <span>}</span> <span>else</span> <span>if </span><span>(</span><span>comment</span><span>.</span><span>commentableType</span> <span>===</span> <span>"</span><span>Photo</span><span>"</span><span>)</span> <span>{</span>
+    <span>return</span> <span>await</span> <span>Photo</span><span>.</span><span>findById</span><span>(</span><span>comment</span><span>.</span><span>commentableId</span><span>);</span>
+  <span>}</span>
+  <span>// ... more conditionals</span>
+<span>}</span>
+</code></pre></div>
+<p>This works, but you’re writing the same conditional logic everywhere you need to load the parent.</p>
+<h3 id="the-rails-way">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#the-rails-way">
+    The Rails Way
+  </a>
+</h3>
+
+<p>Rails bakes this pattern into the framework:</p>
+<div><pre><code><span>class</span> <span>Comment</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>belongs_to</span> <span>:commentable</span><span>,</span> <span>polymorphic: </span><span>true</span>
+<span>end</span>
+
+<span>class</span> <span>Post</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>has_many</span> <span>:comments</span><span>,</span> <span>as: :commentable</span>
+<span>end</span>
+</code></pre></div>
+<p>Now:</p>
+<div><pre><code><span>comment</span> <span>=</span> <span>Comment</span><span>.</span><span>first</span>
+<span>comment</span><span>.</span><span>commentable</span>  <span># Rails automatically loads the right model</span>
+
+<span>post</span> <span>=</span> <span>Post</span><span>.</span><span>first</span>
+<span>post</span><span>.</span><span>comments</span>  <span># All comments on this post</span>
+</code></pre></div>
+<p>No conditionals. No manual lookups. Rails reads the <code>_type</code> column and calls the right model.</p>
+<h2 id="how-polymorphic-associations-actually-work">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#how-polymorphic-associations-actually-work">
+    How Polymorphic Associations Actually Work
+  </a>
+</h2>
+<h3 id="the-database-schema">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#the-database-schema">
+    The Database Schema
+  </a>
+</h3>
+
+<p>A polymorphic association requires two columns:</p>
+<div><pre><code><span># db/migrate/20250101000000_create_comments.rb</span>
+<span>class</span> <span>CreateComments</span> <span>&lt;</span> <span>ActiveRecord</span><span>::</span><span>Migration</span><span>[</span><span>7.0</span><span>]</span>
+  <span>def</span> <span>change</span>
+    <span>create_table</span> <span>:comments</span> <span>do</span> <span>|</span><span>t</span><span>|</span>
+      <span>t</span><span>.</span><span>text</span> <span>:body</span>
+      <span>t</span><span>.</span><span>references</span> <span>:user</span><span>,</span> <span>null: </span><span>false</span><span>,</span> <span>foreign_key: </span><span>true</span>
+
+      <span># Polymorphic association - creates both columns</span>
+      <span>t</span><span>.</span><span>references</span> <span>:commentable</span><span>,</span> <span>polymorphic: </span><span>true</span><span>,</span> <span>null: </span><span>false</span>
+
+      <span>t</span><span>.</span><span>timestamps</span>
+    <span>end</span>
+
+    <span>add_index</span> <span>:comments</span><span>,</span> <span>[</span><span>:commentable_type</span><span>,</span> <span>:commentable_id</span><span>]</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>This creates:</p>
+
+<ul>
+<li><code>commentable_type</code> (string) - stores the model class name: “Post”, “Photo”, “Video”</li>
+<li><code>commentable_id</code> (bigint) - stores the ID of that record</li>
+</ul>
+
+<p>Polymorphic associations can’t have database <a href="https://thoughtbot.com/blog/referential-integrity-with-foreign-keys">foreign key constraints</a> because <code>commentable_id</code> could point to multiple tables. The database can’t enforce referential integrity across tables, so Rails handles validation at the application level.</p>
+
+<div><pre><code><span>post</span> <span>=</span> <span>Post</span><span>.</span><span>find</span><span>(</span><span>123</span><span>)</span>
+<span>comment</span> <span>=</span> <span>post</span><span>.</span><span>comments</span><span>.</span><span>create</span><span>(</span><span>body: </span><span>"Great post!"</span><span>,</span> <span>user: </span><span>current_user</span><span>)</span>
+</code></pre></div>
+<p>Rails automatically sets the polymorphic columns:</p>
+<div><pre><code><span>INSERT</span> <span>INTO</span> <span>comments</span> <span>(</span><span>body</span><span>,</span> <span>user_id</span><span>,</span> <span>commentable_type</span><span>,</span> <span>commentable_id</span><span>,</span> <span>...)</span>
+<span>VALUES</span> <span>(</span><span>'Great post!'</span><span>,</span> <span>42</span><span>,</span> <span>'Post'</span><span>,</span> <span>123</span><span>,</span> <span>...)</span>
+</code></pre></div>
+<div><pre><code><span>comment</span> <span>=</span> <span>Comment</span><span>.</span><span>first</span>
+<span>comment</span><span>.</span><span>commentable</span>  <span># What happens here?</span>
+</code></pre></div>
+<p>Rails reads <code>commentable_type</code> (gets “Post”), reads <code>commentable_id</code> (gets 123), then calls <code>Post.find(123)</code>:</p>
+<div><pre><code><span># What Rails does internally:</span>
+<span>class_name</span> <span>=</span> <span>comment</span><span>.</span><span>commentable_type</span>  <span># =&gt; "Post"</span>
+<span>record_id</span> <span>=</span> <span>comment</span><span>.</span><span>commentable_id</span>     <span># =&gt; 123</span>
+<span>class_name</span><span>.</span><span>constantize</span><span>.</span><span>find</span><span>(</span><span>record_id</span><span>)</span> <span># =&gt; Post.find(123)</span>
+</code></pre></div><h2 id="setting-up-your-models">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#setting-up-your-models">
+    Setting Up Your Models
+  </a>
+</h2>
+
+<div><pre><code><span>class</span> <span>Comment</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>belongs_to</span> <span>:commentable</span><span>,</span> <span>polymorphic: </span><span>true</span>
+  <span>belongs_to</span> <span>:user</span>
+
+  <span>validates</span> <span>:body</span><span>,</span> <span>presence: </span><span>true</span>
+<span>end</span>
+</code></pre></div>
+<p>The <code>polymorphic: true</code> option tells Rails to check <code>commentable_type</code> to determine which model to load.</p>
+<h3 id="on-the-quotonequot-side-post-photo-video">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#on-the-quotonequot-side-post-photo-video">
+    On the “One” Side (Post, Photo, Video)
+  </a>
+</h3>
+<div><pre><code><span>class</span> <span>Post</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>has_many</span> <span>:comments</span><span>,</span> <span>as: :commentable</span><span>,</span> <span>dependent: :destroy</span>
+<span>end</span>
+
+<span>class</span> <span>Photo</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>has_many</span> <span>:comments</span><span>,</span> <span>as: :commentable</span><span>,</span> <span>dependent: :destroy</span>
+<span>end</span>
+</code></pre></div>
+<p>The <code>as: :commentable</code> must match the name in <code>belongs_to</code>. The <code>dependent: :destroy</code> deletes comments when the parent is deleted.</p>
+
+<h3 id="generate-the-migration">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#generate-the-migration">
+    Generate the migration
+  </a>
+</h3>
+<div><pre><code>rails generate model Comment body:text user:references commentable:references<span>{</span>polymorphic<span>}</span>
+</code></pre></div><h3 id="set-up-routes-with-concerns">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#set-up-routes-with-concerns">
+    Set up routes with </a><a href="https://guides.rubyonrails.org/routing.html#routing-concerns">concerns</a>
+  
+</h3>
+<div><pre><code><span># config/routes.rb</span>
+<span>Rails</span><span>.</span><span>application</span><span>.</span><span>routes</span><span>.</span><span>draw</span> <span>do</span>
+  <span>concern</span> <span>:commentable</span> <span>do</span>
+    <span>resources</span> <span>:comments</span><span>,</span> <span>only: </span><span>[</span><span>:create</span><span>,</span> <span>:destroy</span><span>]</span>
+  <span>end</span>
+
+  <span>resources</span> <span>:posts</span><span>,</span> <span>concerns: :commentable</span>
+  <span>resources</span> <span>:photos</span><span>,</span> <span>concerns: :commentable</span>
+  <span>resources</span> <span>:videos</span><span>,</span> <span>concerns: :commentable</span>
+<span>end</span>
+</code></pre></div><h3 id="create-the-controller-with-signed-global-ids">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#create-the-controller-with-signed-global-ids">
+    Create the controller with Signed Global IDs
+  </a>
+</h3>
+
+<p>Instead of passing <code>commentable_type</code> and <code>commentable_id</code> as separate params (which requires whitelisting types and constantizing strings), use Rails’ <a href="https://github.com/rails/globalid">Signed Global IDs</a>. They encode the model type and ID into a single tamper-proof token:</p>
+<div><pre><code><span># app/controllers/comments_controller.rb</span>
+<span>class</span> <span>CommentsController</span> <span>&lt;</span> <span>ApplicationController</span>
+  <span>before_action</span> <span>:set_commentable</span>
+
+  <span>def</span> <span>create</span>
+    <span>@comment</span> <span>=</span> <span>@commentable</span><span>.</span><span>comments</span><span>.</span><span>build</span><span>(</span><span>comment_params</span><span>)</span>
+    <span>@comment</span><span>.</span><span>user</span> <span>=</span> <span>current_user</span>
+
+    <span>if</span> <span>@comment</span><span>.</span><span>save</span>
+      <span>redirect_to</span> <span>@commentable</span><span>,</span> <span>notice: </span><span>"Comment created!"</span>
+    <span>else</span>
+      <span>render</span> <span>:new</span><span>,</span> <span>status: :unprocessable_entity</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>private</span>
+
+  <span>def</span> <span>set_commentable</span>
+    <span>@commentable</span> <span>=</span> <span>GlobalID</span><span>::</span><span>Locator</span><span>.</span><span>locate_signed</span><span>(</span><span>params</span><span>[</span><span>:commentable_sgid</span><span>])</span>
+    <span>raise</span> <span>ActiveRecord</span><span>::</span><span>RecordNotFound</span> <span>unless</span> <span>@commentable</span>
+  <span>end</span>
+
+  <span>def</span> <span>comment_params</span>
+    <span>params</span><span>.</span><span>require</span><span>(</span><span>:comment</span><span>).</span><span>permit</span><span>(</span><span>:body</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>In your form, generate the signed global ID:</p>
+<div><pre><code><span>&lt;%=</span> <span>form_with</span> <span>model: </span><span>Comment</span><span>.</span><span>new</span><span>,</span> <span>url: </span><span>comments_path</span> <span>do</span> <span>|</span><span>f</span><span>|</span> <span>%&gt;</span>
+  <span>&lt;%=</span> <span>hidden_field_tag</span> <span>:commentable_sgid</span><span>,</span> <span>@post</span><span>.</span><span>to_sgid</span><span>.</span><span>to_s</span> <span>%&gt;</span>
+  <span>&lt;%=</span> <span>f</span><span>.</span><span>text_area</span> <span>:body</span> <span>%&gt;</span>
+  <span>&lt;%=</span> <span>f</span><span>.</span><span>submit</span> <span>%&gt;</span>
+<span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+</code></pre></div>
+<p>This approach prevents users from tampering with params to comment on records they shouldn’t access. For more on this pattern, see <a href="https://thoughtbot.com/blog/let-rails-help-you">Let Rails Help You</a>.</p>
+<h2 id="common-polymorphic-patterns">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#common-polymorphic-patterns">
+    Common Polymorphic Patterns
+  </a>
+</h2>
+<h3 id="dry-with-concerns">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#dry-with-concerns">
+    DRY with Concerns
+  </a>
+</h3>
+
+<p>Extract the association into a concern when multiple models share the same polymorphic relationship:</p>
+<div><pre><code><span># app/models/concerns/commentable.rb</span>
+<span>module</span> <span>Commentable</span>
+  <span>extend</span> <span>ActiveSupport</span><span>::</span><span>Concern</span>
+
+  <span>included</span> <span>do</span>
+    <span>has_many</span> <span>:comments</span><span>,</span> <span>as: :commentable</span><span>,</span> <span>dependent: :destroy</span>
+  <span>end</span>
+<span>end</span>
+
+<span># app/models/post.rb</span>
+<span>class</span> <span>Post</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>include</span> <span>Commentable</span>
+<span>end</span>
+</code></pre></div><h3 id="querying">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#querying">
+    Querying
+  </a>
+</h3>
+<div><pre><code><span># Get all comments on posts</span>
+<span>Comment</span><span>.</span><span>where</span><span>(</span><span>commentable_type: </span><span>"Post"</span><span>)</span>
+
+<span># Eager load to avoid N+1</span>
+<span>Comment</span><span>.</span><span>includes</span><span>(</span><span>:commentable</span><span>).</span><span>where</span><span>(</span><span>user: </span><span>current_user</span><span>)</span>
+
+<span># Count by type</span>
+<span>Comment</span><span>.</span><span>group</span><span>(</span><span>:commentable_type</span><span>).</span><span>count</span>
+<span># =&gt; {"Post" =&gt; 150, "Photo" =&gt; 89, "Video" =&gt; 45}</span>
+</code></pre></div>
+<p>If you’re using <a href="https://api.rubyonrails.org/classes/ActiveRecord/DelegatedType.html">delegated types</a> (Rails 6.1+), you get scopes like <code>Comment.posts</code> for free.</p>
+<h2 id="common-pitfalls">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#common-pitfalls">
+    Common Pitfalls
+  </a>
+</h2>
+<h3 id="forgetting-the-index">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#forgetting-the-index">
+    Forgetting the Index
+  </a>
+</h3>
+
+<p>Always add a composite index on both columns:</p>
+<div><pre><code><span>add_index</span> <span>:comments</span><span>,</span> <span>[</span><span>:commentable_type</span><span>,</span> <span>:commentable_id</span><span>]</span>
+</code></pre></div><h3 id="mismatched-names">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#mismatched-names">
+    Mismatched Names
+  </a>
+</h3>
+
+<p>The <code>as:</code> option must match the <code>belongs_to</code> name exactly:</p>
+<div><pre><code><span># These must match</span>
+<span>belongs_to</span> <span>:commentable</span><span>,</span> <span>polymorphic: </span><span>true</span>
+<span>has_many</span> <span>:comments</span><span>,</span> <span>as: :commentable</span>  <span># not :post_commentable</span>
+</code></pre></div><h3 id="n1-queries">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#n1-queries">
+    N+1 Queries
+  </a>
+</h3>
+<div><pre><code><span># Triggers N+1</span>
+<span>comments</span><span>.</span><span>each</span> <span>{</span> <span>|</span><span>c</span><span>|</span> <span>c</span><span>.</span><span>commentable</span><span>.</span><span>title</span> <span>}</span>
+
+<span># Fixed</span>
+<span>Comment</span><span>.</span><span>includes</span><span>(</span><span>:commentable</span><span>).</span><span>each</span> <span>{</span> <span>|</span><span>c</span><span>|</span> <span>c</span><span>.</span><span>commentable</span><span>.</span><span>title</span> <span>}</span>
+</code></pre></div><h2 id="when-not-to-use-polymorphic-associations">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#when-not-to-use-polymorphic-associations">
+    When NOT to Use Polymorphic Associations
+  </a>
+</h2>
+
+<p>Avoid polymorphic associations when:</p>
+
+<ul>
+<li>You need database foreign key constraints (polymorphic can’t have them)</li>
+<li>You only have 2-3 parent models (separate foreign keys are simpler)</li>
+<li>The parent models have very different behavior</li>
+</ul>
+
+<p>Alternatives: separate associations with foreign keys, Single Table Inheritance (STI) if models are similar, or <a href="https://api.rubyonrails.org/classes/ActiveRecord/DelegatedType.html">delegated types</a> (Rails 6.1+).</p>
+<h2 id="wrapping-up">
+  <a href="https://thoughtbot.com/blog/a-javascript-developer-s-guide-to-rails-what-is-polymorphic-rails-model#wrapping-up">
+    Wrapping up
+  </a>
+</h2>
+
+<p>Polymorphic associations encode a common pattern—one model belonging to multiple types—into Rails conventions. The database stores a <code>_type</code> and <code>_id</code> column, and Rails handles the rest.</p>
+
+<p>The key points:</p>
+
+<ul>
+<li>Two columns: <code>{name}_type</code> (string) and <code>{name}_id</code> (bigint)</li>
+<li><code>belongs_to :name, polymorphic: true</code> on the child</li>
+<li><code>has_many :children, as: :name, dependent: :destroy</code> on each parent</li>
+<li>Always index <code>[:type_column, :id_column]</code></li>
+<li>Use Signed Global IDs in controllers to avoid constantizing user input</li>
+<li>No database foreign keys possible—Rails handles integrity at the application level</li>
+</ul>
+
+
+
+    </div></div>
+  </div>
+</body>
+</html>

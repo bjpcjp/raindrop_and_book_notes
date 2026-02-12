@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Build Your Own Rails Generator</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Build Your Own Rails Generator</h1>
+    <p><strong>URL:</strong> <a href="https://www.honeybadger.io/blog/build-a-rails-generator">https://www.honeybadger.io/blog/build-a-rails-generator</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876789494</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+            <p>Rails generators are one of the most prominent features of Rails. We can generate feature scaffolds, migrate databases, create mailers, and even create new background jobs. There is nothing more satisfying than running a generator with everything set up and ready to go.  </p>
+
+<p>Scaffolds also serve an essential function in a lot of successful gems. Many popular gems ship with an install command that sets up everything the developer needs to succeed with that library.</p>
+
+<p>If you’re a long-time Rails user, you probably take generators for granted until you venture outside of Rails.  </p>
+
+<p>Generators are easy to view as "magic". How they work can be pretty obscure to a newcomer. This article will dig into exactly how generators work under the hood, and then we'll build one ourselves.  </p>
+
+<h2 id="what-is-a-generator">What is a Generator</h2>
+
+<p>A generator consists of the following:</p>
+
+<ul>
+<li>A class that inherits from <code>Rails::Generators::NamedBase</code></li>
+<li>A template(optional)</li>
+<li>A repeatable pattern</li>
+</ul>
+
+<h2 id="kinds-of-generators">Kinds of Generators</h2>
+
+<p>Generators come in all shapes and sizes, but generally, they come in two variations—generators that take arguments and do something with them and installers that set up the plumbing.</p>
+
+<p>These kinds of generators exist in the <a href="https://github.com/excid3/noticed">Noticed gem</a>and within Rails itself via the various <code>rails scaffold commands</code> and even the <code>rails new</code> command, which is a Rails generator itself.  </p>
+
+<p>In the Noticed gem, we can do the following:</p>
+<div><pre><code><span>rails</span> <span>generate</span> <span>noticed</span><span>:model</span>
+</code></pre></div>
+<p>This generates a new model called notifications, a migration, and some tests.</p>
+
+<p>It then proceeds to give you some instructions on what to do next.  </p>
+
+<p>Now let’s dive into the code, which you can read <a href="https://github.com/excid3/noticed/blob/master/lib/generators/noticed/model_generator.rb">here</a>.</p>
+
+<p>The critical thing here is that we inherit from <code>Rails::Generators::NamedBase</code>; note that we have a <code>source_root</code> method that points to the templates folder.  </p>
+<div><pre><code><span>module</span> <span>Noticed</span>
+ <span>module</span> <span>Generators</span>
+  <span>class</span> <span>ModelGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span>
+   <span>include</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>ResourceHelpers</span>
+
+   <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"../templates"</span><span>,</span> <span>__FILE__</span><span>)</span>
+
+   <span>desc</span> <span>"Generates a Notification model for storing notifications."</span>
+
+   <span>argument</span> <span>:name</span><span>,</span> <span>type: :string</span><span>,</span> <span>default: </span><span>"Notification"</span><span>,</span> <span>banner: </span><span>"Notification"</span>
+   <span>argument</span> <span>:attributes</span><span>,</span> <span>type: :array</span><span>,</span> <span>default: </span><span>[],</span> <span>banner: </span><span>"field:type field:type"</span>
+ <span>...</span>
+</code></pre></div>
+<p>This class governs all behavior that goes into the noticed generator.  </p>
+
+<p>Note that we also have the <code>argument</code> method, which defaults to string. We can also pass arguments into this generator. For example, we might want the notifications model to be called something else instead of notification.  </p>
+<div><pre><code><span>rails</span> <span>generate</span> <span>noticed</span><span>:model</span> <span>Notice</span> 
+</code></pre></div>
+<p>Noticed has a generator targeted for taking an argument in the form of a Ruby Class.</p>
+<div><pre><code><span>rails</span> <span>generate</span> <span>noticed</span><span>:notification</span> <span>CommentNotification</span> 
+</code></pre></div>
+<p>This can be <a href="https://github.com/excid3/noticed/blob/master/lib/generators/noticed/notification_generator.rb">seen here</a> and is remarkably simple. Like the previous generator, it inherits from <code>Rails::Generators::NamedBase</code> and has the <code>source_root</code> method, which points to the templates folder. However, this example uses a template that can be seen <a href="https://github.com/excid3/noticed/blob/master/lib/generators/noticed/templates/notification.rb.tt">here</a>.  </p>
+<div><pre><code># To deliver this notification:
+#
+# &lt;%= class_name %&gt;.with(post: @post).deliver_later(current_user)
+# &lt;%= class_name %&gt;.with(post: @post).deliver(current_user)
+
+class &lt;%= class_name %&gt; &lt; Noticed::Base
+ # Add your delivery methods
+ #
+ # deliver_by :database
+ # deliver_by :email, mailer: "UserMailer"
+ # deliver_by :slack
+ # deliver_by :custom, class: "MyDeliveryMethod"
+
+ # Add required params
+ #
+ # param :post
+
+ # Define helper methods to make rendering easier.
+ #
+ # def message
+ #  t(".message")
+ # end
+ #
+ # def url
+ #  post_path(params[:post])
+ # end
+end
+</code></pre></div>
+<h2 id="invocation-order">Invocation Order</h2>
+
+<p>All public methods in the generator will be called one after the <a href="https://github.com/rails/thor/wiki/Invocations">other</a>. Private methods will not be called but are available in your public methods like regular Ruby classes.  </p>
+
+<h2 id="building-a-generator-getting-started">Building A Generator - Getting Started</h2>
+
+<p>The best way to understand generators is, of course, to build one ourselves. This generator will be simple initially but easy to build upon in the future. We will keep our generator simple and create new StimulusJS controllers.</p>
+
+<p>The first thing we do is build a new Rails app to get started.  </p>
+
+<p>Assuming you’re using Rails 7, run the following command:  </p>
+<div><pre><code><span>rails</span> <span>new</span> <span>rails_generator</span>
+</code></pre></div>
+<p>Now we change into that directory:</p>
+<div><pre><code><span>cd </span>rails_generator
+</code></pre></div>
+<p>Once that's ready, we will use a Rails generator to create our first generator.</p>
+<div><pre><code><span>rails</span> <span>g</span> <span>generator</span> <span>stimulus</span>
+</code></pre></div>
+<p>Then we will do the following:  </p>
+<div><pre><code>   <span>create</span> <span>lib</span><span>/</span><span>generators</span><span>/</span><span>stimulus</span>
+   <span>create</span> <span>lib</span><span>/</span><span>generators</span><span>/</span><span>stimulus</span><span>/</span><span>stimulus_generator</span><span>.</span><span>rb</span>
+   <span>create</span> <span>lib</span><span>/</span><span>generators</span><span>/</span><span>stimulus</span><span>/</span><span>USAGE</span>
+   <span>create</span> <span>lib</span><span>/</span><span>generators</span><span>/</span><span>stimulus</span><span>/</span><span>templates</span>
+   <span>invoke</span> <span>test_unit</span>
+   <span>create</span>  <span>test</span><span>/</span><span>lib</span><span>/</span><span>generators</span><span>/</span><span>stimulus_generator_test</span><span>.</span><span>rb</span>
+</code></pre></div>
+<p>The first file I like to edit is the <code>lib/generators/stimulus/USAGE</code> file. This allows us to do some documentation upfront and provide helpful hints to fellow developers who might want to use your generator.  </p>
+
+<p>So, let’s change that by updating the <code>lib/generators/stimulus/USAGE</code>file:</p>
+<div><pre><code>Description:
+  Generates a New Stimulus Controller
+
+Example:
+  bin/rails generate stimulus Thing
+
+  This will create:
+    app/javascripts/controllers/thing_controller.js
+
+</code></pre></div>
+<p>In our terminal, we can run the following, and we’ll see the output.  </p>
+<div><pre><code>rails g stimulus <span>--help</span>
+</code></pre></div><div><pre><code>Usage:
+ rails generate stimulus NAME <span>[</span>options]
+
+Options:
+ <span>[</span><span>--skip-namespace</span><span>]</span>, <span>[</span><span>--no-skip-namespace</span><span>]</span>       <span># Skip namespace (affects only isolated engines)</span>
+ <span>[</span><span>--skip-collision-check</span><span>]</span>, <span>[</span><span>--no-skip-collision-check</span><span>]</span> <span># Skip collision check</span>
+
+Runtime options:
+ <span>-f</span>, <span>[</span><span>--force</span><span>]</span>          <span># Overwrite files that already exist</span>
+ <span>-p</span>, <span>[</span><span>--pretend</span><span>]</span>, <span>[</span><span>--no-pretend</span><span>]</span> <span># Run but do not make any changes</span>
+ <span>-q</span>, <span>[</span><span>--quiet</span><span>]</span>, <span>[</span><span>--no-quiet</span><span>]</span>   <span># Suppress status output</span>
+ <span>-s</span>, <span>[</span><span>--skip</span><span>]</span>, <span>[</span><span>--no-skip</span><span>]</span>    <span># Skip files that already exist</span>
+
+Description:
+  Generates a New Stimulus Controller
+
+Example:
+  bin/rails generate stimulus Thing
+
+  This will create:
+    app/javascripts/controllers/thing_controller.js
+</code></pre></div>
+<p>This is a good start, but nothing happens if we run the generator. Let’s fix this. Let’s start by adding a test to our <code>test/lib/generators/stimulus_generator_test.rb</code></p>
+<div><pre><code><span># test/lib/generators/stimulus_generator_test.rb</span>
+<span>require</span> <span>"test_helper"</span>
+<span>require</span> <span>"generators/stimulus/stimulus_generator"</span>
+
+<span>class</span> <span>StimulusGeneratorTest</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>TestCase</span>
+ <span>tests</span> <span>StimulusGenerator</span>
+ <span>destination</span> <span>Rails</span><span>.</span><span>root</span><span>.</span><span>join</span><span>(</span><span>"tmp/generators"</span><span>)</span>
+ <span>setup</span> <span>:prepare_destination</span>
+
+ <span>test</span> <span>'should add thing controller file'</span> <span>do</span>
+  <span>run_generator</span> <span>[</span><span>'Thing'</span><span>]</span>
+
+  <span>assert_file</span> <span>'app/javascript/controllers/thing_controller.js'</span>
+ <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>Now we have created a failing test. We can run it.  </p>
+<div><pre><code><span>rails</span> <span>test</span> <span>test</span><span>/</span><span>lib</span><span>/</span><span>generators</span><span>/</span><span>stimulus_generator_test</span><span>.</span><span>rb</span>
+</code></pre></div><div><pre><code><span># Running:</span>
+
+<span>F</span>
+
+<span>Failure</span><span>:</span>
+<span>StimulusGeneratorTest</span><span>#test_should_add_thing_controller_file [/Users/williamkennedy/projects/honeybadger/rails_generators/test/lib/generators/stimulus_generator_test.rb:12]:</span>
+<span>Expected</span> <span>file</span> <span>"app/javascript/controllers/thing_controller.js"</span> <span>to</span> <span>exist</span><span>,</span> <span>but</span> <span>does</span> <span>not</span>
+
+
+<span>rails</span> <span>test</span> <span>test</span><span>/</span><span>lib</span><span>/</span><span>generators</span><span>/</span><span>stimulus_generator_test</span><span>.</span><span>rb</span><span>:</span><span>9</span>
+
+
+
+<span>Finished</span> <span>in</span> <span>0.007052</span><span>s</span><span>,</span> <span>141.8037</span> <span>runs</span><span>/</span><span>s</span><span>,</span> <span>141.8037</span> <span>assertions</span><span>/</span><span>s</span><span>.</span>
+<span>1</span> <span>runs</span><span>,</span> <span>1</span> <span>assertions</span><span>,</span> <span>1</span> <span>failures</span><span>,</span> <span>0</span> <span>errors</span><span>,</span> <span>0</span> <span>skips</span>
+</code></pre></div>
+<p>Let’s fix this.  </p>
+<div><pre><code><span># lib/generators/stimulus/stimulus_generator.rb</span>
+<span>class</span> <span>StimulusGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span>
+ <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span>
+
+ <span>def</span> <span>create_stimulus_controller</span>
+  <span>create_file</span> <span>"app/javascript/controllers/</span><span>#{</span><span>file_path</span><span>}</span><span>_controller.js"</span>
+ <span>end</span>
+<span>end</span>
+
+</code></pre></div>
+<p>Now when we run our tests, it should pass.</p>
+<div><pre><code><span>rails</span> <span>test</span> <span>test</span><span>/</span><span>lib</span><span>/</span><span>generators</span><span>/</span><span>stimulus_generator_test</span><span>.</span><span>rb</span>
+</code></pre></div><div><pre><code><span>Running</span> <span>1</span> <span>tests</span> <span>in</span> <span>a</span> <span>single</span> <span>process</span> <span>(</span><span>parallelization</span> <span>threshold</span> <span>is</span> <span>50</span><span>)</span>
+<span>Run</span> <span>options: </span><span>--</span><span>seed</span> <span>41043</span>
+
+<span># Running:</span>
+
+<span>.</span>
+
+<span>Finished</span> <span>in</span> <span>0.007780</span><span>s</span><span>,</span> <span>128.5347</span> <span>runs</span><span>/</span><span>s</span><span>,</span> <span>128.5347</span> <span>assertions</span><span>/</span><span>s</span><span>.</span>
+<span>1</span> <span>runs</span><span>,</span> <span>1</span> <span>assertions</span><span>,</span> <span>0</span> <span>failures</span><span>,</span> <span>0</span> <span>errors</span><span>,</span> <span>0</span> <span>skips</span>
+</code></pre></div>
+<h2 id="building-a-generator-generating-code">Building A Generator - Generating Code</h2>
+
+<p>So far, what we’ve built is pretty cool but not practical. It only creates an empty file. However, we’ve got all the building blocks ready to take our generator further, so let’s start with a non-empty file.</p>
+
+<p>Most stimulus controllers have the following code. The connect and initialize methods are optional.</p>
+<div><pre><code><span>import</span> <span>{</span> <span>Controller</span> <span>}</span> <span>from</span> <span>"</span><span>@hotwired/stimulus</span><span>"</span>
+
+<span>export</span> <span>default</span> <span>class</span> <span>extends</span> <span>Controller</span> <span>{</span>
+
+ <span>initialize</span><span>()</span> <span>{</span>
+ <span>}</span>
+
+ <span>connect</span><span>()</span> <span>{</span>
+ <span>}</span>
+<span>}</span>
+</code></pre></div>
+<p>Our generator does not add any of this code, and it would be helpful if it did. Let’s modify our generator to do this.  </p>
+
+<p>In our tests, let’s add the following:  </p>
+<div><pre><code><span># test/lib/generators/stimulus_generator_test.rb</span>
+<span>class</span> <span>StimulusGeneratorTest</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>TestCase</span>
+ <span>...</span>
+ <span>test</span> <span>'should add stimulusjs boilerplate'</span> <span>do</span>
+  <span>run_generator</span> <span>[</span><span>'Thing'</span><span>]</span>
+  <span>assert_file</span> <span>"app/javascript/controllers/thing_controller.js"</span> <span>do</span> <span>|</span><span>content</span><span>|</span>
+   <span>assert_match</span> <span>/Controller/</span><span>,</span> <span>content</span>
+   <span>assert_match</span> <span>/connect()/</span><span>,</span> <span>content</span>
+   <span>assert_match</span> <span>/@hotwired/</span><span>,</span> <span>content</span>
+  <span>end</span>
+ <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>In true test-driven-development fashion, we run this test, and it fails.</p>
+<div><pre><code>rails <span>test test</span>/lib/generators/stimulus_generator_test.rb
+</code></pre></div><div><pre><code>Run options: <span>--seed</span> 15750
+
+<span># Running:</span>
+
+F
+
+Failure:
+StimulusGeneratorTest#test_should_add_stimulusjs_boilerplate <span>[</span>/Users/williamkennedy/projects/honeybadger/rails_generators/test/lib/generators/stimulus_generator_test.rb:17]:
+Expected /Controller/ to match <span>""</span><span>.</span>
+
+
+rails <span>test test</span>/lib/generators/stimulus_generator_test.rb:15
+
+<span>.</span>
+
+Finished <span>in </span>0.009860s, 202.8398 runs/s, 405.6795 assertions/s.
+2 runs, 4 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div>
+<p>We can take advantage of our templates folder to make this test pass. Let’s create a new file that will be a template for our stimulus controller.</p>
+<div><pre><code><span>touch </span>lib/generators/stimulus/templates/stimulus_controller.js.erb
+</code></pre></div>
+<p>In that file, add our stimulus controller boilerplate.  </p>
+<div><pre><code><span>// lib/generators/stimulus/templates stimulus_controller.js.erb</span>
+<span>import</span> <span>{</span> <span>Controller</span> <span>}</span> <span>from</span> <span>"</span><span>@hotwired/stimulus</span><span>"</span>
+
+<span>export</span> <span>default</span> <span>class</span> <span>extends</span> <span>Controller</span> <span>{</span>
+
+ <span>initialize</span><span>()</span> <span>{</span>
+ <span>}</span>
+
+ <span>connect</span><span>()</span> <span>{</span>
+ <span>}</span>
+<span>}</span>
+</code></pre></div>
+<p>Let’s also update our generator class.</p>
+<div><pre><code><span># lib/generators/stimulus/stimulus_generator.rb</span>
+
+<span>class</span> <span>StimulusGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span>
+ <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span>
+
+ <span>def</span> <span>create_stimulus_controller</span>
+  <span>template</span> <span>'stimulus_controller.js.erb'</span><span>,</span> <span>"app/javascript/controllers/</span><span>#{</span><span>file_path</span><span>}</span><span>_controller.js"</span>
+ <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>Now, let’s rerun our test.</p>
+<div><pre><code>rails <span>test test</span>/lib/generators/stimulus_generator_test.rb
+</code></pre></div><div><pre><code>Running 2 tests <span>in </span>a single process <span>(</span>parallelization threshold is 50<span>)</span>
+Run options: <span>--seed</span> 61204
+
+<span># Running:</span>
+
+..
+
+Finished <span>in </span>0.010278s, 194.5904 runs/s, 778.3615 assertions/s.
+2 runs, 8 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div>
+<p>We have saved ourselves quite a lot of time. The next time we need a new stimulus controller, we run our generator, and we’re ready to go. However, now that we have gone beyond the basics of creating a file, could we go further. Could we make our generator even better?</p>
+
+<h2 id="build-a-generator-handling-command-line-arguments">Build A Generator - Handling Command Line Arguments</h2>
+
+<p>When creating a new Rails model, we can pass in options.</p>
+<div><pre><code>rails g model Item name:string description:text
+</code></pre></div>
+<p>This will create an ”items” table with name and description columns. StimulusJS controllers have several options that allow us to expand the usefulness of our controller.  </p>
+
+<ul>
+<li><a href="https://stimulus.hotwired.dev/reference/actions">Actions</a></li>
+<li><a href="https://stimulus.hotwired.dev/reference/targets">Targets</a></li>
+<li><a href="https://stimulus.hotwired.dev/reference/values">Values</a></li>
+<li><a href="https://stimulus.hotwired.dev/reference/css-classes">CSS Classes</a></li>
+</ul>
+
+<p>Wouldn’t it be great if we could also generate markup from our generator? Let’s try it.</p>
+
+<p>Go back to our tests and write our test case.  </p>
+<div><pre><code><span># test/lib/generators/stimulus_generator_test.rb</span>
+<span>class</span> <span>StimulusGeneratorTest</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>TestCase</span>
+ <span>...</span>
+ <span>test</span> <span>'should generate actions'</span> <span>do</span>
+  <span>run_generator</span> <span>[</span><span>"toggle"</span><span>,</span> <span>"--actions"</span><span>,</span> <span>"toggle hide"</span><span>]</span>
+  <span>assert_file</span> <span>"app/javascript/controllers/toggle_controller.js"</span> <span>do</span> <span>|</span><span>content</span><span>|</span>
+   <span>assert_match</span> <span>/toggle()/</span><span>,</span> <span>content</span>
+   <span>assert_match</span> <span>/hide()/</span><span>,</span> <span>content</span>
+  <span>end</span>
+ <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>Let’s run our tests.</p>
+<div><pre><code>rails <span>test test</span>/lib/generators/stimulus_generator_test.rb
+</code></pre></div><div><pre><code>Running 3 tests <span>in </span>a single process <span>(</span>parallelization threshold is 50<span>)</span>
+Run options: <span>--seed</span> 2776
+
+<span># Running:</span>
+
+.F
+
+Failure:
+StimulusGeneratorTest#test_should_generate_actions <span>[</span>/Users/williamkennedy/projects/honeybadger/rails_generators/test/lib/generators/stimulus_generator_test.rb:26]:
+Expected /toggle<span>()</span>/ to match <span>"import { Controller } from </span><span>\"</span><span>@hotwired/stimulus</span><span>\"\n\n</span><span>export default class extends Controller {</span><span>\n\n</span><span> initialize() {</span><span>\n</span><span> }</span><span>\n</span><span> </span><span>\n</span><span> connect() {</span><span>\n</span><span> }</span><span>\n</span><span>}</span><span>\n\n</span><span>"</span><span>.</span>
+
+
+rails <span>test test</span>/lib/generators/stimulus_generator_test.rb:24
+
+<span>.</span>
+
+Finished <span>in </span>0.013761s, 218.0074 runs/s, 799.3605 assertions/s.
+3 runs, 11 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div>
+<p>When taking arguments in our generators, we can use the <code>class_option</code> method. We now need to update our generator once again.</p>
+<div><pre><code><span>class</span> <span>StimulusGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span>
+ <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span>
+
+ <span>class_option</span> <span>:actions</span><span>,</span> <span>type: :array</span><span>,</span> <span>default: </span><span>[]</span>
+
+ <span>def</span> <span>create_stimulus_controller</span>
+  <span>template</span> <span>'stimulus_controller.js.erb'</span><span>,</span> <span>"app/javascript/controllers/</span><span>#{</span><span>file_path</span><span>}</span><span>_controller.js"</span>
+ <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>Note that we have an empty array as the default for the argument. This means we don’t have to worry about nil errors if we don’t use the action argument.</p>
+
+<p>We can access the arguments by using the <code>options</code> method. Here’s how I have done it in the <code>lib/generators/stimulus/templates/stimulus_controller.js.erb</code>:</p>
+<div><pre><code>import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+
+ initialize() {
+ }
+
+ connect() {
+ }
+<span>&lt;%</span> <span>options</span><span>[</span><span>:actions</span><span>].</span><span>each</span> <span>do</span> <span>|</span><span>action</span><span>|</span> <span>%&gt;</span>
+
+ <span>&lt;%=</span> <span>action</span> <span>%&gt;</span>(){
+ }
+
+<span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+}
+</code></pre></div>
+<p>Now when we can run our generator with options.</p>
+<div><pre><code><span>rails</span> <span>g</span> <span>stimulus</span> <span>toggle</span> <span>--</span><span>actions</span> <span>toggle</span> <span>hide</span>
+</code></pre></div>
+<p>This will produce the following in the file <code>app/javascript/controllers/toggle_controller.js</code>:  </p>
+<div><pre><code><span>import</span> <span>{</span> <span>Controller</span> <span>}</span> <span>from</span> <span>"@hotwired/stimulus"</span>
+
+<span>export</span> <span>default</span> <span>class</span> <span>extends</span> <span>Controller</span> <span>{</span>
+
+ <span>initialize</span><span>()</span> <span>{</span>
+ <span>}</span>
+
+ <span>connect</span><span>()</span> <span>{</span>
+ <span>}</span>
+
+ <span>toggle</span><span>(){</span>
+ <span>}</span>
+
+ <span>hide</span><span>(){</span>
+ <span>}</span>
+<span>}</span>
+</code></pre></div>
+<p>And, of course, if we rerun our tests, we’ll see that they pass.  </p>
+<div><pre><code>rails <span>test test</span>/lib/generators/stimulus_generator_test.rb
+</code></pre></div><div><pre><code>Running 3 tests <span>in </span>a single process <span>(</span>parallelization threshold is 50<span>)</span>
+Run options: <span>--seed</span> 47721
+
+<span># Running:</span>
+
+...
+
+Finished <span>in </span>0.015036s, 199.5211 runs/s, 864.5916 assertions/s.
+3 runs, 13 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div>
+<p>We could do the same process for the other stimulus features, such as targets, values, and CSS classes.</p>
+
+<ol>
+<li>Create the test.</li>
+<li>Add the class option.</li>
+<li>Adjust our template.</li>
+<li>Ensure the test passes.</li>
+</ol>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Generators are pretty helpful and can save hours, reduce boilerplate errors, and create a standard across your codebase as it gets larger over time.  </p>
+
+<p>However, there is a balance to be struck on when to automate something using a generator. Luckily, XKCD has <a href="https://xkcd.com/1205/">a handy guide</a>.</p>
+
+<p>The source code for this app can be found <a href="https://github.com/williamkennedy/rails_generator">here</a>.</p>
+
+          </article></div>
+  </div>
+</body>
+</html>

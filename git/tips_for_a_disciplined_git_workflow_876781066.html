@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tips for a disciplined git workflow</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Tips for a disciplined git workflow</h1>
+    <p><strong>URL:</strong> <a href="https://drewdevault.com/2019/02/25/Using-git-with-discipline.html">https://drewdevault.com/2019/02/25/Using-git-with-discipline.html</a></p>
+    <p><strong>Tags:</strong> git</p>
+    <p><strong>Bookmark ID:</strong> 876781066</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+  <article>
+    <p>Basic git usage involves typing a few stock commands to “<a href="https://xkcd.com/1597/">sync everyone
+up</a>”. Many people who are frustrated with git become so
+because they never progress beyond this surface-level understanding of how it
+works. However, mastering git is easily worth your time. How much of your day is
+spent using git? I would guess that there are many tools in your belt that you
+use half as often and have spent twice the time studying.</p>
+<p><a href="https://xkcd.com/1205/"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<p>If you’d like to learn more about git, I suggest starting with <a href="https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain">Chapter
+10</a> of <a href="https://git-scm.com/book/en/v2">Pro Git</a> (it’s free!), then reading chapters 2, 3,
+and 7. The rest is optional. In this article, we’re going to discuss how you can
+apply the tools discussed in the book to a disciplined and productive git
+workflow.</p>
+<h3 id="the-basics-writing-good-commit-messages">The basics: Writing good commit messages</h3>
+<p><a href="https://xkcd.com/1296/"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<p>You may have heard this speech before, but bear with me. Generally, you should
+not use <code>git commit -m "Your message here"</code>. Start by configuring git to use
+your favorite editor: <code>git config --global core.editor vim</code>, then simply run
+<code>git commit</code> alone. Your editor will open and you can fill in the file with your
+commit message. The first line should be limited to 50 characters in length, and
+should complete this sentence: when applied, this commit will… “Fix text
+rendering in CJK languages”. “Add support for protocol v3”. “Refactor CRTC
+handling”. Then, add a single empty line, and expand on this in the <em>extended
+commit description</em>, which should be hard-wrapped at 72 columns, and include
+details like rationale for the change, tradeoffs and limitations of the
+approach, etc.</p>
+<p>We use 72 characters because that’s <a href="https://tools.ietf.org/html/rfc2822#section-2.1.1">the standard width of an email</a>, and
+email is an important tool for git. The 50 character limit is used because the
+first line becomes the subject line of your email - and lots of text like
+“<code>[PATCH linux-usb v2 0/13]</code>” can get added to beginning. You might find
+wrapping your lines like this annoying and burdensome - but consider that when
+working with others, they may not be reading the commit log in the same context
+as you. I have a vertical monitor that I often read commit logs on, which is not
+going to cram as much text into one line as your 4K 16:9 display could.</p>
+<h3 id="each-commit-should-be-a-self-contained-change">Each commit should be a self-contained change</h3>
+<p>Every commit should only contain one change - avoid sneaking in little unrelated
+changes into the same commit<sup id="fnref:1"><a href="#fn:1" role="doc-noteref">1</a></sup>. Additionally, avoid breaking one change into
+several commits, unless you can refactor the idea into discrete steps - each of
+which represents a complete change in its own right. If you have several changes
+in your working tree and only need to commit some of them, try <code>git add -i</code> or
+<code>git add -p</code>. Additionally, every commit should compile and run all tests
+successfully, and should avoid having any known bugs which will be fixed up in a
+future commit.</p>
+<p>If this is true of your repository, then you can check out any commit and expect
+the code to work correctly. This also becomes useful later, for example when
+cherry-picking commits into a release branch. Using this approach also allows
+<a href="https://git-scm.com/docs/git-bisect">git-bisect</a> to become more useful<sup id="fnref:2"><a href="#fn:2" role="doc-noteref">2</a></sup>,
+because if you can expect the code to compile and complete tests successfully
+for every commit, you can pass <code>git-bisect</code> a script which programmatically
+tests a tree for the presence of a bug and avoid false positives. These
+self-contained commits with good commit messages can also make it really easy to
+prepare release notes with <a href="https://git-scm.com/docs/git-shortlog">git-shortlog</a>,
+<a href="https://lkml.org/lkml/2019/1/6/178">like Linus does with Linux releases</a>.</p>
+<h3 id="get-it-right-on-the-first-try">Get it right on the first try</h3>
+<p>We now come to one of the most important features of git which distinguishes it
+from its predecessors: history editing. All version control systems come with a
+time machine of some sort, but before git they were mostly read-only. However,
+git’s time machine is different: you can change the past. In fact, you’re
+encouraged to! But a word of warning: only change a future which has yet to be
+merged into a stable public branch.</p>
+<p>The advice in this article - bug-free, self-contained commits with a good commit
+message - is hard to get right on the first try. Editing your history, however,
+is easy and part of an effective git workflow. Familiarize yourself with
+<a href="https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History">git-rebase</a> and use
+it liberally. You can use rebase to reorder, combine, delete, edit, and split
+commits. One workflow I find myself commonly using is to make some changes to a
+file, commit a “fixup” commit (<code>git commit -m fixup</code>), then use <code>git rebase -i</code>
+to squash it into an earlier commit.</p>
+<h3 id="other-miscellaneous-tips">Other miscellaneous tips</h3>
+<ul>
+<li>Read the man pages! Pick a random git man page and read it now. Also, if you
+haven’t read the top-level git man page (simply <code>man git</code>), do so.</li>
+<li>At the bottom of each man page for a high-level git command is usually a list
+of low-level git commands that the high-level command relies on. If you want
+to learn more about how a high-level git command works, try reading these man
+pages, too.</li>
+<li>Learn how to specify the commit you want with <a href="https://git-scm.com/book/en/v2/Git-Tools-Revision-Selection">rev selection</a></li>
+<li>Branches are useful, but you should learn how to work without them as well to
+have a nice set of tools in your belt. Use tools like <code>git pull --rebase</code>,
+<code>git send-email -1 HEAD~2</code>, and <code>git push origin HEAD~2:master</code>.</li>
+</ul>
+<div role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>I could stand to take my own advice more often in this respect.&nbsp;<a href="#fnref:1" role="doc-backlink">↩︎</a></p>
+</li>
+<li id="fn:2">
+<p>In a nutshell, git bisect is a tool which does a binary search between two commits in your history, checking out the commits in between one at a time to allow you to test for the presence of a bug. In this manner you can narrow down the commit which introduced a problem.&nbsp;<a href="#fnref:2" role="doc-backlink">↩︎</a></p>
+</li>
+</ol>
+</div>
+
+  </article>
+</div><section>
+  <h2>
+    Articles from blogs I read
+    <small>
+      Generated by
+      <a href="https://git.sr.ht/~sircmpwn/openring">openring</a>
+    </small>
+  </h2>
+  <section>
+    
+    <div>
+      <h4>
+        <a href="https://emersion.fr/blog/2024/status-update-68/" target="_blank" rel="noopener">Status update, September 2024</a>
+      </h4>
+      <p>Hi!
+Once again, this status update will be rather short due to limited time
+bandwidth. I hope to be able to allocate a bit more time slots for my
+open-source projects next month.
+We’re getting closer to a new Sway release (fingers crossed), with lots of help
+f…</p>
+      <p><small>
+        via <a href="https://emersion.fr/blog/">emersion</a>
+      </small>
+      <small>September 20, 2024</small>
+    </p></div>
+    
+    <div>
+      <h4>
+        <a href="https://go.dev/blog/alias-names" target="_blank" rel="noopener">What's in an (Alias) Name?</a>
+      </h4>
+      <p>A description of generic alias types, a planned feature for Go 1.24</p>
+      <p><small>
+        via <a href="https://blog.golang.org/feed.atom">The Go Blog</a>
+      </small>
+      <small>September 17, 2024</small>
+    </p></div>
+    
+    <div>
+      <h4>
+        <a href="https://sourcehut.org/blog/2024-09-16-whats-cooking-september-2024/" target="_blank" rel="noopener">What's cooking on SourceHut? September 2024</a>
+      </h4>
+      <p>Hello everyone! It has been some time since we last wrote a
+“What’s cooking” for you. We’d like to resume this tradition as of this
+September. We haven’t been totally radio silent – you can get caught up on
+what’s been happening over these past two years rea…</p>
+      <p><small>
+        via <a href="https://sourcehut.org/blog/">Blogs on Sourcehut</a>
+      </small>
+      <small>September 16, 2024</small>
+    </p></div>
+    
+  </section>
+</section></div>
+  </div>
+</body>
+</html>

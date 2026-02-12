@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Binaries and processes — GCC Contributors Guide 0.1 documentation</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Binaries and processes — GCC Contributors Guide 0.1 documentation</h1>
+    <p><strong>URL:</strong> <a href="https://gcc-newbies-guide.readthedocs.io/en/latest/binaries-and-processes.html">https://gcc-newbies-guide.readthedocs.io/en/latest/binaries-and-processes.html</a></p>
+    <p><strong>Tags:</strong> cpp, gcc</p>
+    <p><strong>Bookmark ID:</strong> 876784746</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section id="binaries-and-processes" role="main">
+
+<p>Given this trivial C program as <code><span>hello.c</span></code>:</p>
+<div><pre><span></span><span>#include &lt;stdio.h&gt;</span>
+<span>int</span> <span>main</span> <span>()</span>
+<span>{</span>
+  <span>printf</span> <span>(</span><span>"hello world</span><span>\n</span><span>"</span><span>);</span>
+  <span>return</span> <span>0</span><span>;</span>
+<span>}</span>
+</pre></div>
+<p>what happens when you compile it with GCC?</p>
+<p>If we run this command line:</p>
+<div><pre><span></span><span># compile hello.c to an executable named "hello"</span>
+$<span> </span>gcc<span> </span>hello.c<span> </span>-o<span> </span>hello
+</pre></div>
+<p>we end up with an executable:</p>
+<div><pre><span></span>$<span> </span>ls
+hello<span>  </span>hello.c
+</pre></div>
+<p>which we can run:</p>
+<div><pre><span></span>$<span> </span>./hello
+hello<span> </span>world
+</pre></div>
+<p>but a lot has happened “under the hood”.</p>
+<p>The <strong>gcc</strong> binary is actually just a relatively small “driver”
+program.  It looks at what inputs you have provided, and what output you
+have asked for, and tries to figure out what to do.</p>
+<p>In this case we have a C source file as input (<code><span>hello.c</span></code>), and
+an executable as output.</p>
+<p>The <strong>gcc</strong> driver “knows” that it can compile <code><span>.c</span></code> files
+to assembler by invoking GCC’s C compiler, which is a binary called
+<code><span>cc1</span></code>.  This will take <code><span>hello.c</span></code> as input, and generate
+an assembler file with a <code><span>.s</span></code> suffix.  The driver will then
+invoke the assembler on that <code><span>.s</span></code> file, generating an object file.
+This is a binary file format, containing machine code and metadata,
+typically in a file format called ELF.  However, this <code><span>.o</span></code> can’t
+be run directly; it needs to go through the linker, which will generate
+the final executable that can be run (also an ELF file).</p>
+<p>In diagram form:</p>
+<div><pre><span></span>         <span>cc1</span>          <span>as</span>          <span>linker</span>
+<span>hello</span><span>.</span><span>c</span> <span>-----&gt;</span> <span>tmp</span><span>.</span><span>s</span> <span>----&gt;</span> <span>tmp</span><span>.</span><span>o</span> <span>--------&gt;</span> <span>"hello"</span> <span>executable</span>
+</pre></div>
+<p>We can investigate by adding the <code><span>-v</span></code> option, which makes <strong>gcc</strong>
+print copious amounts of information to stderr.</p>
+<p>Here’s the output when I run it (your output may look a little
+different):</p>
+<div><pre><span></span>$ gcc hello.c -o hello -v
+Using built-in specs.
+COLLECT_GCC=gcc
+COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/10/lto-wrapper
+OFFLOAD_TARGET_NAMES=nvptx-none
+OFFLOAD_TARGET_DEFAULT=1
+Target: x86_64-redhat-linux
+Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl --enable-offload-targets=nvptx-none --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+Supported LTO compression algorithms: zlib zstd
+gcc version 10.3.1 20210422 (Red Hat 10.3.1-1) (GCC)
+COLLECT_GCC_OPTIONS='-o' 'hello' '-v' '-mtune=generic' '-march=x86-64'
+ /usr/libexec/gcc/x86_64-redhat-linux/10/cc1 -quiet -v hello.c -quiet -dumpbase hello.c -mtune=generic -march=x86-64 -auxbase hello -version -o /tmp/cckqYOSJ.s
+GNU C17 (GCC) version 10.3.1 20210422 (Red Hat 10.3.1-1) (x86_64-redhat-linux)
+      compiled by GNU C version 10.3.1 20210422 (Red Hat 10.3.1-1), GMP version 6.2.0, MPFR version 4.1.0-p9, MPC version 1.1.0, isl version isl-0.16.1-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/10/include-fixed"
+ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/10/../../../../x86_64-redhat-linux/include"
+#include "..." search starts here:
+#include &lt;...&gt; search starts here:
+ /usr/lib/gcc/x86_64-redhat-linux/10/include
+ /usr/local/include
+ /usr/include
+End of search list.
+GNU C17 (GCC) version 10.3.1 20210422 (Red Hat 10.3.1-1) (x86_64-redhat-linux)
+      compiled by GNU C version 10.3.1 20210422 (Red Hat 10.3.1-1), GMP version 6.2.0, MPFR version 4.1.0-p9, MPC version 1.1.0, isl version isl-0.16.1-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: b30993865ac347030daf9d56a2db69cd
+COLLECT_GCC_OPTIONS='-o' 'hello' '-v' '-mtune=generic' '-march=x86-64'
+ as -v --64 -o /tmp/ccXNu6jN.o /tmp/cckqYOSJ.s
+GNU assembler version 2.35 (x86_64-redhat-linux) using BFD version version 2.35-18.fc33
+COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/10/:/usr/libexec/gcc/x86_64-redhat-linux/10/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/10/:/usr/lib/gcc/x86_64-redhat-linux/
+LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/10/:/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/10/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-o' 'hello' '-v' '-mtune=generic' '-march=x86-64'
+ /usr/libexec/gcc/x86_64-redhat-linux/10/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/10/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/10/lto-wrapper -plugin-opt=-fresolution=/tmp/cchv3sYK.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o hello /usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/10/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/10 -L/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/10/../../.. /tmp/ccXNu6jN.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-redhat-linux/10/crtend.o /usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/crtn.o
+COLLECT_GCC_OPTIONS='-o' 'hello' '-v' '-mtune=generic' '-march=x86-64'
+</pre></div>
+<p>That’s a lot of text.  Let’s break it down a bit to see what’s going on.</p>
+<p>Immediately below the command-line I typed, <strong>gcc</strong> has emitted
+some version information about itself, and how it has been configured:</p>
+<div><pre><span></span>$ gcc hello.c -o hello -v
+Using built-in specs.
+COLLECT_GCC=gcc
+COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/10/lto-wrapper
+OFFLOAD_TARGET_NAMES=nvptx-none
+OFFLOAD_TARGET_DEFAULT=1
+Target: x86_64-redhat-linux
+Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl --enable-offload-targets=nvptx-none --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+Supported LTO compression algorithms: zlib zstd
+gcc version 10.3.1 20210422 (Red Hat 10.3.1-1) (GCC)
+COLLECT_GCC_OPTIONS='-o' 'hello' '-v' '-mtune=generic' '-march=x86-64'
+</pre></div>
+<p>Next is the <strong>cc1</strong> invocation:</p>
+<div><pre><span></span>/usr/libexec/gcc/x86_64-redhat-linux/10/cc1<span> </span>-quiet<span> </span>-v<span> </span>hello.c<span> </span>-quiet<span> </span>-dumpbase<span> </span>hello.c<span> </span>-mtune<span>=</span>generic<span> </span>-march<span>=</span>x86-64<span> </span>-auxbase<span> </span>hello<span> </span>-version<span> </span>-o<span> </span>/tmp/cckqYOSJ.s
+</pre></div>
+<p>That command-line is very long, so let’s reformat it to make it easier
+to see what’s going on:</p>
+<div><pre><span></span>/usr/libexec/gcc/x86_64-redhat-linux/10/cc1<span> </span><span>\</span>
+<span>  </span>-quiet<span> </span><span>\</span>
+<span>  </span>-v<span> </span><span>\</span>
+<span>  </span>hello.c<span> </span><span>\</span>
+<span>  </span>-quiet<span> </span><span>\</span>
+<span>  </span>-dumpbase<span> </span>hello.c<span> </span><span>\</span>
+<span>  </span>-mtune<span>=</span>generic<span> </span><span>\</span>
+<span>  </span>-march<span>=</span>x86-64<span> </span><span>\</span>
+<span>  </span>-auxbase<span> </span>hello<span> </span><span>\</span>
+<span>  </span>-version<span> </span><span>\</span>
+<span>  </span>-o<span> </span>/tmp/cckqYOSJ.s
+</pre></div>
+<p>Looking at the above options in turn, starting with the <strong>cc1</strong> invocation:</p>
+<blockquote>
+<p>We can see that the <strong>cc1</strong> binary isn’t in the <span id="index-0"></span><code><span>PATH</span></code>
+but is hidden away in a separate directory
+(<code><span>/usr/libexec/gcc/x86_64-redhat-linux/10/</span></code>) that the
+<strong>gcc</strong> driver knows to use.</p></blockquote>
+<p><code><span>-quiet</span></code>:</p>
+<blockquote>
+<p>This option was supplied by the driver twice: without it the compiler
+emits debugging messages to stderr about what it’s doing, which can be
+handy when debugging it directly.</p></blockquote>
+<p><code><span>-v</span></code>:</p>
+<blockquote>
+<p>This is passed on from the <strong>gcc</strong> invocation to its invocation
+of <strong>cc1</strong>, so <strong>cc1</strong> will, in turn, emit lots of
+verbose information to stderr about what it is doing.</p></blockquote>
+<p><code><span>hello.c</span></code>:</p>
+<blockquote>
+<p>tells <strong>cc1</strong> which source file to compile.</p></blockquote>
+<p><code><span>-dumpbase</span> <span>hello.c</span></code></p>
+<blockquote>
+<p>tells <strong>cc1</strong> that when it creates any dump files, it should
+use <cite>hello.c</cite> as the base for their filenames.  It won’t create any
+dump files by default, but we’ll do that below.</p></blockquote>
+<p><code><span>-mtune=generic</span></code> and <code><span>-march=x86-64</span></code></p>
+<blockquote>
+<div><p>are both architecture-specific options, documented in
+<a href="https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html">https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html</a></p>
+<p>They affect the kind of machine code that the compiler will generate.</p>
+<p><code><span>-mtune=generic</span></code> for x86 means “try to tune the performance
+of the generated code for a blend of popular x86 processors”.</p>
+<p><code><span>-march=x86-64</span></code> for x86 means generate code for a generic x86
+CPU with 64-bit extensions</p>
+</div></blockquote>
+<p><code><span>-auxbase</span> <span>hello</span></code>:</p>
+<blockquote>
+<p>was an undocumented option that later releases of GCC don’t use
+anymore.</p></blockquote>
+<p><code><span>-version</span></code>:</p>
+<blockquote>
+<p>makes <strong>cc1</strong> emit version information to stderr</p></blockquote>
+<p><code><span>-o</span> <span>/tmp/cckqYOSJ.s</span></code>:</p>
+<blockquote>
+<div><p>tells <strong>cc1</strong> to use <code><span>/tmp/cckqYOSJ.s</span></code> as the output file
+when writing the generated assembler.</p>
+<p>The precise temporary file will change from invocation to invocation,
+and the <strong>gcc</strong> driver will delete its temporary files when its
+done.  If you’re exploring how gcc works, or debugging, you can use
+the <code><span>-save-temps</span></code> option to tell <strong>gcc</strong> to keep these
+intermediate files around.</p>
+</div></blockquote>
+<p>You might see slightly different options; you can see the full
+documentation for GCC options at
+<a href="https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html">https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html</a> (though that can
+get overwhelming).</p>
+<p>Given that <strong>gcc</strong> passed on the <code><span>-v</span></code> option to
+<strong>cc1</strong>, the next thing on stderr is the verbose output from
+<strong>cc1</strong>.  This mainly consists of version and configuration
+information:</p>
+<div><pre><span></span><span>GNU</span> <span>C17</span> <span>(</span><span>GCC</span><span>)</span> <span>version</span> <span>10.3.1</span> <span>20210422</span> <span>(</span><span>Red</span> <span>Hat</span> <span>10.3.1</span><span>-</span><span>1</span><span>)</span> <span>(</span><span>x86_64</span><span>-</span><span>redhat</span><span>-</span><span>linux</span><span>)</span>
+      <span>compiled</span> <span>by</span> <span>GNU</span> <span>C</span> <span>version</span> <span>10.3.1</span> <span>20210422</span> <span>(</span><span>Red</span> <span>Hat</span> <span>10.3.1</span><span>-</span><span>1</span><span>),</span> <span>GMP</span> <span>version</span> <span>6.2.0</span><span>,</span> <span>MPFR</span> <span>version</span> <span>4.1.0</span><span>-</span><span>p9</span><span>,</span> <span>MPC</span> <span>version</span> <span>1.1.0</span><span>,</span> <span>isl</span> <span>version</span> <span>isl</span><span>-</span><span>0.16.1</span><span>-</span><span>GMP</span>
+
+<span>GGC</span> <span>heuristics</span><span>:</span> <span>--</span><span>param</span> <span>ggc</span><span>-</span><span>min</span><span>-</span><span>expand</span><span>=</span><span>100</span> <span>--</span><span>param</span> <span>ggc</span><span>-</span><span>min</span><span>-</span><span>heapsize</span><span>=</span><span>131072</span>
+<span>ignoring</span> <span>nonexistent</span> <span>directory</span> <span>"/usr/lib/gcc/x86_64-redhat-linux/10/include-fixed"</span>
+<span>ignoring</span> <span>nonexistent</span> <span>directory</span> <span>"/usr/lib/gcc/x86_64-redhat-linux/10/../../../../x86_64-redhat-linux/include"</span>
+<span>#include "..." search starts here:</span>
+<span>#include &lt;...&gt; search starts here:</span>
+ <span>/</span><span>usr</span><span>/</span><span>lib</span><span>/</span><span>gcc</span><span>/</span><span>x86_64</span><span>-</span><span>redhat</span><span>-</span><span>linux</span><span>/</span><span>10</span><span>/</span><span>include</span>
+ <span>/</span><span>usr</span><span>/</span><span>local</span><span>/</span><span>include</span>
+ <span>/</span><span>usr</span><span>/</span><span>include</span>
+<span>End</span> <span>of</span> <span>search</span> <span>list</span><span>.</span>
+<span>GNU</span> <span>C17</span> <span>(</span><span>GCC</span><span>)</span> <span>version</span> <span>10.3.1</span> <span>20210422</span> <span>(</span><span>Red</span> <span>Hat</span> <span>10.3.1</span><span>-</span><span>1</span><span>)</span> <span>(</span><span>x86_64</span><span>-</span><span>redhat</span><span>-</span><span>linux</span><span>)</span>
+      <span>compiled</span> <span>by</span> <span>GNU</span> <span>C</span> <span>version</span> <span>10.3.1</span> <span>20210422</span> <span>(</span><span>Red</span> <span>Hat</span> <span>10.3.1</span><span>-</span><span>1</span><span>),</span> <span>GMP</span> <span>version</span> <span>6.2.0</span><span>,</span> <span>MPFR</span> <span>version</span> <span>4.1.0</span><span>-</span><span>p9</span><span>,</span> <span>MPC</span> <span>version</span> <span>1.1.0</span><span>,</span> <span>isl</span> <span>version</span> <span>isl</span><span>-</span><span>0.16.1</span><span>-</span><span>GMP</span>
+
+<span>GGC</span> <span>heuristics</span><span>:</span> <span>--</span><span>param</span> <span>ggc</span><span>-</span><span>min</span><span>-</span><span>expand</span><span>=</span><span>100</span> <span>--</span><span>param</span> <span>ggc</span><span>-</span><span>min</span><span>-</span><span>heapsize</span><span>=</span><span>131072</span>
+<span>Compiler</span> <span>executable</span> <span>checksum</span><span>:</span> <span>b30993865ac347030daf9d56a2db69cd</span>
+</pre></div>
+<p>We’ll go into more detail about what happens in <strong>cc1</strong> in a
+later section.</p>
+<p>Next comes the invocation of <strong>as</strong>, the assembler:</p>
+<div><pre><span></span><span>COLLECT_GCC_OPTIONS</span><span>=</span><span>'-o'</span><span> </span><span>'hello'</span><span> </span><span>'-v'</span><span> </span><span>'-mtune=generic'</span><span> </span><span>'-march=x86-64'</span>
+<span> </span>as<span> </span>-v<span> </span>--64<span> </span>-o<span> </span>/tmp/ccXNu6jN.o<span> </span>/tmp/cckqYOSJ.s
+GNU<span> </span>assembler<span> </span>version<span> </span><span>2</span>.35<span> </span><span>(</span>x86_64-redhat-linux<span>)</span><span> </span>using<span> </span>BFD<span> </span>version<span> </span>version<span> </span><span>2</span>.35-18.fc33
+</pre></div>
+<p>This is much simpler, where the <strong>gcc</strong> driver invokes <strong>as</strong> with:</p>
+<div><pre><span></span>as<span> </span>-v<span> </span>--64<span> </span>-o<span> </span>/tmp/ccXNu6jN.o<span> </span>/tmp/cckqYOSJ.s
+</pre></div>
+<p>essentially merely telling it the input <code><span>.s</span></code> file, the output
+<code><span>.o</span></code> file, and a couple of options.</p>
+<p>Next comes the linker invocation; in this case <strong>gcc</strong> driver invokes <strong>collect2</strong>:</p>
+<div><pre><span></span><span>COMPILER_PATH</span><span>=</span>/usr/libexec/gcc/x86_64-redhat-linux/10/:/usr/libexec/gcc/x86_64-redhat-linux/10/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/10/:/usr/lib/gcc/x86_64-redhat-linux/
+<span>LIBRARY_PATH</span><span>=</span>/usr/lib/gcc/x86_64-redhat-linux/10/:/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/10/../../../:/lib/:/usr/lib/
+<span>COLLECT_GCC_OPTIONS</span><span>=</span><span>'-o'</span><span> </span><span>'hello'</span><span> </span><span>'-v'</span><span> </span><span>'-mtune=generic'</span><span> </span><span>'-march=x86-64'</span>
+<span> </span>/usr/libexec/gcc/x86_64-redhat-linux/10/collect2<span> </span>-plugin<span> </span>/usr/libexec/gcc/x86_64-redhat-linux/10/liblto_plugin.so<span> </span>-plugin-opt<span>=</span>/usr/libexec/gcc/x86_64-redhat-linux/10/lto-wrapper<span> </span>-plugin-opt<span>=</span>-fresolution<span>=</span>/tmp/cchv3sYK.res<span> </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lgcc<span> </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lgcc_s<span> </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lc<span> </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lgcc<span> </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lgcc_s<span> </span>--build-id<span> </span>--no-add-needed<span> </span>--eh-frame-hdr<span> </span>--hash-style<span>=</span>gnu<span> </span>-m<span> </span>elf_x86_64<span> </span>-dynamic-linker<span> </span>/lib64/ld-linux-x86-64.so.2<span> </span>-o<span> </span>hello<span> </span>/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/crt1.o<span> </span>/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/crti.o<span> </span>/usr/lib/gcc/x86_64-redhat-linux/10/crtbegin.o<span> </span>-L/usr/lib/gcc/x86_64-redhat-linux/10<span> </span>-L/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64<span> </span>-L/lib/../lib64<span> </span>-L/usr/lib/../lib64<span> </span>-L/usr/lib/gcc/x86_64-redhat-linux/10/../../..<span> </span>/tmp/ccXNu6jN.o<span> </span>-lgcc<span> </span>--push-state<span> </span>--as-needed<span> </span>-lgcc_s<span> </span>--pop-state<span> </span>-lc<span> </span>-lgcc<span> </span>--push-state<span> </span>--as-needed<span> </span>-lgcc_s<span> </span>--pop-state<span> </span>/usr/lib/gcc/x86_64-redhat-linux/10/crtend.o<span> </span>/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/crtn.o
+<span>COLLECT_GCC_OPTIONS</span><span>=</span><span>'-o'</span><span> </span><span>'hello'</span><span> </span><span>'-v'</span><span> </span><span>'-mtune=generic'</span><span> </span><span>'-march=x86-64'</span>
+</pre></div>
+<p>The command the driver uses to invoke the linker is over 1000 characters
+long.  We can reformat it to make it more approachable, but it’s still
+rather intimidating:</p>
+<div><pre><span></span>/usr/libexec/gcc/x86_64-redhat-linux/10/collect2<span> </span><span>\</span>
+<span>   </span>-plugin<span> </span>/usr/libexec/gcc/x86_64-redhat-linux/10/liblto_plugin.so<span> </span><span>\</span>
+<span>     </span>-plugin-opt<span>=</span>/usr/libexec/gcc/x86_64-redhat-linux/10/lto-wrapper<span> </span><span>\</span>
+<span>     </span>-plugin-opt<span>=</span>-fresolution<span>=</span>/tmp/cchv3sYK.res<span> </span><span>\</span>
+<span>     </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lgcc<span> </span><span>\</span>
+<span>     </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lgcc_s<span> </span><span>\</span>
+<span>     </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lc<span> </span><span>\</span>
+<span>     </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lgcc<span> </span><span>\</span>
+<span>     </span>-plugin-opt<span>=</span>-pass-through<span>=</span>-lgcc_s<span> </span><span>\</span>
+<span>   </span>--build-id<span> </span><span>\</span>
+<span>   </span>--no-add-needed<span> </span><span>\</span>
+<span>   </span>--eh-frame-hdr<span> </span><span>\</span>
+<span>   </span>--hash-style<span>=</span>gnu<span> </span><span>\</span>
+<span>   </span>-m<span> </span>elf_x86_64<span> </span><span>\</span>
+<span>   </span>-dynamic-linker<span> </span><span>\</span>
+<span>   </span>/lib64/ld-linux-x86-64.so.2<span> </span><span>\</span>
+<span>   </span>-o<span> </span>hello<span> </span><span>\</span>
+<span>   </span>/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/crt1.o<span> </span><span>\</span>
+<span>   </span>/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/crti.o<span> </span><span>\</span>
+<span>   </span>/usr/lib/gcc/x86_64-redhat-linux/10/crtbegin.o<span> </span><span>\</span>
+<span>   </span>-L/usr/lib/gcc/x86_64-redhat-linux/10<span> </span><span>\</span>
+<span>   </span>-L/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64<span> </span><span>\</span>
+<span>   </span>-L/lib/../lib64<span> </span><span>\</span>
+<span>   </span>-L/usr/lib/../lib64<span> </span><span>\</span>
+<span>   </span>-L/usr/lib/gcc/x86_64-redhat-linux/10/../../..<span> </span><span>\</span>
+<span>   </span>/tmp/ccXNu6jN.o<span> </span><span>\</span>
+<span>   </span>-lgcc<span> </span><span>\</span>
+<span>   </span>--push-state<span> </span><span>\</span>
+<span>     </span>--as-needed<span> </span><span>\</span>
+<span>     </span>-lgcc_s<span> </span><span>\</span>
+<span>   </span>--pop-state<span> </span><span>\</span>
+<span>   </span>-lc<span> </span><span>\</span>
+<span>   </span>-lgcc<span> </span><span>\</span>
+<span>   </span>--push-state
+<span>     </span>--as-needed<span> </span><span>\</span>
+<span>     </span>-lgcc_s<span> </span><span>\</span>
+<span>   </span>--pop-state<span> </span><span>\</span>
+<span>   </span>/usr/lib/gcc/x86_64-redhat-linux/10/crtend.o<span> </span><span>\</span>
+<span>   </span>/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64/crtn.o
+</pre></div>
+<p>We’ll skip the details for now so that we can focus on <strong>cc1</strong>
+in the next section, but perhaps the most important options are
+<code><span>-o</span> <span>hello</span></code> specifying the output file, and
+<code><span>/tmp/ccXNu6jN.o</span></code> specifying the file that the assembler just
+emitted, this time as an input file to the linker (containing the user’s
+code built from <code><span>hello.c</span></code>).  It’s also linking in various support
+libraries needed by an executable binary.</p>
+</section></div>
+  </div>
+</body>
+</html>

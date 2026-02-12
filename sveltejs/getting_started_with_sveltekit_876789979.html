@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Getting Started With SvelteKit</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Getting Started With SvelteKit</h1>
+    <p><strong>URL:</strong> <a href="https://css-tricks.com/getting-started-with-sveltekit">https://css-tricks.com/getting-started-with-sveltekit</a></p>
+    <p><strong>Tags:</strong> javascript, sveltejs</p>
+    <p><strong>Bookmark ID:</strong> 876789979</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p>
+	DigitalOcean provides cloud products for every stage of your journey. Get started with <a href="https://try.digitalocean.com/css-tricks/?utm_medium=content_acq&amp;utm_source=css-tricks&amp;utm_campaign=global_brand_ad_en&amp;utm_content=conversion_prearticle_everystage">$200 in free credit!</a>
+</p><div>
+
+          
+          
+<p><a href="https://kit.svelte.dev/" rel="noopener">SvelteKit</a> is the latest of what I’d call next-gen application frameworks. It, of course, scaffolds an application for you, with the file-based routing, deployment, and server-side rendering that Next has done forever. But SvelteKit also supports nested layouts, server mutations that sync up the data on your page, and some other niceties we’ll get into.</p>
+
+
+
+<p>This post is meant to be a high-level introduction to hopefully build some excitement for anyone who’s never used SvelteKit. It’ll be a relaxed tour. If you like what you see, the <a href="https://kit.svelte.dev/docs/introduction" rel="noopener">full docs are here</a>.</p>
+
+
+
+<p>In some ways this is a challenging post to write. SvelteKit is an <em>application framework</em>. It exists to help you build… well, applications. That makes it hard to demo. It’s not feasible to build an entire application in a blog post. So instead, we’ll use our imaginations a bit. We’ll build the skeleton of an application, have some empty UI placeholders, and hard-coded static data. The goal isn’t to build an actual application, but instead to show you how SvelteKit’s moving pieces work so you can build an application of your own.</p>
+
+
+
+<p>To that end, we’ll build the tried and true To-Do application as an example. But don’t worry, this will be much, much more about seeing how SvelteKit works than creating yet another To-Do app.</p>
+
+
+
+<p>The code for everything in this post is <a href="https://github.com/arackaf/sveltekit-blog-1" rel="noopener">available at GitHub</a>. This project is also <a href="https://sveltekit-blog-1.vercel.app/" rel="noopener">deployed on Vercel</a> for a live demo.</p>
+
+
+<h3 id="creating-your-project">Creating your project</h3>
+
+
+<p>Spinning up a new SvelteKit project is simple enough. Run <code>npm create svelte@latest your-app-name</code> in the terminal and answer the question prompts. Be sure to pick “Skeleton Project” but otherwise make whatever selections you want for TypeScript, ESLint, etc.</p>
+
+
+
+<p>Once the project is created, run <code>npm i</code> and <code>npm run dev</code> and a dev server should start running. Fire up <code>localhost:5173</code> in the browser and you’ll get the placeholder page for the skeleton app.</p>
+
+
+<h3 id="basic-routing">Basic routing</h3>
+
+
+<p>Notice the <code>routes</code> folder under <code>src</code>. That holds code for all of our routes. There’s already a <code>+page.svelte</code> file in there with content for the root <code>/</code> route. No matter where in the file hierarchy you are, the actual page for that path always has the name <code>+page.svelte</code>. With that in mind, let’s create pages for <code>/list</code>, <code>/details</code>, <code>/admin/user-settings</code> and <code>admin/paid-status</code>, and also add some text placeholders for each page.</p>
+
+
+
+<p>Your file layout should look something like this:</p>
+
+
+
+<figure><img data-recalc-dims="1" fetchpriority="high" decoding="async" width="956" height="858" src="data:application/octet-stream;base64," alt="Initial files." srcset="data:application/octet-stream;base64, 956w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+
+<p>You should be able to navigate around by changing URL paths in the browser address bar.</p>
+
+
+
+<figure><img data-recalc-dims="1" decoding="async" width="774" height="258" src="data:application/octet-stream;base64," alt="Browser address bar with localhost URL." srcset="data:application/octet-stream;base64, 774w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+<h3 id="layouts">Layouts</h3>
+
+
+<p>We’ll want navigation links in our app, but we certainly don’t want to copy the markup for them on each page we create. So, let’s create a <code>+layout.svelte</code> file in the root of our <code>routes</code> folder, which SvelteKit will treat as a global template for all pages. Let’s and add some content to it:</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">&lt;nav&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;a href="/"&gt;Home&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;a href="/list"&gt;To-Do list&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;a href="/admin/paid-status"&gt;Account status&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;a href="/admin/user-settings"&gt;User settings&lt;/a&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;slot /&gt;
+
+&lt;style&gt;
+  nav {
+    background-color: beige;
+  }
+  nav ul {
+    display: flex;
+  }
+  li {
+    list-style: none;
+    margin: 15px;
+  }
+  a {
+    text-decoration: none;
+    color: black;
+  }
+&lt;/style&gt;</code></pre>
+
+
+
+<p>Some rudimentary navigation with some basic styles. Of particular importance is the <code>&lt;slot /&gt;</code> tag. This is <em>not</em> <a href="https://css-tricks.com/encapsulating-style-and-structure-with-shadow-dom/#aa-including-content-from-the-light-dom">the slot you use with web components and shadow DOM</a>, but rather a Svelte feature indicating where to put our content. When a page renders, the page content will slide in where the slot is.</p>
+
+
+
+<p>And now we have some navigation! We won’t win any design competitions, but we’re not trying to.</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="916" height="544" src="data:application/octet-stream;base64," alt="Horizontal navigation with light yellow background." srcset="data:application/octet-stream;base64, 916w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+<h3 id="nested-layouts">Nested layouts</h3>
+
+
+<p>What if we wanted all our admin pages to inherit the normal layout we just built but also share some things common to all admin pages (but only admin pages)? No problem, we add another <code>+layout.svelte</code> file in our root <code>admin</code> directory, which will be inherited by everything underneath it. Let’s do that and add this content:</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">&lt;div&gt;This is an admin page&lt;/div&gt;
+
+&lt;slot /&gt;
+
+&lt;style&gt;
+  div {
+    padding: 15px;
+    margin: 10px 0;
+    background-color: red;
+    color: white;
+  }
+&lt;/style&gt;</code></pre>
+
+
+
+<p>We add a red banner indicating this is an admin page and then, like before, a <code>&lt;slot /&gt;</code> denoting where we want our page content to go.</p>
+
+
+
+<p>Our root layout from before renders. Inside of the root layout is a <code>&lt;slot /&gt;</code> tag. The nested layout’s content goes into the root layout’s <code>&lt;slot /&gt;</code>. And finally, the nested layout defines its own <code>&lt;slot /&gt;</code>, into which the page content renders.</p>
+
+
+
+<p>If you navigate to the admin pages, you should see the new red banner:</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="884" height="444" src="data:application/octet-stream;base64," alt="Red box beneath navigation that says this is an admin page." srcset="data:application/octet-stream;base64, 884w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+<h3 id="defining-our-data">Defining our data</h3>
+
+
+<p>OK, let’s render some actual data — or at least, see how we can render some actual data. There’s a hundred ways to create and connect to a database. This post is about SvelteKit though, not managing DynamoDB, so we’ll “load” some static data instead. But, we’ll use all the same machinery to read and update it that you’d use for real data. For a real web app, swap out the functions returning static data with functions connecting and querying to whatever database you happen to use.</p>
+
+
+
+<p>Let’s create a dirt-simple module in <code>lib/data/todoData.ts</code> that returns some static data along with artificial delays to simulate real queries. You’ll see this <code>lib</code> folder imported elsewhere via <code>$lib</code>. This is a SvelteKit feature for that particular folder, and you can even <a href="https://kit.svelte.dev/docs/configuration#alias" rel="noopener">add your own aliases</a>.</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">let todos = [
+  { id: 1, title: "Write SvelteKit intro blog post", assigned: "Adam", tags: [1] },
+  { id: 2, title: "Write SvelteKit advanced data loading blog post", assigned: "Adam", tags: [1] },
+  { id: 3, title: "Prepare RenderATL talk", assigned: "Adam", tags: [2] },
+  { id: 4, title: "Fix all SvelteKit bugs", assigned: "Rich", tags: [3] },
+  { id: 5, title: "Edit Adam's blog posts", assigned: "Geoff", tags: [4] },
+];
+
+let tags = [
+  { id: 1, name: "SvelteKit Content", color: "ded" },
+  { id: 2, name: "Conferences", color: "purple" },
+  { id: 3, name: "SvelteKit Development", color: "pink" },
+  { id: 4, name: "CSS-Tricks Admin", color: "blue" },
+];
+
+export const wait = async amount =&gt; new Promise(res =&gt; setTimeout(res, amount ?? 100));
+
+export async function getTodos() {
+  await wait();
+
+  return todos;
+}
+
+export async function getTags() {
+  await wait();
+
+  return tags.reduce((lookup, tag) =&gt; {
+    lookup[tag.id] = tag;
+    return lookup;
+  }, {});
+}
+
+export async function getTodo(id) {
+  return todos.find(t =&gt; t.id == id);
+}</code></pre>
+
+
+
+<p>A function to return a flat array of our to-do items, a lookup of our tags, and a function to fetch a single to-do (we’ll use that last one in our Details page).</p>
+
+
+<h3 id="loading-our-data">Loading our data</h3>
+
+
+<p>How do we get that data into our Svelte pages? There’s a number of ways, but for now, let’s create a <code>+page.server.js</code> file in our <code>list</code> folder, and put this content in it:</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">import { getTodos, getTags } from "$lib/data/todoData";
+
+export function load() {
+  const todos = getTodos();
+  const tags = getTags();
+
+  return {
+    todos,
+    tags,
+  };
+}</code></pre>
+
+
+
+<p>We’ve defined a <code>load()</code> function that pulls in the data needed for the page. Notice that we are <em>not</em> <code>await</code>-ing calls to our <code>getTodos</code> and <code>getTags</code> async functions. Doing so would create a data loading waterfall as we wait for our to-do items to come in before loading our tags. Instead, we return the raw promises from <code>load</code>, and SvelteKit does the necessary work to <code>await</code> them.</p>
+
+
+
+<p>So, how do we access this data from our page component? SvelteKit provides a <code>data</code> prop for our component with data on it. We’ll access our to-do items and tags from it using a <a href="https://svelte.dev/docs#component-format-script-3-$-marks-a-statement-as-reactive" rel="noopener">reactive assignment</a>.</p>
+
+
+
+<p>Our List page component now looks like this.</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">&lt;script&gt;
+  export let data;
+  $: ({ todo, tags } = data);
+&lt;/script&gt;
+
+&lt;table cellspacing="10" cellpadding="10"&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Task&lt;/th&gt;
+      &lt;th&gt;Tags&lt;/th&gt;
+      &lt;th&gt;Assigned&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    {#each todos as t}
+    &lt;tr&gt;
+      &lt;td&gt;{t.title}&lt;/td&gt;
+      &lt;td&gt;{t.tags.map((id) =&gt; tags[id].name).join(', ')}&lt;/td&gt;
+      &lt;td&gt;{t.assigned}&lt;/td&gt;
+    &lt;/tr&gt;
+    {/each}
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;style&gt;
+  th {
+    text-align: left;
+  }
+&lt;/style&gt;</code></pre>
+
+
+
+<p>And this should render our to-do items!</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="1386" height="788" src="data:application/octet-stream;base64," alt="Five to-do items in a table format." srcset="data:application/octet-stream;base64, 1386w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 1024w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+<h3 id="layout-groups">Layout groups</h3>
+
+
+<p>Before we move on to the Details page and mutate data, let’s take a peek at a really neat SvelteKit feature: <strong>layout groups</strong>. We’ve already seen nested layouts for all admin pages, but what if we wanted to share a layout between arbitrary pages at the same level of our file system? In particular, what if we wanted to share a layout between only our List page and our Details page? We already have a global layout at that level. Instead, we can create a new directory, but with a name that’s in parenthesis, like this:</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="398" height="352" src="data:application/octet-stream;base64," alt="File directory." srcset="data:application/octet-stream;base64, 398w, data:application/octet-stream;base64, 300w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+
+<p>We now have a layout group that covers our List and Details pages. I named it <code>(todo-management)</code> but you can name it anything you like. To be clear, this name will <em>not</em> affect the URLs of the pages inside of the layout group. The URLs will remain the same; layout groups allow you to add shared layouts to pages without them all comprising the entirety of a directory in <code>routes</code>.</p>
+
+
+
+<p>We <em>could</em> add a <code>+layout.svelte</code> file and some silly <code>&lt;div&gt;</code> banner saying, “Hey we’re managing to-dos”. But let’s do something more interesting. Layouts can define <code>load()</code> functions in order to provide data for all routes underneath them. Let’s use this functionality to load our tags — since we’ll be using our tags in our <code>details</code> page — in addition to the <code>list</code> page we already have.</p>
+
+
+
+<p>In reality, forcing a layout group just to provide a single piece of data is almost certainly not worth it; it’s better to duplicate that data in the <code>load()</code> function for each page. But for this post, it’ll provide the excuse we need to see a new SvelteKit feature!</p>
+
+
+
+<p>First, let’s go into our <code>list</code> page’s <code>+page.server.js</code> file and remove the tags from it.</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">import { getTodos, getTags } from "$lib/data/todoData";
+
+export function load() {
+  const todos = getTodos();
+
+  return {
+    todos,
+  };
+}</code></pre>
+
+
+
+<p>Our List page should now produce an error since there is no <code>tags</code> object. Let’s fix this by adding a <code>+layout.server.js</code> file in our layout group, then define a <code>load()</code> function that loads our tags.</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">import { getTags } from "$lib/data/todoData";
+
+export function load() {
+  const tags = getTags();
+
+  return {
+    tags,
+  };
+}</code></pre>
+
+
+
+<p>And, just like that, our List page is rendering again!</p>
+
+
+<h4 id="were-loading-data-from-multiple-locations">We’re loading data from multiple locations</h4>
+
+
+<p>Let’s put a fine point on what’s happening here:</p>
+
+
+
+<ul>
+<li>We defined a <code>load()</code> function for our layout group, which we put in <code>+layout.server.js</code>.</li>
+
+
+
+<li>This provides data for <strong>all</strong> of the pages the layout serves — which in this case means our List and Details pages.</li>
+
+
+
+<li>Our List page also defines a <code>load()</code> function that goes in its <code>+page.server.js</code> file.</li>
+
+
+
+<li>SvelteKit does the grunt work of taking the results of these data sources, merging them together, and making both available in <code>data</code>.</li>
+</ul>
+
+
+<h3 id="our-details-page">Our Details page</h3>
+
+
+<p>We’ll use our Details page to edit a to-do item. First, let’s add a column to the table in our List page that links to the Details page with the to-do item’s ID in the query string.</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">&lt;td&gt;&lt;a href="/details?id={t.id}"&gt;Edit&lt;/a&gt;&lt;/td&gt;</code></pre>
+
+
+
+<p>Now let’s build out our Details page. First, we’ll add a loader to grab the to-do item we’re editing. Create a <code>+page.server.js</code> in <code>/details</code>, with this content:</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">import { getTodo, updateTodo, wait } from "$lib/data/todoData";
+
+export function load({ url }) {
+  const id = url.searchParams.get("id");
+
+  console.log(id);
+  const todo = getTodo(id);
+
+  return {
+    todo,
+  };
+}</code></pre>
+
+
+
+<p>Our loader comes with a <code>url</code> property from which we can pull query string values. This makes it easy to look up the to-do item we’re editing. Let’s render that to-do, along with functionality to edit it.</p>
+
+
+
+<p>SvelteKit has wonderful built-in mutation capabilities, so long as you use forms. Remember forms? Here’s our Details page. I’ve elided the styles for brevity.</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">&lt;script&gt;
+  import { enhance } from "$app/forms";
+
+  export let data;
+
+  $: ({ todo, tags } = data);
+  $: currentTags = todo.tags.map(id =&gt; tags[id]);
+&lt;/script&gt;
+
+&lt;form use:enhance method="post" action="?/editTodo"&gt;
+  &lt;input name="id" type="hidden" value="{todo.id}" /&gt;
+  &lt;input name="title" value="{todo.title}" /&gt;
+
+  &lt;div&gt;
+    {#each currentTags as tag}
+    &lt;span style="{`color:" ${tag.color};`}&gt;{tag.name}&lt;/span&gt;
+    {/each}
+  &lt;/div&gt;
+
+  &lt;button&gt;Save&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+
+
+<p>We’re grabbing the tags as before from our layout group’s loader and the to-do item from our page’s loader. We’re grabbing the actual <code>tag</code> objects from the to-do’s list of tag IDs and then rendering everything. We create a form with a hidden input for the ID and a real input for the title. We display the tags and then provide a button to submit the form.</p>
+
+
+
+<p>If you noticed the <code>use:enhance</code>, that simply tells SvelteKit to use progressive enhancement and Ajax to submit our form. You’ll likely always use that.</p>
+
+
+<h4 id="how-do-we-save-our-edits">How do we save our edits?</h4>
+
+
+<p>Notice the <code>action="?/editTodo"</code> attribute on the form itself? This tells us where we want to submit our edited data. For our case, we want to submit to an <code>editTodo</code> “action.”</p>
+
+
+
+<p>Let’s create it by adding the following to the <code>+page.server.js</code> file we already have for Details (which currently has a <code>load()</code> function, to grab our to-do):</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">import { redirect } from "@sveltejs/kit";
+
+// ...
+
+export const actions = {
+  async editTodo({ request }) {
+    const formData = await request.formData();
+
+    const id = formData.get("id");
+    const newTitle = formData.get("title");
+
+    await wait(250);
+    updateTodo(id, newTitle);
+
+    throw redirect(303, "/list");
+  },
+};</code></pre>
+
+
+
+<p>Form actions give us a <code>request</code> object, which provides access to our <code>formData</code>, which has a <code>get</code> method for our various form fields. We added that hidden input for the ID value so we could grab it here in order to look up the to-do item we’re editing. We simulate a delay, call a new <code>updateTodo()</code> method, then redirect the user back to the <code>/list</code> page. The <code>updateTodo()</code> method merely updates our static data; in real life you’d run some sort of update in whatever datastore you’re using.</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">export async function updateTodo(id, newTitle) {
+  const todo = todos.find(t =&gt; t.id == id);
+  Object.assign(todo, { title: newTitle });
+}</code></pre>
+
+
+
+<p>Let’s try it out. We’ll go to the List page first:</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="1386" height="788" src="data:application/octet-stream;base64," alt="List page with to-do-items." srcset="data:application/octet-stream;base64, 1386w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 1024w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+
+<p>Now let’s click the Edit button for one of the to-do items to bring up the editing page in <code>/details</code>.</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="884" height="478" src="data:application/octet-stream;base64," alt="Details page for a to-do item." srcset="data:application/octet-stream;base64, 884w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+
+<p>We’re going to add a new title:</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="872" height="398" src="data:application/octet-stream;base64," alt="Changing the to-do title in an editable text input." srcset="data:application/octet-stream;base64, 872w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+
+<p>Now, click Save. That should get us back to our <code>/list</code> page, with the new to-do title applied.</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="1458" height="708" src="data:application/octet-stream;base64," alt="The edited to-do item in the full list view." srcset="data:application/octet-stream;base64, 1458w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 1024w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+
+<p>How did the new title show up like that? It was automatic. Once we redirected to the <code>/list</code> page, SvelteKit automatically re-ran all of our loaders just like it would have done regardless. This is the key advancement that next-gen application frameworks, like SvelteKit, <a href="https://remix.run/" rel="noopener">Remix</a>, and <a href="https://nextjs.org/" rel="noopener">Next 13</a> provide. Rather than giving you a convenient way to render pages then wishing you the best of luck fetching whatever endpoints you might have to update data, they integrate data mutation alongside data loading, allowing the two to work in tandem.</p>
+
+
+
+<p>A few things you might be wondering…</p>
+
+
+
+<p><strong>This mutation update doesn’t seem too impressive.</strong> The loaders will re-run whenever you navigate. What if we hadn’t added a redirect in our form action, but stayed on the current page? SvelteKit would perform the update in the form action, like before, but would <strong>still</strong> re-run all of the loaders for the current page, including the loaders in the page layout(s).</p>
+
+
+
+<p><strong>Can we have more targeted means of invalidating our data?</strong> For example, our tags were not edited, so in real life we wouldn’t want to re-query them. Yes, what I showed you is just the default forms behavior in SvelteKit. You can turn the default behavior off by <a href="https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance" rel="noopener">providing a callback to <code>use:enhance</code></a>. Then SvelteKit provides manual <a href="https://kit.svelte.dev/docs/load#invalidation" rel="noopener">invalidation functions</a>.</p>
+
+
+
+<p><strong>Loading data on every navigation is potentially expensive, and unnecessary.</strong> Can I cache this data like I do with tools like <a href="https://www.npmjs.com/package/react-query" rel="noopener"><code>react-query</code></a>? Yes, just differently. SvelteKit lets you set (and then respect) the cache-control headers the web already provides. And I’ll be covering cache invalidation mechanisms in a follow-on post.</p>
+
+
+
+<p>Everything we’ve done throughout this article uses static data and modifies values in memory. If you need to revert everything and start over, stop and restart the <code>npm run dev</code> Node process.</p>
+
+
+<h3 id="wrapping-up">Wrapping up</h3>
+
+
+<p>We’ve barely scratched the surface of SvelteKit, but hopefully you’ve seen enough to get excited about it. I can’t remember the last time I’ve found web development this much fun. With things like bundling, routing, SSR, and deployment all handled out of the box, I get to spend more time coding than configuring.</p>
+
+
+
+<p>Here are a few more resources you can use as next steps learning SvelteKit:</p>
+
+
+
+<ul>
+<li><a href="https://svelte.dev/blog/announcing-sveltekit-1.0" rel="noopener">Announcing SvelteKit 1.0</a> (Svelte Blog)</li>
+
+
+
+<li><a href="https://vercel.com/docs/beginner-sveltekit" rel="noopener">Beginner SvelteKit Course</a> (Vercel)</li>
+
+
+
+<li><a href="https://kit.svelte.dev/docs/introduction" rel="noopener">SvelteKit Documentation</a></li>
+</ul>
+
+          
+        </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Performant Front-end Architecture | DebugBear</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Performant Front-end Architecture | DebugBear</h1>
+    <p><strong>URL:</strong> <a href="https://www.debugbear.com/blog/performant-front-end-architecture">https://www.debugbear.com/blog/performant-front-end-architecture</a></p>
+    <p><strong>Tags:</strong> ui-ux</p>
+    <p><strong>Bookmark ID:</strong> 876782312</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="__blog-post-container" itemprop="articleBody"><p>This post describes some techniques to make front-end apps load faster and provide a good user experience.</p>
+<p>We'll look at the overall architecture of the front-end. How can you load essential resources first, and maximize the probability that the resources are already in the cache?</p>
+<p>I won't say much how the backend should deliver resources, whether your page even needs to be a client-side app, or how to optimize the rendering time of your application.</p>
+<h2 id="overview">Overview<a href="#overview" aria-label="Direct link to Overview" title="Direct link to Overview">​</a></h2>
+<p>I’ll group loading the app into three different stages:</p>
+<ol>
+<li>Initial render –&nbsp;how long does it take before the user sees anything?</li>
+<li>App load –&nbsp;how long does it take before the user can use the app?</li>
+<li>Next page –&nbsp;how long does it take to navigate to the next page?</li>
+</ol>
+<p><a href="https://www.debugbear.com/assets/files/performant-front-end-architecture-204ab1ea906a6296503777698285fd28.png" target="_blank"><img loading="lazy" alt="Strategies for front-end performance" src="data:application/octet-stream;base64," width="2378" height="1822" data-abc="true"></a></p>
+<h2 id="initial-render">Initial render<a href="#initial-render" aria-label="Direct link to Initial render" title="Direct link to Initial render">​</a></h2>
+<p>Before the browser's initial render there's nothing for the user to see. At a minimum, rendering the page will require loading the HTML document, but most of the time there are additional resources that need to be loaded, such as CSS and JavaScript files. Once those are available the browser can start painting something on the screen.</p>
+<p>I'll be using <a href="https://www.webpagetest.org/" target="_blank" rel="noopener noreferrer">WebPageTest</a> waterfall charts throughout this post. The request waterfall for your site will probably look something like this.</p>
+<p><img loading="lazy" alt="HTML blocking CSS, CSS blocking render" src="data:application/octet-stream;base64," width="859" height="180" data-abc="true"></p>
+<p>The HTML document loads a bunch of additional files, and the page renders once those are loaded. Note that the CSS files are loaded in parallel, so each additional request doesn't add a significant delay.</p>
+<p>(Sidenote: gov.uk <a href="https://twitter.com/TheRealNooshu/status/1225403389158227971" target="_blank" rel="noopener noreferrer">has now enabled HTTP/2</a>, so the assets domain can re-use the existing connection to <a href="http://www.gov.uk/" target="_blank" rel="noopener noreferrer">www.gov.uk</a>! I'll talk more about server connections below.)</p>
+<h3 id="reduce-render-blocking-requests">Reduce render-blocking requests<a href="#reduce-render-blocking-requests" aria-label="Direct link to Reduce render-blocking requests" title="Direct link to Reduce render-blocking requests">​</a></h3>
+<p>Stylesheets and (by default) script elements <a href="https://www.debugbear.com/blog/render-blocking-resources">block any content below them from rendering</a>.</p>
+<p>You've got a few options to fix this:</p>
+<ul>
+<li>Place script tags at the bottom of the body tag</li>
+<li>Load scripts asynchronously with <a href="https://www.debugbear.com/blog/async-vs-defer"><code>async</code></a></li>
+<li>Inline small JS or CSS snippets if they need to be loaded synchronously</li>
+</ul>
+<h3 id="avoid-sequential-render-blocking-request-chains">Avoid sequential render-blocking request chains<a href="#avoid-sequential-render-blocking-request-chains" aria-label="Direct link to Avoid sequential render-blocking request chains" title="Direct link to Avoid sequential render-blocking request chains">​</a></h3>
+<p>What’s slowing down your site isn’t necessarily the number of render-blocking requests. More important is the download size of each resource, and when the browser discovers that it needs to load the resource.</p>
+<p>If the browser only finds out it needs to load a file after another request has finished you can get a synchronous request chain. This can happen for a variety of reasons:</p>
+<ul>
+<li>@import rules in CSS</li>
+<li>Webfonts that are referenced in a CSS file</li>
+<li>JavaScript injecting link or script tags</li>
+</ul>
+<p>Take a look at this example:</p>
+<p><img loading="lazy" alt="Fonts CSS is only requested once other CSS has loaded" src="data:application/octet-stream;base64," width="676" height="196" data-abc="true"></p>
+<p>This website uses @import in one of their CSS files to load a Google font. That means the browser needs to make these requests one after the other:</p>
+<ol>
+<li>Document HTML</li>
+<li>Application CSS</li>
+<li>Google Fonts CSS</li>
+<li>Google Font Woff file (not shown in the waterfall)</li>
+</ol>
+<p>To fix this, first move the request to the Google Fonts CSS from the @import to a link tag in the HTML document. This cuts one link from the chain.</p>
+<p>To speed things up further, <strong>inline the Google Fonts CSS</strong> file directly in your HTML, or in your CSS file.</p>
+<p>(Keep in mind that the CSS response from Google Fonts depends on the user agent. If you make the request with IE8 the CSS will reference an EOT file, IE11 will get a woff file, and modern browsers will get a woff2 file. But if you’re ok with older browsers using system fonts then you can you can just copy and paste the contents of the CSS file.)</p>
+<p>Even after the page starts rendering the user still might not be able to do anything with the page, because no text will be shown until the font has been loaded. This can be avoided with <a href="https://css-tricks.com/google-fonts-and-font-display/" target="_blank" rel="noopener noreferrer">font-display swap</a>, which Google Fonts now uses by default.</p>
+<p>Sometimes it's not viable to eliminate the request chain. In those cases you can consider a <strong>preload or preconnect</strong> tag. For example, the website above could connect to fonts.googleapis.com before the actual CSS request is made.</p>
+<h3 id="re-use-server-connections-to-speed-up-requests">Re-use server connections to speed up requests<a href="#re-use-server-connections-to-speed-up-requests" aria-label="Direct link to Re-use server connections to speed up requests" title="Direct link to Re-use server connections to speed up requests">​</a></h3>
+<p>Establishing a new <a href="https://www.debugbear.com/blog/http-server-connections">server connection</a> usually takes 3 round trips between the browser a server:</p>
+<ol>
+<li>DNS lookup</li>
+<li>Establishing a TCP connection</li>
+<li>Establishing an SSL connection</li>
+</ol>
+<p>Once the connection is ready, at least one more round trip is required to send the request and download the response.</p>
+<p>The waterfall below shows that connections are initiated to four different servers: hostgator.com, optimizely.com, googletagmanager.com, and googelapis.com.</p>
+<p>However, <strong>subsequent requests to the same server can re-use the existing connection</strong>. So loading base.css or index1.css is fast, because they are also hosted on hostgator.com.</p>
+<p><img loading="lazy" alt="Various HTTP connection being made while render is blocked" src="data:application/octet-stream;base64," width="583" height="238" data-abc="true"></p>
+<h3 id="reduce-file-size-and-use-a-cdn">Reduce file size and use a CDN<a href="#reduce-file-size-and-use-a-cdn" aria-label="Direct link to Reduce file size and use a CDN" title="Direct link to Reduce file size and use a CDN">​</a></h3>
+<p>In addition to file size, there are two other factors that affect request times, and are under your control: the size of the resource and the location of your servers.</p>
+<p>Send as little data to the user as necessary, and <a href="https://www.debugbear.com/blog/http-compression-gzip-brotli">make sure it's compressed</a> (e.g. with brotli or gzip).</p>
+<p>Content delivery networks provide servers in a large number of locations, so that one of them is likely to be located close to your user. Instead of connecting to your central application server, the user can connect to a <a href="https://www.debugbear.com/blog/cdn">CDN server</a> that's close to them. That means the server round trip times will be much smaller. This is especially convenient for static assets like CSS, JavaScript, and images, since they are easy to distribute.</p>
+<h3 id="skip-the-network-with-service-workers">Skip the network with service workers<a href="#skip-the-network-with-service-workers" aria-label="Direct link to Skip the network with service workers" title="Direct link to Skip the network with service workers">​</a></h3>
+<p>Service workers allow you to intercept requests before they go to the network. That means you can achieve a <strong>first paint that’s practically instant</strong>!</p>
+<p><img loading="lazy" alt="Request durations between 5ms and 11ms due to service worker" src="data:application/octet-stream;base64," width="708" height="235" data-abc="true"></p>
+<p>Of course, this only works if you don't <em>need</em> the network to send a response. You need to have the response cached already, so the user will only benefit the second time they load your app.</p>
+<p>The service worker below caches the HTML and CSS that's needed to render the page. When the app is loaded again it tries to serve the cached resources, and falls back to the network if they aren't available.</p>
+<pre tabindex="0"><code><div><pre tabindex="0"><code><span><span>self</span><span>.</span><span>addEventListener</span><span>(</span><span>"install"</span><span>,</span><span> </span><span>async</span><span> </span><span>(</span><span>e</span><span>)</span><span> </span><span>=&gt;</span><span> </span><span>{</span><span></span><br></span><span><span>  caches</span><span>.</span><span>open</span><span>(</span><span>"v1"</span><span>)</span><span>.</span><span>then</span><span>(</span><span>function</span><span> </span><span>(</span><span>cache</span><span>)</span><span> </span><span>{</span><span></span><br></span><span><span>    </span><span>return</span><span> cache</span><span>.</span><span>addAll</span><span>(</span><span>[</span><span>"/app"</span><span>,</span><span> </span><span>"/app.css"</span><span>]</span><span>)</span><span>;</span><span></span><br></span><span><span>  </span><span>}</span><span>)</span><span>;</span><span></span><br></span><span><span></span><span>}</span><span>)</span><span>;</span><span></span><br></span><span><span></span><br></span><span><span>self</span><span>.</span><span>addEventListener</span><span>(</span><span>"fetch"</span><span>,</span><span> </span><span>(</span><span>event</span><span>)</span><span> </span><span>=&gt;</span><span> </span><span>{</span><span></span><br></span><span><span>  event</span><span>.</span><span>respondWith</span><span>(</span><span></span><br></span><span><span>    caches</span><span>.</span><span>match</span><span>(</span><span>event</span><span>.</span><span>request</span><span>)</span><span>.</span><span>then</span><span>(</span><span>(</span><span>cachedResponse</span><span>)</span><span> </span><span>=&gt;</span><span> </span><span>{</span><span></span><br></span><span><span>      </span><span>return</span><span> cachedResponse </span><span>||</span><span> </span><span>fetch</span><span>(</span><span>event</span><span>.</span><span>request</span><span>)</span><span>;</span><span></span><br></span><span><span>    </span><span>}</span><span>)</span><span></span><br></span><span><span>  </span><span>)</span><span>;</span><span></span><br></span><span><span></span><span>}</span><span>)</span><span>;</span><br></span></code></pre></div></code></pre>
+<p>Read this guide to learn more about <a href="https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker" target="_blank" rel="noopener noreferrer">using service workers to preload and cache resources</a>.</p>
+<h2 id="app-load">App load<a href="#app-load" aria-label="Direct link to App load" title="Direct link to App load">​</a></h2>
+<p>Ok, so now the user can see something. What else is needed before they can use your app?</p>
+<ol>
+<li>Load application code (JS and CSS)</li>
+<li>Load essential data for the page</li>
+<li>Load additional data and images</li>
+</ol>
+<p><img loading="lazy" alt="Page load process: loading, functional, and complete" src="data:application/octet-stream;base64," width="611" height="161" data-abc="true"></p>
+<p>Note that it's not just the loading data from the network that can delay the render. Once your code is loaded the browser will need to parse, compile, and execute it.</p>
+<h3 id="bundle-splitting-only-load-necessary-code-and-maximize-cache-hits">Bundle splitting: only load necessary code, and maximize cache hits<a href="#bundle-splitting-only-load-necessary-code-and-maximize-cache-hits" aria-label="Direct link to Bundle splitting: only load necessary code, and maximize cache hits" title="Direct link to Bundle splitting: only load necessary code, and maximize cache hits">​</a></h3>
+<p>Bundle splitting allows you to load just the code you need for the current page, instead of loading the entire app. Splitting your bundle also means that parts of it can be cached, even if other parts have changed and need to be reloaded.</p>
+<p>Typically, code is split into three different types of files:</p>
+<ul>
+<li>Page-specific code</li>
+<li>Shared application code</li>
+<li>Third-party modules that rarely change (great for caching!)</li>
+</ul>
+<p>Webpack can automatically split shared code to reduce the total download weight using <a href="https://webpack.js.org/plugins/split-chunks-plugin/" target="_blank" rel="noopener noreferrer">optimization.splitChunks</a>. Make sure to enable the runtime chunk so that the chunk hashes are stable and you benefit from long-term caching. Ivan Akulov has written an <a href="https://developers.google.com/web/fundamentals/performance/webpack/use-long-term-caching" target="_blank" rel="noopener noreferrer">in-depth guide to Webpack code splitting and caching</a>.</p>
+<p>Splitting off page specific code can’t be done automatically and you’ll need to identify bits that can be loaded separately. Often that’s a specific route or a set of pages. <a href="https://webpack.js.org/guides/code-splitting/#dynamic-imports" target="_blank" rel="noopener noreferrer">Use dynamic imports to lazy load that code</a>.</p>
+<p>Bundle splitting will result in more requests being made to load your app. But as long as the requests are made in parallel that’s not a big problem, especially if your site served over HTTP/2. You can see that with the first three requests in this waterfall:</p>
+<p><img loading="lazy" alt="Application bundle loading other bundle dynamically" src="data:application/octet-stream;base64," width="682" height="167" data-abc="true"></p>
+<p>However, this waterfall also shows 2 requests that are made sequentially. Those chunks are only needed for this page and loaded dynamically with an import() call.</p>
+<p>You can fix this by inserting a <a href="https://www.debugbear.com/blog/resource-hints-rel-preload-prefetch-preconnect#what-are-preload-hints">preload link tag</a>, if you know these chunks will be required.</p>
+<p><img loading="lazy" alt="All bundles being fetched in parallel" src="data:application/octet-stream;base64," width="685" height="157" data-abc="true"></p>
+<p>However, you can see that the benefit of this can be small compared to the overall <a href="https://www.debugbear.com/docs/page-load-time">page load time</a>.</p>
+<p>Also, using preload is sometimes counter-productive, as it can delay when other more important files are loaded. Check out <a href="https://andydavies.me/blog/2019/02/12/preloading-fonts-and-the-puzzle-of-priorities/" target="_blank" rel="noopener noreferrer">Andy Davies' post on preloading fonts</a> and how that can block the initial render by loading the fonts before the render-blocking CSS.</p>
+<h3 id="loading-page-data">Loading page data<a href="#loading-page-data" aria-label="Direct link to Loading page data" title="Direct link to Loading page data">​</a></h3>
+<p>Your app probably exists to show some data. Here are a few tips you can use to load this data early and avoid rendering delays.</p>
+<h4 id="dont-wait-for-the-bundles-before-starting-to-load-data">Don’t wait for the bundles before starting to load data<a href="#dont-wait-for-the-bundles-before-starting-to-load-data" aria-label="Direct link to Don’t wait for the bundles before starting to load data" title="Direct link to Don’t wait for the bundles before starting to load data">​</a></h4>
+<p>This is a special case of a sequential request chain: you load your application bundle and that code then requests the page data.</p>
+<p>There are two ways to avoid this:</p>
+<ol>
+<li>Embed page data in the HTML document</li>
+<li>Start the data request through an inline script inside the document</li>
+</ol>
+<p>Embedding the data in the HTML guarantees that your app doesn’t have to wait for the data to load. It also reduces complexity in your application, since you don't have to handle the loading state.</p>
+<p>It’s not a good idea though if fetching the data significantly delays your document response, as that will delay your initial render.</p>
+<p>In that case, or if you serve a cached HTML document through a service worker, you can instead embed an inline script in your HTML that loads this data. You can make it available as global promise, like this:</p>
+<pre tabindex="0"><code><div><pre tabindex="0"><code><span><span>window.userDataPromise = fetch("/me")</span><br></span></code></pre></div></code></pre>
+<p>Then your application can start rendering right away if the data is ready, or wait until it is.</p>
+<p>For both techniques you need to know what data the page will has to load before the app starts rendering. This tends to be easy for user-related data (user name, notifications, ...), but be tricky for page-specific conent. Consider identifying the most important pages and writing custom logic for those.</p>
+<h4 id="dont-block-rendering-while-waiting-for-non-essential-data">Don’t block rendering while waiting for non-essential data<a href="#dont-block-rendering-while-waiting-for-non-essential-data" aria-label="Direct link to Don’t block rendering while waiting for non-essential data" title="Direct link to Don’t block rendering while waiting for non-essential data">​</a></h4>
+<p>Sometimes generating page data requires slow complex backend logic. In those cases you may be able to first load a simpler version of the data, if that’s enough to make your application functional and interactive.</p>
+<p>For example, an analytics tool can first load a list all charts before loading the chart data. That allows the user to look for the chart they're interested in right away, and also helps spread backend requests across different servers.</p>
+<p><img loading="lazy" alt="2 screenshots, first showing empty charts, then with data" src="data:application/octet-stream;base64," width="672" height="217" data-abc="true"></p>
+<h4 id="avoid-sequential-data-request-chains">Avoid sequential data request chains<a href="#avoid-sequential-data-request-chains" aria-label="Direct link to Avoid sequential data request chains" title="Direct link to Avoid sequential data request chains">​</a></h4>
+<p>This may conflict with my previous point about loading non-essential data in a second request, but avoid sequential request chains <em>if each finished requests doesn't result in the user being shown more information</em>.</p>
+<p>Instead of first making a request about who the user is logged in as and then requesting the list of teams they belong to, return the list of teams alongside the user info. You could use <a href="https://graphql.org/" target="_blank" rel="noopener noreferrer">GraphQL</a> for that, but a custom <code>user?includeTeams=true</code> endpoint works great too.</p>
+<h3 id="server-side-rendering">Server-side rendering<a href="#server-side-rendering" aria-label="Direct link to Server-side rendering" title="Direct link to Server-side rendering">​</a></h3>
+<p><a href="https://www.debugbear.com/blog/server-side-rendering">Server-side rendering</a> means pre-rendering your app on the server and responding to the document request with the full page HTML. That means the client can see the page fully rendered without having to wait for additional code or data to be loaded!</p>
+<p>Because the server just sends static HTML to the client, your app won't be interactive yet. The application needs to be loaded, it needs to re-run the rendering logic, and then attach the necessary event listeners to the DOM.</p>
+<p>Use server rendering if the seeing the non-interactive content is valuable. It also helps if you're able to cache the rendered HTML on the server and serve that to all users without delaying the initial document request. For example, server-rendering is a great fit if you're using React to render a blog post.</p>
+<p>Read <a href="https://web.archive.org/web/20210113232424/https://michaljanaszek.com/blog/combine-pwa-and-isomorphic-rendering/" target="_blank" rel="noopener noreferrer">this article by Michał Janaszek</a> to learn about how to combine service workers with server-side rendering.</p>
+<h2 id="next-page">Next page<a href="#next-page" aria-label="Direct link to Next page" title="Direct link to Next page">​</a></h2>
+<p>At some point the user is going to interact with your app and go to the next page. Once the initial page is open you control of what happens in the browser, so you're in a position to prepare for the next interaction.</p>
+<h3 id="prefetch-resources">Prefetch resources<a href="#prefetch-resources" aria-label="Direct link to Prefetch resources" title="Direct link to Prefetch resources">​</a></h3>
+<p>If you preload the code that’s needed for the next page you can eliminate the delay when the user starts the navigation. Use <a href="https://www.debugbear.com/blog/resource-hints-rel-preload-prefetch-preconnect#what-are-prefetch-hints">prefetch link tags</a>, or use <a href="https://webpack.js.org/guides/code-splitting/#prefetchingpreloading-modules" target="_blank" rel="noopener noreferrer"><code>webpackPrefetch</code></a> for dynamic imports:</p>
+<pre tabindex="0"><code><div><pre tabindex="0"><code><span><span>import</span><span>(</span><span>/* webpackPrefetch: true, webpackChunkName: "todo-list" */</span><span> </span><span>"./TodoList"</span><span>)</span><span>;</span><br></span></code></pre></div></code></pre>
+<p>Keep in how much of your user's data and bandwidth you're using, especially if they're on a mobile connection. You could preload less aggressively if they use the mobile version of your site, or if they have save-data mode enabled.</p>
+<p>Be strategic about what parts of your app the user is most likely to need.</p>
+<h3 id="re-use-already-loaded-data">Re-use already loaded data<a href="#re-use-already-loaded-data" aria-label="Direct link to Re-use already loaded data" title="Direct link to Re-use already loaded data">​</a></h3>
+<p>Cache Ajax data locally in your app and use it to avoid future requests. If the user navigates from the list of teams to the "Edit Team" page, you can make the transition instant by re-using the data that's already been fetched.</p>
+<p>Note that this won’t work if your entity is frequently edited by other users, and the data you've downloaded may be out of date. In those cases, consider first showing the existing data read-only while fetching the up-to-date data.</p>
+<h2 id="conclusion">Conclusion<a href="#conclusion" aria-label="Direct link to Conclusion" title="Direct link to Conclusion">​</a></h2>
+<p>This article showed a bunch of factors that can slow down your page at different points of the loading process. Use tools like <a href="https://www.debugbear.com/test/website-speed" target="_blank" rel="noopener noreferrer">DebugBear /test</a>, <a href="https://developers.google.com/web/tools/chrome-devtools" target="_blank" rel="noopener noreferrer">Chrome DevTools</a>, <a href="https://www.webpagetest.org/" target="_blank" rel="noopener noreferrer">WebPageTest</a> and <a href="https://developers.google.com/web/tools/lighthouse" target="_blank" rel="noopener noreferrer">Lighthouse</a> to figure out which of these apply to your app.</p>
+<p>In practice you'll rarely be able to optimize on all fronts. Find out what's having the biggest impact on your users and focus on that.</p>
+<p>One thing I realized while writing this post is that I had an ingrained belief that making many separate requests is bad for performance. Thas was true in the past when each request required a separate connection, and browsers would only allow a few connections per domain. But with HTTP/2 and modern browsers that's no longer the case.</p>
+<p>And there are strong arguments in favor of splitting up requests. It allows loading just the necessary resources, and makes better use of cached content as only files that have changed need to be reloaded.</p>
+<h2 id="monitor-the-speed-of-your-website">Monitor the speed of your website<a href="#monitor-the-speed-of-your-website" aria-label="Direct link to Monitor the speed of your website" title="Direct link to Monitor the speed of your website">​</a></h2>
+<p><a href="https://www.debugbear.com/" target="_blank" rel="noopener noreferrer">DebugBear</a> can keep track of your site speed and Core Web Vitals metrics, as well as giving you an in-depth analysis of your website.</p>
+<p><a href="https://www.debugbear.com/signup" target="_blank" rel="noopener noreferrer">Try it for free.</a></p>
+<p><img loading="lazy" src="data:application/octet-stream;base64," alt="DebugBear Monitoring" data-abc="true"></p></div></div>
+  </div>
+</body>
+</html>

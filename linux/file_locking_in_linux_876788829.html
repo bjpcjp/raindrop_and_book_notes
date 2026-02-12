@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>File Locking in Linux</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>File Locking in Linux</h1>
+    <p><strong>URL:</strong> <a href="https://linuxhandbook.com/file-locking">https://linuxhandbook.com/file-locking</a></p>
+    <p><strong>Tags:</strong> linux</p>
+    <p><strong>Bookmark ID:</strong> 876788829</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><a href="https://www.warp.dev/?utm_source=linux_handbook&amp;utm_medium=display&amp;utm_campaign=linux_launch" target="_blank"><img src="data:application/octet-stream;base64," alt="Warp Terminal"></a></p><p>Nope, this is not about password-protecting your files. </p><p>When multiple processes are working on the same file, you might not get intentional output as there was no order defined on how processes are going to handle the same file!</p><p>And file locking is the solution by which you can ensure that the file for reading/writing is going to be handled the safe way by defining the order.</p><p>It might sound too complex and that's perfectly fine. So before approaching the solution, let me bring light to the problem.</p><h2 id="why-file-locking-is-needed">Why File Locking is Needed</h2><p>The problem is similar to the Race condition where multiple processes are modifying the same data simultaneously and the result strictly depends on the order of the process.</p><p>Let's say there are two processes <strong>A</strong> and <strong>B</strong> which are dealing with the file named account.txt (initial data is 100)and their behavior is like this:</p><ul><li>A reads the current value and subtracts 20 from the initial balance</li><li>B reads the current value and adds 50 to the balance.</li></ul><p>On paper, everything looks excellent and the final data should be 130 but it ends up being something else. Let me show you how:</p><ul><li>Process A: Reads data (100) and prepares for the operation.</li><li>Process B: Reads data (100) and saves the current data to its buffer.</li><li>Process A: Subsctracts 20 from 100 making it 80.</li><li>Process B: It is unaware of the fact that the original data has been modified and uses 100 as the initial value so the final result ends up being 150 (100 + 50) rather than what you expected (130).</li></ul><p>And there comes the implementation for file locking. So let's have a look at the types of file locking in Linux.<span data-ez-ph-id="105"></span></p><h2 id="types-of-file-locking-in-linux">Types of File Locking in Linux</h2><p>There are two types of file locking in Linux:</p><ol><li>Advisory Locking</li><li>Mandatory Locking</li></ol><h3 id="1-advisory-locking">1. &nbsp;Advisory Locking </h3><p>The advisory locking system will not force the forces and will only work if both processes are participating in locking.</p><p>For example, process A acquires the lock and starts given tasks with a file.</p><p>And if process B starts without acquiring a lock, it can interrupt the ongoing task with process A. </p><p>So the condition for making an advisory lock is to ensure each process participates in locking.</p><h3 id="2-mandatory-locking">2. Mandatory Locking</h3><p>Mandatory locking can be understood as a forced locking system and it does not require any cooperation by the processes.<span data-ez-ph-id="116"></span></p><p>A mandatory locking causes the kernel to monitor every open, read, and write to verify that the process is not going to violate any process. </p><p>But making mandatory locking work requires comparatively more steps:</p><ul><li>Mounting files with the “-o mand” option.</li><li>Also, users are required to turn off the group execute bit and turn on set-group-ID to enable mandatory locking as when you turn off the group-execute bit, set-group-ID will have no impact. </li></ul><h2 id="how-to-enable-advisory-locking">How to Enable Advisory Locking </h2><p>For this, I'll be using the flock command which allows users to handle tasks related to advisory locking. And the syntax for the flock command is as follows:</p><pre><code>flock file_to_lock command</code></pre><p>First, let's make a file to hold the default value:</p><pre><code>touch account.txt</code></pre><p>Now, let's make it hold 100 as the default value:</p><pre><code>echo "100" &gt; account.txt</code></pre><p>So let's create a simple script to handle the logical part of the processes:</p><pre><code>#!/bin/bash
+file="account.txt"
+value=$(cat $file)
+echo "Read current balance:$value"
+
+#sleep 10 seconds to simulate business calculation
+progress=10
+while [[ $progress -lt 101 ]]; do
+	echo -n -e "\033[77DCalculating new balance..$progress%"
+	sleep 1
+	progress=$((10+progress))
+done
+echo ""
+
+value=$((value+$1))
+echo "Write new balance ($value) back to $file." 
+echo $value &gt; "$file"
+echo "Done."</code></pre><p>Now, let's create the process a.sh with advisory locking:</p><pre><code>touch a.sh
+nano a.sh</code></pre><p>And make sure it contains the following:</p><pre><code>#!/bin/bash
+flock --verbose balance.dat ./update_balance.sh '-20'</code></pre><p>Now, let's make it executable:</p><pre><code>chmod +x a.sh</code></pre><p> So let's put it to the test:</p><pre><code>./a.sh </code></pre><figure><img src="data:application/octet-stream;base64," alt="how to use lock in linux" loading="lazy" width="798" height="277" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 798w" sizes="(min-width: 720px) 720px"><figcaption>Process A in action</figcaption></figure><h4 id="behavior-with-non-cooperative-process">Behavior with Non-cooperative process</h4><p>For this example, I'll be creating the script <code>b.sh</code> which will be non-cooperative to its nature.</p><pre><code>touch b.sh
+nano b.sh</code></pre><p>And script should contain the following:</p><pre><code>#----------------------------------------
+# non-cooperative way
+#----------------------------------------
+./update_balance.sh '80'</code></pre><p>Make it executable by following the given command:</p><pre><code>chmod +x b.sh</code></pre><p>So let's put it to the test: </p><figure><img src="data:application/octet-stream;base64," alt="Advisory file lock with non cooperative process" loading="lazy" width="799" height="550" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 799w" sizes="(min-width: 720px) 720px"><figcaption>Non-cooperative process</figcaption></figure><p>As you can clearly see, my desired value was supposed to be 160 but the process b messed up and gave 180.</p><h4 id="behavior-with-cooperative-processes">Behavior with Cooperative Processes</h4><p>In this section, I'll be making process b a cooperative process with some minor changes as given:</p><pre><code>#----------------------------------------
+# A cooperative way
+#----------------------------------------
+flock --verbose balance.dat ./update_balance.sh '80'</code></pre><p>Its show time:</p><figure><img src="data:application/octet-stream;base64," alt="Advisory file lock with cooperative process" loading="lazy" width="799" height="552" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 799w" sizes="(min-width: 720px) 720px"><figcaption>Cooperative process in action</figcaption></figure><p>As you can clearly see, process B waited while the first process was being executed and I got the desired results!</p><h2 id="how-to-inspect-locks-in-linux">How to Inspect Locks in Linux</h2><p>You can inspect all locks using lslocks command. And the usage is quite easy. A single command and that's it:</p><pre><code>lslocks</code></pre><figure><img src="data:application/octet-stream;base64," alt="list every lock in linux" loading="lazy" width="852" height="459" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 852w" sizes="(min-width: 720px) 720px"></figure><p>And it will show everything from the command, and type of lock to the path. </p><h2 id="final-words">Final Words</h2><p>This guide explained all the basics related to locks in Linux with examples of how you can use advisory Linux for suitable tasks.</p><p>And if you have any queries, let me know in the comments.</p>
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Real-time SKU detection in the browser using TensorFlow.js</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Real-time SKU detection in the browser using TensorFlow.js</h1>
+    <p><strong>URL:</strong> <a href="https://blog.tensorflow.org/2022/05/real-time-sku-detection-in-browser.html?linkId=8068696&m=1">https://blog.tensorflow.org/2022/05/real-time-sku-detection-in-browser.html?linkId=8068696&m=1</a></p>
+    <p><strong>Tags:</strong> image-classification, javascript, tensorflow</p>
+    <p><strong>Bookmark ID:</strong> 876784106</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><em>Posted by <a href="https://www.linkedin.com/in/hugozanini/?locale=en_US">Hugo Zanini</a>, Data Product Manager</em></p>
+
+<p>
+Last year, I published an article on<a href="https://blog.tensorflow.org/2021/01/custom-object-detection-in-browser.html"> how to train custom object detection in the browser using TensorFlow.js</a>. This received lots of  interest from developers from all over the world who tried to apply the solution to their personal or business projects.While answering reader’s questions on my first article, I noticed a few difficulties in adapting our solution to large datasets, and deploying the resulting model in production using the new version of TensorFlow.js.
+</p>
+<p>
+Therefore, the goal of this article is to share a solution for a well-known problem in the consumer packaged goods (CPG) industry: real-time and offline <a href="https://en.wikipedia.org/wiki/Stock_keeping_unit">SKU</a> detection using TensorFlow.js.
+</p>
+ 
+<p><img data-original-height="714" data-original-width="1058" id="imgFull" src="data:application/octet-stream;base64," data-action="zoom"></p><table><tbody><tr><td><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-RgZkEm4Rb9QERMU7H4wVyk5Z6KdeiCKoyGOOlOnyEiefkPXnDbFlVAW-ORzatYYq2bgkEc9XXXux_WzoPzlT3u-13WyNL8p8-dNo73C1k-ywKzuAAe207cSvaMx84_MrcqrT-qaVE-yL39_BbFX6ba3G9PepBjusD3M_wS0gsSVcIBALq6XjHpiy/s1600/ezgif.com-gif-maker.gif"></a></td></tr>
+<tr><td>Offline SKU detection running in real time on a smartphone using TensorFlow.js 
+</td></tr>
+</tbody></table>
+
+
+<p>
+<strong>The problem</strong>
+</p>
+<p>
+Items consumed frequently by consumers (foods, beverages, household products, etc) require an extensive routine of replenishment and placement of those products at their point of sale (supermarkets, convenience stores, etc). 
+</p>
+<p>
+Over the past few years, researchers have shown repeatedly that about two-thirds of purchase decisions are made after customers enter the store. One of the biggest challenges for consumer goods companies is to guarantee the availability and correct placement of their product in-stores.  
+</p>
+<p>
+At stores, teams organize the shelves based on marketing strategies, and manage the level of products in the stores. The people working on these activities may count the number of SKUs of each brand in a store to estimate product stocks and market share, and help to shape marketing strategies.
+</p>
+<p>
+These estimations though are very time-consuming. Taking a photo and using an algorithm to count the SKUs on the shelves to calculate a brand’s market share could be a good solution.
+</p>
+<p>
+To use an approach like that, the detection should run in real-time such that as soon as you point a phone camera to the shelf, the algorithm recognizes the brands and calculates the market shares. And, as the internet inside the stores is generally limited, the detection should work offline.
+</p>
+
+
+
+<p><img data-original-height="714" data-original-width="1058" id="imgFull" src="data:application/octet-stream;base64," data-action="zoom"></p><table><tbody><tr><td><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiXJKi_ujdUUveIPpH2BeriYxl3K7TzTUfsocSRD1xKulteBDQZkZYmQBB1z_yW4C6orHg825mRAhFCJTEuOrtHjpMFpVUVcBUCQ33OYwkmPRDKdTs9oH4RBHrb2Ay9p_j3bDhsIfjwzukA1Sr-uT0uSXA_kpXnJSi62XSi0bHPDsaPMlQZZyGReTiB/s1600/image7.png"></a></td></tr>
+<tr><td> Example workflow</td></tr>
+</tbody></table>
+
+
+
+<p>
+This post is going to show how to implement the real-time and offline image recognition solution to identify generic SKUs using the<a href="https://github.com/eg4000/SKU110K_CVPR19"> SKU110K dataset</a> and the<a href="https://arxiv.org/abs/1801.04381"> MobileNetV2</a> network.
+</p>
+<p>
+Due to the lack of a public dataset with labeled SKUs of different brands, we’re going to create a generic algorithm, but all the instructions can be applied in a multiclass problem.
+</p>
+<p>
+As with every machine learning flow, the project will be divided into four steps, as follows:
+</p>
+
+
+
+<p><img data-original-height="714" data-original-width="1058" id="imgFull" src="data:application/octet-stream;base64," data-action="zoom"></p><table><tbody><tr><td><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsTYleef2QUeRdcScNczV1XV50dtvAvS3M9jh47bAwfMEG0zJIOt0VJvlteFAaoPvA7D2U21L1zxmo_41WG6QVf46l4hnIsbCPn63EWCw4Dp_qSTEL2O9FIUOzPMElANPmlkMFd64ZFzD7eOrtkDqpu8_-CM4R5OM-v8VPtd9606_i1dzTjjD8NvSC/s1600/image3.png"></a></td></tr>
+<tr><td>Object Detection Model Production Pipeline</td></tr>
+</tbody></table>
+
+
+
+
+<p>
+<strong>Preparing the data</strong>
+</p>
+<p>
+The first step to training a good model is to gather good data. As mentioned before, this solution is going to use a dataset of SKUs in different scenarios. The purpose of SKU110K was to create a benchmark for models capable of recognizing objects in densely packed scenes.
+</p>
+<p>
+The dataset is provided in the <a href="https://towardsdatascience.com/coco-data-format-for-object-detection-a4c5eaf518c5">Pascal VOC</a> format and has to be converted to <em><a href="https://keras.io/examples/keras_recipes/creating_tfrecords/">tf.record</a></em>. The script to do the conversion is<a href="https://github.com/hugozanini/realtime-sku-detection/blob/main/pascal-to-tfrecord.py"> available here</a> and the<em> tf.record</em> version of the dataset is also available in my <a href="https://github.com/hugozanini/realtime-sku-detection">project repository</a>. As mentioned before, SKU110K is a large and very challenging dataset to work with. It contains many objects, often looking similar or even identical, positioned in close proximity.
+</p>
+
+
+<center>  </center>
+
+
+<p>
+To work with this dataset, the neural network chosen has to be very effective in recognizing patterns and be small enough to run in real-time in TensorFlow.js.
+</p>
+<p>
+<strong>Choosing the model</strong>
+</p>
+<p>
+There are a variety of neural networks capable of solving the SKU detection problem. But, the architectures that easily achieve a high level of precision are very dense and don't have reasonable inference times when converted to TensorFlow.js to run in real-time.
+</p>
+<p>
+Because of that, the approach here is going to be to focus on optimizing a mid-level neural network to achieve reasonable precision working on densely packed scenes and run the inferences in real-time. Analyzing the<a href="https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md"> TensorFlow 2.0 Detection Model Zoo</a>, the challenge will be to try to solve the problem using the lighter single-shot model available: SSD MobileNet v2 320x320 which seems to fit the criteria required. The architecture is proven to be able to recognize up to 90 classes and can be trained to identify different SKUs.
+</p>
+<p>
+<strong>Training the model</strong>
+</p>
+<p>
+With a good dataset and the model selected, it’s time to think about the training process. TensorFlow 2.0 provides an<a href="https://github.com/tensorflow/models/tree/master/research/object_detection"> Object Detection API</a> that makes it easy to construct, train, and deploy object detection models. In this project, we’re going to use this API and train the model using a<a href="https://colab.research.google.com/drive/1dyuGpeLh1K4rqOkxELLTTlSqhfbTnFac?usp=sharing"> Google Colaboratory Notebook</a>. The remainder of this section explains how to set up the environment, the model selection, and training. If you want to jump straight to the Colab Notebook,<a href="https://colab.research.google.com/drive/1WDXd1IzyQRw1oDmcapAM1PyZxgw2UVJM?usp=sharing"> click here</a>.
+</p>
+<p>
+<strong>Setting up the environment</strong>
+</p>
+<p>
+<a href="https://colab.research.google.com/">Create</a> a new Google Colab notebook and select a GPU as the hardware accelerator:
+</p>
+
+
+
+<pre>Runtime &gt; Change runtime type &gt; Hardware accelerator: GPU
+</pre>
+
+
+<p>
+Clone, install, and test the TensorFlow Object Detection API:
+</p>
+
+<center>  </center>
+
+<p>
+Next, download and extract the dataset using the following commands:
+</p>
+
+
+<center>  </center>
+
+
+<p>
+<strong>Setting up the training pipeline</strong>
+</p>
+<p>
+We’re ready to configure the training pipeline. TensorFlow 2.0 provides pre-trained weights for the SSD Mobilenet v2 320x320 on the<a href="https://cocodataset.org/#home"> COCO 2017 Dataset</a>, and they are going to be downloaded using the following commands:
+</p>
+
+
+<center>  </center>
+
+<p>
+The downloaded weights were pre-trained on the<a href="https://cocodataset.org/#home"> COCO 2017 Dataset</a>, but the focus here is to train the model to recognize one class so these weights are going to be used only to initialize the network — this technique is known as<a href="https://www.tensorflow.org/tutorials/images/transfer_learning"> transfer learning</a>, and it’s commonly used to speed up the learning process.
+</p>
+<p>
+The last step is to set up the hyperparameters on the configuration file that is going to be used during the training. Choosing the best hyperparameters is a task that requires some experimentation and, consequently, computational resources.
+</p>
+<p>
+I took a standard configuration of MobileNetV2 parameters from the TensorFlow <a href="https://github.com/tensorflow/models/tree/master/research/object_detection/configs/tf2">Models Config Repository</a> and performed a sequence of experiments (thanks Google Developers for the free resources) to optimize the model to work with densely packed scenes on the SKU110K dataset. Download the configuration and check the parameters using the code below.
+</p>
+
+
+<center>  </center>
+
+
+<center>  </center>
+
+<p>
+With the parameters set, start the training by executing the following command:
+</p>
+
+
+<center>  </center>
+<p>
+To identify how well the training is going, we use the loss value. Loss is a number indicating how bad the model’s prediction was on the training samples. If the model’s prediction is perfect, the loss is zero; otherwise, the loss is greater. The goal of training a model is to find a set of weights and biases that have low loss, on average, across all examples (<a href="https://developers.google.com/machine-learning/crash-course/descending-into-ml/training-and-loss">Descending into ML: Training and Loss | Machine Learning Crash Course</a>).
+</p>
+<p>
+The training process was monitored through Tensorboard and took around 22h to finish on a 60GB machine using an NVIDIA Tesla P4. The final losses can be checked below
+</p>
+
+
+
+<p><img data-original-height="714" data-original-width="1058" id="imgFull" src="data:application/octet-stream;base64," data-action="zoom"></p><table><tbody><tr><td><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi4k_zpucjpl8y6HA_I4lB-wH41VY_Eg9awRHYD9kZCE7sPDJpAareh0sOhzi0Mbaeae1cxSK2vuR_zn3ZAHrat0_r5Dk3ttFUXIPoBopVPJCefHsj_3DyhVqsBM4F9aCvAauEjwfQ9s_aG0asu8k9JGCZf4D6W6DlgKAIbLAjCgZgVLnLRZutj8etf/s1600/image9.png"></a></td></tr>
+<tr><td>Total training loss
+</td></tr>
+</tbody></table>
+
+
+
+<p>
+<strong>Validate the model</strong>
+</p>
+<p>
+Now let’s evaluate the trained model using the test data:
+</p>
+
+<center>  </center>
+
+<p>
+The evaluation was done across 2740 images and provides three metrics based on the<a href="https://cocodataset.org/#detection-eval"> COCO detection evaluation metrics</a>: precision, recall, and loss (<a href="https://developers.google.com/machine-learning/crash-course/classification/precision-and-recall">Classification: Precision and Recall | Machine Learning Crash Course</a>). The same metrics are available via Tensorboard and can be analyzed in an easier way
+</p>
+
+
+
+<pre>%load_ext tensorboard
+%tensorboard --logdir '/content/training/'
+</pre>
+
+
+<p>
+You can then explore all training and evaluation metrics.
+</p>
+
+
+
+
+<p><img data-original-height="714" data-original-width="1058" id="imgFull" src="data:application/octet-stream;base64," data-action="zoom"></p><table><tbody><tr><td><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhIuzWSK8B52q9FIJJ0ARUu4Y--esT101VSCIkUEg9JMTm5H0zy1r9PmkOkLTHl9ve-3DWWKa09876MB0TGYkzJXgRGMpSgriZZmOivA7fK4FJ7z_hXkEsiMkiGJBSgpfrD-MYBUlowijEKqECWHUEKxGxon9JDwqIllWlFuOD0qbEwBrblrnWDuToP/s1600/image8.png"></a></td></tr>
+<tr><td>Main evaluation metrics
+</td></tr>
+</tbody></table>
+
+
+
+<p>
+<strong>Exporting the model</strong>
+</p>
+<p>
+Now that the training is validated, it’s time to export the model. We’re going to convert the training checkpoints to a <em><a href="https://developers.google.com/protocol-buffers/docs/proto3">protobuf </a></em>(pb) file. This file is going to have the graph definition and the weights of the model.
+</p>
+<center>  </center>
+
+
+<p>
+As we’re going to deploy the model using TensorFlow.js and Google Colab has a maximum lifetime limit of 12 hours, let’s download the trained weights and save them locally. When running the command <code>files.download("/content/saved_model.zip")</code>, the Colab will prompt the file download automatically.
+</p>
+
+<center> </center>
+
+
+
+<p>
+<strong>Deploying the model</strong>
+</p>
+<p>
+The model is going to be deployed in a way that anyone can open a PC or mobile camera and perform inference in real-time through a web browser. To do that, we’re going to convert the saved model to the TensorFlow.js layers format, load the model in a JavaScript application and make everything available on<a href="https://codesandbox.io/"> CodeSandbox</a>.
+</p>
+<p>
+<strong>Converting the model</strong>
+</p>
+<p>
+At this point, you should have something similar to this structure saved locally:
+</p>
+<p>
+%MD
+</p>
+<p>
+├── inference-graph
+</p>
+<p>
+│ ├── saved_model
+</p>
+<p>
+│ │ ├── assets
+</p>
+<p>
+│ │ ├── saved_model.pb
+</p>
+<p>
+│ │ ├── variables
+</p>
+<p>
+│ │ ├── variables.data-00000-of-00001
+</p>
+<p>
+│ │ └── variables.index
+</p>
+<p>
+Before we start, let’s create an isolated Python environment to work in an empty workspace and avoid any library conflict.<a href="https://virtualenv.pypa.io/en/latest/installation.html"> Install virtualenv</a> and then open a terminal in the inference-graph folder and create and activate a new virtual environment:
+</p>
+
+
+
+<pre>virtualenv -p python3 venv
+source venv/bin/activate
+</pre>
+
+
+<p>
+Install the<a href="https://github.com/tensorflow/tfjs/tree/master/tfjs-converter"> TensorFlow.js converter</a>:
+</p>
+
+
+
+<pre>pip install tensorflowjs[wizard]
+</pre>
+
+
+<p>
+Start the conversion wizard:
+</p>
+
+
+
+<pre>tensorflowjs_wizard
+</pre>
+
+
+<p>
+Now, the tool will guide you through the conversion, providing explanations for each choice you need to make. The image below shows all the choices that were made to convert the model. Most of them are the standard ones, but options like the shard sizes and compression can be changed according to your needs.
+</p>
+<p>
+To enable the browser to cache the weights automatically, it’s recommended to split them into shard files of around 4MB. To guarantee that the conversion is going to work, don’t skip the op validation as well, not all TensorFlow operations are supported so some models can be incompatible with TensorFlow.js — See<a href="https://github.com/tensorflow/tfjs/blob/master/tfjs-converter/docs/supported_ops.md"> this list for</a> which ops are currently supported on the various backends that TensorFlow.js executes on such as WebGL, WebAssembly, or plain JavaScript.
+</p>
+
+
+
+
+<p><img data-original-height="714" data-original-width="1058" id="imgFull" src="data:application/octet-stream;base64," data-action="zoom"></p><table><tbody><tr><td><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjMqCki32tUqEILujT0zrG-28wt9CxxQP1IQBwpWYi0hAQfix9TLFHcz9otuK_-kFn1KZbx068Z44cNtzfZ0zr-N6gev0SHhpQbDLt-PE5LeIInTphf9KN1FPPMUaTa14uRREpwhFJQuwy6mZd9oS7ZC5YT2yjrHGTTotKVt5vx6vJ0uGuFQtM9zdt9/s1600/image10.png"></a></td></tr>
+<tr><td><p>
+<em>Model conversion using TensorFlow.js Converter (Full resolution image <a href="https://drive.google.com/file/d/1G-8uRdLeP6FpCtMeDNZ9yxHyygoKUSc2/view?usp=sharing">here</a>)</em>
+</p></td></tr>
+</tbody></table>
+
+
+<p>
+If everything works well, you’re going to have the model converted to the TensorFlow.js layers format in the web_model directory. The folder contains a model.json file and a set of sharded weights files in a binary format. The model.json has both the model topology (aka “architecture” or “graph”: a description of the layers and how they are connected) and a manifest of the weight files (<a href="https://cocodataset.org/#detection-eval">Lin, Tsung-Yi, et al</a>). The contents of the web_model folder currently contains the files shown below:
+</p>
+
+
+
+<pre>└ web_model
+  ├── group1-shard1of5.bin
+  ├── group1-shard2of5.bin
+  ├── group1-shard3of5.bin
+  ├── group1-shard4of5.bin
+  ├── group1-shard5of5.bin
+  └── model.json
+</pre>
+
+
+<p>
+<strong>Configuring the application</strong>
+</p>
+<p>
+The model is ready to be loaded in JavaScript. I’ve created an application to perform inference directly from the browser. Let’s<a href="https://github.com/hugozanini/realtime-sku-detection/tree/web"> clone the repository</a> to figure out how to use the converted model in real-time. This is the project structure:
+</p>
+
+
+
+<pre>├── models
+│	├── group1-shard1of5.bin
+│	├── group1-shard2of5.bin
+│	├── group1-shard3of5.bin
+│	├── group1-shard4of5.bin
+│	├── group1-shard5of5.bin
+│	└── model.json
+├── package.json
+├── package-lock.json
+├── public
+│   └── index.html
+├── README.MD
+└── src
+	├── index.js
+	└── styles.css
+</pre>
+
+
+<p>
+For the sake of simplicity, I have already provided a converted SKU-detector model in the model's folder. However, let’s put the web_model generated in the previous section in the models folder and test it.
+</p>
+<p>
+Next, install the<a href="https://www.npmjs.com/package/http-server"> http-server</a>:
+</p>
+
+
+
+<pre>npm install http-server -g
+</pre>
+
+
+<p>
+Go to the <em>models</em> folder and run the command below to make the model available at http://127.0.0.1:8080 . This is a good choice when you want to keep the model weights in a safe place and control who can request inferences to it. The -c1 parameter is added to disable caching, and the --cors flag enables<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"> cross-origin resource sharing</a> allowing the hosted files to be used by the client-side JavaScript for a given domain.
+</p>
+
+
+
+<pre>http-server -c1 --cors .
+</pre>
+
+
+<p>
+Alternatively, you can upload the model files somewhere else - even on a different domain if needed. In my case, I chose my own Github repo and referenced the model.json folder URL in the load_model function as shown below:
+</p>
+
+
+
+<pre>async function load_model() {
+	// It's possible to load the model locally or from a repo.
+	// Load from localhost locally:
+      const model = await loadGraphModel("http://127.0.0.1:8080/model.json");
+	// Or Load from another domain using a folder that contains model.json.
+      // const model = await loadGraphModel("https://github.com/hugozanini/realtime-sku-detection/tree/web");
+	return model;
+}
+</pre>
+
+
+<p>
+This is a good option because it gives more flexibility to the application and makes it easier to run on public web servers.
+</p>
+<p>
+Pick one of the methods to load the model files in the function load_model <a href="https://github.com/hugozanini/realtime-sku-detection/blob/79f7414de797abcc6681ecef582790c33e96369d/src/index.js#L10">(lines 10–15 in the file src&gt;index.js</a>). 
+</p>
+<p>
+When loading the model, TensorFlow.js will perform the following requests:
+</p>
+
+
+
+<pre>GET /model.json
+GET /group1-shard1of5.bin
+GET /group1-shard2of5.bin
+GET /group1-shard3of5.bin
+GET /group1-shardo4f5.bin
+GET /group1-shardo5f5.bin
+</pre>
+
+
+<p>
+<strong>Publishing in CodeSandbox</strong>
+</p>
+<p>
+<a href="https://codesandbox.io/">CodeSandbox</a> is a simple tool for creating web apps where we can upload the code and make the application available for everyone on the web. By uploading the model files in a GitHub repo and referencing them in the load_model function, we can simply log into <em>CodeSandbox</em>, click on New project &gt; Import from Github, and select the app repository.
+</p>
+<p>
+Wait some minutes to install the packages and your app will be available at a public URL that you can share with others. Click on Show &gt; In a new window and a tab will open with a live preview. Copy this URL and paste it in any web browser (PC or Mobile) and your object detection will be ready to run. A ready to use project can be found <a href="https://codesandbox.io/s/sku-detection-mobilenet-wtvbj?file=/src/index.js">here</a> as well if you prefer. 
+</p>
+<p><strong>Conclusion</strong></p><p>
+Besides the precision, an interesting part of these experiments is the inference time — everything runs in real-time in the browser via JavaScript. SKU detection models running in the browser, <a href="https://www.tensorflow.org/js/guide/save_load#local_storage_browser_only">even offline</a>, and using few computational resources is a must in many consumer packaged goods company applications, along with other industries too.
+</p>
+<p>
+Enabling a Machine Learning solution to run on the client-side is a key step to guarantee that the models are being used effectively at the point of interaction with minimal latency and solve the problems when they happen: right in the user's hand.
+</p>
+<p>
+Deep learning should not be costly and should be used beyond just research, for real world use cases, which JavaScript is great for production deployments. I hope this article will serve as a basis for new projects involving Computer Vision, TensorFlow, and create an easier flow between Python and Javascript.
+</p>
+<p>
+If you have any questions or suggestions you can reach me on<a href="https://twitter.com/hugoznn"> Twitter</a>.
+</p>
+<p>
+Thanks for reading!
+</p>
+<p>
+<strong>Acknowledgments</strong>
+</p>
+<p>
+I’d like to thank the<a href="https://developers.google.com/community/gdg"> Google Developers Group</a>, for providing all the computational resources for training the models, and the authors of the<a href="https://arxiv.org/abs/1904.00853"> SKU 110K Dataset</a>, for creating and open-sourcing the dataset used in this project.
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+</div></div>
+  </div>
+</body>
+</html>

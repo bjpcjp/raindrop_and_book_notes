@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Exception Handling and Validations in Rails, and how to display errors to u</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Exception Handling and Validations in Rails, and how to display errors to u</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/jaguilar89/exception-handling-and-validations-in-rails-and-how-to-display-errors-to-users-505l">https://dev.to/jaguilar89/exception-handling-and-validations-in-rails-and-how-to-display-errors-to-users-505l</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876791846</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1412614" id="article-body">
+            <h2>
+  <a name="introduction" href="#introduction">
+  </a>
+  Introduction
+</h2>
+
+<p>In this article we will go over exception handling and validation in Rails. Exception handling and validation are crucial for <em>any</em> web application, including those built with Rails; it's how we're able to display error messages that are useful not only to us as developers, but to our application users as well. How would you know if you entered the wrong username or password in an application without any validation or error handling?</p>
+
+<p><strong>First, a refresher(or introduction) on exceptions if you need it. Otherwise, skip ahead to the Validation section!</strong></p>
+
+
+<hr>
+
+<h2>
+  <a name="what-is-an-exception" href="#what-is-an-exception">
+  </a>
+  What is an exception?
+</h2>
+
+<p>You've already seen exceptions in action. For example, if you've ever made a typo in your code causing your program to crash with 'NoMethodError' or 'SyntaxError', you're seeing an exception being raised:<br>
+</p>
+
+<div>
+<pre><code><span>putss</span> <span>'Hello World'</span>
+<span># =&gt; NoMethodError: undefined method 'putss' for main:Object</span>
+<span># =&gt; Did you mean? puts</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>An exception represents an error condition in a program. Exceptions are how Ruby deals with unexpected events, and they provide a mechanism for stopping the execution of a program. When an exception is raised, your program starts to shut down. If nothing halts that process, your program will eventually stop and print out an error message.</p>
+
+<h2>
+  <a name="exception-handling" href="#exception-handling">
+  </a>
+  Exception Handling
+</h2>
+
+<p>Crashing programs are no bueno. Normally we want to stop the program from crashing and react to the error. This is called "handling" (also known as "rescuing" or "catching" an exception.</p>
+
+<p>The basic syntax looks something like this:<br>
+</p>
+
+<div>
+<pre><code><span>#Imagine we write a function that would be called when an exception is raised.</span>
+<span>def</span> <span>handle_exception</span>
+  <span>puts</span> <span>"Got an exception, but I'm handling it!"</span>
+<span>end</span>
+
+<span>begin</span>
+  <span># Any exceptions in here...</span>
+<span>rescue</span>
+  <span># ...will trigger this block of code</span>
+  <span>handle_exception</span>
+<span>end</span>
+
+<span># =&gt; "Got an exception, but I'm handling it!"</span>
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In this example, an exception is raised, but the program does not crash because it was "rescued". Instead of crashing, Ruby runs the code in the <code>rescue</code> block, which prints out a message. This is cool and all, but all this does is tell us that something went wrong, without telling us <em>what</em> went wrong.</p>
+
+<p>Any information about what went wrong is going to be contained within an <strong>exception object</strong>.</p>
+
+<h2>
+  <a name="exception-objects" href="#exception-objects">
+  </a>
+  Exception Objects
+</h2>
+
+<p>Exception objects (E.g. SyntaxError or ArgumentError) are regular Ruby objects(subclasses of the <a href="https://ruby-doc.org/core-2.5.1/Exception.html" target="_blank" rel="noopener noreferrer">Exception Class</a>). They contain information about "what went wrong" for the exception that was rescued.</p>
+
+<p>To get an exception object, the <code>rescue</code> syntax is slightly different. In this example, we'll rescue from a <a href="https://ruby-doc.org/core-2.5.1/ZeroDivisionError.html" target="_blank" rel="noopener noreferrer">ZeroDivisionError</a> exception class.<br>
+</p>
+
+<div>
+<pre><code><span>#Rescues all errors, and assigns the exception object to an `error` variable</span>
+<span>rescue</span> <span>=&gt;</span> <span>error</span>
+
+<span>#Rescues only ZeroDivisionError and assigns the exception object to an `error` variable</span>
+<span>rescue</span> <span>ZeroDivisionError</span> <span>=&gt;</span> <span>error</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In the second example above, <code>ZeroDivisionError</code> is the class of the object in the <code>error</code> variable,<code>ZeroDivisionError</code> itself is a subclass of <code>StandardError</code>. The most standard error types in Ruby, such as <code>ArgumentError</code> and <code>NameError</code> are subclasses of <code>StandardError</code>. In fact, <code>StandardError</code> is the default exception for Ruby when an <code>Exception</code> subclass is not explicitly named.<br>
+</p>
+
+<div>
+<pre><code><span>begin</span>
+  <span>do_something</span>
+<span>rescue</span> <span>=&gt;</span> <span>error</span>
+  <span># This is the same as rescuing StandardError</span>
+  <span># and all of its subclasses</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Now.. let's go back and take a closer look at the exception object for <code>ZeroDivisionError</code><br>
+</p>
+
+<div>
+<pre><code><span>begin</span>
+  <span># Any exceptions in here...</span>
+  <span>1</span> <span>/</span> <span>0</span>
+<span>rescue</span> <span>ZeroDivisionError</span> <span>=&gt;</span> <span>error</span>
+  <span>puts</span> <span>"Exception Class: </span><span>#{</span><span>error</span><span>.</span><span>class</span><span>}</span><span>"</span>
+  <span>puts</span> <span>"Exception Message: </span><span>#{</span><span>error</span><span>.</span><span>message</span><span>}</span><span>"</span>
+<span>end</span>
+
+<span># Exception Class: ZeroDivisionError</span>
+<span># Exception Message: divided by 0</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Most Ruby exceptions contain a message detailing what went wrong.</p>
+
+<h2>
+  <a name="triggering-your-own-exceptions" href="#triggering-your-own-exceptions">
+  </a>
+  Triggering Your Own Exceptions
+</h2>
+
+<p>You can also trigger your own exceptions! The process of raising your own exceptions is called.. well.. "raising". You do so by calling the <code>raise</code> method.</p>
+
+<p>When raising your own exceptions, you choose which type of exception to use. You can also set your own error message.<br>
+</p>
+
+<div>
+<pre><code><span>begin</span>
+  <span>#raises an ArgumentError with the message "You screwed up!"</span>
+  <span>raise</span> <span>ArgumentError</span><span>.</span><span>new</span><span>(</span><span>"You screwed up!"</span><span>)</span>
+<span>rescue</span> <span>ArgumentError</span> <span>=&gt;</span> <span>error</span>
+  <span>puts</span> <span>error</span><span>.</span><span>message</span>
+<span>end</span>
+
+<span># =&gt; "You screwed up!"</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="creating-custom-exceptions" href="#creating-custom-exceptions">
+  </a>
+  Creating Custom Exceptions
+</h2>
+
+<p>Ruby's built-in exceptions are great, but they are still limited in scope and cannot cover every possible use case.</p>
+
+<p>Suppose you're building a web app and want to raise an exception when a user tries to access a part of the site that they shouldn't have access to? None of Ruby's built-in exceptions really fit, so your best bet is to create a custom exception.</p>
+
+<p>To create a custom exception, simply create a new class that inherits from <code>StandardError</code>.<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>PermissionDeniedError</span> <span>&lt;</span> <span>StandardError</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>message</span><span>)</span>
+    <span># Call the parent's(StandardError) constructor to set the message</span>
+    <span>super</span><span>(</span><span>message</span><span>)</span>
+  <span>end</span>
+
+<span>end</span>
+
+<span># Then, when the user tries to do something they don't</span>
+<span># have permission to do, you might do something like this:</span>
+<span>raise</span> <span>PermissionDeniedError</span><span>.</span><span>new</span><span>(</span><span>"Permission Denied!!!"</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="the-exception-class-hierarchy" href="#the-exception-class-hierarchy">
+  </a>
+  The Exception Class Hierarchy
+</h2>
+
+<p>We made a custom exception by creating a subclass of <code>StandardError</code>, which itself is a subclass of <code>Exception</code>.<br>
+If you look at the class hierarchy, you'll see that everything subclasses <code>Exception</code>.</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/http%3A%2F%2Frubyblog.pro%2Fimages%2Fposts%2Fexceptions_hierarchy.jpg"><img src="data:application/octet-stream;base64," loading="lazy"></a></p>
+
+<p>Don't worry, you don't need to memorize all of that. But it's important that you're familiar with class hierarchies in general for a very good reason.</p>
+
+<p><strong>Rescuing errors of a specific class will also rescue errors of its subclasses.</strong></p>
+
+<p>When you rescue StandardError, you not only rescue exceptions  of <code>StandardError</code> but those of its children as well. If you look at the chart, you'll see that's a lot: ArgumentError, NameError, TypeError, etc.</p>
+
+<p>Therefore, if you were to rescue <code>Exception</code>, you would rescue every single exception, which is a <strong>bad</strong> idea. Don't do this!</p>
+
+<p>Ruby uses exceptions for things other than errors, so rescuing <em>all</em> errors will cause your program to break in weird ways. Always rescue <em>specific</em> exceptions. When in doubt, use <code>StandardError</code>.</p>
+
+<hr>
+<h2>
+  <a name="validation" href="#validation">
+  </a>
+  Validation
+</h2>
+
+<p>Now that we have fair understanding of exceptions, let's look at <strong>validations</strong> and how it all ties in.</p>
+
+<p>Many things that we do in our day to day lives can now be done online; whether it's shopping, banking, making dinner reservations, etc. But what's at the heart of all these processes? <strong>Data</strong>, it's all data. </p>
+
+<p>Therefore, to ensure that everything runs smoothly, data integrity needs to be ensured. This is accomplished by <strong>validating</strong> the data that's provided before it can be saved to a database.</p>
+
+<p>As you know, Rails is structured on the <a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller" target="_blank" rel="noopener noreferrer">MVC</a> architecture. The <strong>M</strong>, which is the <strong>m</strong>odel layer, is concerned with managing how objects are created and stored in a database. In Rails, this layer is run by <a href="https://guides.rubyonrails.org/active_record_basics.html" target="_blank" rel="noopener noreferrer">Active Record</a> by default, therefore, Active Record is concerned with handling the crucial task of data validation.</p>
+
+<p>Validations are simply a set of rules that determine whether data is valid based on some criteria. Every model object contains an <em>errors</em> collection. In valid models, this collection contains no errors and is empty. When you declare validation rules on a certain model and it fails to pass, then an <strong>exception</strong> will be raised and that errors collection will contain errors consistent with the rules you've set, and this model will not be valid. A simple example is checking whether an online form has all the necessary data before it's submitted. If a field is left blank, an error message will be shown to the user so that they can fill it in.</p>
+<h2>
+  <a name="simple-validations" href="#simple-validations">
+  </a>
+  Simple validations
+</h2>
+
+<p>Let's look at two basic validation methods.</p>
+<h3>
+  <a name="validating-the-presence-andor-absence-of-attributes" href="#validating-the-presence-andor-absence-of-attributes">
+  </a>
+  Validating the presence and/or absence of attributes
+</h3>
+
+<p>This validation checks for the presence(or absence) of an attribute. In the example below, we're checking to see if the  <code>username</code> attribute is not only present, but also unique. This helps you avoid having duplicate usernames within your application. You check these with the <code>presence</code> and <code>uniqueness</code> <a href="https://guides.rubyonrails.org/active_record_validations.html#validation-helpers" target="_blank" rel="noopener noreferrer">validation helpers</a> respectively, using the <code>validates</code> keyword, followed by the attribute name:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>User</span> <span>&lt;</span> <span>ApplicationRecord</span>
+   <span>#validates presence and uniqueness of a username upon </span>
+   <span>#creation</span>
+   <span>validates</span> <span>:username</span><span>,</span> <span>presence: </span><span>true</span><span>,</span> <span>uniqueness: </span><span>true</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="validating-character-length-on-an-attribute" href="#validating-character-length-on-an-attribute">
+  </a>
+  Validating character length on an attribute
+</h3>
+
+<p>For a <code>password</code> attribute, we can check if the password that we're trying to set meets our specified requirements. In this case, we're making sure that it has a minimum length of 8 characters with the <a href="https://guides.rubyonrails.org/active_record_validations.html#length" target="_blank" rel="noopener noreferrer">length</a> helper:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>User</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>validates</span> <span>:username</span><span>,</span> <span>presence: </span><span>true</span><span>,</span> <span>uniqueness: </span><span>true</span>
+  <span>#validates minimum length of 8 characters</span>
+  <span>validates</span> <span>:password</span><span>,</span> <span>length: </span><span>{</span> <span>minimum: </span><span>8</span> <span>}</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="working-with-validation-errors" href="#working-with-validation-errors">
+  </a>
+  Working with Validation Errors
+</h2>
+
+<p>So how do you handle a validation error? As mentioned earlier, when a validation fails, an exception is raised and an <code>errors</code> collection is generated. </p>
+
+<p>Let's see what happens when we try to create a user account with a password that is less than 8 characters:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>User</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>validates</span> <span>:username</span><span>,</span> <span>presence: </span><span>true</span><span>,</span> <span>uniqueness: </span><span>true</span>
+  <span>validates</span> <span>:password</span><span>,</span> <span>length: </span><span>{</span> <span>minimum: </span><span>8</span> <span>}</span>
+<span>end</span>
+
+<span>user</span> <span>=</span> <span>User</span><span>.</span><span>create</span><span>(</span><span>username: </span><span>admin</span><span>,</span> <span>password: </span><span>"Welcome"</span><span>)</span>
+
+<span>pp</span> <span>user</span>
+
+<span># =&gt; #&lt;User:0x00007fd0cca748e8</span>
+<span># id: nil,</span>
+<span># username: "admin",</span>
+<span># password: "Welcome",</span>
+<span># created_at: nil,</span>
+<span># updated_at: nil&gt; </span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>We get back what appears to be a <code>User</code> instance, but upon closer inspection we see that the <code>id</code> attribute is <code>nil</code>, meaning the <code>User</code> instance wasn't saved to the database. Good to know, but we need to see why exactly this record is invalid. To raise an exception and see more details about the error, we need to append a <a href="https://riptutorial.com/ruby-on-rails/example/9285/activerecord-bang-----methods" target="_blank" rel="noopener noreferrer">bang</a>(!) to our <code>create</code> method:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>User</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>validates</span> <span>:username</span><span>,</span> <span>presence: </span><span>true</span><span>,</span> <span>uniqueness: </span><span>true</span>
+  <span>validates</span> <span>:password</span><span>,</span> <span>length: </span><span>{</span> <span>minimum: </span><span>8</span> <span>}</span>
+<span>end</span>
+
+<span>user</span> <span>=</span> <span>User</span><span>.</span><span>create!</span><span>(</span><span>username: </span><span>admin</span><span>,</span> <span>password: </span><span>"Welcome"</span><span>)</span>
+
+<span># =&gt; ActiveRecord::RecordInvalid (Validation failed: Password is # too short (minimum is 8 characters)) </span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Here we get a <code>RecordInvalid</code> exception, one of many exception subclasses of <code>ActiveRecordError</code>, which itself is a subclass of <code>StandardError</code>. See the list of Active Record exceptions <a href="https://github.com/rails/rails/blob/main/activerecord/lib/active_record/errors.rb" target="_blank" rel="noopener noreferrer">here</a>.</p>
+
+<p><code>RecordInvalid</code> is raised when a record cannot be saved to the database due to a failed validation. In this case, our password was too short.</p>
+
+<p>Remember I mentioned that an errors collection is also generated? Here's how to access it:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>User</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>validates</span> <span>:username</span><span>,</span> <span>presence: </span><span>true</span><span>,</span> <span>uniqueness: </span><span>true</span>
+  <span>validates</span> <span>:password</span><span>,</span> <span>length: </span><span>{</span> <span>minimum: </span><span>8</span> <span>}</span>
+<span>end</span>
+
+<span>user</span> <span>=</span> <span>User</span><span>.</span><span>create!</span><span>(</span><span>username: </span><span>nil</span><span>,</span> <span>password: </span><span>"Welcome"</span><span>)</span>
+<span># =&gt; ActiveRecord::RecordInvalid (Validation failed: Username can't be blank, Password is too short (minimum is 8 characters))</span>
+
+<span>#Accesses an array of error messages from the `errors` object.</span>
+<span>user</span><span>.</span><span>errors</span><span>.</span><span>full_messages</span>
+<span># =&gt; ["Username can't be blank", "Password is too short (minimum is 8 characters)"] </span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Having an easily accessible array of validation errors is useful because we can communicate them to the frontend.</p>
+
+
+<hr>
+
+<p>Going back to our <code>User</code> model, let's add a <code>create</code> <a href="https://guides.rubyonrails.org/active_record_basics.html#crud-reading-and-writing-data" target="_blank" rel="noopener noreferrer">method</a> to create a new user account.<br>
+</p>
+
+<div>
+<pre><code><span>def</span> <span>create</span>
+    <span>#remember to append a "!" to your create method</span>
+    <span>user</span> <span>=</span> <span>User</span><span>.</span><span>create!</span><span>(</span><span>user_params</span><span>)</span>
+    <span>session</span><span>[</span><span>:user_id</span><span>]</span> <span>=</span> <span>user</span><span>.</span><span>id</span>
+    <span>render</span> <span>json: </span><span>user</span><span>,</span> <span>status: :created</span>
+<span>end</span>
+
+<span>private</span>
+
+<span>def</span> <span>user_params</span>
+    <span>params</span><span>.</span><span>permit</span><span>(</span><span>:username</span><span>,</span> <span>:password</span><span>,</span> 
+    <span>:password_confirmation</span><span>)</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Now in the event of a failed validation, in this case a blank username and/or a short password, a <code>RecordInvalid</code> exception will be raised. You can now add some conditional logic to display errors back to the frontend, let's update our <code>create</code> method:<br>
+</p>
+
+<div>
+<pre><code><span>def</span> <span>create</span>
+  <span>begin</span>
+    <span>user</span> <span>=</span> <span>User</span><span>.</span><span>create!</span><span>(</span><span>user_params</span><span>)</span>
+    <span>session</span><span>[</span><span>:user_id</span><span>]</span> <span>=</span> <span>user</span><span>.</span><span>id</span>
+    <span>render</span> <span>json: </span><span>user</span><span>,</span> <span>status: :created</span>
+  <span>rescue</span> <span>ActiveRecord</span><span>::</span><span>RecordInvalid</span> <span>=&gt;</span> <span>exception</span>
+    <span>render</span> <span>json: </span><span>{</span><span>errors: 
+    </span><span>exception</span><span>.</span><span>record</span><span>.</span><span>errors</span><span>.</span><span>full_messages</span><span>},</span> <span>status: 
+    :unprocessable_entity</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In our rescue block, we are passing in the exception as an argument and accessing our errors collection located at <code>exception.record.errors.full_messages</code>. Then we wrap it up in a nice JSON format so that it may be passed to the frontend, with a HTTP status code of <code>422</code> aka <a href="http://www.railsstatuscodes.com/unprocessable_entity.html" target="_blank" rel="noopener noreferrer">Unprocessable Entity</a> using the <code>status:</code> method. You could also just type <code>status: 422</code>, but this is more readable.</p>
+
+<h3>
+  <a name="isnt-there-an-easier-way" href="#isnt-there-an-easier-way">
+  </a>
+  Isn't there an easier way?
+</h3>
+
+<p>You can see how this can get repetitive fast, especially if you're working with multiple models and controllers. You'd have to have the same <code>begin/rescue</code> block in all <code>create</code> actions throughout your controllers just to handle this one exception. Thankfully there's a way to abstract away some of this logic and make your life easier.</p>
+
+<p>In Rails, you'll notice each controller inherits from <code>ApplicationController</code>, and thus inherits all of its methods. We can take advantage of this by moving the logic for handling a <code>RecordInvalid</code> exception up to <code>ApplicationController</code>, but we'll do it a little differently this time:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>ApplicationController</span> <span>&lt;</span> <span>ActionController</span><span>::</span><span>API</span>
+   <span>#rescue_from takes an exception class, and an exception </span>
+   <span>#handler method</span>
+   <span>rescue_from</span> <span>ActiveRecord</span><span>::</span><span>RecordInvalid</span><span>,</span> <span>with: 
+   :unprocessable_entity_response</span>
+
+   <span>private</span>
+
+   <span>def</span> <span>unprocessable_entity_response</span><span>(</span><span>exception</span><span>)</span>
+     <span>render</span> <span>json: </span><span>{</span><span>errors: 
+     </span><span>exception</span><span>.</span><span>record</span><span>.</span><span>errors</span><span>.</span><span>full_messages</span><span>},</span> <span>status: 
+     :unprocessable_entity</span>
+   <span>end</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Instead of a begin/rescue block, we'll use the <a href="https://edgeapi.rubyonrails.org/classes/ActiveSupport/Rescuable/ClassMethods.html" target="_blank" rel="noopener noreferrer">rescue_from</a> method, which takes an exception class, and an exception handler specified by a trailing <code>with:</code> option containing the name of an exception handler method. In this case we created a private class method called <code>unprocessable_entity_response</code>. So, when the specified exception is raised, <code>rescue_from</code> will pass the exception object to the exception handler specified in the <code>with:</code> option.</p>
+
+<h2>
+  <a name="on-the-frontend" href="#on-the-frontend">
+  </a>
+  On the frontend...
+</h2>
+
+<p>Displaying validation errors on the frontend is as simple as getting them through a fetch request and using conditional rendering to display them to a user when a validation error occurs.</p>
+
+<p>This is an example from an account sign up form that I made previously using React:<br>
+</p>
+
+<div>
+<pre><code><span>function</span> <span>SignupForm</span><span>()</span> <span>{</span>
+    <span>const</span> <span>[</span><span>username</span><span>,</span> <span>setUsername</span><span>]</span> <span>=</span> <span>useState</span><span>(</span><span>""</span><span>)</span>
+    <span>const</span> <span>[</span><span>password</span><span>,</span> <span>setPassword</span><span>]</span> <span>=</span> <span>useState</span><span>(</span><span>""</span><span>)</span>
+    <span>const</span> <span>[</span><span>passwordConfirmation</span><span>,</span> <span>setPasswordConfirmation</span><span>]</span> <span>=</span> 
+    <span>useState</span><span>(</span><span>""</span><span>)</span>
+
+   <span>//Any validation errors that are returned will be stored </span>
+   <span>in</span> <span>state</span><span>...</span>
+    <span>const</span> <span>[</span><span>errors</span><span>,</span> <span>setErrors</span><span>]</span> <span>=</span> <span>useState</span><span>([])</span>
+
+    <span>async</span> <span>function</span> <span>handleSubmit</span><span>(</span><span>e</span><span>)</span> <span>{</span>
+        <span>e</span><span>.</span><span>preventDefault</span><span>();</span>
+
+        <span>const</span> <span>res</span> <span>=</span> <span>await</span> <span>fetch</span><span>(</span><span>"</span><span>/api/signup</span><span>"</span><span>,</span> <span>{</span>
+            <span>method</span><span>:</span> <span>"</span><span>POST</span><span>"</span><span>,</span>
+            <span>headers</span><span>:</span> <span>{</span>
+                <span>"</span><span>Content-Type</span><span>"</span><span>:</span> <span>"</span><span>application/json</span><span>"</span>
+            <span>},</span>
+            <span>body</span><span>:</span> <span>JSON</span><span>.</span><span>stringify</span><span>({</span>
+                <span>username</span><span>,</span>
+                <span>password</span><span>,</span>
+                <span>password_confirmation</span><span>:</span> <span>passwordConfirmation</span>
+            <span>})</span>
+        <span>})</span>
+
+        <span>if </span><span>(</span><span>res</span><span>.</span><span>ok</span><span>)</span> <span>{</span>
+            <span>const</span> <span>user</span> <span>=</span> <span>await</span> <span>res</span><span>.</span><span>json</span><span>()</span>
+            <span>setUser</span><span>(</span><span>user</span><span>)</span>
+        <span>}</span> <span>else</span> <span>{</span>
+            <span>//if the fetch request fails and returns an error </span>
+            <span>object</span><span>,</span> <span>the</span> <span>errors</span> <span>will</span> <span>be</span> <span>stored</span> <span>in</span> <span>state</span> <span>using</span> 
+            <span>setErrors</span>
+            <span>const</span> <span>err</span> <span>=</span> <span>await</span> <span>res</span><span>.</span><span>json</span><span>()</span>
+            <span>setErrors</span><span>(</span><span>err</span><span>.</span><span>errors</span><span>)</span>
+        <span>}</span>
+
+    <span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In the return statement, you can use conditional rendering to display the errors if they are present in the <code>errors</code> array in state:<br>
+</p>
+
+<div>
+<pre><code><span>return </span><span>(</span>
+   <span>{</span><span>errors</span><span>.</span><span>map</span><span>((</span><span>err</span><span>)</span> <span>=&gt;</span> <span>&lt;</span><span>Alert</span> <span>key</span><span>=</span><span>{</span><span>err</span><span>}</span> <span>severity</span><span>=</span><span>"</span><span>error</span><span>"</span><span>&gt;</span><span>{</span><span>err</span><span>}</span><span>&lt;</span><span>/Alert&gt;</span><span>)</span><span>}
+</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The result:</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fim3.ezgif.com%2Ftmp%2Fezgif-3-c7006e2b64.gif"><img src="data:application/octet-stream;base64," loading="lazy"></a></p>
+
+
+<hr>
+
+<h2>
+  <a name="resources" href="#resources">
+  </a>
+  Resources
+</h2>
+
+<p><a href="https://guides.rubyonrails.org/active_record_validations.html" target="_blank" rel="noopener noreferrer">https://guides.rubyonrails.org/active_record_validations.html</a><br>
+<a href="http://www.railsstatuscodes.com/" target="_blank" rel="noopener noreferrer">http://www.railsstatuscodes.com/</a><br>
+<a href="https://www.rubydoc.info/docs/rails/4.1.7/ActiveRecord/ActiveRecordError" target="_blank" rel="noopener noreferrer">https://www.rubydoc.info/docs/rails/4.1.7/ActiveRecord/ActiveRecordError</a><br>
+<a href="https://ruby-doc.org/core-2.5.1/Exception.html" target="_blank" rel="noopener noreferrer">https://ruby-doc.org/core-2.5.1/Exception.html</a></p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

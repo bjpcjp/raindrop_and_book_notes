@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A Deep Dive into Monte Carlo Tree Search</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A Deep Dive into Monte Carlo Tree Search</h1>
+    <p><strong>URL:</strong> <a href="http://www.moderndescartes.com/essays/deep_dive_mcts">http://www.moderndescartes.com/essays/deep_dive_mcts</a></p>
+    <p><strong>Tags:</strong> algorithms-math, machine-learning, monte-carlo</p>
+    <p><strong>Bookmark ID:</strong> 876769379</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="content">
+	
+
+<p> 2018-05-15</p>
+<p> Tagged: <a href="http://www.moderndescartes.com/essays/tags/machine_learning">machine learning</a>, <a href="http://www.moderndescartes.com/essays/tags/alphago">alphago</a>, <a href="http://www.moderndescartes.com/essays/tags/software_engineering">software engineering</a>, <a href="http://www.moderndescartes.com/essays/tags/popular">popular ⭐️</a></p>
+<hr>
+
+<p><em>(This was originally a sponsor talk given at PyCon 2018.
+Unfortunately there is no video.)</em></p>
+<h2 id="a-brief-history-of-go-ai">A brief history of Go AI</h2>
+<p>The very first Go AIs used multiple modules to handle each aspect of
+playing Go - life and death, capturing races, opening theory, endgame
+theory, and so on. The idea was that by having experts program each
+module using heuristics, the AI would become an expert in all areas of
+the game. All that came to a grinding halt with the introduction of
+Monte Carlo Tree Search (MCTS) around 2008. MCTS is a tree search
+algorithm that dumped the idea of modules in favor of a generic tree
+search algorithm that operated in all stages of the game. MCTS AIs still
+used hand-crafted heuristics to make the tree search more efficient and
+accurate, but they far outperformed non-MCTS AIs. Go AIs then continued
+to improve through a mix of algorithmic improvements and better
+heuristics. In 2016, AlphaGo leapfrogged the best MCTS AIs by replacing
+some heuristics with deep learning models, and <a href="https://deepmind.com/blog/alphago-zero-learning-scratch/">AlphaGoZero</a>
+in 2018 completely replaced all heuristics with learned models.</p>
+<p>AlphaGoZero learns by repeatedly playing against itself, then
+distilling that experience back into the neural network. This
+reinforement learning loop is so robust that it can figure out how to
+play Go starting from random noise. There are two key requirements for
+this loop to work: that the self-play games represent a higher level of
+gameplay than the raw neural network output, and that the training
+process successfully distills this knowledge.</p>
+<p>This essay digs into the “how do you reach a higher level of
+gameplay?” part of the process. Despite replacing all human heuristics,
+AlphaGoZero still uses tree search algorithms at its core. I hope to
+convince you that AlphaGoZero’s success is as much due to this algorithm
+as it is due to machine learning.</p>
+<p>Since this was originally a PyCon talk, I’ll also demonstrate the
+algorithm in Python and show some Python-specific tricks for optimizing
+the implementation, based on my experience working on <a href="https://github.com/tensorflow/minigo">MiniGo</a>.</p>
+<h2 id="exploration-and-exploitation">Exploration and Exploitation</h2>
+<p>Let’s start by asking a simpler question: how do you rank submissions
+on Hacker News?</p>
+<p><img src="http://www.moderndescartes.com/static/deep_dive_mcts/hn_screenshot.png" title="Front page of HN"></p>
+<p>There’s a tension between wanting to show the highest rated
+submissions (exploitation), but also wanting to discover the good
+submissions among the firehose of new submissions (exploration). If you
+show the highest rated submissions only, you’ll get a rich-get-richer
+effect where you never discover new stories.</p>
+<p>The canonical solution to this problem is to use Upper Confidence
+Bounds.</p>
+<figure>
+<img src="http://www.moderndescartes.com/static/deep_dive_mcts/hn_screenshot_annotated.png" title="HN ranking = quality + upper confidence bound">
+<figcaption>
+Ranking = Quality + Uncertainty (Q + U)
+</figcaption>
+</figure>
+<p>The idea is simple. Instead of ranking according to estimated rating,
+you add a bonus based on how uncertain you are about the rating to yield
+an upper confidence bound. In this example, the top submission on HN has
+fewer upvotes than the second rank submission, but it’s also newer. So
+it gets a bigger uncertainty bonus. The uncertainty bonus fades over
+time, and that submission will fall in ranking unless it can prove its
+worth with more upvotes.</p>
+<p>This is an instance of the <a href="https://en.wikipedia.org/wiki/Multi-armed_bandit">Multi Armed
+Bandit</a> problem and has a pretty extensive literature if you want to
+learn more.</p>
+<h2 id="uct-upper-confidence-bounds-applied-to-trees">UCT = Upper
+Confidence bounds applied to Trees</h2>
+<p>So how does this help us understand AlphaGoZero? Playing a game has a
+lot in common with the multi-armed bandit problem: when reading into a
+game variation, you want to balance between playing the strongest known
+response, and exploring new variations that could turn out to be good
+moves. So it makes sense that we can reuse the UCB idea.</p>
+<p>This figure from the AlphaGoZero paper lays out the steps.</p>
+<p><img src="http://www.moderndescartes.com/static/deep_dive_mcts/alphago_uct_diagram.png" title="UCT diagram from AGZ paper"></p>
+<ol type="1">
+<li><p>First, we select a new variation to evaluate. This is done by
+recursively picking the move that has highest Q+U score until we reach a
+variation that we have not yet evaluated.</p></li>
+<li><p>Next, we pass the variation to a neural network for evaluation.
+We get back two things: an array of probabilities, indicating the net’s
+preference for each followup move, and a position evaluation.</p>
+<p>Normally, with a UCB algorithm, all of the options have equal
+uncertainty. But in this case, the neural network gives us an array of
+probabilities indicating which followup moves are plausible. Those moves
+get higher uncertainty bonuses, ensuring that our tree search looks at
+those moves first.</p>
+<p>The position evaluation can be returned in one of two ways: in an
+absolute sense, where 1 = black wins, -1 = white wins, or in a relative
+sense, where 1 = player to play is winning; -1 player to play is losing.
+Either way, we’ll have to be careful about what we mean by “maximum Q
+score”; we want to reorient Q so that we’re always picking the best move
+for Black or White when it’s their turn. The Python implementation I
+show will use the absolute sense.</p>
+<p>As a historical note, the first MCTS Go AIs attempted to evaluate
+positions by randomly playing them out to the end and scoring the
+finished game. This is where the Monte Carlo in MCTS comes from. But now
+that we no longer do the MC part of MCTS, MCTS is somewhat of a
+misnomer. So the proper name should really just be UCT search.</p></li>
+<li><p>Finally, we walk back up the game tree, averaging in the the
+position evaluation at each node along the way. The net result is that a
+node’s Q score will be the average of its subtree’s
+evaluations.</p></li>
+</ol>
+<p>This process is repeated however long we’d like; each additional
+search fleshes out the game tree with one new variation. UCT search is a
+neat algorithm because it can be stopped at any time with no wasted
+work, and unlike the <a href="https://en.wikipedia.org/wiki/Minimax">minimax algorithm</a>, UCT
+search is flexible enough to explore widely or deeply as it sees fit.
+For deep, narrow sequences like reading ladders, this flexibility is
+important.</p>
+<h2 id="a-basic-implementation-in-python">A basic implementation in
+Python</h2>
+<p>Let’s start at the top. The following code is a straightforward
+translation of each step discussed above.</p>
+<pre><code>def UCT_search(game_state, num_reads):
+    root = UCTNode(game_state)
+    for _ in range(num_reads):
+        leaf = root.select_leaf()
+        child_priors, value_estimate = NeuralNet.evaluate(leaf.game_state)
+        leaf.expand(child_priors)
+        leaf.backup(value_estimate)
+    return max(root.children.items(),
+               key=lambda item: item[1].number_visits)</code></pre>
+<p>The node class is also pretty straightforward: it has references to
+the game state it represents, pointers to its parent and children nodes,
+and a running tally of evaluation results.</p>
+<pre><code>class UCTNode():
+    def __init__(self, game_state, parent=None, prior=0):
+        self.game_state = game_state
+        self.is_expanded = False
+        self.parent = parent  # Optional[UCTNode]
+        self.children = {}  # Dict[move, UCTNode]
+        self.prior = prior  # float
+        self.total_value = 0  # float
+        self.number_visits = 0  # int</code></pre>
+<p>Step 1 (selection) occurs by repeatedly selecting the child node with
+the largest Q + U score. Q is calculated as the average of all
+evaluations. U is a bit more complex; the important part of the U
+formula is that it has the number of visits in the denominator, ensuring
+that as a node is repeatedly visited, its uncertainty bonus shrinks
+inversely proportional to the number of visits.</p>
+<pre><code>def Q(self) -&gt; float:
+    return self.total_value / (1 + self.number_visits)
+
+def U(self) -&gt; float:
+    return (math.sqrt(self.parent.number_visits)
+        * self.prior / (1 + self.number_visits))
+
+def best_child(self) -&gt; UCTNode:
+    return max(self.children.values(),
+               key=lambda node: node.Q() + node.U())
+
+def select_leaf(self) -&gt; UCTNode:
+    current = self
+    while current.is_expanded:
+        current = current.best_child()
+    return current</code></pre>
+<p>Step 2 (expansion) is pretty straightforward: mark the node as
+expanded and create child nodes to be explored on subsequent
+iterations.</p>
+<pre><code>def expand(self, child_priors):
+    self.is_expanded = True
+    for move, prior in enumerate(child_priors):
+        self.add_child(move, prior)
+
+def add_child(self, move, prior):
+    self.children[move] = UCTNode(
+        self.game_state.play(move), parent=self, prior=prior)</code></pre>
+<p>Step 3 (backup) is also mostly straightforward: increment visit
+counts and add the value estimation to the tally. The one tricky step is
+that the value estimate must be inverted, depending on whose turn it is
+to play. This ensures that the “max” Q value is in fact the best Q from
+the perspective of the player whose turn it is to play.</p>
+<pre><code>def backup(self, value_estimate):
+    current = self
+    while current.parent is not None:
+        current.number_visits += 1
+        current.total_value += (value_estimate *
+            self.game_state.to_play)
+        current = current.parent</code></pre>
+<p>And there we have it - a barebones implementation of UCT search in
+about 50 lines of Python.</p>
+<p>Unfortunately, the basic implementation performs rather poorly. When
+executed with <span>\(10^4\)</span> iterations of
+search, this implementation takes 30 seconds to execute, consuming 2 GB
+of memory. Given that many Go engines commonly execute <span>\(10^5\)</span> or even <span>\(10^6\)</span> searches before selecting a move,
+this is rather poor performance. This implementation has stubbed out the
+gameplay logic and the neural network execution, so the time and space
+shown here represents overhead due purely to search.</p>
+<p>What went wrong? Do we just blame Python for being slow?</p>
+<p>Well, kind of. The problem with the basic implementation is that we
+instantiate hundreds of UCTNode objects, solely for the purpose of
+iterating over them and doing some arithmetic on each node to calculate
+Q and U. Each individual operation is fast, but when we execute
+thousands of Python operations (attribute access, addition,
+multiplication, comparisons) to complete just one child node selection,
+the whole thing inevitably becomes slow.</p>
+<h2 id="optimizing-for-performance-using-numpy">Optimizing for
+performance using NumPy</h2>
+<p>One strategy for minimizing the number of Python operations is to get
+more bang for the buck, by using NumPy.</p>
+<p>The way NumPy works is by executing the same operation across an
+entire vector or matrix of elements. Adding two vectors in NumPy only
+requires one NumPy operation, regardless of the size of the vectors.
+NumPy will then delegate the actual computation to an implementation
+done in C or sometimes even Fortran.</p>
+<pre><code>&gt;&gt;&gt; nodes = [(0.7, 0.1), (0.3, 0.3), (0.4, 0.2)]
+&gt;&gt;&gt; q_plus_u = [_1 + _2 for _1, _2 in nodes]
+&gt;&gt;&gt; q_plus_u
+[0.8, 0.6, 0.6]
+&gt;&gt;&gt; max(range(len(q_plus_u)), key=lambda i: q_plus_u[i])
+0
+
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; q = np.array([0.7, 0.3, 0.4])
+&gt;&gt;&gt; u = np.array([0.1, 0.3, 0.2])
+&gt;&gt;&gt; q_plus_u = q + u
+&gt;&gt;&gt; q_plus_u
+array([0.8, 0.6, 0.6])
+&gt;&gt;&gt; np.argmax(q_plus_u)
+0</code></pre>
+<p>This switch in coding style is an instance of the <a href="https://en.wikipedia.org/wiki/AOS_and_SOA">array of structs vs
+struct of arrays idea</a> which appears over and over in various
+contexts. Row vs.&nbsp;column oriented databases is another place this idea
+pops up.</p>
+<p>So how do we integrate NumPy into our basic implementation? The first
+step is to switch perspectives; instead of having each node knowing
+about its own Q/U statistics, each node now knows about the Q/U
+statistics of its children.</p>
+<pre><code>class UCTNode():
+    def __init__(self, game_state,
+                 move, parent=None):
+        self.game_state = game_state
+        self.move = move
+        self.is_expanded = False
+        self.parent = parent  # Optional[UCTNode]
+        self.children = {}  # Dict[move, UCTNode]
+        self.child_priors = np.zeros(
+            [362], dtype=np.float32)
+        self.child_total_value = np.zeros(
+            [362], dtype=np.float32)
+        self.child_number_visits = np.zeros(
+            [362], dtype=np.float32)</code></pre>
+<p>This already results in huge memory savings. Now, we only add child
+nodes when exploring a new variation, rather than eagerly expanding all
+child nodes. The result is that we instantiate a hundred times fewer
+UCTNode objects, so the overhead there is gone. NumPy is also great
+about packing in the bytes - the memory consumption of a numpy array
+containing 362 float32 values is not much more than 362 * 4 bytes. The
+python equivalent would have a PyObject wrapper around every float,
+resulting in a much larger memory footprint.</p>
+<p>Now that each node no longer knows about its own statistics, we
+create aliases for a node’s statistics by using property getters and
+setters. These allow us to transparently proxy these properties to the
+relevant entry in the parents’ child arrays.</p>
+<pre><code>@property
+def number_visits(self):
+    return self.parent.child_number_visits[self.move]
+
+@number_visits.setter
+def number_visits(self, value):
+    self.parent.child_number_visits[self.move] = value
+
+@property
+def total_value(self):
+    return self.parent.child_total_value[self.move]
+
+@total_value.setter
+def total_value(self, value):
+    self.parent.child_total_value[self.move] = value</code></pre>
+<p>These aliases work for both reading and writing values - as a result,
+the rest of the code stays about the same! There is no sacrifice in code
+clarity to accomodate the numpy perspective switch. As an example, see
+the new implementation of <code>child_U</code> which uses the property
+<code>self.number_visits</code>.</p>
+<pre><code>def child_Q(self):
+    return self.child_total_value / (1 + self.child_number_visits)
+
+def child_U(self):
+    return math.sqrt(self.number_visits) * (
+        self.child_priors / (1 + self.child_number_visits))
+
+def best_child(self):
+    return np.argmax(self.child_Q() + self.child_U())</code></pre>
+<p>They look identical to the original declarations. The only difference
+is that previously, each arithmetic operation only worked on one Python
+float, whereas now, they operate over entire arrays.</p>
+<p>How does this optimized implementation perform?</p>
+<p>When doing the same <span>\(10^4\)</span>
+iterations of search, this implementation runs in <strong>90 MB of
+memory (a 20x improvement) and in 0.8 seconds (a 40x
+improvement)</strong>. In fact, the memory improvement is understated,
+as 20MB of the 90MB footprint is due to the Python VM and imported numpy
+modules. If you let the NumPy implementation run for the full 30 seconds
+that the previous implementation ran for, it completes 300,000
+iterations while consuming 2GB of memory - so <strong>30x more
+iterations in the same time and space</strong>.</p>
+<p>The performance wins here come from eliminating thousands of
+repetitive Python operations and unnecessary objects, and replacing them
+with a handful of NumPy operations operating on compact arrays of
+floats. This requires a perspective shift in the code, but with
+judicious use of <span data-cites="property">@property</span> decorators, readability is
+preserved.</p>
+<h2 id="other-components-of-a-uct-implementation">Other components of a
+UCT implementation</h2>
+<p>The code I’ve shown so far is pretty barebones. A UCT implementation
+must handle these additional details:</p>
+<ul>
+<li>Disallowing illegal moves.</li>
+<li>Detecting when a variation represents a completed game, and scoring
+according to the actual rules, rather than the network’s
+approximation.</li>
+<li>Imposing a move limit to prevent arbitrarily long games</li>
+</ul>
+<p>Additionally, the following optimizations can be considered:</p>
+<ul>
+<li>Subtree reuse</li>
+<li>Pondering (thinking during the opponent’s time)</li>
+<li>Parent-Q initialization</li>
+<li>Tuning relative weights of Q, U</li>
+<li>Virtual Losses</li>
+</ul>
+<p>Of these optimizations, one of them is particularly simple yet
+incredibly important to AlphaGoZero’s operation - virtual losses.</p>
+<h3 id="virtual-losses">Virtual losses</h3>
+<p>Until now, I’ve been talking about the Python parts of UCT search.
+But there’s also a neural network to consider, and one of the things we
+know about the GPUs that execute the calculations is that GPUs like big
+batches. Instead of passing in just one variation at a time, it would be
+preferable to pass in 8 or 16 variations at once.</p>
+<p>Unfortunately, the algorithms as implemented above are 100%
+deterministic, meaning that repeated calls to <code>select_leaf()</code>
+will return the same variation each time!</p>
+<p>To fix this requires five changed lines:
+<img src="http://www.moderndescartes.com/static/deep_dive_mcts/virtual_losses_diff.png" title="changes needed for virtual losses"></p>
+<p>This change causes <code>select_leaf</code> to pretend as if it
+already knew the evaluation results (a loss) and apply it to every node
+it passes through. This causes subsequent calls to
+<code>select_leaf</code> to avoid this exact variation, instead picking
+the second most interesting variation. After submitting a batch of
+multiple variations to the neural network, the virtual loss is reverted
+and replaced with the actual evaluation.</p>
+<p>(The 5 line change is a bit of an oversimplification; implementing
+virtual losses requires handling a bunch of edge cases, like “what if
+the same leaf gets selected twice despite the virtual loss” and “tree
+consists of one root node”)</p>
+<p>The overall scaling made possible by virtual losses is something like
+50x. This number comes from significantly increased throughput on the
+GPU (say, 8x throughput). Also, now that leaf selection and leaf
+evaluation have been completely decoupled, you can actually scale up the
+number of GPUs - the match version of AlphaGoZero actually had 4 TPUs
+cooperating on searching a single game tree. So that’s another 4x. And
+finally, since the CPU and GPU/TPU are now executing in parallel instead
+of in series, you can think of it as another 2x speedup.</p>
+<h2 id="summary">Summary</h2>
+<p>I’ve shown how and why UCT search works, a basic Python
+implementation as well as an optimized implementation using NumPy, and
+another optimization that gives smoother integration of UCT search with
+multiple GPUs/TPUs.</p>
+<p>Hopefully you’ll agree with me that UCT search is a significant
+contribution to AlphaGoZero’s reinforcement learning loop.</p>
+<p>The example code shown here is available in a <a href="https://github.com/brilee/python_uct">git repo</a>. You can see
+the productionized version with all the optimizations in the <a href="https://github.com/tensorflow/minigo">Minigo codebase</a> - see
+<code>mcts.py</code> and <code>strategies.py</code> in particular.</p>
+
+
+    </div></div>
+  </div>
+</body>
+</html>

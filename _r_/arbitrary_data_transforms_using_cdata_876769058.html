@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Arbitrary Data Transforms Using cdata</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Arbitrary Data Transforms Using cdata</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/arbitrary-data-transforms-using-cdata">https://www.r-bloggers.com/arbitrary-data-transforms-using-cdata</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876769058</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					<div><p>
+[This article was first published on  <strong><a href="http://www.win-vector.com/blog/2017/11/arbitrary-data-transforms-using-cdata/"> R – Win-Vector Blog</a></strong>, and kindly contributed to <a href="https://www.r-bloggers.com/" rel="nofollow">R-bloggers</a>].  (You can report issue about the content on this page <a href="https://www.r-bloggers.com/contact-us/">here</a>)
+</p><hr><p>Want to share your content on R-bloggers?<a href="https://www.r-bloggers.com/add-your-blog/" rel="nofollow"> click here</a> if you have a blog, or <a href="http://r-posts.com/" rel="nofollow"> here</a> if you don't.
+</p></div>
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.1-->
+
+	<p>We have been writing a lot on higher-order data transforms lately:</p>
+<ul>
+<li><a href="http://winvector.github.io/FluidData/RowsAndColumns.html" rel="nofollow" target="_blank">Coordinatized Data: A Fluid Data Specification</a></li>
+<li><a href="http://winvector.github.io/FluidData/DataWranglingAtScale.html" rel="nofollow" target="_blank">Data Wrangling at Scale</a></li>
+<li><a href="http://winvector.github.io/FluidData/FluidData.html" rel="nofollow" target="_blank">Fluid Data</a></li>
+<li><a href="http://www.win-vector.com/blog/2017/10/big-data-transforms/" rel="nofollow" target="_blank">Big Data Transforms</a>.</li>
+</ul>
+<p><a href="https://github.com/WinVector/cdata" rel="nofollow" target="_blank"><img src="https://i2.wp.com/www.win-vector.com/blog/wp-content/uploads/2017/11/cdata-1.png?resize=300%2C300" alt="Cdata" title="cdata.png" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/www.win-vector.com/blog/wp-content/uploads/2017/11/cdata-1.png?resize=300%2C300&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></a></p>
+<p>What I want to do now is “write a bit more, so I finally feel I have been concise.”</p>
+
+<p>The <a href="https://winvector.github.io/cdata/" rel="nofollow" target="_blank"><code>cdata</code></a> <a href="https://www.r-project.org/" rel="nofollow" target="_blank"><code>R</code></a> package supplies general data transform operators.</p>
+<ul>
+<li>The whole system is based on two primitives or operators <a href="https://winvector.github.io/cdata/reference/moveValuesToRowsD.html" rel="nofollow" target="_blank"><code>cdata::moveValuesToRowsD()</code></a> and <a href="https://winvector.github.io/cdata/reference/moveValuesToColumnsD.html" rel="nofollow" target="_blank"><code>cdata::moveValuesToColumnsD()</code></a>.</li>
+<li>These operators have pivot, un-pivot, one-hot encode, transpose, moving multiple rows and columns, and many other transforms as simple special cases.</li>
+<li>It is easy to write many different operations in terms of the <code>cdata</code> primitives.</li>
+<li>These operators can work-in memory or at big data scale (with databases and Apache Spark; for big data we use the <a href="https://winvector.github.io/cdata/reference/moveValuesToRowsN.html" rel="nofollow" target="_blank"><code>cdata::moveValuesToRowsN()</code></a> and <a href="https://winvector.github.io/cdata/reference/moveValuesToColumnsN.html" rel="nofollow" target="_blank"><code>cdata::moveValuesToColumnsN()</code></a> variants).</li>
+<li>The transforms are controlled by a control table that itself is a diagram of or picture of the transform.</li>
+</ul>
+<p>We will end with a quick example, centered on pivoting/un-pivoting values to/from more than one column at the same time.</p>
+<p>Suppose we had some sales data supplied as the following table:</p>
+<table>
+<thead>
+<tr>
+<th>SalesPerson</th>
+<th>Period</th>
+<th>BookingsWest</th>
+<th>BookingsEast</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>2017Q1</td>
+<td>100</td>
+<td>175</td>
+</tr>
+<tr>
+<td>a</td>
+<td>2017Q2</td>
+<td>110</td>
+<td>180</td>
+</tr>
+<tr>
+<td>b</td>
+<td>2017Q1</td>
+<td>250</td>
+<td>0</td>
+</tr>
+<tr>
+<td>b</td>
+<td>2017Q2</td>
+<td>245</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Suppose we are interested in adding a derived column: which region the salesperson made most of their bookings in.</p>
+<div>
+<pre>library("cdata")</pre>
+</div>
+<pre>## Loading required package: wrapr</pre>
+<div>
+<pre>library("seplyr")</pre>
+</div>
+<div>
+<pre>d &lt;- d  %.&gt;% 
+  dplyr::mutate(., BestRegion = ifelse(BookingsWest &gt; BookingsEast, 
+                                       "West",
+                                       ifelse(BookingsEast &gt; BookingsWest, 
+                                              "East", 
+                                              "Both")))</pre>
+</div>
+<p>Our notional goal is (as part of a larger data processing plan) to reformat the data a thin/tall table or a <a href="https://en.wikipedia.org/wiki/Semantic_triple" rel="nofollow" target="_blank">RDF-triple</a> like form. Further suppose we wanted to copy the derived column into every row of the transformed table (perhaps to make some other step involving this value easy).</p>
+<p>We can use <a href="https://winvector.github.io/cdata/reference/moveValuesToRowsD.html" rel="nofollow" target="_blank"><code>cdata::moveValuesToRowsD()</code></a> to do this quickly and easily.</p>
+<p>First we design what is called a transform control table.</p>
+<div>
+<pre>cT1 &lt;- data.frame(Region = c("West", "East"),
+                  Bookings = c("BookingsWest", "BookingsEast"),
+                  BestRegion = c("BestRegion", "BestRegion"),
+                  stringsAsFactors = FALSE)
+print(cT1)</pre>
+</div>
+<pre>##   Region     Bookings BestRegion
+## 1   West BookingsWest BestRegion
+## 2   East BookingsEast BestRegion</pre>
+<p>In a control table:</p>
+<ul>
+<li>The column names specify new columns that will be formed by <code>cdata::moveValuesToRowsD()</code>.</li>
+<li>The values specify where to take values from.</li>
+</ul>
+<p>This control table is called "non trivial" as it does not correspond to a simple pivot/un-pivot (those tables all have two columns). The control table is a picture of of the mapping we want to perform.</p>
+<p>An interesting fact is <code>cdata::moveValuesToColumnsD(cT1, cT1, keyColumns = NULL)</code> is a picture of the control table as a one-row table (and this one row table can be mapped back to the original control table by <code>cdata::moveValuesToRowsD()</code>, these two operators work roughly as inverses of each other; though <code>cdata::moveValuesToRowsD()</code> operates on rows and <a href="https://winvector.github.io/cdata/reference/moveValuesToColumnsD.html" rel="nofollow" target="_blank"><code>cdata::moveValuesToColumnsD()</code></a> operates on groups of rows specified by the keying columns).</p>
+<p>The mnemonic is:</p>
+<ul>
+<li><code>cdata::moveValuesToColumnsD()</code> converts arbitrary grouped blocks of rows that look like the control table into many columns.</li>
+<li><code>cdata::moveValuesToRowsD()</code> converts each row into row blocks that have the same shape as the control table.</li>
+</ul>
+<p>Because pivot and un-pivot are fairly common needs <code>cdata</code> also supplies functions that pre-populate the controls tables for these operations (<a href="https://winvector.github.io/cdata/reference/buildPivotControlTableD.html" rel="nofollow" target="_blank"><code>buildPivotControlTableD()</code></a> and <a href="https://winvector.github.io/cdata/reference/buildUnPivotControlTable.html" rel="nofollow" target="_blank"><code>buildUnPivotControlTable()</code></a>).</p>
+<p>To design any transform you draw out the control table and then apply one of these operators (you can pretty much move from any block structure to any block structure by chaining two or more of these steps).</p>
+<p>We can now use the control table to supply the same transform for each row.</p>
+<div>
+<pre>d  %.&gt;% 
+  dplyr::mutate(., 
+                Quarter = substr(Period,5,6),
+                Year = as.numeric(substr(Period,1,4)))  %.&gt;% 
+  dplyr::select(., -Period)  %.&gt;% 
+  moveValuesToRowsD(., 
+                    controlTable = cT1, 
+                    columnsToCopy = c('SalesPerson', 
+                                      'Year', 
+                                      'Quarter')) %.&gt;% 
+  arrange_se(., c('SalesPerson', 'Year', 'Quarter', 'Region'))  %.&gt;% 
+  knitr::kable(.)  </pre>
+</div>
+<table>
+<thead>
+<tr>
+<th>SalesPerson</th>
+<th>Year</th>
+<th>Quarter</th>
+<th>Region</th>
+<th>Bookings</th>
+<th>BestRegion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>2017</td>
+<td>Q1</td>
+<td>East</td>
+<td>175</td>
+<td>East</td>
+</tr>
+<tr>
+<td>a</td>
+<td>2017</td>
+<td>Q1</td>
+<td>West</td>
+<td>100</td>
+<td>East</td>
+</tr>
+<tr>
+<td>a</td>
+<td>2017</td>
+<td>Q2</td>
+<td>East</td>
+<td>180</td>
+<td>East</td>
+</tr>
+<tr>
+<td>a</td>
+<td>2017</td>
+<td>Q2</td>
+<td>West</td>
+<td>110</td>
+<td>East</td>
+</tr>
+<tr>
+<td>b</td>
+<td>2017</td>
+<td>Q1</td>
+<td>East</td>
+<td>0</td>
+<td>West</td>
+</tr>
+<tr>
+<td>b</td>
+<td>2017</td>
+<td>Q1</td>
+<td>West</td>
+<td>250</td>
+<td>West</td>
+</tr>
+<tr>
+<td>b</td>
+<td>2017</td>
+<td>Q2</td>
+<td>East</td>
+<td>0</td>
+<td>West</td>
+</tr>
+<tr>
+<td>b</td>
+<td>2017</td>
+<td>Q2</td>
+<td>West</td>
+<td>245</td>
+<td>West</td>
+</tr>
+</tbody>
+</table>
+<p>Notice we were able to easily copy the extra <code>BestRegion</code> values into all the correct rows.</p>
+<p>It can be hard to figure out how to specify such a transformation in terms of pivots and un-pivots. However, as we have said: by drawing control tables one can easily design and manage fairly arbitrary data transform sequences (often stepping through either a denormalized intermediate where all values per-instance are in a single row, or a thin intermediate like the triple-like structure we just moved into).</p>
+
+
+		
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.1-->
+							</div></div>
+  </div>
+</body>
+</html>

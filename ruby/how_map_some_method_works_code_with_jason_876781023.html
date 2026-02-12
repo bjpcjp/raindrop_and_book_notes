@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How map(&:some_method) works - Code with Jason</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How map(&:some_method) works - Code with Jason</h1>
+    <p><strong>URL:</strong> <a href="https://www.codewithjason.com/how-map-works">https://www.codewithjason.com/how-map-works</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876781023</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+			<h2>The map method’s shorthand syntax</h2>
+<p>One of the most common uses of <code>map</code> in Ruby is to take an object and call some method on the object, like this.</p>
+<pre><code>[1, 2, 3].map { |number| number.to_s }</code></pre>
+<p>To save us from redundancy, Ruby has a shorthand version which is functionally equivalent to the above.</p>
+<pre><code>[1, 2, 3].map(&amp;:to_s)</code></pre>
+<p>The shorthand version is nice but its syntax is a little mysterious. In this post I’ll explain why the syntax is what it is.</p>
+<h2>Passing symbols as blocks</h2>
+<p>Let’s leave the world of <code>map</code> for a moment and deal with a “regular” method.</p>
+<p>I’m going to show you a method which takes a block and then demonstrate four different ways of passing a block to that method.</p>
+<p><i>Side note: if you’re not too familiar with Proc objects yet, I would suggest reading my other posts on <a href="https://www.codewithjason.com/ruby-procs/">how Proc objects work</a> and <a href="https://www.codewithjason.com/ampersand-ruby-block/">what the &amp; in front of &amp;block means</a> before continuing.</i></p>
+<h3>First way: using a normal block</h3>
+<p>You’ve of course seen this way before. We call <code>my_method</code> and pass a regular block to it.</p>
+<pre><code>def my_method(&amp;block)
+  block.call("hello")
+end
+
+puts my_method { |value| value.upcase } # outputs "HELLO"</code></pre>
+<h3>Second way: using Proc.new</h3>
+<p>If we wanted to, we could instead pass our block using <code>Proc.new</code>. Since <code>my_method</code> takes a block and not a <code>Proc</code> object, we would have to prefix <code>Proc.new</code> with an ampersand to convert the <code>Proc</code> object into a block.</p>
+<p>(If you didn’t know, prefixing an expression with <code>&amp;</code> will convert a proc to a block and a block to a proc. See <a href="https://www.codewithjason.com/ampersand-ruby-block/">this post</a> for more details on how that works.)</p>
+<pre><code>def my_method(&amp;block)
+  block.call("hello")
+end
+
+puts my_method(&amp;Proc.new { |value| value.upcase })</code></pre>
+<p>There would never really be a practical reason to express the syntax this way, but I wanted to show that it’s possible. This “second way” example will also connect the first way and the third way.</p>
+<h3>Third way: using to_proc</h3>
+<p>All symbols respond to a method called <code>to_proc</code> which returns a <code>Proc</code> object. If we do <code>:upcase.to_proc</code>, it gives us a <code>Proc</code> object that’s equivalent to what we would have gotten by doing <code>Proc.new { |value| value.upcase }</code>.</p>
+<pre><code>def my_method(&amp;block)
+  block.call("hello")
+end
+
+puts my_method(&amp;:upcase.to_proc)</code></pre>
+<h3>Fourth way: passing a symbol</h3>
+<p>I’ll show one final way. When Ruby sees an argument that’s prefixed with an ampersand, it attempts to call <code>to_proc</code> on the argument. So our <code>to_proc</code> on <code>&amp;:upcase.to_proc</code> is actually superfluous. We can just pass <code>&amp;:upcase</code> all by itself.</p>
+<pre><code>def my_method(&amp;block)
+  block.call("hello")
+end
+
+puts my_method(&amp;:upcase)</code></pre>
+<p>What ultimately gets passed is the <code>Proc</code> object that results from calling <code>:upcase.to_proc</code>. Actually, more precisely, what gets passed is the <i>block</i> that results from calling <code>&amp;:upcase.to_proc</code>, since the <code>&amp;</code> converts the <code>Proc</code> object to a block.</p>
+<h2>Passing symbols to map</h2>
+<p>With the understanding of the above, you now know that this:</p>
+<pre><code>[1, 2, 3].map(&amp;:to_s)</code></pre>
+<p>Is equivalent to this:</p>
+<pre><code>[1, 2, 3].map(&amp;:to_s.to_proc)</code></pre>
+<p>Which is equivalent to this:</p>
+<pre><code>[1, 2, 3].map(&amp;Proc.new { |number| number.to_s })</code></pre>
+<p>Which, finally, is equivalent to this:</p>
+<pre><code>[1, 2, 3].map { |number| number.to_s }</code></pre>
+<p>So, contrary to the way it may seem, there aren’t two different “versions” of the <code>map</code> method. The shorthand syntax is owing to the way that Ruby passes <code>Proc</code> objects.</p>
+<h2>Takeaways</h2>
+<ul>
+<li>When an argument is prefixed with <code>&amp;</code>, Ruby attempts to call <code>to_proc</code> on it.</li>
+<li>All symbols respond to the <code>to_proc</code> method.</li>
+<li>There aren’t two different versions of the <code>map</code> method. The shorthand syntax is possible due to the two points above.</li>
+</ul>
+					</div></div>
+  </div>
+</body>
+</html>

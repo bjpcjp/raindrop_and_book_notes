@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Let’s Take a Deep Dive Into the CSS Contain Property</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Let’s Take a Deep Dive Into the CSS Contain Property</h1>
+    <p><strong>URL:</strong> <a href="https://css-tricks.com/lets-take-a-deep-dive-into-the-css-contain-property">https://css-tricks.com/lets-take-a-deep-dive-into-the-css-contain-property</a></p>
+    <p><strong>Tags:</strong> css</p>
+    <p><strong>Bookmark ID:</strong> 876774814</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p>
+	DigitalOcean provides cloud products for every stage of your journey. Get started with <a href="https://try.digitalocean.com/css-tricks/?utm_medium=content_acq&amp;utm_source=css-tricks&amp;utm_campaign=global_brand_ad_en&amp;utm_content=conversion_prearticle_everystage">$200 in free credit!</a>
+</p><div>
+
+          
+          
+<p>Compared to the past, modern browsers have become really efficient at rendering the tangled web of HTML, CSS, and JavaScript code a typical webpage provides. It takes a mere <em>milliseconds</em> to render the code we give it into something people can use.</p>
+
+
+
+<p>What could we, as front-end developers, do to actually help the browser be even faster at rendering? There are the usual best practices that are so easy to forget with our modern tooling — especially in cases where we may not have as much control over generated code. We could keep our CSS under control, for instance, with fewer and simpler selectors. We could keep our HTML under control; keep the tree flatter with fewer nodes, and especially fewer children. We could keep our JavaScript under control; while being careful with our HTML and CSS manipulations.</p>
+
+
+
+<p>Actually, modern frameworks such as Vue and React do help out a good bit with that last part.</p>
+
+
+
+<p>I would like to explore a CSS property that we could use to help the browser figure out what calculations it can reduce in priority or maybe even skip altogether.</p>
+
+
+
+<p>This property is called <code>contain</code>. Here is how <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/contain" rel="noopener">MDN </a>defines this property:</p>
+
+
+
+<blockquote><p>The <strong><code>contain</code></strong> CSS property allows an author to indicate that an element and its contents are, as much as possible, independent of the rest of the document tree. This allows the browser to recalculate layout, style, paint, size, or any combination of them for a limited area of the DOM and not the entire page, leading to obvious performance benefits.</p></blockquote>
+
+
+
+<p>A simple way to look at what this property provides is that we can give hints to the browser about the relationships of the various elements on the page. Not necessarily smaller elements, such as paragraphs or links, but larger groups such as sections or articles. Essentially, we’re talking about container elements that hold content — even content that can be dynamic in nature. Think of a typical SPA where dynamic content is being inserted and removed throughout the page, often independent of other content on the page.</p>
+
+
+
+<p>A browser cannot predict the future of layout changes to the webpage that can happen from JavaScript inserting and removing content on the page. Even simple things as inserting a class name to an element, animating a DOM element, or just getting the dimensions of an element can cause a reflow and repaint of the page. Such things can be expensive and should be avoided, or at least be reduced as much as possible.</p>
+
+
+
+<p>Developers can sort of predict the future because they’ll know about possible future changes based on the UX of the page design, such as when the user clicks on a button it will call for data to be inserted in a div located somewhere in the current view. We know that’s a possibility, but the browser does not. We also know that there’s a distinct possibility that inserting data in that div will not change anything visually, or otherwise, for other elements on the page.</p>
+
+
+
+<p>Browser developers have spent a good amount of time optimizing the browser to handle such situations. There are various ways of helping the browser be more efficient in such situations, but more direct hints would be helpful. The contain property gives us a way to provide these hints.</p>
+
+
+<h3 id="the-various-ways-to-contain">The various ways to contain</h3>
+
+
+<p>The <strong><code>contain</code></strong> property has three values that can be used individually or in combination with one another: <code>size</code>, <code>layout</code>, and <code>paint</code>. It also has two shorthand values for common combinations: <code>strict</code> and <code>content</code>. Let’s cover the basics of each.</p>
+
+
+
+<p>Please keep in mind that there are a number of rules and edge cases for each of these that are <a href="https://drafts.csswg.org/css-contain/" rel="noopener">covered in the spec</a>. I would imagine these will not be of much concern in most situations. Yet, if you get an undesired result, then a quick look at the spec might be handy.</p>
+
+
+
+<p>There is also a <code>style</code> containment type in the spec that this article will not cover. The reason being that the <code>style</code> containment type is considered of little value at this time and is currently at-risk of being removed from the spec.</p>
+
+
+<h4 id="size-containment">Size containment</h4>
+
+
+<p><code>size</code> containment is actually a simple one to explain. When a container with this containment is involved in the layout calculations, the browser can skip quite a bit because it ignores the children of that container. It is expected the container will have a set height and width; otherwise, it collapses, and that is the only thing considered in layout of the page. It is treated as if it has no content whatsoever.</p>
+
+
+
+<p>Consider that descendants can affect their container in terms of size, depending on the styles of the container. This has to be considered when calculating layout; with <code>size</code> containment, it most likely will not be considered. Once the container’s size has been resolved in relation to the page, then the layout of its descendants will be calculated.</p>
+
+
+
+<p><code>size</code> containment doesn’t really provide much in the way of optimizations. It is usually combined with one of the other values.</p>
+
+
+
+<p>Although, one benefit it could provide is helping with JavaScript that alters the descendants of the container based on the size of the container, such as a container query type situation. In some circumstances, altering descendants based on the container’s size can cause the container to change size after the change was done to the descendants. Since a change in the container’s size can trigger another change in the descendants you could end up with a loop of changes. <code>size</code> containment can help prevent that loop.</p>
+
+
+
+<p>Here’s a totally contrived example of this resizing loop concept:</p>
+
+
+
+
+
+
+
+<p>In this example, clicking the start button will cause the red box to start growing, based on the size of the purple parent box, plus five pixels. As the purple box adjusts in size, a resize observer tells the red square to again resize based on the size of the parent. This causes the parent to resize again and so on. The code stops this process once the parent gets above 300 pixels to prevent the infinite loop.</p>
+
+
+
+<p>The reset button, of course, puts everything back into place.</p>
+
+
+
+<p>Clicking the checkbox “set size containment” sets different dimensions and the <code>size</code> containment on the purple box. Now when you click on the start button, the red box will resize itself based on the width of the purple box. True, it overflows the parent, but the point is that it only resizes the one time and stops; there’s no longer a loop.</p>
+
+
+
+<p>If you click on the resize container button, the purple box will grow wider. After the delay, the red box will resize itself accordingly. Clicking the button again returns the purple box back to its original size and then the red box will resize again.</p>
+
+
+
+<p>While it is possible to accomplish this behavior without use of the containment, you will miss out on the benefits. If this is a situation that can happen often in the page the containment helps out with page layout calculations. When the descendants change internal to the containment, the rest of the page behaves as if the changes never happened.</p>
+
+
+<h4 id="layout-containment">Layout containment</h4>
+
+
+<p><code>layout</code> containment tells the browser that external elements neither affect the internal layout of the container element, nor does the internal layout of the container element affect external elements. So when the browser does layout calculations, it can assume that the various elements that have the layout containment won’t affect other elements. This can lower the amount of calculations that need to be done.</p>
+
+
+
+<p>Another benefit is that related calculations could be delayed or lowered in priority if the container is off-screen or obscured. An example the spec provides is:</p>
+
+
+
+<blockquote><p>[…] for example, if the containing box is near the end of a block container, and you’re viewing the beginning of the block container</p></blockquote>
+
+
+
+<p>The container with <code>layout</code> containment becomes a containing box for <code>absolute</code> or <code>fixed</code> position descendants. This would be the same as applying a <code>relative</code> position to the container. So, keep that in mind how the container’s descendants may be affected when applying this type of containment.</p>
+
+
+
+<p>On a similar note, the container gets a new stacking context, so <code>z-index</code> can be used the same as if a <code>relative</code>, <code>absolute</code>, or <code>fixed</code> position was applied. Although, setting the <code>top</code>, <code>right</code>, <code>bottom</code>, or <code>left</code> properties has no effect on the container.</p>
+
+
+
+<p>Here’s a simple example of this:</p>
+
+
+
+
+
+
+
+<p>Click the box and <code>layout</code> containment is toggled. When <code>layout</code> containment is applied, the two purple lines, which are absolute positioned, will shift to inside the purple box. This is because the purple box becomes a containing block with the containment. Another thing to note is that the container is now stacked on top of the green lines. This is because the container now has a new stacking context and follows those rules accordingly.</p>
+
+
+<h4 id="paint-containment">Paint containment</h4>
+
+
+<p><code>paint</code> containment tells the browser none of the children of the container will ever be painted outside the boundaries of the container’s box dimensions. This is similar to placing <code>overflow: hidden;</code> on the container, but with a few differences.</p>
+
+
+
+<p>For one, the container gets the same treatment as it does under <code>layout</code> containment: it becomes a containing block with its own stacking context. So, having positioned children inside <code>paint</code> containment will respect the container in terms of placement. If we were to duplicate the <code>layout</code> containment demo above but use <code>paint</code> containment instead, the outcome would be much the same. The difference being that the purple lines would not overflow the container when containment is applied, but would be clipped at the container’s <code>border-box</code>.</p>
+
+
+
+<p>Another interesting benefit of <code>paint</code> containment is that the browser can skip that element’s descendants in paint calculations if it can detect that the container itself is not visible within the viewport. If the container is not in the viewport or obscured in some way, then it’s a guarantee that its descendants are not visible as well. As an example, think of a nav menu that normally sits off-screen to the left of the page and it slides in when a button is clicked. When that menu is in its normal state off-screen, the browser just skips trying to paint its contents.</p>
+
+
+<h3 id="containments-working-together">Containments working together</h3>
+
+
+<p>These three containments provide different ways of influencing parts of rendering calculations performed by the browser. <code>size</code> containment tells the browser that this container should not cause positional shifting on the page when its contents change. <code>layout</code> containment tells the browser that this container’s descendants should not cause layout changes in elements outside of its container and vice-versa. <code>paint</code> containment tells the browser that this container’s content will never be painted outside of the container’s dimensions and, if the container is obscured, then don’t bother painting the contents at all.</p>
+
+
+
+<p>Since each of these provide different optimizations, it would make sense to combine some of them. The spec actually allows for that. For example, we could use <code>layout</code> and <code>paint</code> together as values of the contain property like this:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt">.el {
+  contain: layout paint;
+}</code></pre>
+
+
+
+<p>Since this is such an obvious thing to do, the spec actually provides two shorthand values:</p>
+
+
+
+<figure><table><thead><tr><th><strong>Shorthand</strong></th><th><strong>Longhand</strong></th></tr></thead><tbody><tr><td><code>content</code></td><td><code>layout paint</code></td></tr><tr><td><code>strict</code></td><td><code>layout paint size</code></td></tr></tbody></table></figure>
+
+
+
+<p>The <code>content</code> value will be the most common to use in a web project with a number of dynamic elements, such as large multiple containers that have content changing over time or from user activity.</p>
+
+
+
+<p>The <code>strict</code> value would be useful for containers that have a defined size that will never change, even if the content changes. Once in place, it’ll stay the intended size. A simple example of that is a div that contains third-party external advertising content, at industry-defined dimensions, that has no relation to anything else on the page DOM-wise.</p>
+
+
+<h3 id="performance-benefits">Performance benefits</h3>
+
+
+<p>This part of the article is tough to explain. The problem is that there isn’t much in the way of <em>visual</em>s about the performance benefits. Most of the benefits are behind-the-scenes optimizations that help the browser decide what to do on a layout or paint change.</p>
+
+
+
+<p>As an attempt to show the <code>contain</code>&nbsp;property’s performance benefits, I made a simple example that changes the <code>font-size</code> on an element with several children. This sort of change would normally trigger a re-layout, which would also lead to a repaint of the page. The example covers the contain values of <code>none</code>, <code>content</code>, and <code>strict</code>.</p>
+
+
+
+
+
+
+
+<p>The radio buttons change the value of the contain <code>property</code> being applied to the purple box in the center. The “change font-size” button will toggle the <code>font-size</code> of the contents of the purple box by switching classes. Unfortunately, this class change is also a potential trigger for re-layout. If you’re curious, <a href="https://gist.github.com/paulirish/5d52fb081b3570c81e3a" rel="noopener">here is a list of situations in JavaScript</a> and then a similar <a href="https://csstriggers.com/" rel="noopener">list for CSS</a> that trigger such layout and paint calculations. I bet there’s more than you think.</p>
+
+
+
+<p>My totally unscientific process was to select the contain type, start a performance recording in Chome’s developer tools, click the button, wait for the <code>font-size</code> change, then stop the recording after another second or so. I did this three times for each containment type to be able to compare multiple recordings. The numbers for this type of comparison are in the low milliseconds each, but there’s enough of a difference to get a feel for the benefits. The numbers could potentially be quite different in a more real-world situation.</p>
+
+
+
+<p>But there are a few things to note other than just the raw numbers.</p>
+
+
+
+<p>When looking through the recording, I would find the relevant area in the timeline and focus there to select the task that covers the change. Then I would look at the event log of the task to see the details. The logged events were: recalculate style, layout, update layer tree, paint, and composite layers. Adding the times of all those gives us the total time of the task.</p>
+
+
+
+<figure><img data-recalc-dims="1" fetchpriority="high" decoding="async" width="861" height="217" src="data:application/octet-stream;base64," alt="DevTools showing set time at 27.9 milliseconds which is the same as the total time to recalculate styles." srcset="data:application/octet-stream;base64, 861w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>The event log with no containment.</figcaption></figure>
+
+
+
+<p>One thing to note for the two containment types&nbsp;is that&nbsp;the paint event was logged twice. I’ll get back to that in a moment.</p>
+
+
+
+<figure><img data-recalc-dims="1" decoding="async" width="851" height="224" src="data:application/octet-stream;base64," alt="DevTools showing set time at 13.8 milliseconds which is the same as the total time to recalculate styles." srcset="data:application/octet-stream;base64, 851w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"></figure>
+
+
+<h4 id="completing-the-task-at-hand">Completing the task at hand</h4>
+
+
+<p>Here are the total times for the three containment types, three runs each:</p>
+
+
+
+<figure><table><thead><tr><th>Containment</th><th>Run 1</th><th>Run 2</th><th>Run 3</th><th>Average</th></tr></thead><tbody><tr><td><code>none</code></td><td>24 ms</td><td>33.8 ms</td><td>23.3 ms</td><td>27.03 ms</td></tr><tr><td><code>content</code></td><td>13.2 ms</td><td>9 ms</td><td>9.2 ms</td><td>10.47 ms</td></tr><tr><td><code>strict</code></td><td>5.6 ms</td><td>18.9 ms</td><td>8.5 ms</td><td>11 ms</td></tr></tbody></table></figure>
+
+
+
+<p>The majority of the time was spent in layout. There were spikes here and there throughout the numbers, but remember that these are unscientific anecdotal results. In fact, the second run of <code>strict</code> containment had a much higher result than the other two runs; I just kept it in because such things do happen in the real world. Perhaps the music I was listening to at the time changed songs during that run, who knows. But you can see that the other two runs were much quicker.</p>
+
+
+
+<p>So, by these numbers you can start to see that the <code>contain</code> property helps the browser render more efficiently. Now imagine my one small change being multiplied over the many changes made to the DOM and styling of a typical dynamic web page.</p>
+
+
+
+<p>Where things get more interesting is in the details of the paint event.</p>
+
+
+<h3 id="layout-once-paint-twice">Layout once, paint twice</h3>
+
+
+<p>Stick with me here. I promise it will make sense.</p>
+
+
+
+<p>I’m going to use the demo above as the basis for the following descriptions. If you wish to follow along then go to the full version of the demo and open the DevTools. Note that you have to open up the details of the “frame” and not the “main” timeline once you run the performance tool to see what I’m about to describe.</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="863" height="121" src="data:application/octet-stream;base64," alt="Showing frame details open and main details closed in DevTools." srcset="data:application/octet-stream;base64, 863w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>Showing frame details open and main details closed in DevTools</figcaption></figure>
+
+
+
+<p>I’m actually taking screenshots from the “fullpage” version since DevTools works better with that version. That said, the regular “full” version should give roughly the same idea.</p>
+
+
+
+<p>The paint event only fired once in the event log for the task that had no containment at all. Typically, the event didn’t take too long, ranging from 0.2 ms to 3.6 ms. The deeper details is where it gets interesting. In those details, it notes that the area of paint was the entire page. In the event log, if you hover on the paint event, DevTools will even highlight the area of the page that was painted. The dimensions in this case will be whatever the size of your browser viewport happens to be. It will also note the layer root of the paint.</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="848" height="265" src="data:application/octet-stream;base64," alt="Showing DevTools paint calculation of 0.7 milliseconds." srcset="data:application/octet-stream;base64, 848w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>Paint event details</figcaption></figure>
+
+
+
+<p>Note that the page area to the left in the image is highlighted, even outside of the purple box. Over to the right, are the dimensions of the paint to the screen. That’s roughly the size of the viewport in this instance. For a future comparison, note the <code>#document</code> as the layer root.</p>
+
+
+
+<p>Keep in mind that browsers have the concept of layers for certain elements to help with painting. Layers are usually for elements that may overlap each other due to a new stacking context. An example of this is the way applying <code>position: relative;</code>&nbsp;and <code>z-index: 1;</code> to an element will cause the browser to create that element as a new layer. The contain property has the same effect.</p>
+
+
+
+<p>There is a section in DevTools called “rendering” and it provides various tools to see how the browser renders the page. When selecting the checkbox named “Layer borders” we can see different things based on the containment. When the containment is none then you should see no layers beyond the typical static web page layers. Select <code>content</code> or <code>strict</code> and you can see the purple box get converted to its own layer and the rest of the layers for the page shift accordingly.</p>
+
+
+
+<figure><img loading="lazy" decoding="async" width="1137" height="279" src="data:application/octet-stream;base64," alt="" srcset="data:application/octet-stream;base64, 1137w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 1024w, data:application/octet-stream;base64, 768w, data:application/octet-stream;base64, 1000w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>Layers with no containment</figcaption></figure>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="1006" height="276" src="data:application/octet-stream;base64," alt="" srcset="data:application/octet-stream;base64, 1006w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w, data:application/octet-stream;base64, 1000w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>Layers with containment</figcaption></figure>
+
+
+
+<p>It may be hard to notice in the image, but after selecting <code>content</code> containment the purple box becomes its own layer and the page has a shift in layers behind the box. Also notice that in the top image the layer line goes across on top of the box, while in the second image the layer line is below the box.</p>
+
+
+
+<p>I mentioned before that both <code>content</code> and <code>strict</code> causes the paint to fire twice. This is because two painting processes are done for two different reasons. In my demo the first event is for the purple box and the second is for the contents of the purple box.</p>
+
+
+
+<p>Typically the first event will paint the purple box and report the dimensions of that box as part of the event. The box is now its own layer and enjoys the benefits that applies.</p>
+
+
+
+<p>The second event is for the contents of the box since they are scrolling elements. As the spec explains; since the stacking context is guaranteed, scrolling elements can be painted into a single GPU layer. The dimensions reported in the second event is taller, the height of the scrolling elements. Possibly even narrower to make room for the scrollbar.</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="788" height="216" src="data:application/octet-stream;base64," alt="" srcset="data:application/octet-stream;base64, 788w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>First paint event with content containment</figcaption></figure>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="772" height="207" src="data:application/octet-stream;base64," alt="" srcset="data:application/octet-stream;base64, 772w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>Second paint event with content containment</figcaption></figure>
+
+
+
+<p>Note the difference in dimensions on the right of both of those images. Also, the layer root for both of those events is <code>main.change</code> instead of the <code>#document</code> seen above. The purple box is a <code>main</code> element, so only that element was painted as opposed as to whole document. You can see the box being highlighted as opposed to the whole page.</p>
+
+
+
+<p>The benefits of this is that normally when scrolling elements come into view, they have to be painted. Scrolling elements in containment have already been painted and don’t require it again when coming into view. So we get some scrolling optimizations as well.</p>
+
+
+
+<p>Again, this can be seen in the demo.</p>
+
+
+
+<p>Back to that Rendering tab. This time, check “Scrolling performance issue” instead. When the containment is set to <code>none</code>, Chrome covers the purple box with an overlay that’s labeled “repaints on scroll.”</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="699" height="209" src="data:application/octet-stream;base64," alt="" srcset="data:application/octet-stream;base64, 699w, data:application/octet-stream;base64, 300w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>DevTools showing “repaints on scroll” with no containment</figcaption></figure>
+
+
+
+<p>If you wish to see this happen live, check the “Paint flashing” option.</p>
+
+
+
+<p><strong>Please note:</strong> if flashing colors on the screen may present an issue for you in some way, please consider not checking the “Paint flashing” option. In the example I just described, not much changes on the page, but if one were to leave that checked and visited other sites, then reactions may be different.</p>
+
+
+
+<p>With paint flashing enabled, you should see a paint indicator covering all the text within the purple box whenever you scroll inside it. Now change the containment to <code>content</code> or <code>strict</code> and then scroll again. After the first initial paint flash it should never reappear, but the scrollbar does show indications of painting while scrolling.</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="551" height="247" src="data:application/octet-stream;base64," alt="" srcset="data:application/octet-stream;base64, 551w, data:application/octet-stream;base64, 300w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>Paint flashing enabled and scrolling with no containment</figcaption></figure>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="614" height="300" src="data:application/octet-stream;base64," alt="" srcset="data:application/octet-stream;base64, 614w, data:application/octet-stream;base64, 300w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>Paint flashing and scrolling with content containment</figcaption></figure>
+
+
+
+<p>Also notice that the “repaints on scroll” overlay is gone on both forms of containment. In this case, containment has given us not only some performance boost in painting but in scrolling as well.</p>
+
+
+<h3 id="an-interesting-accidental-discovery">An interesting accidental discovery</h3>
+
+
+<p>As I was experimenting with the demo above and finding out how the paint and scrolling performance aspects worked, I came across an interesting issue. In one test, I had a simple box in the center of page, but with minimal styling. It was essentially an element that scrolls with lots of text content. I was applying <code>content</code> containment to the container element, but I wasn’t seeing the scrolling performance benefits described above.</p>
+
+
+
+<p>The container was flagged with the “repaints on scroll” overlay and the paint flashing was the same as no containment applied, even though I knew for a fact that <code>content</code> containment was being applied to the container. So I started comparing my simple test against the more styled version I discussed above.</p>
+
+
+
+<p>I eventually saw that if the <code>background-color</code> of the container is transparent, then the containment scroll performance benefits do not happen.</p>
+
+
+
+<p>I ran a similar performance test where I would change the <code>font-size</code> of the contents to trigger the re-layout and repaint. Both tests had roughly the same results, with only difference that the first test had a transparent <code>background-color </code>and the second test had a proper background-color. By the numbers, it looks like the behind-the-scenes calculations are still more performant; only the paint events are different. It appears the element doesn’t become its own layer in the paint calculations with a transparent <code>background-color</code>.</p>
+
+
+
+<p>The first test run only had one paint event in the event log. The second test run had the two paint events as I would expect. Without that background color, it seems the browser decides to skip the layer aspect of the containment. I even found that faking transparency by using the same color as the color behind the element works as well. My guess is if the container’s background is transparent then it must rely on whatever is underneath, making it impossible to separate the container to its own paint layer.</p>
+
+
+
+<p>I made another version of the test demo that changes the <code>background-colo</code>r of the container element from transparent to the same color used for the background color of the body. Here are two screenshots showing the differences when using the various options in the Rendering panel in DevTools.</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="702" height="278" src="data:application/octet-stream;base64," alt="" srcset="data:application/octet-stream;base64, 702w, data:application/octet-stream;base64, 300w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>Rendering panel with transparent <code>background-color</code></figcaption></figure>
+
+
+
+<p>You can see the checkboxes that have been selected and the result to the container. Even with a content containment applied, the box has “repaints on scroll” as well as the green overlay showing painting while scrolling.</p>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="706" height="279" src="data:application/octet-stream;base64," alt="" srcset="data:application/octet-stream;base64, 706w, data:application/octet-stream;base64, 300w" sizes="(min-width: 735px) 864px, 96vw"><figcaption>Rendering panel with <code>background-color</code> applied</figcaption></figure>
+
+
+
+<p>In the second image, you can see that the same checkboxes are selected and a different result to the container. The “repaints on scroll” overlay is gone and the green overlay for painting is also gone. You can see the paint overlay on the scrollbar to show it was active.</p>
+
+
+
+<p><strong>Conclusion:</strong> make sure to apply some form of background color to your container when applying containment to get all the benefits.</p>
+
+
+
+<p>Here’s what I used for the test:</p>
+
+
+
+
+
+
+<h3 id="this-is-the-bottom-of-the-page">This is the bottom of the page</h3>
+
+
+<p>This article has covered the basics of the CSS <code>contain</code> property with its values, benefits, and potential performance gains. There are some excellent benefits to applying this property to certain elements in HTML; which elements need this applied is up to you. At least, that’s what I gather since I’m unaware of any specific guidance. The general idea is apply it to elements that are containers of other elements, especially those with some form of dynamic aspect to them.</p>
+
+
+
+<p>Some possible scenarios: grid areas of a CSS grid, elements containing third-party content, and containers that have dynamic content based on user interaction. There shouldn’t be any harm in using the property in these cases, assuming you aren’t trying to contain an element that does, in fact, rely in some way on another element outside that containment.</p>
+
+
+
+<p><a href="https://caniuse.com/%23feat=css-containment" rel="noopener">Browser support is very strong.</a> Safari is the only holdout at this point. You can still use the property regardless because the browser simply skips over that code without error if it doesn’t understand the property or its value.</p>
+
+
+
+<p>So, feel free to start containing your stuff!</p>
+
+          
+        </div></div>
+  </div>
+</body>
+</html>

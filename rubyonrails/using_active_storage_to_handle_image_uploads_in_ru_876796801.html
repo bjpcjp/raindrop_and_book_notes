@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using Active Storage To Handle Image Uploads In Ruby On Rails</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using Active Storage To Handle Image Uploads In Ruby On Rails</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/awaiszafar14/using-active-storage-to-handle-image-uploads-in-ruby-on-rails-450c">https://dev.to/awaiszafar14/using-active-storage-to-handle-image-uploads-in-ruby-on-rails-450c</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876796801</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1836634" id="article-body">
+            <p><strong>Active Storage</strong> is a framework that handles file uploads, allowing you to store them as attachments locally or on a third-party cloud storage service (like Amazon s3 or Microsoft Azure Storage). It then links those attachments to an Active Record object.</p>
+
+<p>Active Storage isn’t just useful for storing images — it can also generate image representations for non-image uploads, such as videos or PDFs. By combining it with ImageMagick, you can even manipulate image uploads. For now, I just want users to upload a profile picture when they register, and for my app to store that picture locally.</p>
+
+<h2>
+  <a name="setting-up-active-storage" href="#setting-up-active-storage">
+  </a>
+  Setting up Active Storage
+</h2>
+
+<p>To begin implementing Active Storage, I opened up the Rails dating application I had already created. Then, I ran rails active_storage:install. This created a migration file that set up two tables, active_storage_attachments and active_storage_blobs.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F29mb2gm7gbw4otlp57w7.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="800" height="700"></a></p>
+
+<p>Active Storage stores information about each file — such as filename, size, and metadata — in active_storage_blobs. active_storage_attachments is a join table that connects those blobs to a model (in this case, my user model). Active Storage’s polymorphic associations spare me from having to add columns to the models I already created. I used rails db:migrate to run this migration.</p>
+
+<h2>
+  <a name="adding-active-storage-to-a-model" href="#adding-active-storage-to-a-model">
+  </a>
+  Adding Active Storage To A Model
+</h2>
+
+<p>To add an Active Storage association to a model, I added has_one_attached:profile_pic to my user.rb model. If I was storing multiple user images, I would’ve used has_many_attached:image alternatively.</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fa6hoyj6ts6qf3fiieq57.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="752" height="217"></a></p>
+
+<p>Now in user registration_controller.rb file, I added the following code to update method</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fgx150uze075enmzlta20.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="752" height="217"></a></p>
+
+<h2>
+  <a name="configuring-active-storage" href="#configuring-active-storage">
+  </a>
+  Configuring Active Storage
+</h2>
+
+<p>Next, I had to indicate where images would be stored. If I was using Amazon s3 or Google Cloud, this is where I’d declare those services. I chose to store my files locally so in config/storage.yml, I added:</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F113fphub9sr8nyny1xds.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="531" height="112"></a></p>
+
+<p>Then, in config/environments/development.rb, I added config.active_storage.service = :local within Rails.application.configure do:</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fhalap68myefq8eou4hix.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="800" height="64"></a></p>
+
+<h2>
+  <a name="allowing-users-to-upload-on-the-frontend" href="#allowing-users-to-upload-on-the-frontend">
+  </a>
+  Allowing Users To Upload On The Front-End
+</h2>
+
+<p>Finally, I added a file upload field to my pre-existing user registration form. </p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fvfwqo2fjv5agaf2f1rfc.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="800" height="559"></a></p>
+
+<p>I added a new f.label and f.file_field for :profile_pic, which inserted a “Choose File” button within the form. Clicking “Choose File” opens a Finder/File Explorer window where the user can select a profile image on their device.</p>
+
+<h2>
+  <a name="displaying-user-images" href="#displaying-user-images">
+  </a>
+  Displaying User Images
+</h2>
+
+<p>Once the user successfully upload the profile picture, I would display the image as shown below</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fxrh0w9v3kerljug9hzju.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="582" height="90"></a></p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

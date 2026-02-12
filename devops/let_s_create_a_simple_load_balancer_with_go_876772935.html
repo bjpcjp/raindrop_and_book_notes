@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Let's Create a Simple Load Balancer With Go</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Let's Create a Simple Load Balancer With Go</h1>
+    <p><strong>URL:</strong> <a href="https://kasvith.github.io/posts/lets-create-a-simple-lb-go">https://kasvith.github.io/posts/lets-create-a-simple-lb-go</a></p>
+    <p><strong>Tags:</strong> devops, goodreads</p>
+    <p><strong>Bookmark ID:</strong> 876772935</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>
+   Posted 8. November 2019.
+   <strong>10 min read.</strong></p></div><div><p>Load Balancers plays a key role in Web Architecture. They allow distributing load among a set of backends. This makes services more scalable.
+Also since there are multiple backends configured the service become highly available as load balancer can pick up a working server in case of a failure.</p>
+<p>After playing with professional Load Balancers like <a href="https://www.nginx.com/" target="_blank" rel="nofollow noopener noreferrer">NGINX</a> I tried creating a simple Load Balancer for fun.
+I implemented it using <a href="https://golang.org/" target="_blank" rel="nofollow noopener noreferrer">Golang</a>. Go is a modern language which supports concurrency as a first-class citizen.
+Go has a rich standard library which allows writing high-performance applications with fewer lines of codes. It also produces a statically linked single binary for easy distributions.</p>
+<h2 id="how-does-our-simple-load-balancer-work">How does our simple load balancer work</h2>
+<p>Load Balancers have different strategies for distributing the load across a set of backends.</p>
+<p>For example,</p>
+<ul>
+<li><strong>Round Robin</strong> - Distribute load equally, assumes all backends have the same processing power</li>
+<li><strong>Weighted Round Robin</strong> - Additional weights can be given considering the backend's processing power</li>
+<li><strong>Least Connections</strong> - Load is distributed to the servers with least active connections</li>
+</ul>
+<p>For our simple load balancer, we would try implementing the simplest one among these methods, <strong>Round Robin</strong>.</p>
+<figure><img src="https://kasvith.github.io/assets/static/lb-archi.0b1c2c4.b3e35c7510dc44451088756d14739161.png" width="490" alt="A Round Robin Load Balancer" data-old-src="data:image/svg+xml,%3csvg fill='none' viewBox='0 0 490 341' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3cdefs%3e%3cfilter id='__svg-blur-64de35573d79b176fa86f4f68c570e7b'%3e%3cfeGaussianBlur in='SourceGraphic' stdDeviation='40'/%3e%3c/filter%3e%3c/defs%3e%3cimage x='0' y='0' filter='url(%23__svg-blur-64de35573d79b176fa86f4f68c570e7b)' width='490' height='341' xlink:href='data:image/png%3bbase64%2ciVBORw0KGgoAAAANSUhEUgAAAEAAAAAtCAYAAAAeA21aAAAACXBIWXMAAAsSAAALEgHS3X78AAAN50lEQVRo3tWaB1hUVxaAZ6g2UNHYwAZYYqGIXRg7xqxZ01zNupZk17Rvsyb5oibGkt3EEo1iT0wUjQmKRkUhoqKoIApInaENbQDpTZQyAjPzzp5z5z4yDiCYmEDu9/3fue/dO%2b/NOfecc8uMRPInLMePH2dy/vz5HeRyeUh%2bfj5kZGToMjMzBQRaQFCpVNRfExISslti7%2bSByJpB3%2baAULHnsq1LWFiYCcnLly9PqKurA41Go62trRUQePjwYbNQO0eor68HrVYLrX6pg7NeeQcX9zY3AI46M0BQUND4%2b/fvg1qt1lVVVQk1NTXMCGQUUYp10TjUr7q6mkn8nJZG1RrpiHRqBivxxY7OHu3CA3x8fExJpqenO1VWVpJiOlRGKCkpgaioKHJvwDZISUmBtLS0hmsKAeqHBiBjAUly83XIFmRTE3yBfGbv7CHjIWDi4OLRXlKBqUwmO0YGoJFEIwgFBQXg7%2b8Pfn5%2bEBoaCgEBAew6ODgY0GuYQUTFDQ3wGjIJ8UDcDZiMyJBPkbkNBnBu8xCQctnjjTfeWEEhgMpruVICGYKgkeZ5oeGaJPUzgELAY/Lj3obta5DnRAM4ukxp86G3s7OzIQOUlZWN5nFOIcBinKRx3RDDpEiFFJymT3Ie5oipCN6XojQzNkA7SIKmFhYWw6ni5eXVB6e0LExocO/ePW1FRYUOZZNQm9hOsry8XKdQKELJAFNa8IDV7SwEHJHO4sXGjRt7HDlyxM3b29sZcWklrocPHx4lKjgXR7oj0h3paoA1YsNzwBw%2bFZr0HjC0LeO%2bN9JPvBmlvCX9LQ/FCDAhA7yPfIys4qO9irs93VuLbHR0mepJH%2bhrP9q0DUe%2bIzJEvNgR/MHTeSqO8nbkc2QTZzPyGfIBKr8SR/3jfg7Oo37FiBnS1P3m%2bpoYtYuFXM%2bcKnMXT%2bPxKZEGK39ee0t1/XxY5rWTyKnWcCvz2k9hmcG%2bfnHHFpBb90TsEFsu8drDHaUvGsDXwXnqVruhrovwdbZm5pa92sj1B1DWF%2b9dywxgK8GzcUddM6qUkKu%2bCznV2ZBTkw3Z1Vn6enPU6LmLn0kqlbNZYBxfB0zk0g15mZTHpHcC5T5H12mzWPo1M%2b/Pk1DXJr6kKCmp0hC5ISMRWjmRB/0VcaIB5G30rBkITcNTeZ9J/NrR4PndkEGG77ii9GcG%2bFlxckJiiRySi5LqEgsTNMnFSZq0cqUmuSRJk1KSrEkpTdZLEbymfiL4OR1ldne98jJUXsaNIBuLDME6IhsxYMQES4MvZM5HxB7pZHDfhMuByDhuBFdEJpVKsb90DDIWr2dSu1Rq0gfleG4guufMDTPNINbpmcOM3eI7/70sF93Mu%2biaVKogA%2biSixOF2JwYCI69ClGqKIhIC4fw1NsQmR4BdzIiISJVf51UlCig8gJKINn6xcfQMRKj2OyADOYKW/xOIeCAdDHyMLEMmj7PYx8ZILEgQVCWpQghihuwfus62LR7E3zj8zVs2buF1ff/sB%2bOnPEGb0RZmkL9SXkGm9uZgsNnSGyHzWyg39BZkgEjpmH7VCmfLpuKTSpW/IvaGniB1NTMorlk1mxZtmSx1OAZfQymvEcM37N3D5oOrddsf/9FiuMk9AAaTSIhXyHE5cQKinz5L%2bTJBXlePKuLHsChEPB4l0%2bFK7k05D8EJkRXbgSpuWXH5r6/DXfd3rTCpPKO123zoNgS34jUyuDbygcXkUtNEBiufHAzMKpoi9GU52j0fAq9Z5Ceni/NZCEZVX59TEp5IqQUJ9ehYloC84AW453JphD7EWnlqSwJvoUs4puiRQYsRBaz3aCTx7wnWAr3MjMzpymr60srv%2bsUq1JXlmsB8qoACqobk/sAAJsAjRDGFydSHvfm4tKXzwC9xFATDXwsbI9jVE64lrJ6xoM0yKxMbzWqqgy4rQopJgO4t2IzNEc0gK3j6NassFh3iw5dPrudXF6qKgVQFmg0qYUarZIoqNdSPbVQS7I2txIgLLkiiG3xevYazDM/le589dfI7bIrc1hY%2bMV9PyEo%2bdyKy8nnliHLW8ZvGfZffinpzD%2b8rqzpSwpO5Qsi2gRJDcB77iZ8dcg2Q46uM0yeJKYHjpjSLzL1fmn2PTJAvS6tSAuZZQBZ5cAkKk9oCmoAM7U6kGIdDWDPE2wfnl8aG/jkOSZLi6N/e5qlcwA%2buo0SlqPz2Ec2Q7ZDXFu1FH5/nRd7lk8umEVn1hSQARDd1YhUOH7%2bBnj7XoRte49CmDyXjKHJx1C4mVgeTGsDu/4DSXHr1iRQMRR%2bqwGmix4wxNVdSji6uEuXvD1IMmjEOPQK2Zr%2bQ90WkDviQogyfd%2bWsLDsQMnqWYuOVqvvpFcW04jHpN/TRSYXw5VwJZAhAkMVkJBdzTyDcsHxC3dU%2bJkxzq7jrLvZ9Hzsd84%2b8IvyFZEbnq%2bS7/m0Kn73R8jqVrCqKn4Pyl0f5l14bgQZ4G3kTWSFAW/y5EgzxAY0wl/oZSMnv/AkISDtP8K9T2zWw8I0dHWvb3x02/cdhR0HfgDvkxfh5M9hdA/8g2O0pfUAlyNzbtPc3refXT8%2brQ7gM4u58YNP7VzIvkf%2blaXDITcIoFaFmVQJUJ3aempSoS7dr5pGfhuy1YAvkS%2bQNcgqe2e2I2Qrs0EjJ7ZqXt997DKTr2%2b%2b2iEqvYp5QHhCgS40NhtCYrIgPLEAIhIL4Wb8XVBkVWmK1ADRqtoL%2bBFLW7sBffljOvEEOJgvhRslQ8j4yg2KwgAK42qF/CgNFERroChWo8vT1%2bmeLu8Ok1AYg20x%2brrYt1gBtBkaj0xEJnDphryAHCDocNSh4VDU40mOxHpYdOyy7lZSWTlLeqWgVZWDjsA6Q1UGuvRiXT1Nkbf4LNC9e49hhgcevFhwb6BVp32vHlYUil1O73ptLhSGglAQp0OFBM3dSKEyLQSgNB5QUTRMDKujUaA26zbUZKKxsB%2b2CVAQRX3YoegzyADEjku6noEEYWK8jPIgGmA%2bN4BpK06EOltYWLJENuDZybaxqppyGmEyAk%2bGkFOhh%2bpoBKjQsXXADfrwvz/4xKKp9b/hkdisycPIE8YvnDt6LxSFCtq8GAFK4oQieRB479wAJ77eDJdP7GPSZ/8XEHBsF0Re%2bB7irxxnRiHjiJBSf0NFX0Re0kM7Qdk8hJ8Sy2bbO8tsmlgON3VgQYsVG4fhTmy2yAUwvZlUEa3IeVgQl6XOis9W5zQiS61CWX5NXubzuB1gk7NA%2blYX8gAMAeYB9TkRQl5MIKgi/KEk4QrkxQbC3egL6OlBUKG8DpXpoQYeEK33gCeYLZpr6sAV78FXbQ3l2XGe0kkrfujiusTbeszSI1Zjlno3Abtv7f7Wj2xnad7JxvAMwKYpI9zy/ZC9pyx8w0S9AeIpB9Tj6NZDSXw9lMnroTiuHkrleuheEV4Xxdaj4r9QGNd6A/Qf5mY8Epbi2hwxexpz9LilB5s9BTIslVGfsVmgNOSd0VCKBqjNwKyegtBMkKKnphnUSn0/dSrosi%2bJIcBY2AQLMARoj%2bBotCnpyZU3b0oRpykvMPnuV8GST78Nl2w4FCldfyiiOSQk1x4Mb/EcUCxZp0Y2GLgyZtub6qSjh9RJ3vvUSUcOGLGfY3zvQE3iob3F116fIeGHoMRHRnzI7292cJnK1gH8SOwZPvp/5ElwX%2bNQODX3Kb1F3AsMGjW9cTrv2pOmydX9h499mbK6ZSerTm10Imx4MNJQIv4rkdQkHjatyzhvVpd%2bFvFj3L3tbUZH3p4erl0Xvzi1C9VLYn5saNdz1qwicr1Jw16ANkDGLxg8yonurxo8asq8p7b2/pW/BrUwNTZXuvAk3bIHYKyb0XbXACn/iQxXhDK2G%2bw/fJxJGygvfdzUGLN%2brSRl1w6pcvdOqV7ukO7953LW3r1zZ6s%2b3bqx1ePxle%2bxNtZnj5c0cdsWydWlf5e05qexR34bHDhibFv%2bMmR4PC4pPnSwJa/s0NQMJRadMoWFwOv8GPwVLg2h2WH9IydCbf/bYKOp0f95z67nPKdbnfecwTiH%2bM%2bZaXVq1jTr07Onsfo5sW32dKuAeXOsjw536Cz%2bMrSZ/zq0jbOdb4o2IhtwM4QGkDkxA9BByeg2/59QR3NTUzY1nl30qlXphYDAByHXC%2b9fD866fyM424Aco%2btH27B/7okf99GoLsIYfxVZwHnFwUm2HOXnyP/oTBAN4fYrNkO/Wyj06taNtszWcDHAGRLlICQnAiQlgIDoEhUgNAO1UT8GfQbhcS6zROUsEEuu6Bi8F6bH41s0wCtPsBn6o0qvQyvfm1cXGQ61cTEadfQdnSY%2bVofK6QRFvA4S5A0IiI7uJSl0D2OiGqiNjdaQUv9CRZehXI5yOZdLyDP0q0Fsc/YYJIaA4%2bh28x8hi9muLmc0UZFkAJ1WHifcvRoEVw99B8nnz0HMKV%2bIP/0TKM6eAfmZ06DwOwOh3x%2bF%2brgYQOUFhMnWL5ic243iksRDB9l0fOurL91FA%2bAIC6pLgeDz5Rbw3b4N/PfthXN7dkMAyrO7vNAgJ%2bGM106oMzaA/gRYJm0sRTxM7PkiiYzg2A5CIO%2bEDzNAoc8xNx4COgwBAUdXAIrzBMwLiFgn0EPYtaHyGAJayWD6Ryi6NUljxPt27p76lWE7%2bacoZm9mgMzD304CRTxoEuTauvhYIGrjkHiOYZ1f16EhEKGeDJKSBJI/Y0ndt5t5ZNQnq3qWXQpMUd%2b6CTit6RABgRZgfR6EXNMW%2bp2%2b9H/VhZdg5K4iUgAAAABJRU5ErkJggg==' /%3e%3c/svg%3e" data-srcset="/assets/static/lb-archi.0b1c2c4.b3e35c7510dc44451088756d14739161.png 490w" data-src="/assets/static/lb-archi.0b1c2c4.b3e35c7510dc44451088756d14739161.png" srcset="https://kasvith.github.io/assets/static/lb-archi.0b1c2c4.b3e35c7510dc44451088756d14739161.png 490w"><figcaption>A Round Robin Load Balancer</figcaption></figure>
+<h2 id="round-robin-selection">Round Robin Selection</h2>
+<p>Round Robin is simple in terms. It gives equal opportunities for workers to perform tasks in turns.</p>
+<figure><img src="https://kasvith.github.io/assets/static/lb-rr.a901b4a.3b34a78610b7c1e2d22b85f0419700d2.png" width="439" alt="Round Robin Selection on incoming requests" data-old-src="data:image/svg+xml,%3csvg fill='none' viewBox='0 0 439 341' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3cdefs%3e%3cfilter id='__svg-blur-3bacbe173b59bb255eef5470b85be6e2'%3e%3cfeGaussianBlur in='SourceGraphic' stdDeviation='40'/%3e%3c/filter%3e%3c/defs%3e%3cimage x='0' y='0' filter='url(%23__svg-blur-3bacbe173b59bb255eef5470b85be6e2)' width='439' height='341' xlink:href='data:image/png%3bbase64%2ciVBORw0KGgoAAAANSUhEUgAAAEAAAAAyCAYAAADsg90UAAAACXBIWXMAAAsSAAALEgHS3X78AAAKm0lEQVRo3tWaC1BU1xnHL7sQVHylaRRpo7axNZCYdtpOWhvTVp22k2l9tMG2MU6nSTSRTKcxnTiJJob6CEFTExHwiShVE0R5Ex7LQxYQheW5T9hdEAX2ASzv18Lu/fqds2dx0VV3FYflzPzmnHPPuefu%2bd/vfOdxl%2bMeTfC6C9zixYuFAEDrVFZWXmptbYWGhgYrwiPgAqSetampCVQqVU9aWtqLpLGioiKBr6%2bv/fmPI9ORGYgf4s3yQs5TQnx8fFB3dzdYLBZ%2beHiYAG4ygkJCbW3tUdIeJoWzZ8%2b2N/9zJARZgbyMbELWIz9xeEGPJAiQech3kAAnLPDx8Qkmb6O0tPSHRqMRhoaG%2bL6%2bPsrg4CAQ%2bvv7YWBggMZ2SJ6V8QSsP0oEkMlkUeTBZrNZOGPGDHvHyBufj8xE5pDnIrOZNXCPsvPPIE8yE3wC%2bZYDJD/X29t7M/kx5eXlS9ra2sibpB0indPr9dDe3k5EAZPJBNhJ2nkSkzwp6%2b3tJWKQe6gAUqk06gF/72MTLQBReJGrlVNSUoLsApC3T8y6oKAA4uLiIDU1FbKzs%2bHChQuAQwUyMjKguLgY0GpAp9PRIeBgAZGkvYCAgKcxWoI8zVjiEDuyEPkFsm%2bifcJMBwHuOsY2btxIzJNLT08PvN0CWlpaoK6uDtRqNTQ3N1Onp9Vq4caNG7TjXV1d0NPT49QCtmzZMt3Ly8uXvdm7Qcp92G%2bdO9EW4JIA%2bCbJUOHwrQYaDAZi7hbsjJWAYlhHRkasOJ5pmsT2NNazYscprL6ZCRDJnKDXZDt2lwQQi8VUgMTExCAynkkYHR0lswGN7wWpY4f4CTYLHLfPAsuWLfN8AXCM25M%2bOH6TcBh042ygN7oXDHifEdcCuszMzFWkMYlEIggJCfF8AUiIjo4eS69bt27%2b2rVr57nDmjVr5gUHB/vjtEenNfQLk27%2bLguQnJVA488P7idmK3iYB5JxX1pbRNsYhC5u8%2bbNU8MC2I%2bfsAcfzv%2bYxn5zpjtbjt%2b%2bNJ9kAdZynMIgo%2bVJ1XEv5arSQvPq0nfk1aXtxNglcmndjF2Z8osh%2bzK20l4fE%2b%2bdGkMgpeYsLTtRFBZQ1lQy2Gpugca%2bBmjqb3SLxl4tGEEHuarUj0h7Cr1cOM1vbHG3HPk98gJb9BB%2birzINkWTJ4BImSJgQjwnNVSByqgcketlowqDfJTEMp2Uxrb0%2bLwNub3u0M3BmyDWiI6R9kqvSoUz5063P3cFE%2bAltjz/FfIbJoR9xyScFAFylMkCZv6B1a0SUBqVPHaGojbV89puDa/urKeQdAPL13fU8fWmOl5pVNjrjzYPNUOhOifSU3a4bgtQo6ugAsj0Ur6uXQXn0s/Csa%2bOQsrlZLiQHY/5c3Au7Swk5SdCqjiFXrumvgqqdiXYBSjSiqgACxcuWsB2gGQ36s92gP63sYBtypYibzizAoGTgw2Bk4MNgZNOPrAAciqAEr7O/Ar2H9kPUXGR8L/UOIjE%2bNCpL%2bHUxRhIECXA6cRYKNeWgarNiQCLFvuzzt%2bL%2bUwAsin6g5P%2bjgXfyRoCDT1aXtulpmbf0K2leU2nmg4BUv4ohgDxlH9FXmeOIhB5nnnSlcgfmUP5LatHTlhWs9MVkn/OyXb4oZwgcX5ynT0tpWm7E1TcxQmWS5TCufNmujrPezm%2bfbJnXsY85C%2bZiXwX%2bREShPyaCfNj5k2fZYKsZvc%2bxdqZ5d40%2bCmZBgceZBq8zqZBA68DkSp1J2lPaVAI92ZsnQIrwZ9xHDo9thA6swIXQp8gHyI73OBDXBB9nClP2Lo7bQud148W7pmwE9z7new6W2K6vRQemsClcEQeNQJuT/pbnm8BmpLtNG5MfIFTP%2bRmKB9FbJSeom1c7%2b7llDHeU2Mz1JLxu7G0NILzr43g5rvFIW6%2bLIpbUPgefSYHOsnUWQjpRX%2bhce5WzmdAHpNsacrrGW3KNSBtLnM912hpKmgza5L1pivvE2fM9dVECJQxvp4vQLdkLzXZ9sK3gsAoBjCpANqliAygTWqDpJ3hWKavBuBbYEB23HYkNgzC11Z5eb4APZX7qQCmkm2B1qZs0hEL31pu5VslVmirtoKxypY2VFpBV4FIbDHJYxlJk3K8xwx9ahiQn5xah6I9FZ9RATqK/xUIN0UoQA2PneGxg6CryQaTEl2bvhL6NEUwcvMaWFskYGkuo3mjVESvoQh4j2QUBrREAHos/uf1m6YLBXQFez982KItYJIECL9TgBYUwFgNovhoOLxvO5yP3gcppw9CzMFdcDR8ByQcDwdx0gkoy4wDkwIFwrooGhVgSBFDLWDekwvsH0K%2b7/BxxBn2DyN7mBgeYgH6CuiuL4TmykzQVWdDl%2boyGGpFoK/NQasooGW9ajG1hnEWIDsRxXlIcNcHBI33AeW2cU78AIGmq2zjnqTt6CS3%2bwAqQE1lj9D/cZfO/LwmdxYo300FaLv8RiCdBbpwOdSBXt2kwFh%2bf0xyW11jLfq9VuiXHRv7PK46KfB8C9BlraVx5EJO0C89ctqsSeoYVic2I62OmO%2bSZrTgfboh1XlNR8m25fahpYqdNTVWgjdSlo%2bl01/lvDOQ9L/d4hvMJwRz3vwuTqh8hxNe2jC%2bTsornHfhtlsODAzSqeMDjPl/p3Fz2koX5u4ncHH//D3teqjua9oG9HVzqpjHPF8AVQxdDdrEKPgHmm4YOsZwYsK2GNn%2bpm1JN83Xe%2b6cmdPodjc27NVb9ZDeygNcZ%2bkHnJSdBzWnr5waFuBmmP2Ax3OeLYA0zGYBZdv/zSm/%2bJyri/iCUx06iLGN0A3B9H4/X9853541i1rAmX%2bGeJEyUo/WPfwlV7tv91ib4rffnBoCKP67n8bF77ztgg/w8uM4wT1Xa60J8bSN4aoKTrRxw9SwAPHWW19x3%2bO4x3YgH7jB%2b0i4w9DoKsibOp/Hq0I/Gnu9usSLkV15Im1nbo6sMy9H4TK5OfKufJGyPSujoj46gnzz45riYgX5r7/m%2bQKQH0pPcQ8eeMYqwZ2dug5Aias7lcIWO6ZVDKV8fBlileFKUN8K%2bqRL9N8W0N8rzN7wp0kX4Kn7HovvDqUCaI5GBfUVi8FcXWUZqii3DFVKLCPVlRYcyzRtZjFhmOVpObuG95iJeIbUpCi2FBZkvbJuUgWYwbaiLoX66MOBAyVFYK6p4rFDPHYcOktLoF9SBiM1VdBXfg3FqQRyndBbdpWWY12SJ/eMQoMaDCm3BMgOXj/pfoBYwA%2b4O/%2bcOIbftGnky5Ov8cyppQNXbAIMVpTzltpqOPmfUIjcuQPOhX8GsXv3QFzYpzR9PPQTKD1/FsLefRfU36SDVVoDeA8KoBknQJYHCEACMXEhi%2b9g0%2bpVdFrTHIm8wwJu5olAlZYCitRkaMzOhIasTLiekwVKvNaBdcm1zivFgEOBWYDG4yzgvsE%2b96tRgH70AcOkM2gBQ8wKeOLcECumyZsmMcljp2naTMzfVn8UNPVEgEhP8QEuhcYztlkAV3LPWnG8jypkvLm2mh/BzmIMwwyzA%2bPzNUDqIiPQcgMFSDxhPw%2bY7FnApSA/EEbj00u/52tMSxYNiC%2bDSZRtRXgEXIDU47tyc8CUkzXYGHvyZfq9IfmSIPcBVoL/B4Op7PxVFdEyAAAAAElFTkSuQmCC' /%3e%3c/svg%3e" data-srcset="/assets/static/lb-rr.a901b4a.3b34a78610b7c1e2d22b85f0419700d2.png 439w" data-src="/assets/static/lb-rr.a901b4a.3b34a78610b7c1e2d22b85f0419700d2.png" srcset="https://kasvith.github.io/assets/static/lb-rr.a901b4a.3b34a78610b7c1e2d22b85f0419700d2.png 439w"><figcaption>Round Robin Selection on incoming requests</figcaption></figure>
+<p>As shown in the figure about this happens cyclically. But we can't <em>directly</em> use that aren't we?</p>
+<p><strong>What if a backend is down?</strong> We probably don't want to route traffic there.
+So this cannot be directly used unless we put some conditions on it. We need to <strong>route traffic only to backends which are up and running</strong>.</p>
+<h2 id="lets-define-some-structs">Lets define some structs</h2>
+<p>After revising the plan, we know now we want a way to track all the details about a Backend.
+We need to track whether it's alive or dead and also keep track of the Url as well.</p>
+<p>We can simply define a struct like this to hold our backends.</p>
+<div data-language="go"><pre><code><span>type</span> Backend <span>struct</span> <span>{</span>
+  URL          <span>*</span>url<span>.</span>URL
+  Alive        <span>bool</span>
+  mux          sync<span>.</span>RWMutex
+  ReverseProxy <span>*</span>httputil<span>.</span>ReverseProxy
+<span>}</span></code></pre></div>
+<p>Don't worry <strong>I will reason about the fields in the <code>Backend</code></strong>.</p>
+<p>Now we need a way to track all the backends in our load balancer, for that we can simply use a Slice. And also a counter variable.
+We can define it as <strong><code>ServerPool</code></strong></p>
+<div data-language="go"><pre><code><span>type</span> ServerPool <span>struct</span> <span>{</span>
+  backends <span>[</span><span>]</span><span>*</span>Backend
+  current  <span>uint64</span>
+<span>}</span></code></pre></div>
+<h2 id="use-of-the-reverseproxy">Use of the ReverseProxy</h2>
+<p>As we already identified, the sole purpose of the load balancer is to route traffic to different backends and return the results to the original client.</p>
+<p>According to Go's documentation,</p>
+<blockquote>
+<p>ReverseProxy is an HTTP Handler that takes an incoming request and sends it to another server, proxying the response back to the client.</p>
+</blockquote>
+<p><strong>Which is exactly what we want</strong>. There is no need to reinvent the wheel. We can simply relay our original requests through the <code>ReverseProxy</code>.</p>
+<div data-language="go"><pre><code>u<span>,</span> <span>_</span> <span>:=</span> url<span>.</span><span>Parse</span><span>(</span><span>"http://localhost:8080"</span><span>)</span>
+rp <span>:=</span> httputil<span>.</span><span>NewSingleHostReverseProxy</span><span>(</span>u<span>)</span>
+  
+<span>// initialize your server and add this as handler</span>
+http<span>.</span><span>HandlerFunc</span><span>(</span>rp<span>.</span>ServeHTTP<span>)</span></code></pre></div>
+<p>With <code>httputil.NewSingleHostReverseProxy(url)</code> we can initialize a reverse proxy which would relay requests to the passed <code>url</code>. In the above example, all the requests are now passed to localhost:8080 and the results are sent back to the original client. You can find more examples here.</p>
+<p>If we take a look at ServeHTTP method signature, it has the signature of an HTTP handler, that's why we could pass it to the <code>HandlerFunc</code> in <code>http</code>.</p>
+<p>You can find more examples in <a href="https://golang.org/pkg/net/http/httputil/#ReverseProxy" target="_blank" rel="nofollow noopener noreferrer">docs</a>.</p>
+<p>For our simple load balancer we could initiate the <code>ReverseProxy</code> with the associated <code>URL</code> in the <code>Backend</code>, so that <code>ReverseProxy</code> will route our
+requests to the <code>URL</code>.</p>
+<h2 id="selection-process">Selection Process</h2>
+<p>We need to <strong>skip dead backends</strong> during the next pick. But to do anything we need a way to count.</p>
+<p>Multiple clients will connect to the load balancer and when each of them requests a next peer to pass the traffic on race conditions could occur.
+To prevent it we could lock the <code>ServerPool</code> with a <code>mutex</code>. But that would be an overkill, besides we don't want to lock the ServerPool at all.
+We just want to increase the counter by one</p>
+<p>To meet that requirement, the ideal solution is to make this increment atomically. And Go supports that well via <code>atomic</code> package.</p>
+<div data-language="go"><pre><code><span>func</span> <span>(</span>s <span>*</span>ServerPool<span>)</span> <span>NextIndex</span><span>(</span><span>)</span> <span>int</span> <span>{</span>
+  <span>return</span> <span>int</span><span>(</span>atomic<span>.</span><span>AddUint64</span><span>(</span><span>&amp;</span>s<span>.</span>current<span>,</span> <span>uint64</span><span>(</span><span>1</span><span>)</span><span>)</span> <span>%</span> <span>uint64</span><span>(</span><span>len</span><span>(</span>s<span>.</span>backends<span>)</span><span>)</span><span>)</span>
+<span>}</span></code></pre></div>
+<p>In here, we are increasing the current value by one atomically and returns the index by modding with the length of the slice.
+Which means the value always will be between 0 and length of the slice. In the end, we are interested in a particular index, not the total count.</p>
+<h2 id="picking-up-an-alive-backend">Picking up an alive backend.</h2>
+<p>We already know that our requests are routed in a cycle for each backend. All we have to skip dead ones, that's it.</p>
+<p><code>GetNext()</code> always return a value that's capped between 0 and the length of the slice. At any point, we get a next peer and if it's not alive we would have to search through the slice in a cycle.</p>
+<figure><img src="https://kasvith.github.io/assets/static/lb-slice-traverse.93ea44d.9c17a7fc56f9bf6c9e4583c29127aa55.png" width="684" alt="Traverse the slice as a cycle" data-old-src="data:image/svg+xml,%3csvg fill='none' viewBox='0 0 684 173' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3cdefs%3e%3cfilter id='__svg-blur-4afb590bce2d8dc376bace36fa304226'%3e%3cfeGaussianBlur in='SourceGraphic' stdDeviation='40'/%3e%3c/filter%3e%3c/defs%3e%3cimage x='0' y='0' filter='url(%23__svg-blur-4afb590bce2d8dc376bace36fa304226)' width='684' height='173' xlink:href='data:image/png%3bbase64%2ciVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAACm53kpAAAACXBIWXMAAAsSAAALEgHS3X78AAAHxElEQVRYw%2bWXW1Bb1xWGjySw0xmDqakl%2bRYbJ4AdbFMj7OAk03Y6fWgf2odMArE902Q6rUMn04fUSXqJ62amj54%2bpK6N0RHITmxjczFOcNraMUJAHAy6gJEASwLdrwcERghJ6Ohode2jC8KGmbQdP3XPfLPW3mfvrbP%2bvdaeI4p6%2bq0YqUK25VPC7WglyPPIum%2bwVvAYq42t9fxxf%2b1W1ZhEgJIhGfufQtal9lr20%2b07SB3yKiLDt9lFLPKtzIS325p5nnZ7prCAtyfalNSvEL7Jvnsg9eLnYgIMRFD1XyK7kLUUoeY6PPECQA2sz/gN8QD1ZtPfBPUdlwRvtyl5fvLHd/nTeqZgQ6EoP79UKBIdFgiFPxbl5%2b3B/vMEYZ6oKkXeAew/h/5B9CsQMmc3rpGRMfRLcB3Z4xCZV/b9l0VdANSxc2cE9a0oeKtyOTNkT0nxmmvLIoxT7%2bQlqNM/%2bIZLycttRDYjpchWRJzOJikpJ6QI2Y1sSbMJeZZKZZgkvbYEKUuve6LV/uVDASWrrCAbUtUNcVl1Y/IlpAY58j9wSNaY/CtaXtfGE/0iYjnRR/uT1Efn%2bZRvV%2b7/davy5fo2ZU19W/MRtBlq8HSOvHPz0xffvdNe/V7PZ7JTOlXlB323qt7v%2bVx2UnVT9kFvV9Xv%2br%2bo%2bu2XHdUn73by/feRk903ZaT/%2b3v/PMj3VZ/J3sM1p7SqSvIs9VvKl5BKzLZTJ1qb61KnX3VwH7GVDbD5QDNIEHEulcg%2bBYj3XADx3rVoQM5nkVRegFfKzsO3V6b/nwqB%2bvP3eAGUyk2/uHZR8ta1S%2bLjrS3iY9evZiH9oy2XJXWXL0nqLjVJXlOcl9YqG6W1F%2bXSuotySa1SLq1tbpS%2b8alCcrSFlrxxVS4lEJ9Qd%2bUC3z92tUFy/PLfJUcvfiw9fuWc5M12hfitdoXk5x108S/bml6sv/FJCZ9pMpmslM8AihK%2bhgM/RX6W5nUEr28BEH6ElCEVafYhe5DDyG1EhwwivVK%2btqCrXvihcnz9ma6mdc2df1j/QzjNZ4Lixun1/tlXhFiOAp52pOMxOpEryEJ6zmr40u%2b1Jr9B4EmqA8LMoVQfPiSlysrKtp89e7bQYDCaAgEm6PF6/V6vj0nhZXw%2bP2O2WBiPJ%2bV7fb4sfr%2bPsTu9zKB5nhmxRxm9LcIM2yIBvTUyPWxbDIzYlvwDU8aA1vm1X%2bccCugcg9M61yD6gwGNS8uM2FRMxNzBsLYvmbj1X08QdXQx8Rk1E59Wp2zaZ2f7mIj9DjN79zYT6u9l5vt6EHWWhT4VM9mjZyY0TsaksefiN2sdc4Z7ltGh686C7SVbNlPl5eUv3Lp1q3BmZmYB1mjhcBiWlpYgkUhkYZEkl4BwJA5mPweOOQD77EocyFjAAabgOFhmzWBOYwma0E6ClRkG8N0DCI4BzIwihjToT6MNDgDEHiCjy0Sxz5I5GojrhvAHDJA0PICkcTQLGEcgoJ8Ej2UWfJYZJMjjMU1D0LEAk8POwOg1T8HWXRIxtXPnTrFcLi8KBALTJFiO4xLJZJIjkEaGUBwuFApxi4uLHIqRJYL94FyIMzijnNmf4Ew%2bdgVmP3DDTgtn8I1wYz4jZ/QZeMYQg3%2bce%2bge5OJ2FQdePZf0DCGaLICwPjWXDGF/fiUQ1nFx7z0uPNDPxYZ1XFSnyUHLLemGOOf9cc5m9HMOo5ezL8N6zTNg0Tudmk%2bsheIdxZtIBpR3dnYWoABBIgAJPHPy6PMWBQAUAFAAPhsyNhJZhODcAqAAYAkkAIPGbEjwpHyAYZcFjL4RGPMb0Rp4iwKA0T8OKADEHSrMAj1g0ABeLU/Si75HC6yvF1AAgHkcm0cbStuwDlAACA98BSgAYOAQ02t5oggKAK7BcbCN%2bQEFAAwcHGM%2bYjmSCRa9w225Mbdhx3PbtlClpaUlLS0thf9fAjjdA0pTYfG2jUVUSUnJ1ubm5o0oQCBdAksYOEtAn8UhFgVgUQAWA2cx8CxYAiyWAIsCsBg0i0GvAAVgsQRYLAHW6DMihixYAuyEe5DFEmCxBFgsAUSTBUuAxRJgUQAWg14BCsCiACyWAIsCsCjAClAAFkuAxRJgUQDWvsySayIAFp3DPnnj0YZnSQZgBVS0t7dvJHW%2b1iWYyYS1miuEd9YSQCC2EgbHrAvT4IrawB1zI64UURe4lrzgCz/E09XhxWYDiFiQyWUWkShekmBGLDmQPpljBBjHC886BTCFY1OWHEwQmvDAnDsG8%2b4IPHJHeeacixCbTpJLcKFPYSjavGNTMbV3716p3W7P02q1H7tcriabzSZHaIfDkbH0xMQEjc9oj8cjd7vdxNJut4f2ej201eGm75vm6WF7TK6zRmi9LUpAf1ExbEvIv5400BrXV7TOPSjXuAYUOvd9udY1QGvcQ/QDezcdM7fQSfsX8oT1c5qzddGctYtOWHkrjzk6aW62R56YUdEE4rPT3YrkIzU%2bu03P3fkHHe5Vy%2bd7uukFtUoeUnfTIbWKDqvv0lMqHf1Q45Kbhuy0ecjBg77conU2G/stZ1BF0e6yXcXkQ6gKvwUK0t8GeYgo7Wf%2bropyxvJz5pEPHmHaz32WO7YuZyx/lbG8nP0yvyVM752fs6/gsbWrjeXlrF1t3xUxVOx/oQhjL/83pTud3TkRS9gAAAAASUVORK5CYII=' /%3e%3c/svg%3e" data-srcset="/assets/static/lb-slice-traverse.93ea44d.9c17a7fc56f9bf6c9e4583c29127aa55.png 684w" data-src="/assets/static/lb-slice-traverse.93ea44d.9c17a7fc56f9bf6c9e4583c29127aa55.png" srcset="https://kasvith.github.io/assets/static/lb-slice-traverse.93ea44d.9c17a7fc56f9bf6c9e4583c29127aa55.png 684w"><figcaption>Traverse the slice as a cycle</figcaption></figure>
+<p>As shown in the figure above, we want to traverse from next to the entire list, which can be done simply by traversing <code>next + length</code>
+But to pick an index, we want to cap it between slice length. It can be easily done with modding operation.</p>
+<p>After we find a working backend through the search, we mark it as the current one.</p>
+<p>Below you can see the code for the above operation.</p>
+<div data-language="go"><pre><code><span>// GetNextPeer returns next active peer to take a connection</span>
+<span>func</span> <span>(</span>s <span>*</span>ServerPool<span>)</span> <span>GetNextPeer</span><span>(</span><span>)</span> <span>*</span>Backend <span>{</span>
+  <span>// loop entire backends to find out an Alive backend</span>
+  next <span>:=</span> s<span>.</span><span>NextIndex</span><span>(</span><span>)</span>
+  l <span>:=</span> <span>len</span><span>(</span>s<span>.</span>backends<span>)</span> <span>+</span> next <span>// start from next and move a full cycle</span>
+  <span>for</span> i <span>:=</span> next<span>;</span> i <span>&lt;</span> l<span>;</span> i<span>++</span> <span>{</span>
+    idx <span>:=</span> i <span>%</span> <span>len</span><span>(</span>s<span>.</span>backends<span>)</span> <span>// take an index by modding with length</span>
+    <span>// if we have an alive backend, use it and store if its not the original one</span>
+    <span>if</span> s<span>.</span>backends<span>[</span>idx<span>]</span><span>.</span><span>IsAlive</span><span>(</span><span>)</span> <span>{</span>
+      <span>if</span> i <span>!=</span> next <span>{</span>
+        atomic<span>.</span><span>StoreUint64</span><span>(</span><span>&amp;</span>s<span>.</span>current<span>,</span> <span>uint64</span><span>(</span>idx<span>)</span><span>)</span> <span>// mark the current one</span>
+      <span>}</span>
+      <span>return</span> s<span>.</span>backends<span>[</span>idx<span>]</span>
+    <span>}</span>
+  <span>}</span>
+  <span>return</span> <span>nil</span>
+<span>}</span></code></pre></div>
+<h2 id="avoid-race-conditions-in-backend-struct">Avoid Race Conditions in Backend struct</h2>
+<p>There is a serious issue we need to consider. Our <code>Backend</code> structure has a variable which could be
+modified or accessed by different goroutines same time.</p>
+<p>We know there would be more goroutines reading from this rather than writing to it.
+So we have picked <code>RWMutex</code> to serialize the access to the <code>Alive</code>.</p>
+<div data-language="go"><pre><code><span>// SetAlive for this backend</span>
+<span>func</span> <span>(</span>b <span>*</span>Backend<span>)</span> <span>SetAlive</span><span>(</span>alive <span>bool</span><span>)</span> <span>{</span>
+  b<span>.</span>mux<span>.</span><span>Lock</span><span>(</span><span>)</span>
+  b<span>.</span>Alive <span>=</span> alive
+  b<span>.</span>mux<span>.</span><span>Unlock</span><span>(</span><span>)</span>
+<span>}</span>
+
+<span>// IsAlive returns true when backend is alive</span>
+<span>func</span> <span>(</span>b <span>*</span>Backend<span>)</span> <span>IsAlive</span><span>(</span><span>)</span> <span>(</span>alive <span>bool</span><span>)</span> <span>{</span>
+  b<span>.</span>mux<span>.</span><span>RLock</span><span>(</span><span>)</span>
+  alive <span>=</span> b<span>.</span>Alive
+  b<span>.</span>mux<span>.</span><span>RUnlock</span><span>(</span><span>)</span>
+  <span>return</span>
+<span>}</span></code></pre></div>
+<h2 id="lets-load-balance-requests">Lets load balance requests</h2>
+<p>With all the background we created, we can formulate the following simple method to load balance our requests.
+It will only fail when our all backends are offline.</p>
+<div data-language="go"><pre><code><span>// lb load balances the incoming request</span>
+<span>func</span> <span>lb</span><span>(</span>w http<span>.</span>ResponseWriter<span>,</span> r <span>*</span>http<span>.</span>Request<span>)</span> <span>{</span>
+  peer <span>:=</span> serverPool<span>.</span><span>GetNextPeer</span><span>(</span><span>)</span>
+  <span>if</span> peer <span>!=</span> <span>nil</span> <span>{</span>
+    peer<span>.</span>ReverseProxy<span>.</span><span>ServeHTTP</span><span>(</span>w<span>,</span> r<span>)</span>
+    <span>return</span>
+  <span>}</span>
+  http<span>.</span><span>Error</span><span>(</span>w<span>,</span> <span>"Service not available"</span><span>,</span> http<span>.</span>StatusServiceUnavailable<span>)</span>
+<span>}</span></code></pre></div>
+<p>This method can be simply passed as a <code>HandlerFunc</code> to the http server.</p>
+<div data-language="go"><pre><code>server <span>:=</span> http<span>.</span>Server<span>{</span>
+  Addr<span>:</span>    fmt<span>.</span><span>Sprintf</span><span>(</span><span>":%d"</span><span>,</span> port<span>)</span><span>,</span>
+  Handler<span>:</span> http<span>.</span><span>HandlerFunc</span><span>(</span>lb<span>)</span><span>,</span>
+<span>}</span></code></pre></div>
+<h2 id="route-traffic-only-to-healthy-backends">Route traffic only to healthy backends</h2>
+<p>Our current <code>lb</code> has a serious issue. We don't know if a backend is healthy or not. To know this we have to try out a backend and check whether it is alive.</p>
+<p>We can do this in two ways,</p>
+<ul>
+<li><strong>Active</strong>: While performing the current request, we find the selected backend is unresponsive, mark it as down.</li>
+<li><strong>Passive</strong>: We can ping backends on fixed intervals and check status</li>
+</ul>
+<h2 id="actively-checking-for-healthy-backends">Actively checking for healthy backends</h2>
+<p><code>ReverseProxy</code> triggers a callback function, <code>ErrorHandler</code> on any error. We can use that to detect any failure. Here is the implementation</p>
+<div data-language="go"><pre><code>proxy<span>.</span>ErrorHandler <span>=</span> <span>func</span><span>(</span>writer http<span>.</span>ResponseWriter<span>,</span> request <span>*</span>http<span>.</span>Request<span>,</span> e <span>error</span><span>)</span> <span>{</span>
+  log<span>.</span><span>Printf</span><span>(</span><span>"[%s] %s\n"</span><span>,</span> serverUrl<span>.</span>Host<span>,</span> e<span>.</span><span>Error</span><span>(</span><span>)</span><span>)</span>
+  retries <span>:=</span> <span>GetRetryFromContext</span><span>(</span>request<span>)</span>
+  <span>if</span> retries <span>&lt;</span> <span>3</span> <span>{</span>
+    <span>select</span> <span>{</span>
+      <span>case</span> <span>&lt;-</span>time<span>.</span><span>After</span><span>(</span><span>10</span> <span>*</span> time<span>.</span>Millisecond<span>)</span><span>:</span>
+        ctx <span>:=</span> context<span>.</span><span>WithValue</span><span>(</span>request<span>.</span><span>Context</span><span>(</span><span>)</span><span>,</span> Retry<span>,</span> retries<span>+</span><span>1</span><span>)</span>
+        proxy<span>.</span><span>ServeHTTP</span><span>(</span>writer<span>,</span> request<span>.</span><span>WithContext</span><span>(</span>ctx<span>)</span><span>)</span>
+      <span>}</span>
+      <span>return</span>
+    <span>}</span>
+
+  <span>// after 3 retries, mark this backend as down</span>
+  serverPool<span>.</span><span>MarkBackendStatus</span><span>(</span>serverUrl<span>,</span> <span>false</span><span>)</span>
+
+  <span>// if the same request routing for few attempts with different backends, increase the count</span>
+  attempts <span>:=</span> <span>GetAttemptsFromContext</span><span>(</span>request<span>)</span>
+  log<span>.</span><span>Printf</span><span>(</span><span>"%s(%s) Attempting retry %d\n"</span><span>,</span> request<span>.</span>RemoteAddr<span>,</span> request<span>.</span>URL<span>.</span>Path<span>,</span> attempts<span>)</span>
+  ctx <span>:=</span> context<span>.</span><span>WithValue</span><span>(</span>request<span>.</span><span>Context</span><span>(</span><span>)</span><span>,</span> Attempts<span>,</span> attempts<span>+</span><span>1</span><span>)</span>
+  <span>lb</span><span>(</span>writer<span>,</span> request<span>.</span><span>WithContext</span><span>(</span>ctx<span>)</span><span>)</span>
+<span>}</span></code></pre></div>
+<p>In here we leverage the power of closures to design this error handler. It allows us to capture outer variables like server url into our method.
+It will check for existing retry count and if it is less than 3, we again send the same request to the same backend.
+The reason behind this is due to temporary errors the server may reject your requests and it may be available after a short delay(possibly the server ran out of sockets to accept more clients). So we have put a timer to delay the retry for around 10 milliseconds. We increases the retry count with every request.</p>
+<p>After every retry failed, we mark this backend as down.</p>
+<p>Next thing we want to do is attempting a new backend to the same request. We do it by keeping a count of the attempts using the context package. After increasing the attempt count, we pass it back to <code>lb</code> to pick a new peer to process the request.</p>
+<p>Now we can't do this indefinitely, thus we need to check from <code>lb</code> whether the maximum attempts already taken before processing the request further.</p>
+<p>We can simply get the attempt count from the request and if it has exceeded the max count, eliminate the request.</p>
+<div data-language="go"><pre><code><span>// lb load balances the incoming request</span>
+<span>func</span> <span>lb</span><span>(</span>w http<span>.</span>ResponseWriter<span>,</span> r <span>*</span>http<span>.</span>Request<span>)</span> <span>{</span>
+  attempts <span>:=</span> <span>GetAttemptsFromContext</span><span>(</span>r<span>)</span>
+  <span>if</span> attempts <span>&gt;</span> <span>3</span> <span>{</span>
+    log<span>.</span><span>Printf</span><span>(</span><span>"%s(%s) Max attempts reached, terminating\n"</span><span>,</span> r<span>.</span>RemoteAddr<span>,</span> r<span>.</span>URL<span>.</span>Path<span>)</span>
+    http<span>.</span><span>Error</span><span>(</span>w<span>,</span> <span>"Service not available"</span><span>,</span> http<span>.</span>StatusServiceUnavailable<span>)</span>
+    <span>return</span>
+  <span>}</span>
+
+  peer <span>:=</span> serverPool<span>.</span><span>GetNextPeer</span><span>(</span><span>)</span>
+  <span>if</span> peer <span>!=</span> <span>nil</span> <span>{</span>
+    peer<span>.</span>ReverseProxy<span>.</span><span>ServeHTTP</span><span>(</span>w<span>,</span> r<span>)</span>
+    <span>return</span>
+  <span>}</span>
+  http<span>.</span><span>Error</span><span>(</span>w<span>,</span> <span>"Service not available"</span><span>,</span> http<span>.</span>StatusServiceUnavailable<span>)</span>
+<span>}</span></code></pre></div>
+<p>This implementation is recursive.</p>
+<h2 id="use-of-context">Use of context</h2>
+<p><code>context</code> package allows you to store useful data in an Http request.
+We heavily utilized this to track request specific data such as Attempt count and Retry count.</p>
+<p>First, we need to specify keys for the context. It is recommended to use non-colliding integer keys rather than strings. Go provides <code>iota</code> keyword to implement constants incrementally, each containing a unique value. That is a perfect solution defining integer keys.</p>
+<div data-language="go"><pre><code><span>const</span> <span>(</span>
+  Attempts <span>int</span> <span>=</span> <span>iota</span>
+  Retry
+<span>)</span></code></pre></div>
+<p>Then we can retrieve the value as usually we do with a HashMap like follows. The default return value may depend on the use case.</p>
+<div data-language="go"><pre><code><span>// GetAttemptsFromContext returns the attempts for request</span>
+<span>func</span> <span>GetRetryFromContext</span><span>(</span>r <span>*</span>http<span>.</span>Request<span>)</span> <span>int</span> <span>{</span>
+  <span>if</span> retry<span>,</span> ok <span>:=</span> r<span>.</span><span>Context</span><span>(</span><span>)</span><span>.</span><span>Value</span><span>(</span>Retry<span>)</span><span>.</span><span>(</span><span>int</span><span>)</span><span>;</span> ok <span>{</span>
+    <span>return</span> retry
+  <span>}</span>
+  <span>return</span> <span>0</span>
+<span>}</span></code></pre></div>
+<h2 id="passive-health-checks">Passive health checks</h2>
+<p>Passive health checks allow to recover dead backends or identify them. We ping the backends with fixed intervals to check their status.</p>
+<p>To ping, we try to establish a TCP connection. If the backend responses, we mark it as alive. This method can be changed to call a specific endpoint like <code>/status</code> if you like. Make sure to close the connection once it established to reduce the additional load in the server.
+Otherwise, it will try to maintain the connection and it would run out of resources eventually.</p>
+<div data-language="go"><pre><code><span>// isAlive checks whether a backend is Alive by establishing a TCP connection</span>
+<span>func</span> <span>isBackendAlive</span><span>(</span>u <span>*</span>url<span>.</span>URL<span>)</span> <span>bool</span> <span>{</span>
+  timeout <span>:=</span> <span>2</span> <span>*</span> time<span>.</span>Second
+  conn<span>,</span> err <span>:=</span> net<span>.</span><span>DialTimeout</span><span>(</span><span>"tcp"</span><span>,</span> u<span>.</span>Host<span>,</span> timeout<span>)</span>
+  <span>if</span> err <span>!=</span> <span>nil</span> <span>{</span>
+    log<span>.</span><span>Println</span><span>(</span><span>"Site unreachable, error: "</span><span>,</span> err<span>)</span>
+    <span>return</span> <span>false</span>
+  <span>}</span>
+  <span>_</span> <span>=</span> conn<span>.</span><span>Close</span><span>(</span><span>)</span> <span>// close it, we dont need to maintain this connection</span>
+  <span>return</span> <span>true</span>
+<span>}</span></code></pre></div>
+<p>Now we can iterate the servers and mark their status like follows,</p>
+<div data-language="go"><pre><code><span>// HealthCheck pings the backends and update the status</span>
+<span>func</span> <span>(</span>s <span>*</span>ServerPool<span>)</span> <span>HealthCheck</span><span>(</span><span>)</span> <span>{</span>
+  <span>for</span> <span>_</span><span>,</span> b <span>:=</span> <span>range</span> s<span>.</span>backends <span>{</span>
+    status <span>:=</span> <span>"up"</span>
+    alive <span>:=</span> <span>isBackendAlive</span><span>(</span>b<span>.</span>URL<span>)</span>
+    b<span>.</span><span>SetAlive</span><span>(</span>alive<span>)</span>
+    <span>if</span> <span>!</span>alive <span>{</span>
+      status <span>=</span> <span>"down"</span>
+    <span>}</span>
+    log<span>.</span><span>Printf</span><span>(</span><span>"%s [%s]\n"</span><span>,</span> b<span>.</span>URL<span>,</span> status<span>)</span>
+  <span>}</span>
+<span>}</span></code></pre></div>
+<p>To run this periodically we can start a timer in Go. Once a timer created it allows you to listen for the event using a channel.</p>
+<div data-language="go"><pre><code><span>// healthCheck runs a routine for check status of the backends every 20 secs</span>
+<span>func</span> <span>healthCheck</span><span>(</span><span>)</span> <span>{</span>
+  t <span>:=</span> time<span>.</span><span>NewTicker</span><span>(</span>time<span>.</span>Second <span>*</span> <span>20</span><span>)</span>
+  <span>for</span> <span>{</span>
+    <span>select</span> <span>{</span>
+    <span>case</span> <span>&lt;-</span>t<span>.</span>C<span>:</span>
+      log<span>.</span><span>Println</span><span>(</span><span>"Starting health check..."</span><span>)</span>
+      serverPool<span>.</span><span>HealthCheck</span><span>(</span><span>)</span>
+      log<span>.</span><span>Println</span><span>(</span><span>"Health check completed"</span><span>)</span>
+    <span>}</span>
+  <span>}</span>
+<span>}</span></code></pre></div>
+<p>In the above snippet, <code>&lt;-t.C</code> channel will return a value per 20s. <code>select</code> allows to detect this event. <code>select</code> waits until at least one case statement could be executed if there is no <code>default</code> case.</p>
+<p>Finally, run this in a separate goroutine.</p>
+<div data-language="go"><pre><code><span>go</span> <span>healthCheck</span><span>(</span><span>)</span></code></pre></div>
+<!-- ## A little benchmark
+
+After implementing the load balancer, I tried benchmarking on my working machine. This may not be ideal as we
+want dedicated instances to do an actual load testing.
+
+My specs are Core i7, 16GiB Ram, Windows 10 Education.
+
+Test was carried out using Apache JMeter with 5000 concurrent users, 2 loops total 10000 requests.
+
+![JMeter test setup](./images/lets-create-a-load-balancer/bench-jmeter.png)
+
+![JMeter test result(using CLI)](./images/lets-create-a-load-balancer/bench-result.png)
+
+We get around 700 Transactions per second for our simple load balancer, which is not bad at all. -->
+<h2 id="conclusion">Conclusion</h2>
+<p>We covered a lot of stuff in this article.</p>
+<ul>
+<li>Round Robin Selection</li>
+<li>ReverseProxy from the standard library</li>
+<li>Mutexes</li>
+<li>Atomic Operations</li>
+<li>Closures</li>
+<li>Callbacks</li>
+<li>Select Operation</li>
+</ul>
+<p>There is a lot we can do to improve our tiny load balancer.</p>
+<p>For example,</p>
+<ul>
+<li>Use a heap for sort out alive backends to reduce search surface</li>
+<li>Collect statistics</li>
+<li>Implement weighted round-robin/least connections</li>
+<li>Add support for a configuration file</li>
+</ul>
+<p>etc.</p>
+<p>You can find the source code to repository <a href="https://github.com/kasvith/simplelb/" target="_blank" rel="nofollow noopener noreferrer">here</a>.</p>
+<p>Thank you for reading this article 😄</p>
+</div><div><p><img src="https://kasvith.github.io/assets/static/me.e6b6009.37994f20920e4f3b6f1873e260ea641b.jpg" width="180" alt="My Avatar" data-old-src="data:image/svg+xml,%3csvg fill='none' viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3cdefs%3e%3cfilter id='__svg-blur-2bab30cd553928fa513ca0641f2717bd'%3e%3cfeGaussianBlur in='SourceGraphic' stdDeviation='5'/%3e%3c/filter%3e%3c/defs%3e%3cimage x='0' y='0' filter='url(%23__svg-blur-2bab30cd553928fa513ca0641f2717bd)' width='180' height='180' xlink:href='data:image/jpeg%3bbase64%2c/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCABAAEADASIAAhEBAxEB/8QAHQAAAQUBAQEBAAAAAAAAAAAABwAEBQYIAwIBCf/EADUQAAEDAwIEAwYEBwEAAAAAAAECAwQABREGIQcSMWFBUYEIEyJxkaEUJTJCFSMkQ1JUorH/xAAZAQEBAQEBAQAAAAAAAAAAAAACBQABBAP/xAAgEQACAwACAgMBAAAAAAAAAAABAgADEQQTBTESIUEi/9oADAMBAAIRAxEAPwDVNeXCoNq92AV4PKFdM%2bGa9VF6quybDpm7XdxPMmBEdlFP%2bXIgqx9q00yZxB9ojVUfU0luw/lyWFLjSYUlpt9LbqFFJUleM7%2bXbvQq1RxK1hqlwqvN9nvIO4ZbV7lofJCMCoeNFumsdVFEVsPXa5SFuKSnCUqWolSj5AdflUxc%2bGus7a2hcrTs5YV/rgP4%2bYQSRRLqDhMQRiNAkNaNQXmzzG5druc2JJbPMlxp5SSD9d/WtYcDOOytVT4tk1U7EiXANe7Q%2bfhEx3m2wOiTjG3iTtWXIuh9VyXA2zpq7hR2BXDWgfVQxTK/WS6abuCIt1YVFklAdQM%2bGTuCPIjGR4isGBOAzFWA0ifprSoc%2bz7quVrDhda59yWXJ7JXEkOH%2b4ps4Cj3KeUnvmiNShiqucSbc9duHupbfFSVSJNtkNNJH7lltWB9cVY6ZXtbrdnmrjkh1LKykjqDjw71wnBs6BpyYu9mCAwbvfLvK5EfhWUMtrcIASVklW58cJA9TWjYUmPJTzxn2nkeJaWFAfShvwl0s7ZWdTNSgR7%2b6lbbhSklbOAQRkEZOSM42NS%2blNNT4NznTLz%2bAffTJUYchlhLbnuDn9fKB8XQePjv0qXcVsYvsq0g1qEIl3kuobQVuLShA6qWrAHqaCvtE2WFedKN3%2bE%2by9JtiwhamlhfMytWCDjyVgj1og65sUi8Wp429EQ3Ntv%2bkXKaDiEL5hnIO2CM74O9QuurLLXwqu8RaUPz1QkApZbSAXQRkIwAcZ6A56VyrFIff2K3%2bgUz8ly9lRppvgnZltIUlTrshbhP7le%2bUMj0AHpRcqh8EbYqy8PLfbN%2bSKOROfMgKV/0VVfKqIwcBhJLqUYqYqRGRg9KVKlDB7ebQu1XBakIAhPn%2bWQeh68p9Onypi9zFlYbAKyNgTiiRcIbU6I5HfHwKHUdQfAjuKGkkBi4SILq%2bZ9hWDjbm22I9KlcmnrOj0ZV41/YMPsTsFlQPM3yAdMqBzSbhP3J5ESMAVq%2bJRJwEpHUn7Uyfebitc7qiT0GTursBRE05a026HzLIVJdAU4ry8kjsKNFXa2H1Hfd1Lo9mP4MVuFEajsjCGxgd/M%2btd6VKqwGfQkgnfsxVVdQ8QNNWF5bE65tGSjZTLILigfI42B7E0y4x35/T%2bh5T0JwtypCkx21pOCjm6kdwAayeSSSSdzXro4/YPkfU89tvwOCaB1Dx1t0dj8jtkmY54l4hoAeOBuTUfE1Xp/UmJX8TYTKcPMtL6w24D5EHb6UDa5Ox2XVcy2wVefQ/alyPG13KBpE7x%2bc9LE5sPkm56etyS9NukPYZwXQo%2bgBJNfLLxzjJluMzoD7tvRhLMpJAdWB4qQftvmgGiMyg5S2nPff/wBrtR43jK6NO7sXI8g9%2bDMyaqs/FrSdyeS2Zy4a1HA/FtlsfXcD5nFX1C0rQlaFBSVDIIOQR51hitCeznqB%2bZa59mkuKWmFyuMcx/ShWQUjsCM9s0r%2bMEX5LPnVcWOGf//Z' /%3e%3c/svg%3e" data-src="/assets/static/me.e6b6009.37994f20920e4f3b6f1873e260ea641b.jpg" data-srcset="/assets/static/me.e6b6009.37994f20920e4f3b6f1873e260ea641b.jpg 180w"></p><!----><p>
+    Opensource 🧡 <br>
+    Always learning something new 🌗
+  </p></div></div>
+  </div>
+</body>
+</html>

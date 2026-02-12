@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Color Picker with Ruby on Rails 6, Stimulus and Webpacker</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Color Picker with Ruby on Rails 6, Stimulus and Webpacker</h1>
+    <p><strong>URL:</strong> <a href="https://chrislabarge.com/posts/color-picker">https://chrislabarge.com/posts/color-picker</a></p>
+    <p><strong>Tags:</strong> color, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876782673</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+
+
+
+
+
+
+
+<nav>
+  <ul>
+    
+      
+      <li>
+        <a data-list-class="categories">
+          categories
+        </a>
+      </li>
+    
+      
+      <li>
+        <a data-list-class="tags">
+          tags
+        </a>
+      </li>
+    
+  </ul>
+
+  
+    
+
+    
+      
+    
+
+    <ul>
+      
+        <li>
+          <a href="https://chrislabarge.com/categories/tutorial/">
+             tutorial
+            <span>7</span>
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://chrislabarge.com/categories/dev-tools/">
+             dev-tools
+            <span>4</span>
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://chrislabarge.com/categories/review/">
+             review
+            <span>2</span>
+          </a>
+        </li>
+      
+    </ul>
+  
+    
+
+    
+      
+    
+
+    
+  
+</nav>
+
+<div>
+        <p><a href="https://color-picker-demo.herokuapp.com/">Demo Application</a> - Hosted on a Free dyno. (May take 10-20 seconds to wake up)</p>
+<p><a href="https://github.com/chrislabarge/color-picker-demo">Github</a> - Git repo for the hosted application.</p>
+<h2 id="tools">Tools</h2>
+<ul>
+<li><a href="https://github.com/rails/rails">Ruby on Rails 6.0.2.2</a> - Ruby Web Framework</li>
+<li><a href="https://github.com/stimulusjs/stimulus">StimulusJS</a> - A minimal Javascript framework developed by Basecamp.</li>
+<li><a href="https://github.com/rails/webpacker">Webpacker</a> - Rails gem for using Webpack to bundle assets including Javascript modules.</li>
+<li><a href="https://github.com/Simonwep/pickr">Pickr</a> - Color Picker Javascript library.</li>
+</ul>
+<h2 id="set-up">Set Up</h2>
+<p>This tutorial assumes that you have a Rails application with webpacker and stimulus installed (<em>along with some familiarity using each</em>).</p>
+<p>If you are using Rails &gt;= 6.0 version, you can generate the application with the following command.</p>
+<div><pre><code data-lang="bash">rails new sample_app --webpacker<span>=</span>stimulus
+</code></pre></div><p>The demo model we working with is the <code>ColorOption</code>.</p>
+<div><pre><code data-lang="javascript">ColorOption(
+  id<span>:</span> integer,
+  font_color<span>:</span> string,
+  background_color<span>:</span> string,
+  created_at<span>:</span> datetime,
+  updated_at<span>:</span> datetime
+)
+</code></pre></div><p>As you can see above the model has two <code>string</code> columns</p>
+<ul>
+<li><code>font_color: string</code></li>
+<li><code>background_color: string</code></li>
+</ul>
+<p>These will be updated by the Color Picker. The columns can currently be updated using a regular rails form.</p>
+<h4 id="appviewscolor_options_formhtmlhaml-">app/views/color_options/_form.html.haml</h4>
+<div><pre><code data-lang="ruby"><span>=</span> form_with(<span>model</span>: local_assigns<span>[</span><span>:model</span><span>]</span>, <span>local</span>: <span>true</span>) <span>do</span> <span>|</span>f<span>|</span>
+  <span>.</span>field
+    <span>=</span> f<span>.</span>text_field <span>:font_color</span>
+    <span>=</span> f<span>.</span>label <span>:font_color</span>
+  <span>.</span>field
+    <span>=</span> f<span>.</span>text_field <span>:background_color</span>
+    <span>=</span> f<span>.</span>label <span>:background_color</span>
+  <span>.</span>field
+    <span>=</span> f<span>.</span>submit
+</code></pre></div><p><img src="data:application/octet-stream;base64," alt=""></p>
+<p>Pretty standard stuff, now lets get the Color Picker library installed.</p>
+<h2 id="install-with-yarn--webpacker">Install with Yarn &amp; Webpacker</h2>
+<p>Add the Pickr library using <code>yarn</code></p>
+<h4 id="command-line-">Command Line</h4>
+<div><pre><code data-lang="bash">yarn add @simonwep/pickr
+</code></pre></div><p>Afterwords, create a css file to load the module’s styles.</p>
+<h4 id="appjavascriptstylesheetscolor_pickercss-">app/javascript/stylesheets/color_picker.css</h4>
+<div><pre><code data-lang="css"><span>/*Change 'classic' to which ever theme you are using from Pickr*/</span>
+@<span>import</span> <span>'@simonwep/pickr/dist/themes/classic.min.css'</span>;
+
+<span>/*Custom form field style*/</span>
+<span>form</span> .<span>field</span> .<span>pickr</span> {
+  <span>display</span>: <span>inline</span><span>-</span><span>block</span>;
+}
+</code></pre></div><blockquote>
+<blockquote>
+<p><strong>NOTE:</strong> If you do not use a css style path such as <code>app/javascripts/stylesheets/</code> in your build, you can load the the Pickr library styles in the <code>packs</code> file.</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<h4 id="appjavascriptspacksapplicationjs-">app/javascripts/packs/application.js</h4>
+<div><pre><code data-lang="javascript"><span>import</span> <span>'@simonwep/pickr/dist/themes/classic.min.css'</span>;
+</code></pre></div></blockquote>
+</blockquote>
+<h2 id="stimulus-integration">Stimulus Integration</h2>
+<h4 id="appjavascriptcontrollerscolor_picker_controllerjs--">app/javascript/controllers/color_picker_controller.js </h4>
+<div><pre><code data-lang="javascript"><span>import</span> { Controller } from <span>"stimulus"</span>;
+<span>import</span> Pickr from <span>"@simonwep/pickr"</span>;
+<span>import</span> <span>"../stylesheets/color_picker.css"</span>;
+
+<span>export</span> <span>default</span> <span>class</span> <span>extends</span> Controller {
+  <span>static</span> targets <span>=</span> [<span>"picker"</span>, <span>"input"</span>]
+
+  initialize() {
+    <span>this</span>.initPicker();
+  }
+
+  initPicker() {
+    <span>this</span>.picker <span>=</span> Pickr.create({
+      el<span>:</span> <span>this</span>.pickerTarget,
+      theme<span>:</span> <span>'classic'</span>,
+      <span>default</span><span>:</span> <span>this</span>.inputTarget.value,
+
+      components<span>:</span> {
+        preview<span>:</span> <span>true</span>,
+        opacity<span>:</span> <span>true</span>,
+        hue<span>:</span> <span>true</span>,
+
+        interaction<span>:</span> {
+          hex<span>:</span> <span>true</span>,
+          rgba<span>:</span> <span>true</span>,
+          hsla<span>:</span> <span>false</span>,
+          hsva<span>:</span> <span>false</span>,
+          cmyk<span>:</span> <span>false</span>,
+          input<span>:</span> <span>true</span>,
+          clear<span>:</span> <span>false</span>,
+          save<span>:</span> <span>true</span>,
+        },
+      },
+    });
+
+    <span>this</span>.picker.on(<span>'save'</span>, (color, _instance) =&gt; {
+      <span>this</span>.inputTarget.value <span>=</span> color.toHEXA().toString();
+
+      <span>this</span>.picker.hide();
+    });
+  }
+}
+</code></pre></div><p>We load the <code>Pickr</code> class from the node module at the top of the stimulus controller file along with the stylesheet.</p>
+<p><strong>NOTE:</strong> Do NOT load the stylesheet if already imported in <code>app/javascript/packs/application.js</code></p>
+<div><pre><code data-lang="javascript"><span>import</span> Pickr from <span>"@simonwep/pickr"</span>;
+<span>import</span> <span>"../stylesheets/color_picker.css"</span>;
+</code></pre></div><p>We have two stimulus targets.</p>
+<div><pre><code data-lang="javascript"><span>static</span> targets <span>=</span> [<span>"picker"</span>, <span>"input"</span>]
+</code></pre></div><ul>
+<li>
+<p><code>this.pickerTarget</code></p>
+<p>This is the HTML element we will be using to initialize the Picker class with. It will turn the element into a Picker button.</p>
+</li>
+<li>
+<p><code>this.inputTarget</code></p>
+<p>This Is the HTML form input we will fill after a color has been selected/picked.</p>
+</li>
+</ul>
+<p>We use the <code>initialize()</code> stimulus lifecycle function:</p>
+<div><pre><code data-lang="javascript">initialize() {
+  <span>this</span>.initPicker();
+}
+</code></pre></div><p>To call <code>this.initPicker()</code> which contains all of the logic to intialize the Pickr component.</p>
+<p>We set an instance of the Pickr class to <code>this.picker</code> in order to use in the callback.</p>
+<div><pre><code data-lang="javascript">initPicker() {
+  <span>this</span>.picker <span>=</span> Pickr.create(...)
+
+  <span>//ect...
+</span><span></span>}
+</code></pre></div><p>The create settings were provided by the Picker <a href="https://github.com/Simonwep/pickr">README</a> with the exception of setting <code>el</code> and <code>default</code>.</p>
+<div><pre><code data-lang="javascript">el<span>:</span> <span>this</span>.pickerTarget,
+<span>default</span><span>:</span> <span>this</span>.inputTarget.value,
+</code></pre></div><p>This uses the controller’s <code>this.pickerTarget</code> to set the picker element, and the value of <code>this.inputTarget</code> to initialize the Picker with.</p>
+<p>We then use the on <code>save</code> Pickr callback in order to:</p>
+<ul>
+<li>Set the input field’s value</li>
+<li>Hide the widget</li>
+</ul>
+<p>After a user has clicked “Save” on the Color Picker.</p>
+<div><pre><code data-lang="javascript"><span>this</span>.picker.on(<span>"save"</span>, (color, _instance) =&gt; {
+  <span>this</span>.inputTarget.value <span>=</span> color.toHEXA().toString();
+
+  <span>this</span>.picker.hide();
+});
+</code></pre></div><h2 id="final-touches">Final Touches</h2>
+<p>Now all we have to do is update our form partial to utilize the <code>color-picker</code> controller.</p>
+<h4 id="appviewscolor_options_formhtmlhaml--1">app/views/color_options/_form.html.haml</h4>
+<div><pre><code data-lang="ruby"><span>=</span> form_with(<span>model</span>: local_assigns<span>[</span><span>:model</span><span>]</span>, <span>local</span>: <span>true</span>) <span>do</span> <span>|</span>f<span>|</span>
+
+  <span>.</span>field{ <span>data</span>: { <span>controller</span>: <span>"color-picker"</span> } }
+    <span>=</span> f<span>.</span>text_field <span>:font_color</span>, <span>data</span>: { <span>target</span>: <span>"color-picker.input"</span> }
+    <span>%</span>div{ <span>data</span>: { <span>target</span>: <span>"color-picker.picker"</span> } }
+    <span>=</span> f<span>.</span>label <span>:font_color</span>
+
+  <span>.</span>field{ <span>data</span>: { <span>controller</span>: <span>"color-picker"</span> } }
+    <span>=</span> f<span>.</span>text_field <span>:background_color</span>, <span>data</span>: { <span>target</span>: <span>"color-picker.input"</span> }
+    <span>%</span>div{ <span>data</span>: { <span>target</span>: <span>"color-picker.picker"</span> } }
+    <span>=</span> f<span>.</span>label <span>:background_color</span>
+
+  <span>.</span>field
+    <span>=</span> f<span>.</span>submit
+</code></pre></div><p><img src="data:application/octet-stream;base64," alt=""></p>
+
+    </div>
+
+        </div></div>
+  </div>
+</body>
+</html>

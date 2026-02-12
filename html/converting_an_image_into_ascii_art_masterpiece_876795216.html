@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Converting an Image into ASCII Art Masterpiece</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Converting an Image into ASCII Art Masterpiece</h1>
+    <p><strong>URL:</strong> <a href="https://www.jonathan-petitcolas.com/2017/12/28/converting-image-to-ascii-art.html">https://www.jonathan-petitcolas.com/2017/12/28/converting-image-to-ascii-art.html</a></p>
+    <p><strong>Tags:</strong> html, images</p>
+    <p><strong>Bookmark ID:</strong> 876795216</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+        <article>
+    <header>
+        
+        <p>Published on 28 December 2017</p>
+    </header>
+
+    
+
+    <section><p>While browsing Stack Overflow, I generally click on one or two links from the sidebar “Hot Network Questions”. It brings me to several interesting topics, not necessarily related to development. And this time, I found an interesting post: <a href="https://stackoverflow.com/questions/394882/how-do-ascii-art-image-conversion-algorithms-work">how do ASCII art image conversion algorithms work?</a></p>
+
+<p>ASCII art image conversion basically consists in two steps: converting our picture into gray colors, and map each pixel to a given character depending of the grayscale value. For instance, <code>@</code> is darker than <code>+</code>, which is also darker than <code>.</code>. So, let’s try to implement such an algorithm in pure JavaScript.</p>
+
+<p>For those in a hurry, you can test the converter directly in <a href="https://www.jonathan-petitcolas.com/ascii-art-converter/">final demo</a>, or read its source code directly on its <a href="https://github.com/jpetitcolas/ascii-art-converter">GitHub repository</a>.</p>
+
+<h2 id="uploading-an-image-into-a-canvas">Uploading an Image into a Canvas</h2>
+
+<p><img src="data:application/octet-stream;base64," alt="Homer Simpson"></p>
+
+<p>First step is to allow our user to upload a picture. Hence, we need a file input. Moreover, as we are going to manipulate image pixels, we also need a <code>canvas</code>.</p>
+
+<div><pre><code><span>&lt;!DOCTYPE html&gt;</span>
+<span>&lt;html</span> <span>lang=</span><span>"en"</span><span>&gt;</span>
+<span>&lt;head&gt;</span>
+    <span>&lt;meta</span> <span>charset=</span><span>"UTF-8"</span><span>&gt;</span>
+    <span>&lt;meta</span> <span>name=</span><span>"viewport"</span> <span>content=</span><span>"width=device-width, initial-scale=1.0"</span><span>&gt;</span>
+    <span>&lt;meta</span> <span>http-equiv=</span><span>"X-UA-Compatible"</span> <span>content=</span><span>"ie=edge"</span><span>&gt;</span>
+    <span>&lt;title&gt;</span>Ascii Art Converter<span>&lt;/title&gt;</span>
+<span>&lt;/head&gt;</span>
+<span>&lt;body&gt;</span>
+    <span>&lt;h1&gt;</span>Ascii Art Converter<span>&lt;/h1&gt;</span>
+    <span>&lt;p&gt;</span>
+        <span>&lt;input</span> <span>type=</span><span>"file"</span> <span>name=</span><span>"picture"</span> <span>/&gt;</span>
+    <span>&lt;/p&gt;</span>
+    <span>&lt;canvas</span> <span>id=</span><span>"preview"</span><span>&gt;&lt;/canvas&gt;</span>
+<span>&lt;/body&gt;</span>
+<span>&lt;/html&gt;</span>
+</code></pre></div>
+
+<p>At this step, we can send a picture to our input, yet nothing would happen. Indeed, we need to plug the file input to our <code>canvas</code> element. It is done using the <code>FileReader</code> API:</p>
+
+<div><pre><code><span>const</span> <span>canvas</span> <span>=</span> <span>document</span><span>.</span><span>getElementById</span><span>(</span><span>'</span><span>preview</span><span>'</span><span>);</span>
+<span>const</span> <span>fileInput</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>'</span><span>input[type="file"</span><span>'</span><span>);</span>
+
+<span>const</span> <span>context</span> <span>=</span> <span>canvas</span><span>.</span><span>getContext</span><span>(</span><span>'</span><span>2d</span><span>'</span><span>);</span>
+
+<span>fileInput</span><span>.</span><span>onchange</span> <span>=</span> <span>(</span><span>e</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>// just handling single file upload</span>
+    <span>const</span> <span>file</span> <span>=</span> <span>e</span><span>.</span><span>target</span><span>.</span><span>files</span><span>[</span><span>0</span><span>];</span>
+
+    <span>const</span> <span>reader</span> <span>=</span> <span>new</span> <span>FileReader</span><span>();</span>
+    <span>reader</span><span>.</span><span>onload</span> <span>=</span> <span>(</span><span>event</span><span>)</span> <span>=&gt;</span> <span>{</span>
+        <span>const</span> <span>image</span> <span>=</span> <span>new</span> <span>Image</span><span>();</span>
+        <span>image</span><span>.</span><span>onload</span> <span>=</span> <span>()</span> <span>=&gt;</span> <span>{</span>
+            <span>canvas</span><span>.</span><span>width</span> <span>=</span> <span>image</span><span>.</span><span>width</span><span>;</span>
+            <span>canvas</span><span>.</span><span>height</span> <span>=</span> <span>image</span><span>.</span><span>height</span><span>;</span>
+
+            <span>context</span><span>.</span><span>drawImage</span><span>(</span><span>image</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>);</span>
+        <span>}</span>
+
+        <span>image</span><span>.</span><span>src</span> <span>=</span> <span>event</span><span>.</span><span>target</span><span>.</span><span>result</span><span>;</span>
+    <span>};</span>
+
+    <span>reader</span><span>.</span><span>readAsDataURL</span><span>(</span><span>file</span><span>);</span>
+<span>};</span>
+</code></pre></div>
+
+<p>On input change, we instantiate a new <code>FileReader</code> which would read the file, and once done, would load it into our <code>canvas</code>. Note we adapt the canvas size to the image one to not truncate it. The last two arguments of <code>drawImage</code> is the top left image margin: we want to start drawing our image from the top left corner (coordinates [0, 0]).</p>
+
+<p>If we embed previous script on our HTML page and upload Homer, we can display it into our <code>canvas</code> element:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Upload Preview in Canvas"></p>
+
+<p><strong>Note:</strong> if you want to snap a picture from your webcam, please refer to <a href="https://www.jonathan-petitcolas.com/2016/08/24/taking-picture-from-webcam-using-canvas.html">Taking Picture From Webcam Using Canvas</a> post.</p>
+
+<h2 id="turning-an-image-into-gray-colors">Turning an Image into Gray Colors</h2>
+
+<p>Now our image has been uploaded, we need to convert it into gray colors. Each pixel color can be broken into three distinct components: red, green, and blue values, as in hexadecimal (<code>#RRGGBB</code>) colors in CSS. Computing gray scale of a pixel is simply averaging these three values together.</p>
+
+<p>However, human eye is not equally sensitive to these three colors. For instance, our eyes are very sensitive to green color, while blue is only slightly perceived. Hence, we need to ponderate each colors using different weights. After taking a look on the (very) detailed <a href="https://en.wikipedia.org/wiki/Grayscale">Grayscale Wikipedia Page</a>, we can compute the grayscale value using the following formula:</p>
+
+<div><pre><code>GrayScale = 0.21 R + 0.72 G + 0.07 B
+</code></pre></div>
+
+<p>So, we need to iterate on each of our picture pixel, extract its RGB components, and replace each component by its related grayscale value. Fortunately, working on a <code>canvas</code> allows us to manipulate each pixel using <code>getImageData</code> function.</p>
+
+<div><pre><code><span>const</span> <span>toGrayScale</span> <span>=</span> <span>(</span><span>r</span><span>,</span> <span>g</span><span>,</span> <span>b</span><span>)</span> <span>=&gt;</span> <span>0.21</span> <span>*</span> <span>r</span> <span>+</span> <span>0.72</span> <span>*</span> <span>g</span> <span>+</span> <span>0.07</span> <span>*</span> <span>b</span><span>;</span>
+
+<span>const</span> <span>convertToGrayScales</span> <span>=</span> <span>(</span><span>context</span><span>,</span> <span>width</span><span>,</span> <span>height</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>imageData</span> <span>=</span> <span>context</span><span>.</span><span>getImageData</span><span>(</span><span>0</span><span>,</span> <span>0</span><span>,</span> <span>width</span><span>,</span> <span>height</span><span>);</span>
+
+    <span>const</span> <span>grayScales</span> <span>=</span> <span>[];</span>
+
+    <span>for</span> <span>(</span><span>let</span> <span>i</span> <span>=</span> <span>0</span> <span>;</span> <span>i</span> <span>&lt;</span> <span>imageData</span><span>.</span><span>data</span><span>.</span><span>length</span> <span>;</span> <span>i</span> <span>+=</span> <span>4</span><span>)</span> <span>{</span>
+        <span>const</span> <span>r</span> <span>=</span> <span>imageData</span><span>.</span><span>data</span><span>[</span><span>i</span><span>];</span>
+        <span>const</span> <span>g</span> <span>=</span> <span>imageData</span><span>.</span><span>data</span><span>[</span><span>i</span> <span>+</span> <span>1</span><span>];</span>
+        <span>const</span> <span>b</span> <span>=</span> <span>imageData</span><span>.</span><span>data</span><span>[</span><span>i</span> <span>+</span> <span>2</span><span>];</span>
+
+        <span>const</span> <span>grayScale</span> <span>=</span> <span>toGrayScale</span><span>(</span><span>r</span><span>,</span> <span>g</span><span>,</span> <span>b</span><span>);</span>
+        <span>imageData</span><span>.</span><span>data</span><span>[</span><span>i</span><span>]</span> <span>=</span> <span>imageData</span><span>.</span><span>data</span><span>[</span><span>i</span> <span>+</span> <span>1</span><span>]</span> <span>=</span> <span>imageData</span><span>.</span><span>data</span><span>[</span><span>i</span> <span>+</span> <span>2</span><span>]</span> <span>=</span> <span>grayScale</span><span>;</span>
+
+        <span>grayScales</span><span>.</span><span>push</span><span>(</span><span>grayScale</span><span>);</span>
+    <span>}</span>
+
+    <span>context</span><span>.</span><span>putImageData</span><span>(</span><span>imageData</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>);</span>
+
+    <span>return</span> <span>grayScales</span><span>;</span>
+<span>};</span>
+</code></pre></div>
+<p>The <code>for</code> loop requires some explanations. We retrieve each pixels in the <code>imageData.data</code> object. However, it is a uni-dimensional array, each pixel being splitted into its four components: red, green, blue, and alpha (for transparency). We retrieve the RGB value from the three first data cells, compute our grayscale, and then, move on of 4 indexes to go at the start of the next pixel components.</p>
+
+<p>In this snippet, we modified the original image data, causing our function to be impure. Indeed, I wasn’t able to find a way to update image data using a copy of our <code>imageData</code> variable.</p>
+
+<p>Adding a call to <code>convertToGrayScales</code> function at the end of our <code>image.onload</code> listener, we can upload a picture in gray colors:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Grayscale Homer Preview"></p>
+
+<h2 id="mapping-the-pixels-to-gray-scale-values">Mapping the Pixels to Gray Scale Values</h2>
+
+<p>Now that we have a list of grayscale values for every pixel, we can map each of these value to a different character. Reason behind this mapping is simple: some characters are darker than others. For instance, <code>@</code> is darker than <code>.</code>, which occupies less space on screen.</p>
+
+<p>The following character ramp is generally used for this conversion:</p>
+
+<div><pre><code>$@B%8&amp;WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~&lt;&gt;i!lI;:,"^`'.
+</code></pre></div>
+
+<p>Hence, mapping a gray scale value to its equivalent character can be done via:</p>
+
+<div><pre><code><span>const</span> <span>grayRamp</span> <span>=</span> <span>'</span><span>$@B%8&amp;WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~&lt;&gt;i!lI;:,"^`</span><span>\'</span><span>. </span><span>'</span><span>;</span>
+<span>const</span> <span>rampLength</span> <span>=</span> <span>grayRamp</span><span>.</span><span>length</span><span>;</span>
+
+<span>const</span> <span>getCharacterForGrayScale</span> <span>=</span> <span>grayScale</span> <span>=&gt;</span> <span>grayRamp</span><span>[</span><span>Math</span><span>.</span><span>ceil</span><span>((</span><span>rampLength</span> <span>-</span> <span>1</span><span>)</span> <span>*</span> <span>grayScale</span> <span>/</span> <span>255</span><span>)];</span>
+</code></pre></div>
+
+<p>We retrieve the corresponding character using a cross-shaped product: gray scale of 0 (black) should be <code>$</code>, and a white pixel (gray scale of 255) should be a space. We substract 1 to <code>rampLength</code> as arrays start at 0 index.</p>
+
+<p>Let’s translate our input image into pure characters:</p>
+
+<div><pre><code><span>const</span> <span>asciiImage</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>'</span><span>pre#ascii</span><span>'</span><span>);</span>
+
+<span>const</span> <span>drawAscii</span> <span>=</span> <span>(</span><span>grayScales</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>ascii</span> <span>=</span> <span>grayScales</span><span>.</span><span>reduce</span><span>((</span><span>asciiImage</span><span>,</span> <span>grayScale</span><span>)</span> <span>=&gt;</span> <span>{</span>
+        <span>return</span> <span>asciiImage</span> <span>+</span> <span>getCharacterForGrayScale</span><span>(</span><span>grayScale</span><span>);</span>
+    <span>},</span> <span>''</span><span>);</span>
+
+    <span>asciiImage</span><span>.</span><span>textContent</span> <span>=</span> <span>ascii</span><span>;</span>
+<span>};</span>
+</code></pre></div>
+
+<p>We use a <code>pre</code> tag in order to keep aspect ratio of our picture, as it uses a monospaced font.</p>
+
+<p>Calling the <code>drawAscii</code> method at the end of our <code>image.onload</code> callback, we get the following result:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Drawing ASCII image without break lines"></p>
+
+<p>At first glance, it seems it doesn’t work. Yet, if we scroll horizontally, we notice some strings wandering through the screen. Our picture seems to be on a single line. And indeed: all our values are on a single dimensional array. Hence, we need to add a break line every <code>width</code> value:</p>
+
+<div><pre><code><span>const</span> <span>drawAscii</span> <span>=</span> <span>(</span><span>grayScales</span><span>,</span> <span>width</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>ascii</span> <span>=</span> <span>grayScales</span><span>.</span><span>reduce</span><span>((</span><span>asciiImage</span><span>,</span> <span>grayScale</span><span>,</span> <span>index</span><span>)</span> <span>=&gt;</span> <span>{</span>
+        <span>let</span> <span>nextChars</span> <span>=</span> <span>getCharacterForGrayScale</span><span>(</span><span>grayScale</span><span>);</span>
+
+        <span>if</span> <span>((</span><span>index</span> <span>+</span> <span>1</span><span>)</span> <span>%</span> <span>width</span> <span>===</span> <span>0</span><span>)</span> <span>{</span>
+            <span>nextChars</span> <span>+=</span> <span>'</span><span>\n</span><span>'</span><span>;</span>
+        <span>}</span>
+
+        <span>return</span> <span>asciiImage</span> <span>+</span> <span>nextChars</span><span>;</span>
+    <span>},</span> <span>''</span><span>);</span>
+
+    <span>asciiImage</span><span>.</span><span>textContent</span> <span>=</span> <span>ascii</span><span>;</span>
+<span>};</span>
+</code></pre></div>
+
+<p>Result is now far better, except for a detail…</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Drawing far too big ASCII image"></p>
+
+<p>Our image ASCII representation is huge. Indeed, we mapped any single pixel to a character, spread on a lot of pixels. Drawing a 10x10 small picture would then take 10 lines of 10 characters. Too big. We can of course keep this huge text picture and reduce font-size as shown in previous picture. Yet, that’s not optimal, especially if you want to share it by email.</p>
+
+<h2 id="lowering-ascii-image-definition">Lowering ASCII Image Definition</h2>
+
+<p>When browsing the Web to check how other achieve such a resolution downgrade, we often find the average method:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Computing Average Pixels Value on Image"></p>
+
+<p>This technique consists in taking sub-arrays of pixels and to compute their average grayscale. Then, instead of drawing 9 white pixels for the red section above, we would draw a single one, still completly white.</p>
+
+<p>I first dove into the code, trying to compute this average on the unidimensional array. Yet, after an hour of tying myself in knots, I remembered the next two arguments of <code>drawImage</code> canvas method: the output width and height. Their main goal is to resize picture before drawing it. Exactly what we have to do! I wasn’t able to find how this is done under the hood, but I guess this is using the same average process.</p>
+
+<p>Let’s clamp our image dimension:</p>
+
+<div><pre><code><span>const</span> <span>MAXIMUM_WIDTH</span> <span>=</span> <span>80</span><span>;</span>
+<span>const</span> <span>MAXIMUM_HEIGHT</span> <span>=</span> <span>50</span><span>;</span>
+
+<span>const</span> <span>clampDimensions</span> <span>=</span> <span>(</span><span>width</span><span>,</span> <span>height</span><span>)</span> <span>=&gt;</span> <span>{</span>
+    <span>if</span> <span>(</span><span>height</span> <span>&gt;</span> <span>MAXIMUM_HEIGHT</span><span>)</span> <span>{</span>
+        <span>const</span> <span>reducedWidth</span> <span>=</span> <span>Math</span><span>.</span><span>floor</span><span>(</span><span>width</span> <span>*</span> <span>MAXIMUM_HEIGHT</span> <span>/</span> <span>height</span><span>);</span>
+        <span>return</span> <span>[</span><span>reducedWidth</span><span>,</span> <span>MAXIMUM_HEIGHT</span><span>];</span>
+    <span>}</span>
+
+    <span>if</span> <span>(</span><span>width</span> <span>&gt;</span> <span>MAXIMUM_WIDTH</span><span>)</span> <span>{</span>
+        <span>const</span> <span>reducedHeight</span> <span>=</span> <span>Math</span><span>.</span><span>floor</span><span>(</span><span>height</span> <span>*</span> <span>MAXIMUM_WIDTH</span> <span>/</span> <span>width</span><span>);</span>
+        <span>return</span> <span>[</span><span>MAXIMUM_WIDTH</span><span>,</span> <span>reducedHeight</span><span>];</span>
+    <span>}</span>
+
+    <span>return</span> <span>[</span><span>width</span><span>,</span> <span>height</span><span>];</span>
+<span>};</span>
+</code></pre></div>
+
+<p>We focus on height first. Indeed, to better appreciate the artist behind their work, we need to contemplate their art without scrolling. Also note that we keep image aspect ratio to prevent some weird distortions. We now need to update our <code>image.onload</code> handler to use the clamped values:</p>
+
+<div><pre><code><span>image</span><span>.</span><span>onload</span> <span>=</span> <span>()</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>[</span><span>width</span><span>,</span> <span>height</span><span>]</span> <span>=</span> <span>clampDimensions</span><span>(</span><span>image</span><span>.</span><span>width</span><span>,</span> <span>image</span><span>.</span><span>height</span><span>);</span>
+
+    <span>canvas</span><span>.</span><span>width</span> <span>=</span> <span>width</span><span>;</span>
+    <span>canvas</span><span>.</span><span>height</span> <span>=</span> <span>height</span><span>;</span>
+
+    <span>context</span><span>.</span><span>drawImage</span><span>(</span><span>image</span><span>,</span> <span>0</span><span>,</span> <span>0</span><span>,</span> <span>width</span><span>,</span> <span>height</span><span>);</span>
+    <span>const</span> <span>grayScales</span> <span>=</span> <span>convertToGrayScales</span><span>(</span><span>context</span><span>,</span> <span>width</span><span>,</span> <span>height</span><span>);</span>
+
+    <span>drawAscii</span><span>(</span><span>grayScales</span><span>,</span> <span>width</span><span>);</span>
+<span>};</span>
+</code></pre></div>
+
+<p>If we upload our favorite Simpson character, here is the result:</p>
+
+<pre>                                                  U88f
+                                             mr kzB   C'
+                                            8  f   @   t
+                                            ^  8@m-!l!{o%
+                                           w c#1)i!!!!!!!!B
+                                           B@1L)[!!!!!!!!!IW
+                                           @)1Y)!!!!!!!!!!!,B
+                                          @o)))[!!!!!!!!!!!!"J
+                                         "1))))!!!!!!!!!!!!!l|
+                                         @)))))!!!!!!!!!!!!!!"|
+                                         u)))))!!!!!!!!!!!!!l,@
+                                        &lt;1)))))!!!!!!!!!!!!!!lf
+                                        Y1)))))!!!!!!!!!!!!!!!I
+                                        C))))))!!!!!!!!!!!!!!!"X
+                                        ())))))i!!!!l!!!!!!l!ll"X
+                                        `1)))))?!&amp;]  }&amp;!!)q   p]?
+                                         t)))))1|      pU       j
+                                         a)))))0        @       f
+                                         #))))q         '        ^
+                                         i))))@  a8      !    &lt;@ l
+                                          t)1)W  li      !      .                           :
+                                          8)d1W         "`t@XfC %                         %11x]
+                                        ~*@1)@)         @^;ll,|j                         %))[!M)LI
+            '&amp;zo!                       ^:fx)X)*       O!!!!!l~^"                       cc/!!J)]~x
+            j)!llO                        B*))f)Q{   'B!!!!!!]@;x                      B{{i*W1]!!!q
+         "MUB1}!!l{                      ' Z))))&lt;!&gt;(?!!!))){0*&lt;@n                     b1{!!!&lt;f!!c@@
+         j!!!Z1*d))@                       q))))-!!&gt;#WwLCm0ft??]!t*.@cw               U)!!!!!ol@1))*
+        %1!!!!@+!!!iB                     8)%)))-!@/t/}}11]???????]W-?f              :1}Cl!!l,B)1!!!X
+        p))!!f{!!!!!+                    W!i!))){&amp;f]??????????????????Y              Q)&gt;!1!!!:1}!!!l8
+       @~jB)&lt;*!!!,f!;k                   xvoh)))@t?????????????????]B?B              %)!lZ","%)!!!@!W
+      L!!!!&lt;Q|!!!ll!!q                   k)L))))t)?????????????????t@)*             Y))!!!kBaM~!xCxIx
+      B!!!!!&gt;c!!,8!!!"B                  IX11Y)#t??????????????????]f]8            81))!!xl!!!MI_#!u
+      B)!!!!!%?!@!!!!!"&gt;b                  ?#))%t????????????????????-0          ~h)))_!!h!!!!!i!i^Y
+      W)@|!!l@!!lx!!!!!!"Y(                 8))af???]????????????|B{{@          M)))){!!!!!!!!!!i"@
+      'ff/|)xt1!!O!!!!!!!!"w!               @))Wf?????????????????%           -*))))?!!!!!!!!!!,"8
+       m11kb1))!!!!!!!!!!!!!"*;             @))8t????????????????%          ;@11)))!!!!!!!!!!!"xf
+        o1))))))!!!!!!!!!!!!!I"@            @)))t???????????????@         l@1)))){!!!!!!!!!!!"@
+         /m)))))]!!!!!!!!!!!!!!I,@          B)))&amp;/???????????]]q        JM1)))))&gt;!!!!!!!!!!!"%
+           bq))))1!!!!!!!!!!!!!!!I,&amp;        W))))W)??????????W:    ` IBY))))))-!!!!!!!!!!!!,B
+             @1))))!!!!!!!!!!!!!!!!I;&amp; d.   Z)))))+@}?????}@-&lt;   nJuB1)))))){!!!!!!!!!!!!!"8
+              xc)))){!!!!!!!!!!!!!!!!l)h]@  ())11)&gt;ilrh&amp;k/l!^"  a!lll81)))}!!!!!!!!!!!!!!"&amp;
+                B)))))-!!!!!!!!!!!!!!!!!(l*#@#X+l     X&lt;!!!!,qQmqlllllC1[!!!!!!!!!!!!!!!"@
+                 h()))))!!!!!!!!!!!!!!!]  lLilll'    ..}i!!!:Il [lllll:L!!!!!!!!!!!!!!!"@
+                  ,*)))))}!!!!!!!!!!!!l%   lklll     W  q!!!!I?  ~ll"   8!!!!!!!!!!!!!"8
+                    &amp;))))))!!!!!!!!!!!!W    l$l,     p   $!!lq   J^      b!!!!!!!!!!:"k
+                     &gt;d)))))[!!!!!!!!!+      I}      '    x!@;   o       :l!!!!!!!!"+]
+                       @1)))))!!!!!!!!B      `o     |     ]U  B  M        B!!!!!!I"o.
+                        Uc)))))&lt;!!!!!i        I|JbooB         ^. o        .&gt;!!!!",a
+                         .B)))))}!!!!a         B               @'          @!!:"M`
+                           bf)))))!!O.         t               1           &gt;I"1Y
+                            ^&amp;)))))i'          .                _           _8
+                              @)))1Z                            B           0
+                               1Z)@l                            C          `;
+                               .;$lll`                          .         Q&gt;
+                                @llllll                          ?      {a
+                                 zrlllll^                        *   +%x
+                                   Zh;llll.                     fB@J
+                                     ./MBW8z                      %
+</pre>
+
+<p>Resolution has been decreased and we can’t see as many details as before, but that’s a mandatory drawback to get shareable ASCII art.</p>
+
+<p>As usual, here are the related links:</p>
+
+<ul>
+  <li><a href="https://www.jonathan-petitcolas.com/ascii-art-converter/">Final ASCII Art Converter Demo</a>,</li>
+  <li><a href="https://github.com/jpetitcolas/ascii-art-converter">GitHub Repository</a></li>
+</ul>
+
+<p>Note that we only handle static image in this case, but some people also handle live video stream, such as <a href="https://idevelop.ro/ascii-camera/">the ASCII camera</a>. Useless, therefore indispensable!</p>
+</section>
+
+    
+</article>
+
+    </div></div>
+  </div>
+</body>
+</html>

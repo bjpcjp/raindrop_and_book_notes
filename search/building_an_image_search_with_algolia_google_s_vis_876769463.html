@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Building an image search with Algolia & Google’s Vision API</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Building an image search with Algolia & Google’s Vision API</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/martyndavies/building-an-image-search-with-algolia--googles-vision-api-37gm">https://dev.to/martyndavies/building-an-image-search-with-algolia--googles-vision-api-37gm</a></p>
+    <p><strong>Tags:</strong> images, search</p>
+    <p><strong>Bookmark ID:</strong> 876769463</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="24216" id="article-body">
+            <p>Being able to search through uploaded content is always useful, but the quality of the search terms is usually down to the individuals that upload the content. It’s typically their job to either describe the content as free text, or choose from pre-defined tags.</p>
+
+<p>This is fine, but it’s typically an extra step to completion that delays the user experience, or the input from the user is so random (“lol doggos 😆”) that it isn’t going to make for very useful search data.</p>
+
+<p>Thankfully, it’s 2018 and technology has progressed enough that there are ways to ease this situation. So, I set out to create a simple image search app that uses <a href="https://www.algolia.com/" target="_blank" rel="noopener noreferrer">Algolia’s</a> powerful indexing and search experience libraries with a selection of animal photos (just because) that are automatically classified by Google Cloud’s <a href="https://dev.to/martyndavies/[Vision%20API%20-%20Image%20Content%20Analysis%20%C2%A0%7C%C2%A0%20Google%20Cloud](https://cloud.google.com/vision/)">Vision API</a>.</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fcl.ly%2F2k1m0i3R2F1L%2FScreen%2520Recording%25202018-03-26%2520at%252005.24%2520pm.gif"><img src="data:application/octet-stream;base64," alt="What the app looks like" loading="lazy"></a></p>
+
+<p>This example app allows users to upload images, which are then automatically classified (which is really just a fancy way of saying ‘tagged’) and colour profiled by the Vision API. These results are pushed to an Algolia index which then allows them to be immediately searched.</p>
+
+<p>We’re going to take a look at three of the key elements of the app here, but all of the source code is <a href="https://github.com/martyndavies/cloud-vision-algolia" target="_blank" rel="noopener noreferrer">available on GitHub</a> so you can take a look at the whole app in its full context.</p>
+
+<h2>
+  <a name="1-classification" href="#1-classification">
+  </a>
+  1. Classification
+</h2>
+
+<p>The classification of the images is the most key part of this application, yet getting those results is actually quite simple thanks to the work Google’s engineers have put in to make the Cloud Vision API quick and easy to use.</p>
+
+<p>After setting up our account (which comes with a free $300 usage credit) and fighting through the credentials set up process (it isn’t hard, it’s just a bit lengthier than I’d like it to be), we ended up with this piece of code for getting the information we need:<br>
+</p>
+
+<div>
+<pre><code><span>const</span> <span>vision</span> <span>=</span> <span>require</span><span>(</span><span>'</span><span>@google-cloud/vision</span><span>'</span><span>);</span>
+<span>const</span> <span>imageClient</span> <span>=</span> <span>new</span> <span>vision</span><span>.</span><span>ImageAnnotatorClient</span><span>();</span>
+
+<span>// classifyImage() function</span>
+<span>const</span> <span>classifyImage</span> <span>=</span> <span>(</span><span>image</span><span>,</span> <span>cb</span><span>)</span> <span>=&gt;</span> <span>{</span>
+
+  <span>// Use the locally stored image from the upload</span>
+  <span>const</span> <span>imageToClassify</span> <span>=</span> <span>`./public/images/</span><span>${</span><span>image</span><span>}</span><span>`</span><span>;</span>
+
+  <span>// Ask Google Vision what it thinks this is an image of</span>
+  <span>imageClient</span>
+  <span>.</span><span>labelDetection</span><span>(</span><span>imageToClassify</span><span>)</span>
+  <span>.</span><span>then</span><span>(</span><span>results</span> <span>=&gt;</span> <span>{</span>
+    <span>const</span> <span>imageLabels</span> <span>=</span> <span>results</span><span>[</span><span>0</span><span>].</span><span>labelAnnotations</span><span>;</span>
+
+      <span>// Also ask for the dominant colors to use as search attributes</span>
+      <span>imageClient</span>
+      <span>.</span><span>imageProperties</span><span>(</span><span>imageToClassify</span><span>)</span>
+      <span>.</span><span>then</span><span>(</span><span>results</span> <span>=&gt;</span> <span>{</span>
+        <span>const</span> <span>properties</span> <span>=</span> <span>results</span><span>[</span><span>0</span><span>].</span><span>imagePropertiesAnnotation</span><span>;</span>
+        <span>const</span> <span>dominantColors</span> <span>=</span> <span>properties</span><span>.</span><span>dominantColors</span><span>.</span><span>colors</span><span>;</span>
+
+        <span>// Pass both lists back in the callback</span>
+        <span>cb</span><span>(</span><span>imageLabels</span><span>,</span> <span>dominantColors</span><span>);</span>
+      <span>})</span>
+      <span>.</span><span>catch</span><span>(</span><span>err</span> <span>=&gt;</span> <span>{</span>
+        <span>console</span><span>.</span><span>error</span><span>(</span><span>'</span><span>Error:</span><span>'</span><span>,</span> <span>err</span><span>);</span>
+      <span>})</span>
+  <span>})</span>
+  <span>.</span><span>catch</span><span>(</span><span>err</span> <span>=&gt;</span> <span>{</span>
+    <span>console</span><span>.</span><span>error</span><span>(</span><span>'</span><span>Error:</span><span>'</span><span>,</span> <span>err</span><span>);</span>
+  <span>});</span>
+<span>};</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Here’s what’s happening above:</p>
+
+<p>After initialising our instance of Google Cloud Vision’s Node JS library we pass it an image and ask for a list of tags in return. Then, once we have those, we ask it to also return a list of colours that are present in the image as well.</p>
+
+<p><em>Note: The above code is taken directly from the <a href="https://github.com/martyndavies/cloud-vision-algolia" target="_blank" rel="noopener noreferrer">example app I’ve build for you to play around with</a>, but it looks a bit long, so from this point on I’ll be using simplified versions of the code I wrote.</em></p>
+
+<p>To start with, a simplified version of this that just logs the tags to the console would be:<br>
+</p>
+
+<div>
+<pre><code><span>function</span> <span>getImageLabels</span><span>(</span><span>image</span><span>)</span> <span>{</span>
+  <span>imageClient</span>
+  <span>.</span><span>imageProperties</span><span>(</span><span>image</span><span>)</span>
+  <span>.</span><span>then</span><span>(</span><span>results</span> <span>=&gt;</span> <span>{</span>
+    <span>// The labels</span>
+    <span>const</span> <span>imageLabels</span> <span>=</span> <span>results</span><span>[</span><span>0</span><span>].</span><span>labelAnnotations</span><span>;</span>
+    <span>console</span><span>.</span><span>log</span><span>(</span><span>imageLabels</span><span>);</span>
+  <span>})</span>
+<span>}</span>
+
+<span>getImageLabels</span><span>(</span><span>'</span><span>./myPicture.jpg</span><span>'</span><span>);</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>What the API returns is an array of JSON objects that look like this (if you upload a picture of a panda in a tree 🐼):</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fwww.telegraph.co.uk%2Fcontent%2Fdam%2Fnews%2F2016%2F08%2F23%2F106598324PandawaveNEWS_trans_NvBQzQNjv4Bqeo_i_u9APj8RuoebjoAHt0k9u7HhRJvuo-ZLenGRumA.jpg%3Fimwidth%3D300"><img src="data:application/octet-stream;base64," alt="Said panda. In a tree. Credit: Getty Images" loading="lazy"></a><br>
+</p>
+
+<div>
+<pre><code><span>[{</span>
+  <span>locations</span><span>:</span> <span>[],</span>
+  <span>properties</span><span>:</span> <span>[],</span>
+  <span>mid</span><span>:</span> <span>'</span><span>/m/03bj1</span><span>'</span><span>,</span>
+  <span>locale</span><span>:</span> <span>''</span><span>,</span>
+  <span>description</span><span>:</span> <span>'</span><span>giant panda</span><span>'</span><span>,</span>
+  <span>score</span><span>:</span> <span>0.9907882809638977</span><span>,</span>
+  <span>confidence</span><span>:</span> <span>0</span><span>,</span>
+  <span>topicality</span><span>:</span> <span>0.9907882809638977</span><span>,</span>
+  <span>boundingPoly</span><span>:</span> <span>null</span>
+<span>}]</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>As you can see, the detail you get back is very extensive and can include location information, boundary information and even crop suggestions if you want them. For now though, we only require the <code>description</code> and the <code>score</code>  (which is how certain Google is about the image) for this app.</p>
+
+<p>Now, you could pass all of this over to your Algolia index if you wanted to, especially if you were working with images that did return more data for facets like locale and locations. This would make for good search data!</p>
+
+<p>We’re only going to work with labels in this demo so let’s pluck out the <code>score</code> and the <code>description</code> tag and create a new object that we’ll later pass over to Algolia for indexing:<br>
+</p>
+
+<div>
+<pre><code><span>function</span> <span>reduceLabelsToObject</span><span>(</span><span>labels</span><span>)</span> <span>{</span>
+  <span>// Construct a new object with a couple of pre-defined keys</span>
+  <span>// and a link to our uploaded image</span>
+  <span>const</span> <span>algoliaData</span> <span>=</span> <span>{</span>
+    <span>labels</span><span>:</span> <span>[],</span>
+    <span>upload_date</span><span>:</span> <span>Date</span><span>.</span><span>now</span><span>(),</span>
+    <span>image_url</span><span>:</span> <span>'</span><span>/images/image.jpg</span><span>'</span>
+  <span>};</span>
+
+  <span>// Loop through the labels and add each one to the</span>
+  <span>// 'labels' array in the object</span>
+  <span>labels</span><span>.</span><span>forEach</span><span>(</span><span>attribute</span> <span>=&gt;</span> <span>{</span>
+    <span>algoliaData</span><span>.</span><span>labels</span><span>.</span><span>push</span><span>({</span>
+      <span>classification</span><span>:</span> <span>attribute</span><span>.</span><span>description</span><span>,</span>
+      <span>score</span><span>:</span> <span>attribute</span><span>.</span><span>score</span>
+    <span>});</span>
+  <span>});</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="2-indexing" href="#2-indexing">
+  </a>
+  2. Indexing
+</h2>
+
+<p>Once we have a result from the Vision API, it’s time to put that data somewhere more useful so that it can be searched. We’re going to store it in Algolia via their JavaScript SDK.</p>
+
+<p>Above, we created a JavaScript object of the information we want to store, it’s called <code>algoliaData</code>, so let’s push this to our index:</p>
+
+<p>First, make sure your Algolia set up is correct by loading the library, setting the API keys, specifying which index you want to look at and use and <em>most importantly</em> which attributes users will be able to search:<br>
+</p>
+
+<div>
+<pre><code><span>// Require the library</span>
+<span>const</span> <span>algolia</span> <span>=</span> <span>require</span><span>(</span><span>'</span><span>algoliasearch</span><span>'</span><span>);</span>
+<span>// Init the client with your APP ID and API KEY</span>
+<span>const</span> <span>client</span> <span>=</span> <span>algolia</span><span>(</span><span>'</span><span>your_app_id</span><span>'</span><span>,</span> <span>'</span><span>your_admin_api_key</span><span>'</span><span>);</span>
+<span>// Assing which index you want to use</span>
+<span>const</span> <span>index</span> <span>=</span> <span>client</span><span>.</span><span>initIndex</span><span>(</span><span>'</span><span>images</span><span>'</span><span>);</span>
+
+<span>// Set some settings on the index, make sure only the</span>
+<span>// labels array is searchable</span>
+<span>index</span><span>.</span><span>setSettings</span><span>({</span>
+  <span>'</span><span>searchableAttributes</span><span>'</span><span>:</span> <span>[</span>
+    <span>'</span><span>labels.classification</span><span>'</span>
+  <span>]</span>
+<span>});</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Then push the data to the index:<br>
+</p>
+
+<div>
+<pre><code><span>const</span> <span>addToAlgoliaIndex</span> <span>=</span> <span>(</span><span>algoliaData</span><span>)</span> <span>=&gt;</span> <span>{</span>
+  <span>index</span><span>.</span><span>addObject</span><span>(</span><span>algoliaData</span><span>,</span> <span>function</span><span>(</span><span>err</span><span>,</span> <span>content</span><span>)</span> <span>{</span>
+    <span>if </span><span>(</span><span>err</span><span>)</span> <span>{</span>
+        <span>console</span><span>.</span><span>log</span><span>(</span><span>`Error: </span><span>${</span><span>err</span><span>}</span><span>`</span>
+    <span>}</span> <span>else</span> <span>{</span>
+      <span>console</span><span>.</span><span>log</span><span>(</span><span>`All good: </span><span>${</span><span>content</span><span>}</span><span>`</span>
+    <span>}</span> 
+  <span>});</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>That’s actually everything. Algolia can index JSON in any form so your keys and values can be whatever you like. At it’s most simple, the <code>index.addObject()</code> method does everything you need to add single objects to the index quickly and easily.</p>
+
+<p>At this point we’ve set up image recognition and subsequent classification (tagging) and we’ve uploaded that image information to Algolia, which now means it’s searchable.</p>
+
+<h2>
+  <a name="3-displaying-results" href="#3-displaying-results">
+  </a>
+  3. Displaying results
+</h2>
+
+<p>The final piece of the puzzle for this app is how to display the images that are being uploaded back to the users, and allow them to be searched.</p>
+
+<p>Algolia does allow us to build out a search experience using their APIs and we could make it as tuned and customised as we like. In the interest of time though, we’re going to use the excellent <a href="https://dev.to/martyndavies/[InstantSearch.js](https://community.algolia.com/instantsearch.js/)">InstantSearch.js</a> library they provide to create a great search experience using a series of pre-defined widgets that we can style to our liking.</p>
+
+<h3>
+  <a name="setting-up-instantsearch" href="#setting-up-instantsearch">
+  </a>
+  Setting up InstantSearch
+</h3>
+
+<p>You can add InstantSearch to your front end by downloading it, adding it via a package manager, or loading it from a CDN. You can check out all those installation options in the <a href="https://dev.to/martyndavies/[InstantSearch.js%20%7C%20Getting%20started](https://community.algolia.com/instantsearch.js/v1/documentation/)">documentation</a>.</p>
+
+<p>Once you’ve loaded InstantSearch.js, you can initialise it in a separate JS file, or inside a <code>&lt;script&gt;</code> tag:<br>
+</p>
+
+<div>
+<pre><code><span>const</span> <span>search</span> <span>=</span> <span>instantsearch</span><span>({</span>
+  <span>appId</span><span>:</span> <span>'</span><span>your_app_id</span><span>'</span><span>,</span>
+  <span>apiKey</span><span>:</span> <span>'</span><span>your_api_key</span><span>'</span><span>,</span>
+  <span>indexName</span><span>:</span> <span>'</span><span>images</span><span>'</span>
+<span>});</span>
+
+<span>search</span><span>.</span><span>start</span><span>();</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="adding-a-search-box" href="#adding-a-search-box">
+  </a>
+  Adding a search box
+</h3>
+
+<p>…could not be simpler. We’ll use one of the <a href="https://dev.to/martyndavies/[Documentation%20-%20instantsearch.js](https://community.algolia.com/instantsearch.js/v1/documentation/#widgets)">built in InstantSearch widgets</a> to add this to our app.</p>
+
+<p>In our HTML, after adding the InstantSearch.js files and CSS, we add:<br>
+</p>
+
+<div>
+<pre><code><span>&lt;div</span> <span>id=</span><span>“search-box”</span><span>&gt;&lt;/div&gt;</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Then in our JS file:<br>
+</p>
+
+<div>
+<pre><code><span>search</span><span>.</span><span>addWidget</span><span>(</span>
+  <span>instantsearch</span><span>.</span><span>widgets</span><span>.</span><span>searchBox</span><span>({</span>
+    <span>container</span><span>:</span> <span>'</span><span>#search-box</span><span>'</span><span>,</span>
+    <span>placeholder</span><span>:</span> <span>'</span><span>Search for images</span><span>'</span>
+  <span>})</span>
+<span>);</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Above, we’re adding the Search Box widget to the <code>search</code> instance and telling it to load all the elements into the <code>&lt;div&gt;</code> with the ID of <code>search-box</code>.</p>
+
+<p>A search box is cool ’n’ all but if the results don’t have anywhere to display, it’s still quite useless. Let’s set up how we’re going to display the search results that are returned when something is typed into the search box.</p>
+
+<p>Start by adding another <code>&lt;div&gt;</code> to your HTML to house the results:<br>
+</p>
+
+<div>
+<pre><code><span>&lt;div</span> <span>id=</span><span>“hits</span><span>&gt;&lt;/div&gt;</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Then in your JS file, add the Hits widget:<br>
+</p>
+
+<div>
+<pre><code><span>search</span><span>.</span><span>addWidget</span><span>(</span>
+  <span>instantsearch</span><span>.</span><span>widgets</span><span>.</span><span>hits</span><span>({</span>
+    <span>container</span><span>:</span> <span>'</span><span>#hits</span><span>'</span><span>,</span>
+    <span>templates</span><span>:</span> <span>{</span>
+      <span>empty</span><span>:</span> <span>`&lt;p&gt;Sorry, we couldn't find any matches.&lt;/p&gt;`</span><span>,</span>
+      <span>item</span><span>:</span> <span>function</span><span>(</span><span>hit</span><span>)</span> <span>{</span>
+        <span>return</span> <span>`
+        &lt;div class="card"&gt;
+          &lt;div class="card-image"&gt;
+            &lt;img src="</span><span>${</span><span>hit</span><span>.</span><span>image_url</span><span>}</span><span>" class="image"&gt;
+          &lt;/div&gt;
+
+          &lt;div class="card-action"&gt;
+            &lt;a href="</span><span>${</span><span>hit</span><span>.</span><span>image_url</span><span>}</span><span>" download="</span><span>${</span><span>hit</span><span>.</span><span>image_url</span><span>}</span><span>"&gt;Download&lt;/a&gt;
+          &lt;/div&gt;
+          &lt;div class="card-footer" style="height:10px; background-color:</span><span>${</span><span>hit</span><span>.</span><span>most_dominant_color</span><span>}</span><span>"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      `</span>
+      <span>}</span>
+    <span>}</span>
+  <span>})</span>
+<span>);</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Each result that Algolia returns is known as a <em>‘hit’</em>. The Hits widget allows us to specify where in our HTML these results should be displayed, as well as what they should look like.</p>
+
+<p>In our example app, the hits are styled using <a href="https://dev.to/martyndavies/[Documentation%20-%20Materialize](http://materializecss.com/)">Materialize CSS</a> and they look like this:</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fcl.ly%2F1q2i21081a13%2FImage%25202018-03-26%2520at%25203.44.03%2520pm.png"><img src="data:application/octet-stream;base64," alt="An example hit" loading="lazy"></a></p>
+
+<p>There are two templates in use in the code above. The first is what should be displayed if there are no results at all. The second is what each result should look like if there are results (hits) to display.</p>
+
+<p>Each result is passed into the function as an object and you can reference any of the attributes in the HTML. As you can see from the template, we require the <code>image_url</code> attribute and the <code>most_dominant_color</code> attribute to fill out the content of our card.</p>
+
+<h2>
+  <a name="thats-it-fin" href="#thats-it-fin">
+  </a>
+  That’s it. Fin.
+</h2>
+
+<p>Through these examples you’ve seen how to do the following:</p>
+
+<ul>
+<li>Return classification data from Google Cloud’s Vision API by passing it an image</li>
+<li>Store relevant information about this image in Algolia and make it searchable</li>
+<li>How to add a search interface and search results to your app quickly using InstantSearch.js</li>
+</ul>
+
+<p>If you take a look at the <a href="https://github.com/martyndavies/cloud-vision-algolia" target="_blank" rel="noopener noreferrer">full source code of the example app</a> you’ll also get to see how the image uploading is handled using JavaScript and a library for NodeJS called <a href="https://dev.to/martyndavies/[GitHub%20-%20expressjs/multer:%20Node.js%20middleware%20for%20handling%20%20raw%20%60multipart/form-data%60%20endraw%20.](https://github.com/expressjs/multer)">Multer</a>. You’ll also see how to work with some of the dynamic components that <a href="https://dev.to/martyndavies/[Documentation%20-%20Materialize](http://materializecss.com/)">Materialize CSS</a> offers, such as modals and notifications.</p>
+
+<p>If you have any questions about any of this then feel free to reach out to me via <a href="https://dev.to/martyndavies/[GitHub%20-%20martyndavies/cloud-vision-algolia:%20A%20simple%20image%20uploader%20and%20gallery%20that%20automatically%20classifies%20images%20using%20Google%E2%80%99s%20Cloud%20Vision%20API%20and%20makes%20them%20searchable%20using%20Algolia](https://github.com/martyndavies/cloud-vision-algolia)">GitHub</a>, or via <a href="https://twitter.com/martynd" target="_blank" rel="noopener noreferrer">Twitter</a>.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

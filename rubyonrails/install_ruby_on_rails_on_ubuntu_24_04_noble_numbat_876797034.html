@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Install Ruby On Rails on Ubuntu 24.04 Noble Numbat | GoRails</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Install Ruby On Rails on Ubuntu 24.04 Noble Numbat | GoRails</h1>
+    <p><strong>URL:</strong> <a href="https://gorails.com/setup/ubuntu/24.04">https://gorails.com/setup/ubuntu/24.04</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876797034</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><span><i></i> This will take about 30 minutes.</span></p>
+<p>We will be setting up a Ruby on Rails development environment on Ubuntu 24.04 Noble Numbat.</p>
+<p>The reason we're going to be using Ubuntu is because the majority of code you write will run on a Linux server. Ubuntu is one of the easiest Linux distributions to use with lots of documentation so it's a great one to start with.</p>
+<p>You'll want to download the latest Desktop version here: <a href="http://releases.ubuntu.com/24.04/">http://releases.ubuntu.com/24.04/</a></p>
+<p>Some of you may choose to develop on Ubuntu Server so that your development environment matches your production server. You can find it on the same download link above.</p>
+
+<p>The first step is to install dependencies for compiling Ruby. Open your Terminal and run the following commands to install them.</p>
+<pre><code>sudo apt-get update
+sudo apt-get install git-core zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev</code></pre>
+<p>Next we're going to be installing Ruby using a version manager called <a target="_blank" href="https://asdf-vm.com/">ASDF</a>.</p>
+<p>The reason we use ASDF over rbenv, rvm or others is that ASDF can manage other languages like Node.js too.</p>
+<p>Installing <code>asdf</code> is a simple two step process. First you install <code>asdf</code>, and then add it to your shell:
+</p><pre><code>cd
+git clone https://github.com/excid3/asdf.git ~/.asdf
+echo '. "$HOME/.asdf/asdf.sh"' &gt;&gt; ~/.bashrc
+echo '. "$HOME/.asdf/completions/asdf.bash"' &gt;&gt; ~/.bashrc
+echo 'legacy_version_file = yes' &gt;&gt; ~/.asdfrc
+echo 'export EDITOR="code --wait"' &gt;&gt; ~/.bashrc
+exec $SHELL</code></pre>
+<p>Then we can install ASDF plugins for each language we want to use. For Rails, we can install Ruby and Node.js for our frontend Javascript.</p>
+<pre><code>asdf plugin add ruby
+asdf plugin add nodejs</code></pre>
+<p><strong>Choose the version of Ruby you want to install:</strong></p>
+
+<p>To install Ruby and set the default version, we'll run the following commands:</p>
+<pre><code>asdf install ruby <span>3.3.5</span>
+asdf global ruby <span>3.3.5</span>
+
+# Update to the latest Rubygems version
+gem update --system</code></pre>
+<p>Confirm the default Ruby version matches the version you just installed.</p>
+<pre><code>which ruby
+#=&gt; /home/username/.asdf/shims/ruby
+ruby -v
+#=&gt; <span>3.3.5</span></code></pre>
+<p>Then we can install the latest Node.js for handling Javascript in our Rails apps:</p>
+<pre><code>asdf install nodejs 20.18.0
+asdf global nodejs 20.18.0
+
+which node
+#=&gt; /home/username/.asdf/shims/node
+node -v
+#=&gt; 20.18.0
+
+# Install yarn for Rails jsbundling/cssbundling or webpacker
+npm install -g yarn</code></pre>
+<h2 id="git">Configuring Git</h2>
+<p>We'll be using Git for our version control system so we're going to set it up to match our Github account. If you don't already have a Github account, make sure to <a href="https://github.com/">register</a>. It will come in handy for the future.</p>
+<p>Replace my name and email address in the following steps with the ones you used for your Github account.</p>
+<pre><code>git config --global color.ui true
+git config --global user.name "YOUR NAME"
+git config --global user.email "YOUR@EMAIL.com"
+ssh-keygen -t ed25519 -C "YOUR@EMAIL.com"</code></pre>
+<p>The next step is to take the newly generated SSH key and add it to your Github account. You want to copy and paste the output of the following command and <a href="https://github.com/settings/ssh">paste it here</a>.
+</p><pre><code>cat ~/.ssh/id_ed25519.pub</code></pre>
+<p>Once you've done this, you can check and see if it worked:</p>
+<pre><code>ssh -T git@github.com</code></pre>
+<p>You should get a message like this: </p>
+<pre><code>Hi excid3! You've successfully authenticated, but GitHub does not provide shell access.</code></pre>
+
+<p><strong>Choose the version of Rails you want to install:</strong></p>
+
+<pre><code>gem install rails -v <span>8.0.0.beta1</span></code></pre>
+<p>Now that you've installed Rails, you can run the <code>rails -v</code> command to make sure you have everything installed correctly:</p>
+<pre><code>rails -v
+# Rails <span>8.0.0.beta1</span>
+</code></pre>
+<p>If you get a different result for some reason, it means your environment may not be setup properly.</p>
+
+<p>Rails ships with sqlite3 as the default database. Chances are you won't want to use it because it's stored as a simple file on disk. You'll probably want something more robust like MySQL or PostgreSQL.</p>
+<p>There is a lot of documentation on both, so you can just pick one that seems like you'll be more comfortable with.</p>
+<p>If you're new to Ruby on Rails or databases in general, I strongly recommend <a href="#postgresql">setting up PostgreSQL</a>.</p>
+<p>If you're coming from PHP, you may already be familiar with MySQL.</p>
+
+<p>You can install MySQL server and client from the packages in the Ubuntu repository. As part of the installation process, you'll set the password for the root user. This information will go into your Rails app's <code>database.yml</code> file in the future.</p>
+<pre><code>sudo apt-get install mysql-server mysql-client libmysqlclient-dev</code></pre>
+<p>The <code>libmysqlclient-dev</code> package gives you the necessary files to compile the <code>mysql2</code> gem which is what Rails will use to connect to MySQL when you setup your Rails app.</p>
+<p>When you're finished, you can <a href="#final-steps">skip to the Final Steps</a>.</p>
+
+<p>For PostgreSQL, we're going to add a new repository to easily install a recent version of Postgres.</p>
+<pre><code>sudo apt install postgresql libpq-dev</code></pre>
+<p>The postgres installation doesn't setup a user for you, so you'll need to follow these steps to create a user with permission to create databases. Feel free to replace <code>chris</code> with your username.</p>
+<pre><code>sudo -u postgres createuser chris -s
+# If you would like to set a password for the user, you can do the following
+sudo -u postgres psql
+postgres=# \password chris</code></pre>
+
+<p>And now for the moment of truth. Let's create your first Rails application:</p>
+<pre><code>#### If you want to use SQLite (not recommended)
+rails new myapp
+
+#### If you want to use MySQL
+rails new myapp -d mysql
+
+#### If you want to use Postgres
+# Note that this will expect a postgres user with the same username
+# as your app, you may need to edit config/database.yml to match the
+# user you created earlier
+rails new myapp -d postgresql
+
+# Move into the application directory
+cd myapp
+
+# If you setup MySQL or Postgres with a username/password, modify the
+# config/database.yml file to contain the username/password that you specified
+
+# Create the database
+rake db:create
+
+rails server</code></pre>
+<p>You can now visit <a href="http://localhost:3000/">http://localhost:3000</a> to view your new website!</p>
+<p>Now that you've got your machine setup, it's time to start building some Rails applications.</p>
+<div>
+<h6>Getting an "Access denied" error?</h6>
+<p>If you received an error that said <code>Access denied for user 'root'@'localhost' (using password: NO)</code> then you need to update your config/database.yml file to match the database username and password.</p>
+</div>
+<h3>Editing Code</h3>
+<p>Install <a target="_blank" href="https://code.visualstudio.com/Download">VS Code</a>.</p>
+<p>Then run Ctrl+Shift+P and select "Install 'code' command in PATH". This will add the <code>code</code> command to your shell so you can open up VS Code from your terminal.</p>
+<p>Lastly, run this command to configure VS Code as your editor. This allows you to edit Rails credentials in your terminal.</p>
+<pre><code>echo 'export EDITOR="code --wait"' &gt;&gt; ~/.bashrc
+exec $SHELL</code></pre>
+<p>That's it! Let us know in the comments below if you run into any issues or have any other protips to share!</p>
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Demystifying containers, Docker, and Kubernetes - Microsoft Open Source Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Demystifying containers, Docker, and Kubernetes - Microsoft Open Source Blog</h1>
+    <p><strong>URL:</strong> <a href="https://cloudblogs.microsoft.com/opensource/2019/07/15/how-to-get-started-containers-docker-kubernetes">https://cloudblogs.microsoft.com/opensource/2019/07/15/how-to-get-started-containers-docker-kubernetes</a></p>
+    <p><strong>Tags:</strong> containers, devops, docker, kubernetes</p>
+    <p><strong>Bookmark ID:</strong> 876780793</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-bi-an="Blog Body">
+					
+
+					<p>Modern application infrastructure is being transformed by containers. The question is: How do you get started?</p>
+<p>Understanding what problems containers, Docker, and Kubernetes solve is essential if you want to build modern cloud-native apps or if you want to modernize your existing legacy applications. In this post, we’ll go through what they are and how you can learn more to advance to the next level.</p>
+<h2>What are containers?</h2>
+<p>Containers effectively virtualize the host operating system (or kernel) and isolate an application’s dependencies from other containers running on the same machine. Before containers, if you had multiple applications deployed on the same virtual machine (VM), any changes to shared dependencies could cause strange things to happen—so the tendency was to have one application per virtual machine.</p>
+<p>The solution of one application per VM solved the isolation problem for conflicting dependencies, but it wasted a lot of resources (CPU and memory). This is because a VM runs not only your application but also a full operating system that needs resources too, so less would be available for your application to use.</p>
+<p>Containers solve this problem with two pieces: a container engine and a container image, which is a package of an application and its dependencies. The container engine runs applications in containers isolating it from other applications running on the host machine. This removes the need to run a separate operating system for each application, allowing for higher resource utilization and lower costs.</p>
+<p><img decoding="async" src="data:application/octet-stream;base64," alt="Diagram of VM and container stacks" width="817" height="340"></p>
+<p>If you want to learn more about containers, watch this short video on <a href="https://www.youtube.com/watch?v=EUitQ8DaZW8&amp;list=PLLasX02E8BPCrIhFrc_ZiINhbRkYMKdPT&amp;index=2&amp;t=3s">why you should care about containers</a>.</p>
+<h2>What is Docker?</h2>
+<p><a href="https://docker.com/">Docker</a> was first released in 2013 and is responsible for revolutionizing container technology by providing a toolset to easily create container images of applications. The underlying concept has been around longer than Docker’s technology, but it was not easy to do until Docker came out with its cohesive set of tools to accomplish it. Docker consists of a few components: a container runtime (called dockerd), a container image builder (BuildKit), and a CLI that is used to work with the builder, containers, and the engine (called docker).</p>
+<h3>Docker images vs. Docker containers</h3>
+<p>A Docker image is a template; a Docker container is a running instance of that template.</p>
+<p>To create an image with your application’s source code, you specify a list of commands in a special text file named <a href="https://docs.docker.com/engine/reference/builder/">Dockerfile</a>. The docker builder takes this file and packages it into an image. Once you have an image, you push it to a container registry—a central repository for versioning your images.</p>
+<p>When you want to run a Docker image, you need to either build it or pull the image from a registry. <a href="https://hub.docker.com/">DockerHub</a> is a well-known public registry, but there are also private registries like <a href="https://azure.microsoft.com/en-us/services/container-registry/">Azure Container Registry</a> that allow you to keep your application images private.</p>
+<p>If you want a hands-on example, this is a good great resource: <a href="https://code.visualstudio.com/docs/python/tutorial-deploy-containers">Deploy Python using Docker containers</a>.</p>
+<h2>What is Kubernetes?</h2>
+<p><a href="https://azure.microsoft.com/en-us/topic/kubernetes/">Kubernetes</a> is an open-source container management platform that unifies a cluster of machines into a single pool of compute resources. With Kubernetes, you organize your applications in groups of containers, which it runs using the Docker engine, taking care of keeping your application running as you request.</p>
+<p>Kubernetes provides the following:</p>
+<ul>
+<li><strong>Compute scheduling</strong>—It considers the resource needs of your containers, to find the right place to run them automatically</li>
+<li><strong>Self-healing</strong>—If a container crashes, a new one will be created to replace it.</li>
+<li><strong>Horizontal scaling</strong>—By observing CPU or custom metrics, Kubernetes can add and remove instances as needed.</li>
+<li><strong>Volume management</strong>—It manages the persistent storage used by your applications</li>
+<li><strong>Service discovery &amp; load balancing</strong>—IP address, DNS, and multiple instances are load-balanced.</li>
+<li><strong>Automated rollouts &amp; rollbacks</strong>–During updates, the health of your new instances are monitored, and if a failure occurs, it can roll back to the previous version automatically.</li>
+<li><strong>Secret &amp; configuration management</strong>. It manages application configuration and secrets.</li>
+</ul>
+<p>Kubernetes uses a master/slave communication model where there is at least one master and usually several worker nodes. The master (sometimes called the control plane) has three components and a data store:</p>
+<ul>
+<li><strong>API server</strong>—exposes the Kubernetes API for controlling the cluster</li>
+<li><strong>Controller manager</strong>—responsible for watching the cluster’s objects and resources and ensuring the desired state is consistent</li>
+<li><strong>Scheduler</strong>—responsible for scheduling compute requests on the cluster</li>
+<li><strong>etcd</strong>—an open-source distributed key value store used to hold the cluster data</li>
+</ul>
+<p>The worker nodes provide the container runtime for your applications and have a few components responsible for communicating with the master and networking on every worker node:</p>
+<ul>
+<li><strong>Kubelet</strong>—responsible for communicating to the master and ensuring the containers are running on the node</li>
+<li><strong>Kube-proxy</strong>—enables the cluster to forward traffic to executing containers</li>
+<li><strong>Docker (container runtime)</strong>—provides the runtime environment for containers</li>
+</ul>
+<p><img decoding="async" src="data:application/octet-stream;base64," alt="Diagram showing Kubernetes master and worker nodes" width="924" height="505"></p>
+<p>The master and workers are the platform that run your applications. In order to get your applications running on the cluster, you need to interact with the API server and work with the Kubernetes object model.</p>
+<h3>Kubernetes objects</h3>
+<p>To run an application on Kubernetes, you need to communicate with the API server using the object model. The objects are usually expressed in .yaml or .json format; kubectl is the command-line interface used to interact with the API.</p>
+<p>The most common objects are:</p>
+<ul>
+<li><strong>Pod</strong>—a group of one or more containers and metadata</li>
+<li><strong>Service</strong>—works with a set of pods and directs traffic to them</li>
+<li><strong>Deployment</strong>—ensures the desired state and scale are maintained</li>
+</ul>
+<p>To find out more about how your applications work on Kubernetes, watch this short video by Brendan Burns on <a href="https://www.youtube.com/watch?v=daVUONZqn88&amp;list=PLLasX02E8BPCrIhFrc_ZiINhbRkYMKdPT&amp;index=3&amp;t=2s">How Kubernetes works</a>.</p>
+<p>Here is <a href="https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough">a great walkthough</a> that uses a Python voting application and a Redis cache to help you get started with the Kubernetes concepts.</p>
+<h2>Conclusion</h2>
+<p>Containers are the foundation of modern applications. Docker provides the toolset to easily create container images of your applications, and Kubernetes gives you the platform to run it all.</p>
+<p>Now that you know the basic pieces of the puzzle and have a better idea of what containers, Docker, and Kubernetes are all about, you can learn more at <a href="https://azure.microsoft.com/en-us/resources/kubernetes-learning-path/">Kubernetes Learning Path.</a></p>
+
+
+					
+<div data-bi-an="Author Bio">
+						<p><img width="170" height="142" src="data:application/octet-stream;base64," alt="Jason Haley bio picture" srcset="data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w, data:application/octet-stream;base64, 330w, data:application/octet-stream;base64, 400w" sizes="(max-width: 170px) 100vw, 170px">						</p>
+					</div>
+
+					
+									</div></div>
+  </div>
+</body>
+</html>

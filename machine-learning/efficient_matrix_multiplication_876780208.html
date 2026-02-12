@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Efficient matrix multiplication</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Efficient matrix multiplication</h1>
+    <p><strong>URL:</strong> <a href="https://gist.github.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0">https://gist.github.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0</a></p>
+    <p><strong>Tags:</strong> algorithms-math, linear-algebra, machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876780208</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="file-matrix-md">
+    <article itemprop="text"><p dir="auto"><h2 dir="auto">High-Performance Matrix Multiplication</h2><a id="user-content-high-performance-matrix-multiplication" aria-label="Permalink: High-Performance Matrix Multiplication" href="#high-performance-matrix-multiplication"></a></p>
+<p dir="auto">This is a short post that explains how to write a high-performance matrix
+multiplication program on modern processors. In this tutorial I will use a
+single core of the Skylake-client CPU with AVX2, but the principles in this post
+also apply to other processors with different instruction sets (such as AVX512).</p>
+<p dir="auto"><h2 dir="auto">Intro</h2><a id="user-content-intro" aria-label="Permalink: Intro" href="#intro"></a></p>
+<p dir="auto">Matrix multiplication is a mathematical operation that defines the product of
+two matrices. It's defined as</p>
+<pre><code>C(m, n) = A(m, k) * B(k, n)
+</code></pre>
+<p dir="auto">It is implemented as a dot-product between the row matrix A and a column of
+matrix B. In other words, it’s a sum over element-wise multiplication of two
+scalars. And this is a naïve implementation in C:</p>
+<div dir="auto"><pre><span>for</span> (<span>int</span> i = <span>0</span>; i &lt; m; i++) {
+  <span>for</span> (<span>int</span> j = <span>0</span>; j &lt; n; j++) {
+    <span>for</span> (<span>int</span> p = <span>0</span>; p &lt; k; p++) {
+      <span>C</span>(i, j) += <span>A</span>(i, p) * <span>B</span>(p, j);
+    }
+  }
+}</pre></div>
+<p dir="auto">The picture below visualizes the computation of a single element in the result
+matrix C. Each element in the result matrix C is the sum of element-wise
+multiplication of a row from A and a column from B.</p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://gist.githubusercontent.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0/raw/23dc2fdf78e88ef7fa2f00028bb735ee70429d6d/zsimple.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<p dir="auto"><h2 dir="auto">Performance analysis</h2><a id="user-content-performance-analysis" aria-label="Permalink: Performance analysis" href="#performance-analysis"></a></p>
+<p dir="auto">The naïve implementation is pretty inefficient. In the next paragraph we’ll
+estimate the capabilities of some processor in terms of flops/sec (floating
+point operations per second). When you read the C code above try to guess how
+efficient the naïve algorithm is. Can we make this program twice as fast? Maybe
+more?</p>
+<p dir="auto">My laptop has an Intel Skylake processor with AVX2. This processor has two
+execution ports that are capable of running 8-wide FMA (fused multiply-add)
+instructions on each port every cycle. The machine runs at a frequency of about
+4Ghz (let’s ignore Turbo in this discussion). To calculate the throughput of the
+machine we’ll need to multiply these numbers together. 8 floating point numbers,
+times two ports, times two (because we perform multiply and add together), times
+4 giga hertz equals 128 Giga flops per second. (Giga is 1 followed by 9 zeros).</p>
+<p dir="auto">Now, let’s estimate how much work we need to perform. Let’s assume that we are
+trying to multiply two matrices of size <code>1024 x 1024</code>.  The algorithm that we use
+for matrix multiplication is <code>O(n^3)</code>, and for each element we perform two
+operations: multiplication and addition. The amount of compute that we need to
+perform is <code>1024 ^ 3 * 2</code>, which is about 2.1 Giga-flops. We should be able to
+perform about 60 <code>1024 x 1024</code> matrix multiplications per second if our code were
+100% efficient and the program were not memory bound. This is the top of the
+roof in the roofline model.</p>
+<p dir="auto">On my machine the naïve algorithm runs at around 8Gflops/sec. This is about 7%
+utilization. In other words, the processor multipliers are idle 93% of the time.</p>
+<p dir="auto"><h2 dir="auto">Why is this program slow?</h2><a id="user-content-why-is-this-program-slow" aria-label="Permalink: Why is this program slow?" href="#why-is-this-program-slow"></a></p>
+<p dir="auto">Our program is memory bound, which means that the multipliers are not active
+most of the time because they are waiting for memory. One way to verify this
+claim is to use performance counters. The two relevant counters are: the number
+of executed AVX instructions, and the total number of cycle. When the code is
+efficient, the number of AVX arithmetic operations is close to the total number
+of cycles. If there's a big gap between the two numbers, then we need to
+investigate the cause. There are performance counters that record different
+kinds of stalls, including memory stalls. This is a picture from Xcode’s
+profiler that can record cpu performance counters.</p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://gist.githubusercontent.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0/raw/23dc2fdf78e88ef7fa2f00028bb735ee70429d6d/zcounters.png"><img src="data:application/octet-stream;base64," alt="Counters"></a></p>
+<p dir="auto"><h2 dir="auto">Optimize the memory bandwidth</h2><a id="user-content-optimize-the-memory-bandwidth" aria-label="Permalink: Optimize the memory bandwidth" href="#optimize-the-memory-bandwidth"></a></p>
+<p dir="auto">The CPU multipliers are not fully utilized because the naïve implementation
+is memory bound. The processor is capable of loading wide SIMD vectors. On my
+machine, using AVX, it’s 8 floating point numbers at once. In the case of matrix
+A, the processor loads a cache line from the main memory into the L1 cache. Then it
+loads the scalars from the cache line one at a time. This is not ideal, but the
+situation of matrix B is much much worse. In matrix B, we scan the matrix down a
+column and use a single scalar from every cache line that we load. By the time
+we finish scanning the column and start the next column, the processor had
+already flushed the cache. Here I assume that the length of the column times
+the size of the cache line is greater than our L1 cache. On my machine the L1
+cache is 32K, and the size of the cache line is 64 bytes. This means that a
+naïve scan of matrix with 512 rows would invalidate the L1 cache.</p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://gist.githubusercontent.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0/raw/23dc2fdf78e88ef7fa2f00028bb735ee70429d6d/zlanes.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<p dir="auto">The first thing that we need to do to accelerate our program is to improve the
+memory utilization of matrix B.</p>
+<p dir="auto">One possible implementation, which is kind of intuitive when you look at the
+first diagram, is to use multiple scalar values from each cache line in matrix B
+at once. We need to multiply the value that we load from matrix A with 8
+consecutive values from matrix B.  We can load a scalar from matrix A and
+broadcast it 8 times to fill the SIMD register. Then, we can load 8 consecutive
+columns from matrix B and perform the vectorized element-wise computation. This
+means that we process and calculate 8 results in matrix C at once. The picture
+below depicts the vectorized matrix multiplication. Notice that instead of
+accumulating into a single scalar we'll be accumulating into a short vector of 8
+scalars. The vectorized method will calculate 8 values in matrix C together.</p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://gist.githubusercontent.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0/raw/23dc2fdf78e88ef7fa2f00028bb735ee70429d6d/zvectorized.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<p dir="auto">This transformation reduces the memory bandwidth of matrix B by a factor of 8
+(the SIMD width). Instead of performing <code>N*N</code> reads (that most likely miss the
+cache) we perform <code>N*N/8</code> reads.</p>
+<p dir="auto">Now that we’ve optimized the bandwidth of matrix B, let’s look at our CPU
+architecture again. Our machine has two FMA ports, and two memory ports. This
+means that we can load two elements from memory each cycle and perform two
+arithmetic operations each cycle. However, in our algorithm we multiply an
+element from matrix A with an element from matrix B. This means that we have two
+memory operations for every arithmetic operation. Half of the time our
+multipliers are waiting for data to be read from memory. In other words, our
+current implementation can achieve at most 50% utilization.</p>
+<p dir="auto"><h2 dir="auto">Register Blocking</h2><a id="user-content-register-blocking" aria-label="Permalink: Register Blocking" href="#register-blocking"></a></p>
+<p dir="auto">To get from 50% utilization to 100% utilization we need to perform one memory
+operation for every arithmetic operation. The technique that people use is
+called “register blocking”. It sounds scary, but it’s actually very simple.
+After loading a value from memory, we need to use it more than once when
+performing arithmetic calculations. Every value that we load from matrix A
+should be multiplied with several values from matrix B, and every value that we
+load from matrix B should be multiplied with several values from matrix A. Take
+a look at the diagram below.  Instead of calculating a single scalar in matrix C
+we calculate a small patch. We accumulate into a number of registers at once.</p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://gist.githubusercontent.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0/raw/23dc2fdf78e88ef7fa2f00028bb735ee70429d6d/zregblock.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<p dir="auto">The templated code below implements the innermost loops that calculate a patch
+of size <code>regA x regB</code> in matrix C. The code loads <code>regA</code> scalars from matrixA
+and <code>regB</code> SIMD-width vectors from matrix B. The program uses Clang's extended
+vector syntax.</p>
+<div dir="auto"><pre><span><span>//</span>/ Compute a RAxRB block of C using a vectorized dot product, where RA is the</span>
+<span><span>//</span>/ number of registers to load from matrix A, and RB is the number of registers</span>
+<span><span>//</span>/ to load from matrix B.</span>
+<span>template </span>&lt;<span>unsigned</span> regsA, <span>unsigned</span> regsB&gt;
+<span>void</span> <span>matmul_dot_inner</span>(<span>int</span> k, <span>const</span> <span>float</span> *a, <span>int</span> lda, <span>const</span> <span>float</span> *b, <span>int</span> ldb,
+                      <span>float</span> *c, <span>int</span> ldc) {
+  float8 csum[regsA][regsB] = {{<span>0.0</span>}};
+  <span>for</span> (<span>int</span> p = <span>0</span>; p &lt; k; p++) {
+
+    <span><span>//</span> Perform the DOT product.</span>
+    <span>for</span> (<span>int</span> bi = <span>0</span>; bi &lt; regsB; bi++) {
+      float8 bb = <span>LoadFloat8</span>(&amp;<span>B</span>(p, bi * <span>8</span>));
+      <span>for</span> (<span>int</span> ai = <span>0</span>; ai &lt; regsA; ai++) {
+        float8 aa = <span>BroadcastFloat8</span>(<span>A</span>(ai, p));
+        csum[ai][bi] += aa * bb;
+      }
+    }
+  }
+
+  <span><span>//</span> Accumulate the results into C.</span>
+  <span>for</span> (<span>int</span> ai = <span>0</span>; ai &lt; regsA; ai++) {
+    <span>for</span> (<span>int</span> bi = <span>0</span>; bi &lt; regsB; bi++) {
+      <span>AdduFloat8</span>(&amp;<span>C</span>(ai, bi * <span>8</span>), csum[ai][bi]);
+    }
+  }
+}
+</pre></div>
+<p dir="auto">The C++ code above compiles to the assembly sequence below where <code>RegA = 3</code>, and
+<code>RegB = 4</code>. You’ll notice that all of the arithmetic operations (vfmadd231ps)
+operate directly on registers. This is a good thing because the values that are
+loaded from matrix A and matrix B are reused by multiple arithmetic
+instructions.</p>
+<pre><code> nop
+ vbroadcastss        (%rsi), %ymm12
+ vmovups             -96(%rdx), %ymm13
+ vfmadd231ps         %ymm13, %ymm12, %ymm11
+ vbroadcastss        (%r13), %ymm14
+ vfmadd231ps         %ymm13, %ymm14, %ymm9
+ vbroadcastss        (%rbx), %ymm15
+ vfmadd231ps         %ymm13, %ymm15, %ymm5
+ vmovups             -64(%rdx), %ymm13
+ vfmadd231ps         %ymm12, %ymm13, %ymm10
+ vfmadd231ps         %ymm13, %ymm14, %ymm7
+ vfmadd231ps         %ymm13, %ymm15, %ymm3
+ vmovups             -32(%rdx), %ymm13
+ vfmadd231ps         %ymm12, %ymm13, %ymm8
+ vfmadd231ps         %ymm14, %ymm13, %ymm4
+ vfmadd231ps         %ymm13, %ymm15, %ymm1
+ vmovups             (%rdx), %ymm13
+ vfmadd231ps         %ymm12, %ymm13, %ymm6
+ vfmadd231ps         %ymm14, %ymm13, %ymm2
+ vfmadd231ps         %ymm15, %ymm13, %ymm0
+ addq                $4, %rbx
+ addq                $4, %r13
+ addq                $4, %rsi
+ addq                %r11, %rdx
+ addq                $-1, %r14
+ jne                 "matmul-f+0x490"
+</code></pre>
+<p dir="auto"><h2 dir="auto">Selecting the optimal register block parameters</h2><a id="user-content-selecting-the-optimal-register-block-parameters" aria-label="Permalink: Selecting the optimal register block parameters" href="#selecting-the-optimal-register-block-parameters"></a></p>
+<p dir="auto">How do we decide how many elements to load from matrix A and how many from
+matrix B?  One thing that we need to notice is that the number of registers is
+limited. AVX2 can only encode 16 registers, which means that the size of the
+patch in matrix C that we can calculate can be at most <code>16 * SIMD-width</code>.</p>
+<p dir="auto">The configuration that we pick needs to minimize the ratio between the number of
+memory operations and the number of arithmetic operations.  The table below
+lists a few possible register blocking values and their properties. The memory
+operations column is calculated as <code>RegA + RegB</code>, because we need to load all of
+the registers from memory. The arithmetic operations column is calculated as
+<code>RegA * RegB</code> because we are multiplying each value from A with each value from
+B.  The total number of registers used is calculated as the number of
+accumulation registers plus the number of registers from matrix A, that we
+broadcast values into.</p>
+<markdown-accessiblity-table><table>
+<thead>
+<tr>
+<th>Regs A</th>
+<th>Regs B</th>
+<th>Registers Used</th>
+<th>Memory Ops</th>
+<th>Arithmetic Ops</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>4</td>
+<td>5</td>
+<td>5</td>
+<td>4</td>
+</tr>
+<tr>
+<td>2</td>
+<td>4</td>
+<td>10</td>
+<td>6</td>
+<td>8</td>
+</tr>
+<tr>
+<td>2</td>
+<td>5</td>
+<td>12</td>
+<td>7</td>
+<td>10</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3</td>
+<td>16</td>
+<td>7</td>
+<td>12</td>
+</tr>
+<tr>
+<td>1</td>
+<td>8</td>
+<td>9</td>
+<td>9</td>
+<td>8</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4</td>
+<td>15</td>
+<td>7</td>
+<td>12</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">As you can see in the table, when we select <code>RegA = 3</code> and <code>RegB = 4</code> we get the
+best compute-to-memory ratio while still using less than 16 registers.</p>
+<p dir="auto"><h2 dir="auto">FMA utilization of register blocking</h2><a id="user-content-fma-utilization-of-register-blocking" aria-label="Permalink: FMA utilization of register blocking" href="#fma-utilization-of-register-blocking"></a></p>
+<p dir="auto">On Skylake the FMA execution ports are pipelined and have a latency of 5 cycles.
+This means that to keep two FMA ports busy we need 10 independent chains of
+computation. If we were to execute the code <code>C += A * B</code> in a loop then we would
+need to wait 5 cycles before each iteration, because the current C would depend
+on the result of the previous C, and the utilization of the machine would be
+at most 20%.</p>
+<p dir="auto">When we block our registers with the parameters <code>3x4</code> we ensure that we have 12
+independent chains of calculation that ensure that our FMA ports are always
+busy.  If we had decided to use register blocking of <code>2x4</code> then our FMAs would
+only have 8 independent chains of calculation, which would result in only 80%
+utilization because only 8 values would be processed at once, instead of 10.</p>
+<p dir="auto">The high-performance Convolution implementation in
+<a href="https://arxiv.org/abs/1805.00907" rel="nofollow">Glow</a> uses a <code>2x5</code> register blocking
+implementation because these dimensions happen to work better for the shapes of
+the matrices used.</p>
+<p dir="auto"><h2 dir="auto">Tiling</h2><a id="user-content-tiling" aria-label="Permalink: Tiling" href="#tiling"></a></p>
+<p dir="auto">Register Blocking significantly reduces the number of times we load elements
+from matrix B. However, our memory access pattern is still inefficient. We
+access matrix B many times and multiply the values with different parts of
+matrix A. As a result, we load matrix B into our cache, and then invalidate
+this cache by loading a different part of matrix B.</p>
+<p dir="auto">We now know how to calculate a patch in the output matrix C. Notice that the
+order in which we calculate patches in matrix C affects the order in which we
+access memory in matrix A and B. An ideal memory access pattern would be one
+where we load matrix B into our L1 cache and keep it there for a long time. One
+way to make this happen is to tile the calculation of matrix C. This is pretty
+easy to do, just divide matrix C into small tiles (say, <code>128 x 256</code>) and
+calculate the results in C one patch at a time.</p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://gist.githubusercontent.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0/raw/23dc2fdf78e88ef7fa2f00028bb735ee70429d6d/ztile.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<p dir="auto"><h2 dir="auto">Conclusion</h2><a id="user-content-conclusion" aria-label="Permalink: Conclusion" href="#conclusion"></a></p>
+<p dir="auto">The register-blocked matrix multiplication is implemented in the
+<a href="https://github.com/pytorch/glow/blob/master/lib/Backends/CPU/libjit/libjit_matmul.cpp">Glow compiler</a>.
+The code is very similar to the code in this post, except that it also handles
+matrices with dimensions that are not a multiplication of the SIMD width.  On my
+machine the code runs at around 100 Gflops, which is not far from the
+theoretical peak, and similar to Intel's optimized implementation. To see what else can be done I recommend
+reading this <a href="https://www.cs.utexas.edu/users/pingali/CS378/2008sp/papers/gotoPaper.pdf" rel="nofollow">paper</a> by Kazushige Goto.</p>
+<p dir="auto">The high-performance implementations of matrix multiplication is actually kind
+of strange: load 3 scalars from the left-hand-side matrix and broadcast them
+into full SIMD registers, then load 4 vector values from the right-hand-side
+matrix, and multiply all of them into 12 accumulation registers. This odd
+implementation is not something that the compiler can do for you
+automatically.</p>
+</article>
+  </div></div>
+  </div>
+</body>
+</html>

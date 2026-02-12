@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AB - Introduction to Gaussian Processes - Part I</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>AB - Introduction to Gaussian Processes - Part I</h1>
+    <p><strong>URL:</strong> <a href="http://bridg.land/posts/gaussian-processes-1">http://bridg.land/posts/gaussian-processes-1</a></p>
+    <p><strong>Tags:</strong> gaussian</p>
+    <p><strong>Bookmark ID:</strong> 876769068</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="articleBody">
+      <p>Gaussian processes may not be at the center of current machine learning hype but are still used at the forefront of research – they were recently seen automatically tuning the MCTS hyperparameters for AlphaGo Zero for instance. They manage to be very easy to use while providing rich modeling capacity and uncertainty estimates.</p>
+
+<p>However they can be pretty hard to grasp, especially if you’re used to the type of models we see a lot of in deep learning. So hopefully this guide can fix that! It assumes a fairly minimal ML background and I aimed for a more visual &amp; intuitive introduction without totally abandoning the theory. To get the most out of it I recommend downloading the notebook and experimenting with all the code!</p>
+
+<p><a href="https://gist.github.com/Bridgo/429594942ff51037ecc703905e40c562" target="_blank">Jupyter notebook version</a></p>
+
+<h2 id="what-is-a-gaussian-process-and-why-would-i-use-one">What is a Gaussian Process and why would I use one?</h2>
+<hr>
+<p>A Gaussian process (GP) is a powerful model that can be used to represent a distribution over functions. Most modern techniques in machine learning tend to avoid this by parameterising functions and then modeling these parameters (e.g. the weights in linear regression). However GPs are nonparametric models that model the function directly. This comes with one hugely important benefit: not only can we model any black-box function, <strong>we can also model our uncertainty</strong>. Quantifying uncertainty can be extremely valuable - for example if we are allowed to explore (request more data) we can chose to explore the areas we are least certain about to be as efficient as possible. This is the main idea behind Bayesian optimisation. For more information on the importance of uncertainty modeling see <a href="http://mlg.eng.cam.ac.uk/yarin/blog_3d801aa532c1ce.html" target="_blank">this article</a> by Yarin Gal.</p>
+
+<blockquote>
+  <p>If you give me several pictures of cats and dogs – and then you ask me to classify a new cat photo – I should return a prediction with rather high confidence. But if you give me a photo of an ostrich and force my hand to decide if it’s a cat or a dog – I better return a prediction with very low confidence.</p>
+
+  <p>Yarin Gal</p>
+</blockquote>
+
+<p>For this introduction we will consider a simple regression setup without noise (but GPs can be extended to multiple dimensions and noisy data):</p>
+<ul>
+  <li>We assume there is some hidden function \( f:\mathbb{R}\rightarrow\mathbb{R} \) that we want to model.</li>
+  <li>We have data \( \mathbf{x}=[x_ 1, \ldots, x_N]^T, \mathbf{y}=[y_ 1, \ldots, y_N]^T \) where \( y_i = f(x_i) \).</li>
+  <li>We want to predict the value of \( f \) at some new, unobserved points \( \mathbf{x}_* \).</li>
+</ul>
+
+<h2 id="modeling-functions-using-gaussians">Modeling Functions using Gaussians</h2>
+<hr>
+<p>The key idea behind GPs is that a function can be modeled using an infinite dimensional multivariate Gaussian distribution. In other words, every point in the input space is associated with a random variable and the joint distribution of these is modeled as a multivariate Gaussian.</p>
+
+<p>Ok, so what does that mean and what does it actually look like? Well lets start with a simpler case: a unit 2D Gaussian. How can we start to view this as a distribution over functions? Here’s what we have:</p><p>
+
+\[\begin{pmatrix} y_0 \\ y_1 \end{pmatrix} \sim\mathcal{N}\left(\begin{pmatrix} 0\\ 0 \end{pmatrix}, \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{pmatrix}\right)\]
+
+</p><p>Normally this is visualised as a 3D bell curve with the probability density represented as height. But what if, instead of visualising the whole distribution, we just sample from the distribution. Then we will have two values which we can plot on an graph. Let’s do this 10 times, putting the first value at \( x=0 \) and the second at \( x=1 \) and then drawing a line between them.</p>
+
+<figure><pre><code data-lang="python"><span>def</span> <span>plot_unit_gaussian_samples</span><span>(</span><span>D</span><span>):</span>
+    <span>p</span> <span>=</span> <span>figure</span><span>(</span><span>plot_width</span><span>=</span><span>800</span><span>,</span> <span>plot_height</span><span>=</span><span>500</span><span>,</span>
+               <span>title</span><span>=</span><span>'Samples from a unit {}D Gaussian'</span><span>.</span><span>format</span><span>(</span><span>D</span><span>))</span>
+
+    <span>xs</span> <span>=</span> <span>np</span><span>.</span><span>linspace</span><span>(</span><span>0</span><span>,</span> <span>1</span><span>,</span> <span>D</span><span>)</span>
+    <span>for</span> <span>color</span> <span>in</span> <span>Category10</span><span>[</span><span>10</span><span>]:</span>
+        <span>ys</span> <span>=</span> <span>np</span><span>.</span><span>random</span><span>.</span><span>multivariate_normal</span><span>(</span><span>np</span><span>.</span><span>zeros</span><span>(</span><span>D</span><span>),</span> <span>np</span><span>.</span><span>eye</span><span>(</span><span>D</span><span>))</span>
+        <span>p</span><span>.</span><span>line</span><span>(</span><span>xs</span><span>,</span> <span>ys</span><span>,</span> <span>line_width</span><span>=</span><span>1</span><span>,</span> <span>color</span><span>=</span><span>color</span><span>)</span>
+    <span>return</span> <span>p</span>
+
+<span>show</span><span>(</span><span>plot_unit_gaussian_samples</span><span>(</span><span>2</span><span>))</span></code></pre></figure>
+
+
+
+
+
+<p>Looking at all these lines on a graph, it starts to look like we’ve just sampled 10 linear functions… What if we now use a 20-dimensional Gaussian, joining each of the sampled points in order?</p>
+
+<figure><pre><code data-lang="python"><span>show</span><span>(</span><span>plot_unit_gaussian_samples</span><span>(</span><span>20</span><span>))</span></code></pre></figure>
+
+
+
+
+
+<p>These definitely look like functions of sorts but they look far too noisy to be useful for our purposes. Let’s think a bit more about what we want from these samples and how we might change the distribution to get better looking samples…</p>
+
+<p>The multivariate Gaussian has two parameters, its mean and covariance matrix. If we changed the mean then we would only change the overall trend (i.e. if the mean was ascending integers, e.g. <code>np.arange(D)</code> then the samples would have an overall positive linear trend) but there would still be that jagged noisy shape. For this reason we tend to leave the GP mean as zero - they actually turn out to be powerful enough to model many functions without changing this.</p>
+
+<p>Instead we want some notion of <em>smoothness</em>: i.e. if two input points are close to each other then we expect the value of the function at those points to be similar. In terms of our model: random variables corresponding to nearby points should have similar values when sampled under their joint distribution (i.e. high <em>covariance</em>).</p>
+
+<p>The covariance of these points is defined in the covariance matrix of the Gaussian. Suppose we have an \( N \) dimensional Gaussian modeling \( y_0,\ldots, y_N \), then the covariance matrix \( \Sigma \) is \( N\times N \) and its \( (i, j) \)-th element is \( \Sigma_{ij}=\text{cov}(y_i, y_j)\). In other words \( \Sigma \) is symmetric and stores the pairwise covariances of all the jointly modeled random variables.</p>
+
+<h2 id="smoothing-with-kernels">Smoothing with Kernels</h2>
+<hr>
+
+<p>So how should we define our covariance function? This is where the vast literature on kernels comes in handy. For our purposes we will choose a <strong>squared exponential kernel</strong> which (in its simplest form) is defined by:</p><p>
+
+\[\kappa(x, x')=\exp\left(-~\frac{(x-x')^2}{2}\right)\]
+
+</p><p>This function (which we plot in a moment) is 1 when \( x=x’ \) and tends to zero as its arguments drift apart.</p>
+
+<figure><pre><code data-lang="python"><span>def</span> <span>k</span><span>(</span><span>xs</span><span>,</span> <span>ys</span><span>,</span> <span>sigma</span><span>=</span><span>1</span><span>,</span> <span>l</span><span>=</span><span>1</span><span>):</span>
+    <span>"""Sqared Exponential kernel as above but designed to return the whole
+    covariance matrix - i.e. the pairwise covariance of the vectors xs &amp; ys.
+    Also with two parameters which are discussed at the end."""</span>
+
+    <span># Pairwise difference matrix.
+</span>    <span>dx</span> <span>=</span> <span>np</span><span>.</span><span>expand_dims</span><span>(</span><span>xs</span><span>,</span> <span>1</span><span>)</span> <span>-</span> <span>np</span><span>.</span><span>expand_dims</span><span>(</span><span>ys</span><span>,</span> <span>0</span><span>)</span>
+    <span>return</span> <span>(</span><span>sigma</span> <span>**</span> <span>2</span><span>)</span> <span>*</span> <span>np</span><span>.</span><span>exp</span><span>(</span><span>-</span><span>((</span><span>dx</span> <span>/</span> <span>l</span><span>)</span> <span>**</span> <span>2</span><span>)</span> <span>/</span> <span>2</span><span>)</span>
+
+<span>def</span> <span>m</span><span>(</span><span>x</span><span>):</span>
+    <span>"""The mean function. As discussed, we can let the mean always be zero."""</span>
+    <span>return</span> <span>np</span><span>.</span><span>zeros_like</span><span>(</span><span>x</span><span>)</span></code></pre></figure>
+
+<p>We can plot this kernel to show how it’s maximised when \( x=x’ \) and then smoothly falls off as the two inputs start to differ.</p>
+
+<figure><pre><code data-lang="python"><span>N</span> <span>=</span> <span>100</span>
+<span>x</span> <span>=</span> <span>np</span><span>.</span><span>linspace</span><span>(</span><span>-</span><span>2</span><span>,</span> <span>2</span><span>,</span> <span>N</span><span>)</span>
+<span>y</span> <span>=</span> <span>np</span><span>.</span><span>linspace</span><span>(</span><span>-</span><span>2</span><span>,</span> <span>2</span><span>,</span> <span>N</span><span>)</span>
+<span>d</span> <span>=</span> <span>k</span><span>(</span><span>x</span><span>,</span> <span>y</span><span>)</span>
+
+<span>color_mapper</span> <span>=</span> <span>LinearColorMapper</span><span>(</span><span>palette</span><span>=</span><span>"Plasma256"</span><span>,</span> <span>low</span><span>=</span><span>0</span><span>,</span> <span>high</span><span>=</span><span>1</span><span>)</span>
+
+<span>p</span> <span>=</span> <span>figure</span><span>(</span><span>plot_width</span><span>=</span><span>400</span><span>,</span> <span>plot_height</span><span>=</span><span>400</span><span>,</span> <span>x_range</span><span>=</span><span>(</span><span>-</span><span>2</span><span>,</span> <span>2</span><span>),</span> <span>y_range</span><span>=</span><span>(</span><span>-</span><span>2</span><span>,</span> <span>2</span><span>),</span>
+           <span>title</span><span>=</span><span>'Visualisation of k(x, x</span><span>\'</span><span>)'</span><span>,</span> <span>x_axis_label</span><span>=</span><span>'x'</span><span>,</span>
+           <span>y_axis_label</span><span>=</span><span>'x</span><span>\'</span><span>'</span><span>,</span> <span>toolbar_location</span><span>=</span><span>None</span><span>)</span>
+<span>p</span><span>.</span><span>image</span><span>(</span><span>image</span><span>=</span><span>[</span><span>d</span><span>],</span> <span>color_mapper</span><span>=</span><span>color_mapper</span><span>,</span> <span>x</span><span>=-</span><span>2</span><span>,</span> <span>y</span><span>=-</span><span>2</span><span>,</span> <span>dw</span><span>=</span><span>4</span><span>,</span> <span>dh</span><span>=</span><span>4</span><span>)</span>
+
+<span>color_bar</span> <span>=</span> <span>ColorBar</span><span>(</span><span>color_mapper</span><span>=</span><span>color_mapper</span><span>,</span> <span>ticker</span><span>=</span><span>BasicTicker</span><span>(),</span>
+                     <span>label_standoff</span><span>=</span><span>12</span><span>,</span> <span>border_line_color</span><span>=</span><span>None</span><span>,</span> <span>location</span><span>=</span><span>(</span><span>0</span><span>,</span><span>0</span><span>))</span>
+
+<span>p</span><span>.</span><span>add_layout</span><span>(</span><span>color_bar</span><span>,</span> <span>'right'</span><span>)</span>
+
+<span>show</span><span>(</span><span>p</span><span>)</span></code></pre></figure>
+
+
+
+
+
+<p>So, to get the sort of smoothness we want we will consider two random variables \( y_i \) and \( y_j \) plotted at \( x_i \) and \( x_j \) to have covariance \( \text{cov}(y_i, y_j)=\kappa(x_i, x_j)\) – <em>the closer they are together the higher their covariance</em>.</p>
+
+<p>Using the kernel function from above we can get this matrix with <code>k(xs, xs)</code>. Now lets try plotting another 10 samples from the 20D Gaussian, but this time with the new covariance matrix. When we do this we get:</p>
+
+<figure><pre><code data-lang="python"><span>p</span> <span>=</span> <span>figure</span><span>(</span><span>plot_width</span><span>=</span><span>800</span><span>,</span> <span>plot_height</span><span>=</span><span>500</span><span>)</span>
+<span>D</span> <span>=</span> <span>20</span>
+<span>xs</span> <span>=</span> <span>np</span><span>.</span><span>linspace</span><span>(</span><span>0</span><span>,</span> <span>1</span><span>,</span> <span>D</span><span>)</span>
+<span>for</span> <span>color</span> <span>in</span> <span>Category10</span><span>[</span><span>10</span><span>]:</span>
+    <span>ys</span> <span>=</span> <span>np</span><span>.</span><span>random</span><span>.</span><span>multivariate_normal</span><span>(</span><span>m</span><span>(</span><span>xs</span><span>),</span> <span>k</span><span>(</span><span>xs</span><span>,</span> <span>xs</span><span>))</span>
+    <span>p</span><span>.</span><span>circle</span><span>(</span><span>xs</span><span>,</span> <span>ys</span><span>,</span> <span>size</span><span>=</span><span>3</span><span>,</span> <span>color</span><span>=</span><span>color</span><span>)</span>
+    <span>p</span><span>.</span><span>line</span><span>(</span><span>xs</span><span>,</span> <span>ys</span><span>,</span> <span>line_width</span><span>=</span><span>1</span><span>,</span> <span>color</span><span>=</span><span>color</span><span>)</span>
+
+<span>show</span><span>(</span><span>p</span><span>)</span></code></pre></figure>
+
+
+
+
+
+<p>Now we have something thats starting to look like a distribution over (useful) functions! And we can see how as the number of dimensions tends to infinity we don’t have to connect points any more because we will have a point for every possible choice of input.</p>
+
+<p>Let’s use more dimensions and see what it looks like across a bigger range of inputs:</p>
+
+<figure><pre><code data-lang="python"><span>n</span> <span>=</span> <span>100</span>
+<span>xs</span> <span>=</span> <span>np</span><span>.</span><span>linspace</span><span>(</span><span>-</span><span>5</span><span>,</span> <span>5</span><span>,</span> <span>n</span><span>)</span>
+<span>K</span> <span>=</span> <span>k</span><span>(</span><span>xs</span><span>,</span> <span>xs</span><span>)</span>
+<span>mu</span> <span>=</span> <span>m</span><span>(</span><span>xs</span><span>)</span>
+
+<span>p</span> <span>=</span> <span>figure</span><span>(</span><span>plot_width</span><span>=</span><span>800</span><span>,</span> <span>plot_height</span><span>=</span><span>500</span><span>)</span>
+
+<span>for</span> <span>color</span> <span>in</span> <span>Category10</span><span>[</span><span>5</span><span>]:</span>
+    <span>ys</span> <span>=</span> <span>np</span><span>.</span><span>random</span><span>.</span><span>multivariate_normal</span><span>(</span><span>mu</span><span>,</span> <span>K</span><span>)</span>
+    <span>p</span><span>.</span><span>line</span><span>(</span><span>xs</span><span>,</span> <span>ys</span><span>,</span> <span>line_width</span><span>=</span><span>2</span><span>,</span> <span>color</span><span>=</span><span>color</span><span>)</span>
+<span>show</span><span>(</span><span>p</span><span>)</span></code></pre></figure>
+
+
+
+
+
+<h2 id="making-predictions-using-the-prior--observations">Making Predictions using the Prior &amp; Observations</h2>
+<hr>
+<p>Now that we have a distribution over functions, how can we use training data to model a hidden function so that we can make predictions?</p>
+
+<p>First of all we need some training data! And to get that we are going to create our secret function \( f \).</p>
+
+<h3 id="the-target-function--f-">The Target Function \( f \)</h3>
+<p>For this intro we’ll use a 5th order polynomial:</p><p>
+
+\[f(x)=0.03 x^5 + 0.2 x^4 - 0.1 x^3 - 2.4 x^2 - 2.5 x + 6\]
+
+</p><p>I chose this because it has a nice wiggly graph but we could have chosen anything.</p>
+
+<figure><pre><code data-lang="python"><span># coefs[i] is the coefficient of x^i
+</span><span>coefs</span> <span>=</span> <span>[</span><span>6</span><span>,</span> <span>-</span><span>2.5</span><span>,</span> <span>-</span><span>2.4</span><span>,</span> <span>-</span><span>0.1</span><span>,</span> <span>0.2</span><span>,</span> <span>0.03</span><span>]</span>
+
+<span>def</span> <span>f</span><span>(</span><span>x</span><span>):</span>
+    <span>total</span> <span>=</span> <span>0</span>
+    <span>for</span> <span>exp</span><span>,</span> <span>coef</span> <span>in</span> <span>enumerate</span><span>(</span><span>coefs</span><span>):</span>
+        <span>total</span> <span>+=</span> <span>coef</span> <span>*</span> <span>(</span><span>x</span> <span>**</span> <span>exp</span><span>)</span>
+    <span>return</span> <span>total</span>
+
+<span>xs</span> <span>=</span> <span>np</span><span>.</span><span>linspace</span><span>(</span><span>-</span><span>5.0</span><span>,</span> <span>3.5</span><span>,</span> <span>100</span><span>)</span>
+<span>ys</span> <span>=</span> <span>f</span><span>(</span><span>xs</span><span>)</span>
+
+<span>p</span> <span>=</span> <span>figure</span><span>(</span><span>plot_width</span><span>=</span><span>800</span><span>,</span> <span>plot_height</span><span>=</span><span>400</span><span>,</span> <span>x_axis_label</span><span>=</span><span>'x'</span><span>,</span>
+           <span>y_axis_label</span><span>=</span><span>'f(x)'</span><span>,</span> <span>title</span><span>=</span><span>'The hidden function f(x)'</span><span>)</span>
+<span>p</span><span>.</span><span>line</span><span>(</span><span>xs</span><span>,</span> <span>ys</span><span>,</span> <span>line_width</span><span>=</span><span>2</span><span>)</span>
+<span>show</span><span>(</span><span>p</span><span>)</span></code></pre></figure>
+
+
+
+
+
+<h3 id="getting-into-the-maths">Getting into the Maths</h3>
+
+<p>Now we get to the heart of GPs. Theres a bit more maths required but it only consists of consolidating what we have so far and using one trick to condition our joint distribution on observed data.</p>
+
+<p>So far we have a way to model \( p(\mathbf{y}\vert\mathbf{x}) \) using a multivariate normal:</p><p>
+
+\[p(\mathbf{y}\vert\mathbf{x})=\mathcal{N}(\mathbf{y}\vert m(\mathbf{x}),\mathbf{K})\]
+
+</p><p>where \( \mathbf{K}=\kappa(\mathbf{x}, \mathbf{x}) \) and \( m(\mathbf{x})=\mathbf{0}\).</p>
+
+<p>This is a prior distribution representing the kind out outputs \( \mathbf{y} \) that we expect to see over some inputs \( \mathbf{x} \) <em>before</em> we observe any data.</p>
+
+<p>So we have some training data with inputs \( \mathbf{x} \), and outputs \( \mathbf{y}=f(\mathbf{x})\). Now lets say we have some new points \( \mathbf{x}_* \) where we want to predict \( \mathbf{y}_*=f(\mathbf{x}_*)\).</p>
+
+<figure><pre><code data-lang="python"><span>x_obs</span> <span>=</span> <span>np</span><span>.</span><span>array</span><span>([</span><span>-</span><span>4</span><span>,</span> <span>-</span><span>1.5</span><span>,</span> <span>0</span><span>,</span> <span>1.5</span><span>,</span> <span>2.5</span><span>,</span> <span>2.7</span><span>])</span>
+<span>y_obs</span> <span>=</span> <span>f</span><span>(</span><span>x_obs</span><span>)</span>
+
+<span>x_s</span> <span>=</span> <span>np</span><span>.</span><span>linspace</span><span>(</span><span>-</span><span>8</span><span>,</span> <span>7</span><span>,</span> <span>80</span><span>)</span></code></pre></figure>
+
+<p>Now recalling the definition of a GP, we will model the joint distribution of all of \( \mathbf{y} \) and \( \mathbf{y}_* \) as:</p><p>
+
+\[\begin{pmatrix}\mathbf{y} \\ \mathbf{y}_*\end{pmatrix} \sim\mathcal{N}\left(\begin{pmatrix}m(\mathbf{x})\\ m(\mathbf{x}_*)\end{pmatrix}, \begin{pmatrix}\mathbf{K} &amp; \mathbf{K}_* \\ \mathbf{K}_*^T &amp; \mathbf{K}_{**}\end{pmatrix}\right)\]
+
+</p><p>where \( \mathbf{K}=\kappa(\mathbf{x}, \mathbf{x}) \), \( \mathbf{K}_* = \kappa(\mathbf{x}, \mathbf{x}_*) \) and \( \mathbf{K}_{**}=\kappa(\mathbf{x}_*, \mathbf{x}_*)\). As before we are going to stick with a zero mean.</p>
+
+<p>However this is modeling \( p(\mathbf{y}, \mathbf{y}_*\vert \mathbf{x}, \mathbf{x}_*) \) and we only want a distribution over \( \mathbf{y}_*\)!</p>
+
+<h3 id="conditioning-multivariate-gaussians">Conditioning Multivariate Gaussians</h3>
+
+<p>Rather than deriving it from scratch we can just make use of <a href="https://en.wikipedia.org/wiki/Multivariate_normal_distribution#Conditional_distributions" target="_blank">this standard result</a>. If we have a joint distribution over \( \mathbf{y} \) and \( \mathbf{y}_* \) as above, and we want to condition on the data we have for \( \mathbf{y} \) then we have the following:</p><p>
+
+\[\begin{align}
+p(\mathbf{y}_*\vert \mathbf{x}_*, \mathbf{x}, \mathbf{y})&amp;=\mathcal{N}(\mathbf{y}_*\vert \mu_*, \Sigma_*)\\
+\mu_*&amp;=m(\mathbf{x}_*)+\mathbf{K}_*^T\mathbf{K}^{-1}(\mathbf{y}-m(\mathbf{x}))\\
+\Sigma_*&amp;=\mathbf{K}_{**}-\mathbf{K}_*^T\mathbf{K}^{-1}\mathbf{K}_*
+\end{align}\]
+
+</p><p>Now we have a posterior distribution over \( \mathbf{y}_* \) using a prior distribution and some observations!</p>
+
+<p><em>NB: The code below would not be used in practice since \( \mathbf{K} \) can often be poorly conditioned, so its inverse might be inaccurate. A better approach is covered in part II of this guide!</em></p>
+
+<figure><pre><code data-lang="python"><span>K</span> <span>=</span> <span>k</span><span>(</span><span>x_obs</span><span>,</span> <span>x_obs</span><span>)</span>
+<span>K_s</span> <span>=</span> <span>k</span><span>(</span><span>x_obs</span><span>,</span> <span>x_s</span><span>)</span>
+<span>K_ss</span> <span>=</span> <span>k</span><span>(</span><span>x_s</span><span>,</span> <span>x_s</span><span>)</span>
+
+<span>K_sTKinv</span> <span>=</span> <span>np</span><span>.</span><span>matmul</span><span>(</span><span>K_s</span><span>.</span><span>T</span><span>,</span> <span>np</span><span>.</span><span>linalg</span><span>.</span><span>pinv</span><span>(</span><span>K</span><span>))</span>
+
+<span>mu_s</span> <span>=</span> <span>m</span><span>(</span><span>x_s</span><span>)</span> <span>+</span> <span>np</span><span>.</span><span>matmul</span><span>(</span><span>K_sTKinv</span><span>,</span> <span>y_obs</span> <span>-</span> <span>m</span><span>(</span><span>x_obs</span><span>))</span>
+<span>Sigma_s</span> <span>=</span> <span>K_ss</span> <span>-</span> <span>np</span><span>.</span><span>matmul</span><span>(</span><span>K_sTKinv</span><span>,</span> <span>K_s</span><span>)</span></code></pre></figure>
+
+<p>And that’s it! We can now use these two parameters to draw samples from the conditional distribution. Here we plot them against the true function \( f(x) \) (the dashed black line). Since we are using a GP we also have uncertainty information in the form of the variance of each random variable. We know the variance of the \( i \)-th random variable will be \( {\Sigma_*}_{ii} \) - in other words the variances are just the diagonal elements of \( \Sigma_*\). Here we plot the samples with an uncertainty of \( \pm 2 \) standard deviations.</p>
+
+<figure><pre><code data-lang="python"><span>p</span> <span>=</span> <span>figure</span><span>(</span><span>plot_width</span><span>=</span><span>800</span><span>,</span> <span>plot_height</span><span>=</span><span>600</span><span>,</span> <span>y_range</span><span>=</span><span>(</span><span>-</span><span>7</span><span>,</span> <span>8</span><span>))</span>
+
+<span>y_true</span> <span>=</span> <span>f</span><span>(</span><span>x_s</span><span>)</span>
+<span>p</span><span>.</span><span>line</span><span>(</span><span>x_s</span><span>,</span> <span>y_true</span><span>,</span> <span>line_width</span><span>=</span><span>3</span><span>,</span> <span>color</span><span>=</span><span>'black'</span><span>,</span> <span>alpha</span><span>=</span><span>0.4</span><span>,</span>
+       <span>line_dash</span><span>=</span><span>'dashed'</span><span>,</span> <span>legend</span><span>=</span><span>'True f(x)'</span><span>)</span>
+
+<span>p</span><span>.</span><span>cross</span><span>(</span><span>x_obs</span><span>,</span> <span>y_obs</span><span>,</span> <span>size</span><span>=</span><span>20</span><span>,</span> <span>legend</span><span>=</span><span>'Training data'</span><span>)</span>
+
+<span>stds</span> <span>=</span> <span>np</span><span>.</span><span>sqrt</span><span>(</span><span>Sigma_s</span><span>.</span><span>diagonal</span><span>())</span>
+<span>err_xs</span> <span>=</span> <span>np</span><span>.</span><span>concatenate</span><span>((</span><span>x_s</span><span>,</span> <span>np</span><span>.</span><span>flip</span><span>(</span><span>x_s</span><span>,</span> <span>0</span><span>)))</span>
+<span>err_ys</span> <span>=</span> <span>np</span><span>.</span><span>concatenate</span><span>((</span><span>mu_s</span> <span>+</span> <span>2</span> <span>*</span> <span>stds</span><span>,</span> <span>np</span><span>.</span><span>flip</span><span>(</span><span>mu_s</span> <span>-</span> <span>2</span> <span>*</span> <span>stds</span><span>,</span> <span>0</span><span>)))</span>
+<span>p</span><span>.</span><span>patch</span><span>(</span><span>err_xs</span><span>,</span> <span>err_ys</span><span>,</span> <span>alpha</span><span>=</span><span>0.2</span><span>,</span> <span>line_width</span><span>=</span><span>0</span><span>,</span> <span>color</span><span>=</span><span>'grey'</span><span>,</span>
+        <span>legend</span><span>=</span><span>'Uncertainty'</span><span>)</span>
+
+<span>for</span> <span>color</span> <span>in</span> <span>Category10</span><span>[</span><span>3</span><span>]:</span>
+    <span>y_s</span> <span>=</span> <span>np</span><span>.</span><span>random</span><span>.</span><span>multivariate_normal</span><span>(</span><span>mu_s</span><span>,</span> <span>Sigma_s</span><span>)</span>
+    <span>p</span><span>.</span><span>line</span><span>(</span><span>x_s</span><span>,</span> <span>y_s</span><span>,</span> <span>line_width</span><span>=</span><span>1</span><span>,</span> <span>color</span><span>=</span><span>color</span><span>)</span>
+
+<span>p</span><span>.</span><span>line</span><span>(</span><span>x_s</span><span>,</span> <span>mu_s</span><span>,</span> <span>line_width</span><span>=</span><span>3</span><span>,</span> <span>color</span><span>=</span><span>'blue'</span><span>,</span> <span>alpha</span><span>=</span><span>0.4</span><span>,</span> <span>legend</span><span>=</span><span>'Mean'</span><span>)</span>
+<span>show</span><span>(</span><span>p</span><span>)</span></code></pre></figure>
+
+
+
+
+
+<h2 id="what-next---gp-regression-and-noisy-data">What Next? - GP Regression and Noisy Data</h2>
+<hr>
+<p>In practice we need to do a bit more work to get good predictions. You may have noticed that the kernel implementation contained two parameters \( \sigma \) and \( l\). If you try changing those when sampling from the prior then you can see how \( \sigma \) changes the vertical variation and \( l \) changes the horizontal scale. So we would need to change these to reflect our prior belief about the hidden function \( f \). For instance if we expect \( f \) to have a much bigger range of outputs (for the domain we are interested in) then we would need to scale up \( \sigma \) accordingly (try scaling the return value of \( f \) by 100 to see what happens, then set <code>sigma=100</code>). In fact, as with anything that uses kernels, we might change our kernel entirely if we expect a different kind of function (e.g. a periodic function).</p>
+
+<p>Picking the kernel is up to a human expert but choosing the parameters can be done automatically by minimising a loss term. This is the realm of Gaussian process regression.</p>
+
+<p>Finally we should consider how to handle noisy data - i.e. when we can’t get perfect samples of the hidden function \( f\). In this case we need to factor this uncertainty into the model to get better generalisation.</p>
+
+<p>These two topics will be the focus of <em>Introduction to Gaussian Processes - Part II</em>.</p>
+
+<h2 id="resources">Resources</h2>
+<hr>
+<ul>
+  <li><em>Machine Learning - A Probabilistic Perspective</em>, Chapter 15 by Kevin P. Murphy</li>
+  <li><a href="https://www.youtube.com/watch?v=4vGiHC35j9s" target="_blank">Introduction to Gaussian processes</a> on YouTube by Nando de Freitas</li>
+</ul>
+
+    </div></div>
+  </div>
+</body>
+</html>

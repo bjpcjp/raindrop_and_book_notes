@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Moving Backgrounds</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Moving Backgrounds</h1>
+    <p><strong>URL:</strong> <a href="https://css-tricks.com/moving-backgrounds">https://css-tricks.com/moving-backgrounds</a></p>
+    <p><strong>Tags:</strong> css</p>
+    <p><strong>Bookmark ID:</strong> 876790668</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p>
+	DigitalOcean provides cloud products for every stage of your journey. Get started with <a href="https://try.digitalocean.com/css-tricks/?utm_medium=content_acq&amp;utm_source=css-tricks&amp;utm_campaign=global_brand_ad_en&amp;utm_content=conversion_prearticle_everystage">$200 in free credit!</a>
+</p><div>
+
+          
+          
+<p>We often think of background images as texture or something that provides contrast for legible content — in other words, not really content. If it was content, you’d probably reach for an <code>&lt;img&gt;</code> anyway, accessibility and whatnot.</p>
+
+
+
+<p>But there are times when the <em>position</em> or <em>scale</em> of a background image might sit somewhere between the poles of content and decoration. Context is king, right? If we change the background image’s position, it may convey a bit more context or experience.</p>
+
+
+
+<p>How so? Let’s look at a few examples I’ve seen floating around.</p>
+
+
+
+<p>As we get started, I’ll caution that there’s a fine line in these demos between images used for decoration and images used as content. The difference has accessibility implications where backgrounds are not announced to screen readers. <a href="https://www.smashingmagazine.com/2021/06/img-alt-attribute-alternate-description-decorative/" rel="noopener">If your image is really an image</a>, then maybe consider an <code>&lt;img&gt;</code> tag with proper <code>alt</code> text. And while we’re talking accessibility, it’s a good idea to <a href="https://css-tricks.com/nuking-motion-with-prefers-reduced-motion/">consider a user’s motion preference’s</a> as well.</p>
+
+
+<h3 id="show-me-more">Show me more!</h3>
+
+
+<p>Chris Coyier has this neat little demo from several years back.</p>
+
+
+
+
+
+
+
+<p>The demo is super practical in lots of ways because it’s a neat approach for displaying ads in content. You have the sales pitch and an enticing image to supplement it.</p>
+
+
+
+<p>The big limitation for most ads, I’d wager, is the limited real estate. I don’t know if you’ve ever had to drop an ad onto a page, but I have and typically ask the advertiser for an image that meets exact pixel dimensions, so the asset fits the space.</p>
+
+
+
+<p>But Chris’s demo alleviates the space issue. Hover the image and watch it both move and scale. The user actually gets <em>more</em> context for the product than they would have when the image was in its original position. That’s a win-win, right? The advertiser gets to create an eye-catching image without compromising context. Meanwhile, the user gets a little extra value from the newly revealed portions of the image.</p>
+
+
+
+<p>If you peek at the demo’s markup, you’ll notice it’s pretty much what you’d expect. Here’s an abridged version:</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">&lt;div class="ad-container"&gt;
+  &lt;a href="#" target="_blank" rel="noopener"&gt;
+    &lt;!-- Background image container  --&gt;
+    &lt;div class="ad-image"&gt;&lt;/div&gt;
+  &lt;/a&gt; 
+  &lt;div class="ad-content"&gt;
+    &lt;!-- Content --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+
+
+<p>We could probably quibble over the semantics a bit, but that’s not the point. We have a container with a linked-up <code>&lt;div&gt;</code> for the background image and another <code>&lt;div&gt;</code> to hold the content.</p>
+
+
+
+<p>As far as styling goes, the important pieces are here:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt">.container {
+  background-image: url("/path/to/some/image.png");
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  height: 400px;
+  width: 350px;
+}</code></pre>
+
+
+
+<p>Not bad, right? We give the container some dimensions and set a background image on it that doesn’t repeat and is positioned by its bottom-left edge.</p>
+
+
+
+<p>The real trick is with JavaScript. We will use that to get the mouse position and the container’s offset, then convert that value to an appropriate scale to set the <code>background-position</code>. First, let’s listen for mouse movements on the <code>.container</code> element:</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">let container = document.querySelector(".container");
+container.addEventListener("mousemove", function(e) {
+    // Our function
+  }
+);</code></pre>
+
+
+
+<p>From here, we can use the container’s <code>offsetX</code> and <code>offsetY</code> properties. But we won’t use these values directly, as the value for the X coordinate is smaller than what we need, and the Y coordinate is larger. We will have to play around a bit to find a constant that we can use as a multiplier.</p>
+
+
+
+<p>It’s a bit touch-and-feel, but I’ve found that <code>1.32</code> and <code>0.455</code> work perfectly for the X and Y coordinates, respectively. We multiply the offsets by those values, append a <code>px</code> unit on the result, then apply it to the <code>background-position</code> values.</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">let container = document.querySelector(".container");
+container.addEventListener("mousemove", function(e) {
+    container.style.backgroundPositionX = -e.offsetX * 1.32 + "px";
+    container.style.backgroundPositionY = -e.offsetY * 0.455 + "px";
+  }
+);</code></pre>
+
+
+
+<p>Lastly, we can also reset the background positions back to the original if the user leaves the image container.</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">container.addEventListener("mouseleave", function() {
+    container.style.backgroundPosition = "0px 0px";
+  }
+);</code></pre>
+
+
+
+
+
+
+
+<p>Since we’re on CSS-Tricks, I’ll offer that we could have done a much cheaper version of this with a little hover transition in vanilla CSS:</p>
+
+
+
+
+
+
+<h3 id="paint-a-bigger-picture">Paint a bigger picture</h3>
+
+
+<p>No doubt you’ve been to some online clothing store or whatever and encountered the ol’ zoom-on-hover feature.</p>
+
+
+
+<figure></figure>
+
+
+
+<p>This pattern has been around for what feels like forever (Dylan Winn-Brown shared his approach <a href="https://css-tricks.com/zooming-background-images/">back in 2016</a>), but that’s just a testament (I hope) to its usefulness. The user gets more context as they zoom in and get a better idea of a sweater’s stitching or what have you.</p>
+
+
+
+<p>There’s two pieces to this: the <strong>container</strong> and the <strong>magnifier</strong>. The container is the only thing we need in the markup, as we’ll inject the magnifier element during the user’s interaction. So, behold our HTML!</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">&lt;div class="container"&gt;&lt;/div&gt;</code></pre>
+
+
+
+<p>​​In the CSS, we will create <code>width</code> and <code>height</code> variables to store the dimensions of the of the magnifier glass itself. &nbsp;Then we’ll&nbsp;give that&nbsp;<code>.container</code>​&nbsp;some shape and a&nbsp;<code>background-image</code>​:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt">​​:root {
+​​  --magnifer-width: 85;
+​​  --magnifer-height: 85;
+​​}
+
+.container {
+  width: 500px;
+  height: 400px;
+  background-size: cover;
+  background-image: url("/path/to/image.png");
+  background-repeat: no-repeat;
+  position: relative;
+}</code></pre>
+
+
+
+<p>There are some things we already know about the magnifier before we even see it, and we can define those styles up-front, specifically the previously defined variables for the <code>.maginifier</code>‘s <code>width</code> and <code>height</code>:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt">.magnifier {
+  position: absolute;
+  width: calc(var(--magnifer-width) * 1px);
+​​  height: calc(var(--magnifer-height) * 1px);
+​​  border: 3px solid #000;
+​​  cursor: none;
+​​  background-image: url("/path/to/image.png");
+​​  background-repeat: no-repeat;
+}</code></pre>
+
+
+
+<p>It’s an absolutely-positioned little square that uses the <em>same</em> background image file as the <code>.container</code>. Do note that the calc function is solely used here to convert the unit-less value in the variable to pixels. Feel free to arrange that however you see fit as far as eliminating repetition in your code.</p>
+
+
+
+<p>Now, let’s turn to the JavaScript that pulls this all together. First we need to access the CSS variable defined earlier. We will use this in multiple places later on. Then we need get the mouse position within the container because that’s the value we’ll use for the the magnifier’s background position.</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">​​// Get the css variables
+​​let root = window.getComputedStyle(document.documentElement);
+​​let magnifier_width = root.getPropertyValue("--magnifer-width");
+​​let magnifier_height = root.getPropertyValue("--magnifer-height");
+
+let container = document.querySelector(".container");
+let rect = container.getBoundingClientRect();
+let x = (e.pageX - rect.left);
+let y = (e.pageY - rect.top);
+
+// Take page scrolling into account
+x = x - window.pageXOffset;
+y = y - window.pageYOffset;</code></pre>
+
+
+
+<p>What we need is basically a <code>mousemove</code> event listener on the <code>.container</code>. Then, we will use the <code>event.pageX</code> or <code>event.pageY</code> property to get the X or Y coordinate of the mouse. But to get the <em>exact</em> relative position of the mouse on an element, we need to subtract the position of the parent element from the mouse position we get from the JavaScript above. A “simple” way to do this is to use <code>getBoundingClientRect()</code>, which returns the size of an element and its position relative to the viewport.</p>
+
+
+
+<p>Notice how I’m taking scrolling into account. If there is overflow, subtracting the window <code>pageX</code> and <code>pageY</code> offsets will ensure the effect runs as expected.</p>
+
+
+
+<p>We will first create the magnifier div. Next, we will create a <code>mousemove</code> function and add it to the image container. In this function, we will give the magnifier a class attribute. We will also calculate the mouse position and give the magnifier the left and top values we calculated earlier.</p>
+
+
+
+<p>Let’s go ahead and build the <code>magnifier</code> when we hear a <code>mousemove</code> event on the <code>.container</code>:</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">// create the magnifier
+let magnifier = document.createElement("div");
+container.append(magnifier);</code></pre>
+
+
+
+<p>Now we need to make sure it has a class name we can scope to the CSS:</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">// run the function on `mousemove`
+container.addEventListener("mousemove", (e) =&gt; {
+  magnifier.setAttribute("class", "magnifier");
+}</code></pre>
+
+
+
+<p>The example video I showed earlier positions the magnifier outside of the container. We’re gonna keep this simple and overlay it on top of the container instead as the mouse moves. We will use <code>if</code> statements to set the magnifier’s position only if the X and Y values are <em>greater</em> or <em>equal</em> to zero, and <em>less</em> than the container’s width or height. That should keep it in bounds. Just be sure to subtract the width and height of the magnifier from the X and Y values.</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">// Run the function on mouse move.
+container.addEventListener("mousemove", (e) =&gt; {
+  magnifier.setAttribute("class", "magnifier");
+
+  // Get mouse position
+  let rect = container.getBoundingClientRect();
+  let x = (e.pageX - rect.left);
+  let y = (e.pageY - rect.top);
+  
+  // Take page scrolling into account
+  x = x - window.pageXOffset;
+  y = y - window.pageYOffset;
+
+  // Prevent magnifier from exiting the container
+  // Then set top and left values of magnifier
+  if (x &gt;= 0 &amp;&amp; x &lt;= container.clientWidth - magnifier_width) {
+    magnifier.style.left = x + "px";
+  }
+  if (y &gt;= 0 &amp;&amp; y &lt;= container.clientHeight - magnifier_height) {
+    magnifier.style.top = y + "px";
+  }
+});</code></pre>
+
+
+
+<p>Last, but certainly not least… we need to play with the magnifier’s background image a bit. The whole point is that the user gets a BIGGER view of the background image based on where the hover is taking place. So, let’s define a magnifier we can use to scale things up. Then we’ll define variables for the background image’s width and height so we have something to base that scale on, and set all of those values on the <code>.magnifier</code> styles:</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">// Magnifier image configurations
+let magnify = 2;
+let imgWidth = 500;
+let imgHeight = 400;
+
+magnifier.style.backgroundSize = imgWidth * magnify + "px " + imgHeight * magnify + "px";</code></pre>
+
+
+
+<p>​​Let’s take the X and Y coordinates of the magnifier’s image and apply them to the&nbsp;<code>.magnifier</code>​&nbsp;element’s&nbsp;<code>background-position</code>​. As before with the magnifier position, we need to subtract the width and height of the magnifier from the X and Y values using the CSS variables.</p>
+
+
+
+<pre rel="JavaScript" data-line=""><code markup="tt">// the x and y positions of the magnifier image
+let magnify_x = x * magnify + 15;
+let magnify_y = y * magnify + 15;
+
+// set backgroundPosition for magnifier if it is within image
+if (
+  x &lt;= container.clientWidth - magnifier_width &amp;&amp;
+  y &lt;= container.clientHeight - magnifier_height
+) {
+  magnifier.style.backgroundPosition = -magnify_x + "px " + -magnify_y + "px";
+}</code></pre>
+
+
+
+<p>Tada!</p>
+
+
+
+
+
+
+<h3 id="make-it-cinematic">Make it cinematic</h3>
+
+
+<p>Have you seen the <a href="https://en.wikipedia.org/wiki/Ken_Burns_effect" rel="noopener">Ken Burns effect</a>? It’s classic and timeless thing where an image is bigger than the container it’s in, then sorta slides and scales slow as a slug. Just about every documentary film in the world seems to use it for image stills. If you have an Apple TV, then you’ve certainly seen it on the screen saver.</p>
+
+
+
+<p>There are <em>plenty</em> of <a href="https://codepen.io/search/pens?q=ken+burns+effect" rel="noopener">examples over at CodePen</a> if you wanna get a better idea.</p>
+
+
+
+<p>You’ll see that there are a number of ways to approach this. Some use JavaScript. Others are 100% CSS. I’m sure the JavaScript approaches are good for some uses cases, but if the goal is simply to subtly scale the image, CSS is perfectly suitable.</p>
+
+
+
+
+
+
+
+<p>We could spice things up a bit using multiple backgrounds rather than one. Or, better yet, if we expand the rules to use elements instead of background images, we can apply the same animation to all of the backgrounds and use a dash of <code>animation-delay</code> to stagger the effect.</p>
+
+
+
+
+
+
+
+<p>Lots of ways to do this, of course! It can certainly be optimized with Sass and/or CSS variables. Heck, maybe you can pull it off with a single <code>&lt;div&gt;</code> If so, share it in the comments!</p>
+
+
+<h3 id="bonus-make-it-immersive">Bonus: Make it immersive</h3>
+
+
+<p>I don’t know if anything is cooler than Sarah Drasner’s <a href="https://codepen.io/sdras/pen/rMEdjB" rel="noopener">“Happy Halloween” pen</a>… and that’s from 2016! It is a great example that layers backgrounds and moves them at varying speeds to create an almost cinematic experience. Good gosh is that cool!</p>
+
+
+
+<p>GSAP is the main driver there, but I imagine we could make a boiled-down version that simply translates each background layer from left to right at different speeds. Not as cool, of course, but certainly the baseline experience. Gotta make sure the start and end of each background image is consistent so it repeats seamlessly when the animation repeats.</p>
+
+
+
+<hr>
+
+
+
+<p>That’s it for now! Pretty neat that we can use backgrounds for much more than texture and contrast. I’m absolutely positive there are tons of other clever interactions we can apply to backgrounds. Temani Afif did exactly that with <a href="https://css-tricks.com/cool-hover-effects-using-background-properties/">a bunch of neat hover effects for links</a>. What do you have in mind? Share it with me in the comments!</p>
+
+          
+        </div></div>
+  </div>
+</body>
+</html>

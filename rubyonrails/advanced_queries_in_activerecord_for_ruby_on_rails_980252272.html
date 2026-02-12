@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Queries in ActiveRecord for Ruby on Rails</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Advanced Queries in ActiveRecord for Ruby on Rails</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2025/02/26/advanced-queries-in-activerecord-for-ruby-on-rails.html">https://blog.appsignal.com/2025/02/26/advanced-queries-in-activerecord-for-ruby-on-rails.html</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 980252272</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>ActiveRecord: Rails' de facto ORM. We use it every day, and it makes life a lot easier; we type less, read less, have complexity hidden from us, and don't have to specify all kinds of boilerplate we'd otherwise have to.</p>
+<p>But its most basic methods, easy-to-read symbol notation, and complete query abstraction aren't always up to the task at hand. As our apps grow, more complex data models and relationships follow, and the limitations of basic querying methods become apparent. Simple, short, and readable queries that once worked well become insufficient and need not just modification but rewriting. This progression calls for a deeper understanding and utilization of ActiveRecord's capabilities beyond the basic finders and associations. Often you need a combination of SQL and ActiveRecord to get the job done.</p>
+<p>Here, we'll delve into advanced ActiveRecord queries, shining a spotlight on more complex joins, custom SQL, and strategic employment of database-specific features. This will help us better approach our data handling in Rails and meet the needs of our increasingly complex database relationships.</p>
+<h2 id="complex-joins-and-associations-in-activerecord-for-rails">Complex Joins and Associations in ActiveRecord for Rails</h2>
+<p>What may begin as a simple one-to-one or one-to-many relationship can quickly expand into a labyrinth of interconnected models, necessitating a deeper dive into complex SQL joins to maintain efficient data retrieval and manipulation.</p>
+<p>ActiveRecord supports more complex joins out of the box; you can easily join multiple tables together using pure AR and symbol notation:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>This is great and often suffices. But what happens the moment we realize we need some information from the transaction and the user too? We can't just <code>.select(:id)</code> and hope it'll somehow magically know we want the <code>id</code> of the <code>Transaction</code> and not the <code>PurchasedItem</code>.</p>
+<p>This is where we need ActiveRecord to leverage SQL strings.</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Here we've selected whatever columns we wanted from each <code>PurchasedItem</code> (which is of course more efficient than simply selecting all of its columns, AR's default behavior). We've fetched the transaction IDs and total amounts associated with each individual purchased item of a given order, as well as the user's name and email.</p>
+<p>We also don't always join exactly the way our models might expect, depending on our use case:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>However, when discovering our team's <code>sales_members</code> via the <code>users</code> table, sometimes a <code>User</code> is more than just a <code>User</code>. This leads us to our next topic: self-referential associations.</p>
+<h2 id="self-referential-associations">Self-Referential Associations</h2>
+<p>Self-referential associations define both sides of a relationship within the same model. This involves creating a join table that links two instances of a model to each other.</p>
+<p>For example, in an organizational context, where users might have <code>managers</code> and <code>sales_members</code>, the <code>User</code> model can be configured to reflect these relationships:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+
+<p>This allows us to traverse the hierarchy in both directions, allowing for queries that can retrieve a user's manager or their list of <code>sales_members</code> (e.g., <code>user.manager</code> or <code>manager.sales_members</code>). It also greatly simplifies self joins, so:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Becomes:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>In this relatively simple example, we've simply placed a <code>manager_id</code> column on the <code>User</code>, but there's nothing stopping you from using join tables to create more complex many-to-many associations.</p>
+<p>That said, keep in mind that, while powerful and often necessary, self-referential joins can lead to more complex queries. This isn't always avoidable, but if you don't actually need them, creating another model might be a better choice. As always, balance needs with the potential cost.</p>
+<h2 id="database-specific-features-in-activerecord-for-ruby-on-rails">Database-Specific Features in ActiveRecord for Ruby on Rails</h2>
+<p>If you're on Rails, there's a pretty good chance you're using PostgreSQL. ActiveRecord, together with PostgreSQL, <a href="https://guides.rubyonrails.org/active_record_postgresql.html#json-and-jsonb">supports column types like JSON, JSONb</a>, and <a href="https://guides.rubyonrails.org/active_record_postgresql.html#array">arrays</a>.</p>
+<p>Do you have a particular model with many potentially optional columns? Or one that's likely to grow, where you'll need a lot of model-specific columns? This might be anything from user preferences, to video stats, to a literal need to just store pure JSON (like webhook responses).</p>
+<p>If so, JSON or JSONb might be a good choice.</p>
+<p><strong>JSON vs. JSONb: Which is the right fit?</strong></p>
+<p>If you need to query them often, you should probably go with JSONb as it has more advanced querying options, and supports indexing — specifically, <a href="https://pganalyze.com/blog/gin-index">GIN indexing</a>. JSONb uses more space and is slightly slower to write, but is much more efficient to retrieve: the "b" in JSONb stands for "binary". JSON is stored as a string, whereas JSONb is stored as binary, meaning it can be queried more efficiently, and doesn't require parsing when retrieved.</p>
+<p>Here's an example of setting up and querying JSONb:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>You can see the appeal here: if you're hosting or cataloging video, there are all kinds of stats and metadata (relevant probably only to the videos themselves) that you might want to keep track of, for everything from bitrate, to resolution, to compression rate, video and codec type, upload and processed dates, fidelity, filetype, and so on. JSON can be an attractive choice for a model that demands a lot of columns and that may continue to grow as your app does.</p>
+<h2 id="bulk-updates-with-update_all">Bulk Updates with <code>update_all</code></h2>
+<p>While we might often retrieve many records at once, we often find ourselves updating records one by one. Sometimes, though, a group of records needs to be updated with the same value. Maybe we've just run a job that's processed a bunch of records in some way, perhaps by making API calls to an external payment service for each.</p>
+<p>We <em>could</em> update them one at a time as we process them, but this puts unnecessary strain on our workers and database. Instead, we can simply use <code>update_all</code>, which updates all records it's called on with a given value per column:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>This achieves an atomic update of all records involved in a single transaction. Nice!</p>
+<p>We also have <code>insert_all</code>, introduced a few years ago by Rails 6. You will likely not use this as often, but it's still valuable, especially if you need to create a lot of records at once in real time on the main thread.</p>
+<p>Maybe you allow your clients to upload their large orders to you. After processing their CSV, you construct their order:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Always consider whether or not you need callbacks or validations on the items you're updating.</p>
+<p>Because these transactions are atomic, there's no way to trigger callbacks. Sometimes that's exactly what we want, which is perfect. If not, though, we might not be able to use <code>update_all</code>. If you need a callback (or, more rarely for a bulk update, a validation) to do something specific for each individual record, we probably can't.</p>
+<p>Let's say you've only got a callback to ensure some other part of our app knows that at least one record of a particular type has been updated (in order to trigger a recount). You can probably do something like <code>update_all</code> on the first n-1 records, then <code>.update</code> on the last. This not only allows us to update everything at once, but it also avoids triggering potentially expensive callbacks on every single item.</p>
+<p>Bonus: Got a mass-update scenario where you need to insert a lot of records at once? Check out <a href="https://api.rubyonrails.org/classes/ActiveRecord/Persistence/ClassMethods.html#method-i-upsert_all"><code>upsert_all</code></a>.</p>
+<h2 id="activerecord-for-ruby-on-rails-words-of-caution">ActiveRecord for Ruby on Rails: Words of Caution</h2>
+<p>It goes without saying, but be mindful of potential <a href="https://guides.rubyonrails.org/security.html#sql-injection">SQL injection</a>. Rails does a good job of protecting us from it most of the time, but it does give us enough rope to hang ourselves with. I personally like to often use single quotes for SQL strings to remind myself not to use string interpolation for things like params that users have control over.</p>
+<p>Be mindful that JSON/JSONb columns are a single column and not self-documenting like the rest of your schema. The keys you add to any given JSON column are arbitrary, and you will have to document them yourself if you need to keep track of them all without having to hunt around your code for clues, because they're not going to show up in the schema.</p>
+<p>Alternatively, you can use ActiveRecord's <code>store_accessor</code>, like this:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>This will allow you to both explicitly declare/document all the potential keys that exist in your JSON/JSONb column, and also access them directly:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Just be sure not to accidentally give any of the keys the same name as an existing column on the same model if you're going with this route! You can have JSON keys with the same names as columns, but if you're using this <code>store_accessor</code> method, you'll run into <a href="https://en.wikipedia.org/wiki/Name_collision">name collisions</a>.</p>
+<p>Lastly, as mentioned, always make sure that if you're using <code>update_all</code>, <code>insert_all</code>, or <code>upsert_all</code>, you either don't need any callbacks or validations, or that those requirements are met after the fact. In some cases, this could be as simple as firing off a job after you've updated or created these records. In other cases, there might not be an easy path.</p>
+<h2 id="wrapping-up">Wrapping Up</h2>
+<p>Leveraging ActiveRecord's advanced features can help make our Rails apps more flexible, efficient, and maintainable. But as with anything, good things are rarely free; keep in mind that all things being equal, simpler is better. If you can accomplish the same task more simply, you probably should. It's always important to balance complexity with simplicity.</p>
+<p>There's always more to learn when it comes to Rails, and ActiveRecord is no exception. The more tools you add to your arsenal, the more effective you'll be, and the better your applications will run.</p>
+<p>Thanks for reading!</p>
+<p><strong>P.S. If you'd like to read Ruby Magic posts as soon as they get off the press, <a href="https://blog.appsignal.com/ruby-magic">subscribe to our Ruby Magic newsletter and never miss a single post</a>!</strong></p></div></div>
+  </div>
+</body>
+</html>

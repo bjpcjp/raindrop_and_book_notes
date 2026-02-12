@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Stack</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The Stack</h1>
+    <p><strong>URL:</strong> <a href="https://every-layout.dev/layouts/stack">https://every-layout.dev/layouts/stack</a></p>
+    <p><strong>Tags:</strong> css, design, html</p>
+    <p><strong>Bookmark ID:</strong> 876780955</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main" tabindex="-1">
+      
+      
+      
+        <nav aria-labelledby="toc-title">
+          
+          <ul>
+            <li><a href="#the-problem">The problem</a></li><li><a href="#the-solution">The solution</a></li><li><a href="#use-cases">Use cases</a></li><li><a href="#the-generator">The generator</a></li><li><a href="#the-component">The component</a></li>
+          </ul>
+        </nav>
+      
+      
+      
+<p>Flow elements require space (sometimes referred to as <em>white space</em>) to physically and conceptually separate them from the elements that come before and after them. This is the purpose of the <code>margin</code> property.</p>
+<p>However, design systems conceive elements and components in isolation. At the time of conception, it is not settled whether there will be surrounding content or what the nature of that content will be. One element or component is likely to appear in different contexts, and the requirement for spacing will differ.</p>
+<p>We are in the habit of styling elements, or classes of elements, directly: we make style declarations <em>belong</em> to elements. Typically, this does not produce any issues, but <code>margin</code> is really a property of the <em>relationship</em> between two proximate elements. The following code is therefore problematic:</p>
+<pre><code><span><span>p</span> <span>{</span></span><br><span>  <span>margin-bottom</span><span>:</span> 1.5rem<span>;</span></span><br><span><span>}</span></span></code></pre>
+<p>Since the declaration is not context sensitive, any correct application of the margin is a matter of luck. If the paragraph is proceeded by another element, the effect is desirable. But a <code>:last-child</code> paragraph produces a redundant margin. Inside a padded parent element, this redundant margin combines with the parent’s padding to produce double the intended space. This is just one problem this approach produces.</p>
+<p><img src="data:application/octet-stream;base64," alt="The left example shows an expected space between two paragraphs. The right example shows an undesired double space between the bottom paragraph and the bottom edge/border of the containing box" loading="lazy"></p>
+
+<p>The trick is to style the context, not the individual element(s). The <strong>Stack</strong> layout primitive injects margin between elements via their common parent:</p>
+<pre><code><span><span>.stack &gt; * + *</span> <span>{</span></span><br><span>  <span>margin-block-start</span><span>:</span> 1.5rem<span>;</span></span><br><span><span>}</span></span></code></pre>
+<p>Using the adjacent sibling combinator (<code>+</code>), <code>margin-block-start</code> is only applied where the element is preceded by another element: no “left over” margin. The universal (or <em>wildcard</em>) selector (<code>*</code>) ensures any and all elements are affected. The key <code>* + *</code> construct is known as the <a href="https://alistapart.com/article/axiomatic-css-and-lobotomized-owls">owl</a>.</p>
+
+<h3 id="recursion">Recursion</h3>
+<p>In the previous example, the child combinator (<code>&gt;</code>) ensures the margins only apply to children of the <code>.stack</code> element. However, it’s possible to inject margins recursively by removing this combinator from the selector.</p>
+<pre><code><span><span>.stack * + *</span> <span>{</span></span><br><span>  <span>margin-block-start</span><span>:</span> 1.5rem<span>;</span></span><br><span><span>}</span></span></code></pre>
+<p>This can be useful where you want to affect elements at any nesting level, while retaining white space regularity.</p>
+<p><img src="data:application/octet-stream;base64," alt="Two nested boxes with borders do not exhibit doubled spacing. The space is equal between each element" loading="lazy"></p>
+<p>In the following demonstration (using the <a href="#the-component">Stack component</a> to follow) there are a set of box-shaped elements. Two of these are nested within another. Because recursion is applied, each box is evenly spaced using just one parent <strong>Stack</strong>.</p>
+
+
+<p>You’re likely to find the recursive mode affects unwanted elements. For example, generic list items that are typically not separated by margins will become unexpectedly <em>spread out</em>.</p>
+<h3 id="nested-variants">Nested variants</h3>
+<p>Recursion applies the same margin no matter the nesting depth. A more deliberate approach would be to set up alternative non-recursive <strong>Stacks</strong> with different margin values, and nest them where suitable. Consider the following.</p>
+<pre><code><span><span>[class^='stack'] &gt; *</span> <span>{</span></span><br><span>  <span>/* top and bottom margins in horizontal-tb writing mode */</span></span><br><span>  <span>margin-block</span><span>:</span> 0<span>;</span></span><br><span><span>}</span></span><br><span></span><br><span><span>.stack-large &gt; * + *</span> <span>{</span></span><br><span>  <span>margin-block-start</span><span>:</span> 3rem<span>;</span></span><br><span><span>}</span></span><br><span></span><br><span><span>.stack-small &gt; * + *</span> <span>{</span></span><br><span>  <span>margin-block-start</span><span>:</span> 0.5rem<span>;</span></span><br><span><span>}</span></span></code></pre>
+
+
+<p>The first declaration block’s selector resets the vertical margin for all <strong>Stack</strong>-like elements (by matching class values that <em>begin</em> with <code>stack</code>). Importantly, only the vertical margins are reset, because the stack only <em>affects</em> vertical margin, and we don't want it to reach outside its remit. You may not need this reset if a universal reset for <code>margin</code> is already in place (see <a href="https://every-layout.dev/rudiments/global-and-local-styling"><strong>Global and local styling</strong></a>).</p>
+<p>The following two blocks set up alternative <strong>Stacks</strong>, with different margin values. These can be nested to produce—for example—the illustrated form layout. Be aware that the <code>&lt;label&gt;</code> elements would need to have <code>display: block</code> applied to appear above the inputs, and for their margins to actually produce spaces (the vertical margin of inline elements has no effect; see <a href="https://every-layout.dev/rudiments/boxes#the-display-property"><strong>The display property</strong></a>).</p>
+<p><img src="data:application/octet-stream;base64," alt="A form uses the large Stack spacing to separate whole fields, and a nested small Stack spacing to separate field labels from their inputs and errors" loading="lazy"></p>
+<p>In <strong>Every Layout</strong>, custom elements are used to implement layout components/primitives like the <strong>Stack</strong>. In <a href="#the-component">the <strong>Stack</strong> component</a>, the <code>space</code> prop (property; attribute) is used to define the spacing value. The modified classes example above is just for illustration. See the <a href="#nested">nested example</a>.</p>
+<h3 id="exceptions">Exceptions</h3>
+<p>CSS works best as an exception-based language. You write far-reaching rules, then use the cascade to override these rules in special cases. As written in <a href="https://24ways.org/2018/managing-flow-and-rhythm-with-css-custom-properties/">Managing Flow and Rhythm with CSS Custom Properties</a>, you can create per-element exceptions within a single <strong>Stack</strong> context (i.e. at the same nesting level).</p>
+<pre><code><span><span>.stack &gt; * + *</span> <span>{</span></span><br><span>  <span>margin-block-start</span><span>:</span> <span>var</span><span>(</span>--space, 1.5em<span>)</span><span>;</span></span><br><span><span>}</span></span><br><span></span><br><span><span>.stack-exception,</span><br><span>.stack-exception + *</span> <span>{</span></span><br><span>  <span>--space</span><span>:</span> 3rem<span>;</span></span><br><span><span>}</span></span></code></pre>
+<p>Note that we are applying the increased spacing above <em>and</em> below the <code>.exception</code> element, where applicable. If you only wanted to increase the space above, you would remove <code>.exception + *</code>.</p>
+<p>This works because <code>*</code> has <em>zero</em> specificity, so <code>.stack &gt; * + *</code> and <code>.stack-exception</code> are the same specificity and <code>.stack-exception</code> overrides <code>.stack &gt; * + *</code> in the cascade (by appearing further down in the stylesheet).</p>
+<h3 id="splitting-the-stack">Splitting the stack</h3>
+<p>By making the <strong>Stack</strong> a Flexbox context, we can give it one final power: the ability to add an <code>auto</code> margin to a chosen element. This way, we can group elements to the top and bottom of the vertical space. Useful for card-like components.</p>
+<p>In the following example, we've chosen to group elements <em>after</em> the second element towards the bottom of the space.</p>
+<pre><code><span><span>.stack</span> <span>{</span></span><br><span>  <span>display</span><span>:</span> flex<span>;</span></span><br><span>  <span>flex-direction</span><span>:</span> column<span>;</span></span><br><span>  <span>justify-content</span><span>:</span> flex-start<span>;</span></span><br><span><span>}</span></span><br><span></span><br><span><span>.stack &gt; * + *</span> <span>{</span></span><br><span>  <span>margin-block-start</span><span>:</span> <span>var</span><span>(</span>--space, 1.5rem<span>)</span><span>;</span></span><br><span><span>}</span></span><br><span></span><br><span><span>.stack &gt; :nth-child(2)</span> <span>{</span></span><br><span>  <span>margin-block-end</span><span>:</span> auto<span>;</span></span><br><span><span>}</span></span></code></pre>
+
+<p>This can be seen working in context in the following demo depicting a presentation/slides editor. The <a href="https://every-layout.dev/layouts/cover"><strong>Cover</strong></a> element on the right has a minimum height of <code>66.666vh</code>, forcing the left sidebar's height to be taller than its content. This is what produces the gap between the slide images and the <em>"Add slide"</em> button.</p>
+
+<div>
+
+<shrink-grow height="auto" unit="rem" aria-labelledby="Splitting a stack to push a button to the bottom of the screen in a slide editor layout">
+  <sidebar-l contentmin="66.666%" data-i="Sidebar-left66.666%var(--s1)">
+    <stack-l splitafter="2" data-i="Stack-var(--s1)false2">
+      <image-l ratio="6:9" aria-label="Image with 6:9 ratio" data-i="Image-6:90none" role="img"></image-l>
+      <image-l ratio="6:9" aria-label="Image with 6:9 ratio" data-i="Image-6:90none" role="img"></image-l>
+      
+    </stack-l>
+    <box-l data-i="Box-var(--s1)var(--border-thin)false">
+      <cover-l centered=".centered" minheight="66.666vh" nopad="" data-i="Cover-.centeredvar(--s1)66.666vhtrue">
+        <stack-l data-i="Stack-var(--s1)false">
+          <h2 role="none">Title of slide</h2>
+          <text-l words="50"><p><span>nec</span> <span>erat</span> <span>dolor</span> <span>tellus</span> <span>orci</span> <span>ac</span> <span>eu</span> <span>semper</span> <span>morbi</span> <span>mattis</span> <span>vulputate</span> <span>convallis</span> <span>euismod</span> <span>vulputate</span> <span>luctus</span> <span>tincidunt</span> <span>lacus</span> <span>tempus</span> <span>donec</span> <span>sapien</span> <span>et</span> <span>odio</span> <span>nec</span> <span>ornare</span> <span>malesuada</span> <span>nisi</span> <span>quam</span> <span>blandit</span> <span>consequat</span> <span>arcu</span> <span>non</span> <span>sollicitudin</span> <span>ante</span> <span>pellentesque</span> <span>eu</span> <span>vulputate</span> <span>diam</span> <span>sed</span> <span>odio</span> <span>nec</span> <span>ac</span> <span>ultricies</span> <span>eu</span> <span>ipsum</span> <span>eu</span> <span>mi</span> <span>ultrices</span> <span>ac</span> <span>mattis</span> <span>accumsan</span></p></text-l>
+        </stack-l>
+      </cover-l>
+    </box-l>
+  </sidebar-l>
+</shrink-grow>
+  <p>
+    <a href="https://every-layout.dev/demos/stack-split" target="_blank">
+      Launch 
+      <svg focusable="false">
+        <use xlink:href="data:,"></use>
+      </svg>
+      <span>(opens new tab)</span>
+    </a>
+  </p>
+</div>
+<p>Where the <strong>Stack</strong> is the only child of its parent, nothing forces it to <em>stretch</em> as in the last example/demo. A height of <code>100%</code> ensures the <strong>Stack's</strong> height <em>matches</em> the parent's and the split can occur.</p>
+<pre><code><span><span>.stack:only-child</span> <span>{</span></span><br><span>  <span>/* ↓ `height` in horizontal-tb writing mode */</span></span><br><span>  <span>block-size</span><span>:</span> 100%<span>;</span></span><br><span><span>}</span></span></code></pre>
+
+<p>The potential remit of the <strong>Stack</strong> layout can hardly be overestimated. Anywhere elements are stacked one atop another, it is likely a <strong>Stack</strong> should be in effect. Only adjacent elements (such as grid cells) should not be subject to a <strong>Stack</strong>. The grid cells <em>are</em> likely to be <strong>Stacks</strong>, however, and the grid itself a member of a <strong>Stack</strong>.</p>
+<p><img src="data:application/octet-stream;base64," alt="A 3 by 2 grid. One of the cells is marked as a Stack, and contains evenly spaced child elements" loading="lazy"></p>
+
+
+<p>Use this tool to help you generate basic <strong>Stack</strong> CSS and HTML.</p>
+
+
+<p>A custom element implementation of the <strong>Stack</strong> is provided for download. Consult the API and examples to follow for more information.</p>
+<a href="https://every-layout.dev/downloads/Stack.zip" download="">
+  <svg focusable="false">
+    <use xlink:href="data:,"></use>
+  </svg>
+  <span>Download Stack.zip</span>
+</a>
+<h3>Props API</h3>
+<p>The following props (attributes) will cause the <strong>Stack</strong> component to re-render when altered. They can be altered by hand—in browser developer tools—or as the subjects of inherited application state.</p>
+<div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>space</td>
+<td><code>string</code></td>
+<td><code>"var(--s1)"</code></td>
+<td>A CSS <code>margin</code> value</td>
+</tr>
+<tr>
+<td>recursive</td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Whether the spaces apply recursively (i.e. regardless of nesting level)</td>
+</tr>
+<tr>
+<td>splitAfter</td>
+<td><code>number</code></td>
+<td><code></code></td>
+<td>The element after which to <em>split</em> the stack with an auto margin</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="examples">Examples</h3>
+<h4 id="basic">Basic</h4>
+<pre><code><span><span><span><span>&lt;</span>stack-l</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>h2</span><span>&gt;</span></span><span>&lt;!-- some text --&gt;</span><span><span><span>&lt;/</span>h2</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>img</span> <span>src</span><span><span>=</span><span>"</span>path/to/some/image.svg<span>"</span></span> <span>/&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>p</span><span>&gt;</span></span><span>&lt;!-- more text --&gt;</span><span><span><span>&lt;/</span>p</span><span>&gt;</span></span></span><br><span><span><span><span>&lt;/</span>stack-l</span><span>&gt;</span></span></span></code></pre>
+<h4 id="nested">Nested</h4>
+<pre><code><span><span><span><span>&lt;</span>stack-l</span> <span>space</span><span><span>=</span><span>"</span>3rem<span>"</span></span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>h2</span><span>&gt;</span></span><span>&lt;!-- heading label --&gt;</span><span><span><span>&lt;/</span>h2</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>stack-l</span> <span>space</span><span><span>=</span><span>"</span>1.5rem<span>"</span></span><span>&gt;</span></span></span><br><span>    <span><span><span>&lt;</span>p</span><span>&gt;</span></span><span>&lt;!-- body text --&gt;</span><span><span><span>&lt;/</span>p</span><span>&gt;</span></span></span><br><span>    <span><span><span>&lt;</span>p</span><span>&gt;</span></span><span>&lt;!-- body text --&gt;</span><span><span><span>&lt;/</span>p</span><span>&gt;</span></span></span><br><span>    <span><span><span>&lt;</span>p</span><span>&gt;</span></span><span>&lt;!-- body text --&gt;</span><span><span><span>&lt;/</span>p</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;/</span>stack-l</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>h2</span><span>&gt;</span></span><span>&lt;!-- heading label --&gt;</span><span><span><span>&lt;/</span>h2</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>stack-l</span> <span>space</span><span><span>=</span><span>"</span>1.5rem<span>"</span></span><span>&gt;</span></span></span><br><span>    <span><span><span>&lt;</span>p</span><span>&gt;</span></span><span>&lt;!-- body text --&gt;</span><span><span><span>&lt;/</span>p</span><span>&gt;</span></span></span><br><span>    <span><span><span>&lt;</span>p</span><span>&gt;</span></span><span>&lt;!-- body text --&gt;</span><span><span><span>&lt;/</span>p</span><span>&gt;</span></span></span><br><span>    <span><span><span>&lt;</span>p</span><span>&gt;</span></span><span>&lt;!-- body text --&gt;</span><span><span><span>&lt;/</span>p</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;/</span>stack-l</span><span>&gt;</span></span></span><br><span><span><span><span>&lt;/</span>stack-l</span><span>&gt;</span></span></span></code></pre>
+<h4 id="recursive">Recursive</h4>
+<pre><code><span><span><span><span>&lt;</span>stack-l</span> <span>recursive</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>div</span><span>&gt;</span></span><span>&lt;!-- first level child --&gt;</span><span><span><span>&lt;/</span>div</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>div</span><span>&gt;</span></span><span>&lt;!-- first level sibling --&gt;</span><span><span><span>&lt;/</span>div</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>div</span><span>&gt;</span></span></span><br><span>    <span><span><span>&lt;</span>div</span><span>&gt;</span></span><span>&lt;!-- second level child --&gt;</span><span><span><span>&lt;/</span>div</span><span>&gt;</span></span></span><br><span>    <span><span><span>&lt;</span>div</span><span>&gt;</span></span><span>&lt;!-- second level sibling --&gt;</span><span><span><span>&lt;/</span>div</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;/</span>div</span><span>&gt;</span></span></span><br><span><span><span><span>&lt;/</span>stack-l</span><span>&gt;</span></span></span></code></pre>
+<h4 id="list-semantics">List semantics</h4>
+<p>In some cases, browsers should interpret the <strong>Stack</strong> as a list for screen reader software. You can use the following ARIA attribution to achieve this.</p>
+<pre><code><span><span><span><span>&lt;</span>stack-l</span> <span>role</span><span><span>=</span><span>"</span>list<span>"</span></span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>div</span> <span>role</span><span><span>=</span><span>"</span>listitem<span>"</span></span><span>&gt;</span></span><span>&lt;!-- item 1 content --&gt;</span><span><span><span>&lt;/</span>div</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>div</span> <span>role</span><span><span>=</span><span>"</span>listitem<span>"</span></span><span>&gt;</span></span><span>&lt;!-- item 2 content --&gt;</span><span><span><span>&lt;/</span>div</span><span>&gt;</span></span></span><br><span>  <span><span><span>&lt;</span>div</span> <span>role</span><span><span>=</span><span>"</span>listitem<span>"</span></span><span>&gt;</span></span><span>&lt;!-- item 3 content --&gt;</span><span><span><span>&lt;/</span>div</span><span>&gt;</span></span></span><br><span><span><span><span>&lt;/</span>stack-l</span><span>&gt;</span></span></span></code></pre>
+
+
+    </div></div>
+  </div>
+</body>
+</html>

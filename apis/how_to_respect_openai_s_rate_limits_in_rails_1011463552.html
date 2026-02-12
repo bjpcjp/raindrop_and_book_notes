@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to respect OpenAI's rate limits in Rails</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to respect OpenAI's rate limits in Rails</h1>
+    <p><strong>URL:</strong> <a href="https://feed.thoughtbot.com/link/24077/17002600/openai-rate-limits">https://feed.thoughtbot.com/link/24077/17002600/openai-rate-limits</a></p>
+    <p><strong>Tags:</strong> rubyonrails, openai, apis</p>
+    <p><strong>Bookmark ID:</strong> 1011463552</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>I’m on a Rails project using OpenAI. We’re sending over large amounts of text to
+provide as much context as possible, and recently ran into issues with
+rate limiting.</p>
+
+<p>As it turns out, OpenAI’s <a href="https://platform.openai.com/docs/guides/rate-limits?context=tier-free#rate-limits-in-headers">rate limits</a> are a little more complicated than
+other APIs.</p>
+
+<blockquote>
+<p>Rate limits are measured in five ways: RPM (requests per minute), RPD
+(requests per day), TPM (tokens per minute), TPD (tokens per day), and IPM
+(images per minute). Rate limits can be hit across any of the options
+depending on what occurs first.</p>
+</blockquote>
+
+<p>In our case, we were hitting our <strong>TPM</strong> (tokens per minute) rate limit.</p>
+
+<p>When a rate limit is exceeded, OpenAI will return the relevant <a href="https://platform.openai.com/docs/guides/rate-limits#rate-limits-in-headers">headers</a>.</p>
+<div><pre><code>x-ratelimit-reset-requests: 1s
+x-ratelimit-reset-tokens: 6m0s
+</code></pre></div>
+<p>At the time of this writing, OpenAI does not have a first-party Ruby library,
+but the community has gravitated towards <a href="https://github.com/alexrudall/ruby-openai">ruby-openai</a>, which is what our
+project is using. When a rate limit is hit, it raises
+<code>Faraday::TooManyRequestsError</code>, which gives us access to those headers via
+<a href="https://www.rubydoc.info/gems/faraday/Faraday%2FError:response_headers"><code>#response_headers</code></a>.</p>
+
+<p>Because OpenAI could return two headers (one for requests per minute and one for
+tokens per minute), we play it safe and wait based on the greater of the two
+values.</p>
+
+<p>Rather than roll our own script to parse the header values, we can use <a href="https://github.com/henrypoydar/chronic_duration">Chronic
+Duration</a> to do this for us. We can then define our own custom error class in
+an initializer to build the wait value for us.</p>
+
+<p>In order to use this value, we need to leverage <a href="https://api.rubyonrails.org/classes/ActiveSupport/Rescuable/ClassMethods.html#method-i-rescue_from"><code>#rescue_from</code></a> in
+combination with <a href="https://api.rubyonrails.org/classes/ActiveJob/Exceptions.html#method-i-retry_job"><code>#retry_job</code></a>. This is because we need to set the <code>wait</code>
+value dynamically based on the headers, and <a href="https://api.rubyonrails.org/classes/ActiveJob/Exceptions/ClassMethods.html#method-i-retry_on"><code>#retry_on</code></a> does not provide a
+way to do this.</p>
+
+<p>Below is a distilled example.</p>
+<div><pre><code><span># app/jobs/send_prompt_job.rb</span>
+<span>class</span> <span>SendPromptJob</span> <span>&lt;</span> <span>ApplicationJob</span>
+  <span>queue_as</span> <span>:default</span>
+
+  <span>MAX_ATTEMPTS</span> <span>=</span> <span>2</span>
+
+  <span>rescue_from</span> <span>OpenAI</span><span>::</span><span>RateLimitError</span> <span>do</span> <span>|</span><span>error</span><span>|</span>
+    <span>if</span> <span>executions</span> <span>&lt;</span> <span>MAX_ATTEMPTS</span>
+      <span>backoff</span> <span>=</span> <span>Backoff</span><span>.</span><span>polynomially_longer</span><span>(</span><span>executions</span><span>:)</span>
+
+      <span>retry_job</span> <span>wait: </span><span>error</span><span>.</span><span>wait</span><span>.</span><span>seconds</span> <span>+</span> <span>backoff</span>
+    <span>else</span>
+      <span>Rails</span><span>.</span><span>logger</span><span>.</span><span>info</span> <span>"Exhausted attempts"</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>def</span> <span>perform</span><span>()</span>
+    <span>OpenAI</span><span>::</span><span>Client</span><span>.</span><span>new</span><span>.</span><span>chat</span><span>(</span><span>...</span><span>)</span>
+  <span>rescue</span> <span>Faraday</span><span>::</span><span>TooManyRequestsError</span> <span>=&gt;</span> <span>error</span>
+    <span>raise</span> <span>OpenAI</span><span>::</span><span>RateLimitError</span><span>.</span><span>new</span><span>(</span><span>error</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+
+<span># lib/backoff.rb</span>
+<span>class</span> <span>Backoff</span>
+  <span>DEFAULT_JITTER</span> <span>=</span> <span>0.15</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>polynomially_longer</span><span>(</span><span>executions</span><span>:,</span> <span>jitter: </span><span>DEFAULT_JITTER</span><span>)</span>
+    <span>((</span><span>executions</span><span>**</span><span>4</span><span>)</span> <span>+</span> <span>(</span><span>Kernel</span><span>.</span><span>rand</span> <span>*</span> <span>(</span><span>executions</span><span>**</span><span>4</span><span>)</span> <span>*</span> <span>jitter</span><span>))</span> <span>+</span> <span>2</span>
+  <span>end</span>
+<span>end</span>
+
+<span># config/initializers/openai.rb</span>
+<span>module</span> <span>OpenAI</span>
+  <span>class</span> <span>RateLimitError</span> <span>&lt;</span> <span>StandardError</span>
+    <span>attr_reader</span> <span>:reset_requests_in_seconds</span><span>,</span> <span>:reset_tokens_in_seconds</span>
+
+    <span>def</span> <span>initialize</span><span>(</span><span>faraday_error</span><span>)</span>
+      <span>headers</span> <span>=</span> <span>faraday_error</span><span>.</span><span>response_headers</span><span>&amp;</span><span>.</span><span>with_indifferent_access</span> <span>||</span> <span>{}</span>
+
+      <span>@reset_requests_in_seconds</span> <span>=</span> <span>headers</span><span>.</span><span>fetch</span><span>(</span><span>"x-ratelimit-reset-requests"</span><span>,</span> <span>"0s"</span><span>)</span>
+      <span>@reset_tokens_in_seconds</span> <span>=</span> <span>headers</span><span>.</span><span>fetch</span><span>(</span><span>"x-ratelimit-reset-tokens"</span><span>,</span> <span>"0s"</span><span>)</span>
+
+      <span>super</span><span>(</span><span>"The API has hit the rate limit"</span><span>)</span>
+    <span>end</span>
+
+    <span>def</span> <span>wait</span>
+      <span>[</span>
+        <span>parse_duration</span><span>(</span><span>reset_requests_in_seconds</span><span>),</span>
+        <span>parse_duration</span><span>(</span><span>reset_tokens_in_seconds</span><span>)</span>
+      <span>].</span><span>max</span>
+    <span>end</span>
+
+    <span>private</span>
+
+    <span>def</span> <span>parse_duration</span><span>(</span><span>value</span><span>)</span>
+      <span>ChronicDuration</span><span>.</span><span>parse</span><span>(</span><span>value</span><span>)</span> <span>||</span> <span>0</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>Since we can’t leverage <code>retry_on</code>, we need to ensure we eventually stop
+retrying the job if it continues to fail.</p>
+<div><pre><code><span>executions</span> <span>&lt;=</span> <span>MAX_ATTEMPTS</span>
+</code></pre></div>
+<p>Additionally, you’ll also note that we add a “backoff” mechanism per OpenAI’s
+<a href="https://cookbook.openai.com/examples/how_to_handle_rate_limits#retrying-with-exponential-backoff">recommendation</a>.</p>
+<div><pre><code><span>backoff</span> <span>=</span> <span>Backoff</span><span>.</span><span>polynomially_longer</span><span>(</span><span>executions</span><span>:)</span>
+
+<span>retry_job</span> <span>wait: </span><span>error</span><span>.</span><span>wait</span><span>.</span><span>seconds</span> <span>+</span> <span>backoff</span>
+</code></pre></div><h2 id="avoid-rate-limits-by-being-proactive">
+  <a href="https://thoughtbot.com/blog/openai-rate-limits#avoid-rate-limits-by-being-proactive">
+    Avoid rate limits by being proactive
+  </a>
+</h2>
+
+<p>We took a reactive approach to the problem, but I do want to highlight that
+there’s an opportunity to be proactive by examining the <a href="https://platform.openai.com/docs/guides/rate-limits#rate-limits-in-headers">headers</a> that return
+the amount of remaining requests or tokens that are permitted before exhausting
+the rate limit.</p>
+<div><pre><code>x-ratelimit-remaining-requests
+x-ratelimit-remaining-tokens
+</code></pre></div>
+<p>Unfortunately, <code>ruby-openai</code> <a href="https://github.com/alexrudall/ruby-openai/issues/438">does not return response headers</a>, but there
+is a workaround. You can create a custom Faraday middleware, and pass it to the
+client in a block.</p>
+<div><pre><code><span>class</span> <span>ExtractRateLimitHeaders</span><span>&lt;</span> <span>Faraday</span><span>::</span><span>Middleware</span>
+  <span>def</span> <span>on_complete</span><span>(</span><span>env</span><span>)</span>
+    <span># Store these values somewhere</span>
+    <span>remaining_requests</span> <span>=</span> <span>env</span><span>.</span><span>response_headers</span><span>[</span><span>"x-ratelimit-remaining-requests"</span><span>]</span>
+    <span>remaining_tokens</span> <span>=</span> <span>env</span><span>.</span><span>response_headers</span><span>[</span><span>"x-ratelimit-remaining-tokens"</span><span>]</span>
+  <span>end</span>
+<span>end</span>
+
+<span>client</span> <span>=</span> <span>OpenAI</span><span>::</span><span>Client</span><span>.</span><span>new</span> <span>do</span> <span>|</span><span>faraday</span><span>|</span>
+  <span>faraday</span><span>.</span><span>use</span> <span>ExtractRateLimitHeaders</span>
+<span>end</span>
+
+<span>client</span><span>.</span><span>chat</span><span>(</span><span>...</span><span>)</span>
+</code></pre></div>
+<p>You could then use this information to reduce the number of tokens you plan on
+sending to OpenAI by comparing its size with <code>remaining_tokens</code>. Or, if you’re
+keeping track of how many requests you’re making, you could compare that value
+with <code>remaining_tokens</code>.</p>
+
+
+
+    </div></div>
+  </div>
+</body>
+</html>

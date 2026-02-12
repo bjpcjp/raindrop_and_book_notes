@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Avoiding N+1 queries the Railsy way with strict loading</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Avoiding N+1 queries the Railsy way with strict loading</h1>
+    <p><strong>URL:</strong> <a href="https://feed.thoughtbot.com/link/24077/17000238/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries">https://feed.thoughtbot.com/link/24077/17000238/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 1009156675</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>When working with Rails, one of the easiest ways to improve performance is to avoid N+1 queries as much as possible.</p>
+
+<p>But what is an N+1 query? Here’s a quick example: let’s say you are rendering a list of 20 books, and you want to show author details on each line. If you don’t preload the authors, accessing <code>book.author.favorite_ice_cream</code> will trigger one additional query per book, making a total of 21 queries.</p>
+
+<p>Strict loading is a Rails feature that allows avoiding N+1 queries without adding any extra dependencies to the project.</p>
+<h2 id="how-does-strict-loading-help-avoid-n1-queries">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#how-does-strict-loading-help-avoid-n1-queries">
+    How does strict loading help avoid N+1 queries?
+  </a>
+</h2>
+
+<p>Rails lazy loads resources by default, which means that when accessing a resource that hasn’t been preloaded, Rails queries the database on demand, which can lead to N+1 queries.</p>
+
+<p>Example</p>
+<div><pre><code><span>class</span> <span>Movie</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>has_many</span> <span>:reviews</span>
+<span>end</span>
+
+<span>movies</span> <span>=</span> <span>Movie</span><span>.</span><span>all</span>
+<span>movies</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>movie</span><span>|</span>
+  <span>puts</span> <span>movie</span><span>.</span><span>reviews</span><span>.</span><span>size</span>  <span># This triggers an N+1 query for each movie</span>
+<span>end</span>
+</code></pre></div>
+<p>In the above example, we are performing an extra query to fetch the reviews for each movie, which creates an N+1 query problem.</p>
+
+<p>To prevent this issue, we can enable strict loading on the <code>reviews</code> association in the <code>Movie</code> model. This will raise an error whenever a review is accessed without being preloaded, forcing us to use eager loading instead of lazy loading.</p>
+
+<p>Here’s how that looks in practice.</p>
+<div><pre><code><span>class</span> <span>Movie</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>has_many</span> <span>:reviews</span><span>,</span> <span>strict_loading: </span><span>true</span>
+<span>end</span>
+</code></pre></div>
+<p>Now accessing the <code>movie.reviews</code> will raise a <code>ActiveRecord::StrictLoadingViolationError</code> if the reviews are not preloaded.</p>
+<div><pre><code><span>movie</span> <span>=</span> <span>Movie</span><span>.</span><span>first</span>
+<span>movie</span><span>.</span><span>reviews</span> <span># Raises ActiveRecord::StrictLoadingViolationError</span>
+</code></pre></div>
+<p>To avoid the error, all we need to do is include or preload the reviews in the initial query.</p>
+<div><pre><code><span>movie</span> <span>=</span> <span>Movie</span><span>.</span><span>first</span><span>.</span><span>includes</span><span>(</span><span>:reviews</span><span>)</span>
+<span>movie</span><span>.</span><span>reviews</span>
+</code></pre></div><h2 id="enabling-strict-loading">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#enabling-strict-loading">
+    Enabling strict loading
+  </a>
+</h2>
+
+<p>Strict loading can be enabled on multiple levels such as:</p>
+<h3 id="model-level-strict-loading">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#model-level-strict-loading">
+    Model level strict loading
+  </a>
+</h3>
+
+<p>It is possible to enable strict loading for a model and all of its associations by setting the <code>strict_loading_by_default</code> attribute to <code>true</code>.</p>
+<div><pre><code><span>class</span> <span>Movie</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>self</span><span>.</span><span>strict_loading_by_default</span> <span>=</span> <span>true</span>
+  <span>has_many</span> <span>:reviews</span>
+<span>end</span>
+
+<span>class</span> <span>Review</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>belongs_to</span> <span>:movie</span>
+<span>end</span>
+</code></pre></div>
+<p>In this case, calling <code>Movie.first.reviews</code> without including the <code>reviews</code> in the initial query will raise an error.</p>
+<h3 id="association-level-strict-loading">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#association-level-strict-loading">
+    Association level strict loading
+  </a>
+</h3>
+
+<p>In cases where you want strict loading only on a specific association, you can do so by marking the setting <code>strict_loading: true</code> on the targeted association.</p>
+<div><pre><code><span>class</span> <span>Movie</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>has_many</span> <span>:reviews</span><span>,</span> <span>strict_loading: </span><span>true</span>
+<span>end</span>
+</code></pre></div><h2 id="global-strict-loading-configuration-options">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#global-strict-loading-configuration-options">
+    Global strict loading configuration options
+  </a>
+</h2>
+
+<p>Rails offers the following global configuration options for strict loading:</p>
+<h3 id="configuring-strictloadingmode">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#configuring-strictloadingmode">
+    Configuring strict<em>loading</em>mode
+  </a>
+</h3>
+
+<p>By default <code>config.active_record.strict_loading_mode</code> is set to <code>:all</code>, meaning that any lazy loading attempt will raise an error. However, you can change it to <code>:n_plus_one_only</code>, which will only raise errors when associations are loaded in a way that leads to N+1 queries like this:</p>
+<div><pre><code><span># config/environments/development.rb</span>
+<span>config</span><span>.</span><span>active_record</span><span>.</span><span>strict_loading_mode</span> <span>=</span> <span>:n_plus_one_only</span>
+</code></pre></div>
+<p>I recommend using <code>:n_plus_one_only</code> since an error will only be raised when the association is loaded in a way that leads to N+1 queries.</p>
+<h3 id="showing-strict-loading-violation-only-in-logs">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#showing-strict-loading-violation-only-in-logs">
+    Showing strict loading violation only in logs
+  </a>
+</h3>
+
+<p>By default, strict loading will raise an error if there’s a violation, but it can be turned off by explicitly logging the violations.</p>
+<div><pre><code><span># config/environments/production.rb</span>
+<span>config</span><span>.</span><span>active_record</span><span>.</span><span>action_on_strict_loading_violation</span> <span>=</span> <span>:log</span>
+</code></pre></div>
+<p>It’s recommended to use this option in production environments to avoid crashing the application when strict loading is violated.</p>
+<h3 id="enabling-strict-loading-validations-for-all-models">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#enabling-strict-loading-validations-for-all-models">
+    Enabling strict loading validations for all models
+  </a>
+</h3>
+
+<p>Strict loading can be enabled for all the models via configuration:</p>
+<div><pre><code><span># config/application.rb</span>
+<span>config</span><span>.</span><span>active_record</span><span>.</span><span>strict_loading_by_default</span> <span>=</span> <span>true</span>
+</code></pre></div>
+<p>You can also disable it in the console via configuration:</p>
+<div><pre><code><span># config/application.rb</span>
+<span>console</span> <span>do</span>
+  <span>ActiveRecord</span><span>::</span><span>Base</span><span>.</span><span>strict_loading_by_default</span> <span>=</span> <span>false</span>
+<span>end</span>
+</code></pre></div><h3 id="disabling-strict-loading-during-test-setups-for-factorybot">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#disabling-strict-loading-during-test-setups-for-factorybot">
+    Disabling strict loading during test setups for FactoryBot
+  </a>
+</h3>
+
+<p>By default, if strict_loading is enabled for a model, any test setup that accesses an association without eager loading will fail.</p>
+
+<p>This can be annoying because factories are just setting up data, and strict loading is primarily meant to catch issues in controllers/views.</p>
+
+<p>You can disable strict loading via configuration:</p>
+<div><pre><code><span># spec/factories.rb</span>
+
+<span>FactoryBot</span><span>.</span><span>define</span> <span>do</span>
+  <span>after</span> <span>:build</span> <span>do</span> <span>|</span><span>record</span><span>|</span>
+    <span>if</span> <span>record</span><span>.</span><span>is_a?</span> <span>ActiveRecord</span><span>::</span><span>Base</span>
+      <span>record</span><span>.</span><span>strict_loading!</span> <span>false</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>after</span> <span>:stub</span> <span>do</span> <span>|</span><span>record</span><span>|</span>
+    <span>if</span> <span>record</span><span>.</span><span>is_a?</span> <span>ActiveRecord</span><span>::</span><span>Base</span>
+      <span>record</span><span>.</span><span>strict_loading!</span> <span>false</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>Without this configuration, your test setup could fail due to strict loading violations before the actual test runs,
+which is not what we want.</p>
+<h2 id="conclusion">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#conclusion">
+    Conclusion
+  </a>
+</h2>
+
+<p>Using strict loading in your Rails app can help prevent N+1 queries and improve application performance without adding any extra dependency to your project, but when using it, setting the proper configurations is crucial to avoid unexpected behavior.</p>
+<h3 id="additional-resources">
+  <a href="https://thoughtbot.com/blog/strict-loading-in-rails-8-a-railsy-way-to-avoid-n-1-queries#additional-resources">
+    Additional resources:
+  </a>
+</h3>
+
+<ul>
+<li><a href="https://api.rubyonrails.org/classes/ActiveRecord/QueryMethods.html?#method-i-strict_loading">Strict Loading Documentation</a></li>
+<li><a href="https://rubyonrails.org/2020/2/21/this-week-in-rails-strict-loading-in-active-record-and-more">Release notes</a></li>
+</ul>
+
+<hr>
+
+
+
+    </div></div>
+  </div>
+</body>
+</html>

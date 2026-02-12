@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Performance impact of the memoization idiom on modern Ruby</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Performance impact of the memoization idiom on modern Ruby</h1>
+    <p><strong>URL:</strong> <a href="https://railsatscale.com/2023-10-24-memoization-pattern-and-object-shapes">https://railsatscale.com/2023-10-24-memoization-pattern-and-object-shapes</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876793709</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div aria-label="Content">
+        <article itemscope="" itemtype="http://schema.org/BlogPosting">
+
+  
+
+  <div itemprop="articleBody">
+    <p>One major internal change in Ruby 3.2 was the introduction of object shapes.</p>
+
+<p>In this post, we’ll try to cover why they were introduced, how they work, and what their limitations are.</p>
+
+<h3 id="how-object-instance-variables-are-stored">How object instance variables are stored</h3>
+
+<p>Because of how dynamic Ruby is, an operation as simple as accessing an instance variable is a lot of work.</p>
+
+<p>In most cases, Ruby objects store their instance variables in an array of references.</p>
+
+<p>For instance, let’s create a simple object with 2 instance variables:</p>
+
+<div><pre><code><span>class</span> <span>User</span>
+  <span>def</span> <span>initialize</span><span>(</span><span>name</span><span>,</span> <span>admin</span><span>)</span>
+    <span>@name</span> <span>=</span> <span>name</span>
+    <span>@admin</span> <span>=</span> <span>admin</span>
+  <span>end</span>
+
+  <span>def</span> <span>admin?</span>
+    <span>@admin</span>
+  <span>end</span>
+<span>end</span>
+
+<span>User</span><span>.</span><span>new</span><span>(</span><span>"John"</span><span>,</span> <span>true</span><span>)</span>
+</code></pre></div>
+
+<p>In MRI, this object will occupy a 40 bytes object slot that is laid out like this:</p>
+
+<div><pre><code>+--------+----------+---------+---------+---------+
+|  flags |  class   |  ivar0  |  ivar1  |  ivar2  |
++--------+----------+---------+---------+---------+
+|  0x01  |  User    |  "John" |  true   |  UNDEF  |
++--------+----------+---------+---------+---------+
+</code></pre></div>
+
+<p>Each cell is 8 bytes large, The first cell is used for the object’s <code>flags</code>, it’s used for many things, but it’s all outside of the scope of this post.</p>
+
+<p>The second cell stores a pointer to the object’s class, and then the last 3 cells are used to store the object’s instance variable.</p>
+
+<p>In this case, since the object only has 2 instance variables, the third slot is not used.</p>
+
+<p>Now when Ruby executes code that accesses an instance variable, it needs to be able to translate the variable name into an index.</p>
+
+<p>In Ruby 3.1 and older, each class would keep a Hash that maps instance variable names to indexes, in pseudo-Ruby it worked like this:</p>
+
+<div><pre><code><span>class</span> <span>Class</span>
+  <span>def</span> <span>initialize</span>
+    <span>@instance_variables_index</span> <span>=</span> <span>{}</span>
+  <span>end</span>
+
+  <span>def</span> <span>ivar_index</span><span>(</span><span>ivar_name</span><span>)</span>
+    <span>@instance_variables_index</span><span>[</span><span>ivar_name</span><span>]</span> <span>||=</span> <span>@instance_variables_index</span><span>.</span><span>size</span>
+  <span>end</span>
+<span>end</span>
+
+<span>class</span> <span>Object</span>
+  <span>def</span> <span>initialize</span>
+    <span>@ivars</span> <span>=</span> <span>[]</span>
+  <span>end</span>
+
+  <span>def</span> <span>instance_variable_get</span><span>(</span><span>ivar_name</span><span>)</span>
+    <span>index</span> <span>=</span> <span>self</span><span>.</span><span>class</span><span>.</span><span>ivar_index</span><span>(</span><span>ivar_name</span><span>)</span>
+    <span>value</span> <span>=</span> <span>@ivars</span><span>[</span><span>index</span><span>]</span>
+    <span>return</span> <span>value</span> <span>==</span> <span>UNDEF</span> <span>?</span> <span>nil</span> <span>:</span> <span>value</span>
+  <span>end</span>
+
+  <span>def</span> <span>instance_variable_set</span><span>(</span><span>ivar_name</span><span>,</span> <span>value</span><span>)</span>
+    <span>index</span> <span>=</span> <span>self</span><span>.</span><span>class</span><span>.</span><span>ivar_index</span><span>(</span><span>ivar_name</span><span>)</span>
+    <span>@ivars</span><span>[</span><span>index</span><span>]</span> <span>=</span> <span>value</span>
+  <span>end</span>
+<span>end</span>
+
+<span>user</span><span>.</span><span>instance_variable_get</span><span>(</span><span>:@admin</span><span>)</span> <span># =&gt; true</span>
+</code></pre></div>
+
+<h3 id="inline-caches">Inline Caches</h3>
+
+<p>As you can imagine, having to do a Hash lookup for every instance variable access is pretty slow.</p>
+
+<p>To avoid doing this every time, the Ruby Virtual Machine uses what’s called inline caches.
+They are small memory regions inside the VM bytecode, that can store the result of this kind of computations to hopefully avoid doing it every time.</p>
+
+<p>In pseudo-Ruby, it looks like this:</p>
+
+<div><pre><code><span>def</span> <span>ruby_vm_get_instance_variable</span><span>(</span><span>object</span><span>,</span> <span>ivar_name</span><span>,</span> <span>cache</span><span>)</span>
+  <span>if</span> <span>cache</span><span>.</span><span>last_class</span> <span>!=</span> <span>object</span><span>.</span><span>class</span>
+    <span>cache</span><span>.</span><span>last_class</span> <span>=</span> <span>object</span><span>.</span><span>class</span>
+    <span>cache</span><span>.</span><span>index</span> <span>=</span> <span>object</span><span>.</span><span>class</span><span>.</span><span>ivar_index</span><span>(</span><span>ivar_name</span><span>)</span>
+  <span>end</span>
+
+  <span>value</span> <span>=</span> <span>object</span><span>.</span><span>ivars</span><span>[</span><span>cache</span><span>.</span><span>index</span><span>]</span>
+  <span>return</span> <span>value</span> <span>==</span> <span>UNDEF</span> <span>?</span> <span>nil</span> <span>:</span> <span>value</span>
+<span>end</span>
+</code></pre></div>
+
+<p>With such inline caches, if a method only ever deals with a single class, it only has to look up the instance variable index once.
+On any future execution, all it has to do is compare the cached class with the current object class, and if it matches it can directly
+re-use the cached index. This is much much faster than having to lookup the index.</p>
+
+<h3 id="inline-caches-and-polymorphism">Inline Caches and Polymorphism</h3>
+
+<p>The problem with such an approach though, is that it doesn’t perform well in the presence of simple polymorphism:</p>
+
+<div><pre><code><span>require</span> <span>"benchmark/ips"</span>
+
+<span>class</span> <span>Parent</span>
+  <span>def</span> <span>name</span>
+    <span>@name</span>
+  <span>end</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>name</span><span>)</span>
+    <span>@name</span> <span>=</span> <span>name</span>
+  <span>end</span>
+<span>end</span>
+
+<span>class</span> <span>Subclass</span> <span>&lt;</span> <span>Parent</span>
+<span>end</span>
+
+<span>stable_1</span> <span>=</span> <span>Parent</span><span>.</span><span>new</span><span>(</span><span>"Odile Deray"</span><span>)</span>
+<span>stable_2</span> <span>=</span> <span>Parent</span><span>.</span><span>new</span><span>(</span><span>"Simon Jérémi"</span><span>)</span>
+
+<span>unstable_1</span> <span>=</span> <span>Parent</span><span>.</span><span>new</span><span>(</span><span>"Peter"</span><span>)</span>
+<span>unstable_2</span> <span>=</span> <span>Subclass</span><span>.</span><span>new</span><span>(</span><span>"Steven"</span><span>)</span>
+
+<span>puts</span> <span>RUBY_DESCRIPTION</span>
+<span>Benchmark</span><span>.</span><span>ips</span> <span>do</span> <span>|</span><span>x</span><span>|</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"stable class"</span><span>)</span> <span>do</span>
+    <span>stable_1</span><span>.</span><span>name</span>
+    <span>stable_2</span><span>.</span><span>name</span>
+  <span>end</span>
+
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"unstable class"</span><span>)</span> <span>do</span>
+    <span>unstable_1</span><span>.</span><span>name</span>
+    <span>unstable_2</span><span>.</span><span>name</span>
+  <span>end</span>
+
+  <span>x</span><span>.</span><span>compare!</span><span>(</span><span>order: :baseline</span><span>)</span>
+<span>end</span>
+</code></pre></div>
+
+<p>In the above benchmark, we compare the performance of a simple instance variable access on two instances of the same class against
+the same simple access but with two distinct classes.</p>
+
+<div><pre><code>ruby 3.1.4p223 (2023-03-30 revision 957bb7cb81) [arm64-darwin22]
+
+        stable class     14.222M (± 1.3%) i/s -     71.960M in   5.060612s
+      unstable class     11.625M (± 3.2%) i/s -     58.238M in   5.015375s
+
+Comparison:
+        stable class: 14221847.8 i/s
+      unstable class: 11625350.9 i/s - 1.22x  slower
+</code></pre></div>
+
+<p>As you can see, even though <code>Subclass</code> is in every shape and form identical to <code>Parent</code> because the class is used as a cache key
+when it differs we have to go through the slow lookup again.</p>
+
+<h3 id="introducing-object-shapes">Introducing Object Shapes</h3>
+
+<p>To solve this problem (and a few others), Ruby <code>3.2</code> implemented object shapes, which is a technique pioneered by Smalltalk in the 80’s.</p>
+
+<p>To keep this article relatively brief, I will only offer a basic explanation of what object shapes are and how they work.
+If you’d like to dig deeper into the topic, I heavily recommend either reading <a href="https://chrisseaton.com/truffleruby/rubykaigi21/">Chris Seaton’s post about the general concept</a>, or watching one of <a href="https://www.youtube.com/watch?v=So-KvN3p-eE">Jemma Issroff’s talks on how she implemented shapes in CRuby</a>.</p>
+
+<p>So without going into too much detail, shapes are a tree-like structure where each node represents an instance variable, for example with the following code:</p>
+
+<div><pre><code><span>class</span> <span>Person</span>
+  <span>def</span> <span>initialize</span><span>(</span><span>name</span><span>)</span>
+    <span>@name</span> <span>=</span> <span>name</span>
+  <span>end</span>
+<span>end</span>
+
+<span>class</span> <span>Employee</span> <span>&lt;</span> <span>Person</span>
+<span>end</span>
+
+<span>class</span> <span>Customer</span> <span>&lt;</span> <span>Person</span>
+  <span>def</span> <span>initialize</span><span>(</span><span>name</span><span>)</span>
+    <span>super</span>
+    <span>@balance</span> <span>=</span> <span>0</span>
+  <span>end</span>
+<span>end</span>
+
+<span>person</span> <span>=</span> <span>Person</span><span>.</span><span>new</span><span>(</span><span>"Peter"</span><span>)</span>
+<span>employee</span> <span>=</span> <span>Employee</span><span>.</span><span>new</span><span>(</span><span>"Steven"</span><span>)</span>
+<span>customer</span> <span>=</span> <span>Customer</span><span>.</span><span>new</span><span>(</span><span>George</span><span>)</span>
+</code></pre></div>
+
+<p>Here the shape tree will look like this:</p>
+
+<div><pre><code>+----------+----------+-------+-----------+
+| shape_id |   ivar   | index | parent_id |
++----------+----------+-------+-----------+
++ 12       | @name    | 0     | 0         |
++----------+----------+-------+-----------+
++ 42       | @balance | 1     | 12        |
++----------+----------+-------+-----------+
+</code></pre></div>
+
+<p>And in the above example, the <code>user</code> and <code>employee</code> instance will have the same shape (<code>12</code>), even though they are of different class.</p>
+
+<p>Any two objects that have the same list of instance variables defined in the same order will share a common shape.</p>
+
+<p>Thanks to this, the instance variable access code was updated to use the shape as a cache key:</p>
+
+<div><pre><code><span>def</span> <span>ruby_vm_get_instance_variable</span><span>(</span><span>object</span><span>,</span> <span>ivar_name</span><span>,</span> <span>cache</span><span>)</span>
+  <span>if</span> <span>cache</span><span>.</span><span>last_shape_id</span> <span>!=</span> <span>object</span><span>.</span><span>shape_id</span>
+    <span>cache</span><span>.</span><span>last_shape_id</span> <span>=</span> <span>object</span><span>.</span><span>shape_id</span>
+    <span>cache</span><span>.</span><span>index</span> <span>=</span> <span>RubyVM</span><span>.</span><span>ivar_index</span><span>(</span><span>shape_id</span><span>,</span> <span>ivar_name</span><span>)</span>
+  <span>end</span>
+
+  <span>if</span> <span>cache</span><span>.</span><span>index</span> <span>==</span> <span>IVAR_NOT_SET</span>
+    <span>return</span> <span>nil</span>
+  <span>else</span>
+    <span>return</span> <span>object</span><span>.</span><span>ivars</span><span>[</span><span>cache</span><span>.</span><span>index</span><span>]</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+<p>Running the same benchmark on Ruby <code>3.2</code> confirms that now the two cases have identical performance:</p>
+
+<div><pre><code>ruby 3.2.2 (2023-03-30 revision e51014f9c0) [arm64-darwin22]
+
+        stable class     13.994M (± 1.2%) i/s -     70.504M in   5.038920s
+      unstable class     14.122M (± 1.5%) i/s -     71.367M in   5.054938s
+
+Comparison:
+        stable class: 13993825.7 i/s
+      unstable class: 14121540.7 i/s - same-ish: difference falls within error
+</code></pre></div>
+
+<p>Thanks to shapes, the inline cache is no longer flip-flopping in the presence of simple polymorphism.</p>
+
+<p>I won’t go into too much detail but note that this isn’t the only advantage of shapes.</p>
+
+<h3 id="the-memoization-idiom">The Memoization Idiom</h3>
+
+<p>However, shapes aren’t faster in all cases.</p>
+
+<p>A very common idiom you have certainly encountered if you ever worked with Ruby, is the memoization pattern:</p>
+
+<div><pre><code><span>def</span> <span>dynamic_property</span>
+  <span>@dynamic_property</span> <span>||=</span> <span>something_slow_to_compute</span>
+<span>end</span>
+</code></pre></div>
+
+<p>Unfortunately, this idiom doesn’t play well with shapes, because now instances of the same class will frequently have
+different shapes, causing the inline caches hit rate to degrade.</p>
+
+<p>A class with all its instance variables defined in <code>initialize</code> will only ever have one shape.</p>
+
+<p>But when extra instance variables can be defined in semi-random order, the number of shapes can quickly explode.
+A class with 1 memoized variable will have 2 shapes, a class with 2 memoized variables will have 4 shapes,
+a class with 5 memoized variables will have up to 121 shapes, and so on.</p>
+
+<p>Yes, this is a factorial growth. The number of shapes a class may have is <code>1 + !lazily_defined_variables</code>.</p>
+
+<p>But how bad is it? Let’s measure:</p>
+
+<div><pre><code><span>require</span> <span>"benchmark/ips"</span>
+
+<span>class</span> <span>UnstableShape</span>
+  <span>attr_reader</span> <span>:name</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>name</span><span>)</span>
+    <span>@name</span> <span>=</span> <span>name</span>
+  <span>end</span>
+
+  <span>def</span> <span>first_name</span>
+    <span>@first_name</span> <span>||=</span> <span>@name</span><span>.</span><span>split</span><span>.</span><span>first</span>
+  <span>end</span>
+
+  <span>def</span> <span>upcased_name</span>
+    <span>@upcased_name</span> <span>||=</span> <span>@name</span><span>.</span><span>upcase</span>
+  <span>end</span>
+<span>end</span>
+
+<span># Generate two objects with the same shape</span>
+<span>stable_1</span> <span>=</span> <span>UnstableShape</span><span>.</span><span>new</span><span>(</span><span>"Odile Deray"</span><span>)</span>
+<span>stable_2</span> <span>=</span> <span>UnstableShape</span><span>.</span><span>new</span><span>(</span><span>"Simon Jérémi"</span><span>)</span>
+<span>stable_1</span><span>.</span><span>first_name</span>
+<span>stable_1</span><span>.</span><span>upcased_name</span>
+<span>stable_2</span><span>.</span><span>first_name</span>
+<span>stable_2</span><span>.</span><span>upcased_name</span>
+
+<span># Generate two objects with distinct shapes</span>
+<span>unstable_1</span> <span>=</span> <span>UnstableShape</span><span>.</span><span>new</span><span>(</span><span>"Peter"</span><span>)</span>
+<span>unstable_2</span> <span>=</span> <span>UnstableShape</span><span>.</span><span>new</span><span>(</span><span>"Steven"</span><span>)</span>
+<span>unstable_1</span><span>.</span><span>first_name</span>
+<span>unstable_1</span><span>.</span><span>upcased_name</span>
+<span>unstable_2</span><span>.</span><span>upcased_name</span>
+<span>unstable_2</span><span>.</span><span>first_name</span>
+
+<span>puts</span> <span>RUBY_DESCRIPTION</span>
+<span>Benchmark</span><span>.</span><span>ips</span> <span>do</span> <span>|</span><span>x</span><span>|</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"stable shape"</span><span>)</span> <span>do</span>
+    <span>stable_1</span><span>.</span><span>name</span>
+    <span>stable_2</span><span>.</span><span>name</span>
+  <span>end</span>
+
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"unstable shape"</span><span>)</span> <span>do</span>
+    <span>unstable_1</span><span>.</span><span>name</span>
+    <span>unstable_2</span><span>.</span><span>name</span>
+  <span>end</span>
+
+  <span>x</span><span>.</span><span>compare!</span><span>(</span><span>order: :baseline</span><span>)</span>
+<span>end</span>
+</code></pre></div>
+
+<div><pre><code>ruby 3.2.2 (2023-03-30 revision e51014f9c0) [arm64-darwin22]
+
+        stable shape     15.341M (± 0.9%) i/s -     76.755M in   5.003687s
+      unstable shape     13.259M (± 1.1%) i/s -     66.385M in   5.007561s
+
+Comparison:
+        stable shape: 15340799.2 i/s
+      unstable shape: 13258541.5 i/s - 1.16x  slower
+</code></pre></div>
+
+<p>16% slower isn’t too bad, but keep in mind that the overhead directly depends on how deep the shape is,
+if we perform the same benchmark, but add an arbitrarily large number of variables to the shape,
+we can make the benchmark arbitrarily slower:</p>
+
+<div><pre><code><span>class</span> <span>UnstableShape</span>
+  <span>def</span> <span>initialize</span><span>(</span><span>name</span><span>)</span>
+    <span>@name</span> <span>=</span> <span>name</span>
+
+    <span>@ivar01</span> <span>=</span> <span>true</span>
+    <span>@ivar02</span> <span>=</span> <span>true</span>
+    <span>@ivar03</span> <span>=</span> <span>true</span>
+    <span>@ivar04</span> <span>=</span> <span>true</span>
+    <span>@ivar05</span> <span>=</span> <span>true</span>
+    <span>@ivar06</span> <span>=</span> <span>true</span>
+    <span>@ivar07</span> <span>=</span> <span>true</span>
+    <span>@ivar08</span> <span>=</span> <span>true</span>
+    <span>@ivar09</span> <span>=</span> <span>true</span>
+    <span>@ivar10</span> <span>=</span> <span>true</span>
+    <span>@ivar11</span> <span>=</span> <span>true</span>
+    <span>@ivar12</span> <span>=</span> <span>true</span>
+    <span>@ivar13</span> <span>=</span> <span>true</span>
+    <span>@ivar14</span> <span>=</span> <span>true</span>
+    <span>@ivar15</span> <span>=</span> <span>true</span>
+    <span>@ivar16</span> <span>=</span> <span>true</span>
+    <span>@ivar17</span> <span>=</span> <span>true</span>
+    <span>@ivar18</span> <span>=</span> <span>true</span>
+    <span>@ivar19</span> <span>=</span> <span>true</span>
+    <span>@ivar20</span> <span>=</span> <span>true</span>
+    <span>@ivar21</span> <span>=</span> <span>true</span>
+    <span>@ivar22</span> <span>=</span> <span>true</span>
+    <span>@ivar23</span> <span>=</span> <span>true</span>
+    <span>@ivar24</span> <span>=</span> <span>true</span>
+    <span>@ivar25</span> <span>=</span> <span>true</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+<div><pre><code>ruby 3.2.2 (2023-03-30 revision e51014f9c0) [arm64-darwin22]
+
+        stable shape     14.253M (± 0.9%) i/s -     71.296M in   5.002615s
+      unstable shape      5.821M (± 1.8%) i/s -     29.116M in   5.003786s
+
+Comparison:
+        stable shape: 14253062.2 i/s
+      unstable shape:  5820686.1 i/s - 2.45x  slower
+</code></pre></div>
+
+<p>The reason is that on a cache miss, Ruby has to walk the object’s shape tree until it finds the node it needs, so it’s an <code>O(n)</code> operation where <code>n</code> is the object’s shape depth
+which is more or less its number of instance variables.</p>
+
+<p>If you are curious, the function responsible for that is <a href="https://github.com/ruby/ruby/blob/f44cee90480c103d911836f92a4e0e20c0eca1e5/shape.c#L430-L460"><code>rb_shape_get_iv_index</code></a>,
+in pseudo-Ruby, it looks like:</p>
+
+<div><pre><code><span>def</span> <span>RubyVM</span><span>.</span><span>ivar_index</span><span>(</span><span>shape_id</span><span>,</span> <span>ivar</span><span>)</span>
+  <span>shape</span> <span>=</span> <span>SHAPES</span><span>[</span><span>shape_id</span><span>]</span>
+  <span>while</span> <span>shape</span>
+    <span>if</span> <span>shape</span><span>.</span><span>ivar</span> <span>==</span> <span>ivar</span>
+      <span>return</span> <span>shape</span><span>.</span><span>index</span>
+    <span>else</span>
+      <span>shape</span> <span>=</span> <span>SHAPES</span><span>[</span><span>shape</span><span>.</span><span>parent_id</span><span>]</span>
+    <span>end</span>
+  <span>end</span>
+  <span>IVAR_NOT_SET</span>
+<span>end</span>
+</code></pre></div>
+
+<p>You may think that <code>25</code> instance variables is a bit over the top, but I chose that number because that is how many instance variables an <code>ActiveRecord::Base</code> instance has.
+So this shows that using the memoization pattern in a single Rails model can significantly degrade the performance of most Active Record operations.</p>
+
+<h3 id="yjits-polymorphic-caches">YJIT’s Polymorphic Caches</h3>
+
+<p>This unstable shape problem is in large part because the virtual machine’s inline caches are monomorphic, meaning they can only record a single shape.</p>
+
+<p>However one of YJIT’s optimizations is that it implements polymorphic inline caches. In Ruby 3.2, YJIT inline caches can record up to 20 different shapes.
+But that’s a memory usage versus speed tradeoff, so based on production data, this was reduced to 5 in Ruby 3.3.</p>
+
+<p>Still, if we enable YJIT, we can see that we again have identical performance for this simple memoization benchmark:</p>
+
+<div><pre><code>ruby 3.2.2 (2023-03-30 revision e51014f9c0) +YJIT [arm64-darwin22]
+
+        stable shape     40.524M (± 1.4%) i/s -    203.140M in   5.013915s
+      unstable shape     40.557M (± 1.0%) i/s -    203.056M in   5.007196s
+
+Comparison:
+        stable shape: 40523693.8 i/s
+      unstable shape: 40557046.2 i/s - same-ish: difference falls within error
+</code></pre></div>
+
+<p>But as explained before, the number of shapes can quickly explode if memoization is used extensively.</p>
+
+<h3 id="shape_too_complex"><code>SHAPE_TOO_COMPLEX</code></h3>
+
+<p>This problem was spotted quite early during object shapes implementation, so a workaround was implemented
+to deal with pathological cases. When the virtual machine detects that a class is generating a lot of different shapes,
+it automatically marks that class as “too complex”, and all future instances will have a special unique shape called <code>SHAPE_TOO_COMPLEX</code>.</p>
+
+<p>Objects with this special shape no longer store their instance variables in an internal array, but instead use a hash map.
+This uses more memory and makes for slower but more consistent access performance.</p>
+
+<p>This can be demonstrated by modifying our benchmark a bit more:</p>
+
+<div><pre><code><span>class</span> <span>StableShape</span>
+  <span>attr_reader</span> <span>:name</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>name</span><span>)</span>
+    <span>@name</span> <span>=</span> <span>name</span>
+  <span>end</span>
+<span>end</span>
+
+<span>class</span> <span>TooComplexShape</span>
+  <span>attr_reader</span> <span>:name</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>name</span><span>)</span>
+    <span>@name</span> <span>=</span> <span>name</span>
+  <span>end</span>
+<span>end</span>
+
+<span># Cause the class to be marked as too complex</span>
+<span>10</span><span>.</span><span>times</span> <span>do</span> <span>|</span><span>i</span><span>|</span>
+  <span>TooComplexShape</span><span>.</span><span>allocate</span><span>.</span><span>instance_variable_set</span><span>(</span><span>"@iv_</span><span>#{</span><span>i</span><span>}</span><span>"</span><span>,</span> <span>i</span><span>)</span>
+<span>end</span>
+
+<span>stable</span> <span>=</span> <span>StableShape</span><span>.</span><span>new</span><span>(</span><span>"Test"</span><span>)</span>
+<span>too_complex</span> <span>=</span> <span>TooComplexShape</span><span>.</span><span>new</span><span>(</span><span>"George Abitbol"</span><span>)</span>
+<span>puts</span> <span>ObjectSpace</span><span>.</span><span>dump</span><span>(</span><span>too_complex</span><span>)</span>
+
+<span>puts</span> <span>RUBY_DESCRIPTION</span>
+<span>Benchmark</span><span>.</span><span>ips</span> <span>do</span> <span>|</span><span>x</span><span>|</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"stable shape"</span><span>)</span> <span>do</span>
+    <span>stable</span><span>.</span><span>name</span>
+  <span>end</span>
+
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"too-complex shape"</span><span>)</span> <span>do</span>
+    <span>too_complex</span><span>.</span><span>name</span>
+  <span>end</span>
+
+  <span>x</span><span>.</span><span>compare!</span><span>(</span><span>order: :baseline</span><span>)</span>
+<span>end</span>
+</code></pre></div>
+
+<div><pre><code>{"address":"0x104d991d0", "type":"OBJECT", ..., "too_complex_shape":true, ...}
+
+ruby 3.2.2 (2023-03-30 revision e51014f9c0) +YJIT [arm64-darwin22]
+
+        stable shape     45.207M (± 1.0%) i/s -    226.553M in   5.011953s
+   too-complex shape     29.952M (± 1.1%) i/s -    150.621M in   5.029290s
+
+Comparison:
+        stable shape: 45207185.7 i/s
+   too-complex shape: 29952498.7 i/s - 1.51x  slower
+</code></pre></div>
+
+<p>So <code>SHAPE_TOO_COMPLEX</code> is slower than the happy path, but faster than the worst-case scenario where we have to constantly lookup
+the variable index in the shape tree.</p>
+
+<h3 id="common-ancestors">Common Ancestors</h3>
+
+<p>While working on this blog post, it occurred to me that we could make inline caches handle the memoization pattern better, without changes to any Ruby code.</p>
+
+<p>On a cache miss, we start searching for the variable index from scratch. But if the inline cache is flip-flopping because of memoization,
+the shape that was stored in the cache and the current shape will have a common ancestor, and checking for it would allow us to stop
+walking the shape tree much sooner.</p>
+
+<p>In the <code>UnstableShape</code> example, we had an object with <code>26</code> fixed instance variables, and <code>2</code> memoized instance variables.
+The variable we’re looking for is the very first one, so we have to walk over at least <code>26</code> shapes which is slow.</p>
+
+<p><a href="https://github.com/Shopify/ruby/commit/6133ca3762d050364a2ac34e997c0b463b23a2d2">But if we provide the stale <code>shape_id</code>, we’d only need to check at most <code>3</code> shapes, which is much faster</a>.</p>
+
+<p>C code can be a bit cryptic, so here’s the pseudo-Ruby version of it:</p>
+
+<div><pre><code><span>def</span> <span>RubyVM</span><span>.</span><span>ivar_index</span><span>(</span><span>shape_id</span><span>,</span> <span>ivar</span><span>,</span> <span>cached_shape_id</span><span>,</span> <span>cached_index</span><span>)</span>
+  <span>shape</span> <span>=</span> <span>SHAPES</span><span>[</span><span>shape_id</span><span>]</span>
+  <span>while</span> <span>shape</span>
+    <span>if</span> <span>cached_shape_id</span> <span>==</span> <span>shape</span><span>.</span><span>parent_id</span>
+      <span># The new shape is a descendant of the one we had in the cache</span>
+      <span># so we know the cached index is still valid.</span>
+      <span>return</span> <span>cached_index</span>
+    <span>elsif</span> <span>shape</span><span>.</span><span>ivar</span> <span>==</span> <span>ivar</span>
+      <span>return</span> <span>shape</span><span>.</span><span>index</span>
+    <span>else</span>
+      <span>shape</span> <span>=</span> <span>SHAPES</span><span>[</span><span>shape</span><span>.</span><span>parent_id</span><span>]</span>
+    <span>end</span>
+  <span>end</span>
+  <span>IVAR_NOT_SET</span>
+<span>end</span>
+</code></pre></div>
+
+<p>It’s still an <code>O(n)</code> operation, but now in most cases <code>n</code> is the number of lazily defined variables rather than the total number of variables, so <code>n</code> is significantly reduced.</p>
+
+<p>When I shared this idea with some fellow Ruby committers, <a href="https://github.com/ruby/ruby/pull/7429">they pointed out that John Hawthorn had pretty much the same idea 6 months prior</a>, but even better implemented.</p>
+
+<p>As I’m writing this, this patch isn’t yet merged, but I’m hoping some version of it will be for Ruby 3.3.0 in December.</p>
+
+<h3 id="indexing-the-ancestors">Indexing the Ancestors</h3>
+
+<p>The above patch would pretty much solve the performance concern of moderate users of the memoization pattern.</p>
+
+<p>However, one pattern it doesn’t help with at all is code that is shared between radically different shapes:</p>
+
+<div><pre><code><span>module</span> <span>Synchronized</span>
+  <span>def</span> <span>initialize</span>
+    <span>@mutex</span> <span>=</span> <span>Mutex</span><span>.</span><span>new</span>
+  <span>end</span>
+
+  <span>def</span> <span>synchronized</span><span>(</span><span>...</span><span>)</span>
+    <span>@mutex</span><span>.</span><span>synchronize</span><span>(</span><span>...</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+
+<span>class</span> <span>Car</span>
+  <span>include</span> <span>Synchronized</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>brand</span><span>,</span> <span>...</span><span>)</span>
+    <span>super</span>
+    <span>@brand</span> <span>=</span> <span>brand</span>
+    <span>...</span>
+  <span>end</span>
+<span>end</span>
+
+<span>class</span> <span>Animal</span>
+  <span>include</span> <span>Synchronized</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>breed</span><span>,</span> <span>...</span><span>)</span>
+    <span>super</span>
+    <span>@breed</span> <span>=</span> <span>breed</span>
+    <span>...</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+<p>In the above example, the <code>@mutex</code> access in the <code>synchronized</code> method will witness radically different shapes, and won’t even see a common ancestor, as such the access will remain <code>O(n)</code>.</p>
+
+<p>This issue was foreseen before the release of Ruby 3.2, but no solution could be implemented in time.</p>
+
+<p>A possible solution is to keep an index of the parent shapes in the child shapes so that on a miss we can more quickly lookup the attribute index. The downside of course is that such indexes
+would use more memory.</p>
+
+<p><a href="https://github.com/ruby/ruby/pull/8744">Aaron Patterson worked on implementing this idea</a>, and chose to use a <a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Red-black tree index</a> because it allows to easily share the parent shape’s index, keeping the memory overhead down.
+To further minimize the extra memory usage his implementation only generates the index every 10 shapes, so on a miss Ruby would have to at most walk 10 shapes and then do an index lookup.</p>
+
+<p>This patch isn’t yet merged either, but will hopefully make it into Ruby 3.3 too.</p>
+
+<h3 id="the-importance-of-shape-friendly-code">The Importance of Shape-Friendly Code</h3>
+
+<p>As demonstrated in the above benchmarks, over-use of the memoization pattern can cause a degradation of performance in your Ruby programs,
+so it can be effective to eagerly initialize instance variables in the constructor to avoid this, at least in hot spots.</p>
+
+<p>But if the pattern is used moderately, it’s probably not a big deal and will be handled better by either YJIT or future versions of Ruby.</p>
+
+<p>The one thing that is best avoided though, is <code>SHAPE_TOO_COMPLEX</code> as it is not only slower but consumes more memory.
+To help with that, <a href="https://bugs.ruby-lang.org/issues/19538">starting in Ruby 3.3 a warning will be emitted when a class is marked as too complex</a>,
+and it can be enabled by setting <code>Warning[:performance] = true</code> or passing <code>-W:performance</code> to the command line:</p>
+
+<div><pre><code><span>$ </span>ruby <span>-W</span>:performance /tmp/too-complex.rb 
+/tmp/too-complex.rb:19: warning: Maximum shapes variations <span>(</span>8<span>)</span> reached by TooComplexShape, instance variables accesses will be slower.
+</code></pre></div>
+
+<p>But overall, <strong>for moderate use of the pattern, outside of hotspots, it’s not a major performance concern</strong>.</p>
+
+<p>My rule of thumb is that one or two memoized variables in a class are fine, but more than that likely deserve a quick refactor to eagerly initialize the variables to <code>nil</code> in the constructor:</p>
+
+<div><pre><code><span>class</span> <span>StableShape</span>
+  <span>def</span> <span>initialize</span>
+    <span>@expensive_value</span> <span>=</span> <span>nil</span>
+  <span>end</span>
+
+  <span>def</span> <span>expensive_value</span>
+    <span>@expensive_value</span> <span>||=</span> <span>compute_expensive_value</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+<p>And in the case where the memoized value may be falsy, you can use a token module:</p>
+
+<div><pre><code><span>class</span> <span>StableShape</span>
+  <span>NOT_SET</span> <span>=</span> <span>Module</span><span>.</span><span>new</span>
+  <span>private_constant</span> <span>:NOT_SET</span>
+
+  <span>def</span> <span>initialize</span>
+    <span>@expensive_value</span> <span>=</span> <span>NOT_SET</span>
+  <span>end</span>
+
+  <span>def</span> <span>expensive_value</span>
+    <span>return</span> <span>@expensive_value</span> <span>unless</span> <span>@expensive_value</span> <span>==</span> <span>NOT_SET</span>
+    <span>@expensive_value</span> <span>=</span> <span>compute_expensive_value</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+  </div>
+</article>
+
+      </div></div>
+  </div>
+</body>
+</html>

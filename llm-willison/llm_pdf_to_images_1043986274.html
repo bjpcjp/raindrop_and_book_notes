@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>llm-pdf-to-images</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>llm-pdf-to-images</h1>
+    <p><strong>URL:</strong> <a href="https://simonwillison.net/2025/May/18/llm-pdf-to-images/#atom-everything">https://simonwillison.net/2025/May/18/llm-pdf-to-images/#atom-everything</a></p>
+    <p><strong>Tags:</strong> llm-willison</p>
+    <p><strong>Bookmark ID:</strong> 1043986274</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+
+
+<p><strong><a href="https://github.com/simonw/llm-pdf-to-images">llm-pdf-to-images</a></strong>. Inspired by my previous <a href="https://github.com/simonw/llm-video-frames">llm-video-frames</a> plugin, I thought it would be neat to have a plugin for LLM that can take a PDF and turn that into an image-per-page so you can feed PDFs into models that support image inputs but don't yet support PDFs.</p>
+<p>This should now do exactly that:</p>
+<div><pre>llm install llm-pdf-to-images
+llm -f pdf-to-images:path/to/document.pdf <span><span>'</span>Summarize this document<span>'</span></span></pre></div>
+
+<p>Under the hood it's using the <a href="https://github.com/pymupdf/PyMuPDF">PyMuPDF</a> library. The key code to convert a PDF into images looks like this:</p>
+<pre><span>import</span> <span>fitz</span>
+<span>doc</span> <span>=</span> <span>fitz</span>.<span>open</span>(<span>"input.pdf"</span>)
+<span>for</span> <span>page</span> <span>in</span> <span>doc</span>:
+    <span>pix</span> <span>=</span> <span>page</span>.<span>get_pixmap</span>(<span>matrix</span><span>=</span><span>fitz</span>.<span>Matrix</span>(<span>300</span><span>/</span><span>72</span>, <span>300</span><span>/</span><span>72</span>))
+    <span>jpeg_bytes</span> <span>=</span> <span>pix</span>.<span>tobytes</span>(<span>output</span><span>=</span><span>"jpg"</span>, <span>jpg_quality</span><span>=</span><span>30</span>)</pre>
+
+<p>Once I'd figured out that code I got o4-mini to write most of the rest of the plugin, using <a href="https://github.com/simonw/llm-fragments-github">llm-fragments-github</a> to load in the example code from the video plugin:</p>
+<pre>llm -f github:simonw/llm-video-frames <span><span>'</span></span>
+<span>import fitz</span>
+<span>doc = fitz.open("input.pdf")</span>
+<span>for page in doc:</span>
+<span>    pix = page.get_pixmap(matrix=fitz.Matrix(300/72, 300/72))</span>
+<span>    jpeg_bytes = pix.tobytes(output="jpg", jpg_quality=30)</span>
+<span><span>'</span></span> -s <span><span>'</span>output llm_pdf_to_images.py which adds a pdf-to-images: </span>
+<span> fragment loader that converts a PDF to frames using fitz like in the example<span>'</span></span> \
+-m o4-mini</pre>
+
+<p>Here's <a href="https://gist.github.com/simonw/27af84e4e533872bfd59fcba69b4166f">the transcript</a> - more details in <a href="https://github.com/simonw/llm-pdf-to-images/issues/1">this issue</a>.</p>
+<p>I had some <em>weird</em> results testing this with GPT 4.1 mini. I created <a href="https://github.com/simonw/llm-pdf-to-images/blob/main/tests/blank-pages.pdf">a test PDF</a> with two pages - one white, one black - and ran a test prompt like this:</p>
+<pre>llm -f <span><span>'</span>pdf-to-images:blank-pages.pdf<span>'</span></span> \
+  <span><span>'</span>describe these images<span>'</span></span></pre>
+
+<blockquote>
+<p>The first image features a stylized red maple leaf with triangular facets, giving it a geometric appearance. The maple leaf is a well-known symbol associated with Canada.</p>
+<p>The second image is a simple black silhouette of a cat sitting and facing to the left. The cat's tail curls around its body. The design is minimalistic and iconic.</p>
+</blockquote>
+<p>I got even wilder hallucinations for other prompts, like "summarize this document" or "describe all figures". I have a collection of those <a href="https://gist.github.com/simonw/2fbef11b1737a9ae7da1b2ff58998454">in this Gist</a>.</p>
+<p>Thankfully this behavior is limited to GPT-4.1 mini. I upgraded to full GPT-4.1 and got <a href="https://gist.github.com/simonw/0713dc0ce00bd6cd4d5990f44c865964#prompt-1">much more sensible results</a>:</p>
+<pre>llm -f <span><span>'</span>pdf-to-images:blank-pages.pdf<span>'</span></span> \
+  <span><span>'</span>describe these images<span>'</span></span> -m gpt-4.1</pre>
+
+<blockquote>
+<p>Certainly! Here are the descriptions of the two images you provided:</p>
+<ol>
+<li>
+<p><strong>First image:</strong> This image is completely white. It appears blank, with no discernible objects, text, or features.</p>
+</li>
+<li>
+<p><strong>Second image:</strong> This image is entirely black. Like the first, it is blank and contains no visible objects, text, or distinct elements.</p>
+</li>
+</ol>
+<p>If you have questions or need a specific kind of analysis or modification, please let me know!</p>
+</blockquote>
+
+
+
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Python’s multiprocessing performance problem</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Python’s multiprocessing performance problem</h1>
+    <p><strong>URL:</strong> <a href="https://pythonspeed.com/articles/faster-multiprocessing-pickle">https://pythonspeed.com/articles/faster-multiprocessing-pickle</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876790823</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="articleBody">
+      <p>Because Python has <a href="https://pythonspeed.com/articles/python-gil/">limited parallelism when using threads</a>, using worker processes is a common way to take advantage of multiple CPU cores.
+The <a href="https://docs.python.org/3/library/multiprocessing.html"><code>multiprocessing</code></a> module is built-in to the standard library, so it’s frequently used for this purpose.</p>
+
+<p>But while multiple processes let you take advantage of multiple CPUs, moving data between processes can be very slow.
+And that can reduce some of the performance benefits of using worker processes.</p>
+
+<p>Let’s see:</p>
+
+<ul>
+  <li>Why processes can have performance problems that threads don’t.</li>
+  <li>A number of ways to work around or deal with this performance overhead.</li>
+  <li>A bad solution you don’t want to use.</li>
+</ul>
+
+<!-- TEASER_END -->
+
+<h2 id="threads-vs-processes">Threads vs. processes</h2>
+
+<p>Multiple threads let you run code in parallel, potentially on multiple CPUs.
+On Python, however, the <a href="https://pythonspeed.com/articles/python-gil/">global interpreter lock</a> makes this parallelism harder to achieve.</p>
+
+<p>Multiple processes <em>also</em> let you run code in parallel—so what’s the difference between threads and processes?</p>
+
+<p><strong>All the threads inside a single process share the same memory address space.</strong>
+If thread 1 in a process stores some memory at address 0x7f0cd1a88810, thread 2 can access the same memory at the same address.
+That means passing objects between threads is cheap: you just need to get the pointer to the memory address from one thread to the other.
+A memory address is 8 bytes: this is not a lot of data to move around.</p>
+
+<p><strong>In contrast, processes do not share the same memory space.</strong>
+There are some shared memory facilities provided by the operating system, typically, and we’ll get to that later.
+But by default, no memory is shared.
+That means you can’t just share the address of your data across processes: you have to copy the data.</p>
+
+<p>If you’re passing a little bit of data between processes, that’s fine; if you’re passing a 1GB <code>DataFrame</code>… that may start getting expensive.</p>
+
+<h2 id="multiprocessing-in-python">Multiprocessing in Python</h2>
+
+<p>So far we’ve been talking about processes on the operating system level, where the available facilities essentially involving copying bytes: from a file, or shared memory, or a fancy hybrid of the two like <a href="https://pythonspeed.com/articles/reduce-memory-array-copies/"><code>mmap()</code></a>.
+When you’re writing Python, though, you want to share Python objects between processes.</p>
+
+<p>To enable this, when you pass Python objects between processes using Python’s <code>multiprocessing</code> library:</p>
+
+<ol>
+  <li>On the sender side, the arguments get serialized to bytes with the <a href="https://docs.python.org/3/library/pickle.html"><code>pickle</code></a> module.</li>
+  <li>On the receiver side, the bytes are unserialized using <code>pickle</code>.</li>
+</ol>
+
+<p>This serialization and deserialization process involves computation, which can potentially be slow.
+Let’s try an example, comparing a thread pool to a process pool:</p>
+
+<div><pre><code><span>from</span> <span>time</span> <span>import</span> <span>time</span>
+<span>import</span> <span>multiprocessing</span> <span>as</span> <span>mp</span>
+<span>from</span> <span>multiprocessing.pool</span> <span>import</span> <span>ThreadPool</span>
+<span>import</span> <span>numpy</span> <span>as</span> <span>np</span>
+<span>import</span> <span>pickle</span>
+
+<span>def</span> <span>main</span><span>():</span>
+    <span>arr</span> <span>=</span> <span>np</span><span>.</span><span>ones</span><span>((</span><span>1024</span><span>,</span> <span>1024</span><span>,</span> <span>1024</span><span>),</span> <span>dtype</span><span>=</span><span>np</span><span>.</span><span>uint8</span><span>)</span>
+    <span>expected_sum</span> <span>=</span> <span>np</span><span>.</span><span>sum</span><span>(</span><span>arr</span><span>)</span>
+
+    <span>with</span> <span>ThreadPool</span><span>(</span><span>1</span><span>)</span> <span>as</span> <span>threadpool</span><span>:</span>
+        <span>start</span> <span>=</span> <span>time</span><span>()</span>
+        <span>assert </span><span>(</span>
+            <span>threadpool</span><span>.</span><span>apply</span><span>(</span><span>np</span><span>.</span><span>sum</span><span>,</span> <span>(</span><span>arr</span><span>,))</span> <span>==</span> <span>expected_sum</span>
+        <span>)</span>
+        <span>print</span><span>(</span><span>"</span><span>Thread pool:</span><span>"</span><span>,</span> <span>time</span><span>()</span> <span>-</span> <span>start</span><span>)</span>
+
+    <span>with</span> <span>mp</span><span>.</span><span>get_context</span><span>(</span><span>"</span><span>spawn</span><span>"</span><span>).</span><span>Pool</span><span>(</span><span>1</span><span>)</span> <span>as</span> <span>processpool</span><span>:</span>
+        <span>start</span> <span>=</span> <span>time</span><span>()</span>
+        <span>assert </span><span>(</span>
+            <span>processpool</span><span>.</span><span>apply</span><span>(</span><span>np</span><span>.</span><span>sum</span><span>,</span> <span>(</span><span>arr</span><span>,))</span>
+            <span>==</span> <span>expected_sum</span>
+        <span>)</span>
+        <span>print</span><span>(</span><span>"</span><span>Process pool:</span><span>"</span><span>,</span> <span>time</span><span>()</span> <span>-</span> <span>start</span><span>)</span>
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>"</span><span>__main__</span><span>"</span><span>:</span>
+    <span>main</span><span>()</span>
+</code></pre></div>
+
+<p>If we run this we get the following:</p>
+
+<div><pre><code>$ python threads_vs_processes.py
+Thread pool: 0.3097844123840332
+Process pool: 1.8011224269866943
+</code></pre></div>
+
+<p>Running the code in a subprocess is much slower than running a thread, not because the computation is slower, but because of the overhead of copying and (de)serializing the data.
+So how do you avoid this overhead?</p>
+
+<h2 id="reducing-the-performance-hit-of-copying-data-between-processes">Reducing the performance hit of copying data between processes</h2>
+
+<h3 id="option-1-just-use-threads">Option #1: Just use threads</h3>
+
+<p>Processes have this overhead, threads do not.
+And while it’s true that generic Python code won’t parallelize well when using multiple threads, that’s not necessarily true for <em>your</em> Python code.
+For example, NumPy releases the GIL for many of its operations, which means you can use multiple CPU cores even with threads.</p>
+
+<p>For example:</p>
+
+<div><pre><code><span>import</span> <span>numpy</span> <span>as</span> <span>np</span>
+<span>from</span> <span>time</span> <span>import</span> <span>time</span>
+<span>from</span> <span>multiprocessing.pool</span> <span>import</span> <span>ThreadPool</span>
+
+<span>arr</span> <span>=</span> <span>np</span><span>.</span><span>ones</span><span>((</span><span>1024</span><span>,</span> <span>1024</span><span>,</span> <span>1024</span><span>))</span>
+
+<span>start</span> <span>=</span> <span>time</span><span>()</span>
+<span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>10</span><span>):</span>
+    <span>arr</span><span>.</span><span>sum</span><span>()</span>
+<span>print</span><span>(</span><span>"</span><span>Sequential:</span><span>"</span><span>,</span> <span>time</span><span>()</span> <span>-</span> <span>start</span><span>)</span>
+
+<span>expected</span> <span>=</span> <span>arr</span><span>.</span><span>sum</span><span>()</span>
+<span>start</span> <span>=</span> <span>time</span><span>()</span>
+<span>with</span> <span>ThreadPool</span><span>(</span><span>4</span><span>)</span> <span>as</span> <span>pool</span><span>:</span>
+    <span>result</span> <span>=</span> <span>pool</span><span>.</span><span>map</span><span>(</span><span>np</span><span>.</span><span>sum</span><span>,</span> <span>[</span><span>arr</span><span>]</span> <span>*</span> <span>10</span><span>)</span>
+    <span>assert</span> <span>result</span> <span>==</span> <span>[</span><span>expected</span><span>]</span> <span>*</span> <span>10</span>
+<span>print</span><span>(</span><span>"</span><span>4 threads:</span><span>"</span><span>,</span> <span>time</span><span>()</span> <span>-</span> <span>start</span><span>)</span>
+</code></pre></div>
+
+<p>When run, we see that NumPy uses multiple cores just fine when using threads, at least for this operation:</p>
+
+<div><pre><code><span>$</span><span> </span>python numpy_gil.py
+<span>Sequential: 4.253053188323975
+4 threads: 1.3854241371154785
+</span></code></pre></div>
+
+<p>In situations where parallelism is possible with Python threads, like using much of NumPy’s API, there’s much less motivation to use processes.
+For more details, read <a href="https://pythonspeed.com/articles/python-gil/">this introduction to the GIL</a>.</p>
+
+<p>Pandas is built on NumPy, so many numeric operations will likely release the GIL as well.
+However, anything involving strings, or Python objects in general, will not.
+So another approach is to use a library like <a href="https://pythonspeed.com/articles/polars-memory-pandas/">Polars</a> which is designed from the ground-up for parallelism, to the point where you don’t have to think about it at all, it has an internal thread pool.</p>
+
+<blockquote>
+  <p><strong>Note:</strong> Whether or not any particular tool or technique will speed things up depends on where the bottlenecks are in <em>your</em> software.</p>
+
+  <p><strong>Need to identify the performance and memory bottlenecks in your own Python data processing code?</strong> Try the <a href="https://sciagraph.com/?mtm_campaign=best_practices">Sciagraph profiler</a>, with support for profiling both in development and production on <strong>macOS and Linux</strong>, and with built-in <strong>Jupyter support</strong>.</p>
+
+  <p><a href="https://sciagraph.com/?mtm_campaign=best_practices"><img src="data:application/octet-stream;base64," width="446" height="170" loading="lazy" alt="A performance timeline created by Sciagraph, showing both CPU and I/O as bottlenecks"></a><br>
+<a href="https://sciagraph.com/?mtm_campaign=best_practices"><img src="data:application/octet-stream;base64," width="446" height="161" loading="lazy" alt="A memory profile created by Sciagraph, showing a list comprehension is responsible for most memory usage"></a><br></p>
+</blockquote>
+
+<h3 id="option-2-live-with-it">Option #2: Live with it</h3>
+
+<p>If you’re stuck with using processes, you might just decide to live with the overhead of pickling.
+In particular, if you minimize how much data gets passed and forth between processes, and the computation in each process is significant enough, the cost of copying and serializing data might not significantly impact your program’s runtime.
+Spending a few seconds on pickling doesn’t really matter if your subsequent computation takes 10 minutes.</p>
+
+<p>In addition, it’s worth noting that Python has a faster version of pickling that is not enabled by default as of 3.11; <a href="https://github.com/python/cpython/issues/89467">it might be enabled in a future version</a>.
+This will reduce the overhead of pickling somewhat, though it will still exist.</p>
+
+<h3 id="option-3-write-the-data-to-disk">Option #3: Write the data to disk</h3>
+
+<p>Instead of passing data directly, you can write the data to disk, and then pass the path to this file to the subprocess (as an argument) or parent process (as the return value of the function running in the worker process).
+The recipient process can then parse the file.</p>
+
+<p>Here’s an example comparing passing the DataFrame directly to passing it using a temporary Parquet file:</p>
+
+<div><pre><code><span>import</span> <span>pandas</span> <span>as</span> <span>pd</span>
+<span>import</span> <span>multiprocessing</span> <span>as</span> <span>mp</span>
+<span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+<span>from</span> <span>tempfile</span> <span>import</span> <span>mkdtemp</span>
+<span>from</span> <span>time</span> <span>import</span> <span>time</span>
+
+
+<span>def</span> <span>noop</span><span>(</span><span>df</span><span>:</span> <span>pd</span><span>.</span><span>DataFrame</span><span>):</span>
+    <span># real code would process the dataframe here
+</span>    <span>pass</span>
+
+
+<span>def</span> <span>noop_from_path</span><span>(</span><span>path</span><span>:</span> <span>Path</span><span>):</span>
+    <span>df</span> <span>=</span> <span>pd</span><span>.</span><span>read_parquet</span><span>(</span><span>path</span><span>,</span> <span>engine</span><span>=</span><span>"</span><span>fastparquet</span><span>"</span><span>)</span>
+    <span># real code would process the dataframe here
+</span>    <span>pass</span>
+
+
+<span>def</span> <span>main</span><span>():</span>
+    <span>df</span> <span>=</span> <span>pd</span><span>.</span><span>DataFrame</span><span>({</span><span>"</span><span>column</span><span>"</span><span>:</span> <span>list</span><span>(</span><span>range</span><span>(</span><span>10_000_000</span><span>))})</span>
+    <span>with</span> <span>mp</span><span>.</span><span>get_context</span><span>(</span><span>"</span><span>spawn</span><span>"</span><span>).</span><span>Pool</span><span>(</span><span>1</span><span>)</span> <span>as</span> <span>pool</span><span>:</span>
+        <span># Pass the DataFrame to the worker process
+</span>        <span># directly, via pickling:
+</span>        <span>start</span> <span>=</span> <span>time</span><span>()</span>
+        <span>pool</span><span>.</span><span>apply</span><span>(</span><span>noop</span><span>,</span> <span>(</span><span>df</span><span>,))</span>
+        <span>print</span><span>(</span><span>"</span><span>Pickling-based:</span><span>"</span><span>,</span> <span>time</span><span>()</span> <span>-</span> <span>start</span><span>)</span>
+
+        <span># Write the DataFrame to a file, pass the path to
+</span>        <span># the file to the worker process:
+</span>        <span>start</span> <span>=</span> <span>time</span><span>()</span>
+        <span>path</span> <span>=</span> <span>Path</span><span>(</span><span>mkdtemp</span><span>())</span> <span>/</span> <span>"</span><span>temp.parquet</span><span>"</span>
+        <span>df</span><span>.</span><span>to_parquet</span><span>(</span>
+            <span>path</span><span>,</span>
+            <span>engine</span><span>=</span><span>"</span><span>fastparquet</span><span>"</span><span>,</span>
+            <span># Run faster by skipping compression:
+</span>            <span>compression</span><span>=</span><span>"</span><span>uncompressed</span><span>"</span><span>,</span>
+        <span>)</span>
+        <span>pool</span><span>.</span><span>apply</span><span>(</span><span>noop_from_path</span><span>,</span> <span>(</span><span>path</span><span>,))</span>
+        <span>print</span><span>(</span><span>"</span><span>Parquet-based:</span><span>"</span><span>,</span> <span>time</span><span>()</span> <span>-</span> <span>start</span><span>)</span>
+
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>"</span><span>__main__</span><span>"</span><span>:</span>
+    <span>main</span><span>()</span>
+</code></pre></div>
+
+<p>If we run it, we can see the Parquet version is indeed faster:</p>
+
+<div><pre><code><span>$</span><span> </span>python tofile.py
+<span>Pickling-based: 0.24182868003845215
+Parquet-based: 0.17243456840515137
+</span></code></pre></div>
+
+<p>Parquet may or may not be faster in all situations, of course, and pickle will likely run faster in future versions of Python, but this sort of approach might be helpful in some situations.</p>
+
+<h3 id="option-4-multiprocessingshared_memory">Option #4: <code>multiprocessing.shared_memory</code></h3>
+
+<p>Because processes sometimes do want to share memory, operating systems typically provide facilities for explicitly creating shared memory between processes.
+Python wraps this facilities in the <a href="https://docs.python.org/3/library/multiprocessing.shared_memory.html"><code>multiprocessing.shared_memory</code> module</a>.</p>
+
+<p>However, unlike threads, where the same memory address space allows trivially sharing Python objects, in this case you’re mostly limited to sharing arrays.
+And as we’ve seen, NumPy releases the GIL for expensive operations, which means you can just use threads, which is much simpler.
+Still, in case you ever need it, it’s worth knowing this module exists.</p>
+
+<blockquote>
+  <p><strong>Note:</strong> The module also includes <a href="https://docs.python.org/3/library/multiprocessing.shared_memory.html#multiprocessing.shared_memory.ShareableList"><code>ShareableList</code></a>, which is a bit like a Python list but limited to <code>int</code>, <code>float</code>, <code>bool</code>, small <code>str</code> and <code>bytes</code>, and <code>None</code>.
+But this doesn’t help you cheaply share an arbitrary Python object.</p>
+</blockquote>
+
+<h3 id="a-bad-option-for-linux-the-fork-context">A bad option for Linux: the <code>"fork"</code> context</h3>
+
+<p>You may have noticed we did <code>multiprocessing.get_context("spawn").Pool()</code> to create a process pool.
+This is because Python has multiple implementations of multiprocessing on some OSes.
+<code>"spawn"</code> is the only option on Windows, the only non-broken option on macOS, and available on Linux.
+When using <code>"spawn"</code>, a completely new process is created, so you always have to copy data across.</p>
+
+<p>On Linux, the default is <code>"fork"</code>: the new child process has a complete copy of the memory of the parent process at the time of the child process’ creation.
+This means any objects in the parent (arrays, giant dicts, whatever) that were created before the child process was created, and were stored somewhere helpful like a module, are accessible to the child.
+Which means you don’t need to pickle/unpickle to access them.</p>
+
+<p>Sounds useful, right?
+There’s only one problem: the <code>"fork"</code> context is super-broken, which is why it will stop being the default in Python 3.14.</p>
+
+<p>Consider the following program:</p>
+
+<div><pre><code><span>import</span> <span>threading</span>
+<span>import</span> <span>sys</span>
+<span>from</span> <span>multiprocessing</span> <span>import</span> <span>Process</span>
+
+<span>def</span> <span>thread1</span><span>():</span>
+    <span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>1000</span><span>):</span>
+        <span>print</span><span>(</span><span>"</span><span>hello</span><span>"</span><span>,</span> <span>file</span><span>=</span><span>sys</span><span>.</span><span>stderr</span><span>)</span>
+
+<span>threading</span><span>.</span><span>Thread</span><span>(</span><span>target</span><span>=</span><span>thread1</span><span>).</span><span>start</span><span>()</span>
+
+<span>def</span> <span>foo</span><span>():</span>
+    <span>pass</span>
+
+<span>Process</span><span>(</span><span>target</span><span>=</span><span>foo</span><span>).</span><span>start</span><span>()</span>
+</code></pre></div>
+
+<p>On my computer, this program consistently deadlocks: it freezes and never exits.
+Any time you have threads in the parent process, the <code>"fork"</code> context can cause in potential deadlocks, or even corrupted memory, in the child process.</p>
+
+<p>You might think that you’re fine because you don’t start any threads.
+But many Python libraries start a thread pool on import, for example NumPy.
+If you’re using NumPy, Pandas, or any other library that depends on NumPy, you are running a threaded program, and therefore at risk of deadlocks, segfaults, or data corruption when using the <code>"fork"</code> multiprocessing context.
+For more details see <a href="https://pythonspeed.com/articles/python-multiprocessing/">this article on why <code>multiprocessing</code>’s default is broken on Linux</a>.</p>
+
+<p>So in theory this is an option on Linux, but in practice you really don’t want to use it.
+Thus I won’t bother showing you how to pass data across processes this way.
+If you really want to know, there are articles elsewhere demonstrating this, but you’re just shooting yourself in the foot if you take this approach.</p>
+
+<h2 id="you-need-to-measure">You need to measure</h2>
+
+<p>Before you spend too much time on trying to fix this particular performance issue, you really should measure your software’s performance and figuring out where its actual bottlenecks are.
+It’s quite possible that threading actually works just fine (option #1), or that the extra overhead from communicating across processes doesn’t matter (option #2).</p>
+
+<p>You will only know if you profile your software and figure out what the actual bottlenecks are.</p>
+
+
+  </div></div>
+  </div>
+</body>
+</html>

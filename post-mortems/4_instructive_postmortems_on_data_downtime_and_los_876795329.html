@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>4 Instructive Postmortems on Data Downtime and Loss</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>4 Instructive Postmortems on Data Downtime and Loss</h1>
+    <p><strong>URL:</strong> <a href="https://thehackernews.com/2024/03/4-instructive-postmortems-on-data.html">https://thehackernews.com/2024/03/4-instructive-postmortems-on-data.html</a></p>
+    <p><strong>Tags:</strong> devops, post-mortems</p>
+    <p><strong>Bookmark ID:</strong> 876795329</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="articlebody"><p><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA47baWNHDSOYxDHAZUAklnZMz4VivNtBlZLq9LXKvwQ0ijBH-xGBlpNh5sjaBfU-SnhWPzz_LhyRVq8FqXqPpXTaNyxX7dkNBgkQ78IHp38gRz16FTey2T5V7o3vjOs1szRp-eGFH1a9o8-l1cZgwWfDas6q2Ek4wh4T3CDmK8gbTGP8Js5eXha_0j3k/s728-rw-e365/rw.jpg"><img data-src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA47baWNHDSOYxDHAZUAklnZMz4VivNtBlZLq9LXKvwQ0ijBH-xGBlpNh5sjaBfU-SnhWPzz_LhyRVq8FqXqPpXTaNyxX7dkNBgkQ78IHp38gRz16FTey2T5V7o3vjOs1szRp-eGFH1a9o8-l1cZgwWfDas6q2Ek4wh4T3CDmK8gbTGP8Js5eXha_0j3k/s728-rw-e365/rw.jpg" alt="Data Downtime and Loss" data-original-height="380" data-original-width="728" title="Data Downtime and Loss" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhA47baWNHDSOYxDHAZUAklnZMz4VivNtBlZLq9LXKvwQ0ijBH-xGBlpNh5sjaBfU-SnhWPzz_LhyRVq8FqXqPpXTaNyxX7dkNBgkQ78IHp38gRz16FTey2T5V7o3vjOs1szRp-eGFH1a9o8-l1cZgwWfDas6q2Ek4wh4T3CDmK8gbTGP8Js5eXha_0j3k/s728-rw-e365/rw.jpg"></a></p>
+<p>More than a decade ago, the concept of the <a href="https://www.etsy.com/codeascraft/blameless-postmortems/" rel="noopener" target="_blank">'blameless'</a> postmortem changed how tech companies recognize failures at scale.</p>
+<p>John Allspaw, who coined the term during his tenure at Etsy, argued postmortems were all about controlling our natural reaction to an incident, which is to point fingers: "One option is to assume the single cause is incompetence and scream at engineers to make them 'pay attention!' or 'be more careful!' Another option is to take a hard look at how the accident actually happened, treat the engineers involved with respect, and learn from the event."</p>
+<p>What can we, in turn, learn from some of the most honest and blameless—and public—postmortems of the last few years?</p>
+<h2 id="gitlab-300gb-of-user-data-gone-in-seconds">GitLab: 300GB of user data gone in seconds<a href="#gitlab-300gb-of-user-data-gone-in-seconds">#</a></h2>
+<p><strong>What happened</strong>: Back in 2017, GitLab experienced a painful 18-hour outage. That story, and GitLab's subsequent honesty and transparency, has significantly impacted how organizations handle data security today.</p>
+<p>The incident began when GitLab's secondary database, which replicated the primary and acted as a failover, could no longer sync changes fast enough due to increased load. Assuming a temporary spam attack created said load, GitLab engineers decided to manually re-sync the secondary database by deleting its contents and running the associated script.</p>
+<p>When the re-sync process failed, another engineer tried the process again, only to realize they had run it against the primary.</p>
+<p><strong>What was lost</strong>: Even though the engineer stopped their command in two seconds, it had already deleted 300GB of recent user data, affecting GitLab's estimates, 5,000 projects, 5,000 comments, and 700 new user accounts.</p>
+<p><strong>How they recovered</strong>: Because engineers had just deleted the secondary database's contents, they couldn't use it for its intended purpose as a failover. Even worse, their daily database backups, which were supposed to be uploaded to S3 every 24 hours, had failed. Due to an email misconfiguration, no one received the notification emails informing them as much. </p>
+<p>In any other circumstance, their only choice would have been to restore from their previous snapshot, which was nearly 24 hours old. Enter a very fortunate happenstance: Just 6 hours before the data loss, an engineer had taken a snapshot of the primary database for testing, inadvertently saving the company from 18 additional hours of lost data.</p>
+<p>After an excruciatingly slow 18 hours of copying data across slow network disks, GitLab engineers fully restored service.</p>
+<h3 id="what-we-learned">What we learned<a href="#what-we-learned">#</a></h3>
+<ol>
+<li><strong>Analyze your root causes with the "</strong><a href="https://en.wikipedia.org/wiki/Five_whys" rel="noopener" target="_blank"><strong>Five whys</strong></a>." GitLab engineers did an admirable job in their postmortem explaining the incident's root cause. It wasn't that an engineer accidentally deleted production data, but rather that an automated system mistakenly reported a GitLab employee for spam—the subsequent removal caused the increased load and primary&lt;-&gt;secondary desync.The deeper you diagnose what went wrong, the better you can build data security and business continuity systems that address the long chain of unfortunate events that might cause failure again.</li><li><strong>Share your roadmap of improvements</strong>. GitLab has continuously operated with extreme transparency, which applies to this outage and data loss. In the aftermath, engineers have created <a href="https://gitlab.com/gitlab-com/gl-infra/production-engineering/-/issues/1684" rel="noopener" target="_blank">dozens of public issues</a> discussing their plans, like testing disaster recovery scenarios for all <a href="https://gitlab.com/gitlab-com/gl-infra/production-engineering/-/issues/1161" rel="noopener" target="_blank">data not in their database</a>. Making those fixes public gave their customers precise assurances and shared learnings with other tech companies and open-source startups.</li><li><strong>Backups need ownership</strong>. Before this incident, no single GitLab engineer was responsible for validating the backup system or testing the restoration process, which meant no one did. GitLab engineers quickly assigned one of their team with rights to <a href="https://gitlab.com/gitlab-com/gl-infra/production-engineering/-/issues/1163" rel="noopener" target="_blank">"stop the line"</a> if data was at risk.</li>
+</ol>
+<p>Read the rest: <a href="https://about.gitlab.com/blog/2017/02/10/postmortem-of-database-outage-of-january-31/" rel="noopener" target="_blank"><em>Postmortem of database outage of January 31</em></a>.</p>
+
+
+<h2 id="tarsnap-deciding-between-safe-data-vs-availability">Tarsnap: Deciding between safe data vs. availability<a href="#tarsnap-deciding-between-safe-data-vs-availability">#</a></h2>
+<p><strong>What happened</strong>: One morning in the summer of 2023, this one-person <a href="https://www.tarsnap.com/" rel="noopener" target="_blank">backup service</a> went completely offline.</p>
+<p>Tarsnap is run by Colin Percival, who's been working on FreeBSD for over 20 years and is largely responsible for bringing that OS to Amazon's <a href="https://aws.amazon.com/ec2/" rel="noopener" target="_blank">EC2</a> cloud computing service. In other words, few people better understood how FreeBSD, EC2, and Amazon S3, which stored Tarsnap's customer data, could work together… or fail.</p>
+<p>Colin's monitoring service notified him the central Tarsnap EC2 server had gone offline. When he checked on the instance's health, he immediately found catastrophic filesystem damage—he knew right away he'd have to rebuild the service from scratch.</p>
+<p><strong>What was lost</strong>: No user backups, thanks to two smart decisions on Colin's part.</p>
+<p>First, Colin had built Tarsnap on a log-structured filesystem. While he cached logs on the EC2 instance, he stored all data in S3 object storage, which has its own data resilience and recovery strategies. He knew Tarsnap user backups were safe—the challenge was making them easily accessible again.</p>
+<p>Second, when Colin built the system, he'd written automation scripts but had not configured them to run unattended. Instead of letting the infrastructure rebuild and restart services automatically, he wanted to double-check the state himself before letting scripts take over. He wrote, "'Preventing data loss if something breaks' is far more important than 'maximize service availability.'"</p>
+<p><strong>How they recovered</strong>: Colin fired up a new EC2 instance to read the logs stored in S3, which took about 12 hours. After fixing a few bugs in his data restoration script, he could "replay" each log entry in the correct order, which took another 12 hours. With logs and S3 block data once again properly associated, Tarsnap was up and running again.</p>
+<h3 id="what-we-learned">What we learned<a href="#what-we-learned">#</a></h3>
+<ol>
+<li><strong>Regularly test your disaster recovery playbook</strong>. In the public discourse around the outage and postmortem, Tarsnap users expressed their surprise that Colin had never tried his recovery scripts, which would have revealed multiple bugs that significantly delayed his responsiveness.</li><li><strong>Update your processes and configurations to match changing technology</strong>. Colin admitted to never updating his recovery scripts based on new capabilities from the services Tarsnap relied on, like S3 and <a href="https://aws.amazon.com/ebs/" rel="noopener" target="_blank">EBS</a>. He could have read the S3 log data using more than 250 simultaneous connections or provisioned an EBS volume with higher throughput to shorten the timeline to full recovery.</li><li><strong>Layer in human checks to gather details about your state before letting automation do the grunt work</strong>. There's no saying exactly what would have happened had Colin not included some "seatbelts" in his recovery process, but it helped prevent a mistake like the GitLab folks.</li>
+</ol>
+<p><em>Read the rest: </em><a href="https://mail.tarsnap.com/tarsnap-announce/msg00050.html" rel="noopener" target="_blank"><em>2023-07-02 -- 2023-07-03 Tarsnap outage post-mortem</em></a></p>
+
+
+<h2 id="roblox-73-hours-of-contention-">Roblox: 73 hours of 'contention'<a href="#roblox-73-hours-of-contention-">#</a></h2>
+<p><strong>What happened</strong>: Around Halloween 2021, a game played by millions every day on an infrastructure of 18,000 servers and 170,000 containers experienced a full-blown outage.</p>
+<p>The service didn't go down all at once—a few hours after Roblox engineers detected a single cluster with high CPU load, the number of online players had dropped to 50% below normal. This cluster hosted <a href="https://github.com/hashicorp/consul" rel="noopener" target="_blank">Consul</a>, which operated like middleware between many distributed Roblox services, and when Consul could no longer handle even the diminished player count, it became a single point of failure for the entire online experience.</p>
+<p><strong>What was lost</strong>: Only system configuration data. Most Roblox services used other storage systems within their on-premises data centers. For those that did use Consul's key-value store, data was either stored after engineers solved the load and contention issues or safely cached elsewhere.</p>
+<p><strong>How they recovered</strong>: Roblox engineers first attempted to redeploy the Consul cluster on much faster hardware and then very slowly let new requests enter the system, but neither worked.</p>
+<p>With assistance from HashiCorp engineers and many long hours, the teams finally narrowed down two root causes:</p>
+<ul>
+<li><strong><em>Contention</em>: </strong>After discovering how long Consul KV writes were blocked, the teams realized that Consul's new streaming architecture was under heavy load. Incoming data fought over Go channels designed for concurrency, creating a vicious cycle that only tightened the bottleneck.</li>
+<li><strong><em>A bug far downstream</em>: </strong>Consul uses an open-source database, BoltDB, for storing logs. It was supposed to clean up old log entries regularly but never truly freed the disk space, creating a heavy compute workload for Consul.</li>
+</ul>
+<p>After fixing these two bugs, the Roblox team restored service—a stressful 73 hours after that first high CPU alert.</p>
+<h3 id="what-we-learned">What we learned<a href="#what-we-learned">#</a></h3>
+<ol>
+<li><strong>Avoid circular telemetry systems</strong>. Roblox's telemetry systems, which monitored the Consul cluster, also depended on it. In their postmortem, they admitted they could have acted faster with more accurate data.</li><li><strong>Look two, three, or four steps beyond what you've built for root causes.</strong> Modern infrastructure is based on a massive supply chain of third-party services and open-source software. Your next outage might not be caused by an engineer's honest mistake but rather by exposing a years-old bug in a dependency, three steps removed from your code, that no one else had <em>just</em> the right environment to trigger.</li>
+</ol>
+<p><em>Read the rest: </em><a href="https://blog.roblox.com/2022/01/roblox-return-to-service-10-28-10-31-2021/" rel="noopener" target="_blank"><em>Roblox Return to Service 10/28-10/31, 2021</em></a></p>
+<h2 id="cloudflare-a-long-state-baked-weekend">Cloudflare: A long (state-baked) weekend<a href="#cloudflare-a-long-state-baked-weekend">#</a></h2>
+<p><strong>What happened</strong>: A few days before Thanksgiving Day 2023, an attacker used stolen credentials to access Cloudflare's on-premises Atlassian server, which ran Confluence and Jira. Not long after, they used those credentials to create a persistent connection to this piece of Cloudflare's global infrastructure.</p>
+
+
+<p>The attacker attempted to move laterally through the network but was denied access at every turn. The day after Thanksgiving, Atlassian engineers permanently removed the attacker and took down the affected Atlassian server.</p>
+<p>In their postmortem, Cloudflare states their belief the attacker was backed by a nation-state eager for widespread access to Cloudflare's network. The attacker had opened hundreds of internal documents in Confluence related to their network's architecture and security management practices.</p>
+<p><strong>What was lost</strong>: No user data. Cloudflare's Zero Trust architecture prevented the attacker from jumping from the Atlassian server to other services or accessing customer data.</p>
+<p>Atlassian has been in the news for another reason lately—their Server offering has reached its <a href="https://www.atlassian.com/migration/assess/journey-to-cloud" rel="noopener" target="_blank">end-of-life</a>, forcing organizations to migrate to Cloud or Data Center alternatives. During or after that drawn-out process, engineers realize their new platform doesn't come with the same <a href="https://rewind.com/for/atlassian-eol/?utm_source=thehackernews&amp;utm_medium=paid-partner&amp;utm_campaign=dev-always-on_brand__na__03-2024____ba__&amp;utm_content=blog_4-instructive-postmortems-on-data-downtime-and-loss" rel="noopener" target="_blank">data security and backup capabilities</a> they were used to, forcing them to rethink their data security practices.</p>
+<p><strong>How they recovered</strong>: After booting the attacker, Cloudflare engineers rotated over 5,000 production credentials, triaged 4,893 systems, and reimaged and rebooted every machine. Because the attacker had attempted to access a new data center in Brazil, Cloudflare replaced all the hardware out of extreme precaution.</p>
+<h3 id="what-we-learned">What we learned<a href="#what-we-learned">#</a></h3>
+<ol>
+<li><strong>Zero Trust architectures work</strong>. When you build authorization/authentication right, you prevent one compromised system from deleting data or operating as a stepping-stone for lateral movement in the network.</li><li><strong>Despite the exposure, documentation is still your friend</strong>. Your engineers will always need to know how to reboot, restore, or rebuild your services. Your goal is that even if an attacker learns <em>everything</em> about your infrastructure through your internal documentation, they still shouldn't be able to create or steal the credentials necessary to intrude even deeper.</li><li><strong>SaaS security is easier to overlook. </strong>This intrusion was only possible because Cloudflare engineers had failed to rotate credentials for SaaS apps with administrative access to their Atlassian products. The root cause? They believed no one still used said credentials, so there was no point in rotating them.</li>
+</ol>
+<p><em>Read the rest: </em><a href="https://blog.cloudflare.com/thanksgiving-2023-security-incident" rel="noopener" target="_blank"><em>Thanksgiving 2023 security incident</em></a></p>
+<h2 id="what-s-next-for-your-data-security-and-continuity-planning-">What's next for your data security and continuity planning?<a href="#what-s-next-for-your-data-security-and-continuity-planning-">#</a></h2>
+<p>These postmortems, detailing exactly what went wrong and elaborating on how engineers are preventing another occurrence, are more than just good role models for how an organization can act with honesty, transparency, and empathy for customers during a crisis.</p>
+<p>If you can take a single lesson from allthese situations, <em>someone </em>in your organization, whether an ambitious engineer or an entire team, must own the data security lifecycle. Test and document everything because only practice makes perfect.</p>
+<p>But also recognize that all these incidents occurred on owned cloud or on-premises infrastructure. Engineers had full access to systems and data to diagnose, protect, and restore them. You can't say the same about the many cloud-based SaaS platforms your peers use daily, like versioning code and managing projects on GitHub or deploying lucrative email campaigns via Mailchimp. If something happens to those services, you can't just SSH to check logs or rsync your data.</p>
+<p>As <a href="https://rewind.com/blog/shadow-it-is-putting-your-business-critical-data-at-risk/?utm_source=thehackernews&amp;utm_medium=paid-partner&amp;utm_campaign=dev-always-on_brand__na__03-2024____ba__&amp;utm_content=blog_4-instructive-postmortems-on-data-downtime-and-loss" rel="noopener" target="_blank">shadow IT</a> grows exponentially—a 1,525% increase in just seven years—the best continuity strategies won't cover the infrastructure you own but the SaaS data your peers depend on. You could wait for a new postmortem to give you solid recommendations about the SaaS data frontier… or take the necessary steps to ensure <em>you're</em> not the one writing it.</p>
+
+
+<p>Found this article interesting? <span>This article is a contributed piece from one of our valued partners.</span> Follow us on <a href="https://twitter.com/thehackersnews" rel="noopener" target="_blank">Twitter <i></i></a> and <a href="https://www.linkedin.com/company/thehackernews/" rel="noopener" target="_blank">LinkedIn</a> to read more exclusive content we post.</p>
+</div></div>
+  </div>
+</body>
+</html>

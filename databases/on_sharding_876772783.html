@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>On Sharding</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>On Sharding</h1>
+    <p><strong>URL:</strong> <a href="https://www.tbray.org/ongoing/When/201x/2019/09/25/On-Sharding">https://www.tbray.org/ongoing/When/201x/2019/09/25/On-Sharding</a></p>
+    <p><strong>Tags:</strong> databases, algorithms-math</p>
+    <p><strong>Bookmark ID:</strong> 876772783</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="centercontent">
+<p itemprop="description">If you need to handle really a lot of traffic, there’s only one way to do it: sharding. Which is to say, splitting up the
+incoming requests
+among as many hosts (or Lambda functions, or message brokers, or data streams) as you need. Once you get this working you can handle
+an essentially unlimited request volume.  Of course, you have to make choices on how you’re going to divide up the traffic among
+the shards. I’ve had intense exposure to the options since I came to work at AWS.</p>
+
+<p id="p-1"><span>Random spray</span> · 
+This is the simplest thing imaginable.  For each message, you make a UUID and use it as the Partition Key (if your downstream
+uses that for sharding), otherwise just pick a target shard using your favorite random number generator.</p>
+
+<p>There’s a lot to like about it.  Your front-end can be dumb and stateless and fast.  The load will get dealt out evenly
+among the shards.  Spoiler alert: I think this is a good choice and you should do it if you can possibly can.</p>
+
+<p>A common variation on this theme involves auto-scaling.  For example, if you have a fleet of hosts processing messages from an
+SQS queue, auto-scaling the fleet size based on the queue depth is a fairly common practice.  Once again, admirably simple.</p>
+
+<p id="p-2"><span>“Smart” sharding</span> · 
+The idea is that you do extra work to avoid problems, for example some shards getting overloaded and others being idle. Another
+kind of problem is one of your upstream sources sending “poison pill” messages that cause the receiving shard to lock up or
+otherwise misbehave</p>
+
+<p>Load-sensitivity is one “smart” approach. The idea is that you keep track of the load on each shard, and selectively route
+traffic to the lightly-loaded ones and away from the busy ones.  Simplest thing is, if you have some sort of load metric, always pick
+the shard with the lowest value.</p>
+
+<p>I’ve seen this done, and work OK.  But it isn’t that easy. You have to figure out a meaningful load metric (queue depth? how much
+traffic received recently? CPU load?) and communicate that from each shard to the front end.</p>
+
+<p>If poison pills are your worry — this is not rare at all — the smartest approach is usually shuffle sharding. See
+<a href="https://twitter.com/colmmacc/status/1034492056968736768?lang=en">Colm MacCárthaigh’s awesome thread on the subject</a>,
+which you should go read if you haven’t already.  He has pretty pictures (see below for one I stole) and math too!</p>
+
+<p><a href="https://www.tbray.org/ongoing/When/201x/2019/09/25/-big/shuffle-sharding.jpg.html"><img alt="Shuffle sharding by Colm MacCárthaigh" title="Shuffle sharding by Colm MacCárthaigh" src="data:application/octet-stream;base64,"></a></p>
+<p id="p-3"><span>Affinity</span> · 
+Also known as “session affinity”. Another term you sometimes hear is “sticky sessions”; for a discussion see
+<a href="https://access.redhat.com/solutions/900933">this article over at Red Hat</a>.
+The idea is that you route all the events from the same upstream source to the same shard, by using an account number or session
+identifier of some sort as a partition key.</p>
+
+<p>Affinity is attractive: If all the clickstream clicks from the same user or state-change events from the same workflow or
+whatever go to the same host, you can hold the relevant state in that host’s memory, which means you can respond faster and hit your
+database less hard.</p>
+
+<p>Ladies, enbies, gentlemen, and others: I’ve had really lousy luck with affinity in sharding. Lots of things can go wrong. The
+most obvious: When traffic isn’t evenly distributed among upstream sources.</p>
+
+<p><img alt="inverse-square curve" title="inverse-square curve" src="data:application/octet-stream;base64,"></p><p>One time I was working with a stream of AWS
+customer events, and I 
+thought it’d be smart to deal them out to Kinesis shards by account number. That was 
+bad<span> —</span> the messages per second per account rate was distributed across account numbers in a classic
+inverse-square curve like the one in the margin.  To make this concrete, in one of the early tests I noticed that the top 10 account
+numbers accounted for half the traffic.  Ouch. (I don’t think this was a rare situation, I think it’s probably common as dirt.)</p>
+
+<p>The general lesson is that if you unfortunately send too many “hot” upstream sources to the same shard, it’s easy to overload
+it. The worst case of this is when you get a single “whale” customer whose traffic is too much for any single shard.</p>
+
+<p>So in this situation I’m talking about, we switched to random-spray, and the whole system settled down and ran nice and smooth.
+Except for, processing each message required consulting a database keyed by account number and the database bills got kind of
+high.</p>
+
+<p>So I got what I thought was a brilliant idea, hid in a corner, and wrote a “best-effort affinity” library that tried to cluster
+requests for each customer on as few shards as possible. It seemed to work and our database bills went down by a factor of six and I
+felt smart.</p>
+
+<p>Since then, it’s turned into a nightmare.  There’s all sorts of special-case code to deal with extra-big whales and sudden surges
+and other corner cases we didn’t think of.  Now people roll their eyes when smoke starts coming out of the service and mutter “that
+affinity thing”. They’re usually too polite to say “Tim’s dumb affinity code”.</p>
+
+<p id="p-4"><span>That’s not all, folks</span> · 
+Here’s another way things can go wrong: What happens when you have session affinity, and you have per-session state built up in
+some host, and then that host goes down? (Not necessarily a crash, maybe you just have to patch the software.)</p>
+
+<p>Now, because you’re a good designer, you’ve been writing all your updates to a journal of some sort, so when your shard goes
+pear-shaped, you find another host for it and replay the journal and you’re back in business.</p>
+
+<p>To accomplish this you need to:</p>
+
+<ol>
+<li><p>Reliably detect when a node fails. As opposed to being stuck in a long GC cycle, or waiting for a slow dependency.</p>
+</li>
+<li><p>Find a new host to place the shard on.</p>
+</li>
+<li><p>Find the right journal and replay it to reconstruct all the lost state.</p>
+</li>
+</ol>
+<p>Anyone can see this takes work. It can be done. It is being done inside a well-known AWS service I sit near. But the code isn’t
+simple at all, and on-call people sigh and mutter “shard migration” in exactly the same tone of voice they use for “Tim’s dumb
+affinity code.”</p>
+
+<p id="p-5"><span>But the database!</span> · 
+So am I saying that storing state in shards is a no-no, that we should all go back to stateless random spray and pay the cost in
+time and compute to refresh our state on every damn message?</p>
+
+<p>Well yeah, if you can.  That fleet running my dumb affinity code?  Turns out when we reduced the database bills by a factor of
+six we saved (blush) a laughably small amount of money.</p>
+
+<p>What about latency, then?  Well, if you were using a partition key for sharding, you can probably use it for retrieving state
+from a key/value store, like DynamoDB or Cassandra or Mongo.  When things are set up well, you can expect steady-state retrieval
+latencies in the single-digit milliseconds. You might be able to use a caching accelerator like
+<a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html">DynamoDB’s DAX</a> and do a lot better.</p>
+
+<p>In fact, if the sessions you might have tried to shard on have that inverse-square behavior I was talking about, where a small
+number of keys cover a high proportion of the traffic, that might actually help the caching work better.</p>
+
+<p>But the cache is a distraction.  The performance you’re going to get will depend on your record sizes and update patterns
+and anyhow you probabl don’t care about the mean or median as much as the
+<a href="https://www.tbray.org/ongoing/When/201x/2018/12/14/SF-4">P99</a>.</p>
+
+<p>Which is to say, run some tests.
+You might just find that you’re getting enough performance out of your database that you can
+random-spray across your shards, have a stateless front-end and auto-scaled back-end and sleep sound at night because your nice simple system pretty well
+takes care of itself.</p>
+
+<hr>
+
+
+<hr>
+
+</div></div>
+  </div>
+</body>
+</html>

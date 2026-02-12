@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dask — Dask 2.11.0 7.gc99a4402 documentation</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Dask — Dask 2.11.0 7.gc99a4402 documentation</h1>
+    <p><strong>URL:</strong> <a href="https://docs.dask.org/en/latest">https://docs.dask.org/en/latest</a></p>
+    <p><strong>Tags:</strong> dask</p>
+    <p><strong>Bookmark ID:</strong> 876773898</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      
+      
+      
+        
+      
+      
+      
+      <main id="main-content" role="main">
+        
+        
+
+
+
+          <div>
+              
+              
+              
+              
+
+
+
+              
+                
+
+                <article>
+                  
+  <section id="dask">
+<h2>Dask<a href="#dask" title="Link to this heading">#</a></h2>
+<div>
+<p><em>Dask is a Python library for parallel and distributed computing.</em>  Dask is:</p>
+<ul>
+<li><p><strong>Easy</strong> to use and set up (it’s just a Python library)</p></li>
+<li><p><strong>Powerful</strong> at providing scale, and unlocking complex algorithms</p></li>
+<li><p>and <strong>Fun</strong> 🎉</p></li>
+</ul>
+</div>
+<section id="how-to-use-dask">
+<h2>How to Use Dask<a href="#how-to-use-dask" title="Link to this heading">#</a></h2>
+<p>Dask provides several APIs.  Choose one that works best for you:</p>
+<div>
+<p>
+<label for="sd-tab-item-0">
+Tasks</label></p><div>
+<p>Dask Futures parallelize arbitrary for-loop style Python code,
+providing:</p>
+<ul>
+<li><p><strong>Flexible</strong> tooling allowing you to construct custom
+pipelines and workflows</p></li>
+<li><p><strong>Powerful</strong> scaling techniques, processing several thousand
+tasks per second</p></li>
+<li><p><strong>Responsive</strong> feedback allowing for intuitive execution,
+and helpful dashboards</p></li>
+</ul>
+<p>Dask futures form the foundation for other Dask work</p>
+<p>Learn more at <a href="https://docs.dask.org/en/futures.html"><span>Futures Documentation</span></a>
+or see an example at <a href="https://examples.dask.org/futures.html"><span>Futures Example</span></a></p>
+<div>
+<div><pre><span></span><span>from</span><span> </span><span>dask.distributed</span><span> </span><span>import</span> <span>LocalCluster</span>
+<span>client</span> <span>=</span> <span>LocalCluster</span><span>()</span><span>.</span><span>get_client</span><span>()</span>
+
+<span># Submit work to happen in parallel</span>
+<span>results</span> <span>=</span> <span>[]</span>
+<span>for</span> <span>filename</span> <span>in</span> <span>filenames</span><span>:</span>
+    <span>data</span> <span>=</span> <span>client</span><span>.</span><span>submit</span><span>(</span><span>load</span><span>,</span> <span>filename</span><span>)</span>
+    <span>result</span> <span>=</span> <span>client</span><span>.</span><span>submit</span><span>(</span><span>process</span><span>,</span> <span>data</span><span>)</span>
+    <span>results</span><span>.</span><span>append</span><span>(</span><span>result</span><span>)</span>
+
+<span># Gather results back to local computer</span>
+<span>results</span> <span>=</span> <span>client</span><span>.</span><span>gather</span><span>(</span><span>results</span><span>)</span>
+</pre></div>
+<div>
+<figure>
+<img alt="_images/futures-graph.png" src="https://docs.dask.org/en/_images/futures-graph.png">
+</figure>
+</div>
+</div>
+</div>
+<p>
+<label for="sd-tab-item-1">
+DataFrames</label></p><div>
+<p>Dask Dataframes parallelize the popular pandas library, providing:</p>
+<ul>
+<li><p><strong>Larger-than-memory</strong> execution for single machines, allowing you
+to process data that is larger than your available RAM</p></li>
+<li><p><strong>Parallel</strong> execution for faster processing</p></li>
+<li><p><strong>Distributed</strong> computation for terabyte-sized datasets</p></li>
+</ul>
+<p>Dask Dataframes are similar in this regard to Apache Spark, but use the
+familiar pandas API and memory model.  One Dask dataframe is simply a
+collection of pandas dataframes on different computers.</p>
+<p>Learn more at <a href="https://docs.dask.org/en/dataframe.html"><span>DataFrame Documentation</span></a>
+or see an example at <a href="https://examples.dask.org/dataframe.html"><span>DataFrame Example</span></a></p>
+<div>
+<div><pre><span></span><span>import</span><span> </span><span>dask.dataframe</span><span> </span><span>as</span><span> </span><span>dd</span>
+
+<span># Read large datasets in parallel</span>
+<span>df</span> <span>=</span> <span>dd</span><span>.</span><span>read_parquet</span><span>(</span><span>"s3://mybucket/data.*.parquet"</span><span>)</span>
+<span>df</span> <span>=</span> <span>df</span><span>[</span><span>df</span><span>.</span><span>value</span> <span>&lt;</span> <span>0</span><span>]</span>
+<span>result</span> <span>=</span> <span>df</span><span>.</span><span>groupby</span><span>(</span><span>df</span><span>.</span><span>name</span><span>)</span><span>.</span><span>amount</span><span>.</span><span>mean</span><span>()</span>
+
+<span>result</span> <span>=</span> <span>result</span><span>.</span><span>compute</span><span>()</span>  <span># Compute to get pandas result</span>
+<span>result</span><span>.</span><span>plot</span><span>()</span>
+</pre></div>
+<div>
+<figure>
+<img alt="_images/dask-dataframe.svg" src="https://docs.dask.org/en/_images/dask-dataframe.svg">
+</figure>
+</div>
+</div>
+</div>
+<p>
+<label for="sd-tab-item-2">
+Arrays</label></p><div>
+<p>Dask Arrays parallelize the popular NumPy library, providing:</p>
+<ul>
+<li><p><strong>Larger-than-memory</strong> execution for single machines, allowing you
+to process data that is larger than your available RAM</p></li>
+<li><p><strong>Parallel</strong> execution for faster processing</p></li>
+<li><p><strong>Distributed</strong> computation for terabyte-sized datasets</p></li>
+</ul>
+<p>Dask Arrays allow scientists and researchers to perform intuitive and
+sophisticated operations on large datasets but use the
+familiar NumPy API and memory model.  One Dask array is simply a
+collection of NumPy arrays on different computers.</p>
+<p>Learn more at <a href="https://docs.dask.org/en/array.html"><span>Array Documentation</span></a>
+or see an example at <a href="https://examples.dask.org/array.html"><span>Array Example</span></a></p>
+<div>
+<div><pre><span></span><span>import</span><span> </span><span>dask.array</span><span> </span><span>as</span><span> </span><span>da</span>
+
+<span>x</span> <span>=</span> <span>da</span><span>.</span><span>random</span><span>.</span><span>random</span><span>((</span><span>10000</span><span>,</span> <span>10000</span><span>))</span>
+<span>y</span> <span>=</span> <span>(</span><span>x</span> <span>+</span> <span>x</span><span>.</span><span>T</span><span>)</span> <span>-</span> <span>x</span><span>.</span><span>mean</span><span>(</span><span>axis</span><span>=</span><span>1</span><span>)</span>
+
+<span>z</span> <span>=</span> <span>y</span><span>.</span><span>var</span><span>(</span><span>axis</span><span>=</span><span>0</span><span>)</span><span>.</span><span>compute</span><span>()</span>
+</pre></div>
+<div>
+<figure>
+<img alt="_images/dask-array.svg" src="https://docs.dask.org/en/_images/dask-array.svg">
+</figure>
+</div>
+</div>
+<p>Xarray wraps Dask array and is a popular downstream project, providing
+labeled axes and simultaneously tracking many Dask arrays together,
+resulting in more intuitive analyses.  Xarray is popular and accounts
+for the majority of Dask array use today especially within geospatial
+and imaging communities.</p>
+<p>Learn more at <a href="https://docs.xarray.dev/en/stable/"><span>Xarray Documentation</span></a>
+or see an example at <a href="https://examples.dask.org/xarray.html"><span>Xarray Example</span></a></p>
+<div>
+<div><pre><span></span><span>import</span><span> </span><span>xarray</span><span> </span><span>as</span><span> </span><span>xr</span>
+
+<span>ds</span> <span>=</span> <span>xr</span><span>.</span><span>open_mfdataset</span><span>(</span><span>"data/*.nc"</span><span>)</span>
+<span>da</span><span>.</span><span>groupby</span><span>(</span><span>'time.month'</span><span>)</span><span>.</span><span>mean</span><span>(</span><span>'time'</span><span>)</span><span>.</span><span>compute</span><span>()</span>
+</pre></div>
+<div>
+<figure>
+<img alt="https://docs.xarray.dev/en/stable/_static/logos/Xarray_Logo_RGB_Final.png" src="https://docs.xarray.dev/en/stable/_static/logos/Xarray_Logo_RGB_Final.png">
+</figure>
+</div>
+</div>
+</div>
+<p>
+<label for="sd-tab-item-3">
+Bags</label></p><div>
+<p>Dask Bags are simple parallel Python lists, commonly used to process
+text or raw Python objects.  They are …</p>
+<ul>
+<li><p><strong>Simple</strong> offering easy map and reduce functionality</p></li>
+<li><p><strong>Low-memory</strong> processing data in a streaming way that minimizes memory use</p></li>
+<li><p><strong>Good for preprocessing</strong> especially for text or JSON data prior
+ingestion into dataframes</p></li>
+</ul>
+<p>Dask bags are similar in this regard to Spark RDDs or vanilla
+Python data structures and iterators.  One Dask bag is simply a
+collection of Python iterators processing in parallel on different computers.</p>
+<p>Learn more at <a href="https://docs.dask.org/en/bag.html"><span>Bag Documentation</span></a>
+or see an example at <a href="https://examples.dask.org/bag.html"><span>Bag Example</span></a></p>
+<div><pre><span></span><span>import</span><span> </span><span>dask.bag</span><span> </span><span>as</span><span> </span><span>db</span>
+
+<span># Read large datasets in parallel</span>
+<span>lines</span> <span>=</span> <span>db</span><span>.</span><span>read_text</span><span>(</span><span>"s3://mybucket/data.*.json"</span><span>)</span>
+<span>records</span> <span>=</span> <span>(</span><span>lines</span>
+    <span>.</span><span>map</span><span>(</span><span>json</span><span>.</span><span>loads</span><span>)</span>
+    <span>.</span><span>filter</span><span>(</span><span>lambda</span> <span>d</span><span>:</span> <span>d</span><span>[</span><span>"value"</span><span>]</span> <span>&gt;</span> <span>0</span><span>)</span>
+<span>)</span>
+<span>df</span> <span>=</span> <span>records</span><span>.</span><span>to_dask_dataframe</span><span>()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="how-to-install-dask">
+<h2>How to Install Dask<a href="#how-to-install-dask" title="Link to this heading">#</a></h2>
+<p>Installing Dask is easy with <code><span>pip</span></code> or <code><span>conda</span></code>.</p>
+<p>Learn more at <a href="https://docs.dask.org/en/install.html"><span>Install Documentation</span></a></p>
+<div>
+<p>
+<label for="sd-tab-item-4">
+pip</label></p><div><pre><span></span><span>pip</span> <span>install</span> <span>"dask[complete]"</span>
+</pre></div>
+<p>
+<label for="sd-tab-item-5">
+conda</label></p><div><pre><span></span><span>conda</span> <span>install</span> <span>dask</span>
+</pre></div>
+</div>
+</section>
+<section id="how-to-deploy-dask">
+<h2>How to Deploy Dask<a href="#how-to-deploy-dask" title="Link to this heading">#</a></h2>
+<p>You can use Dask on a single machine, or deploy it on distributed hardware.</p>
+<p>Learn more at <a href="https://docs.dask.org/en/deploying.html"><span>Deploy Documentation</span></a></p>
+<div>
+<p>
+<label for="sd-tab-item-6">
+Local</label></p><div>
+<p>Dask can set itself up easily in your Python session if you create a
+<code><span>LocalCluster</span></code> object, which sets everything up for you.</p>
+<div><pre><span></span><span>from</span><span> </span><span>dask.distributed</span><span> </span><span>import</span> <span>LocalCluster</span>
+<span>cluster</span> <span>=</span> <span>LocalCluster</span><span>()</span>
+<span>client</span> <span>=</span> <span>cluster</span><span>.</span><span>get_client</span><span>()</span>
+
+<span># Normal Dask work ...</span>
+</pre></div>
+<p>Alternatively, you can skip this part, and Dask will operate within a
+thread pool contained entirely with your local process.</p>
+</div>
+<p>
+<label for="sd-tab-item-7">
+Cloud</label></p><div>
+<p><a href="https://docs.coiled.io/user_guide/index.html?utm_source=dask-docs&amp;utm_medium=homepage">Coiled</a>
+is a commercial SaaS product that deploys Dask clusters on cloud platforms like AWS, GCP, and Azure.</p>
+<div><pre><span></span><span>import</span><span> </span><span>coiled</span>
+<span>cluster</span> <span>=</span> <span>coiled</span><span>.</span><span>Cluster</span><span>(</span>
+   <span>n_workers</span><span>=</span><span>100</span><span>,</span>
+   <span>region</span><span>=</span><span>"us-east-2"</span><span>,</span>
+   <span>worker_memory</span><span>=</span><span>"16 GiB"</span><span>,</span>
+   <span>spot_policy</span><span>=</span><span>"spot_with_fallback"</span><span>,</span>
+<span>)</span>
+<span>client</span> <span>=</span> <span>cluster</span><span>.</span><span>get_client</span><span>()</span>
+</pre></div>
+<p>Learn more at <a href="https://docs.coiled.io/user_guide/index.html?utm_source=dask-docs&amp;utm_medium=homepage"><span>Coiled Documentation</span></a></p>
+</div>
+<p>
+<label for="sd-tab-item-8">
+HPC</label></p><div>
+<p>The <a href="https://jobqueue.dask.org/">Dask-Jobqueue project</a> deploys
+Dask clusters on popular HPC job submission systems like SLURM, PBS, SGE, LSF,
+Torque, Condor, and others.</p>
+<div><pre><span></span><span>from</span><span> </span><span>dask_jobqueue</span><span> </span><span>import</span> <span>PBSCluster</span>
+<span>cluster</span> <span>=</span> <span>PBSCluster</span><span>(</span>
+   <span>cores</span><span>=</span><span>24</span><span>,</span>
+   <span>memory</span><span>=</span><span>"100GB"</span><span>,</span>
+   <span>queue</span><span>=</span><span>"regular"</span><span>,</span>
+   <span>account</span><span>=</span><span>"my-account"</span><span>,</span>
+<span>)</span>
+<span>cluster</span><span>.</span><span>scale</span><span>(</span><span>jobs</span><span>=</span><span>100</span><span>)</span>
+<span>client</span> <span>=</span> <span>cluster</span><span>.</span><span>get_client</span><span>()</span>
+</pre></div>
+<p>Learn more at <a href="https://jobqueue.dask.org/"><span>Dask-Jobqueue Documentation</span></a></p>
+</div>
+<p>
+<label for="sd-tab-item-9">
+Kubernetes</label></p><div>
+<p>The <a href="https://kubernetes.dask.org/">Dask Kubernetes project</a> provides
+a Dask Kubernetes Operator for deploying Dask on Kubernetes clusters.</p>
+<div><pre><span></span><span>from</span><span> </span><span>dask_kubernetes.operator</span><span> </span><span>import</span> <span>KubeCluster</span>
+<span>cluster</span> <span>=</span> <span>KubeCluster</span><span>(</span>
+   <span>name</span><span>=</span><span>"my-dask-cluster"</span><span>,</span>
+   <span>image</span><span>=</span><span>"ghcr.io/dask/dask:latest"</span><span>,</span>
+   <span>resources</span><span>=</span><span>{</span><span>"requests"</span><span>:</span> <span>{</span><span>"memory"</span><span>:</span> <span>"2Gi"</span><span>},</span> <span>"limits"</span><span>:</span> <span>{</span><span>"memory"</span><span>:</span> <span>"64Gi"</span><span>}},</span>
+<span>)</span>
+<span>cluster</span><span>.</span><span>scale</span><span>(</span><span>10</span><span>)</span>
+<span>client</span> <span>=</span> <span>cluster</span><span>.</span><span>get_client</span><span>()</span>
+</pre></div>
+<p>Learn more at <a href="https://kubernetes.dask.org/"><span>Dask Kubernetes Documentation</span></a></p>
+</div>
+</div>
+</section>
+<section id="learn-with-examples">
+<h2>Learn with Examples<a href="#learn-with-examples" title="Link to this heading">#</a></h2>
+<p>Dask use is widespread, across all industries and scales.  Dask is used
+anywhere Python is used and people experience pain due to large scale data, or
+intense computing.</p>
+<p>You can learn more about Dask applications at the following sources:</p>
+<ul>
+<li><p><a href="https://examples.dask.org/">Dask Examples</a></p></li>
+<li><p><a href="https://youtube.com/@dask-dev">Dask YouTube Channel</a></p></li>
+</ul>
+<p>Additionally, we encourage you to look through the reference documentation on
+this website related to the API that most closely matches your application.</p>
+<p>Dask was designed to be <strong>easy to use</strong> and <strong>powerful</strong>.  We hope that it’s
+able to help you have fun with your work.</p>
+
+
+
+
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                
+              
+            </div>
+          
+        
+
+      </main>
+    </div></div>
+  </div>
+</body>
+</html>

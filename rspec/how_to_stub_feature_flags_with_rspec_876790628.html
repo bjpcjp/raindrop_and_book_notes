@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to stub Feature Flags with RSpec</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to stub Feature Flags with RSpec</h1>
+    <p><strong>URL:</strong> <a href="https://thoughtbot.com/blog/how-to-stub-feature-flags-with-rspec">https://thoughtbot.com/blog/how-to-stub-feature-flags-with-rspec</a></p>
+    <p><strong>Tags:</strong> rspec, ruby</p>
+    <p><strong>Bookmark ID:</strong> 876790628</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>If you are using feature flags with <a href="https://rubygems.org/gems/flipper">Flipper</a> or a similar gem on your Rails project,
+and storing them in Redis, you may run into the issue of leaking feature flag
+states between test cases.</p>
+
+<p>That increases the chances of making your test suite flaky,
+and an easy strategy to counter that is to stub all of the feature flags on your specs.</p>
+<h2 id="creating-feature-flag-helper-methods-with-rspec">
+  <a href="#creating-feature-flag-helper-methods-with-rspec">
+    Creating Feature Flag Helper Methods With RSpec
+  </a>
+</h2>
+
+<p>Inspired by the <a href="https://gitlab.com/gitlab-org/gitlab-foss/-/blob/master/spec/support/helpers/stub_feature_flags.rb">strategy that GitLab follows</a> to stub all feature flags by default, we adapted it to our case, which was a much simpler scenario.</p>
+
+<p>The first step is to create a helper method in your RSpec support folder:</p>
+<div><pre><code><span># spec/support/helpers/stub_feature_flags.rb</span>
+
+<span>module</span> <span>StubFeatureFlags</span>
+  <span># Enable/disable Flipper globally</span>
+  <span># Disabled by default in spec/spec_helper.rb</span>
+  <span>def</span> <span>stub_all_feature_flags</span><span>(</span><span>value</span><span>)</span>
+    <span>allow</span><span>(</span><span>Flipper</span><span>).</span><span>to</span> <span>receive</span><span>(</span><span>:enabled?</span><span>).</span><span>and_return</span><span>(</span><span>value</span><span>)</span>
+  <span>end</span>
+
+  <span># Unstub any global stubs</span>
+  <span># aka undo `stub_all_feature_flags`</span>
+  <span># More details at the end of the post</span>
+  <span>def</span> <span>unstub_all_feature_flags</span>
+    <span>RSpec</span><span>::</span><span>Mocks</span><span>.</span><span>space</span><span>.</span><span>proxy_for</span><span>(</span><span>Flipper</span><span>).</span><span>reset</span>
+  <span>end</span>
+
+  <span># Enable/disable Flipper for a specific feature for any actors</span>
+  <span># e.g.: stub_feature_flag(:allow_cat_to_have_snacks, true)</span>
+  <span>def</span> <span>stub_feature_flag</span><span>(</span><span>feature_name</span><span>,</span> <span>value</span><span>)</span>
+    <span>allow</span><span>(</span><span>Flipper</span><span>).</span><span>to</span> <span>receive</span><span>(</span><span>:enabled?</span><span>).</span><span>with</span><span>(</span><span>feature_name</span><span>,</span> <span>anything</span><span>).</span><span>and_return</span><span>(</span><span>value</span><span>)</span>
+    <span>allow</span><span>(</span><span>Flipper</span><span>).</span><span>to</span> <span>receive</span><span>(</span><span>:enabled?</span><span>).</span><span>with</span><span>(</span><span>feature_name</span><span>).</span><span>and_return</span><span>(</span><span>value</span><span>)</span>
+  <span>end</span>
+
+  <span># Enable/disable Flipper for a specific feature and actor</span>
+  <span># e.g.: stub_feature_flag_for_actor(:allow_cat_to_have_snacks, cat, true)</span>
+  <span>def</span> <span>stub_feature_flag_for_actor</span><span>(</span><span>feature_name</span><span>,</span> <span>actor</span><span>,</span> <span>value</span><span>)</span>
+    <span>allow</span><span>(</span><span>Flipper</span><span>).</span><span>to</span> <span>receive</span><span>(</span><span>:enabled?</span><span>).</span><span>with</span><span>(</span><span>feature_name</span><span>,</span> <span>actor</span><span>).</span><span>and_return</span><span>(</span><span>value</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>The next step is to make those stub methods available to the whole RSpec test suite:</p>
+<div><pre><code><span># spec/spec_helper.rb</span>
+
+<span>require</span> <span>"support/helpers/stub_feature_flags.rb"</span>
+
+<span>RSpec</span><span>.</span><span>configure</span> <span>do</span> <span>|</span><span>config</span><span>|</span>
+  <span>config</span><span>.</span><span>include</span> <span>StubFeatureFlags</span>
+  <span># ...</span>
+
+  <span># Disable all feature flags by default</span>
+  <span># Use StubFeatureFlags methods to stub feature flags</span>
+  <span>config</span><span>.</span><span>before</span><span>(</span><span>:each</span><span>)</span> <span>do</span>
+    <span>stub_all_feature_flags</span><span>(</span><span>false</span><span>)</span>
+  <span>end</span>
+  <span># ...</span>
+<span>end</span>
+</code></pre></div>
+<p>Now, to test behaviors related to feature flags, we need to stub them explicitly on our test cases. Let’s see how.</p>
+<h2 id="how-to-use-feature-flag-helper-methods-in-rspec-test-cases">
+  <a href="#how-to-use-feature-flag-helper-methods-in-rspec-test-cases">
+    How to use Feature Flag Helper Methods in RSpec test cases
+  </a>
+</h2>
+
+<p>Our <code>Cat</code> model has a feature behind a feature flag called <code>allow_cat_to_have_snacks</code>.</p>
+
+<p>In our Cat Shop, only the cats with the feature flag enabled can have snacks, so we need to test
+the business logic around their snack allowance.</p>
+
+<p>Here are some test cases to show how to use the helper methods for our cats:</p>
+<div><pre><code><span># spec/models/cat_spec.rb</span>
+
+<span>describe</span> <span>Cat</span> <span>do</span>
+  <span>describe</span> <span>"#can_have_snacks?"</span> <span>do</span>
+    <span>context</span> <span>"when feature flag allow_cat_to_have_snacks is enabled for all cats"</span> <span>do</span>
+      <span>it</span> <span>"returns true"</span> <span>do</span>
+        <span>cat</span> <span>=</span> <span>create</span><span>(</span><span>:cat</span><span>)</span>
+        <span>stub_feature_flag</span><span>(</span><span>:allow_cat_to_have_snacks</span><span>,</span> <span>true</span><span>)</span>
+
+        <span>expect</span><span>(</span><span>cat</span><span>.</span><span>can_have_snacks?</span><span>).</span><span>to</span> <span>be</span><span>(</span><span>true</span><span>)</span>
+      <span>end</span>
+    <span>end</span>
+
+    <span>context</span> <span>"when feature flag allow_cat_to_have_snacks is enabled only for specific cats"</span> <span>do</span>
+      <span>it</span> <span>"returns true only for the allowed cats"</span> <span>do</span>
+        <span>allowed_cat</span> <span>=</span> <span>create</span><span>(</span><span>:cat</span><span>)</span>
+        <span>not_allowed_cat</span> <span>=</span> <span>create</span><span>(</span><span>:cat</span><span>)</span>
+
+        <span>stub_feature_flag_for_actor</span><span>(</span><span>:allow_cat_to_have_snacks</span><span>,</span> <span>allowed_cat</span><span>,</span> <span>true</span><span>)</span>
+        <span>stub_feature_flag_for_actor</span><span>(</span><span>:allow_cat_to_have_snacks</span><span>,</span> <span>not_allowed_cat</span><span>,</span> <span>false</span><span>)</span>
+
+        <span>expect</span><span>(</span><span>allowed_cat</span><span>.</span><span>can_have_snacks?</span><span>).</span><span>to</span> <span>be</span><span>(</span><span>true</span><span>)</span>
+        <span>expect</span><span>(</span><span>not_allowed_cat</span><span>.</span><span>can_have_snacks?</span><span>).</span><span>to</span> <span>be</span><span>(</span><span>false</span><span>)</span>
+      <span>end</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div><h2 id="unstubbing-feature-flags-for-flipper-groups">
+  <a href="#unstubbing-feature-flags-for-flipper-groups">
+    Unstubbing Feature Flags For Flipper groups
+  </a>
+</h2>
+
+<p>There might be cases where resetting the default stubbing in the <code>spec/spec_helper.rb</code> is necessary.</p>
+
+<p>In our app, we had a Flipper group defined in the gem’s initializer:</p>
+<div><pre><code><span># config/initializers/flipper.rb</span>
+
+<span>Flipper</span><span>.</span><span>register</span><span>(</span><span>:cat_owners</span><span>)</span> <span>do</span> <span>|</span><span>actor</span><span>|</span>
+  <span>actor</span><span>.</span><span>respond_to?</span><span>(</span><span>:cats</span><span>)</span> <span>&amp;&amp;</span> <span>actor</span><span>.</span><span>cats</span><span>.</span><span>any?</span>
+<span>end</span>
+</code></pre></div>
+<p>A Flipper Group checks if a flag is <code>enabled?</code> for its actors behind the scenes. Because our spec helper sets Flipper’s <code>enabled?</code> to always return <code>false</code>, we needed to undo that default stub.</p>
+
+<p>Otherwise, the following test would fail because <code>enabled?</code> was always returning <code>false</code> for any actors:</p>
+<div><pre><code>
+<span># spec/models/user_spec.rb</span>
+
+<span>describe</span> <span>User</span> <span>do</span>
+  <span>describe</span> <span>"#can_pet_cat?"</span> <span>do</span>
+    <span>it</span> <span>"returns true only for cat owners"</span> <span>do</span>
+      <span>unstub_all_feature_flags</span> <span># &lt;-- resets Flipper stubs</span>
+      <span>Flipper</span><span>.</span><span>enable_group</span><span>(</span><span>:allow_pet_cat</span><span>,</span> <span>:cat_owners</span><span>)</span>
+
+      <span>user</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>)</span>
+      <span>user_cat_owner</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>,</span> <span>cat_owner: </span><span>true</span><span>)</span>
+
+      <span>expect</span><span>(</span><span>user</span><span>.</span><span>can_pet_cat?</span><span>).</span><span>to</span> <span>be</span><span>(</span><span>false</span><span>)</span>
+      <span>expect</span><span>(</span><span>user_cat_owner</span><span>.</span><span>can_pet_cat?</span><span>).</span><span>to</span> <span>be</span><span>(</span><span>true</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>Calling <code>RSpec::Mocks.space.proxy_for(Flipper).reset</code> on our <code>StubFeatureFlags</code> will remove the stubs, therefore allowing the above test to succeed. Handy for undoing any stubs on your specs.</p>
+<h2 id="bye-flaky-feature-flags-tests">
+  <a href="#bye-flaky-feature-flags-tests">
+    Bye, Flaky Feature Flags Tests!
+  </a>
+</h2>
+
+<p>And that’s it!</p>
+
+<p>Now, because we are required to explicitly stub feature flags only on test cases that need them,
+our test suite became more reliable and easier to maintain.</p>
+
+<p>This approach also made it easier to test both scenarios: when the feature flag is enabled and when it isn’t.</p>
+
+<p>All of those benefits while not having flaky tests anymore!</p>
+
+<p>Now our Cat Shop’s employees can nap peacefully knowing the cat’s snack allowance is properly tested 🐱.</p>
+
+    </div></div>
+  </div>
+</body>
+</html>

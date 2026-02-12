@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A Journey with GraphQL</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A Journey with GraphQL</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/doylecodes/a-journey-with-graphql-32gc">https://dev.to/doylecodes/a-journey-with-graphql-32gc</a></p>
+    <p><strong>Tags:</strong> graphql</p>
+    <p><strong>Bookmark ID:</strong> 876781064</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="87230" id="article-body">
+            <h2>
+  <a name="graphq-what" href="#graphq-what">
+  </a>
+  GraphQ What?
+</h2>
+
+<p>Before I started with GraphQL I heard about it on a number of posts and podcasts, all describing how great it was. I never really understood what it was all about, but I understood people were excited about it. <em>So, why should I be interested?</em></p>
+
+<p>Before we go into what GraphQL is, it's probably beneficial to look at a traditional REST API.  I once made a workout API for a little project on freecodecamp.com.  It had a simple frontend that allowed you to create a user, add an exercise, and lookup the user and exercises based on their user id.  Below is the code for the request to retrieve a user:<br>
+</p>
+
+<div>
+<pre><code>app.get('/api/exercise/log/:user', async (req, res) =&gt; {
+  const user = await User.findById(req.params.user).populate('exercises'); 
+
+  const to  = req.query.to || moment().format(); // set to current day if no entry
+  const from  = req.query.from || moment(0).format(); // set to 1970 if no from
+  const totalExercise = user.exercises.length;
+  let exercises;
+
+  if (req.query.limit) {
+    exercises = await Exercise.find({ userId: req.params.user }, '_id description duration date')
+      .where('date')
+      .gte(from)
+      .lte(to)
+      .limit(parseInt(req.query.limit))
+  } else {
+    exercises = await Exercise.find({ userId: req.params.user }, '_id description duration date')
+      .where('date')
+      .gte(from)
+      .lte(to)
+  }
+
+  const response = {
+    userId: user._id,
+    username: user.username,
+    totalExercises: totalExercise,
+    exercises: exercises
+  }
+  res.json(response)
+})
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>Looking at this gives me such pain now! When I first wrote this, I essentially needed to be able to get a user, but also be able to pass in optional query params that would allow the results to be limited in quantity or by the date. I did this by checking the request for query params and then building up a new object to return. Does it work?  Sure. The problem is this really isn't the route that would be optimal for scalability.  (I mean, I assume this isn't what's going on when I check my profile on Strava.)</p>
+
+<p><strong>The struggle with making queries is making it easy to filter and/or get custom information returned.</strong> Sure, you can just make a user and always return everything, but you don't really want that either. Optimally you only want to return what the client actually needs so their device isn't doing all the heavy lifting. This is where GraphQL makes life easy. </p>
+<h3>
+  <a name="great-so-what-is-it" href="#great-so-what-is-it">
+  </a>
+  Great, so what is it?!
+</h3>
+
+<p>GraphQL is basically a new query language.  It lets you write a query such as the one below:<br>
+</p>
+<div>
+<pre><code>{
+  query GET_USERS {
+    users(name: "Ryan") { 
+      id
+      runs
+      hikes
+      totalExercises
+    }
+  }
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>The query above, called "GET_USERS," is running a method/resolver (I'll get to that later) called "users()" that is accepting a name. If I pass in the name "Ryan" I will get back ALL of the users named Ryan, along with their user id, their runs, hikes, and a totalExercises.  What if I wanted to know about all the runs for people named Jane? I could do:<br>
+</p>
+<div>
+<pre><code>{
+  query JANE_RUNS {
+    users(name: "Jane") { 
+      id
+      runs
+    }
+  }
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+<p>This would give me the users named Jane along with their id and all of their runs.  It seems pretty great!  GraphQL also has <em>mutations</em> you can use that work similarly taht allow you to write and edit changes to your database. So, how do those work?  <a href="https://dev.to/ryanmdoyle/graphql-basics-part-1---prisma-the-why-45h0">You can find out by reading my next post on Prisma!</a> <del>(Which...you'll have to come back for because it doesn't exist yet.)</del></p>
+<h2>
+  <a name="the-goal" href="#the-goal">
+  </a>
+  The Goal
+</h2>
+
+<p>My goal is to create a short series of posts sharing what I have learned about GraphQL, Prisma, and Apollo. Partially to share what I have learned, but also because as a teacher I have learned that one of the best ways to truly learn something is to attempt to teach it to someone else. It exposes the things you really don't understand as you go along. If you happen across this post or the future posts and see something horribly wrong, feel free to chime in so we can all understand more together! If you are interested in how I started learning, I learned much of this though taking the Advanced React course offered by <a href="https://wesbos.com/courses/">Wes Bos</a>. I also dove in to the documentation a ton, but credit where credit is due.  He has a lot of great content.</p>
+
+
+<div>
+    <p>
+      <h2>Article No Longer Available</h2>
+    </p>
+  </div>
+
+
+
+
+          </div></div>
+  </div>
+</body>
+</html>

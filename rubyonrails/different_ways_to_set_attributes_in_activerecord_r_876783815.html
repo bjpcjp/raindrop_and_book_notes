@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Different Ways to Set Attributes in ActiveRecord (Rails 7)</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Different Ways to Set Attributes in ActiveRecord (Rails 7)</h1>
+    <p><strong>URL:</strong> <a href="https://scottbartell.com/2022/04/12/set-attributes-in-active-record-rails-7">https://scottbartell.com/2022/04/12/set-attributes-in-active-record-rails-7</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876783815</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div aria-label="Content">
+<article itemscope="" itemtype="http://schema.org/BlogPosting">
+
+<div itemprop="articleBody">
+<p>Rails 7 has a rich API that allows you to update your <code>ActiveRecord</code> objects in several ways.
+Some methods have slightly different behavior which can sometimes result in unexpected consequences, so
+it’s important to understand their differences.</p>
+<p><strong>Note:</strong> This cheat sheet is for Rails 7. See cheat sheets for other versions here:</p>
+<ul>
+<li><a href="https://davidverhasselt.com/5-ways-to-set-attributes-in-activerecord-in-rails-3/">Rails 3</a> (external link)</li>
+<li><a href="https://davidverhasselt.com/set-attributes-in-activerecord/">Rails 4</a> (external link)</li>
+<li><a href="https://scottbartell.com/2019/07/15/set-attributes-in-active-record-rails-5/">Rails 5</a></li>
+<li><a href="https://scottbartell.com/2020/01/30/set-attributes-in-active-record-rails-6/">Rails 6</a></li>
+</ul>
+<p>Here’s a cheat sheet highlighting the differences between all the methods available for setting attributes in Rails 7:</p>
+<h2 id="cheat-sheet">Cheat Sheet</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Uses Default Accessor</th>
+<th>Saves to Database</th>
+<th>Runs Validations</th>
+<th>Runs Callbacks</th>
+<th>Updates <a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Timestamp.html"><code>updated_at/on</code></a></th>
+<th>Respects <a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/ReadonlyAttributes/ClassMethods.html#method-i-attr_readonly">Readonly</a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://apidock.com/rails/ActiveRecord/AttributeMethods/Write/attribute="><code>attribute=</code></a></td>
+<td>Yes</td>
+<td>No</td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveModel/AttributeAssignment.html#method-i-attributes-3D"><code>attributes=</code></a></td>
+<td>Yes</td>
+<td>No</td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveModel/AttributeAssignment.html#method-i-assign_attributes"><code>assign_attributes</code></a></td>
+<td>Yes</td>
+<td>No</td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/AttributeMethods/Write.html#method-i-write_attribute"><code>write_attribute</code></a></td>
+<td>No</td>
+<td>No</td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/AttributeMethods.html#method-i-5B-5D-3D"><code>[]=</code></a></td>
+<td>No</td>
+<td>No</td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Persistence.html#method-i-update"><code>update</code></a></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Persistence.html#method-i-update_attribute"><code>update_attribute</code></a></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Persistence.html#method-i-update_column"><code>update_column</code></a></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Persistence.html#method-i-update_columns"><code>update_columns</code></a></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Persistence/ClassMethods.html#method-i-update"><code>User.update</code></a></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Relation.html#method-i-update_all"><code>User.update_all</code></a></td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Persistence/ClassMethods.html#method-i-upsert"><code>User.upsert</code></a></td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Persistence/ClassMethods.html#method-i-upsert_all"><code>User.upsert_all</code></a></td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>Yes/No<sup id="fnref:insert_upsert_all_timestamps" role="doc-noteref"><a href="#fn:insert_upsert_all_timestamps" rel="footnote">1</a></sup></td>
+<td>No</td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Persistence/ClassMethods.html#method-i-insert"><code>User.insert</code></a></td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td><a href="https://api.rubyonrails.org/v7.0/classes/ActiveRecord/Persistence/ClassMethods.html#method-i-insert_all"><code>User.insert_all</code></a></td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>Yes/No<sup id="fnref:insert_upsert_all_timestamps:1" role="doc-noteref"><a href="#fn:insert_upsert_all_timestamps" rel="footnote">1</a></sup></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<div role="doc-endnotes">
+<ol>
+<li id="fn:insert_upsert_all_timestamps" role="doc-endnote">
+<p>Timestamps will be updated depending on the model’s <code>record_timestamps</code> config or the value of the <code>record_timestamps</code> argument passed into these methods.&nbsp;<a href="#fnref:insert_upsert_all_timestamps" role="doc-backlink">↩</a>&nbsp;<a href="#fnref:insert_upsert_all_timestamps:1" role="doc-backlink">↩<sup>2</sup></a></p>
+</li>
+</ol>
+</div>
+</div>
+
+</article>
+</div></div>
+  </div>
+</body>
+</html>

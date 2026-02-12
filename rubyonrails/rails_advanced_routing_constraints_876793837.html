@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Rails advanced routing constraints</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Rails advanced routing constraints</h1>
+    <p><strong>URL:</strong> <a href="https://thoughtbot.com/blog/rails-advanced-routing-constraints">https://thoughtbot.com/blog/rails-advanced-routing-constraints</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876793837</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>I’m on a client project that’s using <a href="https://github.com/heartcombo/devise">Devise</a>. In an effort to prevent
+anonymous users from accessing admin routes, we wrap those routes with an
+<a href="https://rubydoc.info/gems/devise/ActionDispatch/Routing/Mapper#authenticated-instance_method">authenticated</a> constraint. This constraint also ensures only authenticated
+users who are admins are allowed access.</p>
+<div><pre><code><span># config/routes.rb</span>
+
+<span>authenticated</span> <span>:user</span><span>,</span> <span>-&gt;</span> <span>{</span> <span>_1</span><span>.</span><span>admin?</span> <span>}</span> <span>do</span>
+  <span>namespace</span> <span>:admin</span> <span>do</span>
+    <span>resources</span> <span>:users</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>We recently needed to restrict access to the admin routes based on IP address.
+Our first approach was to place this logic at the controller layer and use a
+<a href="https://api.rubyonrails.org/classes/AbstractController/Callbacks/ClassMethods.html#method-i-before_action">before_action</a> <a href="https://guides.rubyonrails.org/action_controller_overview.html#filters">filter</a>.</p>
+<div><pre><code><span># app/controllers/admin/users_controller.rb</span>
+
+<span>class</span> <span>Admin::UsersController</span> <span>&lt;</span> <span>ApplicationController</span>
+  <span>before_action</span> <span>:authorize_ip</span>
+
+  <span>private</span>
+
+  <span>def</span> <span>authorize_ip</span>
+    <span>allow_list</span> <span>=</span> <span>Rails</span><span>.</span><span>application</span><span>.</span><span>config</span><span>.</span><span>x</span><span>.</span><span>ips</span><span>.</span><span>allow_list</span>
+
+    <span>raise</span> <span>ActionController</span><span>::</span><span>RoutingError</span><span>.</span><span>new</span><span>(</span><span>"Not Found"</span><span>)</span> <span>unless</span> <span>requests</span><span>.</span><span>ip</span><span>.</span><span>in?</span> <span>allow_list</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>However, we realized there was an opportunity to push this logic to the routing
+layer, since we already have access to the <a href="https://api.rubyonrails.org/classes/ActionDispatch/Request.html">request</a> object. This saves us from
+having to process the request in a controller altogether, which is a small
+performance gain.</p>
+<h2 id="create-a-custom-constraint">
+  <a href="#create-a-custom-constraint">
+    Create a custom constraint
+  </a>
+</h2>
+
+<p>Although Rails provides the ability to <a href="https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-constraints-label-Restricting+based+on+IP">restrict routes based on IP range</a>,
+we needed to create a <a href="https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-constraints-label-Dynamic+request+matching">custom constraint</a> in order to see if the IP was in our
+allow list, which is not possible otherwise.</p>
+
+<p>The custom constraint needs to respond to <code>matches?</code> when passed a <a href="https://api.rubyonrails.org/classes/ActionDispatch/Request.html">request</a>,
+and must return a boolean.</p>
+
+<p>To see if a request is from an IP address in our allow list, we can do something
+like this:</p>
+<div><pre><code><span># app/constraints/ip_constraint.rb</span>
+
+<span>class</span> <span>IpConstraint</span>
+  <span>def</span> <span>self</span><span>.</span><span>matches?</span><span>(</span><span>request</span><span>)</span>
+    <span>allow_list</span> <span>=</span> <span>Rails</span><span>.</span><span>application</span><span>.</span><span>config</span><span>.</span><span>x</span><span>.</span><span>ips</span><span>.</span><span>allow_list</span>
+
+    <span>request</span><span>.</span><span>ip</span><span>.</span><span>in?</span> <span>allow_list</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>Then we can wrap our admin routes in this constraint like so.</p>
+<div><pre><code><span># config/routes.rb</span>
+
+<span>authenticated</span> <span>:user</span><span>,</span> <span>-&gt;</span> <span>{</span> <span>_1</span><span>.</span><span>admin?</span> <span>}</span> <span>do</span>
+  <span>constraints</span><span>(</span><span>IpConstraint</span><span>)</span> <span>do</span>
+    <span>namespace</span> <span>:admin</span> <span>do</span>
+      <span>resources</span> <span>:users</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div><h2 id="consolidating-constraints">
+  <a href="#consolidating-constraints">
+    Consolidating constraints
+  </a>
+</h2>
+
+<p>Although the previous implementation is perfectly acceptable, there’s an
+opportunity to consolidate the <a href="https://rubydoc.info/gems/devise/ActionDispatch/Routing/Mapper#authenticated-instance_method">authenticated</a> constraint with our
+<code>IpConstraint</code>.</p>
+
+<p>Since we need access to the <code>user</code>, we can leverage <a href="https://github.com/wardencommunity/warden/wiki/Overview#the-how">warden</a> (which is a
+dependency of Devise) to return the user object from the <a href="https://api.rubyonrails.org/classes/ActionDispatch/Request.html">request</a>.</p>
+<div><pre><code><span>requst</span><span>.</span><span>env</span><span>[</span><span>"warden"</span><span>].</span><span>user</span>
+
+<span># =&gt; #&lt;User&gt;</span>
+</code></pre></div>
+<p>We can then combine this with the logic used to check the IP address like so:</p>
+<div><pre><code><span># app/constraints/admin_constraint.rb</span>
+
+<span>class</span> <span>AdminConstraint</span>
+  <span>attr_reader</span> <span>:user</span><span>,</span> <span>:ip</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>request</span><span>)</span>
+    <span>@user</span> <span>=</span> <span>request</span><span>.</span><span>env</span><span>[</span><span>"warden"</span><span>].</span><span>user</span>
+    <span>@ip</span> <span>=</span> <span>request</span><span>.</span><span>ip</span>
+  <span>end</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>matches?</span><span>(</span><span>request</span><span>)</span>
+    <span>new</span><span>(</span><span>request</span><span>).</span><span>authorized?</span>
+  <span>end</span>
+
+  <span>def</span> <span>authorized?</span>
+    <span>allow_list</span> <span>=</span> <span>Rails</span><span>.</span><span>application</span><span>.</span><span>config</span><span>.</span><span>x</span><span>.</span><span>ips</span><span>.</span><span>allow_list</span>
+
+    <span>ip</span><span>.</span><span>in?</span><span>(</span><span>allow_list</span><span>)</span> <span>&amp;&amp;</span> <span>user</span><span>.</span><span>present?</span> <span>&amp;&amp;</span> <span>user</span><span>.</span><span>admin?</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>A constraint needs to respond to <code>matches?</code>, so we are free to put whatever
+logic we want in that method so long as it returns boolean. In this
+case, our <code>matches?</code> method initializes a new instance of our constraint and
+calls <code>authorized?</code>. The <code>authorized?</code> method is responsible for determining if
+the request came from a supported IP address, and that the requested came from
+an authenticated admin.</p>
+
+<p>Now we can update our routes like so:</p>
+<div><pre><code><span># config/routes.rb</span>
+
+<span>constraints</span><span>(</span><span>AdminConstraint</span><span>)</span> <span>do</span>
+  <span>namespace</span> <span>:admin</span> <span>do</span>
+    <span>resources</span> <span>:users</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div><h2 id="wrapping-up">
+  <a href="#wrapping-up">
+    Wrapping up
+  </a>
+</h2>
+
+<p>I think this is an appropriate strategy for authorizing requests at the routing
+layer (instead of the controller layer) because it is only concerned with data
+in the <a href="https://api.rubyonrails.org/classes/ActionDispatch/Request.html">request</a>.</p>
+
+<p>If you need data beyond the raw request, then you should leverage authorization
+libraries such as <a href="https://github.com/varvet/pundit">Pundit</a>.</p>
+<h2 id="want-to-learn-more">
+  <a href="#want-to-learn-more">
+    Want to learn more?
+  </a>
+</h2>
+
+<p>Learn about the Ruby on Rails services thoughtbot offers and <a href="https://thoughtbot.com/services/ruby-on-rails-development">how we can work together</a> to streamline your project.</p>
+
+    </div></div>
+  </div>
+</body>
+</html>

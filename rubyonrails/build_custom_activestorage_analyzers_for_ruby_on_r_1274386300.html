@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Build Custom ActiveStorage Analyzers for Ruby on Rails</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Build Custom ActiveStorage Analyzers for Ruby on Rails</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2025/07/30/build-custom-activestorage-analyzers-for-ruby-on-rails.html">https://blog.appsignal.com/2025/07/30/build-custom-activestorage-analyzers-for-ruby-on-rails.html</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 1274386300</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>In this series, we will take a close look at the architecture of ActiveStorage for Rails.</p>
+<p>In this first part, we will examine how ActiveStorage treats uploaded data and how to extend this process. The second part will explore how to augment the presentation of uploaded assets.</p>
+<p>But first, let's quickly define what ActiveStorage does.</p>
+<h2 id="what-is-activestorage-for-ruby-on-rails">What Is ActiveStorage for Ruby on Rails?</h2>
+<p>Without recounting the entire <a href="https://guides.rubyonrails.org/active_storage_overview.html">ActiveStorage documentation</a>, in a nutshell, ActiveStorage is an adapter to various forms of storing (mostly) user-generated files in your Ruby on Rails application in a straightforward way. The available storage backends can be divided into:</p>
+<ul>
+<li>Local disk storage</li>
+<li>Diverse flavors of cloud storage (most prominently Amazon S3 and compatible object storage providers)</li>
+</ul>
+<p><strong>Note:</strong> For the sake of completeness, there are also adapters to directly store binary data in your database, like <a href="https://github.com/lsylvester/active_storage-postgresql">active_storage-postgresql</a>.</p>
+<p>ActiveStorage allows you to transparently attach files to database records for easy access. You have probably already come across this API:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Here, the class methods <code>has_one_attached</code> and <code>has_many_attached</code> are responsible for wiring up your <code>User</code> or <code>Post</code> records with the respective attachments. But how does this magic work?</p>
+<p>Under the hood, ActiveStorage uses two database tables generated when you install it. Here are their entries from the database schema definition:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>The first table belongs to the join model <code>ActiveStorage::Attachment</code>. It references a polymorphic <code>record</code> (that's why the methods <code>has_(one|many)_attached</code> can be called from <em>any</em> ActiveRecord model) as well as a <code>Blob</code>. As you might correctly assume, this refers to the second table, which is mapped by the <code>ActiveStorage::Blob</code> model. This acts as a data container for all that is needed to upload or download a file to one of the configured services. Let's take it apart a bit:</p>
+<ul>
+<li>The <code>key</code> attribute refers to how the blob is called at its actual storage location (in most cases, an S3 bucket).</li>
+<li><code>filename</code> is the original name of the file under which it was uploaded.</li>
+<li><code>content_type</code> is its analyzed MIME type.</li>
+<li><code>metadata</code> is a generic text column that can hold any metadata of the file, in <a href="https://github.com/rails/rails/blob/0f591639b864de6bf3fd760a6921f5eda17b2905/activestorage/app/models/active_storage/blob.rb#L23-L24">JSON format</a>. <em>It's this column that our custom analyzers will make use of.</em></li>
+<li><code>service_name</code> is used to identify the service in <code>config/storage.yml</code> to which this file was uploaded.</li>
+<li><code>byte_size</code> and <code>checksum</code> are exactly what you'd expect these attributes to store.</li>
+</ul>
+<h2 id="how-does-activestorage-treat-uploaded-data">How Does ActiveStorage Treat Uploaded Data?</h2>
+<p>With these general concepts out of the way, let's examine the ingest process used by ActiveStorage. In other words, once a file is uploaded, what happens next?</p>
+<p>The answer lies in the <code>Attachment</code> model's code. In an <code>after_create_commit</code> callback, it enqueues a job to <a href="https://github.com/rails/rails/blob/0f591639b864de6bf3fd760a6921f5eda17b2905/activestorage/app/models/active_storage/attachment.rb#L126-L127">analyze the blob it pertains to later</a>.</p>
+<p>The code that's used to perform the analysis <a href="https://github.com/rails/rails/blob/0f591639b864de6bf3fd760a6921f5eda17b2905/activestorage/app/models/active_storage/blob/analyzable.rb#L29-L31">reads simple enough</a>:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>We observe that, as indicated before, the <code>analyze</code> method updates the <code>metadata</code> column of the blob. This metadata is extracted by an analyzer, but there's an important detail hidden in how exactly this analyzer is provided. The <code>analyzer_class</code> is retrieved from a list of analyzers that the <code>ActiveStorage</code> module itself keeps. Let's take a brief look at it in the Rails console:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Listed here are all the standard analyzers that ship with ActiveStorage: two for images (because of the two processing backends, Vips and ImageMagick), one for video, and one for audio data. From this list, the <strong>first</strong> analyzer that responds to <code>accept?(self)</code> with <code>true</code> is selected. So, for example, <code>ImageAnalyzer</code> checks <a href="https://github.com/rails/rails/blob/0f591639b864de6bf3fd760a6921f5eda17b2905/activestorage/lib/active_storage/analyzer/image_analyzer.rb#L20-L21">whether a blob holds an image</a>, and so on. Creating new analyzers, then, only needs a class that extends <a href="https://github.com/rails/rails/blob/0f591639b864de6bf3fd760a6921f5eda17b2905/activestorage/lib/active_storage/analyzer.rb">Analyzer</a> and is <strong>prepended</strong> to this list. We'll explore how to do this in the remainder of this article.</p>
+<h2 id="two-use-cases-for-custom-analyzers">Two Use Cases for Custom Analyzers</h2>
+<p>When would you reach for a custom analyzer? I contend that most use cases revolve around needs for enhanced <em>presentation</em> of assets. To back up that claim, I have prepared two prototypical examples:</p>
+<ul>
+<li>precomputing audio waveform data</li>
+<li>calculating image <a href="https://blurha.sh/">blurhashes</a></li>
+</ul>
+
+<h3 id="extracting-and-storing-audio-sample-data">Extracting and Storing Audio Sample Data</h3>
+<p>Let's assume that we are building a directory of songs. We might use a <code>Song</code> model, which has an attached <code>recording</code> for this:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>If we create a new record of this model and attach an audio file, what happens? In a full-stack scenario, we would use an upload form, but for the sake of investigating the analysis process, let's just create one from the Rails console:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Apart from the usual SQL log, Rails also informs us that it has enqueued a job to process the data:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Let's now inspect the respective <code>Attachment</code> and <code>Blob</code> records:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Aha! The file has been correctly identified as being of type <code>audio/x-wav</code>, but apart from that, there's no other metadata being persisted. We're here to change that.</p>
+<p>First, let's write our custom analyzer. We'll put it in the <code>lib/active_storage</code> directory, and call it <code>ActiveStorage::WaveformAnalyzer</code>. To draw upon the existing implementation, we'll inherit from <code>ActiveStorage::Analyzer::AudioAnalyzer</code>.</p>
+<p>We saw above that the <code>metadata</code> method is responsible for returning the appropriate data, so we'll override it. We have to be careful to call <code>super</code> and merge any new data into what the parent class already provides.</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>The real meat, though, is of course the computation of waveform datapoints. Because ActiveStorage depends on it, we can utilize <code>ffmpeg</code> for our purposes. The full call we pass to <code>IO.popen</code> here reads like this:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Here, <code>-ac 1</code> tells ffmpeg to mix the audio down to one channel, while <code>-f f32le</code> specifies "float 32-bit little endian" as the output format. The final dash <code>-</code> instructs ffmpeg to output this to STDOUT, so we can actually pick it up in the block passed to <code>IO.popen</code>.</p>
+<p>There's one important signal processing detail to mention: storing each and every sample as metadata wouldn't be very efficient — in fact, it would result in storing the entire audio file as a JSON array. Instead, we perform some data compression here by calculating the <a href="https://en.wikipedia.org/wiki/Root_mean_square">root mean square</a> over a frame. That's only a fancy way of saying we're calculating the average of 512 (an arbitrary number, but mostly a power of 2) samples, but we square it and subsequently take the square root, because audio sample data can be both positive and negative.</p>
+<p>Our new analyzer isn't yet wired up to be used by the Rails application, so we do that in an initializer:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>It's important to <code>prepend</code> it to the list here, because, as we've observed above, the <strong>first</strong> analyzer in the list that accepts audio files will be used.</p>
+<p>Let's put it to use in the Rails console again:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Now that we have a compressed representation of the audio in our metadata, how can we make use of it? We'll take a look at an idiomatic ActiveStorage method in the second part of this series, but for starters, many JavaScript audio widgets allow you to specify precomputed waveform data, <a href="https://wavesurfer.xyz/examples/?predecoded.js">like WaveSurfer does in this example</a>.</p>
+<h3 id="calculating-image-blurhashes-in-ruby">Calculating Image Blurhashes in Ruby</h3>
+<p><a href="https://blurha.sh/">Blurhashes</a> are compressed representations of images you can use instead of generic placeholders for an enhanced lazy loading experience. The <a href="https://github.com/Gargron/blurhash">blurhash</a> Ruby gem provides a straightforward way to encode such strings from images. We add it to our application's dependencies like so:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Before we begin writing our custom analyzer, it's important to note that the image processing backend comes in two flavors: Vips or ImageMagick. Since its API is a bit simpler, we'll concentrate on the latter and configure it in <code>config/application.rb</code>:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>We can now begin our implementation by subclassing the <code>ActiveStorage::Analyzer::ImageAnalyzer::ImageMagick</code> base analyzer:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>What's going on here? We encounter an already familiar pattern: we populate the database column of the same name with more data using the <code>metadata</code> method. <code>read_image</code> is just a helper method provided by Rails that opens the image as a file, ready for us to use. The <code>build_thumbnail</code> method is actually optional, but very helpful for speeding up the blurhash calculation. We simply use <code>MiniMagick</code> to scale down the image to fit within the bounds of 200x200 pixels. The <code>blurhash</code> method then employs this method to build the compressed string representation from the downscaled image.</p>
+<p>Like above, we prepend it to the list of analyzers in our initializer:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>Now it's time to test it out. For this, we'll use a <a href="https://picsum.photos/id/128/600/400">test image from picsum.photos</a>:</p>
+<figure><p><img alt="Test image from picsum" loading="lazy" width="600" height="400" decoding="async" data-nimg="1" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fblog%2F2025-07%2Fpicsum-photo.jpg&amp;w=3840&amp;q=90"></p></figure>
+<p>Let's open a Rails console and attach this image to a post:</p>
+<figure data-rehype-pretty-code-figure=""></figure>
+<p>For reference, converted to an actual preview image, it looks like this:</p>
+<figure><p><img alt="Blurhash preview image" loading="lazy" width="600" height="400" decoding="async" data-nimg="1" src="https://blog.appsignal.com/_next/image?url=%2Fimages%2Fblog%2F2025-07%2Fblurhash.png&amp;w=3840&amp;q=90"></p></figure>
+<p>To make use of this in our application frontend, the blurhash needs to be decoded and presented. Typically, this involves using the official <a href="https://github.com/woltapp/blurhash/tree/master/TypeScript">TypeScript library</a> and a bespoke Stimulus controller. In the second part of this series, we'll take a look at implementing a pure ActiveStorage-generated preview.</p>
+<p>That's it for this first part!</p>
+<h2 id="wrap-up">Wrap Up</h2>
+<p>In this article, we've taken a few first steps to customize how ActiveStorage handles and processes media data. We've learned that the <code>ActiveStorage::Blob</code> model is where the data describing an attachment is stored. When writing bespoke analyzers, it's necessary to put any results in its <code>metadata</code> column.</p>
+<p>We then looked at two examples explaining when and how to write your own custom ActiveStorage analyzers: extracting interleaved waveform data from audio files and calculating image blurhashes. Both implementations demonstrate the diligence that has been put into ActiveStorage's background media processing API: the glue code that is necessary to plug binaries like ffmpeg or ImageMagick into the analysis pipeline is minimal.</p>
+<p>In the second and final part of this series, we will reverse this process and examine ways to implement custom ActiveStorage previewers, providing compact graphic representations of the calculated metadata.</p>
+<p>Happy coding!</p></div></div>
+  </div>
+</body>
+</html>

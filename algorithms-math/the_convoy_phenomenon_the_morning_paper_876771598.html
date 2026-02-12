@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The convoy phenomenon | the morning paper</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The convoy phenomenon | the morning paper</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2019/07/01/the-convoy-phenomenon">https://blog.acolyer.org/2019/07/01/the-convoy-phenomenon</a></p>
+    <p><strong>Tags:</strong> algorithms-math</p>
+    <p><strong>Bookmark ID:</strong> 876771598</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-8873">
+	<!-- .entry-header -->
+
+	<div>
+		<p><a href="https://jimgray.azurewebsites.net/papers/Convoy%20Phenomenon%20RJ%202516.pdf">The convoy phenomenon</a> Blasgen et al., <em>IBM Research Report 1977 (revised 1979)</em></p>
+<p>Today we’re jumping from HotOS topics of 2019, to hot topics of 1977! With thanks to Pat Helland for the recommendation, and with Jim Gray as one of the authors, we have a combination that’s very hard to ignore :).</p>
+<p>Here’s the set-up as relayed to me by Pat (with permission):</p>
+<blockquote><p>At work, I am part of a good sized team working on a large system implementation. One of the very senior engineers with 25+ years experience mentioned a problem with the system. It seems that under test load, it would behave beautifully until the performance just fell to the floor. The system just crawled forever and never seemed to get out of this state. Work was getting done but at a pathetic rate. I said: “You have a convoy.” His response was; “Huh?”. I forwarded him the paper on “The Convoy Phenomenon”…</p></blockquote>
+<p>I have to confess I hadn’t heard of the convoy phenomenon either! Before we go on, take a moment to think of possible causes for the system behaviour described above. Lots of things can cause a performance cliff, but the interesting thing here is that the system never recovers. That’s suggestive to me of a queue where queue depth has increased and service and arrival times are finely balanced, so we’re always seeing long wait times. (In such a situation I’d expect to see unusually high latencies, but normal throughput). I was only partially right (there is a steady-state queue involved)… Plus, although it’s not described, the performance degradation observed in this case would almost certainly be poor latency <em>and</em> poor throughput.</p>
+<h3>What is a convoy and why do they form?</h3>
+<blockquote><p>When driving on a two-lane road with no passing one often encounters clusters of cars. This is because a fast-moving car will soon bump into a slow one. The equilibrium state of such a system is for everyone to be in a convoy behind the slowest car.</p></blockquote>
+<p>On English B-roads one of the most common causes for this is a tractor moving between fields on the public highway. And Dorset (maybe other English counties too, but definitely Dorset) seems to have a penchant for Steam Engine rallies in the summer (e.g. ‘<a href="https://www.gdsf.co.uk/">The Great Dorset Steam Fair</a>’), which are a bit like a distributed denial of service attack on the road network as lots of very slow steam engines all converge on a given point.</p>
+<p>But enough about tractors and steam engines! Processes (or in the case of System R, transactions) can also bump into each other when contending for shared resources. “<em>This contention appears as conflicting requests for locks</em>.”</p>
+<p>We know that both <a href="https://blog.acolyer.org/2015/04/29/applying-the-universal-scalability-law-to-organisations/">contention and coherence are scalability killers</a>, but we still have to explain why the performance never recovers.</p>
+<p>The <em>duration</em> of a lock is the average number of instructions executed while the lock is held. The <em>execution interval</em> of a lock is the average number of instructions executed between successive requests for that lock by a process. The <em>collision cross section</em> of the lock is the fraction of time it is granted, i.e., the <em>lock grant probability</em>. With a single processor this is just <em>duration</em> / (<em>duration + execution interval</em>) to a first approximation (ignoring wait times and switching times).</p>
+<p>The high-traffic, lock-protected resources in System R are the buffer pool, recovery log, and system entry/exit. Here are their respective stats:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/06/convoy-fig-1.jpeg?w=520" alt=""></p>
+<p>If a process P1 goes into a wait state while it holds a high traffic lock L (e.g. for a buffer pool) then all other processes will be scheduled and will more or less immediately request L (it’s a high traffic lock remember). Each transaction finds the lock L busy, and so it waits for it. Now P1 which holds the lock is sleeping, and all the other processes are waiting for the lock that P1 holds:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/06/convoy-waiters.jpeg?w=480" alt=""></p>
+<p>That already looks bad, but it turns out to be a trap from which the system finds it very hard to escape:</p>
+<ul>
+<li>The system sleeps until P1 wakes up</li>
+<li>P1 runs and releases L (after say 100 instructions)</li>
+<li>P2 is granted L by P1</li>
+<li>P1 executes 1000 instructions (the buffer pool execution interval) more and then</li>
+<li>P1 requests L (again) but L is busy (because there are many processes ahead of P1 in the queue and not all of these processes will be dispatched before P1 re-requests L)</li>
+<li>P1 enqueues on the lock and goes to sleep</li>
+</ul>
+<p>With N processes and M processors, where N is much bigger than M, the lock queue will contain N-M processes and each process will have a execution interval of 1000 instructions.</p>
+<blockquote><p>The system is in a situation of lock thrashing. Most of the CPU is dedicated to task switching. This is a stable phenomenon: new processes are sucked into the convoy and if a process leaves the convoy (for I/O wait or lock wait), when it returns the convoy will probably still exist.</p></blockquote>
+<h3>Don’t sleep while holding a lock!</h3>
+<p>As of 1977, convoys had been observed in System R, MVS, and IMS. System R code followed the following rules:</p>
+<ul>
+<li>Never lock wait while a high traffic lock is held</li>
+<li>Never do I/O while a high traffic lock is held (the log lock was an occasional exception)</li>
+<li>Never page fault while a high traffic lock is held</li>
+</ul>
+<p>If you’re in control of process scheduling then you can greatly reduce the probability of being caught out holding a high traffic lock. But you still won’t reduce that probability to zero, and given the high consequences when it does occur that’s still a problem. But moreover…</p>
+<blockquote><p>Most of us are stuck with a pre-emptive scheduler (i.e., general purpose operating system with virtual memory). Hence convoys will occur. The problem is to make them evaporate quickly when they do occur rather than have them persist forever.</p></blockquote>
+<h3>Breaking up the convoy</h3>
+<p>A trivial solution would be to only run one process at a time, that way there can’t be any lock contention. However, there’s an obvious scalability issue with that!</p>
+<blockquote><p>The next simplest solution is to avoid locks. One can go a very long way with shrewd use of atomic machine instructions (compare and swap) and other programming tasks…. we have done a lot of this, but we were unable to <em>completely</em> eliminate high traffic locks from our programs.</p></blockquote>
+<p>If we have to have locks, we can try to minimise contention by <del>reducing </del>increasing&nbsp;lock granularity (e.g. row locks not table locks), and the lock mode (e.g. non-exclusive locks). This will help to make convoys less likely and less stable, but it probably won’t eliminate them.</p>
+<p>The System R team also experimented with spin locks, but the CPU wastage turned out to be worse than than caused by the convoys.</p>
+<p>Using these techniques System R reduced lock waits on high traffic locks by a factor of ten, and only 40% of lock waits (down from 92%) were for high traffic locks.</p>
+<p>So how did System R solve it in the end?</p>
+<blockquote><p>The key issue of convoys is associated with the granting of locks in first-come first-served order. So we elect to grant all lock requests in random order in the hope that eventually everyone will get service. In theory, some process might ‘starve’ (never be granted its request) but in fact the underlying scheduler and the stochastic nature of real systems cause each process to eventually get service.</p></blockquote>
+<p>Note that we’re talking about adding some randomness to which waiter on a given lock gets access next, <em>not</em> changing the order in which a given process acquires its locks – that way leads to deadlocks!</p>
+<p>Given a single processor, if a convoy exists when a high contention lock is released then the releasor dequeues all members of the convoy from the lock, marks the lock as free, and then signals all members of the convoy. The releaser then continues to run, and with high probability (lets call that <em>P</em>) will terminate with the lock free. Whichever of the signalled processes runs next will be able to acquire the lock (there is no queue on it). With N processes in the convoy, it will disappear with probability <em>P^N</em>.</p>
+<p>In the multi-processor case another processor may look to acquire the lock during a critical section. Here the solution is for the lock requestor to spin for a few instructions in the hope that the lock becomes free, and then enqueue and sleep if it does not.</p>
+<h3>About that slow system…</h3>
+<p>So let’s go back to our opening story and see how it turned out…</p>
+<blockquote><p>The next day I was told that our system did, indeed, have a convoy and the solution was simple.</p></blockquote>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+
+	</article></div>
+  </div>
+</body>
+</html>

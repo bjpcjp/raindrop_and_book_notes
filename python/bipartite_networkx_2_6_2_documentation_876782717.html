@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bipartite — NetworkX 2.6.2 documentation</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Bipartite — NetworkX 2.6.2 documentation</h1>
+    <p><strong>URL:</strong> <a href="https://networkx.org/documentation/stable/reference/algorithms/bipartite.html">https://networkx.org/documentation/stable/reference/algorithms/bipartite.html</a></p>
+    <p><strong>Tags:</strong> algorithms-math, graphs, python</p>
+    <p><strong>Bookmark ID:</strong> 876782717</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+                  
+  <section id="module-networkx.algorithms.bipartite">
+<span id="bipartite"></span>
+<p>This module provides functions and operations for bipartite
+graphs.  Bipartite graphs <code><span>B</span> <span>=</span> <span>(U,</span> <span>V,</span> <span>E)</span></code> have two node sets <code><span>U,V</span></code> and edges in
+<code><span>E</span></code> that only connect nodes from opposite sets. It is common in the literature
+to use an spatial analogy referring to the two node sets as top and bottom nodes.</p>
+<p>The bipartite algorithms are not imported into the networkx namespace
+at the top level so the easiest way to use them is with:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>from</span> <span>networkx.algorithms</span> <span>import</span> <span>bipartite</span>
+</pre></div>
+<p>NetworkX does not have a custom bipartite graph class but the Graph()
+or DiGraph() classes can be used to represent bipartite graphs. However,
+you have to keep track of which set each node belongs to, and make
+sure that there is no edge between nodes of the same set. The convention used
+in NetworkX is to use a node attribute named <code><span>bipartite</span></code> with values 0 or 1 to
+identify the sets each node belongs to. This convention is not enforced in
+the source code of bipartite functions, it’s only a recommendation.</p>
+<p>For example:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>B</span> <span>=</span> <span>nx</span><span>.</span><span>Graph</span><span>()</span>
+<span>&gt;&gt;&gt; </span><span># Add nodes with the node attribute "bipartite"</span>
+<span>&gt;&gt;&gt; </span><span>B</span><span>.</span><span>add_nodes_from</span><span>([</span><span>1</span><span>,</span> <span>2</span><span>,</span> <span>3</span><span>,</span> <span>4</span><span>],</span> <span>bipartite</span><span>=</span><span>0</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span>B</span><span>.</span><span>add_nodes_from</span><span>([</span><span>"a"</span><span>,</span> <span>"b"</span><span>,</span> <span>"c"</span><span>],</span> <span>bipartite</span><span>=</span><span>1</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span># Add edges only between nodes of opposite node sets</span>
+<span>&gt;&gt;&gt; </span><span>B</span><span>.</span><span>add_edges_from</span><span>([(</span><span>1</span><span>,</span> <span>"a"</span><span>),</span> <span>(</span><span>1</span><span>,</span> <span>"b"</span><span>),</span> <span>(</span><span>2</span><span>,</span> <span>"b"</span><span>),</span> <span>(</span><span>2</span><span>,</span> <span>"c"</span><span>),</span> <span>(</span><span>3</span><span>,</span> <span>"c"</span><span>),</span> <span>(</span><span>4</span><span>,</span> <span>"a"</span><span>)])</span>
+</pre></div>
+<p>Many algorithms of the bipartite module of NetworkX require, as an argument, a
+container with all the nodes that belong to one set, in addition to the bipartite
+graph <code><span>B</span></code>. The functions in the bipartite package do not check that the node set
+is actually correct nor that the input graph is actually bipartite.
+If <code><span>B</span></code> is connected, you can find the two node sets using a two-coloring
+algorithm:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>nx</span><span>.</span><span>is_connected</span><span>(</span><span>B</span><span>)</span>
+<span>True</span>
+<span>&gt;&gt;&gt; </span><span>bottom_nodes</span><span>,</span> <span>top_nodes</span> <span>=</span> <span>bipartite</span><span>.</span><span>sets</span><span>(</span><span>B</span><span>)</span>
+</pre></div>
+<p>However, if the input graph is not connected, there are more than one possible
+colorations. This is the reason why we require the user to pass a container
+with all nodes of one bipartite node set as an argument to most bipartite
+functions. In the face of ambiguity, we refuse the temptation to guess and
+raise an <a href="https://networkx.org/documentation/stable/reference/exceptions.html#networkx.AmbiguousSolution" title="networkx.AmbiguousSolution"><code><span>AmbiguousSolution</span></code></a>
+Exception if the input graph for
+<a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.basic.sets.html#networkx.algorithms.bipartite.basic.sets" title="networkx.algorithms.bipartite.basic.sets"><code><span>bipartite.sets</span></code></a>
+is disconnected.</p>
+<p>Using the <code><span>bipartite</span></code> node attribute, you can easily get the two node sets:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>top_nodes</span> <span>=</span> <span>{</span><span>n</span> <span>for</span> <span>n</span><span>,</span> <span>d</span> <span>in</span> <span>B</span><span>.</span><span>nodes</span><span>(</span><span>data</span><span>=</span><span>True</span><span>)</span> <span>if</span> <span>d</span><span>[</span><span>"bipartite"</span><span>]</span> <span>==</span> <span>0</span><span>}</span>
+<span>&gt;&gt;&gt; </span><span>bottom_nodes</span> <span>=</span> <span>set</span><span>(</span><span>B</span><span>)</span> <span>-</span> <span>top_nodes</span>
+</pre></div>
+<p>So you can easily use the bipartite algorithms that require, as an argument, a
+container with all nodes that belong to one node set:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>print</span><span>(</span><span>round</span><span>(</span><span>bipartite</span><span>.</span><span>density</span><span>(</span><span>B</span><span>,</span> <span>bottom_nodes</span><span>),</span> <span>2</span><span>))</span>
+<span>0.5</span>
+<span>&gt;&gt;&gt; </span><span>G</span> <span>=</span> <span>bipartite</span><span>.</span><span>projected_graph</span><span>(</span><span>B</span><span>,</span> <span>top_nodes</span><span>)</span>
+</pre></div>
+<p>All bipartite graph generators in NetworkX build bipartite graphs with the
+<code><span>bipartite</span></code> node attribute. Thus, you can use the same approach:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>RB</span> <span>=</span> <span>bipartite</span><span>.</span><span>random_graph</span><span>(</span><span>5</span><span>,</span> <span>7</span><span>,</span> <span>0.2</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span>RB_top</span> <span>=</span> <span>{</span><span>n</span> <span>for</span> <span>n</span><span>,</span> <span>d</span> <span>in</span> <span>RB</span><span>.</span><span>nodes</span><span>(</span><span>data</span><span>=</span><span>True</span><span>)</span> <span>if</span> <span>d</span><span>[</span><span>"bipartite"</span><span>]</span> <span>==</span> <span>0</span><span>}</span>
+<span>&gt;&gt;&gt; </span><span>RB_bottom</span> <span>=</span> <span>set</span><span>(</span><span>RB</span><span>)</span> <span>-</span> <span>RB_top</span>
+<span>&gt;&gt;&gt; </span><span>list</span><span>(</span><span>RB_top</span><span>)</span>
+<span>[0, 1, 2, 3, 4]</span>
+<span>&gt;&gt;&gt; </span><span>list</span><span>(</span><span>RB_bottom</span><span>)</span>
+<span>[5, 6, 7, 8, 9, 10, 11]</span>
+</pre></div>
+<p>For other bipartite graph generators see
+<a href="#module-networkx.algorithms.bipartite.generators" title="networkx.algorithms.bipartite.generators"><code><span>Generators</span></code></a>.</p>
+<section id="module-networkx.algorithms.bipartite.basic">
+<span id="basic-functions"></span><h2>Basic functions<a href="#module-networkx.algorithms.bipartite.basic" title="Link to this heading">#</a></h2>
+<div><table>
+<tbody>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.basic.is_bipartite.html#networkx.algorithms.bipartite.basic.is_bipartite" title="networkx.algorithms.bipartite.basic.is_bipartite"><code><span>is_bipartite</span></code></a>(G)</p></td>
+<td><p>Returns True if graph G is bipartite, False if not.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.basic.is_bipartite_node_set.html#networkx.algorithms.bipartite.basic.is_bipartite_node_set" title="networkx.algorithms.bipartite.basic.is_bipartite_node_set"><code><span>is_bipartite_node_set</span></code></a>(G,&nbsp;nodes)</p></td>
+<td><p>Returns True if nodes and G/nodes are a bipartition of G.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.basic.sets.html#networkx.algorithms.bipartite.basic.sets" title="networkx.algorithms.bipartite.basic.sets"><code><span>sets</span></code></a>(G[,&nbsp;top_nodes])</p></td>
+<td><p>Returns bipartite node sets of graph G.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.basic.color.html#networkx.algorithms.bipartite.basic.color" title="networkx.algorithms.bipartite.basic.color"><code><span>color</span></code></a>(G)</p></td>
+<td><p>Returns a two-coloring of the graph.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.basic.density.html#networkx.algorithms.bipartite.basic.density" title="networkx.algorithms.bipartite.basic.density"><code><span>density</span></code></a>(B,&nbsp;nodes)</p></td>
+<td><p>Returns density of bipartite graph B.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.basic.degrees.html#networkx.algorithms.bipartite.basic.degrees" title="networkx.algorithms.bipartite.basic.degrees"><code><span>degrees</span></code></a>(B,&nbsp;nodes[,&nbsp;weight])</p></td>
+<td><p>Returns the degrees of the two node sets in the bipartite graph B.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-networkx.algorithms.bipartite.edgelist">
+<span id="edgelist"></span><h2>Edgelist<a href="#module-networkx.algorithms.bipartite.edgelist" title="Link to this heading">#</a></h2>
+<p>Read and write NetworkX graphs as bipartite edge lists.</p>
+<section id="format">
+<h3>Format<a href="#format" title="Link to this heading">#</a></h3>
+<p>You can read or write three formats of edge lists with these functions.</p>
+<p>Node pairs with no data:</p>
+<div><pre><span></span><span>1</span> <span>2</span>
+</pre></div>
+<p>Python dictionary as data:</p>
+<div><pre><span></span><span>1</span> <span>2</span> <span>{</span><span>'weight'</span><span>:</span><span>7</span><span>,</span> <span>'color'</span><span>:</span><span>'green'</span><span>}</span>
+</pre></div>
+<p>Arbitrary data:</p>
+<div><pre><span></span><span>1</span> <span>2</span> <span>7</span> <span>green</span>
+</pre></div>
+<p>For each edge (u, v) the node u is assigned to part 0 and the node v to part 1.</p>
+</section>
+
+</section>
+<section id="module-networkx.algorithms.bipartite.matching">
+<span id="matching"></span><h2>Matching<a href="#module-networkx.algorithms.bipartite.matching" title="Link to this heading">#</a></h2>
+<p>Provides functions for computing maximum cardinality matchings and minimum
+weight full matchings in a bipartite graph.</p>
+<p>If you don’t care about the particular implementation of the maximum matching
+algorithm, simply use the <a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.matching.maximum_matching.html#networkx.algorithms.bipartite.matching.maximum_matching" title="networkx.algorithms.bipartite.matching.maximum_matching"><code><span>maximum_matching()</span></code></a>. If you do care, you can
+import one of the named maximum matching algorithms directly.</p>
+<p>For example, to find a maximum matching in the complete bipartite graph with
+two vertices on the left and three vertices on the right:</p>
+<div><pre><span></span><span>&gt;&gt;&gt; </span><span>G</span> <span>=</span> <span>nx</span><span>.</span><span>complete_bipartite_graph</span><span>(</span><span>2</span><span>,</span> <span>3</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span>left</span><span>,</span> <span>right</span> <span>=</span> <span>nx</span><span>.</span><span>bipartite</span><span>.</span><span>sets</span><span>(</span><span>G</span><span>)</span>
+<span>&gt;&gt;&gt; </span><span>list</span><span>(</span><span>left</span><span>)</span>
+<span>[0, 1]</span>
+<span>&gt;&gt;&gt; </span><span>list</span><span>(</span><span>right</span><span>)</span>
+<span>[2, 3, 4]</span>
+<span>&gt;&gt;&gt; </span><span>nx</span><span>.</span><span>bipartite</span><span>.</span><span>maximum_matching</span><span>(</span><span>G</span><span>)</span>
+<span>{0: 2, 1: 3, 2: 0, 3: 1}</span>
+</pre></div>
+<p>The dictionary returned by <a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.matching.maximum_matching.html#networkx.algorithms.bipartite.matching.maximum_matching" title="networkx.algorithms.bipartite.matching.maximum_matching"><code><span>maximum_matching()</span></code></a> includes a mapping for
+vertices in both the left and right vertex sets.</p>
+<p>Similarly, <a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.matching.minimum_weight_full_matching.html#networkx.algorithms.bipartite.matching.minimum_weight_full_matching" title="networkx.algorithms.bipartite.matching.minimum_weight_full_matching"><code><span>minimum_weight_full_matching()</span></code></a> produces, for a complete
+weighted bipartite graph, a matching whose cardinality is the cardinality of
+the smaller of the two partitions, and for which the sum of the weights of the
+edges included in the matching is minimal.</p>
+
+</section>
+<section id="module-networkx.algorithms.bipartite.matrix">
+<span id="matrix"></span><h2>Matrix<a href="#module-networkx.algorithms.bipartite.matrix" title="Link to this heading">#</a></h2>
+
+</section>
+<section id="module-networkx.algorithms.bipartite.projection">
+<span id="projections"></span><h2>Projections<a href="#module-networkx.algorithms.bipartite.projection" title="Link to this heading">#</a></h2>
+<p>One-mode (unipartite) projections of bipartite graphs.</p>
+
+</section>
+<section id="module-networkx.algorithms.bipartite.spectral">
+<span id="spectral"></span><h2>Spectral<a href="#module-networkx.algorithms.bipartite.spectral" title="Link to this heading">#</a></h2>
+<p>Spectral bipartivity measure.</p>
+
+</section>
+<section id="module-networkx.algorithms.bipartite.cluster">
+<span id="clustering"></span><h2>Clustering<a href="#module-networkx.algorithms.bipartite.cluster" title="Link to this heading">#</a></h2>
+<p>Functions for computing clustering of pairs</p>
+
+</section>
+<section id="module-networkx.algorithms.bipartite.redundancy">
+<span id="redundancy"></span><h2>Redundancy<a href="#module-networkx.algorithms.bipartite.redundancy" title="Link to this heading">#</a></h2>
+<p>Node redundancy for bipartite graphs.</p>
+
+</section>
+<section id="module-networkx.algorithms.bipartite.centrality">
+<span id="centrality"></span><h2>Centrality<a href="#module-networkx.algorithms.bipartite.centrality" title="Link to this heading">#</a></h2>
+
+</section>
+<section id="module-networkx.algorithms.bipartite.generators">
+<span id="generators"></span><h2>Generators<a href="#module-networkx.algorithms.bipartite.generators" title="Link to this heading">#</a></h2>
+<p>Generators and functions for bipartite graphs.</p>
+<div><table>
+<tbody>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.generators.complete_bipartite_graph.html#networkx.algorithms.bipartite.generators.complete_bipartite_graph" title="networkx.algorithms.bipartite.generators.complete_bipartite_graph"><code><span>complete_bipartite_graph</span></code></a>(n1,&nbsp;n2[,&nbsp;create_using])</p></td>
+<td><p>Returns the complete bipartite graph <code><span>K_{n_1,n_2}</span></code>.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.generators.configuration_model.html#networkx.algorithms.bipartite.generators.configuration_model" title="networkx.algorithms.bipartite.generators.configuration_model"><code><span>configuration_model</span></code></a>(aseq,&nbsp;bseq[,&nbsp;...])</p></td>
+<td><p>Returns a random bipartite graph from two given degree sequences.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.generators.havel_hakimi_graph.html#networkx.algorithms.bipartite.generators.havel_hakimi_graph" title="networkx.algorithms.bipartite.generators.havel_hakimi_graph"><code><span>havel_hakimi_graph</span></code></a>(aseq,&nbsp;bseq[,&nbsp;create_using])</p></td>
+<td><p>Returns a bipartite graph from two given degree sequences using a Havel-Hakimi style construction.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.generators.reverse_havel_hakimi_graph.html#networkx.algorithms.bipartite.generators.reverse_havel_hakimi_graph" title="networkx.algorithms.bipartite.generators.reverse_havel_hakimi_graph"><code><span>reverse_havel_hakimi_graph</span></code></a>(aseq,&nbsp;bseq[,&nbsp;...])</p></td>
+<td><p>Returns a bipartite graph from two given degree sequences using a Havel-Hakimi style construction.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.generators.alternating_havel_hakimi_graph.html#networkx.algorithms.bipartite.generators.alternating_havel_hakimi_graph" title="networkx.algorithms.bipartite.generators.alternating_havel_hakimi_graph"><code><span>alternating_havel_hakimi_graph</span></code></a>(aseq,&nbsp;bseq[,&nbsp;...])</p></td>
+<td><p>Returns a bipartite graph from two given degree sequences using an alternating Havel-Hakimi style construction.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.generators.preferential_attachment_graph.html#networkx.algorithms.bipartite.generators.preferential_attachment_graph" title="networkx.algorithms.bipartite.generators.preferential_attachment_graph"><code><span>preferential_attachment_graph</span></code></a>(aseq,&nbsp;p[,&nbsp;...])</p></td>
+<td><p>Create a bipartite graph with a preferential attachment model from a given single degree sequence.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.generators.random_graph.html#networkx.algorithms.bipartite.generators.random_graph" title="networkx.algorithms.bipartite.generators.random_graph"><code><span>random_graph</span></code></a>(n,&nbsp;m,&nbsp;p[,&nbsp;seed,&nbsp;directed])</p></td>
+<td><p>Returns a bipartite random graph.</p></td>
+</tr>
+<tr><td><p><a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.generators.gnmk_random_graph.html#networkx.algorithms.bipartite.generators.gnmk_random_graph" title="networkx.algorithms.bipartite.generators.gnmk_random_graph"><code><span>gnmk_random_graph</span></code></a>(n,&nbsp;m,&nbsp;k[,&nbsp;seed,&nbsp;directed])</p></td>
+<td><p>Returns a random bipartite graph G_{n,m,k}.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-networkx.algorithms.bipartite.covering">
+<span id="covering"></span><h2>Covering<a href="#module-networkx.algorithms.bipartite.covering" title="Link to this heading">#</a></h2>
+<p>Functions related to graph covers.</p>
+
+</section>
+<section id="module-networkx.algorithms.bipartite.extendability">
+<span id="extendability"></span><h2>Extendability<a href="#module-networkx.algorithms.bipartite.extendability" title="Link to this heading">#</a></h2>
+<p>Provides a function for computing the extendability of a graph which is
+undirected, simple, connected and bipartite and contains at least one perfect matching.</p>
+
+</section>
+</section>
+
+
+                </article></div>
+  </div>
+</body>
+</html>

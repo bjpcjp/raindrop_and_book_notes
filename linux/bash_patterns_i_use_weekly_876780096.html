@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bash Patterns I Use Weekly</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Bash Patterns I Use Weekly</h1>
+    <p><strong>URL:</strong> <a href="https://will-keleher.com/posts/5-Useful-Bash-Patterns.html">https://will-keleher.com/posts/5-Useful-Bash-Patterns.html</a></p>
+    <p><strong>Tags:</strong> bash, linux</p>
+    <p><strong>Bookmark ID:</strong> 876780096</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main">
+      <h2>Bash Patterns I Use Weekly</h2>
+<h3>1. Find and replace a pattern in a codebase with capture groups</h3>
+<p><strong><code>git grep -l pattern | xargs gsed -ri 's|pat(tern)|\1s are birds|g'</code></strong></p>
+<ul>
+<li><code>git grep -l</code>: make sure we're only looking for files in our codebase  (<code>ag -l</code> is another good option)</li>
+<li><code>xargs</code>: allow running this with <code>gsed -i</code></li>
+<li><code>gsed -i</code>: edit files (default mac <code>sed</code> is bad, so gnu-sed is essential)</li>
+<li><code>gsed -r</code>: use regular expression for the pattern to allow capture groups</li>
+<li><code>s|</code>: the first character after the <code>s</code> is used as the delimiter. <code>/</code> is pretty consistently annoying because it's used in file paths &amp; urls.</li>
+<li><code>gsed '...'</code>: the single quotes are important to avoid escapes</li>
+<li><code>'s|pat(tern)|\1s are birds|g'</code>: being able to easily use capture groups in a find and replace is amazing</li>
+<li><code>|g</code>: replace this multiple times in a line</li>
+</ul>
+<h3>2. Track down a commit when a command started failing</h3>
+<p><strong><code>while command; do git checkout HEAD^; done;</code></strong></p>
+<ul>
+<li><code>while command</code>: As long as <code>command</code> exits successfully (with a 0), this loop will keep going. (this is why <code>while true;</code> works! The same thing works with <code>if</code>: <code>if git grep yay; then echo "found yay"; fi</code>)</li>
+<li><code>git checkout HEAD^</code>: go back in time.</li>
+<li><a href="https://git-scm.com/docs/git-bisect">git bisect</a> is the "real" way to do this, but it's not something I've ever needed, and <code>while command</code> and <code>while ! command</code> are both generally useful to know</li>
+<li>A similar pattern to poll until something succeeds could be <code>while ! curl localhost:8080; do sleep 1; done;</code>.</li>
+</ul>
+<h3>3. Parallelize running commands by grabbing PIDs.</h3>
+<pre><code>pids=<span>""</span>;
+do_thing_1 &amp;
+pids=<span>"<span>$pids</span> $!"</span>
+do_thing_2 &amp;
+pids=<span>"<span>$pids</span> $!"</span>
+EXIT_CODE=0
+<span>for</span> p <span>in</span> <span>$pids</span>; <span>do</span>
+  <span>if</span> ! <span>wait</span> <span>$p</span>; <span>then</span> EXIT_CODE=1; <span>fi</span>
+<span>done</span>
+
+<span>exit</span> <span>$EXIT_CODE</span>;
+</code></pre>
+<h3>4. Use <code>$SECONDS</code> to track how long things take</h3>
+<p><strong><code>echo "Your command completed after $SECONDS seconds";</code></strong></p>
+<ul>
+<li>Try running this in your shell: <code>SECONDS=0; sleep 5; echo $SECONDS;</code></li>
+<li>I often prefer this over <code>time</code> when setting up logs for a script</li>
+</ul>
+<h3>5. Use <code>for</code> to iterate over simple lists:</h3>
+<pre><code><span>for</span> route <span>in</span> foo bar baz; <span>do</span>
+  curl localhost:8080/<span>$route</span>
+<span>done</span>
+</code></pre>
+<p>The default separator in bash is a space, and you can take advantage of this to make simple <code>for</code> loops. (This default is quite frustrating to work around in general: spaces in file names are the devil.)</p>
+
+      </div></div>
+  </div>
+</body>
+</html>

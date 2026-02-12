@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A gentle explanation of Github Webhooks</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A gentle explanation of Github Webhooks</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/papaponmx/a-gentle-explanation-of-github-webhooks-----d3e">https://dev.to/papaponmx/a-gentle-explanation-of-github-webhooks-----d3e</a></p>
+    <p><strong>Tags:</strong> github</p>
+    <p><strong>Bookmark ID:</strong> 876771853</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="49182" id="article-body">
+            <h2>
+  <a name="intro" href="#intro">
+  </a>
+  Intro
+</h2>
+
+<p>As you know, I have been working a lot on puppeteer lately. Trying to automate the things that I find important, repetitive and boring, or where the <a href="https://en.wikipedia.org/wiki/Pareto_principle" target="_blank" rel="noopener noreferrer">Pareto principle</a> can be implemented. This is an in between post that we'll build on top of for the next part of the project.</p>
+
+<p>The choice to aim for something greater while selecting a topic for this post was not that easy, however, I feel like on the verge of building a product that: is open source, provides you with a lot of value, excites us all and is profitable. All of those four, in that specific order.</p>
+
+<p>If you want to, you can tweet me <a href="https://twitter.com/papaponmx" target="_blank" rel="noopener noreferrer">@papaponmx</a>, DMs are open.</p>
+
+<h2>
+  <a name="what-are-webhooks-and-why-do-they-matter" href="#what-are-webhooks-and-why-do-they-matter">
+  </a>
+  What are webhooks and why do they matter
+</h2>
+
+<p>In this context, <em>hooks are events you can subscribe to</em> in order to trigger some action. It is possible that you have been using them for a while without knowing. Within the context of git and Github, there are many events you might want to know about.</p>
+
+<p>They matter because they allow us to perform some actions only when they are relevant, here are some examples:</p>
+
+<ul>
+<li>When a pull request is created, run all the tests and let me know if they are OK, or not.</li>
+<li>When a new release tag is created, make a summary of all the new features and add it to the <code>CHANGELOG.md</code>.</li>
+<li>When a new issue is rised, send a message to the team via Slack.</li>
+<li>Any time a release is made, run performance test, look for key differences and let me know the results. This is what we are going to do on the next post.</li>
+</ul>
+
+<p>Here is a <a href="https://developer.github.com/webhooks/" target="_blank" rel="noopener noreferrer">link</a> with more events you can subscribe to.</p>
+
+<h2>
+  <a name="how-does-it-work" href="#how-does-it-work">
+  </a>
+  How does it work
+</h2>
+
+<p>When some event happens, Github will send you an <em>HTTP POST</em> letting you us know that the event happen and <em>a payload</em> providing us with relevant information about it. For example: If you subscribed to <code>pull_request</code>, they payload will tell us who initiated it, the target and origin branches, etc.</p>
+
+<p>As you can tell, the payload depends on the event, in the <code>pull_request</code> payload, we have this information about the repo:<br>
+</p>
+
+<div>
+<pre><code><span>{</span>
+<span>//...</span>
+<span>"</span><span>repo</span><span>"</span><span>:</span> <span>{</span>
+  <span>"</span><span>id</span><span>"</span><span>:</span> <span>135493233</span><span>,</span>
+  <span>"</span><span>node_id</span><span>"</span><span>:</span> <span>"</span><span>MDEwOlJlcG9zaXRvcnkxMzU0OTMyMzM=</span><span>"</span><span>,</span>
+  <span>"</span><span>name</span><span>"</span><span>:</span> <span>"</span><span>Hello-World</span><span>"</span><span>,</span>
+  <span>"</span><span>full_name</span><span>"</span><span>:</span> <span>"</span><span>Codertocat/Hello-World</span><span>"</span><span>,</span>
+  <span>"</span><span>owner</span><span>"</span><span>:</span> <span>{</span>
+    <span>"</span><span>login</span><span>"</span><span>:</span> <span>"</span><span>Codertocat</span><span>"</span><span>,</span>
+    <span>"</span><span>id</span><span>"</span><span>:</span> <span>21031067</span><span>,</span>
+    <span>"</span><span>node_id</span><span>"</span><span>:</span> <span>"</span><span>MDQ6VXNlcjIxMDMxMDY3</span><span>"</span><span>,</span>
+    <span>"</span><span>avatar_url</span><span>"</span><span>:</span> <span>"</span><span>https://avatars1.githubusercontent.com/u/21031067?v=4</span><span>"</span><span>,</span>
+    <span>"</span><span>gravatar_id</span><span>"</span><span>:</span> <span>""</span><span>,</span>
+    <span>"</span><span>url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat</span><span>"</span><span>,</span>
+    <span>"</span><span>html_url</span><span>"</span><span>:</span> <span>"</span><span>https://github.com/Codertocat</span><span>"</span><span>,</span>
+    <span>"</span><span>followers_url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat/followers</span><span>"</span><span>,</span>
+    <span>"</span><span>following_url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat/following{/other_user}</span><span>"</span><span>,</span>
+    <span>"</span><span>gists_url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat/gists{/gist_id}</span><span>"</span><span>,</span>
+    <span>"</span><span>starred_url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat/starred{/owner}{/repo}</span><span>"</span><span>,</span>
+    <span>"</span><span>subscriptions_url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat/subscriptions</span><span>"</span><span>,</span>
+    <span>"</span><span>organizations_url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat/orgs</span><span>"</span><span>,</span>
+    <span>"</span><span>repos_url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat/repos</span><span>"</span><span>,</span>
+    <span>"</span><span>events_url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat/events{/privacy}</span><span>"</span><span>,</span>
+    <span>"</span><span>received_events_url</span><span>"</span><span>:</span> <span>"</span><span>https://api.github.com/users/Codertocat/received_events</span><span>"</span><span>,</span>
+    <span>"</span><span>type</span><span>"</span><span>:</span> <span>"</span><span>User</span><span>"</span><span>,</span>
+    <span>"</span><span>site_admin</span><span>"</span><span>:</span> <span>false</span>
+  <span>},</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>If you want to check the full JSON for <code>pull_request</code>, <a href="https://developer.github.com/v3/activity/events/types/#pullrequestevent" target="_blank" rel="noopener noreferrer">here is the link</a>.</p>
+
+<h2>
+  <a name="how-do-we-start" href="#how-do-we-start">
+  </a>
+  How do we start
+</h2>
+
+<p>I'm glad you asked. Now that we have a general notion of the basics, we need two things:</p>
+
+<ol>
+<li>To register our webhook.</li>
+<li>Expose an endpoint to our webhook.</li>
+</ol>
+
+<h3>
+  <a name="registering-our-webhook" href="#registering-our-webhook">
+  </a>
+  Registering our webhook
+</h3>
+
+<p>On your repository, you need to go to Settings, click the Webhooks tab and you should see a screen like this:</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fthepracticaldev.s3.amazonaws.com%2Fi%2F5c7s1nz05epuram7h0pg.png"><img src="data:application/octet-stream;base64," title="Webhooks dashboard" alt="alt text" loading="lazy"></a></p>
+
+<p>One you click the Add webhook button, you will be asked for the following data:</p>
+
+<ul>
+<li>
+<strong>Payload URL</strong>: This is the endpoint where we will receive the post, something like <code>http://localhost:4567/payload</code>. But we'll configure this later.</li>
+<li>
+<strong>Content type</strong>: Comming from a Front End background, <code>application/json</code> makes more sense.</li>
+<li>
+<strong>Secret</strong>: This is a string. The purpose it serves, is to provide us with a way to ensure that the POST request is coming from Github.</li>
+<li>
+<strong>Events</strong>: The events you want to listen.</li>
+</ul>
+
+<p>This is what a webhook added looks like:<br>
+<a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fthepracticaldev.s3.amazonaws.com%2Fi%2Fsgtjikdm3e015cglndt9.png"><img src="data:application/octet-stream;base64," title="Webhooks dashboard" alt="alt text" loading="lazy"></a></p>
+
+<p>Cheers guys.</p>
+
+<h3>
+  <a name="further-resources" href="#further-resources">
+  </a>
+  Further resources:
+</h3>
+
+<p>Link to my Puppeteer series:</p>
+
+<ul>
+<li><a href="https://dev.to/papaponmx/front-end-development-automation-with-puppeteer-part-1-2k9n">Part 1</a></li>
+<li><a href="https://dev.to/papaponmx/front-end-automation-with-puppeteer-part-2-2pmb">Part 2</a></li>
+<li><a href="https://dev.to/papaponmx/front-end-development-automation-with-puppeteer-part-3-3pl6">Part 3</a></li>
+</ul>
+
+<p><a href="https://developer.github.com/webhooks/" target="_blank" rel="noopener noreferrer">Github webhooks Documentation</a><br>
+ My twitter profile, <a href="https://twitter.com/papaponmx" target="_blank" rel="noopener noreferrer">@papaponmx</a>.</p>
+
+<p>Cheers guys.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

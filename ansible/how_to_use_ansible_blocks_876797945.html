@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Use Ansible Blocks</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Use Ansible Blocks</h1>
+    <p><strong>URL:</strong> <a href="https://linuxhandbook.com/ansible-blocks">https://linuxhandbook.com/ansible-blocks</a></p>
+    <p><strong>Tags:</strong> ansible</p>
+    <p><strong>Bookmark ID:</strong> 876797945</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><a href="https://www.warp.dev/?utm_source=linux_handbook&amp;utm_medium=display&amp;utm_campaign=linux_launch" target="_blank"><img src="data:application/octet-stream;base64," alt="Warp Terminal"></a></p><p>Blocks are a powerful feature in Ansible that allows you to group tasks together and apply common attributes, such as when conditions or become directives, to all tasks within the block. </p><p>This can make your <a href="https://linuxhandbook.com/ansible-playbooks/">Ansible playbooks</a> more readable and maintainable. </p><p>With blocks, you can also gracefully handle errors, escalate privileges for multiple tasks at once, and organize tasks hierarchically with nested blocks.</p><p>In this tutorial, we'll explore how to use Ansible blocks with practical examples.</p><h2 id="basic-syntax-of-ansible-blocks">Basic Syntax of Ansible Blocks</h2><p>The basic syntax for an <a href="https://www.ansible.com/">Ansible</a> block is straightforward. Here’s an example:</p><pre><code>- name: Example block
+  block:
+    - name: Task 1
+      ansible.builtin.command: echo "This is task 1"
+
+    - name: Task 2
+      ansible.builtin.command: echo "This is task 2"
+</code></pre><p>In this example, both tasks are grouped within a block. You can apply common attributes to the entire block, such as <code>when</code>, <code>become</code>, or <code>rescue</code>.</p><h2 id="using-blocks-with-conditional-execution">Using Blocks with Conditional Execution</h2><p>Imagine you want to execute a group of tasks only when a certain condition is met. You can apply the condition to the entire block instead of each individual task.</p><p>Create a playbook with the following content.<span data-ez-ph-id="105"></span></p><pre><code>- name: Conditional block example
+  hosts: localhost
+  vars:
+    run_tasks: true
+  tasks:
+    - name: Execute tasks if condition is met
+      block:
+        - name: Task 1
+          ansible.builtin.command: echo "This is task 1"
+
+        - name: Task 2
+          ansible.builtin.command: echo "This is task 2"
+      when: run_tasks
+</code></pre><p>In this playbook, we define a variable <code>run_tasks</code> and set it to <code>true</code>. We then use a block to group two tasks. The <code>when</code> condition is applied to the block, so both tasks will only run if <code>run_tasks</code> is <code>true</code>. </p><p>This approach simplifies the playbook by applying the condition once to the block instead of individually to each task.</p><p>Run the above playbook.</p><pre><code>ansible-playbook conditional_block_example.yml
+</code></pre><p>This will run the block of tasks only if the condition run_tasks is true.</p><pre><code>PLAY [Conditional block example] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Execute tasks if condition is met] ***************************************
+skipping: [localhost]
+
+TASK [Task 1] ******************************************************************
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "This is task 1"
+}
+
+TASK [Task 2] ******************************************************************
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "This is task 2"
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+</code></pre><h2 id="using-blocks-with-error-handling">Using Blocks with Error Handling</h2><p>You can use blocks to handle errors gracefully by adding rescue and always sections.</p><p>Let's create a playbook.<span data-ez-ph-id="116"></span></p><pre><code>- name: Error handling block example
+  hosts: localhost
+  tasks:
+    - name: Block with error handling
+      block:
+        - name: Task that might fail
+          ansible.builtin.command: /bin/false
+
+        - name: Task that won't be executed
+          ansible.builtin.command: echo "This won't run"
+
+      rescue:
+        - name: Handle the error
+          ansible.builtin.command: echo "An error occurred"
+
+      always:
+        - name: This always runs
+          ansible.builtin.command: echo "This runs always"
+</code></pre><p>In this playbook, the <code>block</code> section contains tasks that might fail. The <code>rescue</code> section contains tasks to run if any task in the block fails, and the <code>always</code> section contains tasks that will run regardless of success or failure. </p><p>This structure allows you to manage errors gracefully and ensure certain actions are always performed.</p><p>Now, run the above playbook.</p><pre><code>ansible-playbook error_handling_block_example.yml
+</code></pre><p>This will handle errors and ensure certain tasks always run.</p><pre><code>PLAY [Error handling block example] ********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Block with error handling] ***********************************************
+fatal: [localhost]: FAILED! =&gt; {"changed": false, "cmd": "/bin/false", "rc": 1}
+
+TASK [Handle the error] ********************************************************
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "An error occurred"
+}
+
+TASK [This always runs] ********************************************************
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "This runs always"
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=1    ignored=0
+</code></pre><h2 id="using-blocks-with-privilege-escalation">Using Blocks with Privilege Escalation</h2><p>You can use blocks to apply privilege escalation (become) to multiple tasks at once.</p><p>Create a playbook with the following content.</p><pre><code>- name: Privilege escalation block example
+  hosts: localhost
+  tasks:
+    - name: Block with privilege escalation
+      block:
+        - name: Task 1 as root
+          ansible.builtin.command: echo "Task 1 as root"
+
+        - name: Task 2 as root
+          ansible.builtin.command: echo "Task 2 as root"
+      become: yes
+</code></pre><p>In this playbook, the <code>become: yes</code> directive is applied to the block, so both tasks will run with elevated privileges. This is useful when you need multiple tasks to run as a different user, reducing redundancy by applying the privilege escalation to the entire block.</p><p>Now, let's run this playbook.</p><pre><code>ansible-playbook privilege_escalation_block_example.yml
+</code></pre><p>This playbook executes the tasks in the block with root privileges.</p><pre><code>PLAY [Privilege escalation block example] **************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Block with privilege escalation] *****************************************
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "Task 1 as root"
+}
+
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "Task 2 as root"
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+</code></pre><h2 id="nested-blocks">Nested Blocks</h2><p>You can nest blocks within other blocks to create complex task structures. This can help organize tasks into logical groups and apply specific attributes to different levels of the hierarchy.</p><p>Create a playbook and add the following content.</p><pre><code>- name: Nested blocks example
+  hosts: localhost
+  tasks:
+    - name: Outer block
+      block:
+        - name: Task in outer block
+          ansible.builtin.command: echo "This is in the outer block"
+
+        - name: Inner block
+          block:
+            - name: Task in inner block
+              ansible.builtin.command: echo
+</code></pre><p>In this playbook, the outer block contains another block within it. The outer block has a task that echoes a message indicating it is in the outer block. The inner block is nested within the outer block and contains a task that echoes a message indicating it is in the inner block.</p><p>Run the above playbook.</p><pre><code>ansible-playbook nested_blocks_example.yml
+</code></pre><p>You will get the following output.</p><pre><code>PLAY [Nested blocks example] ***************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Outer block] *************************************************************
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "This is in the outer block"
+}
+
+TASK [Inner block] *************************************************************
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "This is in the inner block"
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+</code></pre><h2 id="using-blocks-with-handlers">Using Blocks with Handlers</h2><p>You can use blocks to notify handlers, which can be useful for managing tasks that need to be executed conditionally based on previous task outcomes.</p><p>Create a playbook with the following content:</p><pre><code>- name: Blocks with handlers example
+  hosts: localhost
+  tasks:
+    - name: Block with handler notification
+      block:
+        - name: Task that changes something
+          ansible.builtin.command: echo "This changes something"
+          notify: Restart service
+
+        - name: Another task
+          ansible.builtin.command: echo "This is another task"
+      notify: Restart service
+
+  handlers:
+    - name: Restart service
+      ansible.builtin.command: echo "Service restarted"
+</code></pre><p>In this example, the block contains two tasks, both of which notify the handler <code>Restart service</code>. The handler <code>Restart service</code> is defined to echo a message indicating the service has been restarted.</p><p>Now, run this playbook.</p><pre><code>ansible-playbook blocks_with_handlers_example.yml
+</code></pre><p>This playbook use blocks to notify handlers, ensuring that specific tasks run based on the outcomes of tasks within the block.</p><pre><code>PLAY [Blocks with handlers example] ********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Block with handler notification] *****************************************
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "This changes something"
+}
+
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "This is another task"
+}
+
+RUNNING HANDLER [Restart service] **********************************************
+ok: [localhost] =&gt; {
+    "changed": false,
+    "msg": "Service restarted"
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+</code></pre><h2 id="conclusion">Conclusion</h2><p>In this article, you explored the basics of using Ansible blocks, including their syntax and practical applications. You saw how blocks can simplify conditional execution, error handling, privilege escalation, nested structures, and handler notifications in your playbooks. By using blocks, you can make your Ansible playbooks more organized and easier to maintain.</p><p>If you are new to Ansible and want to learn it from scratch, our Ansible tutorial series will be of great help. It's written for RHCE exam but it helps you the same whether you are preparing for the exam or not.</p><figure><a href="https://linuxhandbook.com/ansible/"><div><p>RHCE Ansible EX294 Exam Preparation Course</p><p>Learn all the essentials of Ansible with this hands-on tutorial series. It is ideal for RHCE Ansible EX294 exam preparation.</p><p><img src="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png" alt="" data-cfsrc="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png"><span>Ahmed Alkabary</span></p></div><p><img src="https://linuxhandbook.com/content/images/2023/09/RHCE-Ansible-EX294-Exam-Preparation-Course.png" alt="" data-cfsrc="https://linuxhandbook.com/content/images/2023/09/RHCE-Ansible-EX294-Exam-Preparation-Course.png"></p></a></figure><div><p>✍️</p><p>Author: Hitesh Jethwa has more than 15+ years of experience with Linux system administration and DevOps. He likes to explain complicated topics in easy to understand way.</p></div>
+</div></div>
+  </div>
+</body>
+</html>

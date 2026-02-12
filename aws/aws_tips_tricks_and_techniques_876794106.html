@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AWS Tips, Tricks, and Techniques</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>AWS Tips, Tricks, and Techniques</h1>
+    <p><strong>URL:</strong> <a href="https://launchbylunch.com/posts/2014/Jan/29/aws-tips">https://launchbylunch.com/posts/2014/Jan/29/aws-tips</a></p>
+    <p><strong>Tags:</strong> aws</p>
+    <p><strong>Bookmark ID:</strong> 876794106</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><div>
+<ul>
+<li><a href="#background">Background</a></li>
+<li><a href="#billing">Billing</a></li>
+<li><a href="#security">Security</a><ul>
+<li><a href="#multi-factor-authentication">Multi-factor Authentication</a></li>
+<li><a href="#ssh">SSH</a></li>
+<li><a href="#vpc">VPC</a></li>
+<li><a href="#bastion-host">Bastion Host</a></li>
+<li><a href="#firewall-whitelists">Firewall Whitelists</a></li>
+</ul>
+</li>
+<li><a href="#email">Email</a><ul>
+<li><a href="#verification">Verification</a></li>
+<li><a href="#dkim-and-spf">DKIM and SPF</a></li>
+<li><a href="#testing-via-port-25">Testing via Port 25</a></li>
+</ul>
+</li>
+<li><a href="#ec2-on-the-cheap">EC2 (on the cheap)</a><ul>
+<li><a href="#reserved-instances">Reserved Instances</a></li>
+<li><a href="#reserved-instance-marketplace">Reserved Instance Marketplace</a></li>
+<li><a href="#spot-instances">Spot Instances</a></li>
+</ul>
+</li>
+<li><a href="#s3">S3</a><ul>
+<li><a href="#gpg">GPG</a></li>
+<li><a href="#encryption-at-rest">Encryption At Rest</a></li>
+<li><a href="#object-expiration">Object Expiration</a></li>
+<li><a href="#glacier">Glacier</a></li>
+</ul>
+</li>
+<li><a href="#final-thoughts">Final Thoughts</a></li>
+</ul>
+</div>
+<h2 id="background">Background</h2>
+<p>AWS is one of the most popular cloud computing platforms. It provides everything from object storage (<em>S3</em>), elastically provisioned servers (<em>EC2</em>), databases as a service (<em>RDS</em>), payment processing (<em>DevPay</em>), virtualized networking (<em>VPC and AWS Direct Connect</em>), content delivery networks (<em>CDN</em>), monitoring (<em>CloudWatch</em>), queueing (<em>SQS</em>), and a whole lot more.</p>
+<p>In this post I'll be going over some tips, tricks, and general advice for getting started with Amazon Web Services (AWS). The majority of these are lessons we've learned in deploying and running our cloud SaaS product, <a href="https://www.jackdb.com/">JackDB</a>, which runs entirely on AWS.</p>
+<h2 id="billing">Billing</h2>
+<p>AWS billing is invoiced at the end of the month and AWS services are generally provided on a "per use" basis. For example EC2 servers are quoted in $/hour. If you spin up a server for 6 hours then turn it off you'll only be billed for those 6 hours.</p>
+<p>Unfortunately, AWS does not provide a way to cap your monthly expenses. If you accidentally spin up too many servers and forget to turn them off, then you could get a bit shock at the end of they month. Similarly, AWS charges you for total outbound bandwidth used. If you have a spike in activity to a site hosted on AWS or just excessive usage of S3, you could end up with a sizable bill.</p>
+<p>AWS <em>does</em> allow you to set up billing alerts. Amazon CloudWatch allows you to use your projected monthly bill as a metric for alerts. You can have a notification sent to you when it exceeds a preset dollar amount.</p>
+<p><strong><em>Do this immediately!</em></strong></p>
+<p>Seriously just go add this immediately. Even better, add a couple of these at a variety of dollar figures. A good starting set is: $1/mo, $10/mo, $50/mo, $100/mo, $250/mo, $500/mo, and $1,000/mo</p>
+<p>If you ever end up with a run away server or accidentally provision 10 servers instead of 1 (<em>which is surprisingly easy when scripting automated deployments...</em>), then you'll be happy you set up these billing alerts.</p>
+<p>Our company, <a href="https://www.jackdb.com/">JackDB</a>, is entirely hosted on AWS and our bills are fairly consistent month to month. Once that monthly bill stabilized we setup billing alerts, as described above, at the expected value as well as 1/3 and 2/3 of it. This means that on approximately the 10th and 20th of each month we get a notification that our bill is at 1/3 or 2/3 of our expected monthly spend.</p>
+<p>If either of those alerts is triggered sooner than that, it'd be a sign that monthly is on the rise.</p>
+<h2 id="security">Security</h2>
+<p>Security is a big deal, especially so in the cloud. Countless articles have been written about it and the advice here is just a couple quick points. At a later date I'd like to write a more detailed write up.</p>
+<h3 id="multi-factor-authentication">Multi-factor Authentication</h3>
+<p><a href="https://en.wikipedia.org/wiki/Multi-factor_authentication">Mutli-factor authentication</a>, also known as two-factor authentication or 2FA, is an enhanced approach to authentication that requires combining multiple, separate, factors of authentication. Most commonly these are <strong>something you know</strong> (<em>ex: a password</em>) and <strong>something you have</strong> (<em>ex: a hardware token or virtual token generator on your phone</em>).</p>
+<p>If one of these gets compromised (<em>ex: someone steals your password</em>), they would still need one of the other factors to login. A single factor alone isn't enough.</p>
+<p>AWS supports <a href="http://aws.amazon.com/iam/details/mfa/">multi-factor authentication</a> using standard TOTP pin codes. It supports both free software pins (<em>ex: Google Authenticator on your smart phone</em>) and hardware tokens (<em>$12.99 as of Jan, 2014</em>).</p>
+<p><strong><em>Do this immediately!</em></strong></p>
+<p>There is no reason not to have this enabled and I recommend immediately enabling it. In fact, you should enable 2FA on <strong>every</strong> service you use that supports it. If you're using Google Apps or even just regular Gmail, you should enable it there as well.</p>
+<h3 id="ssh">SSH</h3>
+<p>It's a good idea to use unique SSH keys for unrelated projects. It makes it much easier to deprovision them later on. You should generate a new pair of SSH keys (<em>with a <a href="https://xkcd.com/936/">long passphrase</a></em>) to use with your new servers. If you have multiple people sharing access to the same servers, each person should have their own unique SSH keys.</p>
+<p>Rather than specifying your key files on the command line, you should add them to your ~/.ssh/config file so they'll be automatically used. q</p>
+<div><pre><span></span><code>Host ec2-10-20-30-40.compute-1.amazonaws.com
+  User ubuntu
+  IdentityFile "~/.ssh/my-ec2-private-key"
+</code></pre></div>
+
+<p>By default SSH will send all your available SSH keys in your keyring or listed in your config file to a remote server. If you have a lot of SSH keys then you may get an error from a remote server when you try to SSH to it:</p>
+<div><pre><span></span><code><span>Too</span><span> </span><span>many</span><span> </span><span>authentication</span><span> </span><span>failures</span><span> </span><span>for</span><span> </span><span>username</span>
+</code></pre></div>
+
+<p>From the remote server's perspective each is considered a connection attempt. If you have too many SSH keys for it to try then it may not get to the correct one. To force it to only send the SSH key specific to the server you are connecting to as listed in your config file, add the following to the top of your <code>~/.ssh/config</code>:</p>
+<div><pre><span></span><code>Host *
+  IdentitiesOnly yes
+</code></pre></div>
+
+<p>This will force you to explicitly list the SSH key to use for <strong>all</strong> remote servers. If you want to restrict this to just a subset of them, you can replace the "*" in the <strong>Host</strong> section with a wildcard matching the DNS name of the servers. For example <code>*.example.com</code>.</p>
+<h3 id="vpc">VPC</h3>
+<p><a href="http://aws.amazon.com/vpc/">Amazon Virtual Private Coud (VPC)</a> is a networking feature of EC2 that allows you to define a private network for a group of servers. Using it greatly simplifies fencing off components of your infrastructure and minimizing the externally facing pieces.</p>
+<p>The basic idea is to separate your infrastructure into two halves, a public half and a private half. The external endpoints for whatever you are creating goes in the public half. For a web application this would be your web server or load balancer.</p>
+<p>Services that are only consumed internally such as databases or caching servers belong in the private half. Components in the private half are <em>not</em> directly accessible from the public internet.</p>
+<p>This is a form of the <a href="https://en.wikipedia.org/wiki/Principle_of_least_privilege">principle of least privilege</a> and it's a good idea to implement it. If your server infrastructure involves more than <strong>one</strong> server, then you probably should be using a VPC.</p>
+<h3 id="bastion-host">Bastion Host</h3>
+<p>To access internal components in the private half your VPC you'll need a bastion host. This is a dedicated server that will act as an SSH proxy to connect to your other internal components. It sits in the public half of your VPC.</p>
+<p>Using a bastion host with a VPC greatly simplifies network security when working on AWS by significantly minimizing the number of external firewall rules you need to manage. Here's how to set one up:</p>
+<ol>
+<li>Spin up a new server in the public half of your VPC</li>
+<li>Create a security group <strong>Bastion SG</strong> and assign it to the new server</li>
+<li>Edit the security groups for your private half servers to allow <strong>inbound</strong> access on port 22 (SSH) from <strong>Bastion SG</strong></li>
+<li>Add your whitelisted IPs to the inbound ACL for <strong>Bastion SG</strong> (<em>see the next section</em>)</li>
+</ol>
+<p>An SSH proxy server doesn't use that much CPU and practically zero disk. A m1.micro instance (<em>the cheapest one that AWS offers</em>) is more than enough for this. As of Jan 2014, at on-demand rates this comes out to ~$15/mo. With reserved instances you can bring this down to about $7/mo.</p>
+<p>The added cost is nothing compared to the simplicity and security it adds to your overall environment.</p>
+<h3 id="firewall-whitelists">Firewall Whitelists</h3>
+<p>Any server with port 22 (SSH) open to the public internet will get <strong>a lot</strong> of hacking attempts. Within 24 hours of turning on a such a server you should see a lot of entries in your SSH logs of bots trying to brute force log in. If you only allow SSH key based authentication this will be a pointless exercise but it's still annoying to see all the entries in the log (<em>ie. it's extra noise</em>).</p>
+<p>One way to avoid this is to whitelist the IP addresses that can connect to your server. If you have a static IP address at your office or if it's "mostly static" (<em>ex: most dynamic IPs for cable modems and DSL don't change very often</em>), then you can set up the firewall rules for your servers to only allow inbound SSH access from those IPs. Other IP addresses will not even be able to tell there is an SSH server running. Port scanning for an SSH server will fail as the initial TCP socket will never get established.</p>
+<p>Normally this would be a pain to manage on multiple servers but by using a bastion host this only needs to be done in one place. Later on if your IP address changes or you need to connect to your server from a new location (<em>ex: on the road at a hotel</em>), then just add your current IP address to the whitelist. When you're done, simply remove it from the list.</p>
+<h2 id="email">Email</h2>
+<p>Amazon <a href="http://aws.amazon.com/ses/">Simple Email Service (SES)</a> is Amazon's send-only email service for AWS. You can use it to send out email from your application or command line scripts. It includes both an AWS specific programmatic API as well as a standard STMP interface. Both cost the same (<em>it's pay per use</em>)  but for portability purposes I recommend using the SMTP interface. This allows you to change your email provider down the road.</p>
+<p>If you're only sending a handful emails then SES can be used free of charge. The first 2,000 emails per day are free when you send them from an EC2 server. For a lot of people this should be more than enough. After the first 2,000 per day it's $.10 per 1,000 emails plus outbound bandwidth costs.</p>
+<h3 id="verification">Verification</h3>
+<p>When you first set it up you'll need to verify ownership for the email addresses that you'll be sending from. For example if you want to send email from <strong>hello@example.com</strong> then you'll need to prove you actually control <strong>example.com</strong>. This is done by either verifying that you can receive email at that address. You can also verify an entire domain by setting up TXT records to verify domain ownership.</p>
+<p>You cannot send email until this verification is complete and it can take a little while for it to propagate through the system. Additionally, to prevent spammers from using SES for nefarious purposes, Amazon restricts your initial usage of SES. Your sending limit is gradually increased. If you plan on sending email from your application you should set up SES immediately so that it's available when you need it.</p>
+<h3 id="dkim-and-spf">DKIM and SPF</h3>
+<p>To ensure that your emails are actually received by your recipients and not rejected by their spam filters you should set up both <a href="https://en.wikipedia.org/wiki/Dkim">DKIM</a> and <a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework">SPF</a> for your domain. Each is a way for recipients to verify that Amazon SES is a legitimate sender of email for your domain.</p>
+<p>You can read more about setting up SPF on SES <a href="http://docs.aws.amazon.com/ses/latest/DeveloperGuide/spf.html">here</a>.</p>
+<p>You can read more about setting up DKIM on SES <a href="http://docs.aws.amazon.com/ses/latest/DeveloperGuide/easy-dkim.html">here</a>.</p>
+<p>Also, if you haven't already, you should set up DKIM and SPF for your domain's email servers as well. If you're using Google Apps for email hosting more details are available <a href="https://support.google.com/a/answer/174124?hl=en">here</a>.</p>
+<h3 id="testing-via-port-25">Testing via Port 25</h3>
+<p>Once you have it set up, a simple way to test out both DKIM and SPF is using the email verification service provided by <a href="http://www.port25.com/support/authentication-center/email-verification/">Port 25</a>. Simply send them an email and a short while later they'll respond back with a report saying whether SPF and DKIM are properly configured. They'll also indicate whether their spam filters would flag your message as junk mail.</p>
+<p>Note that you can also use Port 25 to verify your personal email address as well, not just Amazon SES. Just manually send an email to Port 25 and wait for the response.</p>
+<h2 id="ec2-on-the-cheap">EC2 (on the cheap)</h2>
+<p>Amazon EC2 allows you to spin up servers on demand and you only pay for what you usage, billed hourly. This means it's particularly catered towards usage patterns that involve scaling up to a large number of servers for a short period of time.</p>
+<p>The flip side of the fine grained billing of EC2 is that the on-demand price of the servers is more expensive than other cloud providers. Here a couple tips to lower your costs.</p>
+<h3 id="reserved-instances">Reserved Instances</h3>
+<p>If you are running a server that is always online you should look into reserved instances. With reserved instances you pay an upfront fee to in exchange for greatly reduced hourly rates. Amazon offers three levels of reserved instances, <strong>Light</strong> (<em>the cheapest</em>), <strong>Medium</strong>, and <strong>Heavy</strong> (<em>most expensive</em>), and each is offered in 1-year (<em>cheaper</em>) or 3-year blocks (<em>more expensive</em>).</p>
+<p>Each costs progressively more, but also progressively reduces the hourly cost for running a server. For example a standard m1.small instance costs $.06/hour on-demand. If you buy a 3-year light reserved instance for $96 the hourly price drops to $.027/hour. Factoring in the up front cost and assuming the server runs 24-hours a day, it would take about 4 months to break even with the reserved instance vs paying on-demand rates.</p>
+<p>Billing for <strong>Heavy</strong> instances is a bit different than <strong>Light</strong>  or <strong>Medium</strong> as you'll be billed for the underlying instances <strong>regardless</strong> of whether it's actually running. This means that if you buy a 3-year heavy reserved instance you're agreeing to pay for running that instance 24-hours a day for the next three years.</p>
+<p>The savings for reserved instances is anywhere from 25% to 65% over on-demand pricing. The break even point is anywhere from 3-months to a year. Once your AWS usage has stabilized it's well worth the time to investigate the cost savings of buying reserved instances.</p>
+<p>If you're unsure of whether you'll be running the instance types a year or two from now I suggest sticking to Light or Medium instances. The savings differential is only another 10-15% but they allow you more cheaply change your infrastructure down the road.</p>
+<h3 id="reserved-instance-marketplace">Reserved Instance Marketplace</h3>
+<p>There's also a reserved instance marketplace where you can buy reserved instances from third parties or sell those that you no longer need. Since reserved instances only impact billing there's no difference in functionality in buying them via the third party marketplace. In fact, it's all part of the same UI in the admin console.</p>
+<p>The only real difference with third party reserved instances is the duration of the reservation can be just about anything. This can be very useful if you anticipate a usage term besides 1-year or 3-years. Just make sure to check the actual price as there usually a couple listed that have wildly inflated prices compared to the Amazon offered ones.</p>
+<h3 id="spot-instances">Spot Instances</h3>
+<p>Spot instances allow you to bid on excess EC2 capacity. As long as your bid price is above the current spot price, your instance will continue to run and you'll pay the lower of the two per hour. If the spot price increases beyond your bid, your instance may be terminated. This termination could happen at anytime.</p>
+<p>As they can be terminated at any time, spot instances work best when application state and results are stored outside the instance itself. Idempotent operations and reproducible or parallelizable work is usually a great candidate for spot instances. One of the most popular use cases for it is for running continuous integration (CI) servers. If the CI server crashes and restarts an hour later, it's not that big of a deal.  The only result we really care about is if the final application build/test was successful.</p>
+<p>More complicated setups are possible with spot instances as well. If you fully automate their provisioning (<em>ie. automate security groups, user data, startup scripts</em>), you can even have them automatically register themselves via Route53 DNS and then join an existing load balancer. In a later article I'll be writing about how to build such a setup that cheaply scales out a stateless web service via a phalanx of spot instances, all the while being fault tolerant to their random termination.</p>
+<h2 id="s3">S3</h2>
+<p>S3 is Amazon's object store. It allows you to store arbitrary objects (<em>up to 5TB in size</em>) and access them over HTTP or HTTPS. It is said to be designed to provide 99.999999999% durability and 99.99% availability. For what it offers, S3 is really <a href="http://aws.amazon.com/s3/pricing/">cheap</a>. Amazon also periodically drops the prices for it as well. Most recently a <a href="http://aws.amazon.com/s3/pricing/effective-february-2014/">week ago</a>.</p>
+<p>The S3 API allows you to create signed URLs that provide fine grained access to S3 resources with custom expirations. For example you can have an object stored in S3 that is not publicly readable to be temporarily accessible via a signed URL. This is a great way to provide user's access to objects stored in private S3 buckets from webapps.</p>
+<h3 id="gpg">GPG</h3>
+<p>If you're using S3 to store sensitive data (<em>ex: database backups</em>) then you should encrypt the data <strong>before</strong> you upload it to S3. That way only encrypted data is stored on Amazon's servers.</p>
+<p>The easiest way to do this is using <a href="https://en.wikipedia.org/wiki/GNU_Privacy_Guard">GPG</a>. Generate a GPG key pair for your backup server on your local machine and add the <strong>public</strong> key of the key pair to the server. Then use that public key to encrypt any data before uploading to S3.</p>
+<div><pre><span></span><code><span># Set the bucket/path on S3 where we will put the backup:</span>
+$<span> </span><span>S3_PATH</span><span>=</span><span>"s3://my-s3-bucket/path/to/backup/backup-</span><span>$(</span>date<span> </span>+%Y%M%d<span>)</span><span>"</span>
+
+<span># Temp file for encryption:</span>
+$<span> </span><span>GPG_TEMP_FILE</span><span>=</span><span>$(</span>mktemp<span>)</span>
+
+<span># Encrypt it with GPG:</span>
+$<span> </span>gpg<span> </span>--recipient<span> </span>aws.backup@example.com<span> </span>--output<span> </span><span>"</span><span>$GPG_TEMP_FILE</span><span>"</span><span> </span>--encrypt<span> </span>mydata.foo
+
+<span># Upload it via s3cmd:</span>
+$<span> </span>s3cmd<span> </span>put<span> </span><span>"</span><span>$GPG_TEMP_FILE</span><span>"</span><span> </span><span>"</span><span>$S3_PATH</span><span>"</span>
+
+<span># Clean up temp file:</span>
+$<span> </span>rm<span> </span><span>"</span><span>$GPG_TEMP_FILE</span><span>"</span>
+</code></pre></div>
+
+<p>The only downside to encrypting data prior to storage on S3 is that you will need to decrypt it to read it. You can't provide the S3 URL to someone else to download the data (<em>ex: a direct link to a user's content that you're storing on their behalf</em>) as they will will not be able to decrypt it. For backups this is the right approach as only <strong>you</strong> (<em>or your company, your team, ...</em>) should be able to read your data.</p>
+<p>The S3 CLI tool <a href="http://s3tools.org/s3cmd">s3cmd</a> includes an option to specify a GPG key. If set, then it will automatically encrypt at objects you PUT to S3. It can be a convenient option as you only need to set it one place (<em>the s3cmd config file</em>). I prefer explicitly adding the GPG steps to my backup scripts though.</p>
+<h3 id="encryption-at-rest">Encryption At Rest</h3>
+<p>S3 also supports what is referred to as <a href="http://aws.typepad.com/aws/2011/10/new-amazon-s3-server-side-encryption.html"><strong>Server Side Encryption</strong></a>
+. With this option enabled, Amazon will encrypt your data before persisting it to disk, and will transparently decrypt it prior to serving it back to a valid S3 request. The documentation for it describes how they keep the decryption keys separate from the S3 API servers and request them on demand.</p>
+<p>Since Amazon can still read your data I don't consider this to be that useful of a feature. If you want to ensure that nobody else can read your data then <strong>you</strong> need to do the encryption. If you trust a third party to do it, then by definition that third party is able to read your unencrypted data.</p>
+<p>Still though, it doesn't hurt to enable it either. Apparently there is no real performance penalty for <a href="http://aws.typepad.com/aws/2011/10/new-amazon-s3-server-side-encryption.html#comment-6a00d8341c534853ef014e8c19308e970d">enabling it</a>.</p>
+<h3 id="object-expiration">Object Expiration</h3>
+<p>Once you start using S3 for backups you'll notice that your S3 bill will grow fairly linearly (<em>or faster!</em>). By default, S3 persists objects forever so you'll need to take some extra steps to clean things up.</p>
+<p>The obvious solution is to delete objects as they get old. If you're using S3 for automated backups then you can have your backup script delete older entries. With additional logic you can have your backup scripts keep various ages of backups (<em>ex: monthly for a year, weekly for a month, daily for a week</em>).</p>
+<p>A simpler, albeit coarser, approach is to use S3 object expirations. It allows you to define a maximum age for S3 objects. Once that age is reached, the object will automatically be deleted with no user interaction. You could set a 6-month expiration on your S3 backup bucket and it will automatically delete older entries than that. </p>
+<p><strong><em>Warning:</em></strong> <em>If you use S3 object expiration make sure that your backups are actually working. It will delete your old objects regardless of whether your latest backups are actually valid. Make sure to test your backups regularly!</em></p>
+<p>Object expiration is also a simple way to delete all the objects in an S3 bucket. From the AWS S3 console simply set the expiration for the entire bucket to be 1-day. The objects will then be automatically deleted after a day. S3 expiration is asynchronous so you may still see the objects in S3 for a short while after 24-hours but you will not be billed for them.</p>
+<h3 id="glacier">Glacier</h3>
+<p><a href="http://aws.amazon.com/glacier/">Glacier</a> is Amazon's long term, persistent storage service. It's about an order of magnitude cheaper than S3 but with much slower access times (<em>on the order of multiple hours</em>).</p>
+<p>Rather than deleting old S3 objects you can configure S3 to automatically expire them to Glacier. The storage cost will be about 10x less and if you really need the data (<em>ex: you accidentally destroyed all your S3 backups</em>) you can slowly restore them from Glacier.</p>
+<h2 id="final-thoughts">Final Thoughts</h2>
+<p>This post ended up longer than originally planned, but it's still a <em>very</em> incomplete list. There are plenty of other tips, tricks, and techniques to use with AWS, this is just a (<em>hopefully helpful</em>) start.</p>
+<p><em>Do you have something to add to this list, a better way of solving some of these problems, or just want to be notified when I have a new post? <a href="mailto:sehrope@jackdb.com">Let me know</a>!</em></p></div></div>
+  </div>
+</body>
+</html>

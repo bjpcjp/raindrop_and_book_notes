@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>No Fooling With Voxel Pooling</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>No Fooling With Voxel Pooling</h1>
+    <p><strong>URL:</strong> <a href="https://semiengineering.com/no-fooling-with-voxel-pooling/">https://semiengineering.com/no-fooling-with-voxel-pooling/</a></p>
+    <p><strong>Tags:</strong> cuda</p>
+    <p><strong>Bookmark ID:</strong> 991332199</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+					<p>A variety of new and complicated transformer models have emerged in the past 18 to 24 months as new “must have” networks in advanced automotive use cases. These novel architectures often introduce new network operators or novel ways of combining tensors – often from different types of sensors – in ways to enhance detection and recognition of objects in L3 / L4 / L5 ADAS and autonomous driving software stacks. Examples include: Deformable Attention Transformer (DAT) and DAT++; SegFormer; Detection Transformer (DETR); and Bird’s Eye View Depth Estimation – BEVdepth. These new functions and operations in these advanced networks can pose extreme porting challenges for SoC programmers trying to run the models on existing NPU accelerators!</p>
+<h2>New operators on fixed-function accelerators?</h2>
+<p>If the SoC team – or the car platform team – is lucky, a new graph operator in a novel AI network can be supported by the existing hardwired, less-than-fully programmable NPU. If they are unlucky, then the operation needs to fallback to run on the slow companion CPU or DSP – which usually means the performance is so slow as to be unviable. But what if the breakthrough function is so new, so novel that it doesn’t exist in the common graph manipulation tools? What if the new function is not a graph operator at all?</p>
+<h2>Voxel Pooling – A custom CUDA function</h2>
+<p>One such function is the Voxel Pooling operation found in the BEVdepth network. (Available on Megvii’s public <a href="https://github.com/Megvii-BaseDetection/BEVDepth/blob/main/bevdepth/ops/voxel_pooling_inference/src/voxel_pooling_inference_forward_cuda.cu" rel="noopener noreferrer" target="_blank">Github repo</a>.) A trusty AI search engine describes Voxel Pooling as: “a technique where 3D point cloud data from multiple camera views is aggregated into a bird’s-eye view (BEV) feature map by dividing the space into voxels (3D grid cells) and combining the features of points falling within each voxel, essentially creating a unified representation of the scene in a 2D grid format, which is then used for further processing like object detection.” Sounds complicated. In fact, in the specific case of BEVdepth, the complex voxel pooling function is written as a custom CUDA function, because it has no equivalent built-in graph operator in PyTorch today, and certainly not in the commonly used interchange formats used by NPU vendor toolchains: ONNX and TFlite.</p>
+<p>So how does the algorithm porting team handle porting of Voxel Pooling onto an embedded NPU if the function is not represented in the graph interchange format supported by the NPU vendor’s graph compiler toolchain? With other NPUs, the team is stuck – there’s simply no way to get that important new function ported quickly to the NPU, and very likely it can never be ported. BEVdepth might simply not be able to run on the platform at all.</p>
+<h2>If only your NPU supported a dialect of C++, just like CUDA!</h2>
+<p>There is one embedded AI processor on the market that does support novel, custom operator functions in a C++ language. Quadric’s Chimera GPNPU – general purpose NPU – is programmed in C++. The advanced Chimera Graph Compiler (CGC) ingests networks in the ONNX format – from PyTorch, Tensorflow, or any other training framework. CGC then converts the entire network into optimized C++ for later compilation by the LLVM compiler. But for functions like Voxel Pooling that are written in pure CUDA no direct compilation is possible – not with our CGC graph compiler – nor any other NPU graph compiler. The solution for Voxel Pooling is to capture the function in a custom C++ representation using our CCL dialect of C++, which is exactly how BEVdepth Voxel Pooling was written in CUDA for the Nvidia platform.</p>
+<p>But is writing Voxel Pooling – or other similar functions – difficult? Not for a skilled programmer who can already write CUDA code. The entire Voxel Pooling kernel is some sixty lines of CCL code (including comments!), shown here:</p>
+<p><a href="https://i0.wp.com/semiengineering.com/wp-content/uploads/Quadric_No-Fooling-with-Voxel-Pooling-fig1.webp?ssl=1"><img data-recalc-dims="1" fetchpriority="high" decoding="async" src="https://i0.wp.com/semiengineering.com/wp-content/uploads/Quadric_No-Fooling-with-Voxel-Pooling-fig1.webp?resize=594%2C656&amp;ssl=1" alt="" width="594" height="656"></a></p>
+<h2>Quickly stitch it back together</h2>
+<p>The C++ shown above is quickly stitched together with the auto-generated C++ output by the CGC graph compiler, and the full network is now ported completely on the Chimera GPNPU – none of the graph needs to run on any other IP block – no CPU load, no companion DSP needed.</p>
+<h2>What about performance?</h2>
+<p>The skeptical reader (you!) is probably already thinking: “OK, fine, you can run Voxel Pooling. But at what speed? If it’s not fast, it’s not useful!” Fear not! The implementation of Voxel Pooling on the Chimera GPNPU is actually faster than the original CUDA code running on a 450 Watt Nvidia RTX3090 board (with GT102 GPU chip). The Chimera GPNPU core – burning just a couple of Watts of power dissipation (your mileage will vary depending on the process node and clock frequency, and choices of off-chip memory interface) outperforms the 450W full chip GPU by a factor of 2X.</p>
+<p><a href="https://i0.wp.com/semiengineering.com/wp-content/uploads/Quadric_No-Fooling-with-Voxel-Pooling-fig2.webp?ssl=1"><img data-recalc-dims="1" decoding="async" src="https://i0.wp.com/semiengineering.com/wp-content/uploads/Quadric_No-Fooling-with-Voxel-Pooling-fig2.webp?resize=624%2C259&amp;ssl=1" alt="" width="624" height="259"></a></p>
+<p>The skeptical reader might also wonder, “How can that be true?” Simple. GPUs – such as the RTX3090 – are designed for ease of use in model training and drawing polygons, mostly aimed at data centers where electricity use is not priority #1. GPUs use cache-based architectures (caches burn power!) and hardware-heavy Warp &amp; Thread programming models. The Chimera GPNPU processor is, by contrast, designed for embedded use. Quantized models, ahead-of-time offline compilation, and DMA-based memory hierarchy all save gobs and gobs of power.</p>
+<p>Want to know more about the implementation of Voxel Pooling on Chimera cores? We have a <a href="https://app.quadric.io/docs/latest/chimera-software-user-guide/tutorials-model-demos/custom-op-tutorials/tutorial-voxel-pooling" rel="noopener noreferrer" target="_blank">detailed Tutorial</a> – including source, performance profiling and more data – for registered users of the Quadric Dev Studio.</p>
+<h2>The fully programmable, universal, high-performance GPNPU solution</h2>
+<p>The Chimera GPNPU runs all AI/ML graph structures. And runs non-graph code – so you can run things currently captured in CUDA, C++ (for DSP functions) and even some Python! The Chimera GPNPU processor integrates fully programmable 32bit ALUs with systolic-array style matrix engines in a fine-grained architecture. Up to 1024 ALUs in a single core, with only one instruction fetch and one AXI data port. That’s over 32,000 bits of parallel, fully-programmable performance. Scalable up to 864 TOPs for bleeding-edge ADAS applications, Chimera GPNPUs have matched and balanced compute throughput for both MAC and ALU operations so no matter what type of network you choose to run they all run fast, low-power and highly parallel. Learn more at <a href="https://quadric.io/" rel="noopener noreferrer" target="_blank">www.quadric.io</a>.</p>
+
+					<br>
+
+				</div><div>
+
+							<h3>Steve Roddy </h3>&nbsp;&nbsp;<p><small><a href="https://semiengineering.com/author/steve-roddy/">(all posts)</a></small>
+
+							<br>
+
+							Steve Roddy is the chief marketing officer at Quadric.io. Previously, he was vice president of the Machine Learning Group at Arm, and before that he served as vice president for IP licensing businesses at Tensilica (acquired by Cadence), and Amphion Semiconductor. He also held product management roles at Synopsys, LSI Logic, and AMCC.
+						</p></div></div>
+  </div>
+</body>
+</html>

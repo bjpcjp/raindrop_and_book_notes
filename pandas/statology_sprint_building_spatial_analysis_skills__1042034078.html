@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Statology Sprint: Building Spatial Analysis Skills with GeoPandas</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Statology Sprint: Building Spatial Analysis Skills with GeoPandas</h1>
+    <p><strong>URL:</strong> <a href="https://www.statology.org/statology-sprint-building-spatial-analysis-skills-with-geopandas/">https://www.statology.org/statology-sprint-building-spatial-analysis-skills-with-geopandas/</a></p>
+    <p><strong>Tags:</strong> pandas, python, spatial</p>
+    <p><strong>Bookmark ID:</strong> 1042034078</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-55310">
+
+	<!-- .entry-header-wrapper -->
+
+	<div>
+		<center><img decoding="async" src="https://www.statology.org/wp-content/uploads/2025/05/sta-sprint-geopandas.png" alt="Statology Sprint: Building Spatial Analysis Skills with GeoPandas" width="100%"><br>
+<span>Image by Editor | Midjourney</span></center>
+<h2>What are Statology Sprints?</h2>
+<p><a href="https://www.statology.org/tag/sprint/" target="_blank" rel="noopener">Statology Sprints</a> are carefully curated learning paths that distill complex concepts into practical tools you can apply immediately. We fuse foundational statistical material with expert insights to enhance your skills while skipping unnecessary filler. Each Sprint includes:</p>
+<ul>
+<li>Core concepts explained clearly</li>
+<li>Practical code examples you can adapt</li>
+<li>Connections between related ideas</li>
+<li>Links to deeper coverage when you need it</li>
+</ul>
+<p>This Sprint focuses on <strong>GeoPandas</strong>, a powerful Python library that extends pandas to handle geospatial data. By combining the capabilities of pandas for data manipulation with the ability to work with geographic information, GeoPandas provides an intuitive approach to spatial analysis.</p>
+<h2>Getting Started with GeoPandas</h2>
+<p>Before diving into spatial analysis, you’ll need to set up your environment with GeoPandas and its dependencies. GeoPandas relies on several key packages to handle geometric operations and coordinate transformations.</p>
+<div>
+
+<pre># Install GeoPandas using conda (recommended approach)
+conda install --channel conda-forge geopandas
+
+# Import libraries
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import geodatasets
+
+# Check your installation
+print(f"GeoPandas version: {gpd.__version__}")
+</pre>
+</div>
+<p>The recommended installation method uses conda with the conda-forge channel, which ensures you get compatible versions of all required dependencies, including:</p>
+<ul>
+<li>numpy and pandas: For data structures and analysis</li>
+<li>shapely: For geometric operations</li>
+<li>pyproj: For coordinate system transformations</li>
+<li>pyogrio: For reading and writing spatial data</li>
+</ul>
+<p>Once installed, we can access built-in datasets using the geodatasets package, which provides a collection of ready-to-use spatial data:</p>
+<div>
+
+<pre># Get a list of available datasets
+dataset_keys = list(geodatasets.data.flatten().keys())
+print(f"Total available datasets: {len(dataset_keys)}")
+print(f"Sample datasets: {dataset_keys[:5]}")
+
+# Load New York City boroughs dataset
+path = geodatasets.get_path('ny.bb')
+nyc = gpd.read_file(path)
+
+# Display the first few rows
+print(nyc.head(2))
+</pre>
+</div>
+<div>
+
+<pre>Total available datasets: 58
+Sample datasets: ['geoda.airbnb', 'geoda.atlanta', 'geoda.cars', 'geoda.charleston1', 'geoda.charleston2']
+</pre>
+</div>
+<center><img decoding="async" src="https://www.statology.org/wp-content/uploads/2025/05/Screenshot-2025-05-12-at-14.16.23-1024x146.png" alt="Table with borough codes, names, shape lengths, areas, and geometry data." width="100%"><br>
+<span>Image By Author</span></center>&nbsp;
+<p>This simple example demonstrates how to load a built-in dataset of New York City boroughs. The result is a GeoDataFrame containing both attribute data (like borough names) and geometric information (the shapes of each borough).</p>
+<p>➡️ <a href="https://www.statology.org/how-to-install-geopandas-and-its-required-dependencies/" target="_blank" rel="noopener">Learn more about installing GeoPandas and its dependencies</a></p>
+<p>➡️ <a href="https://www.statology.org/how-to-access-built-in-geopandas-datasets/" target="_blank" rel="noopener">Explore more about accessing built-in GeoPandas datasets</a></p>
+<h2>Core Concepts in GeoPandas</h2>
+<p>GeoPandas introduces two primary data structures that extend their pandas counterparts: GeoDataFrame and GeoSeries. Understanding these structures is essential for working effectively with spatial data.</p>
+<h3>GeoDataFrame and GeoSeries</h3>
+<p>A GeoDataFrame extends pandas’ DataFrame by adding a special “geometry” column that contains spatial data. Similarly, a GeoSeries extends pandas’ Series to store geometric objects:</p>
+<div>
+
+<pre>import pandas as pd
+from shapely.geometry import Point
+
+# Create a regular pandas DataFrame
+cities_df = pd.DataFrame({
+    'city': ['New York', 'Los Angeles', 'Chicago', 'Houston'],
+    'population': [8.4, 3.9, 2.7, 2.3]  # population in millions
+})
+
+# Create a GeoDataFrame by adding a geometry column
+geometry = [
+    Point(-74.006, 40.7128),  # New York
+    Point(-118.243, 34.0522), # Los Angeles
+    Point(-87.6298, 41.8781), # Chicago
+    Point(-95.3698, 29.7604)  # Houston
+]
+cities_gdf = gpd.GeoDataFrame(cities_df, geometry=geometry, crs="EPSG:4326")
+
+# Print both to compare
+print("Pandas DataFrame:")
+print(cities_df)
+print("\nGeoPandas GeoDataFrame:")
+print(cities_gdf)
+</pre>
+</div>
+<div>
+
+<pre>Pandas DataFrame:
+          city  population
+0     New York         8.4
+1  Los Angeles         3.9
+2      Chicago         2.7
+3      Houston         2.3
+
+GeoPandas GeoDataFrame:
+          city  population                geometry
+0     New York         8.4  POINT (-74.006 40.713)
+1  Los Angeles         3.9  POINT (-118.24 34.052)
+2      Chicago         2.7   POINT (-87.63 41.878)
+3      Houston         2.3    POINT (-95.37 29.76)
+</pre>
+</div>
+<p>Key differences between a DataFrame and a GeoDataFrame include:</p>
+<ol>
+<li>The geometry column, which contains Shapely objects (Points, LineStrings, or Polygons)</li>
+<li>A Coordinate Reference System (CRS) that defines how coordinates relate to locations on Earth</li>
+<li>Special methods for spatial operations like calculating areas or distances</li>
+</ol>
+<h3>Working with Geometries</h3>
+<p>GeoPandas provides numerous methods to analyze and transform geometric data. Let’s examine some common operations:</p>
+<div>
+
+<pre>import geopandas as gpd
+import geodatasets
+
+# Load New York boroughs
+path = geodatasets.get_path('ny.bb')
+nyc = gpd.read_file(path)
+
+# Check the original CRS
+print(f"Original CRS: {nyc.crs}")
+
+# Transform to a metric coordinate system for accurate calculations
+nyc_metric = nyc.to_crs('EPSG:3857')  # Web Mercator projection (units in meters)
+
+# Calculate area of each borough (in square meters, then convert to square kilometers)
+nyc_metric['area_sqkm'] = nyc_metric.geometry.area / 10**6
+
+# Calculate centroids
+nyc_metric['centroid'] = nyc_metric.geometry.centroid
+
+# Calculate distances between Manhattan and other boroughs
+manhattan = nyc_metric[nyc_metric['BoroName'] == 'Manhattan']
+manhattan_centroid = manhattan.centroid.iloc[0]
+nyc_metric['distance_to_manhattan_km'] = nyc_metric.centroid.distance(manhattan_centroid) / 1000
+
+# Display results
+print("\nBoroughs with area and distance to Manhattan:")
+print(nyc_metric[['BoroName', 'area_sqkm', 'distance_to_manhattan_km']])
+</pre>
+</div>
+<div>
+
+<pre>Original CRS: EPSG:2263
+
+Boroughs with area and distance to Manhattan:
+        BoroName   area_sqkm  distance_to_manhattan_km
+0  Staten Island  261.803516                 35.511450
+1         Queens  492.831621                 19.456442
+2       Brooklyn  312.969358                 19.586772
+3      Manhattan  103.220100                  0.000000
+4          Bronx  192.925108                 15.755034
+</pre>
+</div>
+<p>This example demonstrates several key geometric operations: calculating areas using the <strong>area</strong> property, finding geometric centers with the <strong>centroid</strong> method, and measuring distances between geometries with the <strong>distance</strong> method. Notice how our area calculations differ from commonly cited values (Manhattan’s official area is about 59.1 km² versus our calculated 103.2 km²) – these differences illustrate how coordinate reference systems significantly impact spatial measurements. Different projections can provide varying results because they optimize for different properties (preserving area, angles, or distances). While our calculations are mathematically correct within the EPSG:3857 projection, this highlights why selecting the appropriate CRS is essential for accurate geospatial analysis. These variations remind us that spatial measurements are approximations dependent on the chosen projection and should be interpreted within their geographic context.</p>
+<p>➡️ <a href="https://www.statology.org/how-to-work-with-geodataframes-and-geoseries-in-geopandas/" target="_blank" rel="noopener">Learn more about GeoDataFrames and GeoSeries</a></p>
+<p>➡️ <a href="https://www.statology.org/how-to-work-with-geometry-methods-in-geopandas/" target="_blank" rel="noopener">Explore geometry methods in GeoPandas</a></p>
+<p>➡️ <a href="https://www.statology.org/how-to-calculate-distances-between-points-using-geopandas/" target="_blank" rel="noopener">Discover more about calculating distances in GeoPandas</a></p>
+<h2>Advanced Techniques</h2>
+<p>Once you’re comfortable with the basics, GeoPandas offers sophisticated functionality for specialized geospatial analysis and visualization.</p>
+<h3>Working with Coordinate Reference Systems</h3>
+<p>Different maps use different coordinate systems. GeoPandas allows you to check and transform between these systems:</p>
+<div>
+
+<pre># Check the current CRS
+print(f"Original CRS: {nyc.crs}")
+
+# Transform to a different CRS (Web Mercator)
+nyc_mercator = nyc.to_crs("EPSG:3857")
+print(f"New CRS: {nyc_mercator.crs}")
+
+# Compare an area calculation in different projections
+# (Results can vary significantly based on projection)
+borough = "Manhattan"
+area_4326 = nyc[nyc['BoroName'] == borough].geometry.area.iloc[0] / 10**6
+area_3857 = nyc_mercator[nyc_mercator['BoroName'] == borough].geometry.area.iloc[0] / 10**6
+
+print(f"{borough} area (EPSG:4326): {area_4326:.2f} km²")
+print(f"{borough} area (EPSG:3857): {area_3857:.2f} km²")
+</pre>
+</div>
+<div>
+
+<pre>Original CRS: EPSG:2263
+New CRS: EPSG:3857
+Manhattan area (EPSG:4326): 636.47 km²
+Manhattan area (EPSG:3857): 103.22 km²
+</pre>
+</div>
+<p>The output reveals a significant difference in area calculations between coordinate systems: 636.47 km² in the geographic coordinates (EPSG:4326) versus 103.22 km² in Web Mercator projection (EPSG:3857). This dramatic variation highlights why choosing the appropriate projection is important for accurate spatial measurements, especially for area calculations at non-equatorial latitudes.</p>
+<h3>Creating Maps with plot() and explore()</h3>
+<p>GeoPandas offers multiple visualization methods. The <strong>plot()</strong> method creates static maps using matplotlib, while <strong>explore()</strong> creates interactive maps:</p>
+<div>
+
+<pre># Transform to a metric coordinate system for accurate calculations
+nyc_metric = nyc.to_crs('EPSG:3857')  # Web Mercator projection (units in meters)
+
+# Calculate area of each borough (in square meters, then convert to square kilometers)
+nyc_metric['area_sqkm'] = nyc_metric.geometry.area / 10**6
+
+# Create a static map with plot()
+ax = nyc_metric.plot(
+    column='area_sqkm',
+    cmap='viridis',
+    legend=True,
+    figsize=(10, 6),
+    edgecolor='black',
+    legend_kwds={'label': 'Area (sq km)'}
+)
+ax.set_title('New York City Boroughs by Area')
+plt.axis('off')
+plt.show()
+
+# Create an interactive map with explore()
+# This produces an HTML map with zoom and pan capabilities
+interactive_map = nyc_metric.explore(
+    column='BoroName',
+    tooltip=['BoroName', 'area_sqkm'],
+    popup=True,
+    tiles='CartoDB positron',
+    cmap='Set2'
+)
+# To display the interactive map in a notebook, you would use:
+# display(interactive_map)
+</pre>
+</div>
+<center><img decoding="async" src="https://www.statology.org/wp-content/uploads/2025/05/Screenshot-2025-05-12-at-15.10.32-1024x868.png" alt="Choropleth map of NYC boroughs colored by area." width="100%"><br>
+<span>Image By Author</span></center>&nbsp;
+<p>The color-coded map visually communicates the size differences between boroughs at a glance. Queens (yellow) and Brooklyn (teal) appear as the largest boroughs, followed by the Bronx (blue), Staten Island (teal-blue), and Manhattan (purple). This visualization makes spatial patterns immediately apparent, demonstrating how GeoPandas turns complex data into intuitive geographical insights.</p>
+<h3>Simplifying Geometries</h3>
+<p>For working with complex geometries, GeoPandas provides tools to simplify shapes while preserving their overall structure:</p>
+<div>
+
+<pre># Load a detailed dataset (for example, Nepal districts)
+nepal_path = geodatasets.get_path('geoda.nepal')
+nepal = gpd.read_file(nepal_path)
+
+# Check average number of points per district
+avg_points_original = nepal.geometry.apply(lambda g: len(g.exterior.coords)).mean()
+print(f"Average points per district (original): {avg_points_original:.2f}")
+
+# Apply simplification with different tolerance levels
+nepal_simplified = nepal.copy()
+nepal_simplified['geometry'] = nepal_simplified.geometry.simplify(tolerance=0.01)
+
+# Compare number of points before and after
+avg_points_simplified = nepal_simplified.geometry.apply(lambda g: len(g.exterior.coords)).mean()
+print(f"Average points per district (simplified): {avg_points_simplified:.2f}")
+print(f"Reduction: {(1 - avg_points_simplified/avg_points_original) * 100:.1f}%")
+</pre>
+</div>
+<div>
+
+<pre>Average points per district (original): 435.37
+Average points per district (simplified): 43.51
+Reduction: 90.0%
+</pre>
+</div>
+<p>The simplification reduces the average number of points per district from 435.37 to just 43.51—a remarkable 90% reduction in geometric complexity. This dramatic simplification makes the data more efficient to process and store while preserving the essential shape characteristics, a useful technique when working with detailed geographic boundaries or when performance is a concern.</p>
+<p>These advanced techniques allow you to handle complex geospatial analysis tasks effectively. Whether you need to convert between coordinate systems, visualize your data, or optimize geometric operations, GeoPandas provides the tools you need.</p>
+<p>➡️ <a href="https://www.statology.org/how-to-work-with-coordinate-reference-systems-crs-in-geopandas/" target="_blank" rel="noopener">Learn more about coordinate reference systems</a></p>
+<p>➡️ <a href="https://www.statology.org/how-to-convert-coordinate-data-to-a-geodataframe-in-geopandas/" target="_blank" rel="noopener">Learn how to convert coordinate data to a GeoDataFrame</a></p>
+<p>➡️ <a href="https://www.statology.org/how-to-use-the-plot-method-in-geopandas-for-geospatial-visualization/" target="_blank" rel="noopener">Explore visualization with the plot() method</a></p>
+<p>➡️ <a href="https://www.statology.org/how-to-create-interactive-maps-with-geopandas-explore-method/" target="_blank" rel="noopener">Discover interactive mapping with explore()</a></p>
+<p>➡️ <a href="https://www.statology.org/how-to-simplify-geographic-data-using-geopandas/" target="_blank" rel="noopener">Learn about simplifying geographic data</a></p>
+<p>Now that we’ve explored these advanced techniques individually, let’s see how they work together on a slightly more complex dataset.&nbsp;</p>
+<h2>Bringing It All Together: Finding Chicago’s Health Deserts</h2>
+<p>Throughout this article, we’ve explored individual GeoPandas techniques. Now let’s combine these capabilities to solve a practical problem: identifying communities with limited access to good health outcomes, which we’ll call “health deserts.”</p>
+<h3>Step 1: Load Data and Reveal Health Disparities</h3>
+<p>Our analysis begins by loading the Chicago health dataset and creating a composite health score that combines multiple indicators:</p>
+<div>
+
+<pre>import geopandas as gpd
+import geodatasets
+import matplotlib.pyplot as plt
+
+# Load Chicago health data
+chicago = gpd.read_file(geodatasets.get_path('geoda.chicago_health'))
+
+# Create a simple health score (higher = worse health)
+chicago['HealthScore'] = (
+    chicago['InfntMR'].rank(pct=True) + 
+    chicago['CancerAll'].rank(pct=True) + 
+    chicago['DiabetM'].rank(pct=True)
+) / 3
+
+# Visualize health disparities
+fig, ax = plt.subplots(figsize=(10, 8))
+chicago.plot(column='HealthScore', 
+            ax=ax, 
+            legend=True,
+            cmap='RdYlBu_r',
+            edgecolor='black',
+            linewidth=0.5)
+
+# Highlight the worst 5 communities
+worst_health = chicago.nlargest(5, 'HealthScore')
+for idx, row in worst_health.iterrows():
+    ax.annotate(row['community'], 
+                xy=(row.geometry.centroid.x, row.geometry.centroid.y),
+                fontsize=10, 
+                bbox=dict(boxstyle='round', fc='red', alpha=0.7))
+
+ax.set_title('Chicago Health Disparities: Finding Communities in Crisis', fontsize=16)
+ax.axis('off')
+plt.tight_layout()
+plt.show()
+</pre>
+</div>
+<center><img decoding="async" src="https://www.statology.org/wp-content/uploads/2025/05/Screenshot-2025-05-10-at-19.38.16-1014x1024.png" alt="Map showing Chicago neighborhoods with varying health scores; most critical areas are labeled in red." width="100%"><br>
+<span>Image By Author</span></center>&nbsp;
+<p>This visualization reveals stark health disparities across Chicago. We combine infant mortality, cancer rates, and diabetes mortality into a single score, with red areas showing communities facing the most severe health challenges. The annotated communities – West Garfield Park, North Lawndale, Douglas, Fuller Park, and Greater Grand Crossing – emerge as areas needing immediate attention.</p>
+<h3>Step 2: Discover Spatial Clustering</h3>
+<p>Next, we explore how health outcomes cluster geographically using an interactive map:</p>
+<div>
+
+<pre># Create interactive map showing health clusters
+chicago['neighbors'] = chicago.geometry.apply(
+    lambda x: len([1 for idx, row in chicago.iterrows() 
+                   if x.touches(row.geometry)])
+)
+
+# Interactive visualization
+interactive_map = chicago.explore(
+    column='HealthScore',
+    tooltip=['community', 'HealthScore', 'InfntMR', 'neighbors'],
+    cmap='RdYlBu_r',
+    legend=True,
+    popup=True,
+    tiles='CartoDB positron'
+)
+
+display(interactive_map)
+</pre>
+</div>
+<center><img decoding="async" src="https://www.statology.org/wp-content/uploads/2025/05/Screenshot-2025-05-10-at-19.38.49-1024x612.png" alt="Heatmap overlay on Chicago region highlighting neighborhood health scores." width="100%"><br>
+<span>Image By Author</span></center>&nbsp;
+<p>The interactive map allows us to explore individual communities and see how they relate to their neighbors. Notice how poor health outcomes tend to cluster – communities with high health scores are often surrounded by other struggling communities, suggesting that health disparities follow geographic patterns.</p>
+<h3>Step 3: Calculate Distance to Healthcare</h3>
+<p>To understand accessibility, we measure how far each community is from areas with good health outcomes:</p>
+<div>
+
+<pre># Project for accurate distance calculations
+chicago_utm = chicago.to_crs('EPSG:26916')
+
+# Identify "healthy" communities (bottom 20%)
+healthy_communities = chicago_utm.nsmallest(15, 'HealthScore')
+
+# Calculate distance to nearest healthy community for each area
+chicago_utm['distance_to_care'] = chicago_utm.geometry.apply(
+    lambda x: min([x.centroid.distance(h.centroid) 
+                   for h in healthy_communities.geometry]) / 1000  # km
+)
+
+# Visualize accessibility
+fig, ax = plt.subplots(figsize=(10, 8))
+chicago_utm.plot(column='distance_to_care',
+                ax=ax,
+                legend=True,
+                cmap='plasma',
+                edgecolor='black',
+                linewidth=0.5)
+
+ax.set_title('Distance to Nearest "Healthy" Community (km)', fontsize=16)
+ax.axis('off')
+plt.tight_layout()
+plt.show()
+</pre>
+</div>
+<center><img decoding="async" src="https://www.statology.org/wp-content/uploads/2025/05/Screenshot-2025-05-10-at-19.39.24-971x1024.png" alt="Map of Chicago showing distance in km to the nearest healthy neighborhood." width="100%"><br>
+<span>Image By Author</span></center>&nbsp;
+<p>This distance analysis reveals a clear north-south divide. Communities in southern Chicago face the longest journeys to reach areas with better health outcomes, with some neighborhoods more than 20 kilometers away from the nearest “healthy” community. This geographic isolation compounds existing health challenges.</p>
+<h3>Step 4: Identify Health Deserts</h3>
+<p>We now define “health deserts” as communities beyond reasonable access to areas with good health outcomes:</p>
+<div>
+
+<pre># Create 3km buffer zones around healthy communities
+healthy_zones = healthy_communities.geometry.buffer(3000)
+coverage_area = healthy_zones.union_all()
+
+# Find communities outside the coverage
+chicago_utm['covered'] = chicago_utm.geometry.intersects(coverage_area)
+health_deserts = chicago_utm[~chicago_utm['covered']]
+
+# Visualize health deserts
+fig, ax = plt.subplots(figsize=(10, 8))
+chicago_utm.plot(ax=ax, color='lightgray', edgecolor='black')
+health_deserts.plot(ax=ax, color='red', edgecolor='black')
+
+# Add labels
+for idx, row in health_deserts.iterrows():
+    ax.annotate(row['community'], 
+                xy=(row.geometry.centroid.x, row.geometry.centroid.y),
+                fontsize=8,
+                bbox=dict(boxstyle='round', fc='yellow', alpha=0.8))
+
+ax.set_title('Chicago\'s Health Deserts: Communities Beyond 3km of Good Health', fontsize=16)
+ax.axis('off')
+plt.tight_layout()
+plt.show()
+</pre>
+</div>
+<center><img decoding="async" src="https://www.statology.org/wp-content/uploads/2025/05/Screenshot-2025-05-10-at-19.40.00-1024x977.png" alt="Map highlighting communities over 3km from a healthy area, marked in red." width="100%"><br>
+<span>Image By Author</span></center>&nbsp;
+<p>Our analysis identifies 27 communities as health deserts – areas more than 3 kilometers from any community with good health outcomes. These neighborhoods, concentrated entirely on Chicago’s south side, face both poor local health conditions and limited access to areas with better health resources and outcomes.</p>
+<h3>Step 5: Propose Solutions</h3>
+<p>Finally, we identify strategic locations for health interventions based on our spatial analysis:</p>
+<div>
+
+<pre># Identify optimal locations for new health facilities
+from shapely.ops import unary_union
+
+# Focus on high-need, underserved areas
+priority_areas = health_deserts[health_deserts['HealthScore'] &gt; 0.6]
+
+# Find central points for new facilities
+if len(priority_areas) &gt; 0:
+    combined_area = unary_union(priority_areas.geometry)
+    if combined_area.geom_type == 'MultiPolygon':
+        facility_locations = [poly.centroid for poly in combined_area.geoms]
+    else:
+        facility_locations = [combined_area.centroid]
+else:
+    facility_locations = []
+
+# Create final recommendations map
+fig, ax = plt.subplots(figsize=(12, 10))
+
+# Base map with health scores
+chicago_utm.plot(column='HealthScore',
+                ax=ax,
+                cmap='RdYlBu_r',
+                alpha=0.6,
+                edgecolor='black')
+
+# Add 2km service areas for proposed facilities
+for loc in facility_locations:
+    circle = loc.buffer(2000)
+    x, y = circle.exterior.xy
+    ax.fill(x, y, alpha=0.3, fc='green', ec='darkgreen', linewidth=2)
+    ax.scatter(loc.x, loc.y, s=300, c='darkgreen', marker='*', 
+               edgecolor='white', linewidth=2, zorder=5)
+
+ax.set_title('Proposed Health Facility Locations with 2km Service Areas', fontsize=16)
+ax.axis('off')
+plt.tight_layout()
+plt.show()
+
+# Summary statistics
+print(f"Communities identified as health deserts: {len(health_deserts)}")
+print(f"Proposed new facility locations: {len(facility_locations)}")
+print(f"Population potentially served: {priority_areas['Pop2014'].sum():,}")
+</pre>
+</div>
+<center><img decoding="async" src="https://www.statology.org/wp-content/uploads/2025/05/Screenshot-2025-05-10-at-19.41.09-841x1024.png" alt="Map showing a proposed facility in a health desert with a 2km service radius." width="100%"><br>
+<span>Image By Author</span></center>&nbsp;
+<p>Our spatial analysis suggests establishing a new health facility in southern Chicago, strategically positioned to serve the highest concentration of health deserts. The proposed location, with its 2-kilometer service area, could potentially reach over 500,000 residents currently living in areas with poor health outcomes and limited access to better health resources.</p>
+<p>This comprehensive analysis demonstrates how GeoPandas transforms raw health data into actionable spatial insights. By combining visualization, distance calculations, buffer analysis, and spatial clustering, we’ve moved from identifying problems to proposing data-driven solutions for Chicago’s health disparities.</p>
+<h2>Next Steps</h2>
+<p>After completing this spatial analysis of Chicago’s health disparities, there are several ways to extend and apply these GeoPandas techniques to your own work:</p>
+<ul>
+<li><strong>Integrate Multiple Data Sources</strong>: Combine health data with socioeconomic indicators, transportation networks, or environmental data to create more comprehensive analyses. For instance, overlay bus routes or food desert data to understand additional barriers to health access.</li>
+<li><strong>Automate Spatial Reports</strong>: Create reusable scripts that automatically generate health equity reports for different cities or time periods, making regular monitoring more efficient.</li>
+<li><strong>Apply to Other Domains</strong>: These same techniques work for analyzing education access, retail deserts, emergency service coverage, or environmental justice issues. The pattern of identifying disparities, measuring accessibility, and proposing solutions transfers across domains.</li>
+<li><strong>Scale Up Analysis</strong>: Expand from city to state or national level analysis using larger datasets and more sophisticated spatial clustering algorithms like DBSCAN or spatial autocorrelation measures.</li>
+<li><strong>Build Interactive Dashboards</strong>: Combine GeoPandas with tools like Streamlit or Dash to create interactive web applications that let stakeholders explore spatial data dynamically.</li>
+</ul>
+<p>With these foundational GeoPandas skills, you’re equipped to tackle complex spatial problems and transform geographic data into meaningful insights that drive real-world impact.</p>
+		<!--<h2>Featured Posts</h2>-->
+					</div><!-- .entry-content -->
+
+	<!-- .entry-meta -->
+
+</article></div>
+  </div>
+</body>
+</html>

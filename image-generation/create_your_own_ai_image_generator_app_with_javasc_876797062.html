@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Create Your Own AI Image Generator App With JavaScript and DALL-E 3</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Create Your Own AI Image Generator App With JavaScript and DALL-E 3</h1>
+    <p><strong>URL:</strong> <a href="https://webdesign.tutsplus.com/create-your-own-ai-image-generator-app-with-javascript-and-dall-e-3--cms-108670t">https://webdesign.tutsplus.com/create-your-own-ai-image-generator-app-with-javascript-and-dall-e-3--cms-108670t</a></p>
+    <p><strong>Tags:</strong> image-generation</p>
+    <p><strong>Bookmark ID:</strong> 876797062</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p>In this tutorial, we’ll build an AI image-generation app with JavaScript. Users will enter text describing the image they want, then behind the scenes we’ll call the DALL-E 3 API to generate it!</p><div data-content-block-type="Wysi" id="iavp">
+<p>DALL-E 3 is an image generation model that excels at generating images from text prompts. It can understand and interpret complex textual descriptions and translate them into visual representations. The images generated are also high-resolution and diverse in style.By the end of this tutorial, we will have something like this:</p>
+<figure><img src="data:application/octet-stream;base64," loading="lazy" width="870px" height="782px" srcset="data:application/octet-stream;base64, 2x"><img src="data:application/octet-stream;base64," loading="lazy" width="650px" height="585px" srcset="data:application/octet-stream;base64, 2x"><img src="data:application/octet-stream;base64," loading="lazy" width="380px" height="343px" srcset="data:application/octet-stream;base64, 2x"></figure>
+<h2 id="toc-0t2p-html-structure">HTML Structure</h2>
+<p>The HTML structure will consist of the following elements:</p>
+<ul>
+<li>A small button at the top right, which, when clicked, will allow the user to add their API KEY to local storage.</li>
+<li>A text input where users will enter their prompt</li>
+<li>A button that, when clicked, will take the prompt from the user and call the DALL-E API to generate the image</li>
+</ul>
+<h3 id="toc-hzqg-use-bootstrap"><span>Install Bootstrap</span></h3>
+<p><span>We will be using </span><a href="https://getbootstrap.com/" target="_blank" rel="noopener"><span>Bootstrap</span></a><span> to build the interface. Bootstrap is a framework that allows developers to build responsive sites in a short amount of time. Either link to the relevant CSS and JS files in the head of your HTML document, or (if you’re using CodePen) you’ll find the Bootstrap dependencies under the CSS and JS settings tabs.</span></p>
+<h3 id="toc-ggae-api-message"><span>API Message</span></h3>
+<p><span>First, start by displaying&nbsp; a message that the app requires an API key and then show a link where users can get the API KEY. Here’s the markup:</span></p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>&lt;div</span> <span>class=</span><span>"container-fluid"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>    <span>&lt;div</span> <span>class=</span><span>"row justify-content-center"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>      <span>&lt;div</span> <span>class=</span><span>"col-12 col-md-10 col-lg-8 col-xl-6 mt-5"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>        <span>&lt;p</span> <span>class=</span><span>"lead"</span><span>&gt;</span>This demo requires an API key. <span>&lt;a</span> <span>target=</span><span>"_blank"</span> <span>href=</span><span>"https://platform.openai.com/"</span><span>&gt;</span>Get yours here<span>&lt;/a&gt;&lt;/p&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>      <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>    <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre><span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Next, add the <strong>ADD API KEY </strong>button</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>&lt;div</span> <span>class=</span><span>"position-absolute top-0 end-0 mt-2 me-3"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>&lt;button</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>    <span>id=</span><span>"api"</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>    <span>type=</span><span>"button"</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>    <span>class=</span><span>"btn btn-info"</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>    <span>data-bs-toggle=</span><span>"modal"</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>    <span>data-bs-target=</span><span>"#KeyModal"</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>  <span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>    ADD API KEY
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>  <span>&lt;/button&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre><span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>The button uses absolute positioning to ensure it stays at the top right, and it is also set to <code>data-bs-target="#KeyModal.</code>&nbsp;This attribute means the button is linked to an element with the ID <code>KeyModal. </code></p>
+<h3 id="toc-766r-keymodal-button">KeyModal Button</h3>
+<p>When clicked, the button will trigger the modal to open. Bootstrap uses <code>data-bs-target</code> to reference an element by its ID, so when the button is clicked, it will look for the element with the id of <code>KeyModal</code> and perform the specified actions.</p>
+<p>Let’s add the modal below the button.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>&lt;div</span> <span>class=</span><span>"container mt-5"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>    <span>&lt;div</span> <span>class=</span><span>"modal fade"</span> <span>id=</span><span>"KeyModal"</span> <span>tabindex=</span><span>"-1"</span> <span>aria-hidden=</span><span>"true"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>      <span>&lt;div</span> <span>class=</span><span>"modal-dialog"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>        <span>&lt;div</span> <span>class=</span><span>"modal-content"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>          <span>&lt;div</span> <span>class=</span><span>"modal-header"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>            <span>&lt;h5</span> <span>class=</span><span>"modal-title"</span> <span>id=</span><span>"exampleModalLabel"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>              Your API Key remains stored locally in your browser
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>            <span>&lt;/h5&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>          <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>          <span>&lt;div</span> <span>class=</span><span>"modal-body"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre>            <span>&lt;div</span> <span>class=</span><span>"form-group"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>              <span>&lt;label</span> <span>for=</span><span>"apikey"</span><span>&gt;</span>API KEY<span>&lt;/label&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre>              <span>&lt;input</span> <span>type=</span><span>"text"</span> <span>class=</span><span>"form-control"</span> <span>id=</span><span>"apikey"</span> <span>/&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre>            <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre>          <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-16">
+<td><pre>16</pre></td>
+<td><pre>          <span>&lt;div</span> <span>class=</span><span>"modal-footer"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-17">
+<td><pre>17</pre></td>
+<td><pre>            <span>&lt;button</span>
+</pre></td>
+</tr>
+<tr id="line-18">
+<td><pre>18</pre></td>
+<td><pre>              <span>type=</span><span>"button"</span>
+</pre></td>
+</tr>
+<tr id="line-19">
+<td><pre>19</pre></td>
+<td><pre>              <span>class=</span><span>"btn btn-secondary"</span>
+</pre></td>
+</tr>
+<tr id="line-20">
+<td><pre>20</pre></td>
+<td><pre>              <span>data-bs-dismiss=</span><span>"modal"</span>
+</pre></td>
+</tr>
+<tr id="line-21">
+<td><pre>21</pre></td>
+<td><pre>            <span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-22">
+<td><pre>22</pre></td>
+<td><pre>              Close
+</pre></td>
+</tr>
+<tr id="line-23">
+<td><pre>23</pre></td>
+<td><pre>            <span>&lt;/button&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-24">
+<td><pre>24</pre></td>
+<td><pre>            <span>&lt;button</span> <span>type=</span><span>"button"</span> <span>class=</span><span>"btn btn-primary"</span><span>&gt;</span>Save<span>&lt;/button&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-25">
+<td><pre>25</pre></td>
+<td><pre>          <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-26">
+<td><pre>26</pre></td>
+<td><pre>        <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-27">
+<td><pre>27</pre></td>
+<td><pre>      <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-28">
+<td><pre>28</pre></td>
+<td><pre>    <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-29">
+<td><pre>29</pre></td>
+<td><pre>    <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>The modal contains the following elements:</p>
+<ul>
+<li>A modal dialog which ensures the modal is centered on the page</li>
+<li>The modal content contains an input text for entering the API key, a button for saving the key, and a close button that removes the modal from the page&nbsp;.</li>
+</ul>
+<h3 id="toc-9xlu-our-apps-main-section">Our App’s Main Section</h3>
+<p>Now let’s start building the main section of the application. The main section will consist of the following elements&nbsp;</p>
+<ul>
+<li>
+<strong>TextInput<span>: </span></strong>This<span> input field will take in the user’s prompt. The prompt will describe the image they want to generate, for example, a "A cat chasing a mouse".</span>
+</li>
+<li><span><strong>Button</strong>: This button will initiate the image generation process when clicked.&nbsp;</span></li>
+<li><span><strong>Gallery</strong>: A display of sample images previously generated by DALLE to showcase its capabilities.</span></li>
+</ul>
+<p><span>Create a Bootstrap container which will house the elements:</span></p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>&lt;div</span> <span>class=</span><span>"container mt-5"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>&lt;!--input text--&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>&lt;!--button--&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>  <span>&lt;!--galletry--&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre><span>&lt;/dvi&gt;</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Let’s start by adding a header at the top of the page with the title "AI Image Generator" and a description of the application&nbsp;</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>&lt;header</span> <span>class=</span><span>"mt-5"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>&lt;h1</span> <span>class=</span><span>"text-center"</span><span>&gt;</span>AI Image Generator<span>&lt;/h1&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>&lt;p</span> <span>class=</span><span>"lead text-center"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>    Bring your vision to life with Generative AI. Simply describe what you
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>    want to see!
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>  <span>&lt;/p&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre><span>&lt;/header&gt;</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<h3 id="toc-5pfo-the-form">The Form</h3>
+<p>Next add a form that will contain the input text and the generate button.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>&lt;section</span> <span>class=</span><span>"mt-5"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>&lt;form</span> <span>id=</span><span>"generate-form"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>    <span>&lt;div</span> <span>class=</span><span>"row"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>      <span>&lt;div</span> <span>class=</span><span>"col-md-9"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>        <span>&lt;div</span> <span>class=</span><span>"form-group"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>          <span>&lt;input</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>            <span>type=</span><span>"text"</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>            <span>class=</span><span>"form-control py-2 pb-2"</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>            <span>id=</span><span>"prompt"</span>
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>            <span>placeholder=</span><span>"A cartoon of a cat catching a mouse"</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre>          <span>/&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>        <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre>      <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre>      <span>&lt;div</span> <span>class=</span><span>"col-md-3"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre>        <span>&lt;div</span> <span>class=</span><span>"form-group"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-16">
+<td><pre>16</pre></td>
+<td><pre>          <span>&lt;button</span> <span>type=</span><span>"submit"</span> <span>class=</span><span>"btn btn-primary btn-lg"</span> <span>id =</span><span>"generate"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-17">
+<td><pre>17</pre></td>
+<td><pre>            Generate Image
+</pre></td>
+</tr>
+<tr id="line-18">
+<td><pre>18</pre></td>
+<td><pre>          <span>&lt;/button&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-19">
+<td><pre>19</pre></td>
+<td><pre>        <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-20">
+<td><pre>20</pre></td>
+<td><pre>      <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-21">
+<td><pre>21</pre></td>
+<td><pre>    <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-22">
+<td><pre>22</pre></td>
+<td><pre>  <span>&lt;/form&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-23">
+<td><pre>23</pre></td>
+<td><pre><span>&lt;/section&gt;</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>The layout ensures that the input text spans 3/4 of the entire space to provide enough space for the prompt, and the button is positioned at the right to occupy the remaining space.</p>
+<h3 id="toc-v38e-spinner">Spinner</h3>
+<p>Next, add a spinner that will show when an image is generated.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>&lt;!-- spinner --&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre><span>&lt;div</span> <span>class=</span><span>"spinner-border text-danger"</span> <span>role=</span><span>"status"</span> <span>id=</span><span>"spinner"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>&lt;span</span> <span>class=</span><span>"visually-hidden"</span><span>&gt;</span>Loading...<span>&lt;/span&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre><span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<h3 id="toc-ok8g-image-gallery">Image Gallery</h3>
+<p>The last section will contain a few images generated by the DALL-E model.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>&lt;!-- Generated Images --&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre><span>&lt;section</span> <span>class=</span><span>" container mt-5"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>&lt;div</span> <span>class=</span><span>"row justify-content-center"</span> <span>id=</span><span>"gallery"</span><span>&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>  <span>&lt;!--generated images will go here--&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>  
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>  <span>&lt;/div&gt;</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre><span>&lt;/section&gt;</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>We will use JavaScript to display the images dynamically. The gallery container will also be used to display the image generated from a prompt.</p>
+<h2 id="toc-rzbn-styling-with-css">Styling With CSS</h2>
+<p>Besides the Bootstrap framework, we will also add a few custom CSS classes:</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>@import</span> <span>url("https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&amp;display=swap")</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>body</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>    <span>font-family</span><span>:</span> <span>"DM Mono"</span><span>,</span> <span>monospace</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>  <span>}</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>  <span>h1</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>    <span>font-weight</span><span>:</span> <span>900</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>  <span>}</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>  <span>p</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>    <span>font-weight</span><span>:</span> <span>500</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre>  <span>}</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>  <span>.message</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre>  <span>#spinner</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre>    <span>display</span><span>:</span> <span>none</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre>  <span>}</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Here, we are using a custom font from Google Fonts, and we have also set the message element and the spinner to be hidden by default.</p>
+<h2 id="toc-1b4y-javascript-functunality">JavaScript Functionality</h2>
+<p>On to the behaviour! The first thing we want to do is to add the functionality for enabling users to add their API key to local storage. We will use jQuery to open and close the modal.&nbsp;</p>
+<p>We already have &nbsp;<code>data-bs-target="#KeyModal"</code>&nbsp;on the <strong>ADD API KEY </strong>button, which opens the modal. Now, we will listen for the <code>shown.bs.modal</code> event. The <code>shown.bs.modal</code> is a Bootstrap functionality for modal dialogs which is triggered after the modal has been shown to the user</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>$</span><span>(</span><span>"</span><span>#KeyModal</span><span>"</span><span>).</span><span>on</span><span>(</span><span>"</span><span>shown.bs.modal</span><span>"</span><span>,</span> <span>function </span><span>()</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>// get api key from user and save to local storage
+</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre><span>});</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Inside the event listener function, we will get the modal components, which include a text input and a button.&nbsp;</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>$</span><span>(</span><span>"</span><span>#KeyModal</span><span>"</span><span>).</span><span>on</span><span>(</span><span>"</span><span>shown.bs.modal</span><span>"</span><span>,</span> <span>function </span><span>()</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>const</span> <span>saveButton</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>"</span><span>#KeyModal .btn-primary</span><span>"</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>const</span> <span>apiKeyInput</span> <span>=</span> <span>document</span><span>.</span><span>querySelector</span><span>(</span><span>"</span><span>#apikey</span><span>"</span><span>);</span> 
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre><span>});</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<h3 id="toc-vjaf-save-button-event-listener">Save Button Event Listener</h3>
+<p>Next, we will add an event listener to the save button of the modal. Inside the event listener function, we will get the value of the API&nbsp; KEY, save it to local storage, and then close the modal.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre>$("#KeyModal").on("shown.bs.modal", function () {
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  const saveButton = document.querySelector("#KeyModal .btn-primary");
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  const apiKeyInput = document.querySelector("#apikey");
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>  saveButton.addEventListener("click", function () {
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>    const apiKeyValue = apiKeyInput.value;
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>    localStorage.setItem("API_KEY", apiKeyValue);
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>    $("#KeyModal").modal("hide");
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>  });
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>});
+</pre></td>
+</tr>
+</tbody></table></div>
+<h2 id="toc-xq4z-dalle-api">DALL-E 3&nbsp;</h2>
+<p>OpenAI provides two models for text-to-image generation, DALL·E 3 and DALL·E 2.&nbsp; We are going to use DALLE3&nbsp; the latest model,</p>
+<p><span>DALL-E 3 is a new&nbsp;</span><span>state of the art</span><span>&nbsp;text&nbsp;</span><span>to</span><span>&nbsp;image generator which adheres closely to the text provided when generating images.</span></p>
+<p><span>While you dont have to be an expert in prompt engineering to use DALL-E 3, better prompts will generate better results.</span></p>
+<h3 id="toc-e27q-get-api-key">Get API KEY</h3>
+<p><span>To obtain an API key, you need an OpenAI account. Go to the <a href="https://openai.com/" target="_self">OpenAI website</a> and create an account. Once you log in, you will see this page.</span></p>
+<figure><img src="data:application/octet-stream;base64," alt="OpenAI homepage" loading="lazy" width="870px" height="620px" srcset="data:application/octet-stream;base64, 2x"><img src="data:application/octet-stream;base64," alt="OpenAI homepage" loading="lazy" width="650px" height="465px" srcset="data:application/octet-stream;base64, 2x"><img src="data:application/octet-stream;base64," alt="OpenAI homepage" loading="lazy" width="380px" height="274px" srcset="data:application/octet-stream;base64, 2x"></figure>
+<p>On the top left side, click on the API keys icon, and you will be redirected to a page where you can create your API KEY.</p>
+<figure><img src="data:application/octet-stream;base64," alt="create API key" loading="lazy" width="870px" height="600px" srcset="data:application/octet-stream;base64, 2x"><img src="data:application/octet-stream;base64," alt="create API key" loading="lazy" width="650px" height="450px" srcset="data:application/octet-stream;base64, 2x"><img src="data:application/octet-stream;base64," alt="create API key" loading="lazy" width="380px" height="266px" srcset="data:application/octet-stream;base64, 2x"></figure>
+<p>Once you create your API KEY, ensure you copy it since it wont be shown again.</p>
+<h3 id="toc-dlzz-how-to-use-dall-e-3">How to use DALL-E 3</h3>
+<p>The DALL·E 3 &nbsp;model allows developers to generate images from text using this API endpoint.</p>
+<div><table><tbody><tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre>https://api.openai.com/v1/images/generations
+</pre></td>
+</tr></tbody></table></div>
+<p>The API endpoint allows you to create standard and HD-quality images. If the quality is not set, standard images will be generated by default, and the image sizes are 1024x1024, 1024x1792, or 1792x1024 pixels.</p>
+<p><span>DALL-E 3 allows you to request 1 or more images(up to 10). If you want to request more than 1 image, you can do so by making parallel requests This is how you would generate a standard image of size 1024x1024 from the prompt " a red cat."</span></p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre>curl https://api.openai.com/v1/images/generations <span>\
+</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>-H</span> <span>"Content-Type: application/json"</span> <span>\
+</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>-H</span> <span>"Authorization: Bearer </span><span>$OPENAI_API_KEY</span><span>"</span> <span>\
+</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>  <span>-d</span> <span>'{
+</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre><span>    "model": "dall-e-3",
+</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre><span>    "prompt": "a red cat",
+</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre><span>    "n": 1,
+</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre><span>    "size": "1024x1024"
+</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre><span>  }</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>As you can see above, the API endpoint requires you to include the following headers in your request:</p>
+<ul>
+<li>
+<code>Content-Type</code> set to <code>application/json</code>
+</li>
+<li>
+<code>Authorization</code> set to <code>Bearer</code>, followed by your OpenAI API key</li>
+</ul>
+<p>The data sent in the request will include :</p>
+<ul>
+<li>
+<code>model</code> is the model to use for generating an image</li>
+<li>
+<code>prompt</code> - this is the text or the description of the image you want generated.</li>
+<li>
+<code> n</code> is an integer that specifies the number of images to generate.</li>
+<li>
+<code>size</code> is the size of the image in pixels</li>
+</ul>
+<h3 id="toc-5p97-image-generation">Image Generation</h3>
+<p><span>The next step is to generate an image from the prompt provided by the user. To do that we will add an event listener to the generate form. When the form is submitted, it will retrieve the <code>prompt</code> from the user, obtain the API key from local storage, and call another </span><span>function (<code>fetchImage()</code>), which will in turn generate an image.</span></p>
+<p><span>But first , let’s get the necessary elements from the&nbsp; DOM:</span></p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>const</span> <span>message</span> <span>=</span> <span>document</span><span>.</span><span>getElementById</span><span>(</span><span>"</span><span>message</span><span>"</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre><span>const</span> <span>generateForm</span> <span>=</span> <span>document</span><span>.</span><span>getElementById</span><span>(</span><span>"</span><span>generate-form</span><span>"</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre><span>const</span> <span>spinner</span> <span>=</span> <span>document</span><span>.</span><span>getElementById</span><span>(</span><span>"</span><span>spinner</span><span>"</span><span>);</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Next, let’s add an event listener that listens for the submitted event from the form.&nbsp;</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>generateForm</span><span>.</span><span>addEventListener</span><span>(</span><span>"</span><span>submit</span><span>"</span><span>,</span> <span>function </span><span>(</span><span>e</span><span>)</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>e</span><span>.</span><span>preventDefault</span><span>();</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre><span>//   get prompt
+</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre><span>//   get api key
+</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre><span>//   perform validation
+</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre><span>//   call fetchImage() function
+</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre> 
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre><span>});</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Inside the event listener function, update the code as follows:</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>generateForm</span><span>.</span><span>addEventListener</span><span>(</span><span>"</span><span>submit</span><span>"</span><span>,</span> <span>function </span><span>(</span><span>e</span><span>)</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>e</span><span>.</span><span>preventDefault</span><span>();</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>const</span> <span>promptInput</span> <span>=</span> <span>document</span><span>.</span><span>getElementById</span><span>(</span><span>"</span><span>prompt</span><span>"</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>  <span>const</span> <span>prompt</span> <span>=</span> <span>promptInput</span><span>.</span><span>value</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>  <span>const</span> <span>key</span> <span>=</span> <span>localStorage</span><span>.</span><span>getItem</span><span>(</span><span>"</span><span>API_KEY</span><span>"</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>  <span>console</span><span>.</span><span>log</span><span>(</span><span>key</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>  <span>if </span><span>(</span><span>!</span><span>prompt</span><span>)</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>    <span>displayMessage</span><span>(</span><span>"</span><span>Please enter a prompt</span><span>"</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>    <span>return</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre>  <span>}</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>  <span>if </span><span>(</span><span>!</span><span>key</span><span>)</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre>    <span>displayMessage</span><span>(</span>
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre>      <span>"</span><span>Please add your API KEY, The Key will be store locally on your browser</span><span>"</span>
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre>    <span>);</span>
+</pre></td>
+</tr>
+<tr id="line-16">
+<td><pre>16</pre></td>
+<td><pre>    <span>return</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-17">
+<td><pre>17</pre></td>
+<td><pre>  <span>}</span> <span>else</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-18">
+<td><pre>18</pre></td>
+<td><pre>    <span>fetchImage</span><span>(</span><span>prompt</span><span>,</span> <span>key</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-19">
+<td><pre>19</pre></td>
+<td><pre>    
+</pre></td>
+</tr>
+<tr id="line-20">
+<td><pre>20</pre></td>
+<td><pre>  <span>}</span>
+</pre></td>
+</tr>
+<tr id="line-21">
+<td><pre>21</pre></td>
+<td><pre><span>});</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>In the updated code, after the submit event is fired by the form, we get the prompt from the user and the API key from local storage. If the user has not provided a prompt, we display a message asking the user to enter one.</p>
+<p>Similarly, if the API key is missing, we prompt the user to add their API key, if both the prompt and API key are present, we call the <code>fetchImage</code> function and pass the prompt and the API KEY values as arguments</p>
+<p><code>fetchImage()</code> is the function that will use the DALL-E 3 API endpoint to generate an image based on the user’s prompt.</p>
+<p>The <code>displayMessage()</code> function looks like this:</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>function</span> <span>displayMessage</span><span>(</span><span>msg</span><span>)</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>message</span><span>.</span><span>textContent</span> <span>=</span> <span>msg</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>message</span><span>.</span><span>style</span><span>.</span><span>display</span> <span>=</span> <span>"</span><span>block</span><span>"</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>  <span>setTimeout</span><span>(</span><span>function </span><span>()</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>    <span>message</span><span>.</span><span>style</span><span>.</span><span>display</span> <span>=</span> <span>"</span><span>none</span><span>"</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>  <span>},</span> <span>3000</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre><span>}</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p><span>We are setting the content of the alert element to the message from the form event. The </span><code>setTimeout</code><span> function ensures that the message element will be hidden after 3 seconds.</span></p>
+<h3 id="toc-e23r-fetchimage-function"><span>fetchImage Function</span></h3>
+<p><span>Next, let’s create the </span><code>fetchImage</code><span> function, which will be an async function. It will take the </span><code>prompt</code><span> and </span><code>API_KEY</code><span> as parameters.</span></p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>const</span> <span>fetchImage</span> <span>=</span> <span>async </span><span>(</span><span>prompt</span><span>,</span> <span>API_KEY</span><span>)</span> <span>=&gt;</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre><span>}</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p><span>Inside the function, we define the API endpoint and store the required headers and data required by the API in a variable called <code>options</code>.&nbsp;</span></p>
+<p><span>The options object includes:</span></p>
+<ul>
+<li><span>The HTTP method.</span></li>
+<li><span>Headers for content type and authorization.</span></li>
+<li><span>The body (a JSON string containing the model, prompt, n(number of images), and image size.</span></li>
+</ul>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>const</span> <span>url</span> <span>=</span> <span>"</span><span>https://api.openai.com/v1/images/generations</span><span>"</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre><span>const</span> <span>options</span> <span>=</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>    <span>method</span><span>:</span> <span>"</span><span>POST</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>    <span>headers</span><span>:</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>      <span>"</span><span>content-type</span><span>"</span><span>:</span> <span>"</span><span>application/json</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>      <span>Authorization</span><span>:</span> <span>`Bearer </span><span>${</span><span>API_KEY</span><span>}</span><span>`</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>    <span>},</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>    <span>body</span><span>:</span> <span>JSON</span><span>.</span><span>stringify</span><span>({</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>      <span>model</span><span>:</span> <span>"</span><span>dall-e-3</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>      <span>prompt</span><span>:</span> <span>prompt</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre>      <span>n</span><span>:</span> <span>1</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>      <span>size</span><span>:</span> <span>"</span><span>1024x1024</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre>    <span>}),</span>
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre>  <span>};</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Next, inside a try block, we perform a POST request using the fetch API, specifying the <code>url</code> and the <code>options</code> object. While the fetch is happening, we display the spinner immediately.</p>
+<p>We then check the response, and if it’s not successful (<code>!response.ok</code>) , we display an error message to the user, and then we exit the function to prevent further execution.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>const</span> <span>fetchImage</span> <span>=</span> <span>async </span><span>(</span><span>prompt</span><span>,</span> <span>API_KEY</span><span>)</span> <span>=&gt;</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>const</span> <span>url</span> <span>=</span> <span>"</span><span>https://api.openai.com/v1/images/generations</span><span>"</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>const</span> <span>options</span> <span>=</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>    <span>method</span><span>:</span> <span>"</span><span>POST</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>    <span>headers</span><span>:</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>      <span>"</span><span>content-Type</span><span>"</span><span>:</span> <span>"</span><span>application/json</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>      <span>Authorization</span><span>:</span> <span>`Bearer </span><span>${</span><span>API_KEY</span><span>}</span><span>`</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>    <span>},</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>    <span>body</span><span>:</span> <span>JSON</span><span>.</span><span>stringify</span><span>({</span>
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>      <span>model</span><span>:</span> <span>"</span><span>dall-e-3</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre>      <span>prompt</span><span>:</span> <span>prompt</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>      <span>n</span><span>:</span> <span>1</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre>      <span>size</span><span>:</span> <span>"</span><span>1024x1024</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre>    <span>}),</span>
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre>  <span>};</span>
+</pre></td>
+</tr>
+<tr id="line-16">
+<td><pre>16</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-17">
+<td><pre>17</pre></td>
+<td><pre>  <span>try</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-18">
+<td><pre>18</pre></td>
+<td><pre>    <span>spinner</span><span>.</span><span>style</span><span>.</span><span>display</span> <span>=</span> <span>"</span><span>block</span><span>"</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-19">
+<td><pre>19</pre></td>
+<td><pre>    <span>const</span> <span>response</span> <span>=</span> <span>await</span> <span>fetch</span><span>(</span><span>url</span><span>,</span> <span>options</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-20">
+<td><pre>20</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-21">
+<td><pre>21</pre></td>
+<td><pre>    <span>if </span><span>(</span><span>!</span><span>response</span><span>.</span><span>ok</span><span>)</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-22">
+<td><pre>22</pre></td>
+<td><pre>    <span>const</span> <span>error</span> <span>=</span> <span>await</span> <span>response</span><span>.</span><span>json</span><span>();</span>
+</pre></td>
+</tr>
+<tr id="line-23">
+<td><pre>23</pre></td>
+<td><pre>    <span>const</span> <span>message</span> <span>=</span> <span>error</span><span>.</span><span>error</span><span>.</span><span>message</span> <span>?</span> <span>error</span><span>.</span><span>error</span><span>.</span><span>message</span> <span>:</span> <span>"</span><span>Failed to fetch image</span><span>"</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-24">
+<td><pre>24</pre></td>
+<td><pre>     <span>displayMessage</span><span>(</span><span>message</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-25">
+<td><pre>25</pre></td>
+<td><pre>      <span>return</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-26">
+<td><pre>26</pre></td>
+<td><pre>    <span>}</span>
+</pre></td>
+</tr>
+<tr id="line-27">
+<td><pre>27</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-28">
+<td><pre>28</pre></td>
+<td><pre> 
+</pre></td>
+</tr>
+<tr id="line-29">
+<td><pre>29</pre></td>
+<td><pre>  <span>}</span> <span>catch </span><span>(</span><span>error</span><span>)</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-30">
+<td><pre>30</pre></td>
+<td><pre>  
+</pre></td>
+</tr>
+<tr id="line-31">
+<td><pre>31</pre></td>
+<td><pre>  <span>}</span><span>finally</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-32">
+<td><pre>32</pre></td>
+<td><pre> 
+</pre></td>
+</tr>
+<tr id="line-33">
+<td><pre>33</pre></td>
+<td><pre><span>}</span>
+</pre></td>
+</tr>
+<tr id="line-34">
+<td><pre>34</pre></td>
+<td><pre><span>};</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>If the response is successful, we will asynchronously obtain the JSON data from the response object and store it in a variable called <code>result</code>. &nbsp;</p>
+<div><table><tbody><tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>const</span> <span>result</span> <span>=</span> <span>await</span> <span>response</span><span>.</span><span>json</span><span>();</span>
+</pre></td>
+</tr></tbody></table></div>
+<p>For example, the prompt "a blue cat " returns this object. The url has been truncated&nbsp;</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre>{
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>    "created": 1713625375,
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>    "data": [
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>        {
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>            "revised_prompt": "Imagine a cat with the most unique color you can 
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>            think of - a brilliant shade of dark cerulean. This is no ordinary
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>            cat. Picture this feline lounging in the midday sun, its fur 
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>            shimmering in the light. The color is an almost surreal hue, 
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>            rich and saturated, as if pulled straight from a painter's palette.
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>            The cat's eyes are a contrasting emerald green, watching the world 
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre>            with a wise but relaxed gaze. Imagine the blue cat's body shape, 
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>            muscular and agile, made for speedy pursuits and stealthy approaches.
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre>            Now, consider how this splendid creature would look in its natural habitat.",
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre>            "url": "https://oaidalleapiprodscus.blob.core.windows.net/private/org-..."
+</pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre>        }
+</pre></td>
+</tr>
+<tr id="line-16">
+<td><pre>16</pre></td>
+<td><pre>    ]
+</pre></td>
+</tr>
+<tr id="line-17">
+<td><pre>17</pre></td>
+<td><pre>}
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>The data also includes a revised_prompt, which DALL-E 3 used to refine the image generation process. From the object received, we can get the <code>url</code> of the image and pass it to another function <code>displayImage()</code>, which will display it to the user on the web page.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre> <span>const</span> <span>imageUrl</span> <span>=</span> <span>result</span><span>.</span><span>data</span><span>[</span><span>0</span><span>].</span><span>url</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre> <span>displayImage</span><span>(</span><span>imageUrl</span><span>);</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>The next thing we want to do is pass the image url to a function called <code>displayImage()</code>.</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre>const imageUrl = result.data[0].url
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>displayImage(imageUrl);
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>In the catch block, we handle any exceptions that might occur during the fetch operation by displaying an appropriate error message to the user.</p>
+<p>The final block will be executed regardless of the outcome of the fetch request; therefore, it’s a good place to ensure the spinner is hidden regardless of whether the request is successful. &nbsp;</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre> <span>catch </span><span>(</span><span>error</span><span>)</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>    <span>console</span><span>.</span><span>error</span><span>(</span><span>error</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>    <span>displayMessage</span><span>(</span><span>"</span><span>There was an error , try again</span><span>"</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>  <span>}</span><span>finally</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>  <span>spinner</span><span>.</span><span>style</span><span>.</span><span>display</span> <span>=</span> <span>"</span><span>none</span><span>"</span><span>;</span> 
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre><span>}</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<h3 id="toc-x7zr-displayimage-function">displayImage Function</h3>
+<p>The <code>displayImage()</code> function will look like this:</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>function</span> <span>displayImage</span><span>(</span><span>image</span><span>)</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre> 
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>const</span> <span>imageMarkup</span> <span>=</span> <span>`
+</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre><span>  &lt;div class="row justify-content-center"&gt;
+</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre><span>      &lt;div class="col d-flex justify-content-center"&gt;
+</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre><span>          &lt;img src="</span><span>${</span><span>image</span><span>}</span><span>" class="img-fluid" alt="Placeholder Image"&gt;
+</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre><span>      &lt;/div&gt;
+</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre><span>  &lt;/div&gt;`</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>  <span>imageGallery</span><span>.</span><span>innerHTML</span> <span>=</span> <span>imageMarkup</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre>  <span>spinner</span><span>.</span><span>style</span><span>.</span><span>display</span> <span>=</span> <span>"</span><span>none</span><span>"</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre><span>}</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Let’s break it down ,</p>
+<p>First, we create HTML markup to specify a responsive Bootstrap column and set the <code>src</code> attribute of the img tag to the generated image <code>url</code>. Then, we inject this markup into the <code>imageGallery</code> container</p>
+<p>The final step is to display some of the images generated by DALL-E 3 as a gallery so that when the users first open the app, the images will showcase the app’s capabilities.</p>
+<p>First let’s store the images in an array:</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>const</span> <span>images</span> <span>=</span> <span>[</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>"</span><span>https://essykings.github.io/JavaScript/image%207.png</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>  <span>"</span><span>https://essykings.github.io/JavaScript/image1.png</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>  <span>"</span><span>https://essykings.github.io/JavaScript/image2.png</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre>  <span>"</span><span>https://essykings.github.io/JavaScript/image3.png</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre>  <span>"</span><span>https://essykings.github.io/JavaScript/image9.png</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre>  <span>"</span><span>https://essykings.github.io/JavaScript/image5.png</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre>  <span>"</span><span>https://essykings.github.io/JavaScript/image6.png</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>  <span>"</span><span>https://essykings.github.io/JavaScript/cat.png</span><span>"</span><span>,</span>
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre><span>];</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<p>Next, we will use the <code>map()</code> method to iterate over the images. For each image, we will set the <code>src</code> attribute of an <code>&lt;img&gt;</code> element to the image URL and then append it to the image gallery container.&nbsp;</p>
+<p>Finally we will invoke the <code>displayImages()</code> function.&nbsp;</p>
+<div><table><tbody>
+<tr id="line-1">
+<td><pre>1</pre></td>
+<td><pre><span>function</span> <span>displayImages</span><span>()</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-2">
+<td><pre>2</pre></td>
+<td><pre>  <span>const</span> <span>imageMarkup</span> <span>=</span> <span>images</span>
+</pre></td>
+</tr>
+<tr id="line-3">
+<td><pre>3</pre></td>
+<td><pre>    <span>.</span><span>map</span><span>((</span><span>image</span><span>)</span> <span>=&gt;</span> <span>{</span>
+</pre></td>
+</tr>
+<tr id="line-4">
+<td><pre>4</pre></td>
+<td><pre>      <span>return</span> <span>`
+</span>
+</pre></td>
+</tr>
+<tr id="line-5">
+<td><pre>5</pre></td>
+<td><pre><span>        &lt;div class="col-12 col-sm-6 col-md-3 mb-4 position-relative" id ="image-container "&gt;
+</span>
+</pre></td>
+</tr>
+<tr id="line-6">
+<td><pre>6</pre></td>
+<td><pre><span>          &lt;img src="</span><span>${</span><span>image</span><span>}</span><span>" class="img-fluid" alt="Placeholder Image"&gt;
+</span>
+</pre></td>
+</tr>
+<tr id="line-7">
+<td><pre>7</pre></td>
+<td><pre><span>        &lt;/div&gt;
+</span>
+</pre></td>
+</tr>
+<tr id="line-8">
+<td><pre>8</pre></td>
+<td><pre><span>        `</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-9">
+<td><pre>9</pre></td>
+<td><pre>    <span>})</span>
+</pre></td>
+</tr>
+<tr id="line-10">
+<td><pre>10</pre></td>
+<td><pre>    <span>.</span><span>join</span><span>(</span><span>""</span><span>);</span>
+</pre></td>
+</tr>
+<tr id="line-11">
+<td><pre>11</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-12">
+<td><pre>12</pre></td>
+<td><pre>  <span>imageGallery</span><span>.</span><span>innerHTML</span> <span>=</span> <span>imageMarkup</span><span>;</span>
+</pre></td>
+</tr>
+<tr id="line-13">
+<td><pre>13</pre></td>
+<td><pre><span>}</span>
+</pre></td>
+</tr>
+<tr id="line-14">
+<td><pre>14</pre></td>
+<td><pre></pre></td>
+</tr>
+<tr id="line-15">
+<td><pre>15</pre></td>
+<td><pre><span>displayImages</span><span>();</span>
+</pre></td>
+</tr>
+</tbody></table></div>
+<h2 id="toc-4ysf-final-demo">Final Demo</h2>
+<p>We’ve done it! Our app is fully functional!</p>
+
+<h2 id="toc-8bxd-conclusion">Conclusion</h2>
+<p>This tutorial has covered how to build an image-generation app with AI. This app can be applied in various fields, such as education to create illustrations, gaming to create visuals, etc. I hope you enjoyed it!</p>
+</div></div>
+  </div>
+</body>
+</html>

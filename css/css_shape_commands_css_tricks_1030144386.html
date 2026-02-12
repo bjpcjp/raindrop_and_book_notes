@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CSS shape() Commands | CSS-Tricks</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>CSS shape() Commands | CSS-Tricks</h1>
+    <p><strong>URL:</strong> <a href="https://css-tricks.com/css-shape-commands/">https://css-tricks.com/css-shape-commands/</a></p>
+    <p><strong>Tags:</strong> css</p>
+    <p><strong>Bookmark ID:</strong> 1030144386</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+          
+          
+<p>The CSS <code>shape()</code> function recently gained support in both <a href="https://developer.chrome.com/blog/css-shape" rel="noopener">Chromium</a> and <a href="https://webkit.org/blog/16794/the-css-shape-function/" rel="noopener">WebKit</a> browsers. It’s a way of drawing complex shapes when clipping elements with the <code><a href="https://css-tricks.com/almanac/properties/c/clip-path/">clip-path</a></code> property. We’ve had the ability to draw basic shapes for years — think <code>circle</code>, <code>ellipse()</code>, and <code>polygon()</code> — but no “easy” way to draw more complex shapes.</p>
+
+
+
+<p>Well, that’s not entirely true. It’s true there was no “easy” way to draw shapes, but we’ve had the <code>path()</code> function for some time, which we can use to draw shapes using SVG commands directly in the function’s arguments. This is an example of an SVG path pulled straight from WebKit’s blog post linked above:</p>
+
+
+
+<pre rel="SVG" data-line=""><code markup="tt"><span><span><span>&lt;</span>svg</span> <span>viewBox</span><span><span>=</span><span>"</span>0 0 150 100<span>"</span></span> <span>xmlns</span><span><span>=</span><span>"</span>http://www.w3.org/2000/svg<span>"</span></span><span>&gt;</span></span>
+  <span><span><span>&lt;</span>path</span> <span>fill</span><span><span>=</span><span>"</span>black<span>"</span></span> <span>d</span><span><span>=</span><span>"</span>M0 0 L 100 0 L 150 50 L 100 100 L 0 100 Q 50 50 0 0 z <span>"</span></span> <span>/&gt;</span></span>
+<span><span><span>&lt;/</span>svg</span><span>&gt;</span></span></code></pre>
+
+
+
+<p>Which means we can yank those <code>&lt;path&gt;</code> coordinates and drop them into the <code>path()</code> function in CSS when clipping a shape out of an element:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span><span>.clipped</span></span> <span>{</span>
+  <span>clip-path</span><span>:</span> <span>path</span><span>(</span><span>"M0 0 L 100 0 L 150 50 L 100 100 L 0 100 Q 50 50 0 0 z"</span><span>)</span><span>;</span>
+<span>}</span></code></pre>
+
+
+
+<p><em>I totally understand what all of those letters and numbers are doing.</em> Just kidding, I’d have to read up on that somewhere, like Myriam Frisano’s more recent <a href="https://www.smashingmagazine.com/2024/09/svg-coding-examples-recipes-writing-vectors-by-hand/" rel="noopener">“Useful Recipes For Writing Vectors By Hand”</a> article. There’s a steep learning curve to all that, and not everyone — including me — is going down that nerdy, albeit interesting, road. Writing SVG by hand is a niche specialty, not something you’d expect the average front-ender to know. I doubt I’m alone in saying I’d rather draw those vectors in something like Figma first, export the SVG code, and copy-paste the resulting paths where I need them.</p>
+
+
+
+<p>The <code>shape()</code> function is designed to be more, let’s say, CSS-y. We get new commands that tell the browser where to draw lines, arcs, and curves, just like <code>path()</code>, but we get to use plain English and native CSS units rather than unreadable letters and coordinates. That opens us up to even using CSS <code>calc()</code>-ulations in our drawings!</p>
+
+
+
+<p>Here’s a fairly simple drawing I made from a couple of elements. You’ll want to view the demo in either Chrome 135+ or Safari 18.4+ to see what’s up.</p>
+
+
+
+
+
+
+
+<p>So, instead of all those wonky coordinates we saw in <code>path()</code>, we get new terminology. This post is really me trying to wrap my head around what those new terms are and how they’re used.</p>
+
+
+
+<p>In short, you start by telling <code>shape()</code> where the starting point should be when drawing. For example, we can say “<code>from top left</code>” using directional keywords to set the origin at the top-left corner of the element. We can also use CSS units to set that position, so “<code>from 0 0</code>” works as well. Once we establish that starting point, we get a set of commands we can use for drawing lines, arcs, and curves.</p>
+
+
+
+<p>I figured a table would help.</p>
+
+
+
+<figure><table><thead><tr><th>Command</th><th>What it means</th><th>Usage</th><th>Examples</th></tr></thead><tbody><tr><td><code>line</code></td><td>A line that is drawn using a coordinate pair</td><td>The <code>by</code> keyword sets a coordinate pair used to determine the length of the line.</td><td><code>line by -2px 3px</code></td></tr><tr><td><code>vline</code></td><td>Vertical line</td><td>The <code>to</code> keyword indicates where the line should end, based on the current starting point.<p>The <code>by</code> keyword sets a coordinate pair used to determine the length of the line.</p></td><td><code>vline to 50px</code></td></tr><tr><td><code>hline</code></td><td>Horizontal line</td><td>The <code>to</code> keyword indicates where the line should end, based on the current starting point.<p>The <code>by</code> keyword sets a coordinate pair used to determine the length of the line.</p></td><td><code>hline to 95%</code></td></tr><tr><td><code>arc</code></td><td>An arc (oh, really?!). An elliptical one, that is, sort of like the rounded edges of a heart shape.</td><td>The <code>to</code> keyword indicates where the arc should end.<p>The <code>with</code> keyword sets a pair of coordinates that tells the arc how far right and down the arc should slope.</p><p>The&nbsp;<code>of</code>&nbsp;keyword specifies the size of the ellipse that the arc is taken from. The first value provides the horizontal radius of the ellipse, and the second provides the vertical radius.&nbsp;I’m a little unclear on this one, even after playing with it.</p></td><td><code>arc to 10% 50% of 1%</code></td></tr><tr><td><code>curve</code></td><td>A curved line</td><td>The <code>to</code> keyword indicates where the curved line should end.<p>The <code>with</code> keyword sets “control points” that affect the shape of the curve, making it deep or shallow.</p></td><td><code>curve to 0% 100% with 50% 0%</code></td></tr><tr><td><code>smooth</code></td><td>Adds a smooth Bézier curve command to the list of path data commands</td><td>The <code>to</code> keyword indicates where the curve should end.<p>The <code>by</code> keyword sets a coordinate pair used to determine the length of the curve.</p><p>The&nbsp;<code>with</code>&nbsp;keyword specifies control points for the curve.</p></td><td>I have yet to see any examples of this in the wild, but let me know if you do, and I can add it here.</td></tr></tbody></table></figure>
+
+
+
+<p>The <a href="https://drafts.csswg.org/css-shapes-2/#funcdef-shape" rel="noopener">spec</a> is dense, as you might expect with a lot of moving pieces like this. Again, these are just my notes, but let me know if there’s additional nuance you think would be handy to include in the table.</p>
+
+
+
+<p>Oh, another fun thing: you can adjust the <code>shape()</code> on hover/focus. The only thing is that I was unable to <code>transition</code> or animate it, at least in the current implementation.</p>
+
+
+
+
+
+          
+        </div></div>
+  </div>
+</body>
+</html>

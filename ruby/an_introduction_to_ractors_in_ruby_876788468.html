@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>An Introduction to Ractors in Ruby</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>An Introduction to Ractors in Ruby</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2022/08/24/an-introduction-to-ractors-in-ruby.html">https://blog.appsignal.com/2022/08/24/an-introduction-to-ractors-in-ruby.html</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876788468</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>In this post, we'll dive into ractors in Ruby, exploring how to build a ractor. You'll send and receive messages in ractors, and learn about shareable and unshareable objects.</p>
+<p>But first, let's define the actor model and ractors, and consider when you should use ractors.</p>
+<h2 id="what-is-the-actor-model">What is the Actor Model?</h2>
+<p>In computer science, the object-oriented model is very popular, and in the Ruby community, many people are used to the term 'everything is an object'.</p>
+<p>Similarly, let me introduce you to the actor model, within which 'everything is an actor'. The actor model is a mathematical model of concurrent computation in which the universal primitive/fundamental agent of computation is an <strong>actor</strong>. An actor is capable of the following:</p>
+<ul>
+<li>Receiving messages and responding to the sender</li>
+<li>Sending messages to other actors</li>
+<li>Determining how to respond to the next message received</li>
+<li>Creating several other actors</li>
+<li>Making local decisions</li>
+<li>Performing actions (e.g., mutating data in a database)</li>
+</ul>
+<p>Actors communicate via messages, process one message at a time, and maintain their own private state. However, they can modify this state via messages received, eliminating the need for a lock or mutex.</p>
+<p>Received messages are processed one message at a time in the order of FIFO (first in, first out). The message sender is decoupled (isolated) from the sent communication, enabling asynchronous communication.</p>
+<p>A few examples of the actor model implementation are akka, elixir, pulsar, celluloid, and <strong>ractors</strong>. A few examples of concurrency models include threads, processes, and futures.</p>
+<h2 id="what-are-ractors-in-ruby">What Are Ractors in Ruby?</h2>
+<p>Ractor is an actor-model abstraction that provides a parallel execution feature without <a href="https://hacks.mozilla.org/2019/02/fearless-security-thread-safety/">thread-safety concerns</a>.</p>
+<p>Just like threads, ractors provide true parallelism. However, unlike threads, they do not share everything. Most objects are unshareable, and when they are made shareable, are protected by an interpreter or locking mechanism.</p>
+<p>Ractors are also unable to access any objects through variables not defined within their scope. This means that we can be free of the possibility of <a href="https://www.techtarget.com/searchstorage/definition/race-condition">race conditions</a>.</p>
+<p>In 2020, when Ruby 3.0.0 was released, these were the <a href="https://www.ruby-lang.org/en/news/2020/12/25/ruby-3-0-0-released/">words of Matz</a>:</p>
+<blockquote>
+<p>It’s multi-core age today. Concurrency is very important. With Ractor, along with Async Fiber, Ruby will be a real concurrent language.</p>
+</blockquote>
+<p>Ractors do not claim to have solved all thread-safety problems. In the <a href="https://docs.ruby-lang.org/en/3.0/ractor_md.html">Ractor documentation</a>, the following is clearly stated:</p>
+<blockquote>
+<p>There are several blocking operations (waiting send, waiting yield, and waiting take) so you
+can make a program which has dead-lock and live-lock issues.</p>
+</blockquote>
+<blockquote>
+<p>Some kind of shareable objects can introduce transactions (STM, for example). However,
+misusing transactions will generate inconsistent state.</p>
+</blockquote>
+<p>Without ractors, you need to trace all state mutations to debug thread-safety issues. However, the beauty of ractors is that we can concentrate our efforts on suspicious shared code.</p>
+<h2 id="when-and-why-should-i-use-ractors-in-ruby">When and Why Should I Use Ractors in Ruby?</h2>
+<p>When you create a ractor for the first time, you'll get a warning like this one:</p>
+
+<p>However, that does not mean that you should avoid using ractors. Due to parallel execution, ractors can complete processes way faster than when processes are carried out synchronously.</p>
+<p>In the Ruby 3.0.0 release notes, you'll find this benchmark example of the <a href="https://www.ruby-lang.org/en/news/2020/12/25/ruby-3-0-0-released/">Tak function</a>, where it is executed sequentially four times, and four times in parallel with ractors:</p>
+
+<p>The results are as follows:</p>
+
+<p>The <a href="https://www.ruby-lang.org/en/news/2020/12/25/ruby-3-0-0-released/">Ruby 3.0.0 release notes</a> state:</p>
+<blockquote>
+<p>The result was measured on Ubuntu 20.04, Intel(R) Core(TM) i7-6700 (4 cores, 8 hardware threads). It shows that the parallel version is 3.87 times faster than the sequential version.</p>
+</blockquote>
+<p>So if you need a faster process execution time that can run in parallel on machines with multiple cores, ractors are not a bad idea at all.</p>
+<p>Modifying class/module objects on multi-ractor programs can introduce race conditions and should be avoided as much as possible. However, most objects are unshareable, so the need to implement locks to prevent race conditions becomes obsolete. If objects are shareable, they are protected by an interpreter or locking mechanism.</p>
+<h2 id="creating-your-first-ractor-in-ruby">Creating Your First Ractor in Ruby</h2>
+<p>Creating a ractor is as easy as creating any class instance. Call <code>Ractor.new</code> with a block — <code>Ractor.new { block }</code>. This block is run in parallel with every other ractor.</p>
+<p><em>It is important to note that every example shown from this point onwards was performed in Ruby 3.1.2.</em></p>
+
+<p>Arguments can also be passed to <code>Ractor.new</code>, and these arguments become parameters for the ractor block.</p>
+
+
+<p>Recall how we talked about ractors being unable to access objects defined outside their scope? Let's see an example of that:</p>
+
+<p>We get an error on the invocation of <code>.new</code>, related to a <code>Proc</code> not being isolated. This is because <code>Proc#isolate</code> is called at a ractor's creation to prevent sharing unshareable objects. However, objects can be passed to and from ractors via messages.</p>
+<h2 id="sending-and-receiving-messages-in-ractors">Sending and Receiving Messages in Ractors</h2>
+<p>Ractors send messages via an <em>outgoing port</em> and receive messages via an <em>incoming port</em>. The incoming port can hold an infinite number of messages and runs on the FIFO principle.</p>
+<p>The <code>.send</code> method works the same way a mailman delivers a message in the mail. The mailman takes the message and drops it at the door (incoming port) of the ractor.</p>
+<p>However, dropping a message at a person's door is not enough to get them to open it. <code>.receive</code> is then available for the ractor to open the door and receive whatever message has been dropped.</p>
+<p>The ractor might want to do some computation with that message and return a response, so how do we get it? We ask the mailman to <code>.take</code> the response.</p>
+
+<p>As seen above, the return value of a ractor is also a sent message and can be received via <code>.take</code>. Since this is an outgoing message, it goes to the outgoing port.</p>
+<p>Here's a simple example:</p>
+
+<p>Besides returning a message, a ractor can also send a message to its outgoing port via <code>.yield</code>.</p>
+
+<p>The first message sent to the outgoing port is <code>squared*2</code>, and the next message is <code>squared*3</code>. Therefore, when we call <code>.take</code>, we get <code>50</code> first. We have to call <code>.take</code> a second time to get <code>75</code> as two messages are sent to the outgoing port.</p>
+<p>Let's put this all together in one example of customers sending their orders to a supermarket and receiving the fulfilled orders:</p>
+
+<p>The output is as follows:</p>
+
+<p>Running it a second time yields:</p>
+
+<p>The output can most definitely be in a different order every time we run this (because ractors run concurrently, as we have established).</p>
+<p><strong>A few things to note about sending and receiving messages:</strong></p>
+<ul>
+<li>Messages can also be sent using <code>&lt;&lt; msg</code>, instead of <code>.send(msg)</code>.</li>
+<li>You can add a condition to a <code>.receive</code> using <code>receive_if</code>.</li>
+<li>When <code>.send</code> is called on a ractor that is already terminated (not running), you get a <code>Ractor::ClosedError</code>.</li>
+<li>A ractor's outgoing port closes after <code>.take</code> is called on it if it runs just once (not in a loop).</li>
+</ul>
+
+<ul>
+<li>Objects can be moved to a destination ractor via <code>.send(obj, move: true)</code> or <code>.yield(obj, move: true)</code>. These objects become inaccessible at the previous destination, raising a <code>Ractor::MovedError</code> when you try to call any other methods on the moved objects.</li>
+</ul>
+
+<ul>
+<li>Threads cannot be sent as messages using <code>.send</code> and <code>.yield</code>. Doing this results in a <code>TypeError</code>.</li>
+</ul>
+
+
+<p>Shareable objects are objects that can be sent to and from a ractor without compromising thread safety. An immutable object is a good example because once created, it cannot be changed — e.g., numbers and booleans.</p>
+<p>You can check the shareability of an object via <code>Ractor.shareable?</code> and make an object shareable via <code>Ractor.make_shareable</code>.</p>
+
+<p>As seen above, immutable objects are shareable and mutable ones aren't. In Ruby, we usually call the <code>.freeze</code> method on a string to make it immutable. This is the same method ractors apply to make an object shareable.</p>
+
+<p>Messages sent via ractors can either be shareable or unshareable. When shareable, the same object is passed around. However, when unshareable, ractors perform a full copy of the object by default and send the full copy instead.</p>
+
+<p>As seen above, the shareable object is the same within and outside the ractor. However, the unshareable one isn't because the ractor has a different object, just identical to it.</p>
+<p>Another method to send an exact object when it is unshareable is the previously discussed <code>move: true</code>. This moves an object to a destination without needing to perform a copy.</p>
+<p><strong>A few things to note about sharing objects in ractors:</strong></p>
+<ul>
+<li>Ractor objects are also shareable objects.</li>
+<li>Constants that are shareable, but defined outside the scope of a ractor, can be accessed by a ractor. Recall our <code>outer_scope_object</code> example? Give it another try, defined as <code>OUTER_SCOPE_OBJECT = "I am an outer scope object".freeze</code>.</li>
+<li>Class and module objects are shareable, but instance variables or constants defined within them are not if assigned to unshareable values.</li>
+</ul>
+
+<ul>
+<li>An incoming port or outgoing port can be closed using <code>Ractor#close_incoming</code> and <code>Ractor#close_outgoing</code>, respectively.</li>
+</ul>
+<h2 id="wrap-up-and-further-reading-on-ractors">Wrap Up and Further Reading on Ractors</h2>
+<p>In this article, we introduced the concept of ractors, including when and why to use them and how to get started. We also looked at how they communicate with one another, what objects are shareable and unshareable, and how to make objects shareable.</p>
+<p>Ractors go deeper than this. Many other public methods can be called on ractors, like <code>select</code> to wait for the success of take, yield and receive, <code>count</code>, <code>current</code>, etc.</p>
+<p>To expand your knowledge about ractors, check out the <a href="https://docs.ruby-lang.org/en/3.0/ractor_md.html">ractor documentation</a>. <a href="https://gist.github.com/Kukunin/960ccef0d3c0a2c4b28ff5345911c2a5">This GitHub gist</a> might also interest you if you'd like to experimentally compare ractors with threads.</p>
+<p>Ractors are indeed experimental, but they certainly look like they have a bright future in Ruby's evolution.</p>
+<p>Happy coding!</p>
+<p><strong>P.S. If you'd like to read Ruby Magic posts as soon as they get off the press, <a href="https://blog.appsignal.com/ruby-magic">subscribe to our Ruby Magic newsletter and never miss a single post</a>!</strong></p></div></div>
+  </div>
+</body>
+</html>

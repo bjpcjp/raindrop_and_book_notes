@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Introducing gisthost.github.io</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Introducing gisthost.github.io</h1>
+    <p><strong>URL:</strong> <a href="https://simonwillison.net/2026/Jan/1/gisthost/">https://simonwillison.net/2026/Jan/1/gisthost/</a></p>
+    <p><strong>Tags:</strong> github</p>
+    <p><strong>Bookmark ID:</strong> 1520437927</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-permalink-context="/2026/Jan/1/gisthost/">
+
+<p>1st January 2026</p>
+
+
+
+<p>I am a huge fan of <a href="https://gistpreview.github.io/">gistpreview.github.io</a>, the site by Leon Huang that lets you append <code>?GIST_id</code> to see a browser-rendered version of an HTML page that you have saved to a Gist. The last commit was ten years and I needed a couple of small changes so I’ve forked it and deployed an updated version at <a href="https://gisthost.github.io/">gisthost.github.io</a>.</p>
+<h4 id="some-background-on-gistpreview">Some background on gistpreview&nbsp;<a href="https://simonwillison.net/2026/Jan/1/gisthost/#some-background-on-gistpreview">#</a></h4>
+<p>The genius thing about <code>gistpreview.github.io</code> is that it’s a core piece of GitHub infrastructure, hosted and cost-covered entirely by GitHub, that wasn’t built with any involvement from GitHub at all.</p>
+<p>To understand how it works we need to first talk about Gists.</p>
+<p>Any file hosted in a <a href="https://gist.github.com/">GitHub Gist</a> can be accessed via a direct URL that looks like this:</p>
+<p><code>https://gist.githubusercontent.com/simonw/d168778e8e62f65886000f3f314d63e3/raw/79e58f90821aeb8b538116066311e7ca30c870c9/index.html</code></p>
+<p>That URL is served with a few key HTTP headers:</p>
+<pre><code>Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+</code></pre>
+<p>These ensure that every file is treated by browsers as plan text, so HTML file will not be rendered even by older browsers that attempt to guess the content type based on the content.</p>
+<pre><code>Via: 1.1 varnish
+Cache-Control: max-age=300
+X-Served-By: cache-sjc1000085-SJC
+</code></pre>
+<p>These confirm that the file is sever via GitHub’s caching CDN, which means I don’t feel guilty about linking to them for potentially high traffic scenarios.</p>
+<pre><code>Access-Control-Allow-Origin: *
+</code></pre>
+<p>This is my favorite HTTP header! It means I can hit these files with a <code>fetch()</code> call from any domain on the internet, which is fantastic for building <a href="https://simonwillison.net/2025/Dec/10/html-tools/">HTML tools</a> that do useful things with content hosted in a Gist.</p>
+<p>The one big catch is that Content-Type header. It means you can’t use a Gist to serve HTML files that people can view.</p>
+<p>That’s where <code>gistpreview</code> comes in. The <code>gistpreview.github.io</code> site belongs to the dedicated <a href="https://github.com/gistpreview">gistpreview</a> GitHub organization, and is served out of the <a href="https://github.com/gistpreview/gistpreview.github.io">github.com/gistpreview/gistpreview.github.io</a> repository by GitHub Pages.</p>
+<p>It’s not much code. The key functionality is this snippet of JavaScript from <a href="https://github.com/gistpreview/gistpreview.github.io/blob/master/main.js">main.js</a>:</p>
+<div><pre><span>fetch</span><span>(</span><span>'https://api.github.com/gists/'</span> <span>+</span> <span>gistId</span><span>)</span>
+<span>.</span><span>then</span><span>(</span><span>function</span> <span>(</span><span>res</span><span>)</span> <span>{</span>
+  <span>return</span> <span>res</span><span>.</span><span>json</span><span>(</span><span>)</span><span>.</span><span>then</span><span>(</span><span>function</span> <span>(</span><span>body</span><span>)</span> <span>{</span>
+    <span>if</span> <span>(</span><span>res</span><span>.</span><span>status</span> <span>===</span> <span>200</span><span>)</span> <span>{</span>
+      <span>return</span> <span>body</span><span>;</span>
+    <span>}</span>
+    <span>console</span><span>.</span><span>log</span><span>(</span><span>res</span><span>,</span> <span>body</span><span>)</span><span>;</span> <span>// debug</span>
+    <span>throw</span> <span>new</span> <span>Error</span><span>(</span><span>'Gist &lt;strong&gt;'</span> <span>+</span> <span>gistId</span> <span>+</span> <span>'&lt;/strong&gt;, '</span> <span>+</span> <span>body</span><span>.</span><span>message</span><span>.</span><span>replace</span><span>(</span><span><span>/</span><span>\(</span>.<span>*</span><span>\)</span><span>/</span></span><span>,</span> <span>''</span><span>)</span><span>)</span><span>;</span>
+  <span>}</span><span>)</span><span>;</span>
+<span>}</span><span>)</span>
+<span>.</span><span>then</span><span>(</span><span>function</span> <span>(</span><span>info</span><span>)</span> <span>{</span>
+  <span>if</span> <span>(</span><span>fileName</span> <span>===</span> <span>''</span><span>)</span> <span>{</span>
+    <span>for</span> <span>(</span><span>var</span> <span>file</span> <span>in</span> <span>info</span><span>.</span><span>files</span><span>)</span> <span>{</span>
+      <span>// index.html or the first file</span>
+      <span>if</span> <span>(</span><span>fileName</span> <span>===</span> <span>''</span> <span>||</span> <span>file</span> <span>===</span> <span>'index.html'</span><span>)</span> <span>{</span>
+        <span>fileName</span> <span>=</span> <span>file</span><span>;</span>
+      <span>}</span>
+    <span>}</span>
+  <span>}</span>
+  <span>if</span> <span>(</span><span>info</span><span>.</span><span>files</span><span>.</span><span>hasOwnProperty</span><span>(</span><span>fileName</span><span>)</span> <span>===</span> <span>false</span><span>)</span> <span>{</span>
+    <span>throw</span> <span>new</span> <span>Error</span><span>(</span><span>'File &lt;strong&gt;'</span> <span>+</span> <span>fileName</span> <span>+</span> <span>'&lt;/strong&gt; is not exist'</span><span>)</span><span>;</span>
+  <span>}</span>
+  <span>var</span> <span>content</span> <span>=</span> <span>info</span><span>.</span><span>files</span><span>[</span><span>fileName</span><span>]</span><span>.</span><span>content</span><span>;</span>
+  <span>document</span><span>.</span><span>write</span><span>(</span><span>content</span><span>)</span><span>;</span>
+<span>}</span><span>)</span></pre></div>
+<p>This chain of promises fetches the Gist content from the GitHub API, finds the section of that JSON corresponding to the requested file name and then outputs it to the page like this:</p>
+<div><pre><span>document</span><span>.</span><span>write</span><span>(</span><span>content</span><span>)</span><span>;</span></pre></div>
+<p>This is smart. Injecting the content using <code>document.body.innerHTML = content</code> would fail to execute inline scripts. Using <code>document.write()</code> causes the browser to treat the HTML as if it was directly part of the parent page.</p>
+<p>That’s pretty much the whole trick! Read the Gist ID from the query string, fetch the content via the JSON API and <code>document.write()</code> it into the page.</p>
+<p>Here’s a demo:</p>
+<p><a href="https://gistpreview.github.io/?d168778e8e62f65886000f3f314d63e3">https://gistpreview.github.io/?d168778e8e62f65886000f3f314d63e3</a></p>
+<h4 id="fixes-for-gisthost-github-io">Fixes for gisthost.github.io&nbsp;<a href="https://simonwillison.net/2026/Jan/1/gisthost/#fixes-for-gisthost-github-io">#</a></h4>
+<p>I forked <code>gistpreview</code> to add two new features:</p>
+<ol>
+<li>A workaround for Substack mangling the URLs</li>
+<li>The ability to serve larger files that get truncated in the JSON API</li>
+</ol>
+<p>I also removed some dependencies (jQuery and Bootstrap and an old <code>fetch()</code> polyfill) and inlined the JavaScript into <a href="https://github.com/gisthost/gisthost.github.io/blob/main/index.html">a single index.html file</a>.</p>
+<p>The Substack issue was small but frustrating. If you email out a link to a <code>gistpreview</code> page via Substack it modifies the URL to look like this:</p>
+<p><a href="https://gistpreview.github.io/?f40971b693024fbe984a68b73cc283d2=&amp;utm_source=substack&amp;utm_medium=email">https://gistpreview.github.io/?f40971b693024fbe984a68b73cc283d2=&amp;utm_source=substack&amp;utm_medium=email</a></p>
+<p>This breaks <code>gistpreview</code> because it treats <code>f40971b693024fbe984a68b73cc283d2=&amp;utm_source...</code> as the Gist ID.</p>
+<p>The fix is to read everything up to that equals sign. I <a href="https://github.com/gistpreview/gistpreview.github.io/pull/7">submitted a PR</a> for that back in November.</p>
+<p>The second issue around truncated files was <a href="https://github.com/simonw/claude-code-transcripts/issues/26#issuecomment-3699668871">reported against my claude-code-transcripts project</a> a few days ago.</p>
+<p>That project provides a CLI tool for exporting HTML rendered versions of Claude Code sessions. It includes a <code>--gist</code> option which uses the <code>gh</code> CLI tool to publish the resulting HTML to a Gist and returns a gistpreview URL that the user can share.</p>
+<p>These exports can get pretty big, and some of the resulting HTML was past the size limit of what comes back from the Gist API.</p>
+<p>As of <a href="https://github.com/simonw/claude-code-transcripts/releases/tag/0.5">claude-code-transcripts 0.5</a> the <code>--gist</code> option now publishes to <a href="https://gisthost.github.io/">gisthost.github.io</a> instead, fixing both bugs.</p>
+<p>Here’s <a href="https://gisthost.github.io/?02ced545666128ce4206103df6185536">the Claude Code transcript</a> that refactored Gist Host to remove those dependencies, which I published to Gist Host using the following command:</p>
+<pre><code>uvx claude-code-transcripts web --gist
+</code></pre>
+
+
+</div></div>
+  </div>
+</body>
+</html>

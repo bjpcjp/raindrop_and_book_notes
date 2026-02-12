@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Realtime with React and Rails - via @codeship | via @codeship</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Realtime with React and Rails - via @codeship | via @codeship</h1>
+    <p><strong>URL:</strong> <a href="https://blog.codeship.com/realtime-with-react-and-rails">https://blog.codeship.com/realtime-with-react-and-rails</a></p>
+    <p><strong>Tags:</strong> reactjs, rubyonrails, websockets</p>
+    <p><strong>Bookmark ID:</strong> 876769518</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="resource-contents"><p>When I was thinking about creating something to showcase using ActionCable (websockets) in a Rails app with React, I first thought of building a chat. But everybody builds a chat. So next, I thought about a realtime dashboard. But then I realized I had no data in this demo app with all but one user (me). So I decided to build a realtime map application that allows you to broadcast your location to anyone you wish.</p><p>In this article, we'll explore how to use Rails, React (via react<!-- -->_<!-- -->on<!-- -->_<!-- -->rails gem), MobX, and websockets (via ActionCable). <a href="https://tag-along-app.herokuapp.com/" target="_blank" rel="noreferrer noopener">The demo app</a> can be found here. The full repository <a href="https://github.com/leighhalliday/tag-along" target="_blank" rel="noreferrer noopener">can be found here</a>.</p><a href="#getting-started-with-a-new-rails-app"><h2 id="getting-started-with-a-new-rails-app">Getting Started with a New Rails App</h2></a><p>We'll start by generating a new Rails app using the command <code>rails new tag_along --database=postgresql --webpack</code>. Next we'll add the <a href="https://github.com/shakacode/react_on_rails" target="_blank" rel="noreferrer noopener">react<!-- -->_<!-- -->on<!-- -->_<!-- -->rails</a> gem and run the following command after committing our changes: <code>rails generate react_on_rails:install</code>. Remember to add <code>&lt;%= javascript_pack_tag 'webpack-bundle' %&gt;</code> to your application layout file.</p><p>In a previous article, I was asked why I chose <code>react_on_rails</code> rather than just relying on the webpacker gem that ships in the latest version of Rails. I posed that question to <a href="https://twitter.com/railsonmaui" target="_blank" rel="noreferrer noopener">Justin Gordon</a>, the creator of react<!-- -->_<!-- -->on<!-- -->_<!-- -->rails, and he said that it also uses webpacker but provides view helpers and built-in support for server-rendered React components.</p><a href="#creating-our-models"><h2 id="creating-our-models">Creating Our Models</h2></a><p>For this application, we'll be working with just two models: <code>Trip</code>, which keeps track of a single tracking session, and <code>Checkin</code>, which are all of the location updates and what time they occurred.</p><p>The trips migration looks like:</p><pre data-test="sectionSnippet">class CreateTrips &lt; ActiveRecord::Migration[5.1]
+  def change
+    create_table :trips do |t|
+      t.string :viewer_uuid, null: false
+      t.string :owner_uuid, null: false
+      t.string :name, null: false
+      t.timestamps
+    end
+    add_index :trips, :viewer_uuid
+    add_index :trips, :owner_uuid
+  end
+end</pre><p>The Trip model looks like:</p><pre data-test="sectionSnippet">class Trip &lt; ApplicationRecord
+  has_many :checkins
+  validates :viewer_uuid, :owner_uuid, :name, presence: true
+  before_validation :set_uuids, on: :create
+  def set_uuids
+    self.viewer_uuid = SecureRandom.uuid
+    self.owner_uuid = SecureRandom.uuid
+  end
+end</pre><p>The checkins migration looks like:</p><pre data-test="sectionSnippet">class CreateCheckins &lt; ActiveRecord::Migration[5.1]
+  def change
+    create_table :checkins do |t|
+      t.integer :trip_id, null: false
+      t.decimal :lat, null: false, precision: 10, scale: 6
+      t.decimal :lon, null: false, precision: 10, scale: 6
+      t.datetime :captured_at, null: false
+      t.timestamps
+    end
+    add_index :checkins, :trip_id
+  end
+end</pre><p>The Checkin model is pretty small:</p><pre data-test="sectionSnippet">class Checkin &lt; ApplicationRecord
+  belongs_to :trip
+  validates :trip_id, :lat, :lon, :captured_at, presence: true
+end</pre><a href="#organizing-react"><h2 id="organizing-react">Organizing React</h2></a><p>Now that we have our models and initial setup done, we'll work on organizing our React folder structure. What I've chosen to do is to create a new "bundle" called <code>Trip</code> in the <code>client</code> folder with the following subfolders:</p><ul><li><p><b>components</b>: which can be "injected" with MobX store</p></li><li><p><b>containers</b>: where we wrap main entry-points with a MobX Provider</p></li><li><p><b>services</b>: contains code for communicating with Rails API/sockets</p></li><li><p><b>startup</b>: registering our containers with ReactOnRails</p></li><li><p><b>stores</b>: MobX store will live here</p></li></ul><p>Just remember to update the <code>client/webpack.config.js</code> file in the <code>entry</code> section to make it aware of our new bundle: <code>'./app/bundles/Trip/startup/registration'</code>.</p><p>We'll start in the <code>startup</code> folder, where there's a single file called <code>registration.jsx</code>. The job of this file is to "register" any component we wish to render from within a Rails view.</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/startup/registration.jsx
+import ReactOnRails from 'react-on-rails';
+import NewTripContainer from '../containers/NewTripContainer';
+import ViewTripContainer from '../containers/ViewTripContainer';
+ReactOnRails.register({
+  NewTripContainer,
+  ViewTripContainer
+});</pre><a href="#setting-up-mobx"><h2 id="setting-up-mobx">Setting Up MobX</h2></a><p>MobX is a state-management tool for React. It's an alternative to using Redux and one that I find a lot simpler to set up and use. It has an "object-oriented" feel as opposed to the purely functional feel of Redux.</p><p>We need to install the <code>mobx</code> and <code>mobx-react</code> packages. In addition to these, we'll need to install <code>babel-plugin-transform-decorators-legacy</code> and follow that up with adding this plugin to our <code>.babelrc</code> file: <code>"plugins": ["transform-decorators-legacy"]</code>. While not necessary, using decorators with MobX makes things a lot cleaner and easier.</p><p>Inside of the <code>stores</code> folder, we'll create the <code>TripStore</code>, where we'll manage the state for the Trip and its Checkins. We declare which properties we'll track state changes of by adding them at the top of the class using the <code>@observable</code> decorator, which comes with MobX.</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/stores/TripStore.js
+import { observable, action } from 'mobx';
+import TripApi from '../services/TripApi';
+class TripStore {
+  @observable trip = {};
+  @observable checkins = [];
+  constructor() {
+    this.tripApi = new TripApi();
+  }
+}
+const store = new TripStore();
+export default store;</pre><p>It's important to note how the store was exported at the bottom of the file: as an instance of the store rather than the class itself. We want a single instance of this store across the whole application.</p><p>We'll next take a look at the <code>NewTripContainer</code> component. It's not really a component, though, rather just wrapping our real component in a <code>Provider</code> component and also passing along the params that come from our Rails view. By wrapping Provider around our component, we can "inject" the MobX store into any of its children.</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/containers/NewTripContainer.jsx
+import React from 'react';
+import { Provider } from 'mobx-react';
+import TripStore from '../stores/TripStore';
+import NewTrip from '../components/NewTrip';
+export default (props, _railsContext) =&gt; {
+  return (
+    &lt;Provider TripStore={TripStore}&gt;
+      &lt;NewTrip {...props} /&gt;
+    &lt;/Provider&gt;
+  );
+};</pre><p>If we look at the <code>NewTrip</code> component itself, not too much is going on. We are simply including two children, which handle most of the work.</p><pre data-test="sectionSnippet">import React from 'react';
+import TripForm from './TripForm';
+import TripMap from './TripMap';
+export default class NewTrip extends React.Component {
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;TripForm /&gt;
+        &lt;TripMap /&gt;
+      &lt;/div&gt;
+    )
+  }
+}</pre><p>We render this in our <code>views/trips/new</code> view with the following helper provided by react<!-- -->_<!-- -->on<!-- -->_<!-- -->rails. The route and controller/action don't do anything too special, but you can check them out by visiting the repository provided in the introduction.</p><pre data-test="sectionSnippet">&lt;%= react_component('NewTripContainer', props: {}, prerender: false) %&gt;</pre><p>!Sign up for a free Codeship Account </p><a href="#posting-to-rails"><h2 id="posting-to-rails">Posting to Rails</h2></a><p>When the page loads, we'll ask the user to enter their name, which we then post to our Rails app. In Rails, we'll insert a new Trip into the database and respond with the model details as JSON. This part does not use websockets. If we start from the Rails perspective, our action looks like:</p><pre data-test="sectionSnippet"># app/controllers/trips_controller.rb
+def create
+  clean_old_trips
+  trip = Trip.create!(trip_params)
+  render json: trip.to_json
+end</pre><p>If you're wondering what <code>clean_old_trips</code> does, its job is to keep my free Heroku database small. Also, note that error-handling is fairly (entirely) absent from this demo. We're going to assume the client sends us beautifully valid data (which is a horrible assumption).</p><p>The <code>TripForm</code> component is below. This is the first component we will "inject" the TripStore into. What this means is that we will have a prop called <code>TripStore</code>, which allows us to call any action or access any of the observable properties we set up. Comments have been added inline below.</p><pre data-test="sectionSnippet">import React from 'react';
+import { observer, inject } from 'mobx-react';
+// Inject the TripStore into our component as a prop.
+@inject('TripStore')
+// Make our class "react" (re-render) to store changes.
+@observer
+export default class TripForm extends React.Component {
+  // When user submits form, call the `createTrip` action, passing the name.
+  handleSubmit = (e) =&gt; {
+    e.preventDefault();
+    const name = this.nameInput.value;
+    this.props.TripStore.createTrip(name);
+  }
+  render() {
+    const {TripStore} = this.props;
+    // If we already have a trip in our store, display a link that can be
+    // shared with anyone you want to share your realtime location with.
+    if (TripStore.trip.name) {
+      const trip_url = `${window.location.protocol}//${window.location.host}/trips/${TripStore.trip.viewer_uuid}`;
+      return (
+        &lt;section className="trip-form-container"&gt;
+          &lt;p&gt;
+            Tracking &lt;strong&gt;{TripStore.trip.name}&lt;/strong&gt;,
+            share this link: &lt;a href={trip_url}&gt;{trip_url}&lt;/a&gt;
+          &lt;/p&gt;
+        &lt;/section&gt;
+      )
+    }
+    // Display the form allowing user to create a new Trip for themselves
+    return (
+      &lt;section className="trip-form-container"&gt;
+      &lt;/section&gt;
+    )
+  }
+}</pre><p>Inside of our TripStore, we can add the action called above. It will use the API service we set up and, following successful creation, will subscribe to realtime updates (in this case, about our own location) and at the same time will start sending realtime location info to the server.</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/stores/TripStore.js
+@action createTrip = (name) =&gt; {
+  this.tripApi.createTrip(name).
+    then(trip =&gt; {
+      // update our observable property, triggering re-render in component
+      this.trip = trip;
+      // subscribe to websocket channel for this specific "trip"
+      this.tripApi.subscribeTrip(trip.viewer_uuid, checkin =&gt; {
+        this.recordCheckin(checkin)
+      });
+      // send our location to server
+      this.postCheckin();
+    });
+}</pre><p>Inside of our API service, our POST to the Rails server looks like:</p><pre data-test="sectionSnippet">import ActionCable from 'actioncable';
+export default class TripApi {
+  constructor() {
+    // for use later on in article when we talk about websockets
+    this.cable = ActionCable.createConsumer('/cable');
+    this.subscription = false;
+  }
+  createTrip = (name) =&gt; {
+    return fetch('/trips', {
+      method: 'post',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({
+        trip: {name}
+      })
+    }).
+    then(response =&gt; response.json());
+  }
+}</pre><a href="#actioncable--websockets"><h2 id="actioncable--websockets">ActionCable + Websockets</h2></a><p>When working with ActionCable in Rails, I had to add the <code>redis</code> gem and update the <code>config/cable.yml</code> file to point to the correct Redis servers on both development and production:</p><pre data-test="sectionSnippet">development:
+  adapter: redis
+  url: redis://localhost:6379/1
+  channel_prefix: tag_along_development
+production:
+  adapter: redis
+  url: &lt;%= ENV['REDIS_URL'] %&gt;
+  channel_prefix: tag_along_production</pre><p>We are going to create a file called <code>trip_channel.rb</code> in the <code>app/channels</code> folder. Each Channel in ActionCable is meant to handle a single set of logic, similar to a Controller.</p><p>Let's talk terminology first:</p><ul><li><p><b>Channel</b>: :Like a Controller in ActionCable, handling communication for a single use-case.</p></li><li><p><b>Room</b>: If you think of a chatroom, this defines which "room" you are interested in sending and receiving realtime communication with. In our case, it will be for a specific Trip.</p></li><li><p><b>Consumer</b>: This is the client; in our case, the browser that will connect to the server. Consumers can both send and receive information over the websocket connection.</p></li><li><p><b>Subscribe</b>: When the Consumer connects to the server for a specific Channel + Room.</p></li><li><p><b>Broadcast</b>: Sending information to all subscribers of a specific Channel + Room.</p></li></ul><pre data-test="sectionSnippet">class TripChannel &lt; ApplicationCable::Channel
+  # called when user first subscribes
+  # we can define where their information is "broadcast" from
+  def subscribed
+    stream_from "trip_#{params[:room]}"
+  end
+  # called when a Consumer sends information to the server
+  def receive(data)
+    # find trip using owner_uuid
+    trip = Trip.find_by!(owner_uuid: data['owner_uuid'])
+    # add additional checkin
+    # not recording in demo to keep DB small on free Heroku
+    # checkin = trip.checkins.create!({
+    #   lat: data['lat'],
+    #   lon: data['lon'],
+    #   captured_at: Time.zone.at(data['captured_at'] / 1000)
+    # })
+    # broadcast checkin to subscribers
+    ActionCable.server.broadcast("trip_#{params[:room]}", {
+      lat: data['lat'],
+      lon: data['lon'],
+      captured_at: data['captured_at']
+    })
+  end
+end</pre><a href="#receiving-realtime-data"><h2 id="receiving-realtime-data">Receiving Realtime Data</h2></a><p>To be able to send data over websockets, we'll first need to connect to the socket and then subscribe to a Channel + Room. If you look back to where the <code>TripApi</code> service in JavaScript was introduced, there was a line in the <code>constructor</code> that looked like <code>this.cable = ActionCable.createConsumer('/cable');</code>. This sets us up with a connection to the server as a consumer of this websocket.</p><p>Next we'll look at the <code>subscribeTrip</code> function in our TripApi, which is called whenever we want to send/receive information for a Channel + Room. We provide a callback function that is called once every time the server sends realtime data to us as a Consumer.</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/services/TripApi.js
+subscribeTrip = (viewer_uuid, callback) =&gt; {
+  this.subscription = this.cable.subscriptions.create({
+    channel: "TripChannel",
+    room: viewer_uuid
+  }, {
+    received: callback
+  });
+}</pre><p>This function was called inside of the <code>createTrip</code> action function of the TripStore:</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/stores/TripStore.js
+this.tripApi.subscribeTrip(trip.viewer_uuid, checkin =&gt; {
+  this.recordCheckin(checkin)
+});</pre><p>In our case, the only things the server will be sending to us are "checkin" details, which is why the arrow function receives a variable called <code>checkin</code>. It simply calls another action that pushes the checkin to an array.</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/stores/TripStore.js
+@action recordCheckin = (checkin) =&gt; {
+  this.checkins.push({
+    lat: parseFloat(checkin.lat),
+    lon: parseFloat(checkin.lon),
+    captured_at: parseInt(checkin.captured_at)
+  });
+  // Let's just keep last 25 checkins for performance
+  this.checkins = this.checkins.slice(-25);
+}</pre><a href="#sending-realtime-data"><h2 id="sending-realtime-data">Sending Realtime Data</h2></a><p>We talked about how realtime data was received, but how did it get to the server in the first place? After subscribing to the Channel + Room, we have a <code>subscription</code> object. What we will do is ask for the user's location every two seconds, sending that information to the server using this subscription.</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/stores/TripStore.js
+@action postCheckin = () =&gt; {
+  // ask for location
+  navigator.geolocation.getCurrentPosition(position =&gt; {
+    // send location + owner_uuid (secret and only owner knows about it)
+    this.tripApi.postCheckin(
+      this.trip.owner_uuid,
+      position.coords.latitude,
+      position.coords.longitude,
+      position.timestamp
+    );
+    // 2 seconds later do the whole thing again
+    setTimeout(() =&gt; {
+      this.postCheckin();
+    }, 2000);
+  });
+}</pre><p>What <code>postCheckin</code> does in the API is to send the information over websockets using the subscription and its <code>send</code> function.</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/services/TripApi.js
+postCheckin = (owner_uuid, lat, lon, captured_at) =&gt; {
+  this.subscription.send({
+    owner_uuid,
+    lat,
+    lon,
+    captured_at
+  });
+}</pre><a href="#showing-checkin-locations-on-the-map"><h2 id="showing-checkin-locations-on-the-map">Showing Checkin Locations on the Map</h2></a><p>We've looked at how to both send data to the server via websockets and how to receive realtime updates back. But what are we going to do with this stream of location details? We'll show them on a map! For this, we are using the <code>react-map-gl</code> package, which works with MapBox.</p><pre data-test="sectionSnippet">// client/app/bundles/Trip/components/TripMap.jsx
+import React from 'react';
+import { observer, inject } from 'mobx-react';
+import MapGL, {Marker} from 'react-map-gl';
+import moment from 'moment';
+import MARKER_STYLE from '../markerStyle';
+// You must sign up for a free access token
+const token = process.env.MapboxAccessToken;
+@inject('TripStore')
+@observer
+export default class TripStore extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      viewport: {
+        latitude: 43.6532,
+        longitude: -79.3832,
+        // other viewport properties like width, height, zoom
+      },
+      settings: {
+        // settings
+      }
+    };
+  }
+  // render a Marker for each checkin location
+  renderMarker = (checkin) =&gt; {
+    return (
+      &lt;Marker key={checkin.captured_at} longitude={checkin.lon} latitude={checkin.lat} &gt;
+        &lt;div className="station"&gt;
+          &lt;span&gt;{moment(checkin.captured_at).format('MMMM Do YYYY, h:mm:ss a')}&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/Marker&gt;
+    );
+  }
+  // Callback sent to the Map to handle dragging / panning / zooming of map
+  onViewportChange = (viewport) =&gt; {
+    this.setState({viewport});
+  }
+  // Helper function to set the viewport to the user's last checkin location
+  viewport = () =&gt; {
+    const {TripStore} = this.props;
+    let latitude = 43.6532;
+    let longitude = -79.3832;
+    if (TripStore.checkins.length &gt; 0) {
+      const last = TripStore.checkins[TripStore.checkins.length - 1];
+      latitude = last.lat;
+      longitude = last.lon;
+    }
+    return {
+      ...this.state.viewport,
+      latitude,
+      longitude
+    };
+  }
+  render() {
+    const {TripStore} = this.props;
+    const viewport = this.viewport();
+    // render actual map, mapping over each `checkins` in the TripStore
+    return (
+      &lt;MapGL
+        {...viewport}
+        {...this.state.settings}
+        mapStyle="mapbox://styles/mapbox/dark-v9"
+        onViewportChange={this.onViewportChange}
+        mapboxApiAccessToken={token} &gt;
+        &lt;style&gt;{MARKER_STYLE}&lt;/style&gt;
+        { TripStore.checkins.map(this.renderMarker) }
+      &lt;/MapGL&gt;
+    );
+  }
+}</pre><a href="#conclusion"><h2 id="conclusion">Conclusion</h2></a><p>Although it was a fair amount of code, we built something pretty darn cool: a realtime location-tracking map you can share with your friends and family! We used a lot of new technologies to make it happen, including React, MobX, ActionCable, and MapBox.</p><p>Using ActionCable in React is really no different from using it in standard JavaScript. The key is that once you make your websocket connection, you can then subscribe to a Channel + Room. From there, you are free to both send and receive information. How you decide to display that information is up to you!</p></div></div>
+  </div>
+</body>
+</html>

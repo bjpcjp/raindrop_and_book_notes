@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>MIMO radar antenna arrays</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>MIMO radar antenna arrays</h1>
+    <p><strong>URL:</strong> <a href="https://hforsten.com/mimo-radar-antenna-arrays.html">https://hforsten.com/mimo-radar-antenna-arrays.html</a></p>
+    <p><strong>Tags:</strong> antennas</p>
+    <p><strong>Bookmark ID:</strong> 876779024</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section id="content">
+        <article>
+            
+            <div>
+                
+                
+
+<h2 id="introduction">Introduction</h2>
+<p>A radar with one transmitter and one receiver antenna can measure
+distances to the targets based on the time of flight of the transmitted
+electromagnetic wave. One transmitter and receiver isn't however enough to
+measure angle in which the targets are. A simple way to get the angle
+information is to use antenna with a very narrow beam and mechanically rotate
+it. Mechanical rotation does have some drawbacks. It requires a large antenna to
+achieve the narrow beamwidth, rotating the large antenna requires lot of
+space and the whole field of view can't be imaged at the same time.</p>
+<p>Instead of rotating a single antenna, a radar with multiple stationary antennas
+can be used to generate image of the targets. Phased array radars use multiple
+antennas to form the radar image without needing to physically rotate. Because
+the antennas can operate at the same time the image refresh rate is much faster.
+MIMO radar is phased array radar with multiple transmitter and receiver
+antennas. The more antennas are used the better the angular resolution of the
+radar.</p>
+<p>I have been working with MIMO radars for few years. When I started I didn't know
+much about them and there didn't seem to be much of introduction level material
+at the time. Many of the existing material in my opinion are overly complex and
+don't give good intuition about the subject. This post is my try to make
+introduction level article about the MIMO radar antenna array design that
+I wished I had when I started to design MIMO radars.</p>
+<h2 id="antenna-array-beamforming-basics">Antenna array beamforming basics</h2>
+<p>Radar works by transmitting electromagnetic waveform from the transmitter
+antennas which reflects from the targets and is received by the receiver
+antennas. Based on the time delay between transmission and reception the distance
+to the target can be calculated. This doesn't give any information about the
+angle where the object is. To know the angle of the target multiple antennas are
+needed. The antennas are at slightly different locations and thus receive the
+signal at slightly different times. Based on the time differences at each
+antenna the angle of the target can be solved. In practice instead of the
+absolute time difference, which would required extremely good time resolution,
+phase of the received signal is used.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="118" height="91" data-pagespeed-url-hash="1222474103" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Distance of the traveled radar waveform.</p>
+</div>
+
+<p>If we assume that the target is very far and the angle to the target from each
+antenna can be assumed to be identical then the distances the radar waveform
+travels to each antenna is summarized in the above figure. We will also make
+another assumption that the distance difference to the target between the
+antennas is less than range resolution of the radar. This assumption simplifies
+the image formation as all signals will be in the same range bin after the image
+formation.</p>
+<p>The distance traveled by the radar waveform is the distance from TX antenna to
+target plus distance from the target back to the RX antenna: <span>\(r_{tx}
++ r_{rx1} = 2r_{tx} + d\sin \theta\)</span>. With multiple receiver antennas at 
+different distances to the transmitter the radar waveform travels slightly
+different distance which can be used to solve for the angle of the target.</p>
+<p>The received signal from one target at the RX antenna is of the form: <span>\(f_{\text{rx}} = A
+f_{rx0}\exp\left(\frac{2\pi j}{\lambda} d\sin \theta\right)\)</span>. <span>\(A\)</span> is the
+amplitude of the received signal, <span>\(f_{rx0}\)</span> is the time-delayed transmitter
+waveform that would have been received at the transmitter antenna. Exponential
+term is phase shift that depends on the distance to the target <span>\(r\)</span> and wavelength
+of the radiated signal <span>\(\lambda = \frac{c}{f}\)</span>. Complex numbers are used to make
+the analysis mathematically simpler, the actually measured signal are of course
+real valued and only the real part of the expression would be measured.</p>
+<p>With one target and two receiver antennas at different distance the angle of the target can be easily
+determined by comparing phase differences of the received signals at the two
+receiver antennas. The phase difference of the received signals at two antennas at distances <span>\(d\)</span> and
+<span>\(2d\)</span> from the transmitter is <span>\(\exp\left(\frac{2\pi j}{\lambda} d\sin\theta\right)\)</span>, angle
+of the target <span>\(\theta\)</span> can be easily solved from the expression. For there to be
+a single solution the distance <span>\(d\)</span> needs to be less than <span>\(\lambda/2\)</span>, otherwise
+due to periodicity of <span>\(\sin\)</span> same phase could be obtained at two or more angles.</p>
+<h2 id="multiple-targets">Multiple targets</h2>
+<p>The situation is a little bit harder when there are multiple targets. Reflection signals from
+the different targets sum at the receiver and only the summed signal can be
+measured. With one target the amplitude of the signal was the same at all
+antennas, but with multiple targets this is not necessarily the case.</p>
+<p>After the radar waveform <span>\(f_{rx0}\)</span> is demodulated from the receiver signals,
+each receiver's output is of the form <span>\(f_{rx,n} = A_n \exp{j \phi_n}\)</span>. <a href="https://en.wikipedia.org/wiki/Matched_filter">Matched
+filtering</a> is the optimal linear
+filter to determine how likely it is that there is a target at each angle. In
+this case the matched filter is the signal that would be observed from a single
+target at the particular angle: <span>\(g_n(\theta) = \exp\left(\frac{2\pi j}{\lambda} d_n\sin\theta\right)\)</span>.</p>
+<p>The target distribution <span>\(t(\theta)\)</span> can be calculated as: </p>
+<p>$$ t(\theta) = \sum_{n=0}^N
+f_{rx,n}g_n^*(\theta) = \sum_{n=0}^N f_{rx,n}\exp\left(-\frac{2\pi j}{\lambda} d_n\sin\theta\right) $$</p>
+<p>Setting <span>\(f_{rx,n}&nbsp;= 1\)</span> we get the target response of a single target at zero
+angle.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="1536" height="946" data-pagespeed-url-hash="2904861026" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Antenna array detected target response with
+    different number of RX antennas. Half wavelength spacing.</p>
+</div>
+
+<p>In the above figure are some target responses with arrays having single
+transmitter and different number of receivers. Many antennas are required to get
+a decent angular resolution. Even with 16 receivers the -3 dB angular resolution
+is just 6 degrees.</p>
+<p>Sidelobe level could be adjusted by weighting the terms in the sum. Without
+weighting the first sidelobes are at -13 dB level.</p>
+<h2 id="antenna-arrays-with-multiple-transmitters">Antenna arrays with multiple transmitters</h2>
+<p>For the MIMO principle to be possible we need to assume that receivers can
+separate the signals from different transmitters. If they would transmit at the
+same time the same waveform they would just sum up at the receivers and they
+can't be separated. In practice the transmitters could transmit at different
+times, at different frequencies or the waveforms are orthogonal and correlator
+at the receiver can separate them.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="199" height="91" data-pagespeed-url-hash="2947682080" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Two transmitters and two receivers.</p>
+</div>
+
+<p>The above antenna configuration is similar to the previous one with one
+transmitter and two receivers, but now a second transmitter has been added at
+distance <span>\(2d\)</span>. The TX1-RX1 and TX1-RX2 signals are the same as before and there
+are also additional TX2-RX1 and TX2-RX2 signals. We can write <span>\(r_{tx2}\)</span> as
+a function of <span>\(r_{tx1}\)</span> and distance between the transmitters <span>\(2d\)</span> as&nbsp;<span>\(r_{tx2}
+= r_{tx1} - 2d\sin\theta\)</span>. The distance from TX2 to target to RX1 can be written
+as: <span>\(r_{tx2} + (r_{tx1} + d\sin\theta) = 2r_{tx1} - d\sin\theta\)</span>. Writing the
+distances to target of all pairs gives the following table:</p>
+
+
+<table>
+<thead>
+<tr>
+<th>Antenna pair</th>
+<th>Traveled distance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TX2-RX1</td>
+<td><span>\(2r_{tx1} -d\sin\theta\)</span></td>
+</tr>
+<tr>
+<td>TX2-RX2</td>
+<td><span>\(2r_{tx1}\)</span></td>
+</tr>
+<tr>
+<td>TX1-RX1</td>
+<td><span>\(2r_{tx1} + d\sin\theta\)</span></td>
+</tr>
+<tr>
+<td>TX1-RX2</td>
+<td><span>\(2r_{tx1} + 2d\sin\theta\)</span></td>
+</tr>
+</tbody>
+</table>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="181" height="32" data-pagespeed-url-hash="2990715177" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>1TX-4RX array</p>
+</div>
+
+<p>The 2TX-2RX array with four antennas gives identical length differences between
+the antenna pairs to 1TX-4RX array with five antennas in the above figure. This
+results in the identical formed radar image. If the TX2 antenna was moved to the
+same position as RX2 the measured lengths would match perfectly to the 1TX-4RX
+array. The constant offset in the measured distances doesn't matter for
+determining the target angle and I didn't draw it like that because figure would
+have been not as clear.</p>
+<p>Using two transmitters we have saved one total antenna. The savings are even
+bigger with bigger arrays. <strong>MIMO array makes independent measurement for each
+TX-RX pair, while antenna array with only one transmitter can make measurements
+equal to the number of receiver antennas</strong>. For example with 32 receivers and 32
+transmitters each TX-RX pair gives independent measurement for total of 32*32
+= 1024 measurements. Antenna array with only one transmitter would need 1024
+receiver antennas to get the same number measurements and achieve the same
+angular resolution.</p>
+<h2 id="virtual-transceiver-array">Virtual transceiver array</h2>
+<p>In the last section 2TX-2RX array was found to behave similarly to 1TX-4RX array
+when the antenna spacing were as given. If the antenna spacings would have been
+different they would not have matched. Antenna arrays with a single transmitter
+are easy to analyze. The problem is how to determine the correct antenna
+spacings of the MIMO array to match regular antenna array?</p>
+<p>To ease the analysis of MIMO arrays it's possible to calculate virtual element
+positions of the antenna array. Each virtual element is an overlapping
+transmitter and receiver that only receives its own transmitted signal. This
+virtual transceiver antenna array is easier to analyze. In practice for each
+TX-RX pair we place a virtual transceiver antenna at half way between the both
+antennas.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="199" height="91" data-pagespeed-url-hash="3744676672" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>TX-RX pair and virtual antenna at half-way
+    between them.</p>
+</div>
+
+<p>In the above picture is a TX-RX pair at distance <span>\(d\)</span> and a virtual element half
+way between them. The TX to target to RX distance is <span>\(2r_{tx} + d\sin\theta\)</span>.
+Distance from virtual element to target to virtual element is <span>\(2(r_{tx}
++ \frac{d}{2}\sin\theta) = 2r_{tx} + d\sin\theta\)</span>, which is equal to the TX-RX
+pair.</p>
+<p>One important detail about the transceiver elements is that while regular
+antenna array spacing needs to be less than half wavelength to avoid aliasing,
+transceiver element spacing needs to be less than quarter wavelength. This is
+because transceiver element has both transmitter and receiver overlapping.
+Moving the transceiver element by quarter wavelength away from the target
+changes the distance to the target by half wavelength.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="1000" height="500" data-pagespeed-url-hash="434805541" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>1TX-4RX and 2TX-2RX antenna arrays with virtual
+    elements.</p>
+</div>
+
+<p>In the above picture are 1TX-4RX and 2TX-2RX array antenna locations with the
+virtual elements marked. Despite having smaller physical size and less antennas
+virtual element places are identical to the 1TX-4RX array.</p>
+
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="1000" height="500" data-pagespeed-url-hash="2442747833" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>1TX-64RX and 8TX-8RX antenna arrays.</p>
+</div>
+
+<p>In the above figure 1TX-64RX and 8TX-8RX arrays are compared. 8TX-8RX MIMO array
+has less less antennas, is physically smaller and has the same virtual array as
+the 1TX-64RX array. 1TX-64RX physical size is 31.5 wavelengths, 8TX-8RX size is
+sligthly smaller 28 wavelengths. The Y-axis TX to RX distance is arbitrary and
+doesn't have effect on the target detection. Target response at zero angle is
+plotted below.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="700" height="500" data-pagespeed-url-hash="1590192270" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>64 virtual element with λ/4 spacing target response at zero angle.</p>
+</div>
+
+<p>The angular resolution is about 1.6 degrees which starts to be a decent
+resolution for a radar.</p>
+<p>However there is another MIMO array configuration that results in the same
+virtual array but is physically even smaller. The trick is to split the RX array
+in two and put them in the opposite sides of the TX array.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="1485860979" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>8TX-8RX split RX MIMO array.</p>
+</div>
+
+<p>The 8TX-8RX MIMO array in the above figure results in the exact same virtual
+array as the two previous arrays, but the physical size is much smaller at only
+17.5 wavelengths. This is almost two times smaller than 1TX-64RX array and in
+fact <strong>as the number of elements increases the split RX MIMO array takes only half
+of the space of equal array with one transmitter</strong>.</p>
+<p>There are also other possible 8TX-8RX MIMO arrays that have the same virtual
+array, but they are not as compact as the split RX array. However they might be
+useful in some situations. In the figure below is one example:</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="2403920949" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Alternative 8TX-8RX RX MIMO array.</p>
+</div>
+
+<h2 id="3d-mimo-antenna-arrays">3D MIMO antenna arrays</h2>
+<p>Previously the antenna arrays have been one dimensional linear arrays, the
+obtained radar image has distance and azimuth angle to the target. They were
+called 2D arrays as the radar image is 2D and has no inclination angle (target
+height) component. To obtain the also the inclination angle and the full 3D
+position of the targets the antenna array needs to be two dimensional.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="4239889263" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Dense 1TX-64RX 3D antenna array.</p>
+</div>
+
+<p>With one transmitter the receivers need to be arranged in a dense grid in this
+case 8x8 requiring total of 64 receiver antennas.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="218893598" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Target response of 1TX-64RX 3D array.</p>
+</div>
+
+<p>The angular resolution is not that good since there is only eight antennas for
+X and Y directions.</p>
+<p>One MIMO array that has the same virtual array can be achieved by arranging TX
+and RX antennas in perpendicular rows:</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="834932710" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>8TX-8RX MIMO 3D antenna array.</p>
+</div>
+
+<p>While this requires less total antennas it doesn't save space. Similar to split
+RX 2D array the splitting of the antennas can be done with the 3D array to
+achieve a box shaped array:</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="2095921404" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>8TX-8RX MIMO 3D box antenna array.</p>
+</div>
+
+<p>The virtual element array is the same as before but now the physical size is
+smaller. Similarly to the 2D case, as the number of elements increases the side
+dimensions of box shaped MIMO array are half of the dense receiver array with
+one transmitter.</p>
+<p>The box configuration does have one drawback that in the corners TX and RX
+antennas need to be very close together, the distance is only 0.35 wavelengths.
+In practice this can cause issues with large TX-RX coupling.</p>
+<p>The box array has a nice property that it can be tiled while still achieving
+dense virtual element spacing without any gaps or overlapping elements:</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="2900584080" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Four tiled 8TX-8RX MIMO 3D box antenna arrays.</p>
+</div>
+
+<p>This is very useful in practice as it gives space to place components in a large
+array and allows manufacturing the large array with smaller modules.</p>
+<h2 id="non-equally-spaced-mimo-arrays">Non equally spaced MIMO arrays</h2>
+<p>All of the above arrays resulted in equally spaced virtual array. This is very
+useful property in practice as it allows using Fast Fourier Transform in the
+image formation greatly speeding it up. However non-equally spaced array is also
+possible and it's possible to calculate their responses with the same equations.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="2463240520" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>8TX-8RX MIMO array with wider split RX spacing.</p>
+</div>
+
+<p>If the antennas are not at exactly the right places the virtual array won't be
+uniform.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="700" height="500" data-pagespeed-url-hash="4145915074" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Target response of the above array.</p>
+</div>
+
+<p>Larger absolute size of the virtual array leads to narrower main lobe, but gaps
+in the virtual array increase the side lobe levels.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="3917774534" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Randomly placed 8TX-8RX MIMO array.</p>
+</div>
+
+<p>In the above picture 8TX and 8RX antennas were placed randomly in -2 to +2
+wavelength box following uniform distribution.</p>
+<div id="centered">
+    <p><img src="data:application/octet-stream;base64," width="500" height="500" data-pagespeed-url-hash="4229417809" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></p><p>Target response of the above array.</p>
+</div>
+
+<p>Characteristic of randomly distributed antennas is narrow main lobe but high
+side lobe level.</p>
+<h2 id="receiver-antenna-virtual-array">Receiver antenna virtual array</h2>
+<p>It's possible to also make virtual array of only receiver antennas. In that case
+virtual element positions are sum of position of each pair instead of average
+when using transceiver elements. This kind of virtual array is usually more
+common for example in text books. It doesn't matter which one is used when
+analyzing the far field radiation pattern, but one case where it makes
+a difference is MIMO SAR (synthetic aperture array). MIMO SAR virtual array can
+be calculated by sum of individual virtual arrays only if transceiver elements
+are used. I also think that transceiver array derivation is mathematically
+cleaner.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>MIMO radar array with <span>\(N_{tx}\)</span> transmitters and <span>\(N_{rx}\)</span> receivers can achieve
+angular resolution comparable to antenna array with one transmitter and <span>\(N_{tx}
+N_{rx}\)</span> receivers. With the right antenna distribution MIMO array can be made
+half the size of regular antenna array while still achieving the same angular
+resolution.</p>
+<p>The code for visualizing the antenna arrays is available
+<a href="https://gist.github.com/Ttl/3bb3e7c3213374f0dcb056b256795a76">here</a>.</p>
+
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section></div>
+  </div>
+</body>
+</html>

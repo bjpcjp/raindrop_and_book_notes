@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ethereum’s consensus layer elliptic curve</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Ethereum’s consensus layer elliptic curve</h1>
+    <p><strong>URL:</strong> <a href="https://www.johndcook.com/blog/2025/10/13/ethereum-bls12-381/">https://www.johndcook.com/blog/2025/10/13/ethereum-bls12-381/</a></p>
+    <p><strong>Tags:</strong> ethereum, algorithms-math, consensus</p>
+    <p><strong>Bookmark ID:</strong> 1386627175</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+		<p>I’ve written before about <a href="https://www.johndcook.com/blog/2018/08/14/bitcoin-elliptic-curves/">Bitcoin’s elliptic curve</a> and <a href="https://www.johndcook.com/blog/2025/07/27/moneros-elliptic-curve/">Monero’s elliptic curve</a>. In the Monero post I wrote “Bitcoin and Ethereum use the elliptic curve&nbsp;secp256k1.” That’s true, but it’s incomplete. Ethereum does use the elliptic curve secp256k1 for digital signatures, as does Bitcoin, but Ethereum also uses a different elliptic curve for its consensus layer.</p>
+<p>Ethereum’s consensus layer uses the elliptic curve BLS12-381. This post will say a little bit about this curve, starting with unpacking the cryptic name. I won’t go into the advanced math behind the curve’s design but instead will focus on <strong>concrete calculations</strong> in Python to try to make the curve more tangible. The same curve is used in other cryptocurrencies, including Zcash.</p>
+<p>First of all, BLS stands for Paulo Barreto, Ben Lynn, and Michael Scott, the developers of a family of elliptic curves known as the BLS curves, including BLS12-381. Incidentally, in the context of cryptography, BLS can refer to the BLS curves or to BLS signatures. The “L” is the same person in both instances, but the “B” and “S” in BLS signatures refer to Dan Boneh and Hovav Shacham.</p>
+<p>The 381 in BLS12-381 refers to the fact that it is defined over a finite field whose order is a 381-bit number, namely</p>
+<p><em>p</em> = 0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab</p>
+<p>We can verify that <em>p</em> is prime and that it has 381 bits.</p>
+<pre>&gt;&gt;&gt; from sympy import isprime
+&gt;&gt;&gt; isprime(p)
+True
+&gt;&gt;&gt; 2**380 &lt; p &lt; 2**381
+True
+</pre>
+<p>The value of <em>p</em> comes from applying a certain polynomial to a parameter <em>z</em> with low Hamming weight, i.e. with lots of zeros in its binary representation. Why this matters is beyond the scope of this post, but we can show that it’s true.</p>
+<pre>&gt;&gt;&gt; z = -0xd201000000010000
+&gt;&gt;&gt; p == (z-1)**2*(z**4 - z**2 + 1)//3 + z
+True</pre>
+<p>The elliptic curve BLS12-381 is the set of points satisfying</p>
+<p><em>y</em>² = <em>x</em>³ + 4 mod <em>p</em>.</p>
+<p>The 12 in BLS12-381 refers to an embedding degree <em>k</em> that we’ll get to shortly.</p>
+<p>The elliptic curve BLS12-381 is <strong>pairing friendly</strong>, which is the reason for its use in the Ethereum consensus layer. This layer uses pairing-based cryptography to aggregate signatures. I may write more about that someday, but not today.</p>
+<p>As I wrote <a href="https://www.johndcook.com/blog/2025/08/04/pairing-unfriendly-curves/">a couple months ago</a>,</p>
+<blockquote><p>An elliptic curve&nbsp;<em>E</em>/<em>F</em><sub><em>q</em></sub>&nbsp;is said to be&nbsp;<strong>pairing-friendly</strong>&nbsp;if&nbsp;<em>r</em>&nbsp;divides&nbsp;<em>q</em><sup><em>k</em></sup>&nbsp;− 1 for some small&nbsp;<em>k</em>. Here&nbsp;<em>r</em> is the size of the largest prime-order subgroup of the curve.</p></blockquote>
+<p>In the case of BLS12-381,&nbsp;<em>r</em> = <em>z</em><sup>4</sup> − <em>z</em><sup>2</sup> + 1 and <em>r</em> is a 255-bit prime number.</p>
+<pre>&gt;&gt;&gt; r = z**4 - z**2 + 1
+&gt;&gt;&gt; isprime(r)
+True
+&gt;&gt;&gt; 2**254 &lt; r &lt; 2**255
+True
+</pre>
+<p>And now we can verify that that the embedding degree is 12, showing the BLS12-381 is a pairing-friendly curve.</p>
+<pre>&gt;&gt;&gt; (p**12 - 1) % r
+0
+</pre>
+<p>So what is being paired with what? And what is being embedded into what? The group <em>G</em><sub>1</sub> of order <em>r</em>, is a subgroup of BLS12-381. It is paired with another group <em>G</em><sub>2</sub> also of order <em>r</em>, and there is a bilinear mapping from (<em>G</em><sub>1</sub>, <em>G</em><sub>2</sub>) to the multiplicative group of the finite field with&nbsp;<em>p</em><sup>12</sup> elements. For more details, see the <a href="https://eth2book.info/capella/part2/building_blocks/bls12-381/">section</a> on BLS12-381 in Ben Edginton’s book Upgrading Ethereum: A technical handbook on Ethereum’s move to proof of stake and beyond.</p>
+<h2>Related posts</h2>
+<ul>
+<li><a href="https://www.johndcook.com/blog/2025/08/11/misleading-plots-of-elliptic-curves/">Misleading plots of elliptic curves</a></li>
+<li><a href="https://www.johndcook.com/blog/2025/08/07/elliptic-curve-trace/">Counting points on an elliptic curve</a></li>
+<li><a href="https://www.johndcook.com/blog/2025/08/01/jubjub/">Tweedledum and Tweedledee</a></li>
+</ul>
+			</div></div>
+  </div>
+</body>
+</html>

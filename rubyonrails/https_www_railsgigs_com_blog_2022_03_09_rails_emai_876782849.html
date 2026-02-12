@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>https://www.railsgigs.com/blog/2022/03/09/rails-email-setup-for-development-staging-and-production</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>https://www.railsgigs.com/blog/2022/03/09/rails-email-setup-for-development-staging-and-production</h1>
+    <p><strong>URL:</strong> <a href="https://www.railsgigs.com/blog/2022/03/09/rails-email-setup-for-development-staging-and-production">https://www.railsgigs.com/blog/2022/03/09/rails-email-setup-for-development-staging-and-production</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876782849</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="content">
+
+  <section>
+    <article>
+      <section>
+        
+        <p>
+          Matthew •
+          March 9, 2022
+        </p>
+      </section>
+        <img alt="An emoji face thinking about configuring Action Mailer" src="http://web.archive.org/web/20220313065543im_/https://www.railsgigs.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbHNIIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--bdae3453731f8d71ad74c32a24929db054a63c08/config-rails-email-blog-pos.jpg">
+      <p>I've always found setting up email for a Rails app to be kind of a pain. You need to update a lot of files, you need to figure out how to look at sent emails, and you need to make sure you don't end up sending test emails to the world!</p>
+
+<p>This article describes what's become my default strategy for configuring email in Rails so that it's easy to work with email within the development, staging, and production environments. I'm going to talk about the approach I take to ActionMailer configuration and the other tools I use. (If you just wanna see the code, it's in <a href="http://web.archive.org/web/20220313065543/https://gist.github.com/mjbellantoni/deb1625182d0942ac47ee0405cb2f061">this gist here</a>.</p>
+
+<h2>Setting up a place for Rails email configuration</h2>
+
+<p>The first thing I want to do is to set up a place for ActionMailer-specific configuration. Most guides will tell you to add this configuration to the per-environment config files like <code>config/environments/production.rb</code>. </p>
+
+<p>I don't like touching these files because it complicates future Rails upgrades. (I want to minimize diffs when running <code>rails app:update</code>.) I instead prefer to read the config information from a YAML file using an initializer. Here's how to do that!</p>
+
+<p>Create a file called <code>config/mailer.yml</code> and create a section for the usual environments. It should look like this:</p>
+<div><pre><code><span>development</span><span>:</span>
+
+<span>production</span><span>:</span>
+
+<span>test</span><span>:</span>
+</code></pre></div>
+<p>Next, we'll create an initializer to read this file when the app boots up. We'll call it <code>config/initializers/action_mailer.rb</code>.  We'll end up reading this with Rails' <a href="http://web.archive.org/web/20220313065543/https://api.rubyonrails.org/classes/Rails/Application.html#method-i-config_for">config_for</a> (a neat little bit of functionality!) </p>
+<div><pre><code><span>Rails</span><span>.</span><span>application</span><span>.</span><span>config_for</span><span>(</span><span>:mailer</span><span>).</span><span>keys</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>option_name</span><span>|</span>
+  <span>Rails</span><span>.</span><span>configuration</span><span>.</span><span>action_mailer</span><span>[</span><span>option_name</span><span>]</span> <span>=</span> <span>Rails</span><span>.</span><span>application</span><span>.</span><span>config_for</span><span>(</span><span>:mailer</span><span>)[</span><span>option_name</span><span>]</span>
+<span>end</span>
+</code></pre></div>
+<p>That's it for this part! Now let's move on to the individual environment setup.</p>
+
+<h2>Setting up a test email</h2>
+
+<p>I'm not going to go into too much detail here, but if you don't have an email that's easy to send from your app, it might be worth it to set up a simple test email that you can send via the command line. I usually set up something like:</p>
+<div><pre><code><span>namespace</span> <span>:mail</span> <span>do</span>
+  <span>desc</span> <span>"Send a couple of test emails"</span>
+  <span>task</span> <span>send_tests: :environment</span> <span>do</span>
+    <span>%w[ a@example.com b@example.com ]</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>recipient</span><span>|</span>
+      <span>puts</span> <span>"Mailing </span><span>#{</span><span>recipient</span><span>}</span><span>..."</span>
+      <span>TestMailer</span><span>.</span><span>with</span><span>(</span><span>recipient: </span><span>recipient</span><span>).</span><span>test_mail</span><span>.</span><span>deliver_later</span>
+    <span>rescue</span> <span>=&gt;</span> <span>exception</span>
+      <span>log_data</span> <span>=</span> <span>{</span> <span>task: </span><span>"mail:send_tests"</span><span>,</span> <span>recipient: </span><span>recipient</span><span>,</span> <span>exception: </span><span>exception</span> <span>}</span>
+      <span>Rails</span><span>.</span><span>logger</span><span>.</span><span>error</span><span>(</span><span>log_data</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+</code></pre></div>
+<p>I've shown dummy email addresses in this sample, but I actually use live email addresses. (If you wanna email me, it's easy enough for you to find my address!)</p>
+
+<p>I won't show you how to set up <code>TestMailer</code> here, but <a href="http://web.archive.org/web/20220313065543/https://guides.rubyonrails.org/action_mailer_basics.html#walkthrough-to-generating-a-mailer">the Rails docs have everything to get you started</a>.</p>
+
+<h2>Setting up Rails email in development</h2>
+
+<p>In development, I like to use <a href="http://web.archive.org/web/20220313065543/https://mailcatcher.me/">MailCatcher</a>, a simple SMPT server that will catch and display your app's sent emails in a browser. It's free and open source.  </p>
+
+<p>Here's a quick rundown of how to set it up, or you can visit the MailCatcher home page.</p>
+
+<p>First, install MailCatcher using the <code>gem</code> command. (That is: <em>do not</em> install it with Bundler and not put it in your <code>Gemfile</code>.)</p>
+<div><pre><code>gem <span>install </span>mailcatcher
+</code></pre></div>
+<p>I run MailCatcher via <a href="http://web.archive.org/web/20220313065543/https://github.com/ddollar/foreman">Foreman</a>. So the next thing I do is to add it to my <code>Procfile.dev</code> file, like so:</p>
+<div><pre><code>mailcatcher: mailcatcher <span>--foreground</span>
+</code></pre></div>
+<p>Now, we return to the <code>mailer.yml</code> file and add the setup information for ActionMailer. It looks like this:</p>
+<div><pre><code><span>development</span><span>:</span>
+  <span>smtp_settings</span><span>:</span>
+    <span>address</span><span>:</span> <span>"</span><span>localhost"</span>
+    <span>port</span><span>:</span> <span>1025</span>
+</code></pre></div>
+<p>The above is enough to get your app to send emails to MailCatcher. However, there are other things you'll need to do to have real-world emails behave well in your development environment. So, my development email configuration looks like this.</p>
+<div><pre><code><span>development</span><span>:</span>
+  <span>asset_host</span><span>:</span> <span>"</span><span>http://www.railsgigs.test:3000"</span>
+  <span>default_url_options</span><span>:</span>
+    <span>host</span><span>:</span> <span>"</span><span>www.railsgigs.test"</span>
+    <span>port</span><span>:</span> <span>3000</span>
+  <span>smtp_settings</span><span>:</span>
+    <span>address</span><span>:</span> <span>"</span><span>localhost"</span>
+    <span>port</span><span>:</span> <span>1025</span>
+</code></pre></div>
+<p>Most of that is to ensure that the app has enough info to generate URLs for any links or assets in the email.</p>
+
+<p>Now you can send emails in your Rails development environment and quickly look at them!</p>
+
+<h2>Setting up Rails email in staging</h2>
+
+<p>In staging, instead of MailCatcher, I use <a href="http://web.archive.org/web/20220313065543/https://mailtrap.io/">MailTrap</a> by RailsWare. It's functionally similar to MailCatcher and actually has many more features that I won't go into here. I usually deploy on <a href="http://web.archive.org/web/20220313065543/https://heroku.com/">Heroku</a>, where it's trivial to install MailTrap, and there's a free tier!</p>
+
+<p>I usually don't maintain a staging-specific configuration. Instead, I run in production mode with the needed configuration read from the environment. (For more on this approach, read the <a href="http://web.archive.org/web/20220313065543/https://12factor.net/">The Twelve Factor App</a>.  </p>
+
+<p>So, here's what <code>mailer.yml</code> file looks like, with most of the configuration coming from the environment. The <code>smpt_settings</code> are what's needed to get MailTrap working, and the other bits are stuff I find I need for links and assets in emails.</p>
+<div><pre><code><span>production</span><span>:</span>
+  <span>asset_host</span><span>:</span> <span>&lt;%= "https://#{ENV["URL_HOST"]}" %&gt;</span>
+  <span>default_url_options</span><span>:</span>
+    <span>host</span><span>:</span> <span>&lt;%= ENV["URL_HOST"] %&gt;</span>
+  <span>smtp_settings</span><span>:</span>
+    <span>user_name</span><span>:</span> <span>&lt;%= ENV["SMTP_USER_NAME"] %&gt;</span>
+    <span>password</span><span>:</span> <span>&lt;%= ENV["SMTP_PASSWORD"] %&gt;</span>
+    <span>domain</span><span>:</span> <span>&lt;%= ENV["SMTP_DOMAIN"] %&gt;</span>
+    <span>address</span><span>:</span> <span>&lt;%= ENV["SMTP_ADDRESS"] %&gt;</span>
+    <span>port</span><span>:</span> <span>&lt;%= ENV["SMTP_PORT"] %&gt;</span>
+    <span>authentication</span><span>:</span> <span>&lt;%= ENV["SMTP_AUTHENTICATION"]&amp;.to_sym %&gt;</span>
+    <span>enable_starttls_auto</span><span>:</span> <span>true</span>
+</code></pre></div>
+<p>On Heroku, where I usually deploy, you define these environment variables on the "Settings" tab. Here's what the values look like for this app:</p>
+<div><pre><code>SMTP_ADDRESS:         smtp.mailtrap.io
+SMTP_AUTHENTICATION:  cram_md5
+SMTP_DOMAIN:          smtp.mailtrap.io
+SMTP_PASSWORD:        this_is_not_the_password
+SMTP_PORT:            2525
+SMTP_USER_NAME:       this_is_not_the_user_name
+</code></pre></div>
+<h2>Setting up Rails email in production</h2>
+
+<p>We've already done most of the work when setting up the staging environment. We need to update the environment variables we used above in the staging environment. Here's an example of how I set them in my production environment where I'm using <a href="http://web.archive.org/web/20220313065543/https://sendgrid.com/">SendGrid</a>. It should be about the same for any email service.</p>
+<div><pre><code>SMTP_ADDRESS:         smtp.sendgrid.net
+SMTP_AUTHENTICATION:  plain
+SMTP_DOMAIN:          railsgigs.com
+SMTP_PASSWORD:        this_is_not_the_password
+SMTP_PORT:            587
+SMTP_USER_NAME:       this_is_not_the_user_name
+</code></pre></div>
+<p>And, of course, you don't need a way to preview the email here because you're sending live emails!</p>
+
+<h2>And that's it!</h2>
+
+<p>Thanks for reading! I hope this saves you from figuring stuff out and provides you with an enjoyable experience! If you've got any questions, hit me up on Twitter <a href="http://web.archive.org/web/20220313065543/https://twitter.com/mjbellantoni">@mjbellantoni</a>. And once again, you can also find the code in <a href="http://web.archive.org/web/20220313065543/https://gist.github.com/mjbellantoni/deb1625182d0942ac47ee0405cb2f061">this gist here</a>!</p>
+
+    </article>
+  </section>
+
+  <section id="mailing-list-cta">
+    <h3>Want articles like this delivered to your inbox?</h3>
+    
+  </section>
+
+  <section>
+    <hr>
+    <p>
+  Matthew Bellantoni is a seasoned technology manager experienced
+  growing teams from 0 people to under 100 people, from $0 to
+  $100M in revenue, at companies in SaaS, eCommerce, marketplace,
+  and enterprise software. His time has typically been at
+  fast-growing VC-backed companies, mainly using Ruby on Rails,
+  where he's been senior management usually reporting to the CEO.
+  (He's also written a Ruby on Rails gem with over a million
+  downloads.)  You can contact him at
+  <a href="http://web.archive.org/web/20220313065543/mailto:matthew@railsgigs.com">matthew@railsgigs.com</a> or
+  at <a target="_blank" href="http://web.archive.org/web/20220313065543/https://twitter.com/mjbellantoni">@mjbellantoni</a>.
+</p>
+
+  </section>
+</div></div>
+  </div>
+</body>
+</html>

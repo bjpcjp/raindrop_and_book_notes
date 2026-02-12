@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The often-overlooked random forest kernel · RMarcus</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The often-overlooked random forest kernel · RMarcus</h1>
+    <p><strong>URL:</strong> <a href="https://rmarcus.info/blog/2017/10/04/rfk.html">https://rmarcus.info/blog/2017/10/04/rfk.html</a></p>
+    <p><strong>Tags:</strong> kernels, machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876769036</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+  
+  <p>04 Oct 2017</p>
+  <p>Machine learning problems often require a <a href="https://en.wikipedia.org/wiki/Kernel_method">kernel function</a> that measures the similarity between two different input vectors, <span id="il93"></span> and <span id="il94"></span>. Such kernel functions can enable linear algorithms (like SVM, PCA, and k-means) to find non-linear solutions to classification, regression, or clustering problems. Normally, a kernel function is selected from a standard set (although the most common by far appears to be the <a href="https://en.wikipedia.org/wiki/Radial_basis_function_kernel">radial basis function</a>) and tuned slightly based on the dataset. Here, we’ll discuss a type of kernel called the <em>random forest kernel</em>, which takes advantage of a pre-trained random forest in order to provide a custom-tailored kernel.</p>
+
+<h2 id="the-colonels-cocktail-party">The Colonel’s Cocktail Party</h2>
+
+<p>Imagine you are a decorated colonel who hosts an annual cocktail party. Your guests mingle and periodically shift between groups of their peers, all the while admiring your tasteful mid-century decoration and savoring delicious <em>hor d’oeuvres</em>.</p>
+
+<p>You, being both a subtle and naturally curious colonel, wish to determine whether or not two of your guests (guest 3 and guest 6) have any “affinity” for each other. However, to avoid detection, you cannot intervene. Observe the cocktail party below.</p>
+
+
+
+
+
+
+
+<div id="rfk" width="300px" height="150px">
+  <p>G1</p>
+  <p>G2</p>
+  <p>G3</p>
+  <p>G4</p>
+  <p>G5</p>
+</div>
+
+<div id="rfk_stats">
+  <table>
+    <tbody><tr><td>Portion 3 and 6 are together:</td>
+      <td><span id="together36">0.00</span></td>
+    </tr>
+    <tr><td>Portion 1 and 4 are together: </td>
+      <td><span id="together14">0.00</span></td>
+    </tr>
+    <tr><td>Average togetherness:</td>
+      <td><span id="togetherAvg">0.00</span></td>
+    </tr>
+  </tbody></table>
+</div>
+
+<p>You keep track of how often guest 3 and guest 6 appear in the same group and compare that against how often two other guests (1 and 4), and the average guest, appear in the same group. As the party progresses, what can you, the colonel, conclude about the affinity guests 3 and 6 have for being in the same group?</p>
+
+<p>We can think of each timestep of the cocktail party as a <em>random partition</em> of your guests. At any particular time <span id="il95"></span>, the five sets of party-goers are disjoint (assume invitees move between tables instantly). If there is an affinity for one individual <span id="il93"></span> to end up in the same group as another individual <span id="il94"></span>, then the percentage of time that we see <span id="il93"></span> and <span id="il94"></span> together will be higher than the average number of times we see every distinct pair together. If we define:</p>
+
+
+
+<p>… then <span id="il96"></span> can be used a measure of affinity for <span id="il93"></span> and <span id="il94"></span>. The higher the value of <span id="il96"></span>, the higher the affinity between <span id="il93"></span> and <span id="il94"></span>. It turns out that <span id="il97"></span> <a href="https://rmarcus.info/blog/assets/rfk/infinitytheory.pdf">can be used as a kernel function</a>: specifically, given a set of partitionings, the function <span id="il97"></span> will produce <a href="https://en.wikipedia.org/wiki/Gramian_matrix#Positive_semidefinite">a positive semidefinite Gram matrix</a>. The <a href="http://mathworld.wolfram.com/InnerProduct.html">specific mathematical requirements</a> are interesting, but it suffices to accept that this is a sufficient and necessary condition for <span id="il97"></span> to be used as a kernel function.</p>
+
+<p>The question then becomes: how does one create a set of partionings such that elements that are similar (in some context) are frequently grouped together? One can find answers in both <a href="https://rmarcus.info/blog/assets/rfk/bigdata.pdf">Geurts et al.</a> and <a href="https://rmarcus.info/blog/assets/rfk/extrandom.pdf">Davies et al.</a>, but the short answer is to use a random forest!</p>
+
+<h2 id="random-forest-kernel">Random Forest Kernel</h2>
+
+<p>Random forests are a powerful machine learning ensemble method that combine the results of several decision (or regression) trees into a single model. Consider the example below.</p>
+
+<svg width="100%" viewBox="0.00 0.00 602.00 305.00" xmlns="http://www.w3.org/2000/svg"><g transform="translate(4 301)"><title>G</title><path fill="#fff" stroke="transparent" d="M-4 4v-305h602V4H-4z"></path><g><title>A</title><ellipse fill="#d46a6a" stroke="#000" cx="169" cy="-279" rx="27" ry="18"></ellipse><text text-anchor="middle" x="169" y="-275.3" font-family="Times,serif" font-size="14">v₁</text></g><g><title>B</title><ellipse fill="#d46a6a" stroke="#000" cx="135" cy="-192" rx="27" ry="18"></ellipse><text text-anchor="middle" x="135" y="-188.3" font-family="Times,serif" font-size="14">v₂</text></g><g><title>A-&gt;B</title><path fill="none" stroke="#000" d="M157.948-262.286c-3.552 5.91-7.26 12.724-9.948 19.286-2.953 7.208-5.381 15.271-7.306 22.82"></path><path stroke="#000" d="M144.075-219.266l-5.696 8.934-1.118-10.536 6.814 1.602z"></path><text text-anchor="middle" x="161" y="-231.8" font-family="Times,serif" font-size="14">≤ 5</text></g><g><title>C</title><ellipse fill="#d46a6a" stroke="#000" cx="207" cy="-192" rx="27" ry="18"></ellipse><text text-anchor="middle" x="207" y="-188.3" font-family="Times,serif" font-size="14">v₃</text></g><g><title>A-&gt;C</title><path fill="none" stroke="#000" d="M176.69-261.394l18.605 42.595"></path><path stroke="#000" d="M198.656-219.848l.795 10.565-7.21-7.763 6.415-2.802z"></path><text text-anchor="middle" x="204" y="-231.8" font-family="Times,serif" font-size="14">&gt; 5</text></g><g><title>D</title><ellipse fill="#d46a6a" stroke="#000" cx="63" cy="-105" rx="27" ry="18"></ellipse><text text-anchor="middle" x="63" y="-101.3" font-family="Times,serif" font-size="14">v₁</text></g><g><title>B-&gt;D</title><path fill="none" stroke="#000" d="M121.837-176.245A8211.704 8211.704 0 0 0 105-156a11299.07 11299.07 0 0 0-22.377 27.114"></path><path stroke="#000" d="M85.273-126.598l-9.056 5.5 3.65-9.947 5.406 4.447z"></path><text text-anchor="middle" x="118" y="-144.8" font-family="Times,serif" font-size="14">≤ 6</text></g><g><title>T1</title><path fill="#409f9f" stroke="#000" d="M162-123h-54v36h54v-36z"></path><text text-anchor="middle" x="135" y="-101.3" font-family="Times,serif" font-size="14">T</text></g><g><title>B-&gt;T1</title><path fill="none" stroke="#000" d="M135-173.974v40.816"></path><path stroke="#000" d="M138.5-133.003l-3.5 10-3.5-10h7z"></path><text text-anchor="middle" x="148" y="-144.8" font-family="Times,serif" font-size="14">&gt; 6</text></g><g><title>T0</title><path fill="#409f9f" stroke="#000" d="M234-123h-54v36h54v-36z"></path><text text-anchor="middle" x="207" y="-101.3" font-family="Times,serif" font-size="14">T</text></g><g><title>C-&gt;T0</title><path fill="none" stroke="#000" d="M207-173.974v40.816"></path><path stroke="#000" d="M210.5-133.003l-3.5 10-3.5-10h7z"></path><text text-anchor="middle" x="220" y="-144.8" font-family="Times,serif" font-size="14">&gt; 9</text></g><g><title>F0</title><path fill="#a5c663" stroke="#000" d="M306-123h-54v36h54v-36z"></path><text text-anchor="middle" x="279" y="-101.3" font-family="Times,serif" font-size="14">F</text></g><g><title>C-&gt;F0</title><path fill="none" stroke="#000" d="M220.163-176.245A8211.704 8211.704 0 0 1 237-156a10871.59 10871.59 0 0 1 20.349 24.65"></path><path stroke="#000" d="M260.211-133.38l3.651 9.946-9.056-5.498 5.405-4.448z"></path><text text-anchor="middle" x="261" y="-144.8" font-family="Times,serif" font-size="14">≤ 9</text></g><g><title>T2</title><path fill="#409f9f" stroke="#000" d="M54-36H0V0h54v-36z"></path><text text-anchor="middle" x="27" y="-14.3" font-family="Times,serif" font-size="14">T</text></g><g><title>D-&gt;T2</title><path fill="none" stroke="#000" d="M55.715-87.394L38.428-45.617"></path><path stroke="#000" d="M41.58-44.08l-7.058 7.901.59-10.578 6.468 2.677z"></path><text text-anchor="middle" x="61" y="-57.8" font-family="Times,serif" font-size="14">&gt; 3</text></g><g><title>F1</title><path fill="#a5c663" stroke="#000" d="M126-36H72V0h54v-36z"></path><text text-anchor="middle" x="99" y="-14.3" font-family="Times,serif" font-size="14">F</text></g><g><title>D-&gt;F1</title><path fill="none" stroke="#000" d="M70.285-87.394l17.287 41.777"></path><path stroke="#000" d="M90.888-46.757l.59 10.578-7.058-7.901 6.468-2.677z"></path><text text-anchor="middle" x="97" y="-57.8" font-family="Times,serif" font-size="14">≤ 3</text></g><g><title>E</title><ellipse fill="#d46a6a" stroke="#000" cx="458" cy="-279" rx="27" ry="18"></ellipse><text text-anchor="middle" x="458" y="-275.3" font-family="Times,serif" font-size="14">v₂</text></g><g><title>F</title><ellipse fill="#d46a6a" stroke="#000" cx="423" cy="-192" rx="27" ry="18"></ellipse><text text-anchor="middle" x="423" y="-188.3" font-family="Times,serif" font-size="14">v₁</text></g><g><title>E-&gt;F</title><path fill="none" stroke="#000" d="M449.337-261.582c-2.791 5.849-5.813 12.445-8.337 18.582-3.13 7.608-6.225 15.981-8.943 23.706"></path><path stroke="#000" d="M435.295-217.948l-6.566 8.315-.053-10.595 6.619 2.28z"></path><text text-anchor="middle" x="454" y="-231.8" font-family="Times,serif" font-size="14">≤ 3</text></g><g><title>G</title><ellipse fill="#d46a6a" stroke="#000" cx="495" cy="-192" rx="27" ry="18"></ellipse><text text-anchor="middle" x="495" y="-188.3" font-family="Times,serif" font-size="14">v₃</text></g><g><title>E-&gt;G</title><path fill="none" stroke="#000" d="M465.488-261.394l17.999 42.323"></path><path stroke="#000" d="M486.83-220.152l.694 10.572-7.135-7.832 6.442-2.74z"></path><text text-anchor="middle" x="491" y="-231.8" font-family="Times,serif" font-size="14">&gt; 3</text></g><g><title>T3</title><path fill="#409f9f" stroke="#000" d="M378-123h-54v36h54v-36z"></path><text text-anchor="middle" x="351" y="-101.3" font-family="Times,serif" font-size="14">T</text></g><g><title>F-&gt;T3</title><path fill="none" stroke="#000" d="M409.837-176.245A8211.704 8211.704 0 0 0 393-156a10871.59 10871.59 0 0 0-20.349 24.65"></path><path stroke="#000" d="M375.194-128.932l-9.056 5.498 3.65-9.946 5.406 4.448z"></path><text text-anchor="middle" x="406" y="-144.8" font-family="Times,serif" font-size="14">&gt; 4</text></g><g><title>F2</title><path fill="#a5c663" stroke="#000" d="M450-123h-54v36h54v-36z"></path><text text-anchor="middle" x="423" y="-101.3" font-family="Times,serif" font-size="14">F</text></g><g><title>F-&gt;F2</title><path fill="none" stroke="#000" d="M423-173.974v40.816"></path><path stroke="#000" d="M426.5-133.003l-3.5 10-3.5-10h7z"></path><text text-anchor="middle" x="436" y="-144.8" font-family="Times,serif" font-size="14">≤ 4</text></g><g><title>T4</title><path fill="#409f9f" stroke="#000" d="M522-123h-54v36h54v-36z"></path><text text-anchor="middle" x="495" y="-101.3" font-family="Times,serif" font-size="14">T</text></g><g><title>G-&gt;T4</title><path fill="none" stroke="#000" d="M495-173.974v40.816"></path><path stroke="#000" d="M498.5-133.003l-3.5 10-3.5-10h7z"></path><text text-anchor="middle" x="508" y="-144.8" font-family="Times,serif" font-size="14">&gt; 7</text></g><g><title>F3</title><path fill="#a5c663" stroke="#000" d="M594-123h-54v36h54v-36z"></path><text text-anchor="middle" x="567" y="-101.3" font-family="Times,serif" font-size="14">F</text></g><g><title>G-&gt;F3</title><path fill="none" stroke="#000" d="M508.163-176.245A8211.704 8211.704 0 0 1 525-156a10871.59 10871.59 0 0 1 20.349 24.65"></path><path stroke="#000" d="M548.211-133.38l3.651 9.946-9.056-5.498 5.405-4.448z"></path><text text-anchor="middle" x="549" y="-144.8" font-family="Times,serif" font-size="14">≤ 7</text></g></g></svg>
+
+<p>The two-forest random forest shown above has been trained on some dataset, and we can now use it to classify new vectors. Consider the vectors <span id="vectorA"><span id="il98"></span></span>, <span id="vectorB"><span id="il99"></span></span>, <span id="vectorC"><span id="il100"></span></span>, and <span id="vectorD"><span id="il101"></span></span>. You can touch or hover over a vector to see how the forest classifies it.</p>
+
+<p>To use the random forest as a kernel, we view each level of each tree as a partitioning. For example, the first level of the first tree (left hand side) partitions potential vectors into two groups, <span id="il102"></span> and <span id="il103"></span>.  The second level of second tree (right hand side) partitions potential vectors into four groups, <span id="il104"></span>, <span id="il105"></span>, <span id="il106"></span>, and <span id="il107"></span>. The random forest kernel, <span id="il96"></span>, is the number of times <span id="il93"></span> and <span id="il94"></span> fall into the same partition divided by the total number of partitionings.</p>
+
+<p>The above tree contains five different partitionings. We can thus evaluate <span id="il108"></span> by counting the number of times they share a partition. Since <span id="il109"></span> and <span id="il110"></span> share all but one partition, <span id="il111"></span>. Since <span id="il109"></span> and <span id="il112"></span> share no partitions in common, the kernel is zero, i.e. <span id="il113"></span>.</p>
+
+<p>If two items are in the same partition frequently, they are guaranteed to share some properties (i.e. their values share a set of constraints), but because the random forest is built using <em>semantic</em> information (e.g., the class or label of the data), these groupings of properties will have <em>semantic</em> meaning. Thus, items that share more partitions are more similar, and items that share few partitions are dissimilar.</p>
+
+<h2 id="examples">Examples</h2>
+<p>It might seem odd to train a random forest model on a dataset and then use that random forset as a kernel, instead of using the random forest directly. However, this can be useful in a number of circumstances.</p>
+
+<p>For example, consider the MNSIT digit recognition dataset. A large random forest can obtain acceptable (greater than 90% accuracy) if it is trained on all ten digit classes. In other words, if the random forest algorithm is allowed to see many examples of each digit class, it can learn to classify each of the ten digits. But what if the random forest algorithm is only allowed to see examples of 7s and 9s? Clearly, such a random forest would not be very useful on a dataset of 3s and 4s. However, using the random forest kernel, we can take advantage of a random forest trained on only 7s and 9s to help us understand the differences between 3s and 4s (this is often called <a href="https://en.wikipedia.org/wiki/Transfer_learning">transfer learning</a>).</p>
+
+<p>Consider two different PCA projections of the 3s and 4s from the MNIST dataset:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="MNIST 3/4 Example"></p>
+
+<p>The left-hand side image shows the results of using <a href="https://en.wikipedia.org/wiki/Kernel_principal_component_analysis">Kernel PCA</a> to find the two most significant (potentially <em>non-linear</em>) components of the 3s and 4s data using the random forest kernel. The right-hand side shows the two most significant (linear) components as determined by PCA.</p>
+
+<p>For the most part, the components found using the random forest kernel provide a much better separation of the data. Remember, the random forest here only got to see 7s and 9s – it has never seen a 3 or a 4, yet the partitions learned by the random forest still carry semantic meaning about digits that can be <em>transferred</em> to 3s and 4s.</p>
+
+<p>In fact, if one trains an SVM model to find a linear boundary on the first 5 principal components of the data, the accuracy for the random forest kernel assisted PCA + SVM is 94%, compared to the 87% of the linear PCA + SVM scheme.</p>
+
+<p>The random forest kernel can be a quick and easy way to transfer knowledge from a random forest model to a related domain when techniques like deep belief nets are too expensive or simply overkill. The kernel can be evaluated quickly, and does not require special hardware or a significant amount of memory to compute. It isn’t frequently useful, but it is a nice trick to keep in your back pocket.</p>
+
+<h2 id="notes">Notes</h2>
+<p>The metaphor of the cocktail party in this context was first introduced by A. Davies and Z. Ghahramani in their paper, “The Random Forest Kernel and other kernels for big data from random partitions” (<a href="https://arxiv.org/abs/1402.4293">available on arXiv</a>). They explain:</p>
+
+<blockquote>
+  <p>We consider The Colonel, who is the host of a cocktail party. He needs to determine the strength of the affinity between two of his guests, Alice and Bob. Neither Alice and Bob, nor the other guests, must suspect the Colonel’s intentions, so he is only able to do so through surreptuous <em>(sic)</em> observation.</p>
+
+  <p>At the beginning of the evening, his N guests naturally form into different groups to have conversations. As the evening progresses, these groups naturally evolve as people leave and join different conversations. At m opportunities during the course of the evening, our host notes whether Alice and Bob are together in the same conversation.</p>
+
+  <p>As the Colonel farewells his guests <em>(sic)</em>, he has a very good idea of Alice and Bob’s affinity for one another.</p>
+</blockquote>
+
+</div></div>
+  </div>
+</body>
+</html>

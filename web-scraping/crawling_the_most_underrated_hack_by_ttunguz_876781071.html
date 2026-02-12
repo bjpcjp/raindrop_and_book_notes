@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Crawling - The Most Underrated Hack by @ttunguz</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Crawling - The Most Underrated Hack by @ttunguz</h1>
+    <p><strong>URL:</strong> <a href="http://tomtunguz.com/crawling-the-most-under-rated-hack">http://tomtunguz.com/crawling-the-most-under-rated-hack</a></p>
+    <p><strong>Tags:</strong> web-scraping, webdev</p>
+    <p><strong>Bookmark ID:</strong> 876781071</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div> 
+            <p>It’s been a little while since I traded code with anyone. But a few weeks ago, one of our entrepreneurs-in-residence, <a href="http://www.linkedin.com/pub/javier-soltero/0/ba/582">Javier</a>, who joined Redpoint from VMWare, told me about a Ruby gem called <a href="https://rubygems.org/gems/mechanize">Mechanize</a> that makes it really easy to crawl websites, particularly those with username/password logins. </p>
+<p>In about 30 minutes I had a working LinkedIn crawler built, pulling the names of new followers, new LinkedIn connections and LinkedIn status updates. All of that information is useful for me. But I just can’t seem to pull it from LinkedIn any other way. Crawling is the fastest, easiest and best solution. </p>
+<p>Over the years, I’ve used or built a number of crawlers: at Google to track competitive market share across ad networks, at Redpoint to build a BD pipleine and to mine social networks, and also mobile app store crawlers. Programmed well, crawlers are the quick and dirty solution to aggregating data from the web at scale. </p>
+<p>Crawlers are one of the most powerful tools at the disposal of startups and I think some of the most underrated. </p>
+<p>In the spirit of paying it forward, I’ve copied the beginning of my LinkedIn crawler below. The script pulls the first page people who have viewed your profile in the last day and extracts their names, locations, titles and industries. </p>
+<p>H/t to Lachy Groom who helped me refactor a bit.</p>
+<pre><code>require 'rubygems'
+require 'mechanize' 
+require 'nokogiri'
+
+@linkedin_username = "your_username"
+@linkedin_password = "your_password"
+
+agent = Mechanize.new
+agent.user_agent_alias = "Mac Safari"
+agent.follow_meta_refresh = true
+agent.get("https://www.linkedin.com")
+
+#Login to LI
+form = agent.page.form_with(:action =&gt; '/uas/login-submit')
+form['session_key'] = @linkedin_username
+form['session_password'] = @linkedin_password
+agent.submit(form)
+pp "Login successful"
+
+def search_class(page, search_query)
+  page.search(search_query).map do |element|
+    if !element.nil? &amp;&amp; !element.inner_html.nil?
+      element.inner_html
+    end
+  end 
+end
+
+def search_image_class(page, search_query)
+  page.search(search_query).map do |element|
+    if !element.nil? &amp;&amp; !element["alt"].nil?
+      element["alt"]
+    end
+  end 
+end
+
+agent.get("http://www.linkedin.com/wvmx/profile?trk=nmp_profile_stats_viewed_by") do |page|
+  names = search_image_class(page, 'img[@class="photo"]')
+  titles = search_class(page, 'dd[@class = "title"]')
+  locations = search_class(page, 'dd[@class="location"]')
+  industries = search_class(page, 'dd[@class="industries"]')
+end
+</code></pre>
+
+        </div></div>
+  </div>
+</body>
+</html>

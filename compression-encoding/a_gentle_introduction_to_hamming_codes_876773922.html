@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A gentle introduction to Hamming codes</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A gentle introduction to Hamming codes</h1>
+    <p><strong>URL:</strong> <a href="https://www.johndcook.com/blog/2020/02/24/hamming-codes">https://www.johndcook.com/blog/2020/02/24/hamming-codes</a></p>
+    <p><strong>Tags:</strong> compression-encoding</p>
+    <p><strong>Bookmark ID:</strong> 876773922</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+		<p>The <a href="https://www.johndcook.com/blog/2020/02/22/adfgvx/">previous post</a> looked at how to choose five or six letters so that their Morse code representations are as distinct as possible. This post will build on the previous one to introduce Hamming codes. The problem of finding Hamming codes is much simpler in some ways, but also more general.</p>
+<p>Morse code is complicated for a several reasons. First, it seems at first blush to have an alphabet of two symbols—dot and dash—but it actually has an alphabet of three symbols—dot, dash, and space—with a complicated constraints. Second, we’re trying to optimize the perceptual separation between letters, not the objective separation between signals on a wire. Third, dots and dashes have different lengths, and we have secondary objectives related to transmission time. Given the option, we would prefer to choose letters that <em>reduce</em> transmission time, but we would also like to choose letters that each have <em>similar</em> transmission time.</p>
+<p>We will simplify the situation in this post by using exactly two symbols, 0 and 1, and using bit sequences of fixed length. We’ll also have one simple objective, maximizing Hamming distance separation, with no secondary objectives.</p>
+<h2>Terminology</h2>
+<p>We’ll need to introduce some terminology to make the rest of the post more clear.</p>
+<p>By <em>alphabet</em> we will mean the choice of symbols we use. For Morse code, the “alphabet” of symbols is dot, dash, and space. For a binary sequence, the alphabet is 0 and 1.</p>
+<p>By <em>word</em> we will mean a sequence of symbols from our alphabet. Using this terminology, we would call <code>..-.</code> in Morse code a <em>word</em>, even though it represents an English <em>letter</em>. You will also see the term <em>vector</em> used instead of <em>word</em>; mentally substitute <em>vector</em> for <em>word</em> everywhere if you find that easier.</p>
+<p>The set of words we will use for transmitting messages is called a <em>code</em>. In the previous post, the code consisted originally of A, D, F, G, and V, and we looked at codes that would have been better by several criteria.</p>
+<p>If we represent each English letter by a sequence of five bits, we would call the 0s and 1s the elements of our alphabet and the groups of five bits our words.</p>
+
+<p>For this post we will look at words of a fixed length <em>n</em>. For example, we could encode English letters into words of 5 bits each since</p>
+<p>2<sup>5</sup> = 32 &gt; 26</p>
+<p>though this would only give us Hamming distance separation of 1, i.e. many of the code words would differ by only one bit. If a single bit were accidentally flipped in transmission, we would not be able to tell. But if we were to use more bits per word, we could have more separation. For example, if we used words of six bits and used the last bit as a parity bit, then we could choose 26 words that have Hamming distance at least 2 from each other.</p>
+<h2><em>A</em>(<em>n</em>, <em>d</em>)</h2>
+<p>The maximum number of binary words of length <em>n</em>, all separated by a Hamming distance of at least <em>d</em>, is denoted</p>
+<p><em>A</em><sub>2</sub>(<em>n</em>, <em>d</em>).</p>
+<p>The subscript 2 on <em>A</em> says that we’re working with an alphabet of 2 symbols, i.e. 0 and 1. If we were interested in an alphabet of size <em>q</em>, we would replace the 2 with a <em>q</em>.</p>
+<p>This notation is a little sideways from our introduction, but closely related. We would like to know, for example, how many bits <em>n</em> we need do produce a code that has, say, 26 symbols separated by a Hamming distance <em>d</em>. That is, we’re thinking of our code size, such as 26, and the Hamming distance <em>d</em>, as being the independent variables and the number of bits <em>n</em> as the dependent variable. But it’s customary in coding theory to consider the word size <em>n</em> and the Hamming distance separation <em>d</em> as independent variables, and to consider <em>A</em><sub><em>q</em></sub>(<em>n</em>, <em>d</em>) as a function of <em>n</em> and <em>d</em>.</p>
+<p>There is no way to compute <em>A</em><sub><em>q</em></sub>(<em>n</em>, <em>d</em>) in general, even for a fixed <em>q</em> such as <em>q</em> = 2. But there are upper and lower bounds, and exact values have been computed in many particular cases.</p>
+<p>For example, <em>A</em><sub>2</sub>(10, 4) = 40, and so using sequences of 10 bits, you can find a set of 40 words that are all a Hamming distance of at least 4 from each other, enough to encode all English letters (without regard to case) and 10 digits.</p>
+<p><em>A</em><sub>2</sub>(15, 6) = 128, so with 15 bits you could find 128 words a distance of 6 apart, enough to encode all ASCII characters.</p>
+<h2>Hamming bound and perfect codes</h2>
+<p>As mentioned above, there is no convenient formula for <em>A</em>(<em>n</em>, <em>d</em>) but there are bounds. The <strong>Hamming bound</strong> says</p>
+<p><img decoding="async" src="data:application/octet-stream;base64," alt="A_q(n, d) \leq \frac{q^n}{\sum_{k=0}^t {n \choose k}(q-1)^k}" width="218" height="44"></p>
+<p>where the upper limit of the sum is</p>
+<p><img decoding="async" src="data:application/octet-stream;base64," alt="t = \left\lfloor \frac{d-1}{2} \right\rfloor" width="95" height="43"></p>
+<p>A code for which the Hamming bound is exact is called a <strong>perfect code</strong>.</p>
+<h2>Hamming codes</h2>
+<p><strong>Hamming codes</strong> are perfect binary codes where <em>d</em> = 3.</p>
+<p>Note that 3 is the minimum separation for error correction. If we simply add a parity bit, as mentioned above, we can <em>detect</em> errors, but we cannot <em>correct</em> them. If code words are a distance 2 apart, a word with one corrupted bit could be equidistant between two valid code words.</p>
+<p>For example, suppose you encode 00010 as 000101, adding a parity bit of 1 at the end because the original sequence had an odd number of 1’s. And suppose you similarly encode 00011 as 000110. Now you receive 000100. You know that something is wrong because the parity bit is inconsistent with the previous bits. But you don’t know whether 000101 was transmitted and the 6th bit was corrupted or 000110 was transmitted and the 5th bit was corrupted.</p>
+<p>With Hamming codes, <em>n</em> is always one less than a power of 2, i.e</p>
+<p><em>n</em> = 2<sup><em>m</em></sup> − 1</p>
+<p>and <em>m</em> is the number of added bits. That is, the code will have</p>
+<p>2<sup><em>m</em></sup> − <em>m</em> − 1</p>
+<p>data bits, and the number of distinct code words will be 2 raised to that power. Each of these words is separated by a Hamming distance of at least 3.</p>
+<p>Incidentally, note that as <em>m</em> increases, the number of parity bits is growing linearly, but the number of data bits is growing exponentially. That is, the overhead of the parity bits relative to the code word size is going to zero.</p>
+<h2>Hamming(7,4) code</h2>
+<p>Let’s look at one Hamming code in detail. If <em>m</em> = 3, we have a code with 7-bit words: 4 data bits and 3 added bits. With 4 data bits we can have 16 different words, so the Hamming code with 7-bit words contains 16 words, each separated by a Hamming distance of 3. If we compute the right side of the Hamming bound we also get 16, i.e. <em>A</em><sub>2</sub>(7, 3) = 16, demonstrating that the Hamming bound is exact.</p>
+<p>We can encode a set of 4 bits by making them into a row vector and multiplying the vector on the right by the <strong>generator matrix</strong></p>
+<pre>    
+    1 0 0 0 1 1 1
+    0 1 0 0 0 1 1
+    0 0 1 0 1 0 1
+    0 0 0 1 1 1 0
+</pre>
+<p>The matrix multiplication is defined using the field with two elements, so multiplication stays the same but 1 + 1 = 0.</p>
+<p>Note that the 4 by 4 block on the left side of the matrix is the identity matrix. So the encoding of a string of four bits begins with the original 4 bits. The 16 words in our code are</p>
+<pre>    0000000
+    0001110
+    0010101
+    0011011
+    0100011
+    0101101
+    0110110
+    0111000
+    1000111
+    1001001
+    1010010
+    1011100
+    1100100
+    1101010
+    1110001
+    1111111
+</pre>
+<p>Unless I’ve made an error in writing this up [1], each of these code words should differ from all other code words in at least 3 positions.</p>
+<h2>More on coding theory</h2>
+<ul>
+<li><a href="https://www.johndcook.com/blog/2019/10/18/golay-code/">Golay codes</a></li>
+<li><a href="https://www.johndcook.com/blog/2019/09/03/prefix-codes/">Prefix codes</a></li>
+<li><a href="https://www.johndcook.com/blog/2019/09/09/how-utf-8-works/">How UTF-8 works</a></li>
+</ul>
+<p>[1] Errors happen all the time. That’s why we need error correcting codes!</p>
+			</div></div>
+  </div>
+</body>
+</html>

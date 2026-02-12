@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Useful Examples of the Docker ps Command</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Useful Examples of the Docker ps Command</h1>
+    <p><strong>URL:</strong> <a href="https://linuxhandbook.com/docker-ps-command">https://linuxhandbook.com/docker-ps-command</a></p>
+    <p><strong>Tags:</strong> docker</p>
+    <p><strong>Bookmark ID:</strong> 876783886</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><a href="https://www.warp.dev/?utm_source=linux_handbook&amp;utm_medium=display&amp;utm_campaign=linux_launch" target="_blank"><img src="data:application/octet-stream;base64," alt="Warp Terminal"></a></p><p>One of the first Docker commands you use is the <code>docker ps</code> command. It shows the running containers:</p><pre><code>docker ps</code></pre><p>Actually, running this command gives you a <a href="https://linuxhandbook.com/list-containers-docker/">list of running containers</a> and their unique container ID, image name, the command it is executing, time since it is running (uptime), and the ports it is using.</p><p>But you can do a bit more with it. You can display stopped containers, filter the result or just display the container IDs.</p><p>Let's take a bit more detailed look at this <a href="https://linuxhandbook.com/essential-docker-commands/">essential Docker command</a>.</p><h2 id="the-docker-ps-command">The docker ps command</h2><p>Docker has an alias to show all running containers with a POSIX friendly naming convention.</p><p>That is the <code>ps</code> sub-command in Docker. It is an alias of <code>docker container ls</code>. Which, as you can guess, is used for listing docker containers.</p><p>Here is an example of executing <code>docker ps</code> on my computer:</p><pre><code>$ docker ps 
+CONTAINER ID   IMAGE                              COMMAND                  CREATED          STATUS                       PORTS                                   NAMES
+58c7013a49c3   nextcloud                          "/entrypoint.sh apac…"   32 seconds ago   Up 31 seconds                0.0.0.0:8010-&gt;80/tcp, :::8010-&gt;80/tcp   nextcloud_server
+140161b8b139   mariadb                            "docker-entrypoint.s…"   34 seconds ago   Up 32 seconds                3306/tcp                                nextcloud_db
+73a6901a4846   lscr.io/linuxserver/transmission   "/init"                  17 minutes ago   Exited (137) 9 minutes ago                                           transmission_web</code></pre><p>As you can see, this command displays details about all the running containers.<span data-ez-ph-id="105"></span></p><p>The details shown are the unique ID of the container, name of the image, command that the container is executing, date when the container was created, uptime, mapped ports and the container name.</p><p>As a sysadmin, you will often be using this command in a script. Docker provides a few options that can be helpful when you run <code>docker ps</code> in a script.</p><h3 id="show-all-the-containers-not-just-the-running-ones">Show all the containers (not just the running ones)</h3><p>As the UNIX <code>ps</code> command is used to show processes (programs that are being executed), Docker behaves similarly.</p><p>Running <code>docker ps</code> will only show the docker containers that are active.</p><p>If you <a href="https://linuxhandbook.com/docker-stop-container/">stop a running container</a>, it still exists, only that it is not running anymore.</p><p>To see the containers that are in the stopped state, use the <code>--all</code> (or <code>-a</code>) option like so:<span data-ez-ph-id="116"></span></p><pre><code>docker ps --all</code></pre><p>I stopped the container <code>transmission_web</code>. Let's see what I get in the output.</p><pre><code>$ docker ps -a
+CONTAINER ID   IMAGE                              COMMAND                  CREATED          STATUS                       PORTS                                   NAMES
+58c7013a49c3   nextcloud                          "/entrypoint.sh apac…"   32 seconds ago   Up 31 seconds                0.0.0.0:8010-&gt;80/tcp, :::8010-&gt;80/tcp   nextcloud_server
+140161b8b139   mariadb                            "docker-entrypoint.s…"   34 seconds ago   Up 32 seconds                3306/tcp                                nextcloud_db
+73a6901a4846   lscr.io/linuxserver/transmission   "/init"                  17 minutes ago   Exited (137) 9 minutes ago                                           transmission_web</code></pre><p>As you can see, the <code>-a</code> option also shows a container that was stopped.<span data-ez-ph-id="109"></span></p><h3 id="filter-the-output-of-docker-ps-for-more-accurate-result">Filter the output of docker ps for more accurate result</h3><p>The <code>docker ps</code> command has a very useful option, <code>--filter</code> (or <code>-f</code> for short).</p><p>As evident from the option name, you can filter out the containers using the following fields:</p><ul><li><code>id</code></li><li><code>name</code></li><li><code>label</code></li><li><code>exited</code></li><li><code>status</code></li><li><code>ancestor</code></li><li><code>since</code></li><li><code>volume</code></li><li><code>publish</code></li><li><code>health</code></li><li><code>isolation</code></li></ul><p>I have created a container that is named <code>nextcloud_server</code>. I want to see details about containers, but only those with the name I am looking for. Let us see how to use the <code>name</code> filter.</p><pre><code>$ docker ps --filter "name=nextcloud_server"
+CONTAINER ID   IMAGE       COMMAND                  CREATED       STATUS       PORTS                                   NAMES
+58c7013a49c3   nextcloud   "/entrypoint.sh apac…"   3 hours ago   Up 3 hours   0.0.0.0:8010-&gt;80/tcp, :::8010-&gt;80/tcp   nextcloud_server</code></pre><p>I have several containers running, but passing using the <code>name</code> filter only shows me the containers that match the name.</p><p>Let us try using the <code>id</code> filter. I have a MariaDB container with the ID "140161b8b139". I will use the following command to achieve that.</p><pre><code>$ docker ps --filter "id=140161b8b139"
+CONTAINER ID   IMAGE     COMMAND                  CREATED        STATUS        PORTS      NAMES
+140161b8b139   mariadb   "docker-entrypoint.s…"   15 hours ago   Up 15 hours   3306/tcp   nextcloud_db</code></pre><p>Easy! I got the container with the matched ID.</p><h3 id="show-containers-in-the-order-they-were-created">Show containers in the order they were created</h3><p>Yes, you can list containers sorted in the order of their creation date using the <code>--latest</code> (or <span data-ez-ph-id="106"></span><code>l</code> for short).</p><p>The order is latest on the top and oldest on the bottom.</p><p>Here is a sample output of running the command <code>docker ps --latest</code> on my computer:</p><pre><code>$ docker ps --latest
+CONTAINER ID   IMAGE                              COMMAND                  CREATED        STATUS                      PORTS                                   NAMES
+58c7013a49c3   nextcloud                          "/entrypoint.sh apac…"   15 hours ago   Up 15 hours                 0.0.0.0:8010-&gt;80/tcp, :::8010-&gt;80/tcp   nextcloud_server
+73a6901a4846   lscr.io/linuxserver/transmission   "/init"                  16 hours ago   Exited (137) 16 hours ago                                           transmission_web</code></pre><p>There are a few gotchas with this command.</p><ul><li>Any containers that are used as a "dependency" will not be listed</li><li>The output includes all container states (that means even containers that are stopped will be listed)</li></ul><p>I had created the container "nextcloud_server" with MariaDB as its "dependency." So that container is not listed in the output when using <code>--latest</code> flag.</p><h3 id="scripting-much-show-only-container-ids">Scripting much? Show only container IDs</h3><p>Assume you are writing a script and only want to deal with Container IDs so you can perform actions on containers. For that, you can use the <code>--quiet</code> (or <code>-q</code> for short) option.</p><p>Given below is the output of running <code>docker ps -q</code> on my computer.</p><pre><code>$ docker ps -q
+58c7013a49c3
+140161b8b139</code></pre><p>As you can see, the output consists only of Container IDs (of containers that are running) and nothing else.</p><p>As you can see, there is more to the Docker ps command than just displaying the running container information. Let me know if you learned something new or if you know some other useful example of the <code>docker ps</code> command.</p>
+</div></div>
+  </div>
+</body>
+</html>

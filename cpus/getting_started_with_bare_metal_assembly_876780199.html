@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Getting started with bare-metal assembly</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Getting started with bare-metal assembly</h1>
+    <p><strong>URL:</strong> <a href="https://johv.dk/blog/bare-metal-assembly-tutorial.html">https://johv.dk/blog/bare-metal-assembly-tutorial.html</a></p>
+    <p><strong>Tags:</strong> cpus</p>
+    <p><strong>Bookmark ID:</strong> 876780199</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><article lang="en">
+<p>Seeing a program you wrote running directly on the bare metal is deeply satisfying to anyone who enjoys writing software. And it turns out that creating such a program from scratch is easier than it sounds. The hardest part is figuring out where to start. In this tutorial, I'll show you how to write, build and run the classic "Hello, World!" in pure assembly.</p>
+<figure>
+  <img src="data:image/png;base64,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fxZ/ajxbl3EEEEAAgccKnOlaXry9gy3Liyt/5XJN6eK9HOt8MdUrN85aCCCAAALfKnCya3nNhW3asly/Wo9P9vQeybrDNNW4Eo7uCUyfQntpmYUAAgggcLfAsa5l/VK9uCW9ok+vMXtL245husRizS0sLOZg/vVKFiMzB1uzjcniq+NZedU81fhsXcYRQAABBJ4vMP9G/7YHdyW21wm3w3bIBkukxPSXc3s0k+qv932eNncvld3aSgZbpBaW1ROi9Sv2G3QUff7Mv9de35SuolNcYeGPvXyfx539vki7X7f6xfy9to6sy7jTwY8IIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAj9aYP59LX/+/AP0138C3Y8fhNcq110MypYN2i3b4PHRQVoOIYAAAggggMBFgdXvxpWrtV6zL64aTm/J78u/nnnc2YyPhvtiEAEEEEAAAQSOCKx2LUcWIwkCCCCAAAIIILAt8Pf6zPXbFes5bSS3MfbcmIUAAggggMAPESh0Lb2I7WP6D764j4DIjy3MjUvafnAQb4M1rC/PZW4/umDN0w71PVNf0soSYapsIuMIIIAAAgggcFKgXbzl+q3/by/2spLG9D/aQ9njflY/YsvQAty6g22PIxfr76tqI4O5g3o4hAACCCCAAAJVgcLnWvq7EdXFiEcAAQQQQAABBLYFjr1DtF3BGyfqPZvrNRxMdb0YMiCAAAIIIPCVAvtdi1yn5QbMJ16zz9bPjaiv/PVgUwgggAACjxIovEP0qLopBgEEEEAAAQR+msCP61rGH8u9fvrvzn+9QjIggAACCCDwoQKXvtFf3xjSv88cvmHk/lK0Stl3Vex7TC7e5hznH58DW61EVutvswZ1hvsal8RRBBBAAAEEEHizQHa/IRvfLvd4wu1KmIgAAggggAACdwt83jtEdCp3PyfIjwACCCCAwDMF5u8QVesO30NpSbLxav6zqTZWZwoCCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAL/K3D+07h309pP9epa0+9x0Vn2S2L2Sv3z589fXZY2KNn6Q3urZLNkocEq0wCX+ffv323k169fMq4/ygMN1gAb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wBcI/F3dQ7uVIs1E+395E0d/XExlb8bIFJfK5hkcypbrP5IS/js+2fTB+Kk8gyU4hAACCCCAAAKZQOFeS/9BE70XEn4AJRzM6hiMb9xxCf/d5jZoxwcrhof0Xyu8mCdMziACCCCAAAIITAUKXUvrHqSBsEl1cL1HyfK0tFmSUuPCB2mnZ50ABBBAAAEEPlGg/A5R37i0bbdB+26RQISRe0b9m0rVPO7Nnep04hFAAAEEEEDg7QLlruW+isPWpy13vWVpSbgBc9+JIzMCCCCAAAKvESi8Q+QK6j/mslhxaeKRlmWxMMIQQAABBBBA4MkC+11Ltiv7GZRqz+E+v1KdnpVkx9tbRbxbtAJFDAIIIIAAAk8TqH2jv/uoinQVuiV7VA9VP92inUq1ZdFexP5FofAvDdl3i2wHMx137Q7vOj3t2Uw9CCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAII3Csw/74W+ZIS/W4S92NWnfv2FA3LxrM86+N7dWb5B3VmhxZlshUZRwABBBBAAIGxwPnvxpX1sm9gy8bHVb7+6KDO8JC2Mvrg9TWzIgIIIIAAAt8tcFfX8t1q7A4BBBBAAAEEXi9A1/J6c1ZEAAEEEEAAgR2Bv3cm/WeOezckfOtkJf+pPNlaYX79GEr2OZUwW/YGUNu7JgwnMogAAggggAACFwVW77W0S7L8p+vpRbpdsKVfya7o4xJP5clWyfJrzev1a6psLcYRQAABBBBA4D6B1Xsteh9lrzW5bwN95lahVtsfzUamU2hZMjrGEUAAAQQQeI3AateSVfP8JiarnHEEEEAAAQQQ+CyBq13L9BbFdQ5uclw3JAMCCCCAAAJfIHC1a3kagbQ4b7kD9IIG7mna1IMAAggggMArBVY/jTutqTUKb+kVtDBtGvoH0+KPBLxd4MguSIIAAggggMBjBS59o79rU+zNBntoOj7Ns3gbQ/K0YH0g7mH+rMJ+iq7u8rTIfmuLpT72CUFhCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggg8CaBv6br/v79O4z59etXOM4gAggggAACCCBwh8D/uyMpORFAAAEEEEAAgeMCdC3HSUmIAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIPE/j/BWcX/qH3TWoAAAAASUVORK5CYII=">
+  <figcaption>"Hello, World!" inside the UEFI shell. You could also boot directly into the application.</figcaption>
+</figure>
+<p>Well, almost – on a modern computer, our assembly application doesn't just have direct access to the hardware. Instead it must communicate with an intermediary firmware layer on the motherboard, through the so-called <i>Unified Extensible Firmware Interface</i> (UEFI).</p>
+<p>Creating a "Hello, World!" UEFI application is a three-step process:</p>
+<ol>
+  <li>Set up a virtual machine with UEFI support.</li>
+  <li>Install an assembler that can output UEFI applications.</li>
+  <li>Write the actual program and run it!</li>
+</ol>
+<h2>Setting up QEMU</h2>
+<p>
+  We <em>could</em> test our application by repeatedly copying it to a USB drive, rebooting our computer and then seeing if it works. Obviously, we don't want to do that. Instead, we'll be testing our application inside a virtual machine, and <a rel="nofollow" href="https://www.qemu.org/">QEMU</a> is a great fit for this purpose.
+</p>
+<section>
+  <h3>Step 1 — Install QEMU</h3>
+  <p>
+    If you are using a GNU/Linux distribution, there's a good chance that it has a <code>qemu</code> package available. I'll assume that you're using Ubuntu, but you can easily adapt these instructions to whichever system you're using.
+  </p>
+  <pre>$ sudo apt-get install qemu</pre>
+  <p>Once the intallation finishes, you should have <code>qemu-system-x86_64</code> availabe in your path:</p>
+  <pre>$ qemu-system-x86_64 --version
+QEMU emulator version 2.11.1(Debian 1:2.11+dfsg-1ubuntu7.23)
+Copyright (c) 2003-2017 Fabrice Bellard and the QEMU Project developers</pre>
+</section>
+<p>While most modern computers come with UEFI-support built-in, QEMU does not. Instead, we will use something called <a href="https://github.com/tianocore/tianocore.github.io/wiki/OVMF">OVMF</a>, which is a firmware layer that adds UEFI support to QEMU.</p>
+<section>
+  <h3>Step 2 — Set up OVMF</h3>
+  <p>Again, there is probably a package available for your distribution. If you are using Ubuntu, run:</p>
+  <pre>$ sudo apt-get install ovmf</pre>
+  <p>This should install the file <code>OVMF.fd</code> somewhere on your system. Figure out where:</p>
+  <pre>$ find / -name OVMF.fd 2&gt;/dev/null
+/usr/share/ovmf/OVMF.fd</pre>
+  <p>Then, go ahead and copy this file to your working directory:</p>
+  <pre>$ cp /usr/share/ovmf/OVMF.fd .</pre>
+  <p>(On some GNU/Linux distributions, the relevant package may install both a 32-bit and a 64-bit version; in this case, use the 64-bit version.)</p>
+</section>
+<p>The UEFI firmware provides a bare-bones environment called the UEFI shell. We'll want to test the application that we build from this shell. Let's check that it's working correctly.</p>
+<section>
+  <h3> Step 3 — Try the UEFI shell</h3>
+  <p>
+    You should have the file <code>OVMF.fd</code> available in your working directory from step 2. To tell QEMU about this firmware, use the argument <code>-bios OVMF.fd</code>. We also need to specify <code>-net none</code> so QEMU won't try to boot over the network:
+  </p>
+  <pre>$ qemu-system-x86_64 -bios OVMF.fd -net none</pre>
+  <p>This will land you in a shell that looks a little something like this:</p>
+  <pre>UEFI Interactive Shell v2.2
+EDK II
+UEFI v2.70 (EDK II, 0x00010000)
+Mapping table
+     BLK0: Alias(s):
+          PciRoot(0x0)/Pci(0x1,0x1)/Ata(0x0)
+Press ESC in 1 seconds to skip startup.nsh or any other key to continue.
+Shell&gt;</pre>
+  <p>Try typing <code>help -b</code> to get a list of commands.</p>
+</section>
+<p>We need some way of accessing the executable that we build from inside the UEFI shell. The shell can read FAT32 file systems. Conveniently, QEMU can mount a directory in the host file system as a FAT32 formatted drive in the virtual machine.</p>
+<section>
+  <h3> Step 4 — Open files from the UEFI shell</h3>
+  <p>We'll store the files on our emulated drive in a directory on the host called <code>drive/</code>. For now, let's just create a small test file that we'll try to read:</p>
+  <pre>$ mkdir drive
+$ echo "This is a test" &gt; drive/test.txt</pre>
+  <p>
+    To make this directory available as a FAT32 formatted drive inside QEMU, use the <code>-drive</code> option like this:
+  </p>
+  <pre>$ qemu-system-x86_64 -bios OVMF.fd -net none -drive format=raw,file=fat:rw:<u>drive/</u></pre>
+  <p>Inside QEMU, you will now see that there is a new file system available called <code>FS0:</code>. Switch to it and look for the text file that you just created:</p>
+  <pre>Shell&gt; fs0:
+FS0:\&gt; dir
+Directory of: FS0:\
+03/21/2020  17:46                  15  test.txt
+03/21/2020  16:49              10,565  NvVars
+          2 File(s)      10,580 bytes
+          0 Dir(s)
+FS0:\&gt; cat test.txt
+This is a test</pre>
+</section>
+<p>Great! We can now transfer our executable into QEMU and open it from the shell. This gives us an environment that is very similar to what we would get if we inserted a FAT32 formatted USB drive into a real computer with a UEFI shell installed.</p>
+<h2>Assembling a UEFI application with FASM</h2>
+<p>
+  It would be nice if we could just put a bunch of machine code on a USB drive and have our computer execute that. Unfortunately, that's not how it works. All modern operating systems store executables as <a rel="nofollow" href="https://en.wikipedia.org/wiki/Object_file">object files</a>. An object file contains both the machine code itself and some information about how that code should be loaded and executed.
+</p>
+<p>
+  The specific object file format used by UEFI is the so-called <a rel="nofollow" href="https://en.wikipedia.org/wiki/Portable_Executable">Portable Executable</a> format. This format is also used by Microsoft Windows for <code>.exe</code> and <code>.dll</code> files.
+</p>
+<p>
+  An assembler is a program that generates an object file from assembly code. There are many assemblers, but for this tutorial we'll be using <a rel="nofollow" href="https://flatassembler.net/">FASM</a>, because it's easy to use and has built-in support for the object file format we need.
+</p>
+<section>
+  <h3>Step 5 — Install FASM</h3>
+  <p>On Ubuntu, FASM is available in the standard repository:</p>
+  <pre>$ sudo apt-get install fasm</pre>
+  <p>Check that you have FASM installed and in your path:</p>
+  <pre>$ fasm
+flat assembler  version 1.73.13
+usage: fasm <source> [output]
+optional settings:
+ -m &lt;limit&gt;         set the limit in kilobytes for the available memory
+ -p &lt;limit&gt;         set the maximum allowed number of passes
+ -d &lt;name&gt;=&lt;value&gt;  define symbolic variable
+ -s &lt;file&gt;          dump symbolic information for debugging</pre>
+</section>
+<p>FASM can generate code for many different output formats. We need to tell it to generate a 64-bit Portable Executable with some extra flags set to specify that it's a UEFI application. This is done using the <code>format</code> directive:</p>
+<pre>format pe64 efi</pre>
+<p>Let's start by writing a program that is even simpler than "Hello, World!" – a program that does absolutely nothing. This program will start at the <code>main:</code> label and then immediately return to the caller:</p>
+<pre>entry main
+main:
+  ret</pre>
+<p>The Portable Executable format, like most executable file formats, supports multiple <i>sections</i>. One section contains the program code, another contains data that is loaded into RAM when the program is started, and so on. The machine code should sit in a section called <code>.text</code>, and we should specify that data in this section may be both executed and read:</p>
+<pre>section '.text' executable readable</pre>
+<p>Thus, the final program, which does nothing and then exists, is:</p>
+<pre>format pe64 efi
+entry main
+
+section '.text' executable readable
+
+main:
+  ret</pre>
+<p>Now we just need to assemble this program, and then we'll be able to run it inside QEMU.</p>
+<section>
+  <h3> Step 6 — Assemble and run an empty executable</h3>
+  <p>Save the program as <code>empty.asm</code>:</p>
+  <pre>$ cat &gt; empty.asm
+format pe64 efi
+entry main
+
+section '.text' executable readable
+
+main:
+  ret</pre>
+  <p>Then, assmble it with FASM, and put the output in <code>drive/empty</code></p>
+  <pre>$ mkdir -p drive
+$ fasm empty.asm drive/empty</pre>
+  <p>Now, we can mount <code>drive/</code> as a FAT32 formatted drive in QEMU. Then, we just need to run the application off the drive from inside the UEFI shell. If everything goes according to plan, you should see nothing happen:</p>
+  <pre>$ qemu-system-x86_64 -bios OVMF.fd -net none -drive format=raw,file=fat:rw:drive/
+UEFI Interactive Shell v2.2
+EDK II
+UEFI v2.70 (EDK II, 0x00010000)
+Mapping table
+      FS0: Alias(s):HD0a1:;BLK1:
+          PciRoot(0x0)/Pci(0x1,0x1)/Ata(0x0)/HD(1,MBR,0xBE1AFDFA,0x3F,0xFBFC1)
+     BLK0: Alias(s):
+          PciRoot(0x0)/Pci(0x1,0x1)/Ata(0x0)
+     BLK2: Alias(s):
+          PciRoot(0x0)/Pci(0x1,0x1)/Ata(0x0)
+Press ESC in 1 seconds to skip startup.nsh or any other key to continue.
+Shell&gt; fs0:\empty
+Shell&gt;</pre>
+</section>
+<p>Now that we have figured out how to assemble a UEFI application and run it inside QEMU, let's see if we can do something a little bit more interesting. Yes, it's finally time to write our "Hello, World!" program!</p>
+<h2>Using UEFI services to write output</h2>
+<p>
+  The UEFI firmware provides some standardized services. Among them is a service that we can use to show text on the screen called the Simple Text Output Protocol. The <a href="https://uefi.org/specifications" rel="nofollow">UEFI Specification</a> contains everything you could ever possibly want to know about UEFI – and then some. (This tutorial uses version 2.8, updated in Feburary 2020.)
+</p>
+<p>For the purposes of writing "Hello, World!", we are mostly interested in the following sections:</p>
+<ul>
+  <li>Sections 2.3.1 and 2.3.4 (Data types and x86-64 calling conventions)</li>
+  <li>Section 4 (EFI System Table)</li>
+  <li>Section 12 (Console support)</li>
+</ul>
+<p>If anything in this tutorial is unclear, you can probably find an answer to your question in one of those sections. I'll try to summarize the important parts here.</p>
+<p>When our UEFI application is started, a pointer to the EFI System Table will be in <code>RDX</code>. The System Table is a structure that contains, among other things, a pointer to a Simple Text Output Protocol. This protocol is itself a structure that contains a function to print output to the screen.</p>
+<p>The specification contains definitions of all the structures that we need to worry about. On page 92, we find:</p>
+<pre>typedef struct {
+        EFI_TABLE_HEADER                Hdr;
+        CHAR16                          *FirmwareVendor;
+        UINT32                          FirmwareRevision;
+        EFI_HANDLE                      ConsoleInHandle;
+        EFI_SIMPLE_TEXT_INPUT_PROTOCOL  *ConIn;
+        EFI_HANDLE                      ConsoleOutHandle;
+        EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *ConOut;
+        EFI_HANDLE                      StandardErrorHandle;
+        EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *StdErr;
+        EFI_RUNTIME_SERVICES            *RuntimeServices;
+        EFI_BOOT_SERVICES               *BootServices;
+        UINTN                           NumberOfTableEntries;
+        EFI_CONFIGURATION_TABLE         *ConfigurationTable;
+} EFI_SYSTEM_TABLE;</pre>
+<p>We need to calculate the offset to <code>ConOut</code> inside this structure. The header is 24 bytes (see the definition on page 90), <code>UINT32</code> is 4 bytes, and <code>EFI_HANDLE</code> and all pointer types are 8 bytes.</p>
+<p>However, each element of the structure must also be <i>naturally aligned</i> (page 19). This means that 4-byte values must start at a multiple of 4 bytes, 8-byte values must start at a multiple of 8 bytes, and so on. In this case, there are 4 bytes of padding before the first <code>EFI_HANDLE</code> (which must be 8-byte aligned).</p>
+<p>
+  So, in fact, the <code>ConOut</code> pointer will be at index <span>24 + 8 + 4 + (4 + 8) + 8 + 8 = 64</span>
+</p>
+<p>Thus, we can load the Simple Text Output Protocol <code>ConOut</code> like so:</p>
+<pre>
+mov rcx, [rdx + 64]</pre>
+<p>The Simple Text Output Protocol structure looks like this (page 442):</p>
+<pre>typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL {
+        EFI_TEXT_RESET               Reset;
+        EFI_TEXT_STRING              OutputString;
+        EFI_TEXT_TEST_STRING         TestString;
+        EFI_TEXT_QUERY_MODE          QueryMode;
+        EFI_TEXT_SET_MODE            SetMode;
+        EFI_TEXT_SET_ATTRIBUTE       SetAttribute;
+        EFI_TEXT_CLEAR_SCREEN        ClearScreen;
+        EFI_TEXT_SET_CURSOR_POSITION SetCursorPosition;
+        EFI_TEXT_ENABLE_CURSOR       EnableCursor;
+        SIMPLE_TEXT_OUTPUT_MODE      *Mode;
+} EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;</pre>
+<p>We are interested in calling the function <code>OutputString</code>, which is at offset 8 inside this structure. (Each function pointer is 8 bytes.) This function takes two arguments: a pointer to the Output Protocol and the string itself (see page 444).</p>
+<p>We can load the address of the function into <code>RAX</code> like so:</p>
+<pre>
+mov rax, [rcx + 8]</pre>
+<p>
+  FASM has a handy <code>du</code> instruction, which we can use to store a 16-bit string. (See the <a href="https://flatassembler.net/docs.php?article=manual" rel="nofollow">FASM manual</a> for more information about how <code>du</code> works.) The string should end with a carriage return and a line feed. We'll store the string in the <code>.data</code> section like so:
+</p>
+<pre>section '.data' readable writable
+string du 'Hello, World!', 0xD, 0xA, 0</pre>
+<p>
+  The calling conventions (see page 27) specify that the function takes its first argument in <code>RCX</code> and its second argument in <code>RDX</code>. We must also allocate 32 bytes of so-called <i>shadow space</i> on the stack before calling the function. Once we have set everything up, we can call the function in <code>RAX</code>:
+</p>
+<pre>
+mov rdx, string
+
+
+sub rsp, 32
+
+
+call rax
+
+
+add rsp, 32
+
+ret</pre>
+<p>And that's our "Hello, World!" program. Now we need to assemble it into an executable.</p>
+<section>
+  <h3>Step 7 — Assemble "Hello, World!"</h3>
+  <p>
+    Create a file with the full source code for the assembly program, and save it as <code>hello.asm</code>:
+  </p>
+  <pre>$ cat &gt; hello.asm
+format pe64 efi
+entry main
+
+section '.text' executable readable
+
+main:
+  ;; Recall that RDX contains a pointer to the System Table when
+  ;; our application is called. So rdx + 64 is the address of the
+  ;; pointer to ConOut, and [rdx + 64] is the pointer itself.
+  mov rcx, [rdx + 64]
+
+  ;; Now, RCX contains the ConOut pointer. Thus, the address of
+  ;; the OutputString function is at rcx + 8. We'll move this
+  ;; function into RAX:
+  mov rax, [rcx + 8]
+
+  ;; We already have the ConOut pointer in RCX. Let's load the
+  ;; string pointer into RDX:
+  mov rdx, string
+
+  ;; Set up the shadow space. We just need to reserve 32 bytes
+  ;; on the stack, which we do by manipulating the stack pointer:
+  sub rsp, 32
+
+  ;; Now we can call the OutputText function, whose address is
+  ;; in the RAX register:
+  call rax
+
+  ;; Finally, we'll clean up the shadow space and then return:
+  add rsp, 32
+
+  ret
+
+section '.data' readable writable
+
+string du 'Hello, World!', 0xD, 0xA, 0</pre>
+  <p>Then, assemble it with FASM, and save the output in <code>drive/hello</code>:</p>
+  <pre>$ fasm hello.asm drive/hello</pre>
+</section>
+<p>With the program in the <code>drive/</code> directory, we can mount this directory inside QEMU as a FAT32 formatted drive in the same way that we did before. And then we can finally run our "Hello, World!" program!</p>
+<section>
+  <h3>Step 8 — Run "Hello, World!" in QEMU</h3>
+  <p>You should have <code>drive/hello</code> from the previous step. Run QEMU:</p>
+  <pre>$ qemu-system-x86_64 -bios OVMF.fd -net none -drive format=raw,file=fat:rw:drive/</pre>
+  <p>Then, in the UEFI shell execute <code>FS0:\hello</code>:</p>
+  <pre>Shell&gt; FS0:\hello
+Hello, World!
+Shell&gt;</pre>
+</section>
+<p>And there you go!</p>
+<p>Perhaps you would like to see your "Hello, World!" program running in all its glory on your real, physical hardware. This is actually pretty easy to do. You just need to format a USB drive with a FAT32 file system, and then you can put your file directly on the USB drive. If you have a UEFI shell built-in to your firmware, then you can run the program from there.</p>
+<p>
+  Otherwise, you can save the file as <code>\EFI\BOOT\BOOTx64.EFI</code> on the USB drive; this will make the UEFI firmware think that it's a bootable device (like a USB drive with an operating system or a bootloader on it), and let you select that drive from the boot menu. If you're planning to boot directly into your "Hello, World!" program, you should change the <code>ret</code> instruction to <code>jmp $</code>. This will cause the program to wait forever so that it doesn't shut down immediately after booting from it.
+</p>
+<section>
+  <h3>Step 9 — Create a bootable USB drive</h3>
+  <p>Start by replacing <code>ret</code> with <code>jmp $</code> so you can acutally see your program running. Then reassemble it to <code>hello</code>:</p>
+  <pre>$ sed -i 's/ret$/jmp $/' hello.asm
+$ fasm hello.asm hello</pre>
+  <p>
+    I'll assume that you have an empty USB drive available as <code>/dev/sdx</code>. We'll need <code>mkfs.vfat</code> to format the USB drive. On Ubuntu, you can install this with:
+  </p>
+  <pre>$ sudo apt-get install dosfstools</pre>
+  <p>Now, format the drive as FAT32:</p>
+  <pre>$ sudo mkfs.vfat -F32 /dev/sdx</pre>
+  <p>Then, mount the device:</p>
+  <pre>$ mkdir -p mnt
+$ sudo mount /dev/sdx mnt</pre>
+  <p>Now, copy the <code>hello</code> executable to <code>\EFI\BOOT\BOOTx64.EFI</code> on the device:</p>
+  <pre>$ mkdir -p mnt/EFI/BOOT
+$ cp hello mnt/EFI/BOOT/BOOTx64.EFI
+$ sudo umount mnt</pre>
+</section>
+<p>Now you should be able to plug your USB drive into your computer and boot from it!</p>
+<p>
+  Of course, a "Hello, World!" program isn't all that interesting. But with this, you have a good starting point to make much more intersting applications. In fact, it's possible to make an entire operating system as a UEFI application. If this is something that sounds interesting to you, I'd recommend the <a rel="nofollow" href="https://wiki.osdev.org/Expanded_Main_Page">OSDev Wiki</a> as an excellent place to get started. Have fun!
+</p>
+</article></div></div>
+  </div>
+</body>
+</html>

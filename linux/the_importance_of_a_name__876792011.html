@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The importance of a name.</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The importance of a name.</h1>
+    <p><strong>URL:</strong> <a href="https://joebordes.com/the-importance-of-a-name">https://joebordes.com/the-importance-of-a-name</a></p>
+    <p><strong>Tags:</strong> devops, linux</p>
+    <p><strong>Bookmark ID:</strong> 876792011</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="post-content-parent"><p>In 1936(!), <a target="_blank" href="https://en.wikipedia.org/wiki/Dale_Carnegie">Dale Carnegie</a> wrote in his book, <a target="_blank" href="https://en.wikipedia.org/wiki/How_to_Win_Friends_and_Influence_People">How to Win Friends and Influence People</a> about how important names are to most people. I personally learned this in another great book from <a target="_blank" href="https://en.wikipedia.org/wiki/Steve_McConnell">Steve McConnell</a>. He wrote <a target="_blank" href="https://en.wikipedia.org/wiki/Code_Complete">Code Complete</a> in 1993. I must have been lucky enough to read it shortly after having written it and it changed the way I programmed forever. This is one of the most important books I have ever read about programming and fervently recommend it to anyone wanting to learn programming or anyone who just wants to refresh things they should be doing as they program every day.</p>
+<p>In this book (and in hundreds of blog posts around the web) you will find exceptional explanations on how fundamental it is to name your variables, your files, your directories, your <a target="_blank" href="https://tiddlywiki.com/">tiddlers</a>,... any information you save with a significant and semantical NAME. Nothing new there, but I want to share with you an extreme case of bad naming that could have cost a lot if it weren't for the resilience of the great operating system Linux is.</p>
+<p>This past week, to close the year with something to remember, our team had a surreal experience with a case of terrible naming. Watch carefully how Linux saves us!</p>
+<h3 id="heading-context-and-setup-of-the-disaster">Context and setup of the disaster</h3>
+<p>At some point in time, someone decides to install <a target="_blank" href="https://redash.io/">Redash</a> on one of our servers. They, very correctly, install it in a directory named <strong>/opt/redash</strong>.</p>
+<p>They also add the new directory to our backups following company policies. So we have local and off-server backups.</p>
+<p>All is good up to here.</p>
+<p>Sometime later, a requirement to set up a docker container with a MySQL production database appears. The person in charge of this task decides to mount the MySQL data directory inside /opt/redash. <strong>Yes! you read that correctly.</strong> We now have a Redash install AND a MySQL data directory living inside /opt/redash. But wait for it, it gets better.</p>
+<p>Following good practice, a script is created to make a daily dump of the database that is inside the container. Good. Where do we save the dump? Well, of course! Inside, /opt/redash, where else? Anyone who reads "redash" will clearly understand that you can save non-related database dumps inside there. To further entangle the situation we will save the MySQL database password that the script uses and all the docker configuration files inside /opt/redash also. Obviously, no documentation of this special case is created.</p>
+<blockquote>
+<p>Now that I am writing this I think I understand that they did that out of laziness, just to not have to add the database dump to the backups, by saving it in /opt/redash which was already in the backups definition they had an easy win. When the disaster occurred my mind was not calm enough to see this.</p>
+</blockquote>
+<h3 id="heading-the-disaster">The disaster</h3>
+<p>Time goes by. The person who set up the situation above is no longer with us. A review of the server contents is done. Turns out that no one is using Redash, it wasn't what they needed. So, what do we do? we decide to eliminate it. First, we shut down the service and wait a month or so to see if anyone complains. Next, we create a directory named <strong>deleteme_after_202202</strong> (see what a significant name that is !!) and we <strong>move</strong> (this is where Linux saved us) /opt/redash inside deleteme_after_202202. We stop making backups of /opt/redash. Our monitoring system does not trigger any exceptional situation and everything seems to be working.</p>
+<p>Some weeks go by. In an unrelated succession of events, we run out of space in our main backup server so we decide to clean up. One of the first candidates is the redash directory, nobody has been using it for months anyway and it just contains an old redash install, right? This lack of space follows our other backup server (where we had another backup of that redash directory) so we delete redash from there too. Do you see the trend of how Murphy catches you no matter what you do?</p>
+<p>Now disaster strikes. The server is restarted. On reboot, our monitoring system starts complaining that we have a site down. A database is missing. You can imagine our confusion. We start investigating and see that the mount point of the docker container has disappeared. So the production docker container has restarted, it mounted the directory (/opt/redash/mysql_data) but there was no MySQL data directory (we had moved it out some weeks ago), so it started empty. We start looking for backups but none are to be found. <strong>Total despair.</strong></p>
+<h3 id="heading-the-save">The save</h3>
+<p>The save happened with the "move". We were cautious enough to <strong>move</strong> the /opt/redash directory instead of directly deleting it. Linux was intelligent enough to keep the i-node references even if the parent directory was different so the docker container kept working inside the deleteme_after_202202 directory.</p>
+<p>It took us a while to stumble on that. A while I would prefer to forget, but that is part of the work. In the end, we were able to recover everything and get some training for when we won't be so lucky.</p>
+<h3 id="heading-the-takeaway">The takeaway</h3>
+<p>Some of the things I took away</p>
+<ul>
+<li><p><strong>follow standards</strong>: we don't use docker containers for production databases, and we shouldn't make exceptions</p>
+</li>
+<li><p><strong>create standards (document things)</strong>: if exceptions must be made, for whatever reason, create procedures for it, convert that exception into a recognized company standard, write things down, and reach a consensus with the rest of the team. <strong>Leave README files where they can be seen for these special cases!</strong></p>
+</li>
+<li><p><strong>talk with the team (share)</strong> reaching a consensus would obligate us to define how backups are made, how monitoring those backups is done, and probably even a naming convention for the process. If you see something that is not following the company standards raise the issue, share your concern with the rest of the affected team, put it on the endless to-do list</p>
+</li>
+<li><p><strong>Please, please stop to think about what you are doing before you give something a name!</strong></p>
+</li>
+<li><p><strong>Don't be lazy!</strong> There are a lot of people counting on your work, even if nobody sees it until it breaks. Even if no one is going to come and say what a good job you are doing protecting their data, do it! Do it to the best of your knowledge.</p>
+</li>
+</ul>
+<p>As John Lenon said:</p>
+<blockquote>
+<p>“When you do something noble and beautiful and no one notices, don't be sad. Sunrise is a beautiful spectacle but without a doubt, the greater part of the audience is still asleep.”</p>
+</blockquote>
+<p>Live and learn.</p>
+</div></div>
+  </div>
+</body>
+</html>

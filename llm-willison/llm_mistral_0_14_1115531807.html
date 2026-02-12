@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>llm-mistral 0.14</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>llm-mistral 0.14</h1>
+    <p><strong>URL:</strong> <a href="https://simonwillison.net/2025/May/29/llm-mistral-014/#atom-everything">https://simonwillison.net/2025/May/29/llm-mistral-014/#atom-everything</a></p>
+    <p><strong>Tags:</strong> llm-willison</p>
+    <p><strong>Bookmark ID:</strong> 1115531807</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+
+
+<p><strong><a href="https://github.com/simonw/llm-mistral/releases/tag/0.14">llm-mistral 0.14</a></strong>. I <a href="https://github.com/simonw/llm-mistral/issues/31">added tool-support</a> to my plugin for accessing the Mistral API from LLM today, plus support for Mistral's new <a href="https://simonwillison.net/2025/May/28/codestral-embed/">Codestral Embed</a> embedding model.</p>
+<p>An interesting challenge here is that I'm not using an official client library for <code>llm-mistral</code> - I rolled my own client on top of their streaming HTTP API using Florimond Manca's <a href="https://github.com/florimondmanca/httpx-sse">httpx-sse</a> library. It's a very pleasant way to interact with streaming APIs - here's <a href="https://github.com/simonw/llm-mistral/blob/098a4eaf624a3a723f91381915f93b4783d498bc/llm_mistral.py#L456-L502">my code that does most of the work</a>.</p>
+<p>The problem I faced is that Mistral's API <a href="https://docs.mistral.ai/capabilities/function_calling/">documentation for function calling</a> has examples in Python and TypeScript but doesn't include <code>curl</code> or direct documentation of their HTTP endpoints!</p>
+<p>I needed documentation at the HTTP level. Could I maybe extract that directly from Mistral's official Python library?</p>
+<p>It turns out <a href="https://github.com/simonw/llm-mistral/issues/31#issuecomment-2917121330">I could</a>. I started by cloning the repo:</p>
+<div><pre>git clone https://github.com/mistralai/client-python
+<span>cd</span> client-python/src/mistralai
+files-to-prompt <span>.</span> <span>|</span> ttok</pre></div>
+
+<p>My <a href="https://github.com/simonw/ttok">ttok</a> tool gave me a token count of 212,410 (counted using OpenAI's tokenizer, but that's normally a close enough estimate) - Mistral's models tap out at 128,000 so I switched to Gemini 2.5 Flash which can easily handle that many.</p>
+<p>I ran this:</p>
+<div><pre>files-to-prompt -c <span>.</span> <span>&gt;</span> /tmp/mistral.txt
+
+llm -f /tmp/mistral.txt \
+  -m gemini-2.5-flash-preview-05-20 \
+  -s <span><span>'</span>Generate comprehensive HTTP API documentation showing
+how function calling works, include example curl commands for each step<span>'</span></span></pre></div>
+
+<p>The results were pretty spectacular! Gemini 2.5 Flash produced a <a href="https://gist.github.com/simonw/03f2049cd9af6dc072e1ee33461f3437#response">detailed description</a> of the exact set of HTTP APIs I needed to interact with, and the JSON formats I should pass to them.</p>
+<p>There are a bunch of steps needed to get tools working in a new model, as described in <a href="https://llm.datasette.io/en/stable/plugins/advanced-model-plugins.html#supporting-tools">the LLM plugin authors documentation</a>. I started working through them by hand... and then got lazy and decided to see if I could get a model to do the work for me.</p>
+<p>This time I tried the new Claude Opus 4. I fed it three files: my existing, incomplete <code>llm_mistral.py</code>, a full copy of <a href="https://github.com/simonw/llm-gemini/blob/6177aa2a0676bf004b374a8863914585aa93ca52/llm_gemini.py">llm_gemini.py</a> with its working tools implementation and a copy of the API docs Gemini had written for me earlier. I prompted:</p>
+<blockquote>
+<p><code>I need to update this Mistral code to add tool support. I've included examples of that code for Gemini, and a detailed README explaining the Mistral format.</code></p>
+</blockquote>
+<p>Claude churned away and wrote me code that was <em>most</em> of what I needed. I tested it in a bunch of different scenarios, pasted problems back into Claude to see what would happen, and eventually took over and finished the rest of the code myself. Here's <a href="https://claude.ai/share/7c609a61-4b32-45ca-bdca-31bf4ef25d2d">the full transcript</a>.</p>
+<p>I'm a little sad I didn't use Mistral to write the code to support Mistral, but I'm pleased to add yet another model family to the list that's supported for tool usage in LLM.</p>
+
+
+
+</div></div>
+  </div>
+</body>
+</html>

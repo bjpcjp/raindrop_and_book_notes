@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using word embedding to enable semantic queries on relational databases</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using word embedding to enable semantic queries on relational databases</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2017/07/06/using-word-embedding-to-enable-semantic-queries-on-relational-databases">https://blog.acolyer.org/2017/07/06/using-word-embedding-to-enable-semantic-queries-on-relational-databases</a></p>
+    <p><strong>Tags:</strong> nlp</p>
+    <p><strong>Bookmark ID:</strong> 876769113</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-5154">
+	<!-- .entry-header -->
+
+	<div>
+		<p><a href="http://dl.acm.org/citation.cfm?id=3076251">Using word embedding to enable semantic queries in relational databases</a> Bordawekar and Shmeuli, <em>DEEM’17</em></p>
+<p>As I’m sure some of you have figured out, I’ve started to work through a collection of papers from SIGMOD’17. Strictly speaking, this paper comes from the <a href="http://deem-workshop.org/">DEEM workshop</a> held in conjunction with SIGMOD, but it sparked my imagination and I hope you’ll enjoy it too. Plus, as a bonus it’s only four pages long!</p>
+<p>What do you get if you cross word embedding vectors with a relational database? The ability to ask a new class of queries, which the authors term <em>cognitive intelligence</em> (CI) queries, that ask about the <em>semantic relationship</em> between tokens in the database, rather than just syntactic matching as is supported by current queries. It’s a really interesting example of AI infusing everyday systems.</p>
+<blockquote><p>
+  We begin with a simple observation: there is a large amount of untapped latent information within a database relation. This is intuitively clear for columns that contain unstructured text. But even columns that contain different types of data, e.g., strings, numerical values, images, dates, etc., possess significant latent information in the form of inter- and intra-column relationships.
+</p></blockquote>
+<p>If we understood the <em>meaning</em> of these tokens in the database (at least in some abstract way that was <em>comparable</em>), we could ask queries such as “show me all the rows <em>similar</em> to this.” That’s something you can’t easily do with relational databases today – excepting perhaps for range queries on specific types such as dates. Where can we get comparable abstract representations of meaning though? The answer is already given away in the paper title of course – this is exactly what word embedding vectors do for us!</p>
+<p>If you’re not familiar with word embedding vectors, we covered <a href="https://blog.acolyer.org/2016/04/21/the-amazing-power-of-word-vectors/">word2vec</a> and <a href="https://blog.acolyer.org/2016/04/22/glove-global-vectors-for-word-representation/">GloVe</a> in The Morning Paper a while back. In fact, “<a href="https://blog.acolyer.org/2016/04/21/the-amazing-power-of-word-vectors/">The Amazing Power of Word Vectors</a>” continues to be one of the most read pieces on this blog. In short:</p>
+<blockquote><p>
+  The idea of word embedding is to fix a <em>d</em>-dimensional vector space and for each word in a text corpus associate a dimension <em>d</em> vector of reals numbers that encodes the <em>meaning</em> of that word… If two words have similar meaning, their word vectors point in very similar directions.
+</p></blockquote>
+<p>The authors use word2vec in their work, though as they point out they could equally have used GloVe.</p>
+<h3>How do we get word embedding vectors for database content?</h3>
+<p>One approach is to use word vectors that have been pre-trained from external sources. You can also learn directly from the database itself. Think of each row as corresponding to a sentence, and a relation as a document.</p>
+<blockquote><p>
+  Word embedding then can extract latent semantic information in terms of word (and in general, token) associations and co-occurrences and encode it in word vectors. Thus, these vectors capture first inter- and intra-attribute relationships within a row (sentence) and then aggregate these relationships across the relation (document) to compute the collective <em>semantic relationships</em>.
+</p></blockquote>
+<p>In their prototype implementation, the authors first <em>textify</em> (!) the data in a database table (e.g., using a view), and then use a modified version of word2vec to learn vectors for the words (database tokens) in the extracted text. This phase can also use an external source (e.g. Wikipedia articles) for model training.</p>
+<blockquote><p>
+  We use <em>word</em> as a synonym to token although some tokens may not be valid words in any natural language. Following vector training, the resultant vectors are stored in a relational system table.
+</p></blockquote>
+<p>At runtime, the system (built on Spark using Spark SQL and the DataFrames API) uses UDFs to fetch trained vectors from the system and answer CI queries.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/07/ci-queries-fig-1.jpeg?w=520" alt=""></p>
+<h3>CI Queries</h3>
+<blockquote><p>
+  Broadly, there are two classes of cognitive intelligence queries: <em>similarity</em> and <em>prediction</em> queries… The key characteristic of the CI queries is that these queries are executed, in part, using the vectors in the word embedding model. If the word embedding model is generated using the database being queried, it captures meaning in the context of the associated relational table, as specified by the relational view. If a model is rebuilt using a different relational view, a CI query may return different results for the new model.
+</p></blockquote>
+<p>It’s time to look at some concrete examples to make all this a bit clearer. Given a <code>similarityUDF</code> that can tell us how similar two <em>sets</em> of word vectors are, we can ask a query such as:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/07/ci-queries-fig-2.jpeg?w=520" alt=""></p>
+<p>In this case, the vector sets correspond to the items purchased by the corresponding customers. What this query will return is pairs of customers that have similar purchasing histories!</p>
+<blockquote><p>
+  The pattern observed in this query can be applied to other domains as well, e.g., identifying patients that are taking similar drugs, but with different brand names or identifying food items with similar ingredients, or finding mutual funds with similar investment strategies.
+</p></blockquote>
+<p>The key difference to a traditional query is that we’re matching by semantic similarity, not by values.</p>
+<p>Recall that word embeddings also support inductive reasoning (e.g., the classic <a href="https://blog.acolyer.org/2016/04/21/the-amazing-power-of-word-vectors/">King is to Man as Queen is to ?</a> style queries). You can exploit this capability in CI queries too. In the following toy example, we’re looking for food product pairs that relate to each other as ‘peanut-butter’ relates to ‘jelly’. (For example, the query may return the pair ‘chips’, ‘salsa’).</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/07/ci-queries-fig-3.jpeg?w=520" alt=""></p>
+<p>The <code>analogyUDF</code> computes the differences (peanut butter – jelly) and (p1 – p2) and looks at the cosine similarity of those differences.</p>
+<blockquote><p>
+  The analogy capabilities of CI queries have several applications in the enterprise space, e.g., associating customers with either most-common or least-common purchases in a given domain (e.g., books, electronics, etc.).
+</p></blockquote>
+<p>I understand the analogy query mechanism, but I’m not sure I quite get the example the authors are trying to give above. Neither finding product popularity, nor seeing whether a customer has purchased a low-popularity (high popularity) item seems to need an analogy? Here’s an example of my own – recommendation by analogy: razor is to blade as [product the customer just put in their basket] is to ?. (Probably not about to replace frequent itemset mining anytime soon!)</p>
+<p>Our final example shows how embeddings trained using external data can be used in queries. Suppose we trained word embeddings with a data set that reveals information about fruits and their allergenic properties. We would have a relationship between the vector for ‘allergenic’ and the vectors for allergenic fruit names. Now we can ask:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2017/07/ci-queries-fig-4.jpeg?w=520" alt=""></p>
+<blockquote><p>
+  This example demonstrates a very powerful ability of CI queries that enables users to query a database using a token (e.g., allergenic) not present in the database.
+</p></blockquote>
+<h3>The last word</h3>
+<p>Will all relational databases one day come with CI querying capabilities built-in?</p>
+<blockquote><p>
+  In summary, we believe this work is a step towards empowering database systems with built-in AI capabilities… We believe CI queries are applicable to a broad class of application domains including healthcare, bio-informatics, document searching, retail analysis, and data integration. We are currently working on applying the CI capabilities to some of these domains.
+</p></blockquote>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+
+	</article></div>
+  </div>
+</body>
+</html>

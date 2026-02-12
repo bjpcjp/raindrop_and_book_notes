@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Generate GPT Output in JSON Format for Ruby developers</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Generate GPT Output in JSON Format for Ruby developers</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/kanehooper/how-to-generate-gpt-output-in-json-format-for-ruby-developers-3g66">https://dev.to/kanehooper/how-to-generate-gpt-output-in-json-format-for-ruby-developers-3g66</a></p>
+    <p><strong>Tags:</strong> nlp, ruby, gpt</p>
+    <p><strong>Bookmark ID:</strong> 876789899</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main-title">
+            <a href="https://media.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F7h0uf9iznpt957i5jjte.png">
+              <img src="data:application/octet-stream;base64," width="1000" height="420" alt="Cover image for How to Generate GPT Output in JSON Format for Ruby developers">
+            </a>
+
+          
+        </div><div data-article-id="1329079" id="article-body">
+            <p>I was playing around with OpenAI (GPT-3) today, building a reasonably complicated email parser for a client. I was running into issues working with the AI’s response. Because OpenAI (GPT-3) is based on a natural language model the response is always a string. While you can prompt the AI model on how you would like it to structure this string, it was going to require me to write processing methods to extract the output I needed.</p>
+
+<p>I was looking for a way to easily convert the response into JSON format. I had a bright idea, why don’t I ask ChatGPT how I can get responses in JSON. In this blog post, I’ll show you how to do it quickly and easily with Ruby.</p>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--PyrVTYxW--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/y2w8zhqx43yb0rt7dr86.png"><img src="data:application/octet-stream;base64," alt="ChatGPT discussion on JSON format" loading="lazy" width="880" height="242"></a></p>
+
+<p>If you are new to OpenAI, I have written an article on how to get started using Ruby.</p>
+
+
+
+
+
+<h2>
+  <a name="prerequisites" href="#prerequisites">
+  </a>
+  Prerequisites
+</h2>
+
+<p>An intermediate understanding of Ruby.</p>
+
+<h2>
+  <a name="what-we-will-build" href="#what-we-will-build">
+  </a>
+  What we will build
+</h2>
+
+<p>We are going to write a short Ruby script that will extract the sender's first name and a summary of the email. The AI will return the data in JSON so it can be easily be manipulated within the code.</p>
+
+<h2>
+  <a name="instructions" href="#instructions">
+  </a>
+  Instructions
+</h2>
+
+<p>Here are the instructions to implement our code.</p>
+
+<ol>
+<li>Install openai gem</li>
+<li>Configure openai with the API key</li>
+<li>Create the prompt (instructions) to the AI requesting the response in JSON</li>
+<li>Call the createCompletion method and get the JSON</li>
+<li>Convert the JSON into a Ruby object</li>
+</ol>
+
+<h2>
+  <a name="step-1-install-the-openai-gem" href="#step-1-install-the-openai-gem">
+  </a>
+  Step 1: Install the openai gem
+</h2>
+
+<p>First things first, you’ll need to install the OpenAI Ruby gem. You can do this by running the following command in your terminal:<br>
+</p>
+
+<p><code>gem install ruby-openai</code><br>
+</p>
+
+<h2>
+  <a name="step-2-require-the-openai-gem" href="#step-2-require-the-openai-gem">
+  </a>
+  Step 2: Require the openai gem
+</h2>
+
+<p>You will need an OpenAI API key, which you can obtain from this URL: <a href="https://openai.com/api/">https://openai.com/api/</a><br>
+</p>
+
+<div>
+<pre><code>require 'ruby/openai'
+
+openai = OpenAI::Client.new(access_token: 'YOUR_API_KEY')
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="step-3-create-the-prompt" href="#step-3-create-the-prompt">
+  </a>
+  Step 3: Create the prompt
+</h3>
+
+<p>Start by adding the text for the email we want the AI model to parse.</p>
+
+<p>Now for the prompt. This is the most important part of working with the OpenAI model. You need to craft the prompt in such a way that it will provide you the results you are specifically looking for.</p>
+
+<p>We’ll ask the AI to extract the first name and summary from the email and return it as JSON.<br>
+</p>
+
+<div>
+<pre><code>email = "I would love to purchase one of your new X-225 
+         lawn mowers. Do you still have some in stock? If 
+         so I will purchase it today. 
+         \n\nRegards,\nJimmy Jackson"
+
+prompt = ‘Analyse the following email and return the author’s
+          first name and a summary of the email. Your
+          response should be in JSON. \n\n”#{email}”’
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The AI model has been trained to respond to natural language requests. You will find much better results if you make your requests in a similar manner.</p>
+
+<h2>
+  <a name="step-4-call-the-completions-method" href="#step-4-call-the-completions-method">
+  </a>
+  Step 4: Call the completions method
+</h2>
+
+<p>The <code>completions</code> method is how we make our request to the AI model. It takes several parameters. The most important are the <code>model</code>, <code>prompt</code>, <code>temperature</code> and <code>max_tokens</code>.</p>
+
+<p>model: The AI model to use. The most advanced model is the <code>davinci-003</code> model.</p>
+
+<p>prompt: This is the instruction provided to the AI. </p>
+
+<p>temperature: This is a number between 0 and 1 and sets the ‘creativity’ of the AIs response. We don’t want the AI to be particularly creative, so we will set it quite low for this example. </p>
+
+<p>max_tokens: A token is 4 characters. It sets the total size of the prompt plus the AI response. We can keep it low for this example.<br>
+</p>
+
+<div>
+<pre><code>response = openai.completions(
+ parameters: {
+   model: "text-davinci-003",
+   prompt: prompt,
+   temperature: 0.3,
+   max_tokens: 500,
+ }
+)
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="step-5-convert-the-json-into-a-ruby-object" href="#step-5-convert-the-json-into-a-ruby-object">
+  </a>
+  Step 5. Convert the JSON into a Ruby object
+</h2>
+
+<p>We will use the built-in JSON library in Ruby to convert JSON into a Ruby object. To do this, we use the <code>JSON.parse()</code> method.<br>
+</p>
+
+<div>
+<pre><code>jsonResponse = JSON.parse(response['choices'][0]['text'].lstrip)
+
+puts "Email Author: #{jsonResponse["firstName"]}"
+puts "Summary: #{jsonResponse["summary"]}"
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="the-output" href="#the-output">
+  </a>
+  The output
+</h2>
+
+
+
+<div>
+<pre><code>Email Author: Jimmy
+Summary: The author is interested in purchasing one of the
+         new X-225 lawn mowers and inquiring about
+         availability.
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="i-found-an-issue" href="#i-found-an-issue">
+  </a>
+  I found an issue
+</h2>
+
+<p>As I was testing my code I found an issue. The AI model was not providing the same parameter names in the JSON response each time.</p>
+
+<p>Sometimes it set the first parameter to “authorsFirstName”, this of course caused to program to terminate.</p>
+
+<p>I han to reengineer the prompt a few times until I found a wording which provided a consistent response each time.<br>
+</p>
+
+<div>
+<pre><code>prompt = "Analyse the following email and return the author's
+          first name and a summary of the email. Your
+          response should be in JSON format with two
+          parameters 'firstName' and 'summary'. 
+          \n\n'#{email}'"
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Effectively I am telling the AI model how to structure the JSON output. </p>
+
+<p>Prompt engineering is definitely an art rather than an exacting science. You have to think like the AI model and adjust the prompt to get the results you are looking for. For an application like an email parser you have to be very explicit about how the data is presented. For something more creative such as providing suggestions for a blog title, you want to allow the model to be more deterministic and ‘creative’.</p>
+
+<p>I think there will be a job 5 years from now known as a Prompt Engineer. </p>
+
+<h2>
+  <a name="summary" href="#summary">
+  </a>
+  Summary
+</h2>
+
+<p>And there you have it! With just a few lines of code, you can easily generate OpenAI (GPT) output in JSON format for your Ruby application.</p>
+
+<p>Good luck, and happy coding!</p>
+
+
+<hr>
+
+<p>Kane Hooper is the CEO of reinteractive, the longest running dedicated Ruby on Rails development firm in the world.<br>
+You can contact Kane directly for any help with your Ruby on Rails application.</p>
+
+<p><a href="http://www.reinteractive.com/">www.reinteractive.com</a></p>
+
+<p><a href="mailto:kane.hooper@reinteractive.com">kane.hooper@reinteractive.com</a></p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Usage</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Usage</h1>
+    <p><strong>URL:</strong> <a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&utm_medium=email">https://llm.datasette.io/en/stable/usage.html?utm_source=substack&utm_medium=email</a></p>
+    <p><strong>Tags:</strong> llms, command-line</p>
+    <p><strong>Bookmark ID:</strong> 1215235496</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article role="main">
+          <section id="usage">
+<span id="id1"></span>
+<p>The command to run a prompt is <code><span>llm</span> <span>prompt</span> <span>'your</span> <span>prompt'</span></code>. This is the default command, so you can use <code><span>llm</span> <span>'your</span> <span>prompt'</span></code> as a shortcut.</p>
+<section id="executing-a-prompt">
+<span id="usage-executing-prompts"></span><h2>Executing a prompt<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#executing-a-prompt" title="Link to this heading">#</a></h2>
+<p>These examples use the default OpenAI <code><span>gpt-4o-mini</span></code> model, which requires you to first <a href="https://llm.datasette.io/en/stable/setup.html#api-keys"><span>set an OpenAI API key</span></a>.</p>
+<p>You can <a href="https://llm.datasette.io/en/stable/plugins/installing-plugins.html#installing-plugins"><span>install LLM plugins</span></a> to use models from other providers, including openly licensed models you can run directly on your own computer.</p>
+<p>To run a prompt, streaming tokens as they come in:</p>
+<div><pre id="codecell0"><span></span>llm<span> </span><span>'Ten names for cheesecakes'</span>
+</pre></div>
+<p>To disable streaming and only return the response once it has completed:</p>
+<div><pre id="codecell1"><span></span>llm<span> </span><span>'Ten names for cheesecakes'</span><span> </span>--no-stream
+</pre></div>
+<p>To switch from ChatGPT 4o-mini (the default) to GPT-4o:</p>
+<div><pre id="codecell2"><span></span>llm<span> </span><span>'Ten names for cheesecakes'</span><span> </span>-m<span> </span>gpt-4o
+</pre></div>
+<p>You can use <code><span>-m</span> <span>4o</span></code> as an even shorter shortcut.</p>
+<p>Pass <code><span>--model</span> <span>&lt;model</span> <span>name&gt;</span></code> to use a different model. Run <code><span>llm</span> <span>models</span></code> to see a list of available models.</p>
+<p>Or if you know the name is too long to type, use <code><span>-q</span></code> once or more to provide search terms - the model with the shortest model ID that matches all of those terms (as a lowercase substring) will be used:</p>
+<div><pre id="codecell3"><span></span>llm<span> </span><span>'Ten names for cheesecakes'</span><span> </span>-q<span> </span>4o<span> </span>-q<span> </span>mini
+</pre></div>
+<p>To change the default model for the current session, set the <code><span>LLM_MODEL</span></code> environment variable:</p>
+<div><pre id="codecell4"><span></span><span>export</span><span> </span><span>LLM_MODEL</span><span>=</span>gpt-4.1-mini
+llm<span> </span><span>'Ten names for cheesecakes'</span><span> </span><span># Uses gpt-4.1-mini</span>
+</pre></div>
+<p>You can send a prompt directly to standard input like this:</p>
+<div><pre id="codecell5"><span></span><span>echo</span><span> </span><span>'Ten names for cheesecakes'</span><span> </span><span>|</span><span> </span>llm
+</pre></div>
+<p>If you send text to standard input and provide arguments, the resulting prompt will consist of the piped content followed by the arguments:</p>
+<div><pre id="codecell6"><span></span>cat<span> </span>myscript.py<span> </span><span>|</span><span> </span>llm<span> </span><span>'explain this code'</span>
+</pre></div>
+<p>Will run a prompt of:</p>
+<div><pre id="codecell7"><span></span><span>&lt;</span><span>contents</span> <span>of</span> <span>myscript</span><span>.</span><span>py</span><span>&gt;</span> <span>explain</span> <span>this</span> <span>code</span>
+</pre></div>
+<p>For models that support them, <a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#usage-system-prompts"><span>system prompts</span></a> are a better tool for this kind of prompting.</p>
+<section id="model-options">
+<span id="usage-model-options"></span><h3>Model options<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#model-options" title="Link to this heading">#</a></h3>
+<p>Some models support options. You can pass these using <code><span>-o/--option</span> <span>name</span> <span>value</span></code> - for example, to set the temperature to 1.5 run this:</p>
+<div><pre id="codecell8"><span></span>llm<span> </span><span>'Ten names for cheesecakes'</span><span> </span>-o<span> </span>temperature<span> </span><span>1</span>.5
+</pre></div>
+<p>Use the <code><span>llm</span> <span>models</span> <span>--options</span></code> command to see which options are supported by each model.</p>
+<p>You can also <a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#usage-executing-default-options"><span>configure default options</span></a> for a model using the <code><span>llm</span> <span>models</span> <span>options</span></code> commands.</p>
+</section>
+<section id="attachments">
+<span id="usage-attachments"></span><h3>Attachments<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#attachments" title="Link to this heading">#</a></h3>
+<p>Some models are multi-modal, which means they can accept input in more than just text. GPT-4o and GPT-4o mini can accept images, and models such as Google Gemini 1.5 can accept audio and video as well.</p>
+<p>LLM calls these <strong>attachments</strong>. You can pass attachments using the <code><span>-a</span></code> option like this:</p>
+<div><pre id="codecell9"><span></span>llm<span> </span><span>"describe this image"</span><span> </span>-a<span> </span>https://static.simonwillison.net/static/2024/pelicans.jpg
+</pre></div>
+<p>Attachments can be passed using URLs or file paths, and you can attach more than one attachment to a single prompt:</p>
+<div><pre id="codecell10"><span></span>llm<span> </span><span>"extract text"</span><span> </span>-a<span> </span>image1.jpg<span> </span>-a<span> </span>image2.jpg
+</pre></div>
+<p>You can also pipe an attachment to LLM by using <code><span>-</span></code> as the filename:</p>
+<div><pre id="codecell11"><span></span>cat<span> </span>image.jpg<span> </span><span>|</span><span> </span>llm<span> </span><span>"describe this image"</span><span> </span>-a<span> </span>-
+</pre></div>
+<p>LLM will attempt to automatically detect the content type of the image. If this doesn’t work you can instead use the <code><span>--attachment-type</span></code> option (<code><span>--at</span></code> for short) which takes the URL/path plus an explicit content type:</p>
+<div><pre id="codecell12"><span></span>cat<span> </span>myfile<span> </span><span>|</span><span> </span>llm<span> </span><span>"describe this image"</span><span> </span>--at<span> </span>-<span> </span>image/jpeg
+</pre></div>
+</section>
+<section id="system-prompts">
+<span id="usage-system-prompts"></span><h3>System prompts<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#system-prompts" title="Link to this heading">#</a></h3>
+<p>You can use <code><span>-s/--system</span> <span>'...'</span></code> to set a system prompt.</p>
+<div><pre id="codecell13"><span></span>llm<span> </span><span>'SQL to calculate total sales by month'</span><span> </span><span>\</span>
+<span>  </span>--system<span> </span><span>'You are an exaggerated sentient cheesecake that knows SQL and talks about cheesecake a lot'</span>
+</pre></div>
+<p>This is useful for piping content to standard input, for example:</p>
+<div><pre id="codecell14"><span></span>curl<span> </span>-s<span> </span><span>'https://simonwillison.net/2023/May/15/per-interpreter-gils/'</span><span> </span><span>|</span><span> </span><span>\</span>
+<span>  </span>llm<span> </span>-s<span> </span><span>'Suggest topics for this post as a JSON array'</span>
+</pre></div>
+<p>Or to generate a description of changes made to a Git repository since the last commit:</p>
+<div><pre id="codecell15"><span></span>git<span> </span>diff<span> </span><span>|</span><span> </span>llm<span> </span>-s<span> </span><span>'Describe these changes'</span>
+</pre></div>
+<p>Different models support system prompts in different ways.</p>
+<p>The OpenAI models are particularly good at using system prompts as instructions for how they should process additional input sent as part of the regular prompt.</p>
+<p>Other models might use system prompts change the default voice and attitude of the model.</p>
+<p>System prompts can be saved as <a href="https://llm.datasette.io/en/stable/templates.html#prompt-templates"><span>templates</span></a> to create reusable tools. For example, you can create a template called <code><span>pytest</span></code> like this:</p>
+<div><pre id="codecell16"><span></span>llm<span> </span>-s<span> </span><span>'write pytest tests for this code'</span><span> </span>--save<span> </span>pytest
+</pre></div>
+<p>And then use the new template like this:</p>
+<div><pre id="codecell17"><span></span>cat<span> </span>llm/utils.py<span> </span><span>|</span><span> </span>llm<span> </span>-t<span> </span>pytest
+</pre></div>
+<p>See <a href="https://llm.datasette.io/en/stable/templates.html#prompt-templates"><span>prompt templates</span></a> for more.</p>
+</section>
+<section id="tools">
+<span id="usage-tools"></span><h3>Tools<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#tools" title="Link to this heading">#</a></h3>
+<p>Many models support the ability to call <a href="https://llm.datasette.io/en/stable/tools.html#tools"><span>external tools</span></a>. Tools can be provided <a href="https://llm.datasette.io/en/stable/plugins/plugin-hooks.html#plugin-hooks-register-tools"><span>by plugins</span></a> or you can pass a <code><span>--functions</span> <span>CODE</span></code> option to LLM to define one or more Python functions that the model can then call.</p>
+<div><pre id="codecell18"><span></span>llm<span> </span>--functions<span> </span><span>'</span>
+<span>def multiply(x: int, y: int) -&gt; int:</span>
+<span>    """Multiply two numbers."""</span>
+<span>    return x * y</span>
+<span>'</span><span> </span><span>'what is 34234 * 213345'</span>
+</pre></div>
+<p>Add <code><span>--td/--tools-debug</span></code> to see full details of the tools that are being executed. You can also set the <code><span>LLM_TOOLS_DEBUG</span></code> environment variable to <code><span>1</span></code> to enable this for all prompts.</p>
+<div><pre id="codecell19"><span></span>llm<span> </span>--functions<span> </span><span>'</span>
+<span>def multiply(x: int, y: int) -&gt; int:</span>
+<span>    """Multiply two numbers."""</span>
+<span>    return x * y</span>
+<span>'</span><span> </span><span>'what is 34234 * 213345'</span><span> </span>--td
+</pre></div>
+<p>Output:</p>
+<div><pre id="codecell20"><span></span><span>Tool</span> <span>call</span><span>:</span> <span>multiply</span><span>({</span><span>'x'</span><span>:</span> <span>34234</span><span>,</span> <span>'y'</span><span>:</span> <span>213345</span><span>})</span>
+  <span>7303652730</span>
+<span>34234</span> <span>multiplied</span> <span>by</span> <span>213345</span> <span>is</span> <span>7</span><span>,</span><span>303</span><span>,</span><span>652</span><span>,</span><span>730.</span>
+</pre></div>
+<p>Or add <code><span>--ta/--tools-approve</span></code> to approve each tool call interactively before it is executed:</p>
+<div><pre id="codecell21"><span></span>llm<span> </span>--functions<span> </span><span>'</span>
+<span>def multiply(x: int, y: int) -&gt; int:</span>
+<span>    """Multiply two numbers."""</span>
+<span>    return x * y</span>
+<span>'</span><span> </span><span>'what is 34234 * 213345'</span><span> </span>--ta
+</pre></div>
+<p>Output:</p>
+<div><pre id="codecell22"><span></span>Tool call: multiply({'x': 34234, 'y': 213345})
+Approve tool call? [y/N]:
+</pre></div>
+<p>The <code><span>--functions</span></code> option can be passed more than once, and can also point to the filename of a <code><span>.py</span></code> file containing one or more functions.</p>
+<p>If you have any tools that have been made available via plugins you can add them to the prompt using <code><span>--tool/-T</span></code> option. For example, using <a href="https://github.com/simonw/llm-tools-simpleeval">llm-tools-simpleeval</a> like this:</p>
+<div><pre id="codecell23"><span></span>llm<span> </span>install<span> </span>llm-tools-simpleeval
+llm<span> </span>--tool<span> </span>simple_eval<span> </span><span>"4444 * 233423"</span><span> </span>--td
+</pre></div>
+<p>Run this command to see a list of available tools from plugins:</p>
+<div><pre id="codecell24"><span></span>llm<span> </span>tools
+</pre></div>
+<p>If you run a prompt that uses tools from plugins (as opposed to tools provided using the <code><span>--functions</span></code> option) continuing that conversation using <code><span>llm</span> <span>-c</span></code> will reuse the tools from the first prompt. Running <code><span>llm</span> <span>chat</span> <span>-c</span></code> will start a chat that continues using those same tools. For example:</p>
+<div><pre id="codecell25"><span></span><span>llm</span> <span>-</span><span>T</span> <span>simple_eval</span> <span>"12345 * 12345"</span> <span>--</span><span>td</span>
+<span>Tool</span> <span>call</span><span>:</span> <span>simple_eval</span><span>({</span><span>'expression'</span><span>:</span> <span>'12345 * 12345'</span><span>})</span>
+  <span>152399025</span>
+<span>12345</span> <span>multiplied</span> <span>by</span> <span>12345</span> <span>equals</span> <span>152</span><span>,</span><span>399</span><span>,</span><span>025.</span>
+<span>llm</span> <span>-</span><span>c</span> <span>"that * 6"</span> <span>--</span><span>td</span>
+<span>Tool</span> <span>call</span><span>:</span> <span>simple_eval</span><span>({</span><span>'expression'</span><span>:</span> <span>'152399025 * 6'</span><span>})</span>
+  <span>914394150</span>
+<span>152</span><span>,</span><span>399</span><span>,</span><span>025</span> <span>multiplied</span> <span>by</span> <span>6</span> <span>equals</span> <span>914</span><span>,</span><span>394</span><span>,</span><span>150.</span>
+<span>llm</span> <span>chat</span> <span>-</span><span>c</span> <span>--</span><span>td</span>
+<span>Chatting</span> <span>with</span> <span>gpt</span><span>-</span><span>4.1</span><span>-</span><span>mini</span>
+<span>Type</span> <span>'exit'</span> <span>or</span> <span>'quit'</span> <span>to</span> <span>exit</span>
+<span>Type</span> <span>'!multi'</span> <span>to</span> <span>enter</span> <span>multiple</span> <span>lines</span><span>,</span> <span>then</span> <span>'!end'</span> <span>to</span> <span>finish</span>
+<span>Type</span> <span>'!edit'</span> <span>to</span> <span>open</span> <span>your</span> <span>default</span> <span>editor</span> <span>and</span> <span>modify</span> <span>the</span> <span>prompt</span>
+<span>&gt;</span> <span>/</span> <span>123</span>
+<span>Tool</span> <span>call</span><span>:</span> <span>simple_eval</span><span>({</span><span>'expression'</span><span>:</span> <span>'914394150 / 123'</span><span>})</span>
+  <span>7434098.780487805</span>
+<span>914</span><span>,</span><span>394</span><span>,</span><span>150</span> <span>divided</span> <span>by</span> <span>123</span> <span>is</span> <span>approximately</span> <span>7</span><span>,</span><span>434</span><span>,</span><span>098.78</span><span>.</span>
+</pre></div>
+<p>Some tools are bundled in a configurable collection of tools called a <strong>toolbox</strong>. This means a single <code><span>--tool</span></code> option can load multiple related tools.</p>
+<p><a href="https://github.com/simonw/llm-tools-datasette">llm-tools-datasette</a> is one example. Using a toolbox looks like this:</p>
+<div><pre id="codecell26"><span></span>llm<span> </span>install<span> </span>llm-tools-datasette
+llm<span> </span>-T<span> </span><span>'Datasette("https://datasette.io/content")'</span><span> </span><span>"Show tables"</span><span> </span>--td
+</pre></div>
+<p>Toolboxes always start with a capital letter. They can be configured by passing a tool specification, which should fit the following patterns:</p>
+<ul>
+<li><p>Empty: <code><span>ToolboxName</span></code> or <code><span>ToolboxName()</span></code> - has no configuration arguments</p></li>
+<li><p>JSON object: <code><span>ToolboxName({"key":</span> <span>"value",</span> <span>"other":</span> <span>42})</span></code></p></li>
+<li><p>Single JSON value: <code><span>ToolboxName("hello")</span></code> or <code><span>ToolboxName([1,2,3])</span></code></p></li>
+<li><p>Key-value pairs: <code><span>ToolboxName(name="test",</span> <span>count=5,</span> <span>items=[1,2])</span></code> - treated the same as <code><span>{"name":</span> <span>"test",</span> <span>"count":</span> <span>5,</span> <span>"items":</span> <span>[1,</span> <span>2]}</span></code>, all values must be valid JSON</p></li>
+</ul>
+<p>Toolboxes are not currently supported with the <code><span>llm</span> <span>-c</span></code> option, but they work well with <code><span>llm</span> <span>chat</span></code>. Try chatting with the Datasette content database like this:</p>
+<div><pre id="codecell27"><span></span>llm<span> </span>chat<span> </span>-T<span> </span><span>'Datasette("https://datasette.io/content")'</span><span> </span>--td
+</pre></div>
+<div><pre id="codecell28"><span></span><span>Chatting</span> <span>with</span> <span>gpt</span><span>-</span><span>4.1</span><span>-</span><span>mini</span>
+<span>Type</span> <span>'exit'</span> <span>or</span> <span>'quit'</span> <span>to</span> <span>exit</span>
+<span>...</span>
+<span>&gt;</span> <span>show</span> <span>tables</span>
+</pre></div>
+</section>
+
+<section id="schemas">
+<span id="usage-schemas"></span><h3>Schemas<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#schemas" title="Link to this heading">#</a></h3>
+<p>Some models include the ability to return JSON that matches a provided <a href="https://json-schema.org/">JSON schema</a>. Models from OpenAI, Anthropic and Google Gemini all include this capability.</p>
+<p>Take a look at the <a href="https://llm.datasette.io/en/stable/schemas.html#schemas"><span>schemas documentation</span></a> for a detailed guide to using this feature.</p>
+<p>You can pass JSON schemas directly to the <code><span>--schema</span></code> option:</p>
+<div><pre id="codecell30"><span></span>llm<span> </span>--schema<span> </span><span>'{</span>
+<span>  "type": "object",</span>
+<span>  "properties": {</span>
+<span>    "dogs": {</span>
+<span>      "type": "array",</span>
+<span>      "items": {</span>
+<span>        "type": "object",</span>
+<span>        "properties": {</span>
+<span>          "name": {</span>
+<span>            "type": "string"</span>
+<span>          },</span>
+<span>          "bio": {</span>
+<span>            "type": "string"</span>
+<span>          }</span>
+<span>        }</span>
+<span>      }</span>
+<span>    }</span>
+<span>  }</span>
+<span>}'</span><span> </span>-m<span> </span>gpt-4o-mini<span> </span><span>'invent two dogs'</span>
+</pre></div>
+<p>Or use LLM’s custom <a href="https://llm.datasette.io/en/stable/schemas.html#schemas-dsl"><span>concise schema syntax</span></a> like this:</p>
+<div><pre id="codecell31"><span></span>llm<span> </span>--schema<span> </span><span>'name,bio'</span><span> </span><span>'invent a dog'</span>
+</pre></div>
+<p>Two use the same concise schema for multiple items use <code><span>--schema-multi</span></code>:</p>
+<div><pre id="codecell32"><span></span>llm<span> </span>--schema-multi<span> </span><span>'name,bio'</span><span> </span><span>'invent two dogs'</span>
+</pre></div>
+<p>You can also save the JSON schema to a file and reference the filename using <code><span>--schema</span></code>:</p>
+<div><pre id="codecell33"><span></span>llm<span> </span>--schema<span> </span>dogs.schema.json<span> </span><span>'invent two dogs'</span>
+</pre></div>
+<p>Or save your schema <a href="https://llm.datasette.io/en/stable/templates.html#prompt-templates"><span>to a template</span></a> like this:</p>
+<div><pre id="codecell34"><span></span>llm<span> </span>--schema<span> </span>dogs.schema.json<span> </span>--save<span> </span>dogs
+<span># Then to use it:</span>
+llm<span> </span>-t<span> </span>dogs<span> </span><span>'invent two dogs'</span>
+</pre></div>
+<p>Be warned that different models may support different dialects of the JSON schema specification.</p>
+<p>See <a href="https://llm.datasette.io/en/stable/schemas.html#schemas-logs"><span>Browsing logged JSON objects created using schemas</span></a> for tips on using the <code><span>llm</span> <span>logs</span> <span>--schema</span> <span>X</span></code> command to access JSON objects you have previously logged using this option.</p>
+</section>
+<section id="fragments">
+<span id="usage-fragments"></span><h3>Fragments<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#fragments" title="Link to this heading">#</a></h3>
+<p>You can use the <code><span>-f/--fragment</span></code> option to reference fragments of context that you would like to load into your prompt. Fragments can be specified as URLs, file paths or as aliases to previously saved fragments.</p>
+<p>Fragments are designed for running longer prompts. LLM <a href="https://llm.datasette.io/en/stable/logging.html#logging"><span>stores prompts in a database</span></a>, and the same prompt repeated many times can end up stored as multiple copies, wasting disk space. A fragment will be stored just once and referenced by all of the prompts that use it.</p>
+<p>The <code><span>-f</span></code> option can accept a path to a file on disk, a URL or the hash or alias of a previous fragment.</p>
+<p>For example, to ask a question about the <code><span>robots.txt</span></code> file on <code><span>llm.datasette.io</span></code>:</p>
+<div><pre id="codecell35"><span></span>llm<span> </span>-f<span> </span>https://llm.datasette.io/robots.txt<span> </span><span>'explain this'</span>
+</pre></div>
+<p>For a poem inspired by some Python code on disk:</p>
+<div><pre id="codecell36"><span></span>llm<span> </span>-f<span> </span>cli.py<span> </span><span>'a short snappy poem inspired by this code'</span>
+</pre></div>
+<p>You can use as many <code><span>-f</span></code> options as you like - the fragments will be concatenated together in the order you provided, with any additional prompt added at the end.</p>
+<p>Fragments can also be used for the system prompt using the <code><span>--sf/--system-fragment</span></code> option. If you have a file called <code><span>explain_code.txt</span></code> containing this:</p>
+<div><pre id="codecell37"><span></span><span>Explain</span> <span>this</span> <span>code</span> <span>in</span> <span>detail</span><span>.</span> <span>Include</span> <span>copies</span> <span>of</span> <span>the</span> <span>code</span> <span>quoted</span> <span>in</span> <span>the</span> <span>explanation</span><span>.</span>
+</pre></div>
+<p>You can run it as the system prompt like this:</p>
+<div><pre id="codecell38"><span></span>llm<span> </span>-f<span> </span>cli.py<span> </span>--sf<span> </span>explain_code.txt
+</pre></div>
+<p>You can use the <code><span>llm</span> <span>fragments</span> <span>set</span></code> command to load a fragment and give it an alias for use in future queries:</p>
+<div><pre id="codecell39"><span></span>llm<span> </span>fragments<span> </span><span>set</span><span> </span>cli<span> </span>cli.py
+<span># Then</span>
+llm<span> </span>-f<span> </span>cli<span> </span><span>'explain this code'</span>
+</pre></div>
+<p>Use <code><span>llm</span> <span>fragments</span></code> to list all fragments that have been stored:</p>
+<div><pre id="codecell40"><span></span>llm<span> </span>fragments
+</pre></div>
+<p>You can search by passing one or more <code><span>-q</span> <span>X</span></code> search strings. This will return results matching all of those strings, across the source, hash, aliases and content:</p>
+<div><pre id="codecell41"><span></span>llm<span> </span>fragments<span> </span>-q<span> </span>pytest<span> </span>-q<span> </span>asyncio
+</pre></div>
+<p>The <code><span>llm</span> <span>fragments</span> <span>remove</span></code> command removes an alias. It does not delete the fragment record itself as those are linked to previous prompts and responses and cannot be deleted independently of them.</p>
+<div><pre id="codecell42"><span></span>llm<span> </span>fragments<span> </span>remove<span> </span>cli
+</pre></div>
+</section>
+<section id="continuing-a-conversation">
+<span id="usage-conversation"></span><h3>Continuing a conversation<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#continuing-a-conversation" title="Link to this heading">#</a></h3>
+<p>By default, the tool will start a new conversation each time you run it.</p>
+<p>You can opt to continue the previous conversation by passing the <code><span>-c/--continue</span></code> option:</p>
+<div><pre id="codecell43"><span></span>llm<span> </span><span>'More names'</span><span> </span>-c
+</pre></div>
+<p>This will re-send the prompts and responses for the previous conversation as part of the call to the language model. Note that this can add up quickly in terms of tokens, especially if you are using expensive models.</p>
+<p><code><span>--continue</span></code> will automatically use the same model as the conversation that you are continuing, even if you omit the <code><span>-m/--model</span></code> option.</p>
+<p>To continue a conversation that is not the most recent one, use the <code><span>--cid/--conversation</span> <span>&lt;id&gt;</span></code> option:</p>
+<div><pre id="codecell44"><span></span>llm<span> </span><span>'More names'</span><span> </span>--cid<span> </span>01h53zma5txeby33t1kbe3xk8q
+</pre></div>
+<p>You can find these conversation IDs using the <code><span>llm</span> <span>logs</span></code> command.</p>
+</section>
+<section id="tips-for-using-llm-with-bash-or-zsh">
+<h3>Tips for using LLM with Bash or Zsh<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#tips-for-using-llm-with-bash-or-zsh" title="Link to this heading">#</a></h3>
+<p>To learn more about your computer’s operating system based on the output of <code><span>uname</span> <span>-a</span></code>, run this:</p>
+<div><pre id="codecell45"><span></span>llm<span> </span><span>"Tell me about my operating system: </span><span>$(</span>uname<span> </span>-a<span>)</span><span>"</span>
+</pre></div>
+<p>This pattern of using <code><span>$(command)</span></code> inside a double quoted string is a useful way to quickly assemble prompts.</p>
+</section>
+<section id="completion-prompts">
+<span id="usage-completion-prompts"></span><h3>Completion prompts<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#completion-prompts" title="Link to this heading">#</a></h3>
+<p>Some models are completion models - rather than being tuned to respond to chat style prompts, they are designed to complete a sentence or paragraph.</p>
+<p>An example of this is the <code><span>gpt-3.5-turbo-instruct</span></code> OpenAI model.</p>
+<p>You can prompt that model the same way as the chat models, but be aware that the prompt format that works best is likely to differ.</p>
+<div><pre id="codecell46"><span></span>llm<span> </span>-m<span> </span>gpt-3.5-turbo-instruct<span> </span><span>'Reasons to tame a wild beaver:'</span>
+</pre></div>
+</section>
+</section>
+<section id="starting-an-interactive-chat">
+<span id="usage-chat"></span><h2>Starting an interactive chat<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#starting-an-interactive-chat" title="Link to this heading">#</a></h2>
+<p>The <code><span>llm</span> <span>chat</span></code> command starts an ongoing interactive chat with a model.</p>
+<p>This is particularly useful for models that run on your own machine, since it saves them from having to be loaded into memory each time a new prompt is added to a conversation.</p>
+<p>Run <code><span>llm</span> <span>chat</span></code>, optionally with a <code><span>-m</span> <span>model_id</span></code>, to start a chat conversation:</p>
+<div><pre id="codecell47"><span></span>llm<span> </span>chat<span> </span>-m<span> </span>chatgpt
+</pre></div>
+<p>Each chat starts a new conversation. A record of each conversation can be accessed through <a href="https://llm.datasette.io/en/stable/logging.html#logging-conversation"><span>the logs</span></a>.</p>
+<p>You can pass <code><span>-c</span></code> to start a conversation as a continuation of your most recent prompt. This will automatically use the most recently used model:</p>
+<div><pre id="codecell48"><span></span>llm<span> </span>chat<span> </span>-c
+</pre></div>
+<p>For models that support them, you can pass options using <code><span>-o/--option</span></code>:</p>
+<div><pre id="codecell49"><span></span>llm<span> </span>chat<span> </span>-m<span> </span>gpt-4<span> </span>-o<span> </span>temperature<span> </span><span>0</span>.5
+</pre></div>
+<p>You can pass a system prompt to be used for your chat conversation:</p>
+<div><pre id="codecell50"><span></span>llm<span> </span>chat<span> </span>-m<span> </span>gpt-4<span> </span>-s<span> </span><span>'You are a sentient cheesecake'</span>
+</pre></div>
+<p>You can also pass <a href="https://llm.datasette.io/en/stable/templates.html#prompt-templates"><span>a template</span></a> - useful for creating chat personas that you wish to return to.</p>
+<p>Here’s how to create a template for your GPT-4 powered cheesecake:</p>
+<div><pre id="codecell51"><span></span>llm<span> </span>--system<span> </span><span>'You are a sentient cheesecake'</span><span> </span>-m<span> </span>gpt-4<span> </span>--save<span> </span>cheesecake
+</pre></div>
+<p>Now you can start a new chat with your cheesecake any time you like using this:</p>
+<div><pre id="codecell52"><span></span>llm<span> </span>chat<span> </span>-t<span> </span>cheesecake
+</pre></div>
+<div><pre id="codecell53"><span></span>Chatting with gpt-4
+Type 'exit' or 'quit' to exit
+Type '!multi' to enter multiple lines, then '!end' to finish
+Type '!edit' to open your default editor and modify the prompt
+Type '!fragment &lt;my_fragment&gt; [&lt;another_fragment&gt; ...]' to insert one or more fragments
+&gt; who are you?
+I am a sentient cheesecake, meaning I am an artificial
+intelligence embodied in a dessert form, specifically a
+cheesecake. However, I don't consume or prepare foods
+like humans do, I communicate, learn and help answer
+your queries.
+</pre></div>
+<p>Type <code><span>quit</span></code> or <code><span>exit</span></code> followed by <code><span>&lt;enter&gt;</span></code> to end a chat session.</p>
+<p>Sometimes you may want to paste multiple lines of text into a chat at once - for example when debugging an error message.</p>
+<p>To do that, type <code><span>!multi</span></code> to start a multi-line input. Type or paste your text, then type <code><span>!end</span></code> and hit <code><span>&lt;enter&gt;</span></code> to finish.</p>
+<p>If your pasted text might itself contain a <code><span>!end</span></code> line, you can set a custom delimiter using <code><span>!multi</span> <span>abc</span></code> followed by <code><span>!end</span> <span>abc</span></code> at the end:</p>
+<div><pre id="codecell54"><span></span>Chatting with gpt-4
+Type 'exit' or 'quit' to exit
+Type '!multi' to enter multiple lines, then '!end' to finish
+Type '!edit' to open your default editor and modify the prompt.
+Type '!fragment &lt;my_fragment&gt; [&lt;another_fragment&gt; ...]' to insert one or more fragments
+&gt; !multi custom-end
+ Explain this error:
+
+   File "/opt/homebrew/Caskroom/miniconda/base/lib/python3.10/urllib/request.py", line 1391, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+  File "/opt/homebrew/Caskroom/miniconda/base/lib/python3.10/urllib/request.py", line 1351, in do_open
+    raise URLError(err)
+urllib.error.URLError: &lt;urlopen error [Errno 8] nodename nor servname provided, or not known&gt;
+
+ !end custom-end
+</pre></div>
+<p>You can also use <code><span>!edit</span></code> to open your default editor and modify the prompt before sending it to the model.</p>
+<div><pre id="codecell55"><span></span>Chatting with gpt-4
+Type 'exit' or 'quit' to exit
+Type '!multi' to enter multiple lines, then '!end' to finish
+Type '!edit' to open your default editor and modify the prompt.
+Type '!fragment &lt;my_fragment&gt; [&lt;another_fragment&gt; ...]' to insert one or more fragments
+&gt; !edit
+</pre></div>
+<p><code><span>llm</span> <span>chat</span></code> takes the same <code><span>--tool/-T</span></code> and <code><span>--functions</span></code> options as <code><span>llm</span> <span>prompt</span></code>. You can use this to start a chat with the specified <a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#usage-tools"><span>tools</span></a> enabled.</p>
+</section>
+<section id="listing-available-models">
+<h2>Listing available models<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#listing-available-models" title="Link to this heading">#</a></h2>
+<p>The <code><span>llm</span> <span>models</span></code> command lists every model that can be used with LLM, along with their aliases. This includes models that have been installed using <a href="https://llm.datasette.io/en/stable/plugins/index.html#plugins"><span>plugins</span></a>.</p>
+<div><pre id="codecell56"><span></span>llm<span> </span>models
+</pre></div>
+<p>Example output:</p>
+<div><pre id="codecell57"><span></span><span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>o</span> <span>(</span><span>aliases</span><span>:</span> <span>4</span><span>o</span><span>)</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>o</span><span>-</span><span>mini</span> <span>(</span><span>aliases</span><span>:</span> <span>4</span><span>o</span><span>-</span><span>mini</span><span>)</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>o1</span><span>-</span><span>preview</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>o1</span><span>-</span><span>mini</span>
+<span>GeminiPro</span><span>:</span> <span>gemini</span><span>-</span><span>1.5</span><span>-</span><span>pro</span><span>-</span><span>002</span>
+<span>GeminiPro</span><span>:</span> <span>gemini</span><span>-</span><span>1.5</span><span>-</span><span>flash</span><span>-</span><span>002</span>
+<span>...</span>
+</pre></div>
+<p>Add one or more <code><span>-q</span> <span>term</span></code> options to search for models matching all of those search terms:</p>
+<div><pre id="codecell58"><span></span>llm<span> </span>models<span> </span>-q<span> </span>gpt-4o
+llm<span> </span>models<span> </span>-q<span> </span>4o<span> </span>-q<span> </span>mini
+</pre></div>
+<p>Use one or more <code><span>-m</span></code> options to indicate specific models, either by their model ID or one of their aliases:</p>
+<div><pre id="codecell59"><span></span>llm<span> </span>models<span> </span>-m<span> </span>gpt-4o<span> </span>-m<span> </span>gemini-1.5-pro-002
+</pre></div>
+<p>Add <code><span>--options</span></code> to also see documentation for the options supported by each model:</p>
+<div><pre id="codecell60"><span></span>llm<span> </span>models<span> </span>--options
+</pre></div>
+<p>Output:</p>
+<!-- [[[cog
+from click.testing import CliRunner
+from llm.cli import cli
+result = CliRunner().invoke(cli, ["models", "list", "--options"])
+cog.out("```\n{}\n```".format(result.output))
+]]] -->
+<div><pre id="codecell61"><span></span><span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>o</span> <span>(</span><span>aliases</span><span>:</span> <span>4</span><span>o</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+      <span>What</span> <span>sampling</span> <span>temperature</span> <span>to</span> <span>use</span><span>,</span> <span>between</span> <span>0</span> <span>and</span> <span>2.</span> <span>Higher</span> <span>values</span> <span>like</span>
+      <span>0.8</span> <span>will</span> <span>make</span> <span>the</span> <span>output</span> <span>more</span> <span>random</span><span>,</span> <span>while</span> <span>lower</span> <span>values</span> <span>like</span> <span>0.2</span> <span>will</span>
+      <span>make</span> <span>it</span> <span>more</span> <span>focused</span> <span>and</span> <span>deterministic</span><span>.</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+      <span>Maximum</span> <span>number</span> <span>of</span> <span>tokens</span> <span>to</span> <span>generate</span><span>.</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+      <span>An</span> <span>alternative</span> <span>to</span> <span>sampling</span> <span>with</span> <span>temperature</span><span>,</span> <span>called</span> <span>nucleus</span> <span>sampling</span><span>,</span>
+      <span>where</span> <span>the</span> <span>model</span> <span>considers</span> <span>the</span> <span>results</span> <span>of</span> <span>the</span> <span>tokens</span> <span>with</span> <span>top_p</span>
+      <span>probability</span> <span>mass</span><span>.</span> <span>So</span> <span>0.1</span> <span>means</span> <span>only</span> <span>the</span> <span>tokens</span> <span>comprising</span> <span>the</span> <span>top</span> <span>10</span><span>%</span>
+      <span>probability</span> <span>mass</span> <span>are</span> <span>considered</span><span>.</span> <span>Recommended</span> <span>to</span> <span>use</span> <span>top_p</span> <span>or</span>
+      <span>temperature</span> <span>but</span> <span>not</span> <span>both</span><span>.</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+      <span>Number</span> <span>between</span> <span>-</span><span>2.0</span> <span>and</span> <span>2.0</span><span>.</span> <span>Positive</span> <span>values</span> <span>penalize</span> <span>new</span> <span>tokens</span> <span>based</span>
+      <span>on</span> <span>their</span> <span>existing</span> <span>frequency</span> <span>in</span> <span>the</span> <span>text</span> <span>so</span> <span>far</span><span>,</span> <span>decreasing</span> <span>the</span> <span>model</span><span>'s</span>
+      <span>likelihood</span> <span>to</span> <span>repeat</span> <span>the</span> <span>same</span> <span>line</span> <span>verbatim</span><span>.</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+      <span>Number</span> <span>between</span> <span>-</span><span>2.0</span> <span>and</span> <span>2.0</span><span>.</span> <span>Positive</span> <span>values</span> <span>penalize</span> <span>new</span> <span>tokens</span> <span>based</span>
+      <span>on</span> <span>whether</span> <span>they</span> <span>appear</span> <span>in</span> <span>the</span> <span>text</span> <span>so</span> <span>far</span><span>,</span> <span>increasing</span> <span>the</span> <span>model</span><span>'s</span>
+      <span>likelihood</span> <span>to</span> <span>talk</span> <span>about</span> <span>new</span> <span>topics</span><span>.</span>
+    <span>stop</span><span>:</span> <span>str</span>
+      <span>A</span> <span>string</span> <span>where</span> <span>the</span> <span>API</span> <span>will</span> <span>stop</span> <span>generating</span> <span>further</span> <span>tokens</span><span>.</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+      <span>Modify</span> <span>the</span> <span>likelihood</span> <span>of</span> <span>specified</span> <span>tokens</span> <span>appearing</span> <span>in</span> <span>the</span> <span>completion</span><span>.</span>
+      <span>Pass</span> <span>a</span> <span>JSON</span> <span>string</span> <span>like</span> <span>'{"1712":-100, "892":-100, "1489":-100}'</span>
+    <span>seed</span><span>:</span> <span>int</span>
+      <span>Integer</span> <span>seed</span> <span>to</span> <span>attempt</span> <span>to</span> <span>sample</span> <span>deterministically</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+      <span>Output</span> <span>a</span> <span>valid</span> <span>JSON</span> <span>object</span> <span>{</span><span>...</span><span>}</span><span>.</span> <span>Prompt</span> <span>must</span> <span>mention</span> <span>JSON</span><span>.</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>chatgpt</span><span>-</span><span>4</span><span>o</span><span>-</span><span>latest</span> <span>(</span><span>aliases</span><span>:</span> <span>chatgpt</span><span>-</span><span>4</span><span>o</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>o</span><span>-</span><span>mini</span> <span>(</span><span>aliases</span><span>:</span> <span>4</span><span>o</span><span>-</span><span>mini</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>o</span><span>-</span><span>audio</span><span>-</span><span>preview</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>audio</span><span>/</span><span>mpeg</span><span>,</span> <span>audio</span><span>/</span><span>wav</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>o</span><span>-</span><span>audio</span><span>-</span><span>preview</span><span>-</span><span>2024</span><span>-</span><span>12</span><span>-</span><span>17</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>audio</span><span>/</span><span>mpeg</span><span>,</span> <span>audio</span><span>/</span><span>wav</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>o</span><span>-</span><span>audio</span><span>-</span><span>preview</span><span>-</span><span>2024</span><span>-</span><span>10</span><span>-</span><span>01</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>audio</span><span>/</span><span>mpeg</span><span>,</span> <span>audio</span><span>/</span><span>wav</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>o</span><span>-</span><span>mini</span><span>-</span><span>audio</span><span>-</span><span>preview</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>audio</span><span>/</span><span>mpeg</span><span>,</span> <span>audio</span><span>/</span><span>wav</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>o</span><span>-</span><span>mini</span><span>-</span><span>audio</span><span>-</span><span>preview</span><span>-</span><span>2024</span><span>-</span><span>12</span><span>-</span><span>17</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>audio</span><span>/</span><span>mpeg</span><span>,</span> <span>audio</span><span>/</span><span>wav</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4.1</span> <span>(</span><span>aliases</span><span>:</span> <span>4.1</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4.1</span><span>-</span><span>mini</span> <span>(</span><span>aliases</span><span>:</span> <span>4.1</span><span>-</span><span>mini</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4.1</span><span>-</span><span>nano</span> <span>(</span><span>aliases</span><span>:</span> <span>4.1</span><span>-</span><span>nano</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>3.5</span><span>-</span><span>turbo</span> <span>(</span><span>aliases</span><span>:</span> <span>3.5</span><span>,</span> <span>chatgpt</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>3.5</span><span>-</span><span>turbo</span><span>-</span><span>16</span><span>k</span> <span>(</span><span>aliases</span><span>:</span> <span>chatgpt</span><span>-</span><span>16</span><span>k</span><span>,</span> <span>3.5</span><span>-</span><span>16</span><span>k</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span> <span>(</span><span>aliases</span><span>:</span> <span>4</span><span>,</span> <span>gpt4</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>-</span><span>32</span><span>k</span> <span>(</span><span>aliases</span><span>:</span> <span>4</span><span>-</span><span>32</span><span>k</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>-</span><span>1106</span><span>-</span><span>preview</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>-</span><span>0125</span><span>-</span><span>preview</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>-</span><span>turbo</span><span>-</span><span>2024</span><span>-</span><span>04</span><span>-</span><span>09</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>-</span><span>turbo</span> <span>(</span><span>aliases</span><span>:</span> <span>gpt</span><span>-</span><span>4</span><span>-</span><span>turbo</span><span>-</span><span>preview</span><span>,</span> <span>4</span><span>-</span><span>turbo</span><span>,</span> <span>4</span><span>t</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4.5</span><span>-</span><span>preview</span><span>-</span><span>2025</span><span>-</span><span>02</span><span>-</span><span>27</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>gpt</span><span>-</span><span>4.5</span><span>-</span><span>preview</span> <span>(</span><span>aliases</span><span>:</span> <span>gpt</span><span>-</span><span>4.5</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>o1</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+    <span>reasoning_effort</span><span>:</span> <span>str</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>o1</span><span>-</span><span>2024</span><span>-</span><span>12</span><span>-</span><span>17</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+    <span>reasoning_effort</span><span>:</span> <span>str</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>o1</span><span>-</span><span>preview</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>o1</span><span>-</span><span>mini</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>o3</span><span>-</span><span>mini</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+    <span>reasoning_effort</span><span>:</span> <span>str</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>o3</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+    <span>reasoning_effort</span><span>:</span> <span>str</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Chat</span><span>:</span> <span>o4</span><span>-</span><span>mini</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+    <span>stop</span><span>:</span> <span>str</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+    <span>seed</span><span>:</span> <span>int</span>
+    <span>json_object</span><span>:</span> <span>boolean</span>
+    <span>reasoning_effort</span><span>:</span> <span>str</span>
+  <span>Attachment</span> <span>types</span><span>:</span>
+    <span>application</span><span>/</span><span>pdf</span><span>,</span> <span>image</span><span>/</span><span>gif</span><span>,</span> <span>image</span><span>/</span><span>jpeg</span><span>,</span> <span>image</span><span>/</span><span>png</span><span>,</span> <span>image</span><span>/</span><span>webp</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>-</span> <span>schemas</span>
+  <span>-</span> <span>tools</span>
+  <span>-</span> <span>async</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+<span>OpenAI</span> <span>Completion</span><span>:</span> <span>gpt</span><span>-</span><span>3.5</span><span>-</span><span>turbo</span><span>-</span><span>instruct</span> <span>(</span><span>aliases</span><span>:</span> <span>3.5</span><span>-</span><span>instruct</span><span>,</span> <span>chatgpt</span><span>-</span><span>instruct</span><span>)</span>
+  <span>Options</span><span>:</span>
+    <span>temperature</span><span>:</span> <span>float</span>
+      <span>What</span> <span>sampling</span> <span>temperature</span> <span>to</span> <span>use</span><span>,</span> <span>between</span> <span>0</span> <span>and</span> <span>2.</span> <span>Higher</span> <span>values</span> <span>like</span>
+      <span>0.8</span> <span>will</span> <span>make</span> <span>the</span> <span>output</span> <span>more</span> <span>random</span><span>,</span> <span>while</span> <span>lower</span> <span>values</span> <span>like</span> <span>0.2</span> <span>will</span>
+      <span>make</span> <span>it</span> <span>more</span> <span>focused</span> <span>and</span> <span>deterministic</span><span>.</span>
+    <span>max_tokens</span><span>:</span> <span>int</span>
+      <span>Maximum</span> <span>number</span> <span>of</span> <span>tokens</span> <span>to</span> <span>generate</span><span>.</span>
+    <span>top_p</span><span>:</span> <span>float</span>
+      <span>An</span> <span>alternative</span> <span>to</span> <span>sampling</span> <span>with</span> <span>temperature</span><span>,</span> <span>called</span> <span>nucleus</span> <span>sampling</span><span>,</span>
+      <span>where</span> <span>the</span> <span>model</span> <span>considers</span> <span>the</span> <span>results</span> <span>of</span> <span>the</span> <span>tokens</span> <span>with</span> <span>top_p</span>
+      <span>probability</span> <span>mass</span><span>.</span> <span>So</span> <span>0.1</span> <span>means</span> <span>only</span> <span>the</span> <span>tokens</span> <span>comprising</span> <span>the</span> <span>top</span> <span>10</span><span>%</span>
+      <span>probability</span> <span>mass</span> <span>are</span> <span>considered</span><span>.</span> <span>Recommended</span> <span>to</span> <span>use</span> <span>top_p</span> <span>or</span>
+      <span>temperature</span> <span>but</span> <span>not</span> <span>both</span><span>.</span>
+    <span>frequency_penalty</span><span>:</span> <span>float</span>
+      <span>Number</span> <span>between</span> <span>-</span><span>2.0</span> <span>and</span> <span>2.0</span><span>.</span> <span>Positive</span> <span>values</span> <span>penalize</span> <span>new</span> <span>tokens</span> <span>based</span>
+      <span>on</span> <span>their</span> <span>existing</span> <span>frequency</span> <span>in</span> <span>the</span> <span>text</span> <span>so</span> <span>far</span><span>,</span> <span>decreasing</span> <span>the</span> <span>model</span><span>'s</span>
+      <span>likelihood</span> <span>to</span> <span>repeat</span> <span>the</span> <span>same</span> <span>line</span> <span>verbatim</span><span>.</span>
+    <span>presence_penalty</span><span>:</span> <span>float</span>
+      <span>Number</span> <span>between</span> <span>-</span><span>2.0</span> <span>and</span> <span>2.0</span><span>.</span> <span>Positive</span> <span>values</span> <span>penalize</span> <span>new</span> <span>tokens</span> <span>based</span>
+      <span>on</span> <span>whether</span> <span>they</span> <span>appear</span> <span>in</span> <span>the</span> <span>text</span> <span>so</span> <span>far</span><span>,</span> <span>increasing</span> <span>the</span> <span>model</span><span>'s</span>
+      <span>likelihood</span> <span>to</span> <span>talk</span> <span>about</span> <span>new</span> <span>topics</span><span>.</span>
+    <span>stop</span><span>:</span> <span>str</span>
+      <span>A</span> <span>string</span> <span>where</span> <span>the</span> <span>API</span> <span>will</span> <span>stop</span> <span>generating</span> <span>further</span> <span>tokens</span><span>.</span>
+    <span>logit_bias</span><span>:</span> <span>dict</span><span>,</span> <span>str</span>
+      <span>Modify</span> <span>the</span> <span>likelihood</span> <span>of</span> <span>specified</span> <span>tokens</span> <span>appearing</span> <span>in</span> <span>the</span> <span>completion</span><span>.</span>
+      <span>Pass</span> <span>a</span> <span>JSON</span> <span>string</span> <span>like</span> <span>'{"1712":-100, "892":-100, "1489":-100}'</span>
+    <span>seed</span><span>:</span> <span>int</span>
+      <span>Integer</span> <span>seed</span> <span>to</span> <span>attempt</span> <span>to</span> <span>sample</span> <span>deterministically</span>
+    <span>logprobs</span><span>:</span> <span>int</span>
+      <span>Include</span> <span>the</span> <span>log</span> <span>probabilities</span> <span>of</span> <span>most</span> <span>likely</span> <span>N</span> <span>per</span> <span>token</span>
+  <span>Features</span><span>:</span>
+  <span>-</span> <span>streaming</span>
+  <span>Keys</span><span>:</span>
+    <span>key</span><span>:</span> <span>openai</span>
+    <span>env_var</span><span>:</span> <span>OPENAI_API_KEY</span>
+
+</pre></div>
+<!-- [[[end]]] -->
+<p>When running a prompt you can pass the full model name or any of the aliases to the <code><span>-m/--model</span></code> option:</p>
+<div><pre id="codecell62"><span></span>llm<span> </span>-m<span> </span>4o<span> </span><span>\</span>
+<span>  </span><span>'As many names for cheesecakes as you can think of, with detailed descriptions'</span>
+</pre></div>
+</section>
+<section id="setting-default-options-for-models">
+<span id="usage-executing-default-options"></span><h2>Setting default options for models<a href="https://llm.datasette.io/en/stable/usage.html?utm_source=substack&amp;utm_medium=email#setting-default-options-for-models" title="Link to this heading">#</a></h2>
+<p>To configure a default option for a specific model, use the <code><span>llm</span> <span>models</span> <span>options</span> <span>set</span></code> command:</p>
+<div><pre id="codecell63"><span></span>llm<span> </span>models<span> </span>options<span> </span><span>set</span><span> </span>gpt-4o<span> </span>temperature<span> </span><span>0</span>.5
+</pre></div>
+<p>This option will then be applied automatically any time you run a prompt through the <code><span>gpt-4o</span></code> model.</p>
+<p>Default options are stored in the <code><span>model_options.json</span></code> file in the LLM configuration directory.</p>
+<p>You can list all default options across all models using the <code><span>llm</span> <span>models</span> <span>options</span> <span>list</span></code> command:</p>
+<div><pre id="codecell64"><span></span>llm<span> </span>models<span> </span>options<span> </span>list
+</pre></div>
+<p>Or show them for an individual model with <code><span>llm</span> <span>models</span> <span>options</span> <span>show</span> <span>&lt;model_id&gt;</span></code>:</p>
+<div><pre id="codecell65"><span></span>llm<span> </span>models<span> </span>options<span> </span>show<span> </span>gpt-4o
+</pre></div>
+<p>To clear a default option, use the <code><span>llm</span> <span>models</span> <span>options</span> <span>clear</span></code> command:</p>
+<div><pre id="codecell66"><span></span>llm<span> </span>models<span> </span>options<span> </span>clear<span> </span>gpt-4o<span> </span>temperature
+</pre></div>
+<p>Or clear all default options for a model like this:</p>
+<div><pre id="codecell67"><span></span>llm<span> </span>models<span> </span>options<span> </span>clear<span> </span>gpt-4o
+</pre></div>
+<p>Default model options are respected by both the <code><span>llm</span> <span>prompt</span></code> and the <code><span>llm</span> <span>chat</span></code> commands. They will not be applied when you use LLM as a <a href="https://llm.datasette.io/en/stable/python-api.html#python-api"><span>Python library</span></a>.</p>
+</section>
+</section>
+
+        </article></div>
+  </div>
+</body>
+</html>

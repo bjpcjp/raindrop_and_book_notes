@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Prevent logging sensitive information in Rails, and beyond</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Prevent logging sensitive information in Rails, and beyond</h1>
+    <p><strong>URL:</strong> <a href="https://feed.thoughtbot.com/link/24077/17048177/parameter-filtering">https://feed.thoughtbot.com/link/24077/17048177/parameter-filtering</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 1152008325</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>By default, Rails <a href="https://guides.rubyonrails.org/action_controller_advanced_topics.html#parameters-filtering">filters out sensitive request parameters</a> from your log
+files. I’ve found the <a href="https://guides.rubyonrails.org/configuring.html#config-filter-parameters">default values</a> are a good foundation, and account for
+<em>almost</em> all use cases.</p>
+<div><pre><code><span># config/initializers/filter_parameter_logging.rb</span>
+
+<span>Rails</span><span>.</span><span>application</span><span>.</span><span>config</span><span>.</span><span>filter_parameters</span> <span>+=</span> <span>[</span>
+  <span>:passw</span><span>,</span> <span>:email</span><span>,</span> <span>:secret</span><span>,</span> <span>:token</span><span>,</span> <span>:_key</span><span>,</span> <span>:crypt</span><span>,</span> <span>:salt</span><span>,</span> <span>:certificate</span><span>,</span> <span>:otp</span><span>,</span> <span>:ssn</span><span>,</span> <span>:cvv</span><span>,</span> <span>:cvc</span>
+<span>]</span>
+</code></pre></div>
+<p>If a request is made that contains a parameter that partially matches any of
+these values, it will be filtered.</p>
+<div><pre><code>Parameters: {"authenticity_token"=&gt;"[FILTERED]", "email_address"=&gt;"[FILTERED]", "password"=&gt;"[FILTERED]", "commit"=&gt;"Sign in"}
+</code></pre></div>
+<p>It also <a href="https://api.rubyonrails.org/classes/ActiveRecord/Core/ClassMethods.html#method-i-filter_attributes">filters the associated attributes</a>.</p>
+<div><pre><code><span>&lt;</span><span>User</span><span>:</span><span>0x000000011f735030</span>
+ <span>id: </span><span>980190962</span><span>,</span>
+ <span>email_address: </span><span>"[FILTERED]"</span><span>,</span>
+ <span>password_digest: </span><span>"[FILTERED]"</span><span>,</span>
+ <span>created_at: </span><span>"2025-04-23 13:59:46.324377000 +0000"</span><span>,</span>
+ <span>updated_at: </span><span>"2025-04-23 13:59:46.324377000 +0000"</span><span>&gt;</span>
+</code></pre></div><form action="https://thoughtbot.us2.list-manage.com/subscribe/post?u=e801d7e43bc155cd5c33729b9&amp;id=c0a5e23629" method="POST">
+
+  <div>
+    <h2>Sign up to receive a weekly recap from thoughtbot</h2>
+
+    
+
+    <div>
+      <p><label for="email">Your email address</label>
+        
+        
+      </p>
+      </div>
+  </div>
+
+  <div>
+    <p>Looking for even more ways to stay connected?</p>
+    
+  </div>
+</form><h2 id="don39t-just-filter-sensitive-information-encrypt-it">
+  <a href="https://thoughtbot.com/blog/parameter-filtering#don39t-just-filter-sensitive-information-encrypt-it">
+    Don’t just filter sensitive information, encrypt it
+  </a>
+</h2>
+
+<p>There’s a case to be made that you should rarely need to update the default
+list. This is because if you plan on storing anything worth filtering, it should
+be <a href="https://guides.rubyonrails.org/active_record_encryption.html">encrypted</a>.</p>
+<div><pre><code><span>class</span> <span>User</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>encrypts</span> <span>:phone_number</span>
+<span>end</span>
+</code></pre></div>
+<p>Fortunately, Rails has accounted for this by <a href="https://guides.rubyonrails.org/active_record_encryption.html#filtering-params-named-as-encrypted-columns">automatically filtering encrypted
+attributes</a>.</p>
+
+<p>Note how the <code>phone_number</code> is filtered when logging internal requests.</p>
+<div><pre><code>Parameters: {"authenticity_token"=&gt;"[FILTERED]", "user"=&gt;{"email_address"=&gt;"[FILTERED]", "phone_number"=&gt;"[FILTERED]", "password_digest"=&gt;"[FILTERED]"}, "commit"=&gt;"Create User"}
+</code></pre></div>
+<p>It’s also filtered when inspecting an object.</p>
+<div><pre><code><span>&lt;</span><span>User</span><span>:</span><span>0x0000000121282608</span>
+ <span>id: </span><span>980190962</span><span>,</span>
+ <span>email_address: </span><span>"[FILTERED]"</span><span>,</span>
+ <span>password_digest: </span><span>"[FILTERED]"</span><span>,</span>
+ <span>created_at: </span><span>"2025-04-23 14:10:49.414784000 +0000"</span><span>,</span>
+ <span>updated_at: </span><span>"2025-04-23 14:10:49.414784000 +0000"</span><span>,</span>
+ <span>phone_number: </span><span>"[FILTERED]"</span><span>&gt;</span>
+</code></pre></div><h2 id="filter-sensitive-information-from-external-network-requests">
+  <a href="https://thoughtbot.com/blog/parameter-filtering#filter-sensitive-information-from-external-network-requests">
+    Filter sensitive information from external network requests
+  </a>
+</h2>
+
+<p>Just because Rails provides a good foundation doesn’t mean it accounts for
+everything.</p>
+
+<p>For example, if you’re using Faraday, it’s your responsibility to <a href="https://lostisland.github.io/faraday/#/middleware/included/logging?id=filter-sensitive-information">filter
+sensitive information</a> when logging requests. This does not happen by
+default.</p>
+<div><pre><code><span>conn</span> <span>=</span> <span>Faraday</span><span>.</span><span>new</span><span>(</span><span>url: </span><span>"http://httpbingo.org"</span><span>)</span> <span>do</span> <span>|</span><span>builder</span><span>|</span>
+  <span>builder</span><span>.</span><span>request</span> <span>:json</span>
+  <span>builder</span><span>.</span><span>response</span> <span>:json</span>
+  <span>builder</span><span>.</span><span>response</span> <span>:raise_error</span>
+  <span>builder</span><span>.</span><span>response</span> <span>:logger</span><span>,</span> <span>nil</span><span>,</span> <span>{</span>
+    <span>headers: </span><span>true</span><span>,</span>
+    <span>bodies: </span><span>true</span><span>,</span>
+    <span>errors: </span><span>true</span>
+  <span>}</span>
+<span>end</span>
+
+<span>conn</span><span>.</span><span>get</span><span>(</span><span>"get"</span><span>,</span> <span>api_key: </span><span>"secret"</span><span>)</span>
+<span>conn</span><span>.</span><span>post</span><span>(</span><span>"anything"</span><span>,</span> <span>user: </span><span>User</span><span>.</span><span>last!</span><span>.</span><span>as_json</span><span>)</span>
+</code></pre></div>
+<p>We’re exposing the <code>api_key</code> when logging both the request and the
+response when making a <code>GET</code> request.</p>
+<div><pre><code>INFO -- : request: GET http://httpbingo.org/get?api_key=secret
+INFO -- : response: {
+  "args": {
+    "api_key": [
+      "secret"
+    ]
+  },
+  "url": "http://httpbingo.org/get?api_key=secret"
+}
+</code></pre></div>
+<p>We’re also exposing all the sensitive attributes on <code>user</code>, even though those
+are filtered internally.</p>
+<div><pre><code>INFO -- : request: POST http://httpbingo.org/anything
+INFO -- : response: {
+  "data": "{\"user\":{\"id\":980190962,\"email_address\":\"one@example.com\",\"password_digest\":\"$2a$12$Qo1yNHtJ58InjxM2d3895emekpMVpEzwLTtMJ/piHeDet0oePuKne\",\"created_at\":\"2025-04-23T14:10:49.414Z\",\"updated_at\":\"2025-04-23T14:10:49.414Z\",\"phone_number\":\"555-555-5555\"}}",
+  "json": {
+    "user": {
+      "created_at": "2025-04-23T14:10:49.414Z",
+      "email_address": "one@example.com",
+      "id": 980190962,
+      "password_digest": "$2a$12$Qo1yNHtJ58InjxM2d3895emekpMVpEzwLTtMJ/piHeDet0oePuKne",
+      "phone_number": "555-555-5555",
+      "updated_at": "2025-04-23T14:10:49.414Z"
+    }
+  }
+}
+</code></pre></div>
+<p>Faraday offers an API for <a href="https://lostisland.github.io/faraday/#/middleware/included/logging?id=filter-sensitive-information">filtering sensitive information</a>, but using it
+would mean you would need to duplicate efforts.</p>
+
+<p>Fortunately, we can create a <a href="https://lostisland.github.io/faraday/#/middleware/included/logging?id=customize-the-formatter">custom formatter</a> to re-use our Rails
+configuration.</p>
+<div><pre><code><span>class</span> <span>ApplicationFormatter</span> <span>&lt;</span> <span>Faraday</span><span>::</span><span>Logging</span><span>::</span><span>Formatter</span>
+  <span>def</span> <span>request</span><span>(</span><span>env</span><span>)</span>
+    <span>info</span><span>(</span><span>"Request"</span><span>)</span> <span>{</span> <span>log_url</span><span>(</span><span>env</span><span>.</span><span>url</span><span>)</span> <span>}</span>
+    <span>info</span><span>(</span><span>"Request"</span><span>)</span> <span>{</span> <span>log_body</span><span>(</span><span>env</span><span>.</span><span>body</span><span>)</span> <span>}</span> <span>if</span> <span>env</span><span>.</span><span>body</span> <span>&amp;&amp;</span> <span>log_body?</span>
+  <span>end</span>
+
+  <span>def</span> <span>response</span><span>(</span><span>env</span><span>)</span>
+    <span>info</span><span>(</span><span>"Response"</span><span>)</span> <span>{</span> <span>log_url</span><span>(</span><span>env</span><span>.</span><span>url</span><span>)</span> <span>}</span>
+    <span>info</span><span>(</span><span>"Response"</span><span>)</span> <span>{</span> <span>log_body</span><span>(</span><span>env</span><span>.</span><span>body</span><span>)</span> <span>}</span> <span>if</span> <span>env</span><span>.</span><span>body</span> <span>&amp;&amp;</span> <span>log_body?</span>
+  <span>end</span>
+
+  <span>private</span>
+
+  <span># Re-uses existing configuration from config/initializers/filter_parameter_logging.rb  </span>
+  <span>def</span> <span>filter_parameters</span>
+    <span>@filter_parameters</span> <span>||=</span> <span>Rails</span><span>.</span><span>configuration</span><span>.</span><span>filter_parameters</span>
+  <span>end</span>
+
+  <span># Filters parameters</span>
+  <span>def</span> <span>parameter_filter</span><span>(</span><span>**</span><span>options</span><span>)</span>
+    <span>ActiveSupport</span><span>::</span><span>ParameterFilter</span><span>.</span><span>new</span><span>(</span><span>filter_parameters</span><span>,</span> <span>**</span><span>options</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>parse_json</span><span>(</span><span>json</span><span>)</span>
+    <span>JSON</span><span>.</span><span>parse</span><span>(</span><span>json</span><span>,</span> <span>object_class: </span><span>HashWithIndifferentAccess</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>log_body?</span>
+    <span>@options</span><span>[</span><span>:bodies</span><span>]</span>
+  <span>end</span>
+
+  <span>def</span> <span>log_body</span><span>(</span><span>body</span><span>)</span>
+    <span>result</span> <span>=</span> <span>walk</span><span>(</span><span>body</span><span>)</span>
+
+    <span>parameter_filter</span><span>.</span><span>filter</span><span>(</span><span>result</span><span>).</span><span>pretty_inspect</span>
+  <span>end</span>
+
+  <span>def</span> <span>log_url</span><span>(</span><span>url</span><span>)</span>
+    <span>filtered_url</span> <span>=</span> <span>filter_url</span><span>(</span><span>url</span><span>)</span>
+
+    <span>filtered_url</span><span>.</span><span>to_s</span>
+  <span>end</span>
+
+  <span>def</span> <span>filter_url</span><span>(</span><span>url</span><span>)</span>
+    <span>return</span> <span>url</span> <span>if</span> <span>url</span><span>.</span><span>query</span><span>.</span><span>nil?</span>
+
+    <span>params</span> <span>=</span> <span>URI</span><span>.</span><span>decode_www_form</span><span>(</span><span>url</span><span>.</span><span>query</span><span>).</span><span>to_h</span>
+    <span>filtered_params</span> <span>=</span> <span>parameter_filter</span><span>(</span><span>mask: </span><span>"FILTERED"</span><span>).</span><span>filter</span><span>(</span><span>params</span><span>)</span>
+    <span>url</span><span>.</span><span>query</span> <span>=</span> <span>URI</span><span>.</span><span>encode_www_form</span><span>(</span><span>filtered_params</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>walk</span><span>(</span><span>obj</span><span>)</span>
+    <span>case</span> <span>obj</span>
+    <span>when</span> <span>Hash</span>
+      <span>obj</span><span>.</span><span>transform_values</span> <span>{</span> <span>walk</span><span>(</span><span>_1</span><span>)</span> <span>}</span>
+    <span>when</span> <span>Array</span>
+      <span>obj</span><span>.</span><span>map</span> <span>{</span> <span>walk</span><span>(</span><span>_1</span><span>)</span> <span>}</span>
+    <span>when</span> <span>String</span>
+      <span>parse_json</span><span>(</span><span>obj</span><span>)</span>
+    <span>else</span>
+      <span>obj</span>
+    <span>end</span>
+  <span>rescue</span> <span>JSON</span><span>::</span><span>ParserError</span>
+    <span>obj</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div><div><pre><code><span>--- a/lib/faraday.rb
+</span><span>+++ b/lib/faraday.rb
+</span><span>-   errors: true
+</span><span>+   errors: true,
++   formatter: ApplicationFormatter
++ }
+</span><span>end
+</span></code></pre></div>
+<p>Now the <code>api_key</code> is filtered when logging both the response and the request.
+This is because we’re already filtering against partial matches on <code>_key</code>.</p>
+<div><pre><code>INFO -- Request: api_key=FILTERED
+INFO -- Response: {"args"=&gt;{"api_key"=&gt;"FILTERED"},
+ "url"=&gt;"http://httpbingo.org/get?api_key=FILTERED"}
+</code></pre></div>
+<p>We’re also no longer exposing all the sensitive attributes on <code>user</code>.</p>
+<div><pre><code>INFO -- Request: http://httpbingo.org/anything
+INFO -- Response: {"args"=&gt;{},
+ "data"=&gt;
+  {"user"=&gt;
+    {"id"=&gt;980190962,
+     "email_address"=&gt;"[FILTERED]",
+     "password_digest"=&gt;"[FILTERED]",
+     "created_at"=&gt;"2025-04-23T14:10:49.414Z",
+     "updated_at"=&gt;"2025-04-23T14:10:49.414Z",
+     "phone_number"=&gt;"[FILTERED]"}},
+ "json"=&gt;
+  {"user"=&gt;
+    {"created_at"=&gt;"2025-04-23T14:10:49.414Z",
+     "email_address"=&gt;"[FILTERED]",
+     "id"=&gt;980190962,
+     "password_digest"=&gt;"[FILTERED]",
+     "phone_number"=&gt;"[FILTERED]",
+     "updated_at"=&gt;"2025-04-23T14:10:49.414Z"}}}
+</code></pre></div><h2 id="creating-an-allow-list">
+  <a href="https://thoughtbot.com/blog/parameter-filtering#creating-an-allow-list">
+    Creating an allow list
+  </a>
+</h2>
+
+<p>Let’s imagine we add a <code>name</code> column to the <code>users</code> table. Depending on the
+application, this could be considered sensitive information, but may not warrant
+encryption. </p>
+
+<p>In this case, you’d need to remember to update
+<code>config/initializers/filter_parameter_logging.rb</code>. In my experience, this is
+almost always forgotten. Instead, what we want is an <a href="https://github.com/rails/rails/pull/45545">allow list</a>.</p>
+
+<p>The idea is that you’d filter everything except timestamps and IDs.</p>
+<div><pre><code><span># config/initializers/filter_parameter_logging.rb</span>
+
+<span>Rails</span><span>.</span><span>application</span><span>.</span><span>config</span><span>.</span><span>filter_parameters</span> <span>+=</span> <span>[</span>
+  <span>lambda</span> <span>{</span> <span>|</span><span>k</span><span>,</span> <span>v</span><span>|</span> <span>v</span><span>.</span><span>replace</span><span>(</span><span>"[FILTERED]"</span><span>)</span> <span>unless</span> <span>k</span><span>.</span><span>match?</span><span>(</span><span>/\A(id|.*_id|.*_at|.*_on)\z/</span><span>)</span> <span>}</span>
+<span>]</span>
+</code></pre></div>
+<p>This can be confirmed when inspecting a <code>user</code>. Note how the <code>name</code> is also
+filtered.</p>
+<div><pre><code><span>#&lt;User:0x00000001306db560</span>
+ <span>id: </span><span>980190962</span><span>,</span>
+ <span>email_address: </span><span>[</span><span>FILTERED</span><span>],</span>
+ <span>password_digest: </span><span>[</span><span>FILTERED</span><span>],</span>
+ <span>created_at: </span><span>"2025-04-23 14:10:49.414784000 +0000"</span><span>,</span>
+ <span>updated_at: </span><span>"2025-06-06 11:45:52.243742000 +0000"</span><span>,</span>
+ <span>phone_number: </span><span>"[FILTERED]"</span><span>,</span>
+ <span>name: </span><span>[</span><span>FILTERED</span><span>]</span><span>&gt;</span>
+</code></pre></div>
+<p>However, this approach might be a little too aggressive, since it filters
+<strong>everything</strong>. Notice how the <code>commit</code> parameter is now filtered from our requests.</p>
+<div><pre><code>Parameters: {"authenticity_token"=&gt;"[FILTERED]", "user"=&gt;{"email_address"=&gt;"[FILTERED]", "phone_number"=&gt;"[FILTERED]", "password_digest"=&gt;"[FILTERED]"}, "commit"=&gt;"[FILTERED]"}
+</code></pre></div>
+<p>This change also affects our Faraday logging.</p>
+
+<p>Now the entire <code>url</code> is filtered, instead of just the <code>api_key</code> parameter.</p>
+<div><pre><code>INFO -- Request: api_key=%5BFILTERED%5D
+INFO -- Response: {"args"=&gt;{"api_key"=&gt;["[FILTERED]"]},
+ "url"=&gt;"[FILTERED]"}
+</code></pre></div>
+<p>And the entire <code>data</code> hash is filtered, instead of just the relevant attributes.</p>
+<div><pre><code>INFO -- Request: http://httpbingo.org/anything
+INFO -- Response: {"args"=&gt;{},
+ "data"=&gt;"[FILTERED]",
+ "json"=&gt;
+  {"user"=&gt;
+    {"created_at"=&gt;"2025-04-23T14:10:49.414Z",
+     "email_address"=&gt;"[FILTERED]",
+     "id"=&gt;980190962,
+     "name"=&gt;"[FILTERED]",
+     "password_digest"=&gt;"[FILTERED]",
+     "phone_number"=&gt;"[FILTERED]",
+     "updated_at"=&gt;"2025-06-06T11:45:52.243Z"}}}
+</code></pre></div>
+<p>Depending on your team’s security requirements, this might be desirable, but
+it can create a poor debugging experience.</p>
+<h2 id="wrapping-up">
+  <a href="https://thoughtbot.com/blog/parameter-filtering#wrapping-up">
+    Wrapping Up
+  </a>
+</h2>
+
+<p>The Rails defaults are a good foundation, and will serve you well. If you need
+to store sensitive information, make sure to encrypt it. This not only filters
+it from logs, but also keeps the data secure in the database.</p>
+
+<p>All that aside, it’s still <strong>your</strong> responsibility to filter sensitive information
+from logs when using external APIs, services, and tools.</p>
+
+<p>Finally, using an Allow List might be a better option for applications that need
+to adhere to strict compliance measures, such as Healthcare.</p>
+
+
+
+    </div></div>
+  </div>
+</body>
+</html>

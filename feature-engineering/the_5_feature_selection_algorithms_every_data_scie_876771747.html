@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The 5 Feature Selection Algorithms every Data Scientist should know</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The 5 Feature Selection Algorithms every Data Scientist should know</h1>
+    <p><strong>URL:</strong> <a href="https://mlwhiz.com/blog/2019/08/07/feature_selection">https://mlwhiz.com/blog/2019/08/07/feature_selection</a></p>
+    <p><strong>Tags:</strong> feature-engineering</p>
+    <p><strong>Bookmark ID:</strong> 876771747</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Data Science is the study of algorithms.</p><p>I grapple through with many algorithms on a day to day basis, so I thought of listing some of the most common and most used algorithms one will end up using in this new
+<a href="https://towardsdatascience.com/tagged/ds-algorithms" target="_blank" rel="nofollow noopener">DS Algorithm series</a>
+.</p><p>How many times it has happened when you create a lot of features and then you need to come up with ways to reduce the number of features.</p><p>We sometimes end up using correlation or tree-based methods to find out the important features.</p><p>Can we add some structure to it?</p><p><em><strong>This post is about some of the most common feature selection techniques one can use while working with data.</strong></em></p><hr><h2 id="why-feature-selection">Why Feature Selection?</h2><p>Before we proceed, we need to answer this question. Why don’t we give all the features to the ML algorithm and let it decide which feature is important?</p><p>So there are three reasons why we don’t:</p><h3 id="1-curse-of-dimensionality--overfitting">1. Curse of dimensionality — Overfitting</h3><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>If we have more columns in the data than the number of rows, we will be able to fit our training data perfectly, but that won’t generalize to the new samples. And thus we learn absolutely nothing.</p><h3 id="2-occams-razor">2. Occam’s Razor:</h3><p>We want our <em><strong>models to be simple</strong></em> and explainable. We lose explainability when we have a lot of features.</p><h3 id="3-garbage-in-garbage-out">3. Garbage In Garbage out:</h3><p>Most of the times, we will have many non-informative features. For Example, Name or ID variables. <em><strong>Poor-quality input will produce Poor-Quality output.</strong></em></p><p>Also, a large number of features make a model bulky, time-taking, and harder to implement in production.</p><hr><h2 id="so-what-do-we-do">So What do we do?</h2><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>We select only useful features.</p><p>Fortunately, Scikit-learn has made it pretty much easy for us to make the feature selection. There are a lot of ways in which we can think of feature selection, but most feature selection methods can be divided into three major buckets</p><ul><li><p><em><strong>Filter based:</strong></em> We specify some metric and based on that filter features. An example of such a metric could be correlation/chi-square.</p></li><li><p><em><strong>Wrapper-based:</strong></em> Wrapper methods consider the selection of a set of features as a search problem. Example: Recursive Feature Elimination</p></li><li><p><em><strong>Embedded:</strong></em> Embedded methods use algorithms that have built-in feature selection methods. For instance, Lasso and RF have their own feature selection methods.</p></li></ul><p>So enough of theory let us start with our five feature selection methods.</p><p>We will try to do this using a dataset to understand it better.</p><p>I am going to be using a football player dataset to find out <em><strong>what makes a good player great?</strong></em></p><p><em><strong>Don’t worry if you don’t understand football terminologies. I will try to keep it at a minimum.</strong></em></p><p>Here is the Kaggle
+<a href="https://www.kaggle.com/mlwhiz/feature-selection-using-football-data" target="_blank" rel="nofollow noopener">Kernel</a>
+with the code to try out yourself.</p><hr><h2 id="some-simple-data-preprocessing">Some Simple Data Preprocessing</h2><p>We have done some basic preprocessing such as removing Nulls and one hot encoding. And converting the problem to a classification problem using:</p><pre><code>y = traindf['Overall']&gt;=87
+</code></pre><p>Here we use High Overall as a proxy for a great player.</p><p>Our dataset(X) looks like below and has 223 columns.</p><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w, data:application/octet-stream;base64, 1500w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><hr><h2 id="1-pearson-correlation">1. Pearson Correlation</h2><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>This is a filter-based method.</p><p>We check the <em><strong>absolute value of the Pearson’s correlation</strong></em> between the target and numerical features in our dataset. We keep the top n features based on this criterion.</p><div><pre><code data-lang="py"><span>def</span> <span>cor_selector</span>(X, y,num_feats):
+    cor_list = []
+    feature_name = X.columns.tolist()
+    <span># calculate the correlation with y for each feature</span>
+    <span>for</span> i <span>in</span> X.columns.tolist():
+        cor = np.corrcoef(X[i], y)[<span>0</span>, <span>1</span>]
+        cor_list.append(cor)
+    <span># replace NaN with 0</span>
+    cor_list = [<span>0</span> <span>if</span> np.isnan(i) <span>else</span> i <span>for</span> i <span>in</span> cor_list]
+    <span># feature name</span>
+    cor_feature = X.iloc[:,np.argsort(np.abs(cor_list))[-num_feats:]].columns.tolist()
+    <span># feature selection? 0 for not select, 1 for select</span>
+    cor_support = [True <span>if</span> i <span>in</span> cor_feature <span>else</span> False <span>for</span> i <span>in</span> feature_name]
+    <span>return</span> cor_support, cor_feature
+cor_support, cor_feature = cor_selector(X, y,num_feats)
+<span>print</span>(<span>str</span>(<span>len</span>(cor_feature)), <span>'selected features'</span>)
+</code></pre></div><hr><h2 id="2-chi-squared">2. Chi-Squared</h2><p>This is another filter-based method.</p><p>In this method, we calculate the chi-square metric between the target and the numerical variable and only select the variable with the maximum chi-squared values.</p><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>Let us create a small example of how we calculate the chi-squared statistic for a sample.</p><p>So let’s say we have 75 Right-Forwards in our dataset and 25 Non-Right-Forwards. We observe that 40 of the Right-Forwards are good, and 35 are not good. Does this signify that the player being right forward affects the overall performance?</p><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w, data:application/octet-stream;base64, 1500w" src="data:application/octet-stream;base64," alt="Observed and Expected Counts"></p><p>We calculate the chi-squared value:</p><p>To do this, we first find out the values we would expect to be falling in each bucket if there was indeed independence between the two categorical variables.</p><p>This is simple. We multiply the row sum and the column sum for each cell and divide it by total observations.</p><p>so Good and NotRightforward Bucket Expected value= 25(Row Sum)*60(Column Sum)/100(Total Observations)</p><p>Why is this expected? Since there are 25% notRightforwards in the data, we would expect 25% of the 60 good players we observed in that cell. Thus 15 players.</p><p>Then we could just use the below formula to sum over all the 4 cells:</p><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>I won’t show it here, but the chi-squared statistic also works in a hand-wavy way with non-negative numerical and categorical features.</p><p>We can get chi-squared features from our dataset as:</p><div><pre><code data-lang="py"><span>from</span> <span>sklearn.feature_selection</span> <span>import</span> SelectKBest
+<span>from</span> <span>sklearn.feature_selection</span> <span>import</span> chi2
+<span>from</span> <span>sklearn.preprocessing</span> <span>import</span> MinMaxScaler
+X_norm = MinMaxScaler().fit_transform(X)
+chi_selector = SelectKBest(chi2, k=num_feats)
+chi_selector.fit(X_norm, y)
+chi_support = chi_selector.get_support()
+chi_feature = X.loc[:,chi_support].columns.tolist()
+<span>print</span>(<span>str</span>(<span>len</span>(chi_feature)), <span>'selected features'</span>)
+</code></pre></div><hr><h2 id="3-recursive-feature-elimination">3. Recursive Feature Elimination</h2><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w, data:application/octet-stream;base64, 800w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>This is a wrapper based method. As I said before, wrapper methods consider the selection of a set of features as a search problem.</p><p>From sklearn Documentation:</p><blockquote><p>The goal of recursive feature elimination (RFE) is to select features by <strong>recursively considering smaller and smaller sets of features.</strong> First, the estimator is trained on the initial set of features and the importance of each feature is obtained either through a <code>coef_</code> attribute or through a <code>feature_importances_</code> attribute. Then, the least important features are pruned from current set of features. That procedure is recursively repeated on the pruned set until the desired number of features to select is eventually reached.</p></blockquote><p>As you would have guessed, we could use any estimator with the method. In this case, we use <code>LogisticRegression</code>, and the RFE observes the <code>coef_</code> attribute of the <code>LogisticRegression</code> object</p><div><pre><code data-lang="py"><span>from</span> <span>sklearn.feature_selection</span> <span>import</span> RFE
+<span>from</span> <span>sklearn.linear_model</span> <span>import</span> LogisticRegression
+rfe_selector = RFE(estimator=LogisticRegression(), n_features_to_select=num_feats, step=<span>10</span>, verbose=<span>5</span>)
+rfe_selector.fit(X_norm, y)
+rfe_support = rfe_selector.get_support()
+rfe_feature = X.loc[:,rfe_support].columns.tolist()
+<span>print</span>(<span>str</span>(<span>len</span>(rfe_feature)), <span>'selected features'</span>)
+</code></pre></div><hr><h2 id="4-lasso-selectfrommodel">4. Lasso: SelectFromModel</h2><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>This is an Embedded method. As said before, Embedded methods use algorithms that have built-in feature selection methods.</p><p>For example, Lasso and RF have their own feature selection methods. Lasso Regularizer forces a lot of feature weights to be zero.</p><p>Here we use Lasso to select variables.</p><div><pre><code data-lang="py"><span>from</span> <span>sklearn.feature_selection</span> <span>import</span> SelectFromModel
+<span>from</span> <span>sklearn.linear_model</span> <span>import</span> LogisticRegression
+
+embeded_lr_selector = SelectFromModel(LogisticRegression(penalty=<span>"l1"</span>), max_features=num_feats)
+embeded_lr_selector.fit(X_norm, y)
+
+embeded_lr_support = embeded_lr_selector.get_support()
+embeded_lr_feature = X.loc[:,embeded_lr_support].columns.tolist()
+<span>print</span>(<span>str</span>(<span>len</span>(embeded_lr_feature)), <span>'selected features'</span>)
+</code></pre></div><hr><h2 id="5-tree-based-selectfrommodel">5. Tree-based: SelectFromModel</h2><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>This is an Embedded method. As said before, Embedded methods use algorithms that have built-in feature selection methods.</p><p>We can also use RandomForest to select features based on feature importance.</p><p>We calculate feature importance using node impurities in each decision tree. In Random forest, the final feature importance is the average of all decision tree feature importance.</p><div><pre><code data-lang="py"><span>from</span> <span>sklearn.feature_selection</span> <span>import</span> SelectFromModel
+<span>from</span> <span>sklearn.ensemble</span> <span>import</span> RandomForestClassifier
+
+embeded_rf_selector = SelectFromModel(RandomForestClassifier(n_estimators=<span>100</span>), max_features=num_feats)
+embeded_rf_selector.fit(X, y)
+
+embeded_rf_support = embeded_rf_selector.get_support()
+embeded_rf_feature = X.loc[:,embeded_rf_support].columns.tolist()
+<span>print</span>(<span>str</span>(<span>len</span>(embeded_rf_feature)), <span>'selected features'</span>)
+</code></pre></div><p>We could also have used a LightGBM. Or an XGBoost object as long it has a <code>feature_importances_</code> attribute.</p><div><pre><code data-lang="py"><span>from</span> <span>sklearn.feature_selection</span> <span>import</span> SelectFromModel
+<span>from</span> <span>lightgbm</span> <span>import</span> LGBMClassifier
+
+lgbc=LGBMClassifier(n_estimators=<span>500</span>, learning_rate=<span>0.05</span>, num_leaves=<span>32</span>, colsample_bytree=<span>0.2</span>,
+            reg_alpha=<span>3</span>, reg_lambda=<span>1</span>, min_split_gain=<span>0.01</span>, min_child_weight=<span>40</span>)
+
+embeded_lgb_selector = SelectFromModel(lgbc, max_features=num_feats)
+embeded_lgb_selector.fit(X, y)
+
+embeded_lgb_support = embeded_lgb_selector.get_support()
+embeded_lgb_feature = X.loc[:,embeded_lgb_support].columns.tolist()
+<span>print</span>(<span>str</span>(<span>len</span>(embeded_lgb_feature)), <span>'selected features'</span>)
+</code></pre></div><hr><h2 id="bonus">Bonus</h2><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p><em><strong>Why use one, when we can have all?</strong></em></p><p>The answer is sometimes it won’t be possible with a lot of data and time crunch.</p><p>But whenever possible, why not do this?</p><div><pre><code data-lang="py"><span># put all selection together</span>
+feature_selection_df = pd.DataFrame({<span>'Feature'</span>:feature_name, <span>'Pearson'</span>:cor_support, <span>'Chi-2'</span>:chi_support, <span>'RFE'</span>:rfe_support, <span>'Logistics'</span>:embeded_lr_support,
+                                    <span>'Random Forest'</span>:embeded_rf_support, <span>'LightGBM'</span>:embeded_lgb_support})
+<span># count the selected times for each feature</span>
+feature_selection_df[<span>'Total'</span>] = np.sum(feature_selection_df, axis=<span>1</span>)
+<span># display the top 100</span>
+feature_selection_df = feature_selection_df.sort_values([<span>'Total'</span>,<span>'Feature'</span>] , ascending=False)
+feature_selection_df.index = <span>range</span>(<span>1</span>, <span>len</span>(feature_selection_df)+<span>1</span>)
+</code></pre></div><p><img sizes="(min-width: 35em) 1200px, 100vw" srcset="data:application/octet-stream;base64, 500w, data:application/octet-stream;base64, 800w" src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>We check if we get a feature based on all the methods. In this case, as we can see Reactions and LongPassing are excellent attributes to have in a high rated player. And as expected Ballcontrol and Finishing occupy the top spot too.</p><hr><h2 id="conclusion">Conclusion</h2><p><a href="https://towardsdatascience.com/the-hitchhikers-guide-to-feature-extraction-b4c157e96631" target="_blank" rel="nofollow noopener">Feature engineering</a>
+and feature selection are critical parts of any machine learning pipeline.</p><p>We strive for accuracy in our models, and one cannot get to a good accuracy without revisiting these pieces again and again.</p><p>In this article, I tried to explain some of the most used feature selection techniques as well as my workflow when it comes to feature selection.</p><p>I also tried to provide some intuition into these methods, but you should probably try to see more into it and try to incorporate these methods into your work.</p><p>Do read my
+<a href="https://towardsdatascience.com/the-hitchhikers-guide-to-feature-extraction-b4c157e96631" target="_blank" rel="nofollow noopener">post on feature engineering</a>
+too if you are interested.</p><hr><p>If you want to learn more about Data Science, I would like to call out this
+<a href="https://coursera.pxf.io/NKERRq" target="_blank" rel="nofollow noopener">&lt;strong&gt;excellent course&lt;/strong&gt;</a>
+by Andrew Ng. This was the one that got me started. Do check it out.</p><hr><p>Thanks for the read. I am going to be writing more beginner-friendly posts in the future too. Follow me up at
+<a href="https://mlwhiz.medium.com/?source=post_page---------------------------" target="_blank" rel="nofollow noopener">&lt;strong&gt;Medium&lt;/strong&gt;</a>
+or Subscribe to my
+<a href="https://mlwhiz.ck.page/a9b8bda70c" target="_blank" rel="nofollow noopener">&lt;strong&gt;blog&lt;/strong&gt;</a>
+.</p><p><a href="https://coursera.pxf.io/coursera" rel="nofollow"><img alt="Start your future with a Data Analysis Certificate." src="data:application/octet-stream;base64,"></a></p><p><a href="https://disqus.com/">comments powered by </a></p></div></div>
+  </div>
+</body>
+</html>

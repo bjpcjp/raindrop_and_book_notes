@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A review of consensus protocols</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A review of consensus protocols</h1>
+    <p><strong>URL:</strong> <a href="https://thomasvilhena.com/2020/10/a-review-of-consensus-protocols">https://thomasvilhena.com/2020/10/a-review-of-consensus-protocols</a></p>
+    <p><strong>Tags:</strong> machine-learning, consensus</p>
+    <p><strong>Bookmark ID:</strong> 876776257</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+            <p>The consensus problem is a fundamental problem in multi-agent systems which requires a group of processes (or agents) to reliably and timely agree on a single data value. Although extensively discussed in the context of distributed computing it’s not exclusive to this field, also being present in our society in a variety of situations such as in democratic elections, the legislative process, jury trial proceedings, and so forth.</p>
+
+<p>It’s solved through the employment of a consensus protocol governing how processes (agents) interact with one another. It may seem redundant but, to solve the consensus problem, first all processes agree to follow the same consensus protocol.</p>
+
+<p>Some of these processes may fail or be unreliable in other ways (such as in a conflict of interest situation) so consensus protocols must be fault tolerant or resilient. The processes must somehow propose their candidate values, communicate with one another, and decide on a single consensus value.</p>
+
+<p>In this post I review four major consensus protocols for solving the consensus problem based on my implementation of them, namely:</p>
+
+<ol>
+  <li>Chandra–Toueg</li>
+  <li>Ben-Or</li>
+  <li>Basic Paxos</li>
+  <li>Nakamoto Consensus</li>
+</ol>
+
+<p>You can find supporting code for this analysis in this GitHub repository: <a href="https://github.com/TCGV/ConsensusKit">ConsensusKit</a></p>
+
+<p>Before getting started let’s recap the three key properties of consensus protocols and take a quick look at relevant terminology for this discussion.</p>
+
+<h2 id="properties-of-a-consensus-protocol">Properties of a consensus protocol</h2>
+
+<p>Formally a consensus protocol must satisfy the following three properties:</p>
+
+<p><b>Termination</b></p>
+
+<ul>
+  <li>Eventually, every correct process decides some value.</li>
+</ul>
+
+<p><b>Integrity</b></p>
+
+<ul>
+  <li>If all the correct processes proposed the same value “v”, then any correct process must decide “v”.</li>
+</ul>
+
+<p><b>Agreement</b></p>
+
+<ul>
+  <li>Every correct process must agree on the same value.</li>
+</ul>
+
+<p>These requirements are rather straight forward. “Termination” certifies the protocol is resilient to halting failures. “Agreement” deters any two correct processes from deciding on different values which would break consensus. Lastly “Integrity”, which is in fact flexible and may vary depending on application requirements, assures the protocol behaves in an expected and unbiased way.</p>
+
+<h2 id="terminology">Terminology</h2>
+
+<p>These terms are used throughout this post as well within the provided support source code.</p>
+
+<h4>Protocol</h4>
+
+<p>The official set of rules (“algorithm”) governing the behavior of processes for solving the consensus problem.</p>
+
+<h4>Process</h4>
+
+<p>An individual agent belonging to a larger group of agents collectively interested in reaching consensus. Processes can be “correct”, meaning they strictly adhere to the protocol and are not subject to failures, or “faulty”, meaning we cannot rely on them following the protocol at all times.</p>
+
+<h4>Instance</h4>
+
+<p>A well-defined round of interactions among processes under a consensus protocol. Depending on the underlying protocol one or multiple intances are required for reaching consensus.</p>
+
+<h4>Proposer</h4>
+
+<p>A process role. Processes under this role are entitled for proposing values. Any value agreed upon by all correct processes must have originated in a proposer.</p>
+
+<h4>Decider</h4>
+
+<p>A process role. Processes under this role are entitled for deciding on a value. Any value agreed upon by all correct processes must have been voted by at least one decider.</p>
+
+<h4>Archiver</h4>
+
+<p>An application or a subsystem that is responsible for persisting decided values and implementing a protocol’s specific data constraints.</p>
+
+<h4>Failure detector</h4>
+
+<p>An application or a subsystem that is responsible for the detection of node failures or crashes.</p>
+
+<h4>Majority</h4>
+
+<p>A protocol’s specific threshold requiring at least half of available votes, more when faulty processes are taken into account.</p>
+
+<h4>Quorum</h4>
+
+<p>A protocol’s specific threshold which ensures that a minimum number of participants (or votes) is met for taking an action.</p>
+
+<p>With these definitions in place let’s move on to the implementation and review of each consensus protocol.</p>
+
+<h2 id="protocol-structure">Protocol structure</h2>
+
+<p>My main goal has been to implement these four protocols in code to be able to run and evaluate them in a controlled environment. I was also interested in trying to spot structural similarities among them that could be extracted into a common base structure, promoting code reuse.</p>
+
+<p>The result of my first coding iteration is displayed in the simplified class diagram below:</p>
+
+<p>
+  <img src="data:application/octet-stream;base64," alt="Main Clasees">
+</p>
+
+<p>Three main classes are depicted in the diagram:</p>
+
+<ul>
+  <li>The <b>Procotol</b> class has a collection of processes that will interact among each other according to the protocol rules for reaching consensus. Each execution of the protocol, through the <code>Execute</code> method, creates a new Instance (not to be confused with the conventional meaning of “instance” in object oriented programming).</li>
+  <li>The <b>Instance</b> class represents one round of interactions among processes potentially resulting in a consensus, as indicated by the <code>Consensus</code> and <code>Value</code> properties. It’s responsible for managing the interaction between processes exercicing proposer and/or decider roles, providing methods for message delivery (<code>Send</code>) and retrieval (<code>WaitMessage</code> and <code>WaitQuorum</code>).</li>
+  <li>The <b>Process</b> class is responsible for implementing proposer and/or decider roles. Behavior is defined in the <code>Bind</code> method just before the instance starts since, as well see, some protocols require processes to play different roles according the the current instance.</li>
+</ul>
+
+<p>The <code>Process.Propose</code> virtual method is called at the start of an instance execution for all proposer processes in that instance to kick off communication and has the following default implementation:</p>
+
+<div><pre><code>
+<span>protected</span> <span>virtual</span> <span>void</span> <span>Propose</span><span>(</span><span>Instance</span> <span>r</span><span>)</span>
+<span>{</span>
+    <span>var</span> <span>v</span> <span>=</span> <span>Proposer</span><span>.</span><span>GetProposal</span><span>();</span>
+    <span>if</span> <span>(</span><span>Archiver</span><span>.</span><span>CanCommit</span><span>(</span><span>v</span><span>))</span>
+        <span>Broadcast</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Propose</span><span>,</span> <span>v</span><span>);</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>It first generates a proposal based on the underlying proposer logic (ex: random boolean proposer), then verifies against an archiver if the generated value passes custom application requirements and finally broadcasts it to all sibling processes.</p>
+
+<p>Processes that bind to the <code>Instance.WaitQuorum</code> event will wait for the protocol specific amount of messages (for each message type) required for taking an action. The specific amounts are defined in each protocol implementation when deriving the Instance class.</p>
+
+<p>All four consensus protocols were implemented using this base structure, as presented in the following sections. Rather than performing an extensive code analysis I will focus on presenting each theoretical algorithm and key points of my implementation.</p>
+
+<h2 id="1-chandratoueg">1) Chandra–Toueg</h2>
+
+<p>The Chandra–Toueg consensus algorithm was first published by Tushar Deepak Chandra and Sam Toueg in 1996 and introduced the concept of failure detectors as means for solving the consensus problem. The algorithm assumes a number of faulty processes denoted by <b>f</b> that’s less than <b>n/2</b> (i.e. less than simple majority).</p>
+
+<p>In each instance one process acts as the decider (rotating coordinator) and all other processes act as proposers. The actions carried out in each instance are<sup>1</sup>:</p>
+
+<ol>
+  <li>All processes send (r, preference, timestamp) to the coordinator.</li>
+  <li>The coordinator waits to receive messages from at least half of the processes (including itself).
+    <ol>
+      <li>It then chooses as its preference a value with the most recent timestamp among those sent.</li>
+    </ol>
+  </li>
+  <li>The coordinator sends (r, preference) to all processes.</li>
+  <li>Each process waits (1) to receive (r, preference) from the coordinator, or (2) for its failure detector to identify the coordinator as crashed.
+    <ol>
+      <li>In the first case, it sets its own preference to the coordinator’s preference and responds with ack(r).</li>
+      <li>In the second case, it sends nack(r) to the coordinator.</li>
+    </ol>
+  </li>
+  <li>The coordinator waits to receive ack(r) or nack(r) from a majority of processes.
+    <ol>
+      <li>If it receives ack(r) from a majority, it sends decide(preference) to all processes.</li>
+    </ol>
+  </li>
+  <li>Any process that receives decide(preference) for the first time relays decide(preference) to all processes, then decides preference and terminates.</li>
+</ol>
+
+<p>Let’s take a look at the code. The following code snippet defines the proposer process behavior:</p>
+
+<div><pre><code>
+<span>private</span> <span>void</span> <span>BindAsProposer</span><span>(</span><span>Instance</span> <span>r</span><span>)</span>
+<span>{</span>
+    <span>WaitQuorum</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Select</span><span>,</span> <span>msgs</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>m</span> <span>=</span> <span>msgs</span><span>.</span><span>Single</span><span>();</span>
+        <span>SendTo</span><span>(</span><span>m</span><span>.</span><span>Source</span><span>,</span> <span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Ack</span><span>,</span> <span>m</span><span>.</span><span>Value</span><span>);</span>
+    <span>});</span>
+
+    <span>WaitQuorum</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Decide</span><span>,</span> <span>msgs</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>v</span> <span>=</span> <span>msgs</span><span>.</span><span>Single</span><span>().</span><span>Value</span><span>;</span>
+        <span>Terminate</span><span>(</span><span>r</span><span>,</span> <span>v</span><span>);</span>
+    <span>});</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>On instance start proposers broadcast their values. Then they wait for a quorum to select a value from the pool of proposals. Since the protocol defines only a single decider per round this quorum is met when the decider process broadcasts his selection. Upon receiving this selection the proposer node will acknowledge it and wait for the decider’s decision, and then decide on the same value and terminate execution.</p>
+
+<p>Now let’s see the code defining the complementary decider processes behavior:</p>
+
+<div><pre><code>
+<span>private</span> <span>void</span> <span>BindAsCoordinator</span><span>(</span><span>Instance</span> <span>r</span><span>)</span>
+<span>{</span>
+    <span>WaitQuorum</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Propose</span><span>,</span> <span>msgs</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>v</span> <span>=</span> <span>PickMostRecentValue</span><span>(</span>
+            <span>msgs</span><span>.</span><span>Where</span><span>(</span><span>m</span> <span>=&gt;</span> <span>Archiver</span><span>.</span><span>CanCommit</span><span>(</span><span>m</span><span>.</span><span>Value</span><span>))</span>
+        <span>);</span>
+
+        <span>Broadcast</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Select</span><span>,</span> <span>v</span><span>);</span>
+    <span>});</span>
+
+    <span>WaitQuorum</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Ack</span><span>,</span> <span>msgs</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>v</span> <span>=</span> <span>PickMostRecentValue</span><span>(</span><span>msgs</span><span>);</span>
+        <span>Broadcast</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Decide</span><span>,</span> <span>v</span><span>);</span>
+        <span>Terminate</span><span>(</span><span>r</span><span>,</span> <span>v</span><span>);</span>
+    <span>});</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>It first waits for a quorum of proposals, i.e, for a simple majority of proposers to submit their values. Then the decider picks the most recent message value, possibly validating the value with the archiver, and broadcasts the selected value back to all processes.</p>
+
+<p>After broadcasting the selected value the decider waits for a quorum of proposers to acknowledge it, in which case it decides on that value and broadcasts its decision to all processes before terminating.</p>
+
+<p>Notice that this simplified implementation doesn’t take failures into account, even though the Chandra–Toueg protocol is fault-resilient.</p>
+
+<h2 id="2-ben-or">2) Ben-Or</h2>
+
+<p>Ben-Or is a decentralized consensus protocol, i.e., it doesn’t assign the decider role to any specific process. Curiously the algorithm correctness proof was only provided in a paper 15 years after its original publication<sup>2</sup>.</p>
+
+<p>Because it lacks a decider for solving tie-break situations, Ben-Or is only capable of handling binary value consensus (“true” or “false”), rather than arbitrary value consensus. Even then, it employs randomization for converging to consensus.</p>
+
+<p>The algorithm works in phases within instances and is resilient up to <b>f</b> crashing processes among a total of <b>n</b> processes given that <b>n &gt; 2f</b>. Here are the actions performed by every process in an instance:</p>
+
+<ol>
+  <li>Assign the process initial preference value <b>x</b> (0 or 1)</li>
+  <li>Assing the phase number <b>k</b> to zero</li>
+  <li>Loop:
+    <ol>
+      <li>Increment the current phase number <b>k</b></li>
+      <li>Send (R, x, k) to all processes</li>
+      <li>Wait for messages of the form (R, k, *) from <b>n − f</b> processes (“∗” can be 0 or 1)
+        <ul>
+          <li>If received more than <b>n/2</b> (R, k, v) with the same <b>v</b> Then
+            <ul>
+              <li>Send (P, k, v) to all processes</li>
+            </ul>
+          </li>
+          <li>Else
+            <ul>
+              <li>Send (P, k, ?) to all processes</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Wait for messages of the form (P, k, ∗) from <b>n − f</b> processes (“∗” can be 0, 1 or ?)
+        <ul>
+          <li>If received at least <b>f + 1</b> (P, k, v) with the same <b>v ≠ ?</b> Then
+            <ul>
+              <li>Decide(v) and terminate execution</li>
+            </ul>
+          </li>
+          <li>Else if at least one (P, k, v) with <b>v ≠ ?</b> Then
+            <ul>
+              <li>Set <b>x</b> to <b>v</b></li>
+            </ul>
+          </li>
+          <li>Else
+            <ul>
+              <li>Set <b>x</b> to 0 or 1 randomly</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<p>It’s essentially a loop that ends when the process is able to decide on a value, otherwise it keeps going on, where each loop iteration  is a new phase consisting of two asynchronous rounds.</p>
+
+<p>In the algorithm, every message contains a tag (R or P), a phase number, and a value which is either 0 or 1 (for messages tagged P, it could also be “?”). Messages tagged “R” are called reports and those tagged with “P” are called proposals.</p>
+
+<p>This protocol was the easiest to implement, but don’t fool yourself, in reality it’s behavior is not trivial to analyze, and that’s why it took so long for the correctness proof the come along. Below is my implementation of the Ben-Or process behavior:</p>
+
+<div><pre><code>
+<span>public</span> <span>override</span> <span>void</span> <span>Bind</span><span>(</span><span>Instance</span> <span>r</span><span>)</span>
+<span>{</span>
+    <span>WaitQuorum</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Propose</span><span>,</span> <span>msgs</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>x</span> <span>=</span> <span>PickMostFrequentValue</span><span>(</span>
+            <span>msgs</span><span>.</span><span>Where</span><span>(</span><span>m</span> <span>=&gt;</span> <span>Archiver</span><span>.</span><span>CanCommit</span><span>(</span><span>m</span><span>.</span><span>Value</span><span>))</span>
+        <span>);</span>
+
+        <span>var</span> <span>v</span> <span>=</span> <span>x</span><span>.</span><span>Count</span> <span>&gt;</span> <span>r</span><span>.</span><span>Proposers</span><span>.</span><span>Count</span> <span>/</span> <span>2</span> <span>?</span> <span>x</span><span>.</span><span>Value</span> <span>:</span> <span>null</span><span>;</span>
+
+        <span>Broadcast</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Select</span><span>,</span> <span>v</span><span>);</span>
+    <span>});</span>
+
+    <span>WaitQuorum</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Select</span><span>,</span> <span>msgs</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>x</span> <span>=</span> <span>PickMostFrequentValue</span><span>(</span><span>msgs</span><span>.</span><span>Where</span><span>(</span><span>m</span> <span>=&gt;</span> <span>m</span><span>.</span><span>Value</span> <span>!=</span> <span>null</span><span>));</span>
+
+        <span>if</span> <span>(</span><span>x</span><span>.</span><span>Count</span> <span>&gt;=</span> <span>f</span> <span>+</span> <span>1</span><span>)</span>
+        <span>{</span>
+            <span>Terminate</span><span>(</span><span>r</span><span>,</span> <span>x</span><span>.</span><span>Value</span><span>);</span>
+            <span>Proposer</span><span>.</span><span>Reset</span><span>();</span>
+        <span>}</span>
+        <span>else</span>
+        <span>{</span>
+            <span>if</span> <span>(</span><span>x</span><span>.</span><span>Count</span> <span>&gt;</span> <span>0</span><span>)</span>
+                <span>Proposer</span><span>.</span><span>Set</span><span>(</span><span>x</span><span>.</span><span>Value</span><span>);</span>
+            <span>else</span>
+                <span>Proposer</span><span>.</span><span>Reset</span><span>();</span>
+        <span>}</span>
+    <span>});</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>I have replaced the “R” tag by the <code>MessageType.Propose</code> enum value and the “P” tag by the <code>MessageType.Select</code> for being more consistent with other protocol implementations within the repository. Aside from that it’s pretty much a copy of the algorithm described earlier, with the actual loop implemented in an event based manner, i.e., as a result of cyclic message passing between processes.</p>
+
+<h2 id="3-basic-paxos">3) Basic Paxos</h2>
+
+<p>So I just learned that the Paxos family of protocols is as old as I am, being first submitted in 1989 (my year of birth) by Leslie Lamport. It’s name is derived after a fictional legislative consensus system used on the Paxos island in Greece, where Lamport wrote that the parliament had to function “even though legislators continually wandered in and out of the parliamentary Chamber”.</p>
+
+<p>Paxos was by far the toughest one to reason about and implement in code. In it processes are classified as proposers, accepters, and learners (a single process may have all three roles). The idea is that a proposer attempts to ratify a proposed decision value (from an arbitrary input set) by collecting acceptances from a majority of the accepters, and this ratification is observed by the learners. Agreement is enforced by guaranteeing that only one proposal can get the votes of a majority of accepters, and validity follows from only allowing input values to be proposed<sup>3</sup>.</p>
+
+<p>The basic Paxos algorithm is briefly presented below:</p>
+
+<ol>
+  <li>The proposer sends a message prepare(n) to all accepters. (Sending to only a majority of the accepters is enough, assuming they will all respond.)</li>
+  <li>Each accepter compares <b>n</b> to the highest-numbered proposal for which it has responded to a prepare message. If <b>n</b> is greater, it responds with ack(n, v, nv) where <b>v</b> is the highest-numbered proposal it has accepted and <b>nv</b> is the number of that proposal (or ⊥, 0 if there is no such proposal).</li>
+  <li>The proposer waits (possibly forever) to receive ack from a majority of accepters. If any ack contained a value, it sets <b>v</b> to the most recent (in proposal number ordering) value that it received. It then sends accept(n, v) to all accepters (or just a majority).</li>
+  <li>Upon receiving accept(n, v), an accepter accepts <b>v</b> unless it has already received prepare(n’) for some <b>n’ &gt; n</b>. If a majority of acceptors accept the value of a given proposal, that value becomes the decision value of the protocol.</li>
+</ol>
+
+<p>Note that acceptance is a purely local phenomenon, so I’ll be including an additional message passing step in my implementation intended to detect which if any proposals have been accepted by a majority of accepters before processes can reliably decide on a value.</p>
+
+<p>Now let’s look at the code implementation starting with the the proposer role behavior:</p>
+
+<div><pre><code>
+<span>protected</span> <span>override</span> <span>void</span> <span>Propose</span><span>(</span><span>Instance</span> <span>r</span><span>)</span>
+<span>{</span>
+    <span>proposalNumber</span> <span>=</span> <span>minNumber</span> <span>+</span> <span>1</span><span>;</span>
+    <span>Broadcast</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Propose</span><span>,</span> <span>proposalNumber</span><span>);</span>
+<span>}</span>
+
+<span>private</span> <span>void</span> <span>BindAsProposer</span><span>(</span><span>Instance</span> <span>r</span><span>)</span>
+<span>{</span>
+    <span>WaitQuorum</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Ack</span><span>,</span> <span>msgs</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>v</span> <span>=</span> <span>PickHighestNumberedValue</span><span>(</span><span>msgs</span><span>)?.</span><span>Value</span> <span>??</span> <span>Proposer</span><span>.</span><span>GetProposal</span><span>();</span>
+
+        <span>if</span> <span>(</span><span>Archiver</span><span>.</span><span>CanCommit</span><span>(</span><span>v</span><span>))</span>
+        <span>{</span>
+            <span>var</span> <span>x</span> <span>=</span> <span>new</span> <span>NumberedValue</span><span>(</span><span>v</span><span>,</span> <span>proposalNumber</span><span>);</span>
+            <span>Broadcast</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Select</span><span>,</span> <span>x</span><span>);</span>
+        <span>}</span>
+    <span>});</span>
+
+    <span>WaitMessage</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Nack</span><span>,</span> <span>msg</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>if</span> <span>(</span><span>msg</span><span>.</span><span>Value</span> <span>!=</span> <span>null</span><span>)</span>
+        <span>{</span>
+            <span>var</span> <span>n</span> <span>=</span> <span>(</span><span>long</span><span>)</span><span>msg</span><span>.</span><span>Value</span><span>;</span>
+            <span>if</span> <span>(</span><span>n</span> <span>&gt;</span> <span>minNumber</span><span>)</span>
+            <span>{</span>
+                <span>minNumber</span> <span>=</span> <span>Math</span><span>.</span><span>Max</span><span>(</span><span>n</span><span>,</span> <span>minNumber</span><span>);</span>
+                <span>if</span> <span>(</span><span>RandomExtensions</span><span>.</span><span>Tryout</span><span>(</span><span>0.5</span><span>))</span>
+                    <span>Propose</span><span>(</span><span>r</span><span>);</span>
+            <span>}</span>
+        <span>}</span>
+    <span>});</span>
+
+    <span>WaitQuorum</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Accept</span><span>,</span> <span>msgs</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>m</span> <span>=</span> <span>msgs</span><span>.</span><span>Select</span><span>(</span><span>m</span> <span>=&gt;</span> <span>m</span><span>.</span><span>Value</span><span>).</span><span>Distinct</span><span>();</span>
+
+        <span>if</span> <span>(</span><span>m</span><span>.</span><span>Count</span><span>()</span> <span>==</span> <span>1</span><span>)</span>
+        <span>{</span>
+            <span>var</span> <span>x</span> <span>=</span> <span>m</span><span>.</span><span>Single</span><span>()</span> <span>as</span> <span>NumberedValue</span><span>;</span>
+            <span>Terminate</span><span>(</span><span>r</span><span>,</span> <span>x</span><span>);</span>
+            <span>Broadcast</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Decide</span><span>,</span> <span>x</span><span>);</span>
+        <span>}</span>
+    <span>});</span>
+<span>}</span>
+
+</code></pre></div>
+<p><span>Obs: Usage of <code>Math.Max</code> in this snippet may seem redundant, but it was actually employed to solve a race condition without resorting to a mutex.</span></p>
+
+<p>You can see that in this case the <code>Process.Propose</code> method was overridden to implement the Paxos protocol proposal numbering logic, and that I’ve used the <code>MessageType.Propose</code> enum member to represent the “prepare” message.</p>
+
+<p>After broadcasting its proposal number the process will wait for either <code>MessageType.Ack</code> or <code>MessageType.Nack</code> responses. In case it receives a negative response this means its proposal number is outdated, so the process will update it and submit a new proposal (after a random interval added for debugging purposes). However, in case it receives enough positive responses to form a quorum the process will broadcast a <code>MessageType.Select</code> message representing the proposer’s accept vote (the algorithm’s third step) for the highest numbered value it’s seen so far, or it’s own preferred value if it hasn’t seen one yet.</p>
+
+<p>Lastly, the proposer will be waiting for a quorum of consistent <code>MessageType.Accept</code> messages from accepters to learn which value has been accepted by a majority of them, in which case it decides on that value and terminates.</p>
+
+<p>On the other side of the picture we have accepters, whose behavior code is presented below:</p>
+
+<div><pre><code>
+<span>private</span> <span>void</span> <span>BindAsAccepter</span><span>(</span><span>Instance</span> <span>r</span><span>)</span>
+<span>{</span>
+    <span>WaitMessage</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Propose</span><span>,</span> <span>msg</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>n</span> <span>=</span> <span>(</span><span>long</span><span>)</span><span>msg</span><span>.</span><span>Value</span><span>;</span>
+
+        <span>if</span> <span>(</span><span>n</span> <span>&gt;</span> <span>minNumber</span><span>)</span>
+        <span>{</span>
+            <span>minNumber</span> <span>=</span> <span>n</span><span>;</span>
+            <span>SendTo</span><span>(</span><span>msg</span><span>.</span><span>Source</span><span>,</span> <span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Ack</span><span>,</span> <span>accepted</span><span>);</span>
+        <span>}</span>
+        <span>else</span>
+        <span>{</span>
+            <span>SendTo</span><span>(</span><span>msg</span><span>.</span><span>Source</span><span>,</span> <span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Nack</span><span>,</span> <span>minNumber</span><span>);</span>
+        <span>}</span>
+    <span>});</span>
+
+    <span>WaitMessage</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Select</span><span>,</span> <span>msg</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>x</span> <span>=</span> <span>msg</span><span>.</span><span>Value</span> <span>as</span> <span>NumberedValue</span><span>;</span>
+
+        <span>if</span> <span>(</span><span>x</span><span>.</span><span>Number</span> <span>&gt;=</span> <span>minNumber</span> <span>&amp;&amp;</span> <span>Archiver</span><span>.</span><span>CanCommit</span><span>(</span><span>x</span><span>.</span><span>Value</span><span>))</span>
+        <span>{</span>
+            <span>accepted</span> <span>=</span> <span>x</span><span>;</span>
+            <span>SendTo</span><span>(</span><span>msg</span><span>.</span><span>Source</span><span>,</span> <span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Accept</span><span>,</span> <span>x</span><span>);</span>
+        <span>}</span>
+    <span>});</span>
+
+    <span>WaitMessage</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Decide</span><span>,</span> <span>msg</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>x</span> <span>=</span> <span>msg</span><span>.</span><span>Value</span> <span>as</span> <span>NumberedValue</span><span>;</span>
+        <span>Terminate</span><span>(</span><span>r</span><span>,</span> <span>x</span><span>);</span>
+    <span>});</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>Upon receiving <code>MessageType.Propose</code> messages the accepter will “ack” as long as the proposal number is greater than the highest proposal number it’s seen so far (<code>minNumber</code>), updating that number, or “nack” considering it’s smaller than or equal.</p>
+
+<p>Then it waits for <code>MessageType.Select</code> messages and accepts it as long as the proposal number is greater than or equal <code>minNumber</code>, in which case it updates its lastly accepted value and sends a <code>MessageType.Accept</code> message back to the proposer.</p>
+
+<p>In closing, the accepter simply waits for a <code>MessageType.Decide</code> to decide on its value and terminate execution.</p>
+
+<h2 id="4-nakamoto-consensus">4) Nakamoto Consensus</h2>
+
+<p>In the Bitcoin white paper, Nakamoto proposed a very simple Byzantine fault tolerant consensus algorithm that is also known as Nakamoto consensus. It’s fundamentally a randomized consensus protocol that employs the concept of “Proof of Work” for defining which process is entitled to legitimately decide on a value.</p>
+
+<p>This proof of work operation is asymmetric, hard to conclude but easy to verify. This is necessary to achieve a functional randomized behavior that is the basis of the protocol, otherwise it would be very difficult for processes to agree on the validity of proposed values.</p>
+
+<p>Nakamoto consensus has its own terminology. Instead of “values” processes seek to reach consensus on data “blocks”. As the protocol execution advances the set of decided data blocks form a “chain” with each new block reinforcing the previous chain block. The act of delivering a proof of work on a block, in order for a process to propose that block to the network, is called “mining”.</p>
+
+<p>The algorithm can be briefly described in two sentences as follows<sup>4</sup>:</p>
+
+<ul>
+  <li>At each round <b>r</b>, an honest process attempts to mine new blocks on top of the longest chain it observes by the end of round <code>r − 1</code> (where ties can be broken arbitrarily). This is often referred to as the longest chain rule.</li>
+  <li>At each round <b>r</b>, an honest process confirms a block if the longest chain it adopts contains the block as well as at least <b>k</b> other blocks of larger heights. This is sometimes referred to as the k-deep confirmation rule.</li>
+</ul>
+
+<p>The purpose of the k-deep confirmation rule is to reduce the chances of a process deciding on an uncertain/volatile data block to a negligible probability.</p>
+
+<p>Even though the Nakamoto consensus protocol has a simple form, it requires a reasonable amount of code for implementing the block mining and block chains management logic. Here’s my implementation top level code:</p>
+
+<div><pre><code>
+<span>protected</span> <span>override</span> <span>void</span> <span>Propose</span><span>(</span><span>Instance</span> <span>r</span><span>)</span>
+<span>{</span>
+    <span>ThreadManager</span><span>.</span><span>Start</span><span>(()</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>b</span> <span>=</span> <span>MineBlock</span><span>(</span><span>r</span><span>);</span>
+        <span>if</span> <span>(</span><span>b</span> <span>!=</span> <span>null</span><span>)</span>
+        <span>{</span>
+            <span>ProcessBlock</span><span>(</span><span>r</span><span>,</span> <span>b</span><span>);</span>
+            <span>Broadcast</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Propose</span><span>,</span> <span>b</span><span>);</span>
+        <span>}</span>
+    <span>});</span>
+<span>}</span>
+
+<span>public</span> <span>override</span> <span>void</span> <span>Bind</span><span>(</span><span>Instance</span> <span>r</span><span>)</span>
+<span>{</span>
+    <span>WaitMessage</span><span>(</span><span>r</span><span>,</span> <span>MessageType</span><span>.</span><span>Propose</span><span>,</span> <span>msg</span> <span>=&gt;</span>
+    <span>{</span>
+        <span>var</span> <span>b</span> <span>=</span> <span>msg</span><span>.</span><span>Value</span> <span>as</span> <span>Block</span><span>;</span>
+        <span>ProcessBlock</span><span>(</span><span>r</span><span>,</span> <span>b</span><span>);</span>
+    <span>});</span>
+<span>}</span>
+
+<span>private</span> <span>void</span> <span>ProcessBlock</span><span>(</span><span>Instance</span> <span>r</span><span>,</span> <span>Block</span> <span>b</span><span>)</span>
+<span>{</span>
+    <span>if</span> <span>(</span><span>b</span><span>.</span><span>VerifyPoW</span><span>())</span>
+    <span>{</span>
+        <span>var</span> <span>newChain</span> <span>=</span> <span>AddNewChain</span><span>(</span><span>b</span><span>);</span>
+        <span>if</span> <span>(</span><span>IsKDeep</span><span>(</span><span>newChain</span><span>)</span> <span>&amp;&amp;</span> <span>!</span><span>IsTerminated</span><span>(</span><span>r</span><span>))</span>
+        <span>{</span>
+            <span>Terminate</span><span>(</span><span>r</span><span>,</span> <span>GetBlockAt</span><span>(</span><span>newChain</span><span>,</span> <span>k</span><span>).</span><span>Value</span><span>);</span>
+            <span>CommitChain</span><span>(</span><span>newChain</span><span>);</span>
+        <span>}</span>
+    <span>}</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>Since mining a block is a time consuming operation it’s performed within a thread and, unlike other protocols described earlier, the proposal phase becomes asynchronous. Upon receiving a proposal the process will evaluate whether the proposed block is valid, i.e., if it’s possible to verify its proof of work. Then, the block is added to a compatible chain found in the set of unconfirmed chains. Finally, if the resulting unconfirmed chain segment becomes <code>k-deep</code> the process will decide on its oldest unconfirmed block.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Taking as base components and terminology described in the literature for coding these four major consensus protocols allowed for the abstraction of structural and message routing logic away from each specific protocol implementation in a consistent manner. The end result highlights each protocol logic and behavior making the code more readable and succinct.</p>
+
+<p>Alternatives to improve the current achitecture and proceed with this study include <b>i)</b> refactoring the Instance class to extract event biding and message passing responsabilities into new components and <b>ii)</b> implement supporting components for evaluating protocol performance in the presence of process failures/crashes.</p>
+
+<p>This exercise has been extremely helpful to me to better understand the consensus problem and have a glimpse into different approaches for solving it. I hope it may serve as a starting point for others interested in learning the basics of consensus protocols in a more practical way.</p>
+
+<hr>
+
+<p><b>Notes</b></p>
+
+<ul>
+  <li>Revised on Oct 29, 2020. For reference you can find the original article <a href="https://github.com/TCGV/blog/blob/3dadb0ca37ea534ead89837b19f194815c7ae8a9/_posts/2020-10-11-a-review-of-consensus-protocols.md">here</a>.</li>
+</ul>
+
+<p><b>Sources</b></p>
+
+<p>[1] Wikipedia. <a href="https://en.wikipedia.org/wiki/Chandra%E2%80%93Toueg_consensus_algorithm">Chandra–Toueg consensus algorithm</a>.</p>
+
+<p>[2] Marcos Kawazoe Aguilera, Sam Toueg. <a href="https://ecommons.cornell.edu/bitstream/handle/1813/7336/98-1682.pdf?sequence=1">Correctness Proof of Ben-Or’s Randomized Consensus Algorithm</a>. 1998.</p>
+
+<p>[3] James Aspnes. <a href="https://www.cs.yale.edu/homes/aspnes/pinewiki/Paxos.html">Paxos - Class notes</a>. 2003 to 2012.</p>
+
+<p>[4] Jianyu Niu, Chen Feng, Hoang Dau, Yu-Chih Huang, and Jingge Zhu. <a href="https://arxiv.org/abs/1910.08510">Analysis of Nakamoto Consensus, Revisited</a>. 2019.</p>
+
+            </div></div>
+  </div>
+</body>
+</html>

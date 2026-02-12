@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Debugging what you deploy in Go 1.12 - The Go Programming Language</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Debugging what you deploy in Go 1.12 - The Go Programming Language</h1>
+    <p><strong>URL:</strong> <a href="https://blog.golang.org/debugging-what-you-deploy">https://blog.golang.org/debugging-what-you-deploy</a></p>
+    <p><strong>Tags:</strong> golang</p>
+    <p><strong>Bookmark ID:</strong> 876771877</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-slug="/blog/debug-opt">
+    
+    <h2><a href="https://go.dev/blog/">The Go Blog</a></h2>
+    
+
+    
+      
+      
+      
+      <h2 id="introduction">Introduction<a href="#introduction" aria-label="Go to introduction">¶</a><a href="#introduction" aria-label="Go to introduction">¶</a></h2>
+<p>Go 1.11 and Go 1.12 make significant progress toward allowing developers
+to debug the same optimized binaries that they deploy to production.</p>
+<p>As the Go compiler has become increasingly aggressive in producing faster binaries,
+we’ve lost ground in debuggability.
+In Go 1.10, users needed to disable optimizations entirely in order to have
+a good debugging experience from interactive tools like Delve.
+But users shouldn’t have to trade performance for debuggability,
+especially when running production services.
+If your problem is occurring in production,
+you need to debug it in production, and that shouldn’t require deploying
+unoptimized binaries.</p>
+<p>For Go 1.11 and 1.12, we focused on improving the debugging experience on
+optimized binaries (the default setting of the Go compiler).
+Improvements include</p>
+<ul>
+<li>More accurate value inspection, in particular for arguments at function entry;</li>
+<li>More precisely identifying statement boundaries so that stepping is less
+jumpy and breakpoints more often land where the programmer expects;</li>
+<li>And preliminary support for Delve to call Go functions (goroutines and
+garbage collection make this trickier than it is in C and C++).</li>
+</ul>
+<h2 id="debugging-optimized-code-with-delve">Debugging optimized code with Delve<a href="#debugging-optimized-code-with-delve" aria-label="Go to debugging-optimized-code-with-delve">¶</a><a href="#debugging-optimized-code-with-delve" aria-label="Go to debugging-optimized-code-with-delve">¶</a></h2>
+<p><a href="https://github.com/go-delve/delve" rel="noreferrer" target="_blank">Delve</a> is a debugger for Go on x86
+supporting both Linux and macOS.
+Delve is aware of goroutines and other Go features and provides one of the
+best Go debugging experiences.
+Delve is also the debugging engine behind <a href="https://www.jetbrains.com/go/" rel="noreferrer" target="_blank">GoLand</a>,
+<a href="https://code.visualstudio.com/" rel="noreferrer" target="_blank">VS Code</a>,
+and <a href="https://github.com/fatih/vim-go" rel="noreferrer" target="_blank">Vim</a>.</p>
+<p>Delve normally rebuilds the code it is debugging with <code>-gcflags "all=-N -l"</code>,
+which disables inlining and most optimizations.
+To debug optimized code with delve, first build the optimized binary,
+then use <code>dlv exec your_program</code> to debug it.
+Or, if you have a core file from a crash,
+you can examine it with <code>dlv core your_program your_core</code>.
+With 1.12 and the latest Delve releases, you should be able to examine many variables,
+even in optimized binaries.</p>
+<h2 id="improved-value-inspection">Improved value inspection<a href="#improved-value-inspection" aria-label="Go to improved-value-inspection">¶</a><a href="#improved-value-inspection" aria-label="Go to improved-value-inspection">¶</a></h2>
+<p>When debugging optimized binaries produced by Go 1.10,
+variable values were usually completely unavailable.
+In contrast, starting with Go 1.11, variables can usually be examined even
+in optimized binaries,
+unless they’ve been optimized away completely.
+In Go 1.11 the compiler began emitting DWARF location lists so debuggers
+can track variables as they move in and out of registers and reconstruct
+complex objects that are split across different registers and stack slots.</p>
+<h2 id="improved-stepping">Improved stepping<a href="#improved-stepping" aria-label="Go to improved-stepping">¶</a><a href="#improved-stepping" aria-label="Go to improved-stepping">¶</a></h2>
+<p>This shows an example of stepping through a simple function in a debugger in 1.10,
+with flaws (skipped and repeated lines) highlighted by red arrows.</p>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHN2ZyAgUFVCTElDICctLy9XM0MvL0RURCBTVkcgMS4xLy9FTicgICdodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQnPgo8c3ZnIHdpZHRoPSIzNTUuNDYiIGhlaWdodD0iMjA4IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjU1LjA3NSA5NS41IDM1NS40NjIxIDIwOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iPgo8ZGVmcz4KPG1hcmtlciBpZD0iYSIgY29sb3I9IiNmZjI2MDAiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIG1hcmtlckhlaWdodD0iOCIgbWFya2VyV2lkdGg9IjEwIiBvcmllbnQ9ImF1dG8iIHZpZXdCb3g9Ii0xIC00IDEwIDgiPgo8cGF0aCBkPSJtOCAwbC04LTN2NnoiIGZpbGw9ImN1cnJlbnRDb2xvciIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiLz4KPC9tYXJrZXI+CjwvZGVmcz4KPG1ldGFkYXRhPlByb2R1Y2VkIGJ5IE9tbmlHcmFmZmxlIDcuMTAuMQo8ZGM6ZGF0ZT4yMDE5LTAzLTIxIDE5OjQ3OjI0ICswMDAwPC9kYzpkYXRlPgo8L21ldGFkYXRhPgo8ZyBmaWxsPSJub25lIj4KPHRpdGxlPkNhbnZhcyAxPC90aXRsZT4KPGc+Cjx0aXRsZT5MYXllciAxPC90aXRsZT4KPHRleHQgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNjQuNSAxMzAuNSkiIGZpbGw9ImJsYWNrIiBmb250LWZhbWlseT0iR28sIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSI0MDAiPgo8dHNwYW4geD0iMjgiIHk9IjExIj5sIDo9IGxpbmV7cG9pbnR7MSArIHplcm8sIDIgKyB6ZXJvfSwgcG9pbnR7MyArIHplcm8sIDQgKyB6ZXJvfX08L3RzcGFuPgo8dHNwYW4geD0iMjgiIHk9IjI1Ij50aW55Y2FsbCgpPC90c3Bhbj4KPHRzcGFuIHg9IjI4IiB5PSIzOSI+aGlzdCA6PSBtYWtlKFtdaW50LCA3KTwvdHNwYW4+Cjx0c3BhbiB4PSIyOCIgeT0iNTMiPnZhciByZWFkZXIgaW8uUmVhZGVyID0gc3RyaW5ncy5OZXdSZWFkZXIoY2FubmVkSW5wdXQpPC90c3Bhbj4KPHRzcGFuIHg9IjI4IiB5PSI2NyI+c2Nhbm5lciA6PSBidWZpby5OZXdTY2FubmVyKHJlYWRlcik8L3RzcGFuPgo8dHNwYW4geD0iMjgiIHk9IjgxIj5mb3Igc2Nhbm5lci5TY2FuKCkgezwvdHNwYW4+Cjx0c3BhbiB4PSI1NiIgeT0iOTUiPnMgOj0gc2Nhbm5lci5UZXh0KCk8L3RzcGFuPgo8dHNwYW4geD0iNTYiIHk9IjEwOSI+aSwgZXJyIDo9IHN0cmNvbnYuUGFyc2VJbnQocywgMTAsIDY0KTwvdHNwYW4+Cjx0c3BhbiB4PSI1NiIgeT0iMTIzIj5pZiBlcnIgIT0gbmlsIHsgLi4uIH08L3RzcGFuPgo8dHNwYW4geD0iNTYiIHk9IjEzNyI+aGlzdCA9IGVuc3VyZShpbnQoaSksIGhpc3QpPC90c3Bhbj4KPHRzcGFuIHg9IjU2IiB5PSIxNTEiPmhpc3RbaW50KGkpXSsrPC90c3Bhbj4KPHRzcGFuIHg9IjI4IiB5PSIxNjUiPn08L3RzcGFuPgo8L3RleHQ+Cjx0ZXh0IHRyYW5zZm9ybT0idHJhbnNsYXRlKDIwNC4zNCAxMDAuNSkiIGZpbGw9ImJsYWNrIj4KPHRzcGFuIHg9IjAiIHk9IjE1IiBmaWxsPSJibGFjayIgZm9udC1mYW1pbHk9IkdvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iNDAwIj5HbyAxLjEwPC90c3Bhbj4KPC90ZXh0Pgo8cGF0aCBkPSJtNzEuOCAxMzAuN2wxNCA2LTE0IDZ6IiBmaWxsPSJibHVlIiBmaWxsLW9wYWNpdHk9Ii4zMzA5Ii8+CjxwYXRoIGQ9Im03MS44IDEzMC43bDE0IDYtMTQgNnoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9Ii4yNSIvPgo8cGF0aCBkPSJtMTAwLjYgMjQzLjNsMTQgNi0xNCA2eiIgZmlsbD0iYmx1ZSIgZmlsbC1vcGFjaXR5PSIuMzMwOSIvPgo8cGF0aCBkPSJtMTAwLjYgMjQzLjNsMTQgNi0xNCA2eiIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iLjI1Ii8+CjxwYXRoIGQ9Im0xMDAuNiAyMjkuNWwxNCA2LTE0IDZ6IiBmaWxsPSJibHVlIiBmaWxsLW9wYWNpdHk9Ii4zMzA5Ii8+CjxwYXRoIGQ9Im0xMDAuNiAyMjkuNWwxNCA2LTE0IDZ6IiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIuMjUiLz4KPHBhdGggZD0ibTcxLjggMjAwLjc0bDE0IDYtMTQgNnoiIGZpbGw9ImJsdWUiIGZpbGwtb3BhY2l0eT0iLjMzMDkiLz4KPHBhdGggZD0ibTcxLjggMjAwLjc0bDE0IDYtMTQgNnoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9Ii4yNSIvPgo8cGF0aCBkPSJtNzEuOCAxNzIuNzJsMTQgNi0xNCA2eiIgZmlsbD0iYmx1ZSIgZmlsbC1vcGFjaXR5PSIuMzMwOSIvPgo8cGF0aCBkPSJtNzEuOCAxNzIuNzJsMTQgNi0xNCA2eiIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iLjI1Ii8+CjxwYXRoIGQ9Im03MS44IDE1OC43MmwxNCA2LTE0IDZ6IiBmaWxsPSJibHVlIiBmaWxsLW9wYWNpdHk9Ii4zMzA5Ii8+CjxwYXRoIGQ9Im03MS44IDE1OC43MmwxNCA2LTE0IDZ6IiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIuMjUiLz4KPHBhdGggZD0ibTU1LjIgMTQ1LjRsMTQgNi0xNCA2eiIgZmlsbD0iYmx1ZSIgZmlsbC1vcGFjaXR5PSIuMzMwOSIvPgo8cGF0aCBkPSJtNTUuMiAxNDUuNGwxNCA2LTE0IDZ6IiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIuMjUiLz4KPHBhdGggZD0ibTEwMC42IDI3MC45bDE0IDYtMTQgNnoiIGZpbGw9ImJsdWUiIGZpbGwtb3BhY2l0eT0iLjMzMDkiLz4KPHBhdGggZD0ibTEwMC42IDI3MC45bDE0IDYtMTQgNnoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9Ii4yNSIvPgo8cGF0aCBkPSJtMTAwLjYgMjU3LjFsMTQgNi0xNCA2eiIgZmlsbD0iYmx1ZSIgZmlsbC1vcGFjaXR5PSIuMzMwOSIvPgo8cGF0aCBkPSJtMTAwLjYgMjU3LjFsMTQgNi0xNCA2eiIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iLjI1Ii8+CjxwYXRoIGQ9Im01NS4yIDEzMC43bDE0IDYtMTQgNnoiIGZpbGw9ImJsdWUiIGZpbGwtb3BhY2l0eT0iLjMzMDkiLz4KPHBhdGggZD0ibTU1LjIgMTMwLjdsMTQgNi0xNCA2eiIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iLjI1Ii8+CjxwYXRoIGQ9Im02MS42NiAxNDcuOTV2LTIuOTAzMWwxLjY1NDEtMC45OTM4NyIgbWFya2VyLWVuZD0idXJsKCNhKSIgc3Ryb2tlPSIjZmYyNjAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPGxpbmUgeDE9Ijc5LjA2IiB4Mj0iNzkuMDYiIHkxPSIxMzkuNTIiIHkyPSIxNTIuNDUiIG1hcmtlci1lbmQ9InVybCgjYSkiIHN0cm9rZT0iI2ZmMjYwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxsaW5lIHgxPSI3OS4wNiIgeDI9Ijk0LjM4MSIgeTE9IjIwOS40IiB5Mj0iMjI4LjM4IiBtYXJrZXItZW5kPSJ1cmwoI2EpIiBzdHJva2U9IiNmZjI2MDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8bGluZSB4MT0iNzkuMDYiIHgyPSI3OS4xMTUiIHkxPSIxODIuNjYiIHkyPSIxOTQuNzYiIG1hcmtlci1lbmQ9InVybCgjYSkiIHN0cm9rZT0iI2ZmMjYwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjwvZz4KPC9nPgo8L3N2Zz4K" width="450" alt="">
+</p>
+<p>Flaws like this make it easy to lose track of where you are when stepping
+through a program and interfere with hitting breakpoints.</p>
+<p>Go 1.11 and 1.12 record statement boundary information and do a better job
+of tracking source line numbers through optimizations and inlining.
+As a result, in Go 1.12, stepping through this code stops on every line
+and does so in the order you would expect.</p>
+<h2 id="function-calls">Function calls<a href="#function-calls" aria-label="Go to function-calls">¶</a><a href="#function-calls" aria-label="Go to function-calls">¶</a></h2>
+<p>Function call support in Delve is still under development, but simple cases work.  For example:</p>
+<pre><code>(dlv) call fib(6)
+&gt; main.main() ./hello.go:15 (PC: 0x49d648)
+Values returned:
+    ~r1: 8
+</code></pre>
+<h2 id="the-path-forward">The path forward<a href="#the-path-forward" aria-label="Go to the-path-forward">¶</a><a href="#the-path-forward" aria-label="Go to the-path-forward">¶</a></h2>
+<p>Go 1.12 is a step toward a better debugging experience for optimized binaries
+and we have plans to improve it even further.</p>
+<p>There are fundamental tradeoffs between debuggability and performance,
+so we’re focusing on the highest-priority debugging defects,
+and working to collect automated metrics to monitor our progress and catch regressions.</p>
+<p>We’re focusing on generating correct information for debuggers about variable locations,
+so if a variable can be printed, it is printed correctly.
+We’re also looking at making variable values available more of the time,
+particularly at key points like call sites,
+though in many cases improving this would require slowing down program execution.
+Finally, we’re working on improving stepping:
+we’re focusing on the order of stepping with panics,
+the order of stepping around loops, and generally trying to follow source
+order where possible.</p>
+<h2 id="a-note-on-macos-support">A note on macOS support<a href="#a-note-on-macos-support" aria-label="Go to a-note-on-macos-support">¶</a><a href="#a-note-on-macos-support" aria-label="Go to a-note-on-macos-support">¶</a></h2>
+<p>Go 1.11 started compressing debug information to reduce binary sizes.
+This is natively supported by Delve, but neither LLDB nor GDB support compressed
+debug info on macOS.
+If you are using LLDB or GDB, there are two workarounds:
+build binaries with <code>-ldflags=-compressdwarf=false</code>,
+or use <a href="https://godoc.org/golang.org/x/tools/cmd/splitdwarf" rel="noreferrer" target="_blank">splitdwarf</a>
+(<code>go get golang.org/x/tools/cmd/splitdwarf</code>) to decompress the debug information
+in an existing binary.</p>
+
+    </div></div>
+  </div>
+</body>
+</html>

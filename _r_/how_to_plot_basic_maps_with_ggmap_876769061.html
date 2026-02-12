@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to plot basic maps with ggmap</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to plot basic maps with ggmap</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/how-to-plot-basic-maps-with-ggmap">https://www.r-bloggers.com/how-to-plot-basic-maps-with-ggmap</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876769061</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+
+	<p>When you’re learning data science – and specifically data science in R using the Tidyverse – it is very helpful to learn individual techniques in a highly modular way.</p>
+<p>This is because large projects, when you really break them down, are just combinations of small techniques.  If you master all of those little tools and techniques on a small scale then you can combine them together later to create more complex charts, graphs, and analyses.</p>
+<p>At a very basic level, this means that you should master fundamental tools like <a href="http://sharpsightlabs.com/blog/r-bar-chart-basic/"><inline_code>geom_bar()</inline_code></a>, <a href="http://sharpsightlabs.com/blog/line-chart-ggplot2-amzn/"><inline_code>geom_line()</inline_code></a>, and <inline_code>geom_point()</inline_code>. After you master those very simple tools, you can learn additional tools that can be combined with the basics.</p>
+<p>A good example of this is <inline_code>ggmap</inline_code>.  The <a href="http://stat405.had.co.nz/ggmap.pdf"><inline_code>ggmap</inline_code></a> package allows you to download and plot basic maps from Google maps (and a few other sources).  These maps can then be used as layers within the <inline_code>ggplot2</inline_code> plotting system.   Essentially, you can plot maps from <inline_code>ggmap</inline_code>, and then use <inline_code>ggplot2</inline_code> to plot points and other geoms <em>on top of the map</em>.  Using <inline_code>ggplot</inline_code>+<inline_code>ggmap</inline_code> this way is extremely useful for quick-and-dirty <a href="https://www.r-bloggers.com/2017/11/how-to-plot-basic-maps-with-ggmap/sharpsightlabs.com/blog/mapping-paris-bike-stands/">geospatial visualization</a>.</p>
+<p>With that in mind, I want to quickly show you how to use <inline_code>ggmap</inline_code> to download and plot maps.</p>
+<p>First, let’s just load the packages that we will use.  Here, we’re going to load <inline_code>ggmap</inline_code> and <inline_code>tidyverse</inline_code>.  <inline_code>ggmap</inline_code> will allow us to access Google Maps, but we’ll also use <inline_code>tidyverse</inline_code> for some additional plotting and other functionality (like pipes).</p>
+<pre>#==============
+# LOAD PACKAGES
+#==============
+
+library(ggmap)
+library(tidyverse)
+
+</pre>
+<p>Now that our packages are downloaded, let’s just get a simple map.  Here, we’ll retrieve a basic map of Tokyo from Google Maps.</p>
+<pre>#=================
+# GET MAP OF Tokyo
+#=================
+
+map.tokyo &lt;- get_map("Tokyo")
+ggmap(map.tokyo)
+
+</pre>
+<p><a href="http://sharpsightlabs.com/join-newsletter-ggplot2/" rel="nofollow" target="_blank"><br>
+<img loading="lazy" src="https://i0.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo-600x569.png?w=450" alt="" srcset_temp="https://i0.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo-600x569.png?w=450 600w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo-768x729.png 768w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo.png 864w" sizes="(max-width: 600px) 100vw, 600px" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo-600x569.png?w=450&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><br>
+</a></p>
+<p>Notice that we’ve used two functions.  </p>
+<p>First we used <inline_code>get_map()</inline_code> to retrieve the map from Google Maps.  To do this, we just specified the name of the location (more on that later).</p>
+<p>Next, we used <inline_code>ggmap()</inline_code> to plot the map.</p>
+<p>In doing this, I saved the map first with the name <inline_code>map.tokyo</inline_code>.  It can be useful sometimes to save a map like this with a name, but sometimes you don’t need the name.  In fact, if you <em>don’t</em> need to save the map, then it can be useful to avoid doing so; finding names for little objects like this can become tiresome.</p>
+<p>Having said that, we can actually retrieve and plot the map in a single line of code, without saving the map object.</p>
+<p>To do this, we will use the tidyverse “pipe” operator, <inline_code>%&gt;%</inline_code>. (Note: this is one of the reasons that we loaded the <inline_code>tidyverse</inline_code> package.)</p>
+<pre>#=============================================
+# USE THE PIPE OPERATOR
+# - Here, we're basically doing the same thing
+#   but we will do it in one line of code
+#=============================================
+
+get_map("Tokyo") %&gt;% ggmap()
+
+</pre>
+<p><a href="http://sharpsightlabs.com/join-newsletter-ggplot2/" rel="nofollow" target="_blank"><br>
+<img loading="lazy" src="https://i0.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo-600x569.png?w=450" alt="" srcset_temp="https://i0.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo-600x569.png?w=450 600w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo-768x729.png 768w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo.png 864w" sizes="(max-width: 600px) 100vw, 600px" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_tokyo-600x569.png?w=450&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><br>
+</a></p>
+<p>Essentially, what we’ve done here is retrieved the map using <inline_code>get_map()</inline_code>, but then immediately “piped” it into <inline_code>ggmap()</inline_code>.  Again, this can be useful because the code is cleaner … we don’t need an intermediate name.</p>
+<p>Now let’s plot a different map.  Here we will plot a map of Japan.</p>
+<pre>#==========================================
+# GET MAP OF JAPAN
+# - this doens't work well without zooming
+#==========================================
+
+get_map("Japan") %&gt;% ggmap()
+
+</pre>
+<p><a href="http://sharpsightlabs.com/join-newsletter-ggplot2/" rel="nofollow" target="_blank"><br>
+<img loading="lazy" src="https://i2.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_nozoom-600x569.png?w=450" alt="" srcset_temp="https://i2.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_nozoom-600x569.png?w=450 600w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_nozoom-768x729.png 768w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_nozoom.png 862w" sizes="(max-width: 600px) 100vw, 600px" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_nozoom-600x569.png?w=450&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><br>
+</a></p>
+<p>This code works in a similar way: we just provide the location name to <inline_code>get_map()</inline_code>, and then pipe it into <inline_code>ggmap()</inline_code>.</p>
+<p>Having said that, this plot is not very good, because it’s not really zoomed properly.</p>
+<p>To fix this, we will use the <inline_code>zoom</inline_code> parameter of <inline_code>get_map()</inline_code> to zoom out.</p>
+<pre>#===========================================
+# GET MAP OF JAPAN, ZOOMED
+# - here, we are manually setting the zoom
+#   to get a better map
+# - to find the best setting for 'zoom', 
+#   you'll need to use some trial-and-error
+#===========================================
+
+get_map("Japan", zoom = 5) %&gt;% ggmap()
+
+</pre>
+<p><a href="http://sharpsightlabs.com/join-newsletter-ggplot2/" rel="nofollow" target="_blank"><br>
+<img loading="lazy" src="https://i2.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_withzoom-600x591.png?w=450" alt="" srcset_temp="https://i2.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_withzoom-600x591.png?w=450 600w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_withzoom-768x757.png 768w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_withzoom.png 832w" sizes="(max-width: 600px) 100vw, 600px" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_japan_withzoom-600x591.png?w=450&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><br>
+</a></p>
+<p>This is much better.</p>
+<p>Keep in mind that to get the right setting for zoom, you’ll typically need to use a bit of trial-and-error.</p>
+<p>Next, we’ll get a map of a more specific location.  Here we will get a map of Shinjuku, an area of Tokyo.</p>
+<p>Notice that as we do this, we are again just specifying the location and zooming in properly with the <inline_code>zoom</inline_code> parameter.</p>
+<pre>#==============================
+# GET MAP OF SPECIFIC LOCATION
+#==============================
+
+# note: not zoomed enough
+get_map("Shinjuku") %&gt;% ggmap()
+
+
+# this is properly zoomed
+get_map("Shinjuku", zoom = 16) %&gt;% ggmap()
+
+</pre>
+<p><a href="http://sharpsightlabs.com/join-newsletter-ggplot2/" rel="nofollow" target="_blank"><br>
+<img loading="lazy" src="https://i0.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_shinjuku-600x563.png?w=450" alt="" srcset_temp="https://i0.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_shinjuku-600x563.png?w=450 600w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_shinjuku-768x721.png 768w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_shinjuku.png 874w" sizes="(max-width: 600px) 100vw, 600px" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_shinjuku-600x563.png?w=450&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><br>
+</a></p>
+<p>So there you have it.  That’s the quick introduction to <inline_code>ggmap</inline_code>.</p>
+<p>To be clear, there’s actually quite a bit more functionality for <inline_code>get_map()</inline_code>, but in the interest of simplicity, you should master these techniques first. Later, once you have mastered these simple <inline_code>ggmap</inline_code> tools, you can start combining maps from <inline_code>ggmap()</inline_code> with tools from <inline_code>ggplot2</inline_code>:</p>
+<pre># CREATE DATA FRAME
+df.tokyo_locations &lt;- tibble(location = c("Ueno, Tokyo, Japan"
+                                          ,"Shibuya, Tokyo, Japan"
+                                          ,"Shinjuku, Tokyo, Japan"))
+
+
+# GEOCODE
+geo.tokyo_locations &lt;- geocode(df.tokyo_locations$location)
+
+
+# COMBINE DATA
+df.tokyo_locations &lt;- cbind(df.tokyo_locations, geo.tokyo_locations)
+
+
+# USE WITH GGPLOT
+get_map("Tokyo", zoom = 12) %&gt;% ggmap() +
+  geom_point(data = df.tokyo_locations, aes(x = lon, y = lat), color = 'red', size = 3)
+</pre>
+<p><a href="http://sharpsightlabs.com/join-newsletter-ggplot2/" rel="nofollow" target="_blank"><br>
+<img loading="lazy" src="https://i1.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_with_ggplot_simple_example-600x544.png?w=450" alt="" srcset_temp="https://i1.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_with_ggplot_simple_example-600x544.png?w=450 600w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_with_ggplot_simple_example-768x696.png 768w, http://sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_with_ggplot_simple_example.png 900w" sizes="(max-width: 600px) 100vw, 600px" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/sharpsightlabs.com/wp-content/uploads/2017/11/ggmap_with_ggplot_simple_example-600x544.png?w=450&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><br>
+</a></p>
+<p>By the way, this is exactly why I recommend learning and mastering simple tools like <inline_code>geom_point()</inline_code> first … once you have mastered simple tools, you can start combining them together like building-blocks to create <a href="http://sharpsightlabs.com/blog/mapping-seattle-crime/">more advanced visualizations</a> and analyses.</p>
+<h2>Sign up to master R</h2>
+<p>Want to master R?</p>
+<p>Here at Sharp Sight, we teach data science in R.</p>
+<p>And we not only show you the techniques, we will show you how to practice those techniques so that you master them.</p>
+<p>So if you want to master data science and become “fluent” in R, sign up for our email newsletter.</p>
+<p>When you sign up, you’ll get:<br>
+– ggplot2 data visualization tutorials<br>
+– tutorials on how to practice ggplot2 syntax (so you can write code “with your eyes closed”)<br>
+– practice tips to help you master and memorize syntax</p>
+<p>You’ll also get access to our “Data Science Crash Course” for free.</p>
+<a href="http://sharpsightlabs.com/join-newsletter-ggplot2/" rel="nofollow" target="_blank">
+<p><strong>SIGN UP NOW</strong></p>
+</a>
+<p>The post <a rel="nofollow" href="http://sharpsightlabs.com/blog/basic-maps-ggmap/" target="_blank">How to plot basic maps with ggmap</a> appeared first on <a rel="nofollow" href="http://sharpsightlabs.com/" target="_blank">SHARP SIGHT LABS</a>.</p>
+
+
+		
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+							</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Cost of JavaScript Frameworks</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The Cost of JavaScript Frameworks</h1>
+    <p><strong>URL:</strong> <a href="https://timkadlec.com/remembers/2020-04-21-the-cost-of-javascript-frameworks">https://timkadlec.com/remembers/2020-04-21-the-cost-of-javascript-frameworks</a></p>
+    <p><strong>Tags:</strong> javascript</p>
+    <p><strong>Bookmark ID:</strong> 876774815</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="wrap">
+
+<article role="article">
+	<header>
+		
+	</header>
+	<section>
+		
+
+<p>There is no faster (pun intended) way to slow down a site than to use a bunch of JavaScript.</p>
+
+<p>The thing about JavaScript is you end up paying a performance tax no less than four times:</p>
+
+<ol>
+<li>The cost of downloading the file on the network</li>
+<li>The cost of parsing and compiling the uncompressed file once downloaded</li>
+<li>The cost of executing the JavaScript</li>
+<li>The memory cost</li>
+</ol>
+
+<p>The <a href="https://v8.dev/blog/cost-of-javascript-2019">combination is very expensive</a>.</p>
+
+<p>And we are shipping an increasingly high amount. We’re making the core functionality of our sites increasingly dependant on JavaScript as organizations move towards sites driven by frameworks like React, Vue.js, and friends.</p>
+
+<p>I see a lot of very heavy sites using them, but then, my perspective is very biased as the companies that I work with work with me precisely <em>because</em> they are facing performance challenges. I was curious just how common the situation is and just <em>how</em> much of a penalty we’re paying when we make these frameworks the default starting point.</p>
+
+<p>Thanks to <a href="https://httparchive.org/">HTTP Archive</a>, we can figure that out.</p>
+
+<h2 id="the-data">The data</h2>
+
+<p>In total, HTTP Archive tracks 4,308,655 desktop URLs, and 5,484,239 mobile URLs. Among the many data points HTTP Archive reports for those URLs is a list of the detected technologies for a given site. That means we can pick out the thousands of sites that use various frameworks and see how much code they’re shipping, and what that costs the CPU.</p>
+
+<p>I ran all the queries against March of 2020, the most recent run at the time.</p>
+
+<p>I decided to compare the aggregate HTTP Archive data for all sites recorded against sites with React, Vue.js, and Angular detected<sup id="footnote-1-link"><a href="#footnote-1">1</a></sup>.</p>
+
+<p>For fun, I also added jQuery—it’s still massively popular, and it also represents a bit of a different approach to building with JavaScript than the single-page application (<abbr title="Single-Page Application">SPA</abbr>) approach provided by React, Vue.js and Angular.</p>
+
+<table>
+    <caption>URLs in HTTP Archive with specific frameworks detected</caption>
+    <thead>
+        <tr>
+            <th>Framework</th>
+            <th>Mobile URLs</th>
+            <th>Desktop URLs</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-title="Framework">jQuery</td>
+            <td data-title="Mobile URLs">4,615,474</td>
+            <td data-title="Desktop URLs">3,714,643</td>
+        </tr>
+        <tr>
+            <td data-title="Framework">React</td>
+            <td data-title="Mobile URLs">489,827</td>
+            <td data-title="Desktop URLs">241,023</td>
+        </tr>
+        <tr>
+            <td data-title="Framework">Vue.js</td>
+            <td data-title="Mobile URLs">85,649</td>
+            <td data-title="Desktop URLs">43,691</td>
+        </tr>
+        <tr>
+            <td data-title="Framework">Angular</td>
+            <td data-title="Mobile URLs">19,423</td>
+            <td data-title="Desktop URLs">18,088</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="hopes-and-dreams">Hopes and dreams</h2>
+
+<p>Before we dig in, here’s what I would hope.</p>
+
+<p>In an ideal world, I believe a framework should go beyond developer experience value and provide concrete value for the people using our sites. Performance is just one part of that—accessibility and security both come to mind as well—but it’s an essential part.</p>
+
+<p>So in an ideal world, a framework makes it easier to perform well by either providing a better starting point or providing constraints and characteristics that make it hard to build something that doesn’t perform well.</p>
+
+<p>The best of frameworks would do both: provide a better starting point and help to restrict how out of hands things can get.</p>
+
+<p>Looking at the median for our data isn’t going to tell us that, and <a href="https://timkadlec.com/remembers/2018-06-07-prioritizing-the-long-tail-of-performance/">in fact leaves a ton of information out</a>. Instead, for each stat, I pulled the following percentiles: the 10th, 25th, 50th (the median), 75th, and 90th.</p>
+
+<p>The 10th and 90th percentiles are particularly interesting to me. The 10th percentile represents the best of class (or at least, reasonably close to the best of class) for a given framework. In other words, only 10% of all sites using a given framework reach that mark or better. The 90th percentile, on the other hand, is the opposite of the spectrum—it shows us how bad things can get. The 90th percentile represents the long-tail—that last 10% of sites with the highest number of bytes or largest amount of main thread time.</p>
+
+<h2 id="javascript-bytes">JavaScript Bytes</h2>
+
+<p>For the starting point, it makes sense to look at the amount of JavaScript passed over the network.</p>
+
+<table>
+    <caption>JavaScript Bytes Served to Mobile Devices, by Percentile</caption>
+    <thead>
+        <tr>
+            <th></th>
+            <th>10th</th>
+            <th>25th</th>
+            <th>50th</th>
+            <th>75th</th>
+            <th>90th</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-title="Dataset">All Sites</td>
+            <td data-title="Bytes Served, 10th Percentile">93.4kb</td>
+            <td data-title="Bytes Served, 25th Percentile">196.6kb</td>
+            <td data-title="Bytes Served, 50th Percentile">413.5kb</td>
+            <td data-title="Bytes Served, 75th Percentile">746.8kb</td>
+            <td data-title="Bytes Served, 90th Percentile">1,201.6kb</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with jQuery</td>
+            <td data-title="Bytes Served, 10th Percentile">110.3kb</td>
+            <td data-title="Bytes Served, 25th Percentile">219.8kb</td>
+            <td data-title="Bytes Served, 50th Percentile">430.4kb</td>
+            <td data-title="Bytes Served, 75th Percentile">748.6kb</td>
+            <td data-title="Bytes Served, 90th Percentile">1,162.3kb</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Vue.js</td>
+            <td data-title="Bytes Served, 10th Percentile">244.7kb</td>
+            <td data-title="Bytes Served, 25th Percentile">409.3kb</td>
+            <td data-title="Bytes Served, 50th Percentile">692.1kb</td>
+            <td data-title="Bytes Served, 75th Percentile">1,065.5kb</td>
+            <td data-title="Bytes Served, 90th Percentile">1,570.7kb</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Angular</td>
+            <td data-title="Bytes Served, 10th Percentile">445.1kb</td>
+            <td data-title="Bytes Served, 25th Percentile">675.6kb</td>
+            <td data-title="Bytes Served, 50th Percentile">1,066.4kb</td>
+            <td data-title="Bytes Served, 75th Percentile">1,761.5kb</td>
+            <td data-title="Bytes Served, 90th Percentile">2,893.2kb</td>
+        </tr>
+         <tr>
+            <td data-title="Dataset">Sites with React</td>
+            <td data-title="Bytes Served, 10th Percentile">345.8kb</td>
+            <td data-title="Bytes Served, 25th Percentile">441.6kb</td>
+            <td data-title="Bytes Served, 50th Percentile">690.3kb</td>
+            <td data-title="Bytes Served, 75th Percentile">1,238.5kb</td>
+            <td data-title="Bytes Served, 90th Percentile">1,893.6kb</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><picture>
+    <source media="(min-width: 650px)" srcset="data:application/octet-stream;base64,">
+    <img src="data:application/octet-stream;base64," alt="Boxplot charts showing the amount of JavaScript bytes served to mobile devices for sites with various frameworks. Also presented by the preceding table">
+</picture></p>
+
+<table>
+    <caption>JavaScript Bytes Served to Desktop Devices, by Percentile</caption>
+    <thead>
+        <tr>
+            <th></th>
+            <th>10th</th>
+            <th>25th</th>
+            <th>50th</th>
+            <th>75th</th>
+            <th>90th</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-title="Dataset">All Sites</td>
+            <td data-title="Bytes Served, 10th Percentile">105.5kb</td>
+            <td data-title="Bytes Served, 25th Percentile">226.6kb</td>
+            <td data-title="Bytes Served, 50th Percentile">450.4kb</td>
+            <td data-title="Bytes Served, 75th Percentile">808.8kb</td>
+            <td data-title="Bytes Served, 90th Percentile">1,267.3kb</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with jQuery</td>
+            <td data-title="Bytes Served, 10th Percentile">121.7kb</td>
+            <td data-title="Bytes Served, 25th Percentile">242.2kb</td>
+            <td data-title="Bytes Served, 50th Percentile">458.3kb</td>
+            <td data-title="Bytes Served, 75th Percentile">803.4kb</td>
+            <td data-title="Bytes Served, 90th Percentile">1,235.3kb</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Vue.js</td>
+            <td data-title="Bytes Served, 10th Percentile">248.0kb</td>
+            <td data-title="Bytes Served, 25th Percentile">420.1kb</td>
+            <td data-title="Bytes Served, 50th Percentile">718.0kb</td>
+            <td data-title="Bytes Served, 75th Percentile">1,122.5kb</td>
+            <td data-title="Bytes Served, 90th Percentile">1,643.1kb</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Angular</td>
+            <td data-title="Bytes Served, 10th Percentile">468.8kb</td>
+            <td data-title="Bytes Served, 25th Percentile">716.9kb</td>
+            <td data-title="Bytes Served, 50th Percentile">1,144.2kb</td>
+            <td data-title="Bytes Served, 75th Percentile">1,930.0kb</td>
+            <td data-title="Bytes Served, 90th Percentile">3,283.1kb</td>
+        </tr>
+         <tr>
+            <td data-title="Dataset">Sites with React</td>
+            <td data-title="Bytes Served, 10th Percentile">308.6kb</td>
+            <td data-title="Bytes Served, 25th Percentile">469.0kb</td>
+            <td data-title="Bytes Served, 50th Percentile">841.9kb</td>
+            <td data-title="Bytes Served, 75th Percentile">1,472.2kb</td>
+            <td data-title="Bytes Served, 90th Percentile">2,197.8kb</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><picture>
+    <source media="(min-width: 650px)" srcset="data:application/octet-stream;base64,">
+    <img src="data:application/octet-stream;base64," alt="Boxplot charts showing the amount of JavaScript bytes served to desktop devices for sites with various frameworks. Also presented by the preceding table">
+</picture></p>
+
+<p>For the sheer payload size, the 10th percentile turns out pretty much as you would expect: if one of these frameworks are in use, there’s more JavaScript even in the most ideal of situations. That’s not surprising—you can’t add a JavaScript framework as a default starting point and expect to ship less JavaScript out of the box.</p>
+
+<p>What <em>is</em> notable is that some frameworks correlate to better starting points than others. Sites with jQuery are the best of the bunch, starting with about 15% more JavaScript on desktop devices and about 18% more on mobile. (There’s admittedly a little bit of bias here. jQuery is found on a lot of sites, so naturally, it’s going to have a tighter relationship to the overall numbers than others. Still, that doesn’t change the way the raw numbers appear for each framework.)</p>
+
+<p>While even a 15-18% increase is notable, comparing that to the opposite end of the spectrum makes the jQuery tax feel very low. Sites with Angular ship 344% more JavaScript on desktop at the 10th percentile, and 377% more on mobile. Sites with React, the next heaviest, ship 193% more JavaScript on desktop and 270% more on mobile devices.</p>
+
+<p>I mentioned earlier that even if the starting point is a little off, I would hope that a framework could still provide value by limiting the upper bound in some way.</p>
+
+<p>Interestingly, jQuery driven sites follow this pattern. While they’re a bit heftier (15-18%) at the 10th percentile, they’re slightly smaller than the aggregate at the 90th percentile—about 3% on both desktop and mobile. Neither of those numbers is super significant, but at least sites with jQuery don’t seem to have a dramatically worse long-tail in terms of JavaScript bytes shipped.</p>
+
+<p>The same can’t be said of the other frameworks.</p>
+
+<p>Just as with the 10th percentile, Angular and React driven sites tend to distance themselves from others at the 90th percentile, and not in a very flattering way.</p>
+
+<p>At the 90th percentile, Angular sites ship 141% more bytes on mobile and 159% more bytes on desktop. Sites with React ship 73% more bytes on desktop and 58% more on mobile. With a 90th percentile weight of 2,197.8kb, React sites ship 322.9kb more bytes of JavaScript to mobile users than Vue.js, the next closest. The desktop gap between Angular and React and the rest of the crowd is even higher—React-driven sites ship 554.7kb more JavaScript than Vue.js-driven sites.</p>
+
+<h2 id="javascript-main-thread-time">JavaScript Main Thread Time</h2>
+
+<p>It’s clear from the data that sites with these frameworks in place tend to pay a large penalty in terms of bytes. But of course, that’s just one part of the equation.</p>
+
+<p>Once that JavaScript arrives, it has to get to work. Any work that occurs on the main thread of the browser is particularly troubling. The main thread is responsible for handling user input, during style calculation, layout and painting. If we’re clogging it up with a lot of JavaScript work, the main thread has no chance to do those things in a timely manner, leading to lag and jank.</p>
+
+<p>HTTP Archive records V8 main thread time, so we can query to see just how much time that main thread is working on all that JavaScript.</p>
+
+<table>
+    <caption>Scripting related CPU time (in milliseconds) for mobile devices, in percentiles</caption>
+    <thead>
+        <tr>
+            <th></th>
+            <th>10th</th>
+            <th>25th</th>
+            <th>50th</th>
+            <th>75th</th>
+            <th>90th</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-title="Dataset">All Sites</td>
+            <td data-title="Main thread time, 10th Percentile">356.4ms</td>
+            <td data-title="Main thread time, 25th Percentile">959.7ms</td>
+            <td data-title="Main thread time, 50th Percentile">2,372.1ms</td>
+            <td data-title="Main thread time, 75th Percentile">5,367.3ms</td>
+            <td data-title="Main thread time, 90th Percentile">10,485.8ms</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with jQuery</td>
+            <td data-title="Main thread time, 10th Percentile">575.3ms</td>
+            <td data-title="Main thread time, 25th Percentile">1,147.4ms</td>
+            <td data-title="Main thread time, 50th Percentile">2,555.9ms</td>
+            <td data-title="Main thread time, 75th Percentile">5,511.0ms</td>
+            <td data-title="Main thread time, 90th Percentile">10,349.4ms</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Vue.js</td>
+            <td data-title="Main thread time">1,130.0ms</td>
+            <td data-title="Main thread time">2,087.9ms</td>
+            <td data-title="Main thread time">4,100.4ms</td>
+            <td data-title="Main thread time">7,676.1ms</td>
+            <td data-title="Main thread time">12,849.4ms</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Angular</td>
+            <td data-title="Main thread time, 10th Percentile">1,471.3ms</td>
+            <td data-title="Main thread time, 25th Percentile">2,380.1ms</td>
+            <td data-title="Main thread time, 50th Percentile">4,118.6ms</td>
+            <td data-title="Main thread time, 75th Percentile">7,450.8ms</td>
+            <td data-title="Main thread time, 90th Percentile">13,296.4ms</td>
+        </tr>
+         <tr>
+            <td data-title="Dataset">Sites with React</td>
+            <td data-title="Main thread time, 10th Percentile">2,700.1ms</td>
+            <td data-title="Main thread time, 25th Percentile">5,090.3ms</td>
+            <td data-title="Main thread time, 50th Percentile">9,287.6ms</td>
+            <td data-title="Main thread time, 75th Percentile">14,509.6ms</td>
+            <td data-title="Main thread time, 90th Percentile">20,813.3ms</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><picture>
+    <source media="(min-width: 650px)" srcset="data:application/octet-stream;base64,">
+    <img src="data:application/octet-stream;base64," alt="Boxplot charts showing the amount of JavaScript cpu time for mobile tests for sites with various frameworks. Also presented by the preceding table">
+</picture></p>
+
+<table>
+    <caption>Scripting related CPU time (in milliseconds) for desktop devices, in percentiles</caption>
+    <thead>
+        <tr>
+            <th></th>
+            <th data-title="Main thread time, 10th Percentile">10th</th>
+            <th data-title="Main thread time, 25th Percentile">25th</th>
+            <th data-title="Main thread time, 50th Percentile">50th</th>
+            <th data-title="Main thread time, 75th Percentile">75th</th>
+            <th data-title="Main thread time, 90th Percentile">90th</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-title="Dataset">All Sites</td>
+            <td data-title="Main thread time">146.0ms</td>
+            <td data-title="Main thread time">351.8ms</td>
+            <td data-title="Main thread time">831.0ms</td>
+            <td data-title="Main thread time">1,739.8ms</td>
+            <td data-title="Main thread time">3,236.8ms</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with jQuery</td>
+            <td data-title="Main thread time, 10th Percentile">199.6ms</td>
+            <td data-title="Main thread time, 25th Percentile">399.2ms</td>
+            <td data-title="Main thread time, 50th Percentile">877.5ms</td>
+            <td data-title="Main thread time, 75th Percentile">1,779.9ms</td>
+            <td data-title="Main thread time, 90th Percentile">3,215.5ms</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Vue.js</td>
+            <td data-title="Main thread time, 10th Percentile">350.4ms</td>
+            <td data-title="Main thread time, 25th Percentile">650.8ms</td>
+            <td data-title="Main thread time, 50th Percentile">1,280.7ms</td>
+            <td data-title="Main thread time, 75th Percentile">2,388.5ms</td>
+            <td data-title="Main thread time, 90th Percentile">4,010.8ms</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Angular</td>
+            <td data-title="Main thread time, 10th Percentile">482.2ms</td>
+            <td data-title="Main thread time, 25th Percentile">777.9ms</td>
+            <td data-title="Main thread time, 50th Percentile">1,365.5ms</td>
+            <td data-title="Main thread time, 75th Percentile">2,400.6ms</td>
+            <td data-title="Main thread time, 90th Percentile">4,171.8ms</td>
+        </tr>
+         <tr>
+            <td data-title="Dataset">Sites with React</td>
+            <td data-title="Main thread time, 10th Percentile">508.0ms</td>
+            <td data-title="Main thread time, 25th Percentile">1,045.6ms</td>
+            <td data-title="Main thread time, 50th Percentile">2,121.1ms</td>
+            <td data-title="Main thread time, 75th Percentile">4,235.1ms</td>
+            <td data-title="Main thread time, 90th Percentile">7,444.3ms</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><picture>
+    <source media="(min-width: 650px)" srcset="data:application/octet-stream;base64,">
+    <img src="data:application/octet-stream;base64," alt="Boxplot charts showing the amount of JavaScript cpu time for desktop tests for sites with various frameworks. Also presented by the preceding table">
+</picture></p>
+
+<p>There are some very familiar themes here.</p>
+
+<p>First, sites with jQuery detected spend <em>much</em> less time on JavaScript work on the main thread than the other three analyzed. At the 10th percentile, there’s a 61% increase in JavaScript main thread work being done on mobile devices and 37% more on desktop. At the 90th percentile, jQuery sites are gain pretty darn close to the aggregate, spending 1.3% <em>less</em> time on the main thread for mobile devices and ..7% less time on desktop machines.</p>
+
+<p>The opposite end—the frameworks that correlate to the most time spent on the main thread—is once again made up of Angular and React. The only difference is that while Angular sites shipped more JavaScript than React sites, they actually spend less time on the CPU—<em>much</em> less time.</p>
+
+<p>At the 10th percentile, Angular sites spend 230% more time on the CPU for JavaScript related work on desktop devices, and 313% more on mobile devices. React sites bring up the tail end, spending 248% more time on desktop devices and 658% more time on mobile devices. No, 658% is not a typo. At the 10th percentile, sites with React spend 2.7s on the main thread dealing with all the JavaScript sent down.</p>
+
+<p>Compared to those big numbers, the situation at the 90th percentile at least looks a little better. The main thread of Angular sites spends 29% more time on JavaScript for desktop devices and 27% more time on mobile devices. React sites spend 130% more time on desktop and 98% more time on mobile devices.</p>
+
+<p>Those percentages look much better than at the 10th percentile, but keep in mind that the bulk numbers are pretty scary: that’s 20.8s of main thread work for sites built with React at the 90th percentile on mobile devices. (What, exactly, is happening during that time is a topic for a follow-up post, I think.)</p>
+
+<p>There’s one potential gotcha (thanks <a href="https://jeremy.codes/">Jeremy</a> for making sure I double-checked the stats from this angle)—many sites will pull in multiple libraries. In particular, I see a lot of sites pulling jQuery in alongside React or Vue.js as they’re migrating to that architecture. So, I re-ran the queries, only this time I only included URLs that included only React, jQuery, Angular or Vue.js <em>not some combination of them</em>.</p>
+
+<table>
+    <caption>Scripting related CPU time (in milliseconds) for mobile devices where only one of the frameworks is detected, in percentiles</caption>
+    <thead>
+        <tr>
+            <th></th>
+            <th>10th</th>
+            <th>25th</th>
+            <th>50th</th>
+            <th>75th</th>
+            <th>90th</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-title="Dataset">Sites with only jQuery</td>
+            <td data-title="Main thread time, 10th Percentile">542.9ms</td>
+            <td data-title="Main thread time, 25th Percentile">1,062.2ms</td>
+            <td data-title="Main thread time, 50th Percentile">2,297.4ms</td>
+            <td data-title="Main thread time, 75th Percentile">4,769.7ms</td>
+            <td data-title="Main thread time, 90th Percentile">8,718.2ms</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with only Vue.js</td>
+            <td data-title="Main thread time, 10th Percentile">944.0ms</td>
+            <td data-title="Main thread time, 25th Percentile">1,716.3ms</td>
+            <td data-title="Main thread time, 50th Percentile">3,194.7ms</td>
+            <td data-title="Main thread time, 75th Percentile">5,959.6ms</td>
+            <td data-title="Main thread time, 90th Percentile">9,843.8ms</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Angular</td>
+            <td data-title="Main thread time, 10th Percentile">1,328.9ms</td>
+            <td data-title="Main thread time, 25th Percentile">2,151.9ms</td>
+            <td data-title="Main thread time, 50th Percentile">3,695.3ms</td>
+            <td data-title="Main thread time, 75th Percentile">6,629.3ms</td>
+            <td data-title="Main thread time, 90th Percentile">11,607.7ms</td>
+        </tr>
+         <tr>
+            <td data-title="Dataset">Sites with React</td>
+            <td data-title="Main thread time, 10th Percentile">2,443.2ms</td>
+            <td data-title="Main thread time, 25th Percentile">4,620.5ms</td>
+            <td data-title="Main thread time, 50th Percentile">10,061.4ms</td>
+            <td data-title="Main thread time, 75th Percentile">17,074.3ms</td>
+            <td data-title="Main thread time, 90th Percentile">24,956.3ms</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><picture>
+    <source media="(min-width: 650px)" srcset="data:application/octet-stream;base64,">
+    <img src="data:application/octet-stream;base64," alt="Boxplot charts showing the amount of JavaScript cpu time for mobiles tests for sites with only one framework detected. Also presented by the preceding table">
+</picture></p>
+
+<p>First, the unsurprising bit: when only one framework is used, performance improves far more often than not. The numbers for every framework look better at the 10th and 25th percentile. That makes sense. A site that is built well with one framework <em>should</em> perform better than a site that is built well with two or more.</p>
+
+<p>In fact, the numbers for every framework look better at each percentile with one curious exception.
+What surprised me, and the reason I ended up including this data, is that at the 50th percentile and beyond, sites using React perform <em>worse</em> when React is the only framework in use.</p>
+
+<p>It’s a bit odd, but here’s my best guess.</p>
+
+<p>If you have React and jQuery running alongside each other, you’re more likely to be in the midst of a migration to React, or a mixed codebase. Since we have already seen that sites with jQuery spend less time on the main thread than sites with React, it makes sense that having some functionality still driven by jQuery would bring the numbers down a bit.</p>
+
+<p>As you move away from jQuery and focus more on React exclusively, though, that changes. If the site is built really well and you’re using React sparingly, you’re fine. But for the average site, more work inside of React means the main thread receives an increasing amount of strain.</p>
+
+<h2 id="the-mobile-desktop-gap">The mobile/desktop gap</h2>
+
+<p>Another angle that’s worth looking at is just how large the gap is between that mobile experience and the desktop experience. Looking at it from a bytes perspective, nothing too scary jumps out. Sure, I’d love to see fewer bytes passed along, but neither mobile nor desktop devices receive significantly more bytes than the other.</p>
+
+<p>But once you look at the processing time, the gap is significant.</p>
+
+<table>
+    <caption>Percentage increase in main thread scripting work on mobile devices compared to desktop devices, by percentiles</caption>
+    <thead>
+        <tr>
+            <th></th>
+            <th>10th</th>
+            <th>25th</th>
+            <th>50th</th>
+            <th>75th</th>
+            <th>90th</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-title="Dataset">All Sites</td>
+            <td data-title="Change from Desktop to Mobile, 10th percentile">144.1%</td>
+            <td data-title="Change from Desktop to Mobile, 25th percentile">172.8%</td>
+            <td data-title="Change from Desktop to Mobile, 50th percentile">185.5%</td>
+            <td data-title="Change from Desktop to Mobile, 75th percentile">208.5%</td>
+            <td data-title="Change from Desktop to Mobile, 90th percentile">224.0%</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with jQuery</td>
+            <td data-title="Change from Desktop to Mobile, 10th percentile">188.2%</td>
+            <td data-title="Change from Desktop to Mobile, 25th percentile">187.4%</td>
+            <td data-title="Change from Desktop to Mobile, 50th percentile">191.3%</td>
+            <td data-title="Change from Desktop to Mobile, 75th percentile">209.6%</td>
+            <td data-title="Change from Desktop to Mobile, 90th percentile">221.9%</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Vue.js</td>
+            <td data-title="Change from Desktop to Mobile, 10th percentile">222.5%</td>
+            <td data-title="Change from Desktop to Mobile, 25th percentile">220.8%</td>
+            <td data-title="Change from Desktop to Mobile, 50th percentile">220.2%</td>
+            <td data-title="Change from Desktop to Mobile, 75th percentile">221.4%</td>
+            <td data-title="Change from Desktop to Mobile, 90th percentile">220.4%</td>
+        </tr>
+        <tr>
+            <td data-title="Dataset">Sites with Angular</td>
+            <td data-title="Change from Desktop to Mobile, 10th percentile">205.1%</td>
+            <td data-title="Change from Desktop to Mobile, 25th percentile">206.0%</td>
+            <td data-title="Change from Desktop to Mobile, 50th percentile">201.6%</td>
+            <td data-title="Change from Desktop to Mobile, 75th percentile">210.4%</td>
+            <td data-title="Change from Desktop to Mobile, 90th percentile">218.7%</td>
+        </tr>
+         <tr>
+            <td data-title="Dataset">Sites with React</td>
+            <td data-title="Change from Desktop to Mobile, 10th percentile">431.5%</td>
+            <td data-title="Change from Desktop to Mobile, 25th percentile">386.8%</td>
+            <td data-title="Change from Desktop to Mobile, 50th percentile">337.9%</td>
+            <td data-title="Change from Desktop to Mobile, 75th percentile">242.6%</td>
+            <td data-title="Change from Desktop to Mobile, 90th percentile">179.6%</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>While some variance is expected between a phone and a laptop, seeing numbers this high tells me that the current crop of frameworks isn’t doing enough to prioritize less powerful devices and help to close that gap. Even at the 10th percentile, React sites spend 431.5% more time on the main thread on mobile devices as they do on desktop devices. jQuery has the lowest gap of all frameworks, but even there, it equates to 188.2% more time on mobile devices. When we make the CPU work harder—and increasingly we are—folks with less powerful devices end up holding the bill.</p>
+
+<h2 id="the-big-picture">The big picture</h2>
+
+<p>Good frameworks should provide a better starting point on the essentials (security, accessibility, performance) or have built-in constraints that make it harder to ship something that violates those.</p>
+
+<p>That doesn’t appear to be happening with performance (<a href="https://webaim.org/projects/million/#frameworks">nor with accessibility</a>, apparently).</p>
+
+<p>It’s worth noting that because sites with React or Angular spend more time on the CPU than others, that isn’t necessarily the same as saying React is more expensive on the CPU than Vue.js. In fact, it says very little about the performance of the core frameworks in play and much more about the approach to development these frameworks may encourage (whether intentionally or not) through documentation, ecosystem, and general coding practices.</p>
+
+<p>It’s also worth noting what we don’t have here: data about how much time the device spends on this JavaScript for subsequent views. The argument for the <abbr title="Single-Page Application">SPA</abbr> architecture is that, once the <abbr title="Single-Page Application">SPA</abbr> is in place, you theoretically get faster subsequent page loads. My own experience tells me that’s far from a given, but we don’t have concrete data here to make that case in either direction.</p>
+
+<p>What is clear: right now, if you’re using a framework to build your site, you’re making a trade-off in terms of initial performance—even in the best of scenarios.</p>
+
+<p><em>Some</em> trade-off may be acceptable in the right situations, but it’s important that we make that exchange consciously.</p>
+
+<p>There’s reason for optimism. I’m encouraged by how closely the folks at Chrome have been working with some of these frameworks to help improve their performance.</p>
+
+<p>But I’m also pragmatic. New architectures tend to create performance problems just as often as they solve them, and it takes time to right the ship. Just as <a href="https://timkadlec.com/remembers/2019-04-18-new-network-fallacies/">we shouldn’t expect new networks to solve all our performance woes</a>, we shouldn’t expect that the next version of our favorite framework is going to solve them all either.</p>
+
+<p>If you are going to use one of these frameworks, then you have to take extra steps to make sure you don’t negatively impact performance in the meantime. Here are a few great starting considerations:</p>
+
+<ul>
+<li>Do a sanity check: do you <em>really</em> need to use it? Vanilla JavaScript can do <em>a lot</em> today.</li>
+<li>Is there a lighter alternative (Preact, Svelte, etc.) that gets you 90% of the way there?</li>
+<li>If you’re going with a framework, does anything exist that provides better, more opinionated defaults (ex: Nuxt.js instead of Vue.js, Next.js instead of React, etc.)?<sup id="footnote-2-link"><a href="#footnote-2">2</a></sup></li>
+<li>What’s your <a href="https://timkadlec.com/remembers/2019-03-07-performance-budgets-that-stick/">performance budget going to be</a> for your JavaScript?</li>
+<li>What friction can you introduce into the workflow that makes it harder to <a href="https://timkadlec.com/remembers/2020-03-18-building-with-friction/">add any more JavaScript than absolutely necessary</a>?</li>
+<li>If you’re using a framework for the developer ergonomics, do you <a href="https://www.gatsbyjs.org/packages/gatsby-plugin-no-javascript/">need to ship it down to the client</a>, or can you handle that all on the server?</li>
+</ul>
+
+<p>These are generally good things to consider regardless of your technology choice, but they’re particularly important if you’re starting with a performance deficit from the beginning.</p>
+
+<div>
+    <p id="footnote-1"><a href="#footnote-1-link">1.</a> I considered using other baselines.</p>
+    
+    <p>For example, we could use all sites that didn't have any of the mentioned frameworks (jQuery, React, Vue.js, Angular) detected.</p><p> Here are the numbers for the JavaScript main thread work on mobile devices for those URLs:
+
+    </p><table>
+    <caption>Scripting related CPU time (in milliseconds) for mobile devices, in percentiles</caption>
+    <thead>
+        <tr>
+            <th></th>
+            <th>10th</th>
+            <th>25th</th>
+            <th>50th</th>
+            <th>75th</th>
+            <th>90th</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-title="Dataset">All Sites</td>
+            <td data-title="Main thread time, 10th Percentile">6.3ms</td>
+            <td data-title="Main thread time, 25th Percentile">75.3ms</td>
+            <td data-title="Main thread time, 50th Percentile">382.2ms</td>
+            <td data-title="Main thread time, 75th Percentile">2,316.6ms</td>
+            <td data-title="Main thread time, 90th Percentile">5,504.7ms</td>
+        </tr>
+    </tbody>
+    </table>
+
+    <p>Going even further, we could use all sites with no JavaScript framework or library detected at all. Here's what the main thread time looks like for those:</p>
+
+    <table>
+    <caption>Scripting related CPU time (in milliseconds) for mobile devices, in percentiles</caption>
+    <thead>
+        <tr>
+            <th></th>
+            <th>10th</th>
+            <th>25th</th>
+            <th>50th</th>
+            <th>75th</th>
+            <th>90th</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-title="Dataset">All Sites</td>
+            <td data-title="Main thread time, 10th Percentile">3.6ms</td>
+            <td data-title="Main thread time, 25th Percentile">29.9ms</td>
+            <td data-title="Main thread time, 50th Percentile">193.2ms</td>
+            <td data-title="Main thread time, 75th Percentile">1,399.6ms</td>
+            <td data-title="Main thread time, 90th Percentile">3,714.5ms</td>
+        </tr>
+    </tbody>
+    </table>
+
+    <p>With either baseline, the data would have looked less favorable and more dramatic. Ultimately, I ended up using the aggregate data as the baseline because:</p>
+    <ul>
+        <li>It's what is used broadly in the community whenever this stuff is discussed.</li>
+        <li>It avoids derailing the conversation with debates about whether or not sites without frameworks are complex enough to be an accurate comparison. You can build large, complex sites without using a framework—I've worked with companies who have—but it's an argument that would distract from the otherwise pretty clear conclusions from the data.</li>
+    </ul>
+
+    <p>Still, as a few folks pointed out to me when I was showing them the data, it's interesting to see these alternate baselines as they do make it very clear how much these tools are messing with the averages.</p>
+
+    <p id="footnote-2"><a href="#footnote-2-link">2.</a> I suspect folks could start with just the framework and build something that outperforms what Next.js or Nuxt.js gives you. The long-tail of data here, though, shows that likely isn't the case for many sites. It takes time to build out all the plumbing they provide, and build it well. Still, it is worth considering how many layers of abstraction we're willing to pull in before making the decision.
+</p></div>
+
+	</section>
+</article>
+
+</div></div>
+  </div>
+</body>
+</html>

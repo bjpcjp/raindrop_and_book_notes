@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>What We Learned When We Built a Vector Database-and Our Customers Started U</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>What We Learned When We Built a Vector Database-and Our Customers Started U</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/datastax/what-we-learned-when-we-built-a-vector-database-and-our-customers-started-using-it-part-1-1c6h">https://dev.to/datastax/what-we-learned-when-we-built-a-vector-database-and-our-customers-started-using-it-part-1-1c6h</a></p>
+    <p><strong>Tags:</strong> vector-databases</p>
+    <p><strong>Bookmark ID:</strong> 876794024</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1761722" id="article-body">
+            <p>Everyone is talking about vectors these days. Cosines, ANN searches, normalizations, sentence embeddings—there’s so much to know, it can feel a bit overwhelming at times!</p>
+
+<p>In the last half year or so, the engineering team at DataStax has been busy delivering a performant, efficient, and scalable vector database experience. Our work spanned many areas, including – crucially – offering guidance to customers and helping them figure out how to get the best out of their vector-based applications.</p>
+
+<p>On this journey (which, as the saying goes, is far from over), we noticed recurring pitfalls, dead ends, and, generally speaking, "things one should've known earlier," on topics ranging from the basics all the way to weird corner cases one does not often think about. </p>
+
+<p>This four-part series of articles is an attempt to collect some of these findings for the benefit of the reader and their future vector-based endeavors. Although these posts are mostly about "mathematical" properties of vectors (which are valid irrespective of the backend you’re using), a few of the remarks will be specific to Apache Cassandra<sup>®</sup>'s and DataStax Astra DB's stance on vectors.</p>
+
+<p>This first article covers general properties of vectors and tips to interact with them, independent of their origin and purpose. The second article will examine the various notions of vector similarity and their properties. In article three, we’ll take a closer look at the usage of Cassandra and Astra DB with vectors. Finally, we’ll offer a couple of quirks and corner cases to keep in mind in your Cassandra- or Astra DB-enabled vector applications and a small example of a full "migration between vector stores," with an emphasis on the pitfalls with distances and similarities.</p>
+
+<h2>
+  <a name="the-basics" href="#the-basics">
+  </a>
+  The basics
+</h2>
+
+<p><strong>What is a vector?</strong><br>
+A vector is a quantity used in geometry and most sciences to denote a phenomenon with a direction and a length (the mathematically rigorous readers, I am sure, will pardon this very practical definition). To describe the blowing of the wind at a given point, for instance, you might use a vector (the vector "length" would be then the wind intensity). With a certain choice of a reference basis (e.g. the x, y and z axes for three-dimensional vectors), a vector can be formulated as a list made of numbers (its three x, y, z components), as many numbers as is its <strong>dimensionality</strong>. While typical vectors one can imagine in the "real world around us" are 3-dimensional or less, nothing prevents you from thinking of 10-dimensional, 768-dimensional, 1536-dimensional vectors (… or even infinite-dimensional vectors. But I digress).</p>
+
+<p>A vector, in short, is a way to denote a point belonging to a given space. You can picture a vector as an arrow, whose tip is the denoted point. It is an expectation from vector geometry that the "length" (or norm) of a vector be defined regardless which direction it is oriented, i.e. a vector space implies some meaningful notion of "rotation" for its vectors. </p>
+
+<p>Don’t confuse the length with the count of the components (i.e. the dimension, which is always a positive integer).<br>
+Take <em>all</em> possible 2-dimensional <strong>(x, y)</strong> vectors: the points they describe form the whole of a flat plane! Now take only the vectors of length equal to one ("unit vectors"): their points form a circle (of radius one). Likewise, the unit length vectors with dimension three are a sphere in space. </p>
+
+<p>Below, I’ll speak of "spheres" in a broad sense, regardless of the dimension (circles, spheres and "hyperspheres" alike): so, when I say "vectors on a sphere," I actually just mean "vectors of some dimensionality whose length is equal to one."</p>
+
+<p><strong>Of similar and dissimilar vectors</strong><br>
+Comparing numbers is easy: 10 is similar to 10.3 and very different from, say, 9979. Just look at (the absolute value of) their difference! What about vectors: how can you say whether two vectors are "similar", or "close", to each other?<br>
+It turns out that with vectors there are several ways ("measures") to decide what "close to each other" might mean. </p>
+
+<p>The subtle differences between the available definitions are enough to warrant a deeper investigation... and a dedicated section later in this post!</p>
+
+<p>Even though these definitions differ in their mathematical formulation, they are all ways to quantify, with a number, the degree of similarity between vectors. Conceptually, higher similarity means the vectors are closer to each other, or – equivalently – their distance is <em>lower</em>. This fact holds regardless of the "measure" being adopted.</p>
+
+<p>Here is a brief overview of the measures I will consider (which happen to be the choices available on Cassandra and Astra DB). Choosing to commit to a measure or another is largely based on the nature of the data you want to represent as vectors, and how you do it:</p>
+
+<ul>
+<li>Euclidean similarity: "how close to each other the tips of the two arrows are"</li>
+<li>Cosine similarity: "by how much are the two arrows pointing to the same <em>direction</em> (regardless of the vectors' lengths)"</li>
+<li>Dot-product similarity: this is the oddball of the bunch. You'll see more about "Dot" later on.</li>
+</ul>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F114wgkjfylbkexw7lypw.png"><img src="data:," alt="Image description" loading="lazy" width="800" height="382"></a></p>
+
+<p><em>Caption: Vectors in two dimensions, on the whole plane (left) and limited to a circle of radius one (a "two-dimensional sphere"). Vectors can be thought of as lists of numbers, but they are usually represented as arrows anchored at an origin point. The "angular distance" on the right is related to the Cosine similarity between two vectors: smaller angle means higher similarity. Likewise, vectors with a smaller Euclidean distance (pictured) are more similar.</em></p>
+
+<p>There are a few other definitions of vector similarity available; most are variations of the Euclidean family, but you need not be concerned with them here.</p>
+
+<p>Note that generally one prefers to think in terms of "similarity" rather than "distance," as the former lends itself to fewer mathematical complications and more immediate practical applicability.</p>
+
+<h2>
+  <a name="lets-get-the-terms-right" href="#lets-get-the-terms-right">
+  </a>
+  Let's get the terms right
+</h2>
+
+<p>In a sense, this article is a mathematical essay in disguise. That means that even if I do my best to keep the number of formulae to a minimum, I still need to use the right concepts precisely and with rigor. For this reason, let's start with a few definitions.</p>
+
+<p>For this series of articles, I will consistently use the following terms:</p>
+
+<ul>
+<li><p><strong>Dimension</strong> or <strong>dimensionality</strong>: denoted by <strong>d</strong>, this amounts to how many numbers (<em>components</em>) form the vector, or equivalently the number of independent directions in the vector space. For example, vectors denoting positions on a sheet of paper have <strong>d=2</strong>, while for locations in the space around you vectors with <strong>d=3</strong> are needed. <strong>d</strong> is much higher than that for most AI-related vector applications. Comparing vectors with different dimensions just makes no sense.</p></li>
+<li><p><strong>Length</strong> or <strong>norm</strong>: for a vector <strong>v</strong>, this is denoted by <strong>|v|</strong>. It is the length of the arrow from tip to tail. One can calculate it as the square root of the sum of the squares of all the components:</p></li>
+</ul>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fgoz4c3u83elnbycu26za.png"><img src="data:," alt="Image description" loading="lazy" width="273" height="161"></a></p>
+
+<ul>
+<li><p><strong>Measure</strong>: a mental model of "what it means for vectors to be close/distant." One can consider a Cosine measure, an Euclidean measure, and so on. Choosing a measure does not mean committing to a precise formula just yet.</p></li>
+<li><p>As mentioned above, I prefer using the notion of "similarity" over that of "distance" where possible. Cassandra and Astra DB never expose anything that is a "distance," only similarities; moreover, not all measures offer a natural and simple-to-understand "distance" to think about.</p></li>
+<li><p><strong>Similarity</strong>: a numeric way to quantify how much two vectors <strong>v<sub>1</sub></strong> and <strong>v<sub>2</sub></strong> are close to each other, computed with some formula <strong>S(v<sub>1</sub>, v<sub>2</sub>)</strong>. One expects that <strong>S(v<sub>1</sub>, v<sub>2</sub>) = S(v<sub>2</sub>, v<sub>1</sub>)</strong>; one also requires this quantity to be higher for pairs of vectors that are more similar to each other. It is desirable (and often verified) that this quantity be bound within a known range: for Cassandra and Astra DB, similarities are chosen so as to lie between zero (most dissimilar, or very high-distance, vectors) and one (most similar). As you will see, though, there is a notable exception to this general rule!</p></li>
+<li><p><strong>Unit sphere</strong>: The set of all vectors with unit length (all the vectors <strong>v</strong> for which <strong>|v| = 1</strong>). When I say that vectors are "on a sphere", it is implied that they are on the unit sphere. This special (and very common) case unlocks a few nice properties.</p></li>
+</ul>
+
+<p>For the mathematically inclined, here are the relevant formulae behind the different similarities. In these, <strong>x<sub>i</sub></strong> with <strong>i=1,... d</strong> denote the components of vector <strong>x</strong> (i.e. each one of the numbers in the list representing <strong>x</strong>).</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fg20l82jo0fqvl5irnx0t.png"><img src="data:," alt="Image description" loading="lazy" width="800" height="377"></a></p>
+
+<h2>
+  <a name="not-every-list-of-numbers-is-a-vector" href="#not-every-list-of-numbers-is-a-vector">
+  </a>
+  Not every list of numbers is a vector
+</h2>
+
+<p>An implied assumption when thinking of vectors is that rotations in their space should "make sense" (pardon the non-rigorous parlance—you're not reading a linear algebra textbook). This essentially amounts to their components being "of the same kind", and is critical for a proper interpretation of the "similarity" between vectors (whatever its precise definition).</p>
+
+<p>Suppose you associate a list of numbers such as <code>[price, average_rating]</code> to searchable ecommerce items. These are heterogeneous quantities. As a consequence, it is not well defined what we mean by "two items having distance 5 from each other": the lack of a natural way to rotate vectors in this space invalidates the notion of similarity as well. What a downer!</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F201rc739dw9xvs2m1r20.png"><img src="data:," alt="Image description" loading="lazy" width="738" height="522"></a></p>
+
+<p><em>Caption: Which item is "closer" to the mousepad: the t-shirt or the paperweight? Certainly geometry alone cannot easily answer such a question. In other words, what we are saying is that the problem of comparing a distance of $5 on the money axis to a distance of 5 on the rating axis is</em> not just <em>a geometry problem.</em></p>
+
+<p>A practical rule then is the following: applying vector search methods is a sensible approach, generally, if and only if the dimensions are of the same kind – in other words, if one can think of summing the numbers in the list in a meaningful way. </p>
+
+<p>This is the case, for instance, for a vector expressing a position on a map as <code>[meters_north_of_home, meters_west_of_home]</code>, but also – crucially – for the sentence embedding vectors that are being used so fruitfully in the GenAI world nowadays.</p>
+
+<p>There are, indeed, advanced, "non-conventional" cases where one might concoct and use such a pseudo-vector – <a href="https://github.com/hemidactylus/astra_misc_resources/blob/main/dot-product-for-weighted-ranking/Dot-product-for-weigthed-1.ipynb">here's an example</a>.</p>
+
+<p>Coming up next, we’ll explore one of the most important choices one must face when designing a vector-powered application: which <em>similarity measure</em> should be adopted? We briefly covered the Euclidean, Cosine and Dot-product options (their virtues and their differences) but are these similarities so dissimilar after all?  Stay tuned to find out – see you next time!</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

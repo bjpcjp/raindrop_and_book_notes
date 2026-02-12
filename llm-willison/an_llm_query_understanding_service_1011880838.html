@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>An LLM Query Understanding Service</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>An LLM Query Understanding Service</h1>
+    <p><strong>URL:</strong> <a href="https://simonwillison.net/2025/Apr/9/an-llm-query-understanding-service/#atom-everything">https://simonwillison.net/2025/Apr/9/an-llm-query-understanding-service/#atom-everything</a></p>
+    <p><strong>Tags:</strong> llms, prompt-engineering, llm-willison</p>
+    <p><strong>Bookmark ID:</strong> 1011880838</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+
+
+<p><strong><a href="https://softwaredoug.com/blog/2025/04/08/llm-query-understand">An LLM Query Understanding Service</a></strong> (<a href="https://lobste.rs/s/oa5hbz/llm_query_understanding_service" title="lobste.rs">via</a>) Doug Turnbull recently wrote about how <a href="https://softwaredoug.com/blog/2025/04/02/all-search-structured-now">all search is structured now</a>:</p>
+<blockquote>
+<p>Many times, even a small open source LLM will be able to turn a search query into reasonable structure at relatively low cost.</p>
+</blockquote>
+<p>In this follow-up tutorial he demonstrates Qwen 2-7B running in a GPU-enabled Google Kubernetes Engine container to turn user search queries like "red loveseat" into structured filters like <code>{"item_type": "loveseat", "color": "red"}</code>.</p>
+<p>Here's the prompt he uses.</p>
+<pre><code>Respond with a single line of JSON:
+
+  {"item_type": "sofa", "material": "wood", "color": "red"}
+
+Omit any other information. Do not include any
+other text in your response. Omit a value if the
+user did not specify it. For example, if the user
+said "red sofa", you would respond with:
+
+  {"item_type": "sofa", "color": "red"}
+
+Here is the search query: blue armchair
+</code></pre>
+<p>Out of curiosity, I tried running his prompt against some other models using <a href="https://llm.datasette.io/">LLM</a>:</p>
+<ul>
+<li><code>gemini-1.5-flash-8b</code>, the cheapest of the Gemini models, <a href="https://gist.github.com/simonw/cc825bfa7f921ca9ac47d7afb6eab1ce">handled it well</a> and cost $0.000011 - or 0.0011 cents.</li>
+<li><code>llama3.2:3b</code> <a href="https://gist.github.com/simonw/d18422ca24528cdb9e5bd77692531cfd">worked too</a> - that's a very small 2GB model which I ran using Ollama.</li>
+<li><code>deepseek-r1:1.5b</code> - a tiny 1.1GB model, again via Ollama, <a href="https://gist.github.com/simonw/c37eca96dd6721883207c99d25aec49d">amusingly failed</a> by interpreting "red loveseat" as <code>{"item_type": "sofa", "material": null, "color": "red"}</code> after thinking very hard about the problem!</li>
+</ul>
+
+
+
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Neural Ordinary Differential Equations | the morning paper</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Neural Ordinary Differential Equations | the morning paper</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2019/01/09/neural-ordinary-differential-equations">https://blog.acolyer.org/2019/01/09/neural-ordinary-differential-equations</a></p>
+    <p><strong>Tags:</strong> algorithms-math</p>
+    <p><strong>Bookmark ID:</strong> 876770692</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-8096">
+	<!-- .entry-header -->
+
+	<div>
+		<p><a href="https://arxiv.org/abs/1806.07366">Neural ordinary differential equations</a> Chen et al., <em>NeurIPS’18</em></p>
+<p>‘Neural Ordinary Differential Equations’ won a best paper award at NeurIPS last month. It’s not an easy piece (at least not for me!), but in the spirit of ‘deliberate practice’ that doesn’t mean there isn’t something to be gained from trying to understand as much as possible.</p>
+<p>In addition to the paper itself, I found the following additional resources to be helpful:</p>
+<ul>
+<li><a href="https://news.ycombinator.com/item?id=18676986">Thread on HN</a></li>
+<li><a href="https://rkevingibson.github.io/blog/neural-networks-as-ordinary-differential-equations/">Kevin Gibson’s blog post</a> on the paper</li>
+<li><a href="https://towardsdatascience.com/paper-summary-neural-ordinary-differential-equations-37c4e52df128">Branislav Holländer’s post on ‘Towards Data Science</a></li>
+<li><a href="http://akosiorek.github.io/ml/2018/04/03/norm_flows.html">Adam Kosiorek’s introduction to normalizing flows</a> (as linked from the previous post)</li>
+<li><a href="https://mailchi.mp/technologyreview/a-new-type-of-deep-neural-network-that-has-no-layers">High level summary in MIT TR’s ‘The Algorithm’ newsletter </a></li>
+</ul>
+<h3>Neural networks as differential equations</h3>
+<p>Consider a multi-layered neural network. We have an input layer and an output layer, and inbetween them, some number of hidden layers. As an input feeds forward through the network, it is progressively transformed, one layer at a time, from the input to the ultimate output. Each network layer is a step on that journey. If we take a small number of big steps, we end up with a rough approximation to the true transformation function we’d like to learn. If we take a much larger number of steps (deeper networks), with each step being individually smaller, we have a more accurate approximation to the true function. What happens in the limit as we take an infinite number of infinitely small steps? Calculus!</p>
+<p>So one way of thinking about those hidden layers is as steps in <a href="https://en.m.wikipedia.org/wiki/Euler_method">Euler’s method</a> for solving differential equations. Consider the following illustration from wikipedia:</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Euler_method.svg/412px-Euler_method.svg.png" alt=""></p>
+<p>We want to recover the blue curve, but all we have is an initial point <img src="https://s0.wp.com/latex.php?latex=A_0&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=A_0&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=A_0&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="A_0"> (think inputs to the network) and a differential equation. From the differential equation, we can calculate the tangent line. If we take a small step along the tangent line, we arrive at <img src="https://s0.wp.com/latex.php?latex=A_1&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=A_1&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=A_1&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="A_1">, which will be close to the desired blue line if the step is small enough. Repeat this process to uncover a polygonal curve <img src="https://s0.wp.com/latex.php?latex=A_%7B0%7DA_%7B1%7DA_%7B2%7D...A_%7Bn%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=A_%7B0%7DA_%7B1%7DA_%7B2%7D...A_%7Bn%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=A_%7B0%7DA_%7B1%7DA_%7B2%7D...A_%7Bn%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="A_{0}A_{1}A_{2}...A_{n}">.</p>
+<p>Many neural networks have a composition that looks exactly like the steps of Euler’s method. We start with an initial state <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bz%7D_0&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bz%7D_0&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bz%7D_0&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{z}_0">, and apply successive transformations over time (layers):</p>
+
+<blockquote><p>In the limit, we parameterize the continuous dynamics of hidden units using an ordinary differential equation (ODE) specified by a neural network:</p>
+<p><span>&nbsp;<img src="https://s0.wp.com/latex.php?latex=%5Cdisplaystyle+%5Cfrac%7Bd%5Cmathbf%7Bz%7D%28t%29%7D%7Bdt%7D+%3D+f%28%5Cmathbf%7Bz%7D%28t%29%2C+t%2C+%5Ctheta%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cdisplaystyle+%5Cfrac%7Bd%5Cmathbf%7Bz%7D%28t%29%7D%7Bdt%7D+%3D+f%28%5Cmathbf%7Bz%7D%28t%29%2C+t%2C+%5Ctheta%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cdisplaystyle+%5Cfrac%7Bd%5Cmathbf%7Bz%7D%28t%29%7D%7Bdt%7D+%3D+f%28%5Cmathbf%7Bz%7D%28t%29%2C+t%2C+%5Ctheta%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\displaystyle \frac{d\mathbf{z}(t)}{dt} = f(\mathbf{z}(t), t, \theta)"></span></p></blockquote>
+<p>The equivalent of having <em>T</em> layers in the network, is finding the solution to this ODE at time <em>T</em>.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/01/NODEs-Fig-1.jpeg?w=480" alt=""></p>
+<p>Something really neat happens once we formulate the problem in this way though. Just like we’ve seen a number of papers that express a problem in a form suitable for solving by a SAT solver, and then throw a state of the art SAT-solver at it, we can now use any ODE solver of our choice.</p>
+<blockquote><p>
+  Euler’s method is perhaps the simplest method for solving ODEs. There since been more than 120 years of development of efficient and accurate ODE solvers. Modern ODE solvers provide guarantees about the growth of approximation error, monitor the level of error, and adapt their evaluation strategy on the fly to achieve the requested level of accuracy. This allows the cost of evaluating a model to scale with problem complexity.
+</p></blockquote>
+<h3>How to train a continuous-depth network</h3>
+<p>We’ve seen how to feed-forward, but how do you efficiently train a network defined as a differential equation? The answer lies in the <a href="https://en.m.wikipedia.org/wiki/Adjoint_state_method">adjoint method</a> (which dates back to 1962). Think of the adjoint as the instantaneous analog of the chain rule.</p>
+<blockquote><p>
+  This approach computes gradients by solving a second, augmented ODE backwards in time, and is applicable to all ODE solvers. This approach scales linearly with problem size, has low memory cost, and explicitly controls numerical error.
+</p></blockquote>
+<p>The adjoint captures how the loss function <em>L</em> changes with respect to the hidden state ( <img src="https://s0.wp.com/latex.php?latex=-+%5Cpartial+L+%2F+%5Cpartial+%5Cmathbf%7Bz%7D%28t%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=-+%5Cpartial+L+%2F+%5Cpartial+%5Cmathbf%7Bz%7D%28t%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=-+%5Cpartial+L+%2F+%5Cpartial+%5Cmathbf%7Bz%7D%28t%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="- \partial L / \partial \mathbf{z}(t)">). Starting from the output of the network, we can recompute <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bz%7D%28t%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bz%7D%28t%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bz%7D%28t%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{z}(t)"> backwards in time together with the adjoint.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/01/NODEs-Fig-2.jpeg?w=480" alt=""></p>
+<p>A third integral then tells us how the loss changes with the parameters <img src="https://s0.wp.com/latex.php?latex=%5Ctheta&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Ctheta&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Ctheta&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\theta"> ( <img src="https://s0.wp.com/latex.php?latex=dL%2Fd%5Ctheta&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=dL%2Fd%5Ctheta&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=dL%2Fd%5Ctheta&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="dL/d\theta">).</p>
+<blockquote><p>
+  All three of these integrals can be computed in a single call to an ODE solver, which concatenates the original state, the adjoint, and the other partial derivatives into a single vector. Algorithm 1 shows how to construct the necessary dynamics, and call an ODE solver to compute all gradients at once.
+</p></blockquote>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/01/NODEs-Alg-1.jpeg?w=640" alt=""></p>
+<p>(Don’t ask me to explain that further!)</p>
+<h3>Applied Neural ODEs</h3>
+<h4>Residual Networks</h4>
+<p>Section three tackles the good old MNIST problem, comparing an ODE-net to a ResNet with 6 residual blocks. The ODE-net replaces the residual blocks with an ODE-Solve module.</p>
+<p>Concentrating on the 2nd and 4th lines in the table below, ODE-Nets are able to achieve roughly the same performance as a ResNet, but using only about 1/3 of the parameters. Also note that the ODE-Net solution using constant memory, whereas ResNets use memory proportional to the number of layers.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/01/NODEs-Table-1.jpeg?w=480" alt=""></p>
+<blockquote><p>
+  It’s not clear how to define the ‘depth’ of an ODE solution. A related quantity is the number of evaluations of the hidden state dynamics required, a detail delegated to the ODE solver and dependent on the initial state or input. The figure below shows the number of function evaluations increases throughout training, presumably adapting to increasing complexity of the model.
+</p></blockquote>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/01/NODEs-Fig-3d.jpeg?w=480" alt=""></p>
+<p>In other words, the ODE-net is kind of doing the equivalent of deepening its network over time as it needs to add sophistication.</p>
+<h4>Normalising flows</h4>
+<p><a href="http://akosiorek.github.io/ml/2018/04/03/norm_flows.html">Normalizing flows</a> allow more complex probability distribution functions (pdfs) to be learned. The same trick of shifting from a discrete set of layers to a continuous transformation works in this situation too. The following figure shows normalising flows vs continuous normalising flows (CNF) when trying to learn a pdf. The CNF is trained for 10,000 iterations and generally achieves lower loss than the NF trained for 500,000 iterations.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/01/NODEs-Fig-4.jpeg?w=640" alt=""></p>
+<h4>Time-series</h4>
+<p>This is the application which most caught my attention.</p>
+<blockquote><p>
+  Applying neural networks to irregularly-sampled data such as medical records, network traffic, or neural spiking data is difficult. Typically, observations are put into bins of fixed duration, and the latent dynamics are discretized in the same way. This leads to difficulties with missing data and ill-defined latent variables… We present a continuous-time, generative approach to modeling time series. Our model represents each time series by a latent trajectory. Each trajectory is determined from a local initial state <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bz%7D_%7Bt_0%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bz%7D_%7Bt_0%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bz%7D_%7Bt_0%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{z}_{t_0}">, and a global set of latent dynamics shared across all time series.
+</p></blockquote>
+<p>The model can be trained as a variational autoencoder, and it looks like this:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/01/NODEs-Fig-6.jpeg?w=640" alt=""></p>
+<p>The evaluation here is based on a dataset of 1000 2-dimensional spirals, each starting at a different point. Half of the spirals are clockwise, and half counter-clockwise. Points are sampled from these trajectories at irregular timestamps. The figure below shows a latent neural ODE is better able to recover the spirals than a traditional RNN:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/01/NODEs-Fig-8.jpeg?w=480" alt=""></p>
+<p>A <a href="https://github.com/rtqichen/torchdiffeq">PyTorch implementation</a> of ODE solvers is available.</p>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+
+	</article></div>
+  </div>
+</body>
+</html>

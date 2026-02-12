@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Intel Processor Trace Part3. Analyzing performance glitches. | Easyperf</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Intel Processor Trace Part3. Analyzing performance glitches. | Easyperf</h1>
+    <p><strong>URL:</strong> <a href="https://easyperf.net/blog/2019/09/06/Intel-PT-part3">https://easyperf.net/blog/2019/09/06/Intel-PT-part3</a></p>
+    <p><strong>Tags:</strong> cpus</p>
+    <p><strong>Bookmark ID:</strong> 876780667</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+				<p><strong>Contents:</strong></p>
+<ul id="markdown-toc">
+  <li><a href="#analyzing-performance-glitches" id="markdown-toc-analyzing-performance-glitches">Analyzing performance glitches</a></li>
+</ul>
+
+<hr>
+<p><strong>Subscribe to my <a href="https://products.easyperf.net/newsletter">newsletter</a>, support me on <a href="https://www.patreon.com/dendibakh">Patreon</a> or by PayPal <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TBM3NW8TKTT34&amp;currency_code=USD&amp;source=url">donation</a>.</strong></p>
+
+<hr>
+
+<p>This is the third part of my series about Intel Processor Traces (PT). In the <a href="https://easyperf.net/blog/2019/08/23/Intel-Processor-Trace">first part</a> of this series I showed the underlying mechanics of this HW feature. In the <a href="https://easyperf.net/blog/2019/08/30/Intel-PT-part2">second part</a> I showed 2 ways how PT can enhance your debugging experience.</p>
+
+<p>Here is the list of all parts in the series of posts about Intel PT:</p>
+<ol>
+  <li>Part1: <a href="https://easyperf.net/blog/2019/08/23/Intel-Processor-Trace">Introduction to Intel Processor Trace</a>.</li>
+  <li>Part2: <a href="https://easyperf.net/blog/2019/08/30/Intel-PT-part2">Better debugging experience with Intel PT</a>.</li>
+  <li>Part3: Analyzing performance glitches with Intel PT (this article).</li>
+  <li>Part4: <a href="https://easyperf.net/blog/2019/09/13/Intel-PT-part4">Better profiling experience with Intel PT</a>.</li>
+</ol>
+
+<p>In this article we will focus more on the performance side of this CPU feature.</p>
+
+<h3 id="analyzing-performance-glitches">Analyzing performance glitches</h3>
+
+<p>Imagine a situation when you’re a developer of an application. Everything works smoothly in general, besides one little thing. Users of the application claim that sometimes they observe glitches in the application performance. Often times this is quite hard to fix, since it won’t be exposed as a hotspot when you profile the app. Also, it’s hard to isolate and extract it to the standalone benchmark, since performance glitches happen rarely, and the root cause may be not obvious. <sup id="fnref:1" role="doc-noteref"><a href="#fn:1" rel="footnote">1</a></sup></p>
+
+<p>To demonstrate how Intel PT can help in this case, I created a small example in which I calculate the <a href="https://cseweb.ucsd.edu/groups/tatami/kumo/exs/sum/">sum of the first N natural numbers</a>. There is intentionally fast and slow path of the algorithm. Here is the code:</p>
+
+<p>a.cpp:</p>
+
+<figure><pre><code data-lang="cpp"><table><tbody><tr><td><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+</pre></td><td><pre><span>#include</span> <span>&lt;random&gt;</span><span>
+</span>
+<span>int</span> <span>goFastPath</span><span>(</span><span>int</span><span>*</span> <span>arr</span><span>,</span> <span>int</span> <span>n</span><span>);</span>
+<span>int</span> <span>goSlowPath</span><span>(</span><span>int</span><span>*</span> <span>arr</span><span>,</span> <span>int</span> <span>n</span><span>);</span>
+
+<span>int</span> <span>main</span><span>()</span> <span>{</span>
+  <span>int</span> <span>arr</span><span>[</span><span>1000</span><span>];</span>
+  <span>for</span> <span>(</span><span>int</span> <span>i</span> <span>=</span> <span>0</span><span>;</span> <span>i</span> <span>&lt;</span> <span>1000</span><span>;</span> <span>i</span><span>++</span><span>)</span> <span>{</span>
+    <span>arr</span><span>[</span><span>i</span><span>]</span> <span>=</span> <span>i</span><span>;</span>
+  <span>}</span>
+
+  <span>const</span> <span>int</span> <span>min</span> <span>=</span> <span>0</span><span>;</span>
+  <span>const</span> <span>int</span> <span>max</span> <span>=</span> <span>999</span><span>;</span>
+  <span>std</span><span>::</span><span>default_random_engine</span> <span>generator</span><span>;</span>
+  <span>std</span><span>::</span><span>uniform_int_distribution</span><span>&lt;</span><span>int</span><span>&gt;</span> <span>distribution</span><span>(</span><span>min</span><span>,</span><span>max</span><span>);</span>
+
+  <span>// counting sum up to N</span>
+  <span>for</span> <span>(</span><span>int</span> <span>i</span> <span>=</span> <span>0</span><span>;</span> <span>i</span> <span>&lt;</span> <span>100000</span><span>;</span> <span>i</span><span>++</span><span>)</span> <span>{</span>
+    <span>int</span> <span>random_int</span> <span>=</span> <span>distribution</span><span>(</span><span>generator</span><span>);</span>
+    <span>if</span> <span>(</span><span>random_int</span> <span>&lt;</span> <span>999</span><span>)</span>
+      <span>goFastPath</span><span>(</span><span>arr</span><span>,</span> <span>random_int</span><span>);</span>
+    <span>else</span>
+      <span>goSlowPath</span><span>(</span><span>arr</span><span>,</span> <span>random_int</span><span>);</span>
+  <span>}</span>
+  <span>return</span> <span>0</span><span>;</span>
+<span>}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>b.cpp:</p>
+
+<figure><pre><code data-lang="cpp"><table><tbody><tr><td><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td><pre><span>int</span> <span>goFastPath</span><span>(</span><span>int</span><span>*</span> <span>arr</span><span>,</span> <span>int</span> <span>n</span><span>)</span> <span>{</span>
+  <span>return</span> <span>(</span><span>n</span> <span>*</span> <span>(</span><span>n</span> <span>+</span> <span>1</span><span>))</span> <span>/</span> <span>2</span><span>;</span>
+<span>}</span>
+
+<span>int</span> <span>goSlowPath</span><span>(</span><span>int</span><span>*</span> <span>arr</span><span>,</span> <span>int</span> <span>n</span><span>)</span> <span>{</span>
+  <span>int</span> <span>res</span> <span>=</span> <span>0</span><span>;</span>
+  <span>for</span> <span>(</span><span>int</span> <span>i</span> <span>=</span> <span>0</span><span>;</span> <span>i</span> <span>&lt;=</span> <span>n</span><span>;</span> <span>i</span><span>++</span><span>)</span>
+    <span>res</span> <span>+=</span> <span>arr</span><span>[</span><span>i</span><span>];</span>
+  <span>return</span> <span>res</span><span>;</span>
+<span>}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>The idea is that 99.9% of the time we are using the fast path which only takes a few CPU cycles. But in 0.1% of the time we will fall back to the slow path which can take as much as 1000 cycles. <sup id="fnref:2" role="doc-noteref"><a href="#fn:2" rel="footnote">2</a></sup></p>
+
+<p>Here is how I build the executable: <sup id="fnref:3" role="doc-noteref"><a href="#fn:3" rel="footnote">3</a></sup></p>
+<div><pre><code><span>$ </span>g++ a.cpp <span>-c</span> <span>-O2</span> <span>-g</span>
+<span>$ </span>g++ b.cpp <span>-c</span> <span>-O2</span> <span>-g</span>
+<span>$ </span>g++ a.o b.o
+<span>$ </span><span>time</span> ./a.out
+real	0m0.007s
+user	0m0.007s
+sys	0m0.000s
+</code></pre></div>
+
+<p>Now let’s collect the traces:</p>
+<div><pre><code><span>$ </span>perf record <span>-e</span> intel_pt/cyc<span>=</span>1/u ./a.out
+<span>[</span> perf record: Woken up 1 <span>times </span>to write data <span>]</span>
+<span>[</span> perf record: Captured and wrote 0.548 MB perf.data <span>]</span>
+</code></pre></div>
+<p>Notice that I used <code>cyc=1</code> to have the finest granularity available. This option asks the CPU to produce timing packets every cycle. <sup id="fnref:4" role="doc-noteref"><a href="#fn:4" rel="footnote">4</a></sup></p>
+
+<p>To decode the traces into human readable form use the command below:</p>
+<div><pre><code><span>$ </span>perf script <span>--ns</span> <span>--itrace</span><span>=</span>i1t <span>-F</span> +srcline,+srccode <span>&gt;</span> decoded.dump
+</code></pre></div>
+
+<p>Before going into the output, let me explain what those options mean. Option <code>--ns</code> will show the timestamps in nanoseconds. Option <code>-F +srcline,+srccode</code> will add source line and source code for each decoded assembly instruction. Option <code>--trace=i1t</code> is a little more difficult to explain. This option specifies a period on which decoder will sample our traces. In my case I asked to sample every clocktick, i.e. it will output each instruction separately and put a timestamp for it. See <code>man perf script</code> for more details and footnotes<sup id="fnref:5" role="doc-noteref"><a href="#fn:5" rel="footnote">5</a></sup> for more examples.</p>
+
+<p>Here is what the decoded output (in <code>decoded.dump</code>) might look like: <sup id="fnref:6" role="doc-noteref"><a href="#fn:6" rel="footnote">6</a></sup></p>
+
+<div><pre><code>proc   PID   CPU    timestamp       sym+off          srcline   srccode
+...
+a.out  3172 [007]   253.555413143:  std::uniform_int_distribution&lt;...&gt; &gt;+0xc2  uniform_int_dist.h:281
+a.out  3172 [007]   253.555413143:  main+0x78        a.cpp:21  if (random_int &lt; 999)
+a.out  3172 [007]   253.555413143:  main+0x7d        a.cpp:22    goFastPath(arr, random_int);
+a.out  3172 [007]   253.555413143:  main+0x7f        a.cpp:22
+a.out  3172 [007]   253.555413143:  main+0x82        a.cpp:21  if (random_int &lt; 999)
+a.out  3172 [007]   253.555413143:  main+0x84        a.cpp:24    goSlowPath(arr, random_int);
+a.out  3172 [007]   253.555413143:  goSlowPath+0x0   b.cpp:7   for (int i = 0; i &lt;= n; i++)
+a.out  3172 [007]   253.555413143:  goSlowPath+0x2   b.cpp:7
+a.out  3172 [007]   253.555413143:  goSlowPath+0x4   b.cpp:7
+a.out  3172 [007]   253.555413143:  goSlowPath+0x7   b.cpp:6   int res = 0;
+a.out  3172 [007]   253.555413143:  goSlowPath+0x9   b.cpp:6
+a.out  3172 [007]   253.555413143:  goSlowPath+0xe   b.cpp:6
+a.out  3172 [007]   253.555413143:  goSlowPath+0x10  b.cpp:8     res += arr[i];
+a.out  3172 [007]   253.555413143:  goSlowPath+0x12  b.cpp:8
+a.out  3172 [007]   253.555413143:  goSlowPath+0x16  b.cpp:7   for (int i = 0; i &lt;= n; i++)
+a.out  3172 [007]   253.555413143:  goSlowPath+0x19  b.cpp:7
+a.out  3172 [007]   253.555413143:  goSlowPath+0x10  b.cpp:8   res += arr[i];
+a.out  3172 [007]   253.555413143:  goSlowPath+0x12  b.cpp:8
+a.out  3172 [007]   253.555413143:  goSlowPath+0x16  b.cpp:7   for (int i = 0; i &lt;= n; i++)
+a.out  3172 [007]   253.555413143:  goSlowPath+0x19  b.cpp:7
+&lt;loop iterations&gt;
+a.out  3172 [007]   253.555413508:  goSlowPath+0x19  b.cpp:7
+a.out  3172 [007]   253.555413508:  goSlowPath+0x1b  b.cpp:7
+a.out  3172 [007]   253.555413508:  main+0x89        a.cpp:19  for (int i = 0; i &lt; 100000; i++) {
+...
+</code></pre></div>
+
+<p><strong>Having such a trace is very helpful for any kind of analysis</strong>. It allows you to zoom in the exact invocation where the glitch happened and analyze it in isolation. You may further use the timestamp to align it with the other event that was happening at the same moment in the system. Also, you can compare two different invocations of the same function: the one that was fast and the one that was slow. You may then go back in time and compare what was happening before the glitch in both cases and hopefully will find the thing that was different.</p>
+
+<p>Decoded processor traces won’t be able to show the values of different variables <sup id="fnref:7" role="doc-noteref"><a href="#fn:7" rel="footnote">7</a></sup> but you will get precise control flow. With this information you will know exactly what lead you here and hopefully it will sched some light on what might be causing performance issues. I’m not showing the history here since in our case it’s obvious what caused the glitch of 365ns.</p>
+
+<p>But… There is a caveat. When adding either <code>+srcline</code> or <code>+srccode</code> to output, decoding gets extremely slow. For this workload that runs for only 7ns and generated traces of less than 1MB, decoding took more than a day! <sup id="fnref:8" role="doc-noteref"><a href="#fn:8" rel="footnote">8</a></sup> I know this is nuts for most of the users. I’m not entirely sure why that happens, but I suspect the implementation might not be optimal.</p>
+
+<p>The good news is that there is a workaround. You don’t have to decode the whole trace in advance and can do it lazily. First you can decode without adding <code>+srcline</code> or <code>+srccode</code> to the <code>perf script</code> command. Then look at the time range that you care about and then only decode this time range using <code>--time start,stop</code> option. For example:</p>
+
+<div><pre><code><span>$ </span>perf script <span>--ns</span> <span>--itrace</span><span>=</span>i1t <span>-F</span> +srcline,+srccode <span>--time</span> 253.555413140,253.555413520 <span>&gt;</span> time_range.dump
+</code></pre></div>
+
+<p>If you’re also interested in assembly instructions, you can do this with the command:</p>
+
+<div><pre><code><span>$ </span>perf script <span>--ns</span> <span>--itrace</span><span>=</span>i1t <span>-F</span> +insn | ../xed <span>-F</span> insn: <span>-I</span> <span>-64</span> <span>&gt;</span> decoded_insn.dump
+</code></pre></div>
+
+<p>This type of decoding is much faster. Note that I also used <code>xed</code> <sup id="fnref:9" role="doc-noteref"><a href="#fn:9" rel="footnote">9</a></sup> to decode the raw bytes into instructions. Here is what the decoded output (in <code>decoded_insn.dump</code>) might look like:</p>
+
+<div><pre><code>proc   PID   CPU    timestamp       sym+off          instruction
+...
+a.out  3172 [007]   253.555413143:  main+0x78        cmp eax, 0x3e6
+a.out  3172 [007]   253.555413143:  main+0x7d        mov esi, eax
+a.out  3172 [007]   253.555413143:  main+0x7f        mov rdi, r12
+a.out  3172 [007]   253.555413143:  main+0x82        jle 0x556830247700
+a.out  3172 [007]   253.555413143:  main+0x84        call 0x556830247a80
+a.out  3172 [007]   253.555413143:  goSlowPath+0x0   test esi, esi		&lt;== enter goSlowPath()
+a.out  3172 [007]   253.555413143:  goSlowPath+0x2   js 0x556830247aa0
+a.out  3172 [007]   253.555413143:  goSlowPath+0x4   movsxd rsi, esi
+a.out  3172 [007]   253.555413143:  goSlowPath+0x7   xor eax, eax
+a.out  3172 [007]   253.555413143:  goSlowPath+0x9   lea rdx, ptr [rdi+rsi*4+0x4]
+a.out  3172 [007]   253.555413143:  goSlowPath+0xe   data16 nop
+a.out  3172 [007]   253.555413143:  goSlowPath+0x10  add eax, dword ptr [rdi]
+a.out  3172 [007]   253.555413143:  goSlowPath+0x12  add rdi, 0x4
+a.out  3172 [007]   253.555413143:  goSlowPath+0x16  cmp rdi, rdx
+a.out  3172 [007]   253.555413143:  goSlowPath+0x19  jnz 0x556830247a90
+a.out  3172 [007]   253.555413143:  goSlowPath+0x10  add eax, dword ptr [rdi]
+a.out  3172 [007]   253.555413143:  goSlowPath+0x12  add rdi, 0x4
+a.out  3172 [007]   253.555413143:  goSlowPath+0x16  cmp rdi, rdx
+a.out  3172 [007]   253.555413143:  goSlowPath+0x19  jnz 0x556830247a90
+&lt;loop iterations&gt;
+a.out  3172 [007]   253.555413508:  goSlowPath+0x16  cmp rdi, rdx
+a.out  3172 [007]   253.555413508:  goSlowPath+0x19  jnz 0x556830247a90
+a.out  3172 [007]   253.555413508:  goSlowPath+0x1b  ret			&lt;== exit goSlowPath()
+a.out  3172 [007]   253.555413508:  main+0x89        sub ebx, 0x1
+...
+</code></pre></div>
+
+<p>If you want combined output, use:</p>
+<div><pre><code><span>$ </span>perf script <span>--ns</span> <span>--itrace</span><span>=</span>i1t <span>-F</span> <span>comm</span>,tid,pid,time,cpu,ip,sym,symoff,srcline,srccode,insn | ../xed <span>-F</span> insn: <span>-I</span> <span>-64</span> <span>&gt;</span> decoded_combined.dump
+</code></pre></div>
+<p>This is the output that you might see:</p>
+<div><pre><code>proc   PID   CPU    timestamp       sym+off          srcline   instruction      srccode
+...
+a.out  3172 [007]   253.555413143:  main+0x84        a.cpp:24  call 0x35c       goSlowPath(arr, random_int);
+a.out  3172 [007]   253.555413143:  goSlowPath+0x0   b.cpp:7   test esi, esi    for (int i = 0; i &lt;= n; i++)
+a.out  3172 [007]   253.555413143:  goSlowPath+0x2   b.cpp:7   js 0x1e
+a.out  3172 [007]   253.555413143:  goSlowPath+0x4   b.cpp:7   movsxd rsi, esi
+...
+</code></pre></div>
+
+<p>Finally, we can also calculate interesting statistics like “How much times we called goSlowPath function?”:</p>
+
+<div><pre><code><span>$ </span><span>grep </span>goSlowPath decoded_insn.dump <span>&gt;</span> slow.trace
+<span>$ </span><span>grep </span>ret slow.trace <span>-c</span>
+93
+</code></pre></div>
+
+<p>Note that this is <strong>exact</strong> number of calls! This is not a wild guess. We know precisely that <code>goSlowPath</code> was called 93 times.</p>
+
+<p>We can calculate average time for one invocation of <code>goSlowPath</code> function:</p>
+
+<div><pre><code><span>$ </span><span>grep</span> <span>"test esi"</span> slow.trace | <span>cut</span> <span>-f1</span> <span>-d</span><span>":"</span> <span>&gt;</span> start.dump
+<span>$ </span><span>grep</span> <span>"ret"</span> slow.trace | <span>cut</span> <span>-f1</span> <span>-d</span><span>":"</span> <span>&gt;</span> end.dump
+<span>$ </span><span>paste</span> <span>-d-</span> end.dump start.dump | bc <span>-l</span> <span>&gt;</span> func.times
+<span>$ </span><span>awk</span> <span>'{ total += $1; count++ } END { printf("%.9f",total/count)}'</span> func.times
+0.000001092
+</code></pre></div>
+
+<p>And there are many other ways how to extract useful information from the Intel PT traces.</p>
+
+<p>That’s it. Hope that you find this article useful and maybe will apply it in your analysis someday. I agree that there are not many tools that support Intel PT, and even those tools don’t perfectly handle all the cases. Anyway, I hope it will get better in the future.</p>
+
+<hr>
+<div role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>Bruce Dawson has a lot of interesting articles on his <a href="https://randomascii.wordpress.com/">blog</a> with examples how he uses Windows ETW traces to debug performance glitches. He has ETW traces turned on <code>24/7</code> on his machines which allows him to capture what was going on in the last minute or so. By analyzing those postmortem traces, he was able to root cause many interesting bugs including <a href="https://randomascii.wordpress.com/2012/09/04/windows-slowdown-investigated-and-identified/">this</a>, <a href="https://randomascii.wordpress.com/2016/03/08/power-wastage-on-an-idle-laptop/">this</a> or <a href="https://randomascii.wordpress.com/2018/08/16/24-core-cpu-and-i-cant-type-an-email-part-one/">this</a>.&nbsp;<a href="#fnref:1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>If no vectorization/unrolling happened. It is the case in my example.&nbsp;<a href="#fnref:2" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>Note that I implemented functions in different files in order to eliminate compiler’s interprocedural optimizations. For that same reason <a href="https://en.wikipedia.org/wiki/Interprocedural_optimization">LTO</a> (<code>-flto</code>) is not used. Also, I compiled with debug information <code>-g</code> in order to have source line information available in the decoded traces.&nbsp;<a href="#fnref:3" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:4" role="doc-endnote">
+      <p>However, they are not sent every cycle. Read more about the timing packets in the <a href="https://easyperf.net/blog/2019/08/23/Intel-Processor-Trace">first part</a> of this series and in Linux kernel <a href="https://github.com/torvalds/linux/blob/master/tools/perf/Documentation/intel-pt.txt#L355">documentation</a>.&nbsp;<a href="#fnref:4" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:5" role="doc-endnote">
+      <p>For example, if you specify <code>--trace=i100ns</code> the decoder will synthesize one instruction roughly each 100ns. It will output only 1 sample but will show near it how much instructions were omitted. It’s a way to go for initial analysis of big traces, since increasing period will allow the decoder work much faster. Read more in Linux kernel <a href="https://github.com/torvalds/linux/blob/master/tools/perf/Documentation/intel-pt.txt#L814">documentation</a>.&nbsp;<a href="#fnref:5" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:6" role="doc-endnote">
+      <p>I formatted the output and omitted several columns. You can add and remove data from the output as you want with <code>-F</code> option. Check <code>man perf script</code> for more details.&nbsp;<a href="#fnref:6" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:7" role="doc-endnote">
+      <p>Although that is also possible with <code>PTWRITE</code> assembly instruction that allows writing values into the PT packets. Check <a href="https://software.intel.com/en-us/articles/intel-sdm">Intel SD Manual</a> for more information about <code>PTWRITE</code> and the <a href="https://easyperf.net/blog/2019/08/23/Intel-Processor-Trace">first part</a> of this series for information about Intel PT packets.&nbsp;<a href="#fnref:7" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:8" role="doc-endnote">
+      <p>This is only the case for <code>+srcline</code> and <code>+srccode</code>. Decoding source lines only (<code>+srcline</code>) takes 6 hours and still is nuts. According to <code>time -p</code> decoder spends 70% of the time in kernel space which indicates that implementation can be significantly improved by caching. If you do not specify <code>+srcline</code> or <code>+srccode</code> decoder usually runs in the orders of minutes (not hours).&nbsp;<a href="#fnref:8" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:9" role="doc-endnote">
+      <p>Xed is “x86 encoder decoder” and it’s available on <a href="https://github.com/intelxed/xed">github</a>.&nbsp;<a href="#fnref:9" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</div>
+
+			</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Even Better Specs</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Even Better Specs</h1>
+    <p><strong>URL:</strong> <a href="https://evenbetterspecs.github.io">https://evenbetterspecs.github.io</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 881001256</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main-content"> <main> <article> <h2> What is it? </h2> <p>Even Better Specs is an <i>opinionated</i> set of best practices to support the creation of tests that are easy to read and maintain.</p> <p>It focuses on the <a href="https://www.ruby-lang.org/en/" target="_blank">Ruby</a> testing framework <a href="https://rspec.info/" target="_blank">RSpec</a>, but some of it could potentially be applied to other frameworks and languages (like <a href="https://github.com/sus-rb/sus" target="_blank">sus</a> and <a href="https://crystal-lang.org/reference/1.13/guides/testing.html" target="_blank">Crystal</a>).</p> <h2> Guiding principles </h2> <ul> <li> tests must be <a href="https://thoughtbot.com/blog/the-self-contained-test" target="_blank">self-contained</a>, not DRY </li> <li> tests should follow the <a href="https://automationpanda.com/2020/07/07/arrange-act-assert-a-pattern-for-writing-good-tests/" target="_blank">Arrange-Act-Assert</a> pattern </li> </ul> </article> <article> <h2 id="describe-what-you-are-testing"> <a href="#describe-what-you-are-testing" aria-labelledby="describe-what-you-are-testing"></a> <a href="#describe-what-you-are-testing"> Describe what you are testing </a> </h2> <p>Be clear about what you are testing.</p> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'User'</span> <span>do</span>
+  <span>describe</span> <span>'the authenticate method for User'</span> <span>do</span>
+  <span>end</span>
+
+  <span>describe</span> <span>'if the user is an admin'</span> <span>do</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <p>Use the Ruby documentation convention of <code>.</code> when referring to a class method's name and <code>#</code> when referring to an instance method's name.</p> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>User</span> <span>do</span>
+  <span>describe</span> <span>'.authenticate'</span> <span>do</span>
+  <span>end</span>
+
+  <span>describe</span> <span>'#admin?'</span> <span>do</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <p>In request tests, describe the controller constant and its actions.</p> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>UsersController</span><span>,</span> <span>type: :request</span> <span>do</span>
+  <span>describe</span> <span>'#index'</span> <span>do</span>
+    <span>it</span> <span>'returns a successful response'</span> <span>do</span>
+      <span>get</span> <span>users_url</span>
+
+      <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>describe</span> <span>'#create'</span> <span>do</span>
+    <span>it</span> <span>'creates a user'</span> <span>do</span>
+      <span>post</span> <span>users_url</span><span>,</span> <span>params: </span><span>{</span> <span>user: </span><span>{</span> <span>name: </span><span>'Tom Jobim'</span> <span>}</span> <span>}</span>
+
+      <span>expect</span><span>(</span><span>User</span><span>.</span><span>last</span><span>.</span><span>name</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'Tom Jobim'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <h3> <a href="#describe-what-you-are-testing" aria-labelledby="describe-what-you-are-testing"></a> RuboCop </h3> <p>You can enforce this guideline using the cop <a href="https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspecdescribeclass" target="_blank">RSpec/DescribeClass</a> from the <a href="https://docs.rubocop.org/rubocop-rspec/installation.html" target="_blank">rubocop-rspec</a> gem.</p> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/2">Discuss this guideline</a> </article> <article> <h2 id="use-contexts"> <a href="#use-contexts" aria-labelledby="use-contexts"></a> <a href="#use-contexts"> Use contexts </a> </h2> <p>Contexts are a powerful way to make your tests clear and well organized. They should start with <code>when</code>.</p> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>'has 200 status code if logged in'</span> <span>do</span>
+  <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+<span>end</span>
+
+<span>describe</span> <span>'it returns 401 status code if not logged in'</span> <span>do</span>
+  <span>it</span> <span>{</span> <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'401'</span><span>)</span> <span>}</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>context</span> <span>'when logged in'</span> <span>do</span>
+  <span>it</span> <span>'returns 200 status code'</span> <span>do</span>
+    <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+
+<span>context</span> <span>'when logged out'</span> <span>do</span>
+  <span>it</span> <span>'returns 401 status code'</span> <span>do</span>
+    <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'401'</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <h3> <a href="#use-contexts" aria-labelledby="use-contexts"></a> RuboCop </h3> <p>You can enforce this guideline using the cops <a href="https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspeccontextmethod" target="_blank">RSpec/ContextMethod</a> and <a href="https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspeccontextwording" target="_blank">RSpec/ContextWording</a> from the <a href="https://docs.rubocop.org/rubocop-rspec/installation.html" target="_blank">rubocop-rspec</a> gem.</p> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/3">Discuss this guideline</a> </article> <article> <h2 id="factories-not-fixtures"> <a href="#factories-not-fixtures" aria-labelledby="factories-not-fixtures"></a> <a href="#factories-not-fixtures"> Factories, not fixtures </a> </h2> <p><a href="https://github.com/thoughtbot/factory_bot" target="_blank">Factories</a> are more flexible and easier to work with. Understand more <a href="https://thoughtbot.com/blog/we-need-to-talk-about-fixtures" target="_blank">here</a>.</p> <div> <figure><pre><code data-lang="ruby"><span>def</span> <span>full_name</span>
+  <span>"</span><span>#{</span><span>first_name</span><span>}</span><span> </span><span>#{</span><span>last_name</span><span>}</span><span>"</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>'returns the full name'</span> <span>do</span>
+  <span>user</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>,</span> <span>first_name: </span><span>'Santos'</span><span>,</span> <span>last_name: </span><span>'Dumont'</span><span>)</span>
+
+  <span>expect</span><span>(</span><span>user</span><span>.</span><span>full_name</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'Santos Dumont'</span><span>)</span>
+<span>end</span></code></pre></figure> </div> <p>If your code doesn't hit the database, prefer <code>build_stubbed</code> over <code>create</code> since the former will make your <a href="https://thoughtbot.com/blog/use-factory-bots-build-stubbed-for-a-faster-test" target="_blank">tests faster</a> 🔥</p> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>'returns the full name'</span> <span>do</span>
+  <span>user</span> <span>=</span> <span>build_stubbed</span><span>(</span><span>:user</span><span>,</span> <span>first_name: </span><span>'Santos'</span><span>,</span> <span>last_name: </span><span>'Dumont'</span><span>)</span>
+
+  <span>expect</span><span>(</span><span>user</span><span>.</span><span>full_name</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'Santos Dumont'</span><span>)</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/4">Discuss this guideline</a> </article> <article> <h2 id="leverage-described-class"> <a href="#leverage-described-class" aria-labelledby="leverage-described-class"></a> <a href="#leverage-described-class"> Leverage described class </a> </h2> <p>Tests are not supposed to be DRY, but that doesn't mean we need to repeat ourselves in vain. Leverage <code>described_class</code> to make your tests maintainable over the years.</p> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>Pilot</span> <span>do</span>
+  <span>describe</span> <span>'.most_successful'</span> <span>do</span>
+    <span>it</span> <span>'returns the most successful pilot'</span> <span>do</span>
+      <span>senna</span> <span>=</span> <span>create</span><span>(</span><span>:pilot</span><span>,</span> <span>name: </span><span>'Ayrton Senna'</span><span>)</span>
+      <span>create</span><span>(</span><span>:pilot</span><span>,</span> <span>name: </span><span>'Alain Prost'</span><span>)</span>
+      <span>create</span><span>(</span><span>:race</span><span>,</span> <span>winner: </span><span>senna</span><span>)</span>
+
+      <span>most_successful_pilot</span> <span>=</span> <span>Pilot</span><span>.</span><span>most_successful</span>
+
+      <span>expect</span><span>(</span><span>most_successful_pilot</span><span>.</span><span>name</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'Ayrton Senna'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>Pilot</span> <span>do</span>
+  <span>describe</span> <span>'.most_successful'</span> <span>do</span>
+    <span>it</span> <span>'returns the most successful pilot'</span> <span>do</span>
+      <span>senna</span> <span>=</span> <span>create</span><span>(</span><span>:pilot</span><span>,</span> <span>name: </span><span>'Ayrton Senna'</span><span>)</span>
+      <span>create</span><span>(</span><span>:pilot</span><span>,</span> <span>name: </span><span>'Alain Prost'</span><span>)</span>
+      <span>create</span><span>(</span><span>:race</span><span>,</span> <span>winner: </span><span>senna</span><span>)</span>
+
+      <span>most_successful_pilot</span> <span>=</span> <span>described_class</span><span>.</span><span>most_successful</span>
+
+      <span>expect</span><span>(</span><span>most_successful_pilot</span><span>.</span><span>name</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'Ayrton Senna'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <p>If the class <code>Pilot</code> ever gets renamed, one just need to change it at the top level <code>describe</code>.</p> <h3> <a href="#leverage-described-class" aria-labelledby="leverage-described-class"></a> RuboCop </h3> <p>You can enforce this guideline using the cop <a href="https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspecdescribedclass" target="_blank">RSpec/DescribedClass</a> from the <a href="https://docs.rubocop.org/rubocop-rspec/installation.html" target="_blank">rubocop-rspec</a> gem.</p> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/5">Discuss this guideline</a> </article> <article> <h2 id="use-subject"> <a href="#use-subject" aria-labelledby="use-subject"></a> <a href="#use-subject"> Use subject </a> </h2> <p>Use <code>subject</code> instead of <code>described_class.new</code> when no argument is given to the initializer.</p> <div> <figure><pre><code data-lang="ruby"><span>class</span> <span>Calculator</span>
+  <span>attr_reader</span> <span>:base</span>
+
+  <span>def</span> <span>initialize</span><span>(</span><span>base</span> <span>=</span> <span>0</span><span>)</span>
+    <span>@base</span> <span>=</span> <span>base</span>
+  <span>end</span>
+
+  <span>def</span> <span>add</span><span>(</span><span>number1</span><span>,</span> <span>number2</span><span>)</span>
+    <span>base</span> <span>+</span> <span>number1</span> <span>+</span> <span>number2</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#add'</span> <span>do</span>
+ <span>it</span> <span>'sums two numbers'</span> <span>do</span>
+   <span>calculator</span> <span>=</span> <span>described_class</span><span>.</span><span>new</span>
+
+   <span>expect</span><span>(</span><span>calculator</span><span>.</span><span>add</span><span>(</span><span>1</span><span>,</span> <span>2</span><span>)).</span><span>to</span> <span>eq</span><span>(</span><span>3</span><span>)</span>
+ <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#add'</span> <span>do</span>
+  <span>it</span> <span>'sums two numbers'</span> <span>do</span>
+    <span>expect</span><span>(</span><span>subject</span><span>.</span><span>add</span><span>(</span><span>1</span><span>,</span> <span>2</span><span>)).</span><span>to</span> <span>eq</span><span>(</span><span>3</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <p>It can be overridden when argument is given to the initializer.</p> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#add'</span> <span>do</span>
+  <span>it</span> <span>'sums two numbers'</span> <span>do</span>
+    <span>subject</span> <span>=</span> <span>described_class</span><span>.</span><span>new</span><span>(</span><span>5</span><span>)</span>
+
+    <span>expect</span><span>(</span><span>subject</span><span>.</span><span>add</span><span>(</span><span>1</span><span>,</span> <span>2</span><span>)).</span><span>to</span> <span>eq</span><span>(</span><span>8</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/6">Discuss this guideline</a> </article> <article> <h2 id="short-description"> <a href="#short-description" aria-labelledby="short-description"></a> <a href="#short-description"> Short description </a> </h2> <p>A spec description must not be longer than 100 characters neither span many lines. If this happens you should split it using <code>context</code>.</p> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>'returns 422 when user first_name is missing from params and when user last_name is missing from params'</span> <span>do</span>
+<span>end</span>
+
+<span>it</span> <span>'returns 422 when user first_name is missing from params \
+    and when user last_name is missing from params'</span> <span>do</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>context</span> <span>'when user first_name is missing from params'</span> <span>do</span>
+  <span>it</span> <span>'returns 422'</span> <span>do</span>
+  <span>end</span>
+<span>end</span>
+
+<span>context</span> <span>'when user last_name is missing from params'</span> <span>do</span>
+  <span>it</span> <span>'returns 422'</span> <span>do</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/7">Discuss this guideline</a> </article> <article> <h2 id="group-expectations"> <a href="#group-expectations" aria-labelledby="group-expectations"></a> <a href="#group-expectations"> Group expectations </a> </h2> <p> Having an <code>it</code> for each expectation can lead to a terrible test performance. Group expectations that use a similar data setup to improve performance and make the tests more readable. </p> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>'returns 200'</span> <span>do</span>
+  <span>user</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>)</span>
+
+  <span>get</span> <span>user_path</span><span>(</span><span>user</span><span>)</span>
+
+  <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+<span>end</span>
+
+<span>it</span> <span>'returns JSON content type'</span> <span>do</span>
+  <span>user</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>)</span>
+
+  <span>get</span> <span>user_path</span><span>(</span><span>user</span><span>)</span>
+
+  <span>expect</span><span>(</span><span>response</span><span>.</span><span>content_type</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'application/json'</span><span>)</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>'responds with 200 http status and a JSON content type'</span> <span>do</span>
+  <span>user</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>)</span>
+
+  <span>get</span> <span>user_path</span><span>(</span><span>user</span><span>)</span>
+
+  <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+  <span>expect</span><span>(</span><span>response</span><span>.</span><span>content_type</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'application/json'</span><span>)</span>
+<span>end</span></code></pre></figure> </div> <p>We recommend enabling <a href="https://rspec.toolboxforweb.xyz/docs/rspec-core/expectation_framework_integration/aggregating_failures#enable-failure-aggregation-globally-using-define_derived_metadata" target="_blank">failure aggregation globally</a> to make it list all failures at once.</p> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/8">Discuss this guideline</a> </article> <article> <h2 id="all-possible-cases"> <a href="#all-possible-cases" aria-labelledby="all-possible-cases"></a> <a href="#all-possible-cases"> All possible cases </a> </h2> <p>Testing is a good practice, but if you do not test the edge cases, it will not be useful. Test valid, edge and invalid cases.</p> <p>If you have way too many cases to test, it might be an indication your subject class is doing too much and must be break down into other classes.</p> <div> <figure><pre><code data-lang="ruby"><span>before_action</span> <span>:authenticate_user!</span>
+<span>before_action</span> <span>:find_product</span>
+
+<span>def</span> <span>destroy</span>
+  <span>@product</span><span>.</span><span>destroy</span>
+  <span>redirect_to</span> <span>products_path</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#destroy'</span> <span>do</span>
+  <span>context</span> <span>'when the product exists'</span> <span>do</span>
+    <span>it</span> <span>'deletes the product'</span> <span>do</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#destroy'</span> <span>do</span>
+  <span>context</span> <span>'when the product exists'</span> <span>do</span>
+    <span>it</span> <span>'deletes the product'</span> <span>do</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>context</span> <span>'when the product does not exist'</span> <span>do</span>
+    <span>it</span> <span>'raises 404'</span> <span>do</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>context</span> <span>'when user is not authenticated'</span> <span>do</span>
+    <span>it</span> <span>'raises 404'</span> <span>do</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/9">Discuss this guideline</a> </article> <article> <h2 id="request-vs-controller-specs"> <a href="#request-vs-controller-specs" aria-labelledby="request-vs-controller-specs"></a> <a href="#request-vs-controller-specs"> Request vs controller specs </a> </h2> <p>Do request tests instead of controller tests.</p> <blockquote>The official recommendation of the Rails team and the RSpec core team is to write request specs instead. Request specs allow you to focus on a single controller action, but unlike controller tests involve the router, the middleware stack, and both rack requests and responses. This adds realism to the test that you are writing, and helps avoid many of the issues that are common in controller specs. In Rails 5, request specs are significantly faster than either request or controller specs were in Rails 4.</blockquote> <p> See <a href="https://rspec.info/blog/2016/07/rspec-3-5-has-been-released/">source.</a> </p> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>UsersController</span><span>,</span> <span>type: :controller</span> <span>do</span>
+  <span>describe</span> <span>"#index"</span> <span>do</span>
+    <span>it</span> <span>"returns a successful response"</span> <span>do</span>
+      <span>get</span> <span>:index</span>
+
+      <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>UsersController</span><span>,</span> <span>type: :request</span> <span>do</span>
+  <span>describe</span> <span>"#index"</span> <span>do</span>
+    <span>it</span> <span>"returns a successful response"</span> <span>do</span>
+      <span>user</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>,</span> <span>name: </span><span>"Carlos Chagas"</span><span>)</span>
+
+      <span>get</span> <span>users_path</span>
+
+      <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+      <span>expect</span><span>(</span><span>response</span><span>.</span><span>body</span><span>).</span><span>to</span> <span>include</span><span>(</span><span>"Carlos Chagas"</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/10">Discuss this guideline</a> </article> <article> <h2 id="expect-vs-should"> <a href="#expect-vs-should" aria-labelledby="expect-vs-should"></a> <a href="#expect-vs-should"> Expect vs should syntax </a> </h2> <p>Always use <code>expect</code> instead of <code>should</code>.</p> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>'creates a resource'</span> <span>do</span>
+  <span>response</span><span>.</span><span>code</span><span>.</span><span>should</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+<span>end</span><span>"</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>'creates a resource'</span> <span>do</span>
+  <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/11">Discuss this guideline</a> </article> <article> <h2 id="redundant-require"> <a href="#redundant-require" aria-labelledby="redundant-require"></a> <a href="#redundant-require"> Redundant require </a> </h2> <p>Remove any redundant <code>require</code> in your spec files. Use <code>.rspec</code> file instead.</p> <div> <figure><pre><code data-lang="ruby"><span># spec/models/user_spec.rb</span>
+<span>require</span> <span>'rails_helper'</span>
+
+<span>describe</span> <span>User</span> <span>do</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span># spec/models/user_spec.rb</span>
+<span>describe</span> <span>User</span> <span>do</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span># .rspec</span>
+<span>--</span><span>require</span> <span>rails_helper</span></code></pre></figure> </div> <h3> <a href="#redundant-require" aria-labelledby="redundant-require"></a> RuboCop </h3> <p>You can enforce this guideline with the custom cop <a href="https://gist.github.com/glaucocustodio/36e0fafb9137a482ec8cfdc794ca36a7" target="_blank">RSpec/RedundantRequireRailsHelper</a>.</p> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/12">Discuss this guideline</a> </article> <article> <h2 id="instance-double-over-double"> <a href="#instance-double-over-double" aria-labelledby="instance-double-over-double"></a> <a href="#instance-double-over-double"> Instance double over double </a> </h2> <p>Instance double ensures the object responds to methods being called, which is not true for double.</p> <div> <figure><pre><code data-lang="ruby"><span>class</span> <span>User</span>
+  <span>def</span> <span>full_name</span>
+    <span>"</span><span>#{</span><span>first_name</span><span>}</span><span> </span><span>#{</span><span>last_name</span><span>}</span><span>"</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>"passes"</span> <span>do</span>
+  <span>user</span> <span>=</span> <span>double</span><span>(</span><span>:user</span><span>,</span> <span>name: </span><span>"Gustavo Kuerten"</span><span>)</span>
+  <span>puts</span> <span>user</span><span>.</span><span>name</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>it</span> <span>"fails"</span> <span>do</span>
+  <span>user</span> <span>=</span> <span>instance_double</span><span>(</span><span>User</span><span>,</span> <span>name: </span><span>"Gustavo Kuerten"</span><span>)</span>
+  <span>puts</span> <span>user</span><span>.</span><span>name</span>
+<span>end</span></code></pre></figure> </div> <p>The above test will fail with the following message since the <code>name</code> method really doesn't exist.</p> <div> <figure><pre><code data-lang="text">the User class does not implement the instance method: name. Perhaps you meant to use `class_double` instead?</code></pre></figure> </div> <h3> <a href="#instance-double-over-double" aria-labelledby="instance-double-over-double"></a> RuboCop </h3> <p>You can enforce this guideline using the cop <a href="https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspecverifieddoubles" target="_blank">RSpec/VerifiedDoubles</a> from the <a href="https://docs.rubocop.org/rubocop-rspec/installation.html" target="_blank">rubocop-rspec</a> gem.</p> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/13">Discuss this guideline</a> </article> <article> <h2 id="lets-not"> <a href="#lets-not" aria-labelledby="lets-not"></a> <a href="#lets-not"> Let's not </a> </h2> <p>Do not use <code>let</code> / <code>let!</code>. These tend to turn your tests very complicated over time as one needs to look up variables defined then apply deltas to figure their current state. Understand more <a href="https://thoughtbot.com/blog/lets-not" target="_blank">here</a>.</p> <p>Tests are not supposed to be DRY, but easy to read and maintain.</p> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#full_name'</span> <span>do</span>
+  <span>let</span><span>(</span><span>:user</span><span>)</span> <span>{</span> <span>build</span><span>(</span><span>:user</span><span>,</span> <span>first_name: </span><span>'Edson'</span><span>,</span> <span>last_name: </span><span>'Pelé'</span><span>)</span> <span>}</span>
+
+  <span>context</span> <span>'when first name and last name are present'</span> <span>do</span>
+    <span>it</span> <span>'returns the full name'</span> <span>do</span>
+      <span>expect</span><span>(</span><span>user</span><span>.</span><span>full_name</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'Edson Pelé'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>context</span> <span>'when last name is not present'</span> <span>do</span>
+    <span>it</span> <span>'returns the first name'</span> <span>do</span>
+      <span>user</span><span>.</span><span>last_name</span> <span>=</span> <span>nil</span>
+      <span>expect</span><span>(</span><span>user</span><span>.</span><span>full_name</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'Edson'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#full_name'</span> <span>do</span>
+  <span>context</span> <span>'when first name and last name are present'</span> <span>do</span>
+    <span>it</span> <span>'returns the full name'</span> <span>do</span>
+      <span>user</span> <span>=</span> <span>build</span><span>(</span><span>:user</span><span>,</span> <span>first_name: </span><span>'Edson'</span><span>,</span> <span>last_name: </span><span>'Pelé'</span><span>)</span>
+
+      <span>expect</span><span>(</span><span>user</span><span>.</span><span>full_name</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'Edson Pelé'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>context</span> <span>'when last name is not present'</span> <span>do</span>
+    <span>it</span> <span>'returns the first name'</span> <span>do</span>
+      <span>user</span> <span>=</span> <span>build</span><span>(</span><span>:user</span><span>,</span> <span>first_name: </span><span>'Edson'</span><span>,</span> <span>last_name: </span><span>nil</span><span>)</span>
+
+      <span>expect</span><span>(</span><span>user</span><span>.</span><span>full_name</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'Edson'</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <h3> <a href="#lets-not" aria-labelledby="lets-not"></a> RuboCop </h3> <p>You can enforce this guideline using the cop <a href="https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspecmultiplememoizedhelpers" target="_blank">RSpec/MultipleMemoizedHelpers</a> from the <a href="https://docs.rubocop.org/rubocop-rspec/installation.html" target="_blank">rubocop-rspec</a> gem:</p> <div> <figure><pre><code data-lang="ruby"><span># .rubocop.yml</span>
+<span>RSpec</span><span>/</span><span>MultipleMemoizedHelpers</span><span>:</span>
+  <span>Max</span><span>:</span> <span>0</span>
+  <span>AllowSubject</span><span>:</span> <span>false</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/14">Discuss this guideline</a> </article> <article> <h2 id="avoid-hooks"> <a href="#avoid-hooks" aria-labelledby="avoid-hooks"></a> <a href="#avoid-hooks"> Avoid hooks </a> </h2> <p>Avoid hooks since they usually cause your tests to become more complex in the long run.</p> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#index'</span> <span>do</span>
+  <span>context</span> <span>'when user is authenticated'</span> <span>do</span>
+    <span>before</span> <span>do</span>
+      <span>@user</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>)</span>
+      <span>sign_in</span> <span>@user</span>
+      <span>get</span> <span>profile_path</span>
+    <span>end</span>
+
+    <span>context</span> <span>'when user has a profile'</span> <span>do</span>
+      <span>it</span> <span>'returns 200'</span> <span>do</span>
+        <span>create</span><span>(</span><span>:profile</span><span>,</span> <span>user: </span><span>@user</span><span>)</span>
+        <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+      <span>end</span>
+    <span>end</span>
+
+    <span>context</span> <span>'when user does not have a profile'</span> <span>do</span>
+      <span>it</span> <span>'returns 404'</span> <span>do</span>
+        <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'404'</span><span>)</span>
+      <span>end</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#index'</span> <span>do</span>
+  <span>context</span> <span>'when user is authenticated'</span> <span>do</span>
+    <span>context</span> <span>'when user has a profile'</span> <span>do</span>
+      <span>it</span> <span>'returns 200'</span> <span>do</span>
+        <span>user</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>)</span>
+        <span>create</span><span>(</span><span>:profile</span><span>,</span> <span>user: </span><span>user</span><span>)</span>
+        <span>sign_in</span> <span>user</span>
+
+        <span>get</span> <span>profile_path</span>
+
+        <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+      <span>end</span>
+    <span>end</span>
+
+    <span>context</span> <span>'when user does not have a profile'</span> <span>do</span>
+      <span>it</span> <span>'returns 404'</span> <span>do</span>
+        <span>user</span> <span>=</span> <span>create</span><span>(</span><span>:user</span><span>)</span>
+        <span>sign_in</span> <span>user</span>
+
+        <span>get</span> <span>profile_path</span>
+
+        <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'404'</span><span>)</span>
+      <span>end</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/15">Discuss this guideline</a> </article> <article>  <p><a href="https://rspec.info/features/3-12/rspec-core/example-groups/shared-examples/" target="_blank">Shared examples</a> is a feature that allow us to not repeat code, but tests are not real code, so introducing it increases the complexity of your suite.</p> <div> <figure><pre><code data-lang="ruby"><span>shared_examples</span> <span>'a barking animal'</span> <span>do</span>
+  <span>it</span> <span>'barks'</span> <span>do</span>
+    <span>expect</span><span>(</span><span>animal</span><span>.</span><span>able_to_bark?</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>true</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+
+<span>describe</span> <span>Dog</span> <span>do</span>
+  <span>let</span><span>(</span><span>:animal</span><span>)</span> <span>{</span> <span>described_class</span><span>.</span><span>new</span><span>(</span><span>able_to_bark: </span><span>true</span><span>)</span> <span>}</span>
+  <span>it_behaves_like</span> <span>'a barking animal'</span>
+<span>end</span>
+
+<span>describe</span> <span>Fox</span> <span>do</span>
+  <span>let</span><span>(</span><span>:animal</span><span>)</span> <span>{</span> <span>described_class</span><span>.</span><span>new</span><span>(</span><span>able_to_bark: </span><span>true</span><span>)</span> <span>}</span>
+  <span>it_behaves_like</span> <span>'a barking animal'</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>Dog</span> <span>do</span>
+  <span>describe</span> <span>'#able_to_bark?'</span> <span>do</span>
+    <span>it</span> <span>'barks'</span> <span>do</span>
+      <span>subject</span> <span>=</span> <span>described_class</span><span>.</span><span>new</span><span>(</span><span>able_to_bark: </span><span>true</span><span>)</span>
+
+      <span>expect</span><span>(</span><span>subject</span><span>.</span><span>able_to_bark?</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>true</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+
+<span>describe</span> <span>Fox</span> <span>do</span>
+  <span>describe</span> <span>'#able_to_bark?'</span> <span>do</span>
+    <span>it</span> <span>'barks'</span> <span>do</span>
+      <span>subject</span> <span>=</span> <span>described_class</span><span>.</span><span>new</span><span>(</span><span>able_to_bark: </span><span>true</span><span>)</span>
+
+      <span>expect</span><span>(</span><span>subject</span><span>.</span><span>able_to_bark?</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>true</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/16">Discuss this guideline</a> </article> <article> <h2 id="mock-external-dependencies"> <a href="#mock-external-dependencies" aria-labelledby="mock-external-dependencies"></a> <a href="#mock-external-dependencies"> Mock external dependencies </a> </h2> <p>Mock external dependencies to your test subject. By external dependencies I mean code that's not the main responsibility of the subject under test.</p> <div> <figure><pre><code data-lang="ruby"><span>def</span> <span>github_stars</span><span>(</span><span>repository_id</span><span>)</span>
+  <span>stars</span> <span>=</span> <span>Github</span><span>.</span><span>fetch_repository_stars</span><span>(</span><span>repository_id</span><span>)</span>
+  <span>"Stars: </span><span>#{</span><span>stars</span><span>}</span><span>"</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#github_stars'</span> <span>do</span>
+  <span>it</span> <span>'displays the number of stars'</span> <span>do</span>
+    <span>expect</span><span>(</span><span>subject</span><span>.</span><span>github_stars</span><span>(</span><span>1</span><span>)).</span><span>to</span> <span>eq</span><span>(</span><span>'Stars: 10'</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#github_stars'</span> <span>do</span>
+  <span>it</span> <span>'displays the number of stars'</span> <span>do</span>
+    <span>expect</span><span>(</span><span>Github</span><span>).</span><span>to</span> <span>receive</span><span>(</span><span>:fetch_repository_stars</span><span>).</span><span>with</span><span>(</span><span>1</span><span>).</span><span>and_return</span><span>(</span><span>10</span><span>)</span>
+
+    <span>expect</span><span>(</span><span>subject</span><span>.</span><span>github_stars</span><span>(</span><span>1</span><span>)).</span><span>to</span> <span>eq</span><span>(</span><span>'Stars: 10'</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <p> Unless you intentionally want to test the underlying dependencies. This type of test must be limited to very few cases though otherwise it will make your test suite slow and hard to maintain. </p> <div> <figure><pre><code data-lang="ruby"><span>def</span> <span>process</span><span>(</span><span>payload</span><span>)</span>
+  <span>UserCreator</span><span>.</span><span>new</span><span>(</span><span>payload</span><span>).</span><span>create</span>
+  <span>ProductCreator</span><span>.</span><span>new</span><span>(</span><span>payload</span><span>).</span><span>create</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#process'</span> <span>do</span>
+  <span>it</span> <span>'creates a user and a product'</span> <span>do</span>
+    <span>payload</span> <span>=</span> <span>{</span> <span>user: </span><span>{</span> <span>name: </span><span>'Isabel'</span> <span>},</span> <span>product: </span><span>{</span> <span>name: </span><span>'Book'</span> <span>}</span> <span>}</span>
+
+    <span>subject</span><span>.</span><span>process</span><span>(</span><span>payload</span><span>)</span>
+
+    <span>expect</span><span>(</span><span>User</span><span>.</span><span>count</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>1</span><span>)</span>
+    <span>expect</span><span>(</span><span>Product</span><span>.</span><span>count</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>1</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/17">Discuss this guideline</a> </article> <article> <h2 id="stub-http-requests"> <a href="#stub-http-requests" aria-labelledby="stub-http-requests"></a> <a href="#stub-http-requests"> Stub HTTP requests </a> </h2> <p>Sometimes you need to access external services. In these cases you can't rely on the real service but you should stub it with solutions like <a href="https://github.com/bblimke/webmock" target="_blank">webmock</a> or <a href="https://github.com/vcr/vcr" target="_blank">VCR</a>.</p> <div> <figure><pre><code data-lang="ruby"><span>def</span> <span>request</span>
+  <span>uri</span> <span>=</span> <span>URI</span><span>.</span><span>parse</span><span>(</span><span>"http://www.example.com/"</span><span>)</span>
+  <span>request</span> <span>=</span> <span>Net</span><span>::</span><span>HTTP</span><span>::</span><span>Post</span><span>.</span><span>new</span><span>(</span><span>uri</span><span>.</span><span>path</span><span>)</span>
+  <span>request</span><span>[</span><span>'Content-Length'</span><span>]</span> <span>=</span> <span>3</span>
+
+  <span>Net</span><span>::</span><span>HTTP</span><span>.</span><span>start</span><span>(</span><span>uri</span><span>.</span><span>host</span><span>,</span> <span>uri</span><span>.</span><span>port</span><span>)</span> <span>do</span> <span>|</span><span>http</span><span>|</span>
+    <span>http</span><span>.</span><span>request</span><span>(</span><span>request</span><span>,</span> <span>"abc"</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#request'</span> <span>do</span>
+  <span>response</span> <span>=</span> <span>subject</span><span>.</span><span>request</span>
+
+  <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#request'</span> <span>do</span>
+  <span>stub_request</span><span>(</span><span>:post</span><span>,</span> <span>"www.example.com"</span><span>).</span><span>with</span><span>(</span><span>body: </span><span>"abc"</span><span>,</span> <span>headers: </span><span>{</span> <span>'Content-Length'</span> <span>=&gt;</span> <span>3</span> <span>})</span>
+
+  <span>response</span> <span>=</span> <span>subject</span><span>.</span><span>request</span>
+
+  <span>expect</span><span>(</span><span>response</span><span>.</span><span>code</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'200'</span><span>)</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/18">Discuss this guideline</a> </article> <article> <h2 id="stub-environment-variables"> <a href="#stub-environment-variables" aria-labelledby="stub-environment-variables"></a> <a href="#stub-environment-variables"> Stub environment variables </a> </h2> <p>Prefer to stub environment variables whenever possible so your tests become more self-contained, the <a href="https://rubygems.org/gems/stub_env" target="_blank">stub_env</a> gem might help you with that.</p> <div> <figure><pre><code data-lang="ruby"><span>def</span> <span>notify_sales_team</span>
+  <span>mail</span><span>(</span>
+    <span>to: </span><span>ENV</span><span>[</span><span>'SALES_TEAM_EMAIL'</span><span>],</span>
+    <span>subject: </span><span>'New sale'</span>
+  <span>)</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#notify_sales_team'</span> <span>do</span>
+  <span>it</span> <span>'prepares the email'</span> <span>do</span>
+    <span>subject</span> <span>=</span> <span>described_class</span><span>.</span><span>notify_sales_team</span>
+
+    <span>expect</span><span>(</span><span>subject</span><span>.</span><span>to</span><span>).</span><span>to</span> <span>eq</span><span>([</span><span>'sales-group@company.com'</span><span>])</span>
+    <span>expect</span><span>(</span><span>subject</span><span>.</span><span>subject</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'New sale'</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span># .env.test</span>
+<span>SALES_TEAM_EMAIL</span><span>=</span><span>'sales-group@company.com'</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'#notify_sales_team'</span> <span>do</span>
+  <span>it</span> <span>'prepares the email'</span> <span>do</span>
+    <span>stub_env</span><span>(</span><span>'SALES_TEAM_EMAIL'</span><span>,</span> <span>'sales-group@company.com'</span><span>)</span>
+
+    <span>subject</span> <span>=</span> <span>described_class</span><span>.</span><span>notify_sales_team</span>
+
+    <span>expect</span><span>(</span><span>subject</span><span>.</span><span>to</span><span>).</span><span>to</span> <span>eq</span><span>([</span><span>'sales-group@company.com'</span><span>])</span>
+    <span>expect</span><span>(</span><span>subject</span><span>.</span><span>subject</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>'New sale'</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/19">Discuss this guideline</a> </article> <article> <h2 id="create-only-the-data-you-need"> <a href="#create-only-the-data-you-need" aria-labelledby="create-only-the-data-you-need"></a> <a href="#create-only-the-data-you-need"> Create only the data you need </a> </h2> <p>Create only the data you need for each test. Having more data than necessary might make your suite slow.</p> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'.featured_product'</span> <span>do</span>
+  <span>it</span> <span>'returns the featured product'</span> <span>do</span>
+    <span>create_list</span><span>(</span><span>:product</span><span>,</span> <span>5</span><span>)</span>
+    <span>product_featured</span> <span>=</span> <span>create</span><span>(</span><span>:product</span><span>,</span> <span>featured: </span><span>true</span><span>)</span>
+
+    <span>expect</span><span>(</span><span>described_class</span><span>.</span><span>featured_product</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>product_featured</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <div> <figure><pre><code data-lang="ruby"><span>describe</span> <span>'.featured_product'</span> <span>do</span>
+  <span>it</span> <span>'returns the featured product'</span> <span>do</span>
+    <span>create</span><span>(</span><span>:product</span><span>,</span> <span>featured: </span><span>false</span><span>)</span>
+    <span>product_featured</span> <span>=</span> <span>create</span><span>(</span><span>:product</span><span>,</span> <span>featured: </span><span>true</span><span>)</span>
+
+    <span>expect</span><span>(</span><span>described_class</span><span>.</span><span>featured_product</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>product_featured</span><span>)</span>
+  <span>end</span>
+<span>end</span></code></pre></figure> </div> <a target="_blank" href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/discussions/20">Discuss this guideline</a> </article> <article> <h2 id="who-is-using-it"> <a href="#who-is-using-it" aria-labelledby="who-is-using-it"></a> <a href="#who-is-using-it"> Who is using it </a> </h2> <p>Here are a few examples of organizations using Even Better Specs:</p> <ul> <li> <a href="https://www.streetbees.com/" target="_blank">Streetbees</a> </li> <li> <a href="https://www.flowis.com/" target="_blank">Flowis</a> </li> </ul> <p>Does your team also use it? <a href="https://github.com/evenbetterspecs/evenbetterspecs.github.io/edit/main/_includes/who_is_using_it.html" target="_blank">Let us know!</a></p> </article> </main> <hr>  </div></div>
+  </div>
+</body>
+</html>

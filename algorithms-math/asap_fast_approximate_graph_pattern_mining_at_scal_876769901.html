@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ASAP: fast, approximate graph pattern mining at scale</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>ASAP: fast, approximate graph pattern mining at scale</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2018/11/07/asap-fast-approximate-graph-pattern-mining-at-scale">https://blog.acolyer.org/2018/11/07/asap-fast-approximate-graph-pattern-mining-at-scale</a></p>
+    <p><strong>Tags:</strong> algorithms-math, graphs</p>
+    <p><strong>Bookmark ID:</strong> 876769901</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-7878">
+	<!-- .entry-header -->
+
+	<div>
+		<p><a href="https://www.usenix.org/conference/osdi18/presentation/iyer">ASAP: fast, approximate graph pattern mining at scale</a> Iyer et al., <em>OSDI’18</em></p>
+<p>I have a real soft spot for approximate computations. In general, we waste a lot of resources on overly accurate analyses when understanding the trends and / or the neighbourhood is quite good enough (do you really need to know it’s 78.763895% vs 78 ± 1%?). You can always drill in with more accuracy if the approximate results hint at something interesting or unexpected.</p>
+<blockquote><p>
+  Approximate analytics is an area that has gathered attention in big data analytics, where the goal is to let the user trade-off accuracy for much faster results.
+</p></blockquote>
+<p>(See e.g. <a href="https://blog.acolyer.org/2015/04/16/approxhadoop-bringing-approximations-to-mapreduce-frameworks/">ApproxHadoop</a> which we covered on The Morning Paper a while back).</p>
+<p>In the realm of graph processing, <em>graph pattern mining</em> algorithms, which discover structural patterns in a graph, can reveal very interesting things in our data but struggle to scale to larger graphs. This is in contrast to <em>graph analysis</em> algorithms such as PageRank which typically compute properties of a graph using neighbourhood information.</p>
+<blockquote><p>
+  Today, a deluge of graph processing frameworks exist, both in academia and open-source… a vast majority of the existing graph processing frameworks however have focused on graph analysis algorithms.
+</p></blockquote>
+<p><a href="https://blog.acolyer.org/2016/01/26/arabesque/">Arabesque</a> explicitly targets the graph mining problem using distributed processing, but even then large graphs (1 billion edges) can take hours (e.g. 10 hours) to mine.</p>
+<blockquote><p>
+  In this paper, we present <em>A Swift Approximate Pattern-miner</em> (ASAP), a system that enables both <em>fast</em> and <em>scalable</em> pattern mining. ASAP is motivated by one key observation: in many pattern mining tasks, it is often not necessary to output the exact answer. For instance, in frequent sub-graph mining (FSM) the task is to find the frequency of subgraphs with an end goal of ordering them by occurrences… our conversations with a social network firm revealed that their application for social graph similarity uses a count of similar graphlets. Another company’s fraud detection system similarly counts the frequency of pattern occurrences. In both cases, an approximate count is good enough.
+</p></blockquote>
+<p>ASAP outperforms Arabesque by up to 77x on the LiveJournal graph while incurring less than 5% error. It can scale to graphs with billions of edges (e.g. Twitter at 1.5B edges) and produce results in minutes rather than hours.</p>
+<p>One major challenge is that the approximation methods used in big data analytics don’t carry over to graph pattern mining. There, the core idea is to sample the input, run the analysis over the sample, and extrapolate based on an assumption that the <em>sample size relates to the error in the output</em>. If we take this same idea and apply it to a foundational graph mining problem, counting triangles, it quickly becomes apparent that there is no clear relationship we can rely on between the size of the sample and the error or the speedup.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/11/asap-fig-1.jpeg?w=640" alt=""></p>
+<blockquote><p>
+  We conclude that the existing approximation approach of running the exact algorithm on one or more samples of the input is incompatible with graph pattern mining. Thus, in this paper, we propose a new approach.
+</p></blockquote>
+<h3>Graph pattern mining and sampling</h3>
+<p>Pattern mining is the problem of finding instances of a given pattern e.g. triangles, 3-chains, cliques, motifs, in a graph. (A <em>motif</em> query looks for patterns involving a certain number of vertices, e.g. a 3-motif query looks for triangles and 3-chains).</p>
+<p>A common approach is to iterate over all possible embeddings in the graph starting with a vertex or edge, filtering out those that cannot possibly match. The remaining <em>candidate</em> embeddings are then expanded by adding one more vertex/edge and the process repeats.</p>
+<blockquote><p>
+  The obvious challenge in graph pattern mining, as opposed to graph analysis, is the exponentially large candidate set that needs to be checked.
+</p></blockquote>
+<p><em>Neighbourhood sampling</em> has been proposed in the context of a specific graph pattern, triangle counting. The central idea is to sample one edge from an edge stream, and the gradually add more edges until either they form a triangle or it becomes impossible to form the pattern. Given a graph with <em>m</em> edges, it proceeds as follows. To perform one trial:</p>
+
+<p>If a trial successfully samples a triangle, we can estimate <img src="https://s0.wp.com/latex.php?latex=e_i+%3D+mc&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=e_i+%3D+mc&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=e_i+%3D+mc&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="e_i = mc"> triangles in the full graph. After conduction <em>r</em> trials we have an approximate result given by <img src="https://s0.wp.com/latex.php?latex=%5Cfrac%7B1%7D%7Br%7D%5Csum_%7Br%7De_i&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cfrac%7B1%7D%7Br%7D%5Csum_%7Br%7De_i&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cfrac%7B1%7D%7Br%7D%5Csum_%7Br%7De_i&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\frac{1}{r}\sum_{r}e_i">.</p>
+<p>Here’s an example using a graph with five nodes:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/11/asap-fig-2.jpeg?w=480" alt=""></p>
+<h3>Introducing ASAP</h3>
+<p>ASAP generalises the neighbouring sampling approach outlined above to work with a broader set of patterns. It comes with a standard library of implementations for common patterns, and users can also write their own. It is designed for a distributed setting and also includes mining over property graphs (which requires predicate matching).</p>
+<p>Users of ASAP can explicitly trade off compute time and accuracy, specifying either a time budget (best result you can do in this time) or an error budget (give me a result as quickly as you can, with at least this accuracy). Before running the algorithm, ASAP returns an estimate of the time or error bounds it can achieve. If the user approves the algorithm is run and the presented result includes a count, confidence level, and actual run time. Users may then optionally ask to output the actual embeddings of the found pattern.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/11/asap-fig-3.jpeg?w=480" alt=""></p>
+<p>To find out how many estimators it needs to run for the given bounds ASAP builds an <em>error-latency profile</em> (ELP). Building an ELP is fast and can be done online. For the error profile, the process begins with uniform sampling to reduce the graph to a size where nearly 100% accurate estimates can be produced. A loose upper bound for the number of estimators required is then produced using Chernoff bounds and scaled to the larger graph (see section 5.2 for details and for how the time profile is computed). For evolving graphs, the ELP algorithm can be re-run after a certain number of changes to the graph (e.g., when 10% of edges have changed).</p>
+<h3>Approximate pattern mining in ASAP</h3>
+<p>ASAP generalises neighbourhood sampling to a two phase process: a <em>sampling</em> phase followed by a <em>closing</em> phase.</p>
+<blockquote><p>
+  In the sampling phase, we select an edge in one of two ways by treating the graph as an ordered stream of edges: (a) sample an edge randomly; (b) sample an edge that is adjacent to any previously sampled edges, from the remainder of the stream. In the closing phase, we wait for one or more specific edges to complete the pattern.
+</p></blockquote>
+<p>(So in the triangle counting example above, sampling <img src="https://s0.wp.com/latex.php?latex=l_0&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=l_0&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=l_0&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="l_0"> and <img src="https://s0.wp.com/latex.php?latex=l_1&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=l_1&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=l_1&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="l_1"> form the sampling phase, and waiting for <img src="https://s0.wp.com/latex.php?latex=l_2&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=l_2&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=l_2&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="l_2"> is the closing phase).</p>
+<blockquote><p>
+  The probability of sampling a pattern can be computed from these two phases….
+</p></blockquote>
+<p>For a k-node pattern, the probability of detecting a pattern <em>p</em> depends on <em>k</em> and the different ways to sample using the neighbourhood sampling technique. There are four different cases for <img src="https://s0.wp.com/latex.php?latex=k+%3D+2..5&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=k+%3D+2..5&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=k+%3D+2..5&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="k = 2..5">, and up to three different types of sampling possible within each case. The probability formulas for all of these are enumerated in section 4.1.1. E.g., when k=2 the probability is 1/mc as we saw previously.</p>
+<p>When applied in a distributed setting ASAP parallelises the sampling process and then combines the outputs (MapReduce). Vertices in the graph are partitioned across machines, and several copies of the estimator task are scheduled on each machine. The graphs edges and vertices need to seen in the same order on each machine, but any order will do (‘<em>thus, ASAP uses a random ordering which is fast and requires no pre-processing of the graph</em>’). The output from each machine is a partial count, making the reduce step a trivial sum operation.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/11/asap-fig-6.jpeg?w=480" alt=""></p>
+<p>For predicate matching on property graphs ASAP supports both ‘at least one’ and ‘all’ predicates on the pattern’s vertices and edges. For ‘all’ predicates, ASAP introduces a filtering phase before the execution of the pattern mining task. For ‘at least one’ predicates a first pass produces a matching list of edges matching the predicate. Then in the second pass when running the sampling phase of the algorithm every estimator picks its first edge randomly from within the matching list.</p>
+<p>There’s a performance optimisation for motif queries (finding all patterns with a certain number of vertices) whereby common building blocks from k-node patterns can be reused.</p>
+<p>If a user first explores the graph with a low accuracy answer (e.g. using 1 million estimators), and then wants to drill in to higher accuracy (requiring e.g. 3 million estimators) then ASAP only needs to launch another 2 million estimators and can reuse the first 1 million.</p>
+<h3>Key evaluation results</h3>
+<p>ASAP is evaluated using a number of graphs:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/11/asap-datasets.jpeg?w=480" alt=""></p>
+<p>Compared to Arabesque, ASAP shows up to 77x performance improvement with a 5% loss of accuracy when counting 3-motifs and 4-motifs on modest sized graphs:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/11/asap-fig-8.jpeg?w=520" alt=""></p>
+<p>On larger graphs ASAPs advantage extends up to 258x.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/11/asap-table-3.jpeg?w=480" alt=""></p>
+<p>The final part of the evaluation evaluates mining for 5-motifs (21 individual patterns), based on conversations with industry partners who use similar patterns in their production systems. Results for two of those patterns are shown in the table below, and demonstrate that ASAP can handle them easily (using a cluster of 16 machines each with 16 cores).</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/11/asap-fig-13.jpeg?w=420" alt=""></p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/11/asap-table-6.jpeg?w=480" alt=""></p>
+<blockquote><p>
+  Our evaluation shows that not only does ASAP outperform state-of-the-art exact solutions by more than an order of magnitude, but it also scales to large graphs while being low on resource demands.
+</p></blockquote>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+
+	</article></div>
+  </div>
+</body>
+</html>

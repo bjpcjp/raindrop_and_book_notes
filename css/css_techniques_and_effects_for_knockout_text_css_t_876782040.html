@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Techniques And Effects For Knockout Text | CSS-Tricks</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>CSS Techniques And Effects For Knockout Text | CSS-Tricks</h1>
+    <p><strong>URL:</strong> <a href="https://css-tricks.com/css-techniques-and-effects-for-knockout-text">https://css-tricks.com/css-techniques-and-effects-for-knockout-text</a></p>
+    <p><strong>Tags:</strong> css, fonts-typography</p>
+    <p><strong>Bookmark ID:</strong> 876782040</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p>
+	DigitalOcean provides cloud products for every stage of your journey. Get started with <a href="https://try.digitalocean.com/css-tricks/?utm_medium=content_acq&amp;utm_source=css-tricks&amp;utm_campaign=global_brand_ad_en&amp;utm_content=conversion_prearticle_everystage">$200 in free credit!</a>
+</p><div>
+
+          
+          <p><em>Knockout text</em> is a technique where words are clipped out of an element and reveal the background. In other words, you only see the background because the letters are knocking out holes. It’s appealing because it opens up typographic styles that we don’t get out of traditional CSS properties, like <code>color</code>.</p>
+<p>While we’ve seen a <a href="https://css-tricks.com/how-to-do-knockout-text/">number of ways</a> to accomplish knockout text in the past, there are some modern CSS properties we can use now and even enhance the effect further, like transitions and animations. Let’s see them in action.</p>
+
+<h3>Mix Blend Modes</h3>
+<p>There are <a href="https://css-tricks.com/almanac/properties/m/mix-blend-mode/">four blend modes</a> that effortlessly make text cutouts: <code>multiply</code>, <code>screen</code>, <code>darken</code>, and <code>lighten</code>. Applying these to the top element of a stack of image and text, text being at top, creates the knockout design.</p>
+<p>Even though, in most cases, either black or white is used in these blend modes to get a clear distinction between the text and the background, I prefer using a darker or lighter color instead to keep the back image slightly visible, like this:</p>
+<pre><code>&lt;div class="backdrop"&gt;
+  &lt;p class="text"&gt;Taitō&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+<pre rel="CSS"><code>/* Background layer with an image */
+.backdrop {
+  background: url("/path/to/image.jpg") center;
+  ...
+}
+    
+/* Dark foreground layer, with white text, set to "multiply" mix blend mode */
+.text {
+  color: white;
+  background: rgb(59, 2, 6);
+  mix-blend-mode: multiply;
+  ...
+}</code></pre>
+<p data-height="225" data-theme-id="1" data-slug-hash="qxrQpb" data-default-tab="result" data-user="rpsthecoder" data-embed-version="2" data-pen-title="CSS Knockout Text">See the Pen <a href="https://codepen.io/rpsthecoder/pen/qxrQpb/" rel="noopener">CSS Knockout Text</a> by Preethi (<a href="https://codepen.io/rpsthecoder" rel="noopener">@rpsthecoder</a>) on <a href="https://codepen.io/" rel="noopener">CodePen</a>.</p>
+<p>Using a darker (or lighter) color also creates a nice “theme” going on with the image shown through the text.</p>
+<p>The <strong>multiply</strong> blend mode keeps darker colors dark and the lighter colors let through whatever’s behind them: a black portion on the top layer will be fully opaque and white will be fully transparent.</p>
+<figure id="post-267487"><img data-recalc-dims="1" decoding="async" src="data:application/octet-stream;base64," alt=""><figcaption>The effects of the <code>multiply</code> mix blend mode.</figcaption></figure>
+<p>In the above example, the white text became completely see-through while the darker color around it lets the image behind be seen only a little, as the darker shades remain unaffected.</p>
+<p>The <strong>screen</strong> blend mode reverses the roles: darker colors create translucence while lighter shades remain light and block what’s behind.</p>
+<p>The <strong>darken</strong> and <strong>lighten</strong> blend modes are similar to multiply and screen, respectively, except that details are lost on the portions of the back image that can be seen. Rather than mixing the shades, the modes choose the darker or the lighter shade of the two layers that are shown.</p>
+<p>See below the difference in how the four modes have blended the colors:</p>
+<pre rel="CSS"><code>/* Knockout text within a dark area */
+.multiply {
+  color: white;
+  mix-blend-mode: multiply;
+  background-color: rgb(59, 2, 6);
+}
+
+/* Knockout text within a bright area */
+.screen {
+  color: black;
+  mix-blend-mode: screen;
+  background-color: rgb(244, 220, 211);
+}
+
+/* Knockout text within a dark area that's less detailed */
+.darken {
+  color: white;
+  mix-blend-mode: darken;
+  background-color: rgb(59, 2, 6);
+}
+
+/* Knockout text within a light area that's less detailed */
+.lighten {
+  color: black;
+  mix-blend-mode: lighten;
+  background-color: rgb(244, 220, 211);
+}</code></pre>
+<p data-height="800" data-theme-id="1" data-slug-hash="Zremwz" data-default-tab="result" data-user="rpsthecoder" data-embed-version="2" data-pen-title="CSS Knockout Text">See the Pen <a href="https://codepen.io/rpsthecoder/pen/Zremwz/" rel="noopener">CSS Knockout Text</a> by Preethi (<a href="https://codepen.io/rpsthecoder" rel="noopener">@rpsthecoder</a>) on <a href="https://codepen.io/" rel="noopener">CodePen</a>.</p>
+<p>Using a blend mode is the most convenient option to get a knockout text effect, because it allows us to apply additional styles that other techniques might not allow.</p>
+<p>Let’s take a closer look at the styles we can use to enhance the knockout effect.</p>
+<h4>Shadow Blur</h4>
+<p>Adding a white/black or a light/dark text shadow to the text creates a blurred effect. For example, let’s say I add a <code>text-shadow</code> that’s with a large blur radius value:</p>
+<pre rel="CSS"><code>.text {
+  text-shadow: 0 0 9px white;
+  ...
+}</code></pre>
+<p>Now the edges are less crisp and give a sort of cloudy effect:</p>
+<p data-height="225" data-theme-id="1" data-slug-hash="XZMyvm" data-default-tab="result" data-user="rpsthecoder" data-embed-version="2" data-pen-title="CSS Blurred Knockout Text">See the Pen <a href="https://codepen.io/rpsthecoder/pen/XZMyvm/" rel="noopener">CSS Blurred Knockout Text</a> by Preethi (<a href="https://codepen.io/rpsthecoder" rel="noopener">@rpsthecoder</a>) on <a href="https://codepen.io/" rel="noopener">CodePen</a>.</p>
+<h4>Animation</h4>
+<p>We can even make things move around a little. For example, let’s take build on the <code>text-shadow</code> idea we looked at above and put some movement on it to make it appear that the text is glowing:</p>
+<pre rel="CSS"><code>.text {
+  animation:  glow 3s infinite;
+  ...
+}
+
+@keyframes glow {
+  0% {
+    text-shadow:  0 0 10px white;
+  }
+  
+  15% {
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 1),
+                 -2px -2px 10px rgba(255, 255, 255, 1);
+  }
+  30% {
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, .7),
+                 -2px -2px 4px rgba(255, 255, 255, .7);
+  }
+  50% {
+    text-shadow: 20px 20px 50px rgba(255, 255, 255, .5),
+                 -20px -20px 50px rgba(255, 255, 255, .5);
+  }
+}</code></pre>
+<p data-height="208" data-theme-id="1" data-slug-hash="BYWvNG" data-default-tab="result" data-user="rpsthecoder" data-embed-version="2" data-pen-title="CSS knockout Text Glow Animation">See the Pen <a href="https://codepen.io/rpsthecoder/pen/BYWvNG/" rel="noopener">CSS knockout Text Glow Animation</a> by Preethi (<a href="https://codepen.io/rpsthecoder" rel="noopener">@rpsthecoder</a>) on <a href="https://codepen.io/" rel="noopener">CodePen</a>.</p>
+<h4>Transition</h4>
+<p>Transition is another property we can apply to our knockout text and that opens up even more interesting possibilities, like using <code>text-indent</code> on pseudo-classes like <code>:hover</code>.</p>
+<p>Here’s how we can use transition on pseudo-classes to introduce a new element into the knockout text: </p>
+<pre rel="CSS"><code>/* The knockout text */
+.text {
+  transition: text-indent .5s;
+  ...
+}
+
+/* On hover, trigger the transition */
+.text:hover {
+  text-indent: 5px;
+  transition: text-indent .5s;
+}
+
+/* The thing that slides in on hover */
+.text:hover::before {
+  display: inline-block;
+  content: '&amp;#x2708;︎';
+}</code></pre>
+<p data-height="550" data-theme-id="1" data-slug-hash="VQpqbX" data-default-tab="result" data-user="rpsthecoder" data-embed-version="2" data-pen-title="CSS Knockout Text Transition">See the Pen <a href="https://codepen.io/rpsthecoder/pen/VQpqbX/" rel="noopener">CSS Knockout Text Transition</a> by Preethi (<a href="https://codepen.io/rpsthecoder" rel="noopener">@rpsthecoder</a>) on <a href="https://codepen.io/" rel="noopener">CodePen</a>.</p>
+<h3>Background Clip</h3>
+<p>The <a href="https://css-tricks.com/almanac/properties/b/background-clip/"><code>background-clip</code></a> CSS property set with the  <code>text</code> value clips a background to the shape of its foreground text.</p>
+<figure id="post-267488"><img data-recalc-dims="1" decoding="async" src="data:application/octet-stream;base64," alt=""><figcaption>Using <code>background-clip: text</code></figcaption></figure>
+<pre><code>&lt;p class="text"&gt;Taitō&lt;/p&gt;</code></pre>
+<pre rel="CSS"><code>.text {
+  background: url("/path/to/image.jpg") center;
+  background-clip: text;
+  color: transparent;
+  ...
+}</code></pre>
+<p data-height="195" data-theme-id="1" data-slug-hash="rJyopW" data-default-tab="result" data-user="rpsthecoder" data-embed-version="2" data-pen-title="Knockout Text">See the Pen <a href="https://codepen.io/rpsthecoder/pen/rJyopW/" rel="noopener">Knockout Text</a> by Preethi (<a href="https://codepen.io/rpsthecoder" rel="noopener">@rpsthecoder</a>) on <a href="https://codepen.io/" rel="noopener">CodePen</a>.</p>
+<p>The transparent text shows the image behind it that’s already cut to the shape of the text. Although this is a true knockout text approach—it literally removes the text’s surrounding background on screen—having no background left to bleed into or move over leaves little space for other effects like blur, or moving text, to take place. That’s where <code>mix-blend-mode</code> has an advantage.</p>
+<h3>CSS Mask</h3>
+<p>The first technique we looked at employs <strong>masking</strong>, a concept where shapes are created on a foreground layer and use color to determine how much of the shape shows the background. The black parts of the foreground hide (or “mask”) and white parts reveal the background, or vice-versa. Any gray value between black and white is treated as varying degrees of partial transparency.</p>
+<p>CSS mask works the same way: you straight up declare an image to be the mask applied over another image and, depending on the type of the mask, we get a portion cut out. As of writing this post CSS mask is fully supported in Firefox only.</p>
+<div><div><h4>Desktop</h4><table><thead><tr><th><span>Chrome</span></th><th><span>Firefox</span></th><th><span>IE</span></th><th><span>Edge</span></th><th><span>Safari</span></th></tr></thead><tbody><tr><td title="Chrome - "><span>120</span></td><td title="Firefox - "><span>53</span></td><td title="IE - "><span>No</span></td><td title="Edge - "><span>120</span></td><td title="Safari - "><span>15.4</span></td></tr></tbody></table></div><div><h4>Mobile / Tablet</h4><table><thead><tr><th><span>Android Chrome</span></th><th><span>Android Firefox</span></th><th><span>Android</span></th><th><span>iOS Safari</span></th></tr></thead><tbody><tr><td title="Android Chrome - "><span>129</span></td><td title="Android Firefox - "><span>130</span></td><td title="Android - "><span>129</span></td><td title="iOS Safari - "><span>15.4</span></td></tr></tbody></table></div></div>
+<p>Since we are looking specifically into knockout text, the mask needs to be made from text. This is a great use for SVG <code>&lt;mask&gt;</code>, which can create masks from SVG shapes and texts. </p>
+<pre><code>&lt;div class="backdrop"&gt;
+  &lt;p class="text"&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;svg&gt;
+  &lt;defs&gt;
+    &lt;mask id="m"&gt;
+      &lt;rect width="100%" height="100%" fill="white" /&gt;
+      &lt;text x="50%" y="75%" text-anchor="middle"&gt;Taitō&lt;/text&gt;
+    &lt;/mask&gt;
+  &lt;/defs&gt;
+&lt;/svg&gt;</code></pre>
+<pre rel="CSS"><code>/* Background layer with an image */
+.backdrop {
+  background:  url("/path/to/image.jpg") center;
+  ...
+}
+
+/* Dark foreground layer with masking applied */
+.text {
+  background-color: rgba(59, 2, 6, 1);
+  mask-type: luminance;
+  /* Referrer to an SVG mask */
+  mask: url("#m");              
+  ...
+}
+
+svg {
+  width: 75vw;
+  height: 20vw;
+}
+
+/* SVG text inside the mask */
+text {
+  font: bolder 12vw 'Alfa Slab One';
+}</code></pre>
+<p data-height="300" data-theme-id="1" data-slug-hash="mXWaLQ" data-default-tab="result" data-user="rpsthecoder" data-embed-version="2" data-pen-title="Knockout Text">See the Pen <a href="https://codepen.io/rpsthecoder/pen/mXWaLQ/" rel="noopener">Knockout Text</a> by Preethi (<a href="https://codepen.io/rpsthecoder" rel="noopener">@rpsthecoder</a>) on <a href="https://codepen.io/" rel="noopener">CodePen</a>.</p>
+<p>The <code>luminance</code> value on the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask-type" rel="noopener"><code>mask-type</code></a> property of the foreground element implements a masking mechanism where parts of this layer, corresponding to the black parts of the mask, become transparent. The parts corresponding to the white portions of the mask remain opaque. The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask" rel="noopener"><code>mask</code></a> property uses the <code>url()</code> value to designate the SVG element used for the mask.</p>
+<p>SVG’s <code>&lt;mask&gt;</code> element creates a mask imaged from its contents. The contents I made inside the <code>&lt;mask&gt;</code> are a white rectangle (<code>&lt;rect&gt;</code>) and black text (<code>&lt;text&gt;</code>). The text, being black, brings up the portion of the image behind it to the view after masking.</p>
+<h4>Blurring, Animation, and Transition</h4>
+<p>CSS masks open up the same blur and animation effects we were able to use with <code>mix-blend-mode</code>.</p>
+<p>That same glowing text from we used before applies here as well, this time applied directly to the <code>&lt;text&gt;</code> element of the SVG:</p>
+<pre rel="CSS"><code>text {
+  font: bolder 12vw 'Alfa Slab One';
+  animation: glow 3s infinite;
+}
+
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 10px white;
+  }
+  
+  15% {
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 1),
+                 -2px -2px 10px rgba(255, 255, 255, 1);
+  }
+  30% {
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, .7),
+                 -2px -2px 4px rgba(255, 255, 255, .7);
+  }
+  50% {
+    text-shadow: 20px 20px 50px rgba(255, 255, 255, .5),
+                 -20px -20px 50px rgba(255, 255, 255, .5);
+  }
+}</code></pre>
+<p>However, unlike <code>mix-blend-mode</code>, not all the same properties can be animated. For example, <code>text-indent</code> won’t work here and neither will <code>transform</code>. It’s true that CSS transforms can be applied to SVG elements but because our mask is actually being used as a mask in its truest form, browsers might not apply those transformations.</p>
+<p>We can always inject a <code>transform</code> SVG attribute using JavaScript, delivering those transformations to the elements inside the mask:</p>
+<pre rel="JavaScript"><code>t = document.querySelector('text');
+b = document.querySelector('.backdrop');
+b.onmouseover = ()=&gt;{
+  t.setAttribute('transform', 'translate(20)');
+}
+b.onmouseout = ()=&gt;{
+  t.removeAttribute('transform');
+}</code></pre>
+<h3>Conclusion</h3>
+<p>When it comes to browser support and production safe code, CSS mask lags behind due to being limited to Firefox support. The blend modes mentioned in this post are supported in almost all the major browsers, except Edge. The <code>background-clip</code> property is also supported by all the browsers, but still requires <code>-webkit</code> prefix. </p>
+<p>In terms of result, both blend modes and mask give similar output. Between <code>background-clip</code> and <code>mix-blend-mode</code> values, it’ll be the choice of the design that’ll lead to choosing one over another. What you can achieve with <code>background-clip</code> can also be done by blending, provided you’re using either only black or white background matching the page’s body.</p>
+<p>TLDR; knockout text method <em>uno</em>: apply one of the four knockout-friendly blend modes to the top layer of a text-image stack and use dark/light (or black/white) color combination on the text and its enclosure. Method <em>dos:</em> set <code>background-clip</code> to <code>text</code> in the element carrying both a background image and a transparent text. Method <em>tres</em>: use CSS masking on a solid foreground with an image behind and dictate the cutout using an SVG text mask.</p>
+
+          
+        </div></div>
+  </div>
+</body>
+</html>

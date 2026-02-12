@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Getting Started on Heroku with Node.js | Heroku Dev Center</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Getting Started on Heroku with Node.js | Heroku Dev Center</h1>
+    <p><strong>URL:</strong> <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs">https://devcenter.heroku.com/articles/getting-started-with-nodejs</a></p>
+    <p><strong>Tags:</strong> heroku, nodejs</p>
+    <p><strong>Bookmark ID:</strong> 876781123</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div role="main">
+    
+    <h2 data-next-message="I'm ready to start" id="introduction">Introduction</h2>
+
+<p>This tutorial can help you deploy a Node.js app to Heroku in minutes.</p>
+
+<p>The tutorial assumes that you have:</p>
+
+<ul>
+<li>A <a href="https://devcenter.heroku.com/articles/account-verification">verified Heroku Account</a></li>
+<li><a href="https://nodejs.org/en/download/">Node.js</a> and <a href="https://www.npmjs.com/package/npm">npm</a> installed locally</li>
+<li>An <a href="https://devcenter.heroku.com/articles/eco-dyno-hours">Eco dynos plan</a> subscription (recommended)</li>
+</ul>
+
+<p>Using dynos to complete this tutorial counts towards your usage. To complete this tutorial, we recommend using our <a href="https://blog.heroku.com/new-low-cost-plans">low-cost plans</a>. Eligible students can apply for platform credits through our new <a href="https://blog.heroku.com/github-student-developer-program">Heroku for GitHub Students program</a>.</p>
+
+<h2 data-next-message="I have installed the Heroku CLI" id="set-up">Set Up</h2>
+
+
+
+<p>In this step you <a href="https://devcenter.heroku.com/articles/heroku-cli">install the Heroku Command Line Interface (CLI)</a>. You use the CLI to manage and scale your applications, provision add-ons, view your application logs, and run your application locally.</p>
+
+<p>Download and run the installer for your platform.</p>
+
+<div>
+    <p><img src="data:application/octet-stream;base64," alt="apple logo">macOS</p>
+        <pre><code><span><span>$ </span>brew tap heroku/brew &amp;&amp; brew install heroku</span></code></pre>
+      </div>
+
+<p>More installation options for the Heroku Command Line Interface (CLI) can be found <a href="https://devcenter.heroku.com/articles/heroku-cli">here</a>.</p>
+
+<p>When installation completes, you can use the <code>heroku</code> command from your terminal.</p>
+
+<p>On Windows, start the Command Prompt (cmd.exe) or Powershell to access the command shell.</p>
+
+<p>To log in to the Heroku CLI, use the <code>heroku login</code> command.</p>
+<pre><code>$ heroku login
+heroku: Press any key to open up the browser to login or q to exit
+ ›   Warning: If browser does not open, visit
+ ›   https://cli-auth.heroku.com/auth/browser/***
+heroku: Waiting for login...
+Logging in... done
+Logged in as me@example.com
+</code></pre>
+<p>This command opens your web browser to the Heroku login page. If your browser is already logged in to Heroku, click the <strong><code>Log in</code></strong> button.</p>
+
+<p>This authentication is required for the <code>heroku</code> and <code>git</code> commands to work correctly.</p>
+
+<p>If you’re behind a firewall that requires use of a proxy to connect with external HTTP/HTTPS services, you can set the <a href="https://devcenter.heroku.com/articles/using-the-cli#using-an-http-proxy"><code>HTTP_PROXY</code> or <code>HTTPS_PROXY</code> environment variables</a> in your local development environment before running the <code>heroku</code> command.</p>
+
+<p>Before you continue, check that you have the prerequisites installed properly. Type each command below, and make sure that each one displays the version that you installed. (Your versions can be different from the example.) If no version is returned, install the prerequisites.</p>
+
+<p>To declare app dependencies and subsequent steps, you must complete this local setup.</p>
+
+<p>This tutorial works for any version of Node greater than 18.</p>
+<pre><code>$ node --version
+v20.9.0
+</code></pre>
+<p><code>npm</code> is installed with Node, so check that it’s there. If you don’t have it, install a more recent version of Node.</p>
+<pre><code>$ npm --version
+10.1.0
+</code></pre>
+<p>Now check that you have <code>git</code> installed.  If not, <a href="https://git-scm.com/downloads">install it</a>, and test again.</p>
+<pre><code>$ git --version
+git version 2.42.0
+</code></pre>
+<h2 data-next-message="I cloned the app source code" id="prepare-the-app">Prepare the App</h2>
+
+<p>In this step, you prepare a sample application that’s ready to be deployed to Heroku.</p>
+
+<div>
+<p>If you’re new to Heroku, we recommend that you complete this tutorial using the Heroku-provided sample application.</p>
+
+<p>However, if you have an existing application that you want to deploy instead, read <a href="https://devcenter.heroku.com/articles/preparing-a-codebase-for-heroku-deployment" target="_blank">this article</a> to learn how to prepare it for Heroku deployment.</p>
+</div>
+
+<p>To clone a local version of the sample application that you can then deploy to Heroku, execute these commands in your local command shell or terminal.</p>
+<pre><code>$ git clone https://github.com/heroku/node-js-getting-started.git
+$ cd node-js-getting-started
+</code></pre>
+<p>You now have a functioning Git repository that contains a simple application and a <code>package.json</code> file, which Node’s dependency manager uses.</p>
+
+<h2 data-next-message="I deployed my app on Heroku" id="deploy-the-app">Deploy the app</h2>
+
+<p>In this step, you deploy the app to Heroku.</p>
+
+<p>Using dynos to complete this tutorial counts towards your usage. To control costs, <a href="https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-apps-destroy">Delete your app</a> as soon as you‘re done.</p>
+
+
+
+<p>By default, apps use Eco dynos if you’re subscribed to Eco. Otherwise, it defaults to Basic dynos. If you plan to deploy many small apps to Heroku, we recommend the Eco dynos plan, which is shared across all Eco dynos in your account. Learn more <a href="https://blog.heroku.com/new-low-cost-plans">here</a>. Eligible students can apply for platform credits through our <a href="https://blog.heroku.com/github-student-developer-program">Heroku for GitHub Students program</a>.</p>
+
+<p>Create an app on Heroku, which prepares Heroku to receive your source code.</p>
+<pre><code>$ heroku create
+Creating app... done, ⬢ shrouded-anchorage-35377
+https://shrouded-anchorage-35377.herokuapp.com/ | https://git.heroku.com/shrouded-anchorage-35377.git
+</code></pre>
+<p>When you create an app, you also create a Git remote called <code>heroku</code>. It’s associated with your local Git repository.</p>
+
+<p>Heroku generates a random name for your app, in this case <code>shrouded-anchorage-35377</code>. Or you can pass a parameter to specify your own app name.</p>
+
+<p>Deploy your code.</p>
+<pre><code>$ git push heroku main
+Enumerating objects: 554, done.
+Counting objects: 100% (554/554), done.
+Delta compression using up to 20 threads
+Compressing objects: 100% (412/412), done.
+Writing objects: 100% (554/554), 248.74 KiB | 124.37 MiB/s, done.
+Total 554 (delta 109), reused 548 (delta 106), pack-reused 0
+remote: Compressing source files... done.
+remote: Building source:
+remote:
+remote: -----&gt; Building on the Heroku-22 stack
+remote: -----&gt; Determining which buildpack to use for this app
+remote: -----&gt; Node.js app detected
+remote:
+remote: -----&gt; Creating runtime environment
+remote:
+remote:        NPM_CONFIG_LOGLEVEL=error
+remote:        NODE_VERBOSE=false
+remote:        NODE_ENV=production
+remote:        NODE_MODULES_CACHE=true
+remote:
+remote: -----&gt; Installing binaries
+remote:        engines.node (package.json):  20.x
+remote:        engines.npm (package.json):   unspecified (use default)
+remote:
+remote:        Resolving node version 20.x...
+remote:        Downloading and installing node 20.9.0...
+remote:        Using default npm version: 10.1.0
+remote:
+remote: -----&gt; Installing dependencies
+remote:        Installing node modules (package.json)
+remote:
+remote:        added 160 packages, and audited 161 packages in 4s
+remote:
+remote:        64 packages are looking for funding
+remote:          run `npm fund` for details
+remote:
+remote:        found 0 vulnerabilities
+remote:
+remote: -----&gt; Build
+remote:
+remote: -----&gt; Caching build
+remote:        - node_modules
+remote:
+remote: -----&gt; Pruning devDependencies
+remote:
+remote:        up to date, audited 74 packages in 450ms
+remote:
+remote:        9 packages are looking for funding
+remote:          run `npm fund` for details
+remote:
+remote:        found 0 vulnerabilities
+remote:
+remote: -----&gt; Build succeeded!
+remote: -----&gt; Discovering process types
+remote:        Procfile declares types -&gt; web
+remote:
+remote: -----&gt; Compressing...
+remote:        Done: 43.4M
+remote: -----&gt; Launching...
+remote:        Released v3
+remote:        https://shrouded-anchorage-35377.herokuapp.com/ deployed to Heroku
+remote:
+remote: Verifying deploy... done.
+To https://git.heroku.com/shrouded-anchorage-35377.git
+ * [new branch]      main -&gt; main
+</code></pre>
+<p>Ensure that at least one instance of the app is running.</p>
+<pre><code>$ heroku ps:scale web=1
+</code></pre>
+<p>Visit the app at the URL generated by its app name. As a shortcut, you can open the website.</p>
+<pre><code>$ heroku open
+</code></pre>
+<h2 data-next-message="I've learned how to see my logs" id="view-logs">View Logs</h2>
+
+<p>Heroku treats logs as streams of time-ordered events aggregated from the output streams of all your app and Heroku components, providing a single channel for all of the events.</p>
+
+<p>View information about your running app using one of the <a href="https://devcenter.heroku.com/articles/logging">logging commands</a>, <code>heroku logs --tail</code>:</p>
+<pre><code>$ heroku logs --tail
+2023-03-02T19:56:09.671017+00:00 heroku[web.1]: Starting process with command `npm start`
+2023-03-02T19:56:12.617099+00:00 app[web.1]:
+2023-03-02T19:56:12.617126+00:00 app[web.1]: &gt; node-js-getting-started@0.3.0 start
+2023-03-02T19:56:12.617127+00:00 app[web.1]: &gt; node index.js
+2023-03-02T19:56:12.617127+00:00 app[web.1]:
+2023-03-02T19:56:12.738203+00:00 app[web.1]: Listening on 16832
+2023-03-02T19:56:13.217147+00:00 heroku[web.1]: State changed from starting to up
+</code></pre>
+<p>Visit your application in the browser again, and you see another log message generated.</p>
+
+<p>To stop streaming the logs, press <code>Control+C</code>.</p>
+
+<h2 data-next-message="I know what a Procfile is" id="define-a-procfile">Define a Procfile</h2>
+
+<p>Use a <a href="https://devcenter.heroku.com/articles/procfile">Procfile</a>, which is a text file in the root directory of your application, to explicitly declare what command executes to start your app.</p>
+
+<p>The <code>Procfile</code> in the example app you deployed looks like:</p>
+<pre><code>web: npm start
+</code></pre>
+<p>The name <code>web</code> is important because it declares that this single process type attaches to Heroku’s <a href="https://devcenter.heroku.com/articles/http-routing">HTTP routing</a> stack and receives web traffic when deployed. This command uses the <code>start</code> script specified in the <code>package.json</code>.</p>
+
+<p>Procfiles can contain additional process types. For example, you can declare one for a background worker process that processes items off of a queue.</p>
+
+<h2 data-next-message="I know how to scale my app" id="scale-the-app">Scale the App</h2>
+
+<p>Right now, your app runs on a single web <a href="https://devcenter.heroku.com/articles/dynos">dyno</a>. Think of a dyno as a lightweight container that runs the command specified in the Procfile.</p>
+
+<p>You can check how many dynos are running using the <code>ps</code> command.</p>
+<pre><code>$ heroku ps
+=== web (Eco): npm start (1)
+web.1: up 2023/03/02 15:56:13 -0400 (~ 6m ago)
+</code></pre>
+<p>By default, your app deploys on an Eco dyno. If they don’t receive any traffic, Eco dynos sleep after 30 minutes of inactivity. Upon waking, expect a delay of a few seconds for the first request. Subsequent requests perform normally. Eco dynos also consume from a monthly, account-level quota of <a href="https://devcenter.heroku.com/articles/eco-dyno-hours">Eco dyno hours</a>. As long as the quota isn’t exhausted, all Eco apps can continue to run.</p>
+
+<p>To avoid dyno sleeping, you can upgrade to a Basic or Professional dyno type as described in the <a href="https://devcenter.heroku.com/articles/dyno-types">Dyno Types</a> article. For example, if you migrate your app to a professional dyno, you can scale it by running a command that tells Heroku to execute a specific number of dynos, each running your web process type.</p>
+
+<p>Scaling an application on Heroku is equivalent to changing the number of dynos running. Scale the number of web dynos to zero.</p>
+<pre><code>$ heroku ps:scale web=0
+</code></pre>
+<p>Access the app again by hitting refresh on the web tab, or <code>heroku open</code> to open it in a web tab. You get an error message because you no longer have any web dynos available to serve requests.</p>
+
+<p>Scale it up again.</p>
+<pre><code>$ heroku ps:scale web=1
+</code></pre>
+<h2 data-next-message="I've installed the app dependencies locally" id="declare-app-dependencies">Declare App Dependencies</h2>
+
+<p>Heroku recognizes an app as Node.js from a <code>package.json</code> file in the root directory. For your own apps, you can create one by running <code>npm init --yes</code>.</p>
+
+<p>The demo app that you deployed already has a <code>package.json</code> that looks like:</p>
+<pre><code>{
+  "name": "node-js-getting-started",
+  "version": "0.3.0",
+  ...
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.15.2"
+  },
+  ...
+}
+</code></pre>
+<p>The <code>package.json</code> file determines the version of Node.js to run your application on Heroku and the dependencies to install with your application.</p>
+
+<p>Run this command in your local directory to install the dependencies, preparing your system to run the app locally.</p>
+<pre><code>$ npm install
+added 160 packages in 6s
+</code></pre>
+<p>After installation, a <code>package-lock.json</code> file is generated when <code>npm install</code> is run. Make sure to check this into Git. When subsequent dependencies are added, npm makes changes to this file, so make sure to add those changes to Git too.</p>
+
+<p>When an app is deployed, Heroku reads the <code>package.json</code> to install the appropriate node version and the <code>package-lock.json</code> to install the dependencies.</p>
+
+<h2 data-next-message="I can run my app locally" id="run-the-app-locally">Run the App Locally</h2>
+
+<p>Start your application locally using the <code>heroku local</code> command, which installed as part of the Heroku CLI.</p>
+<pre><code>$ heroku local web --port 5001
+[OKAY] Loaded ENV .env File as KEY=VALUE Format
+4:09:49 p.m. web.1 |  &gt; node-js-getting-started@0.3.0 start
+4:09:49 p.m. web.1 |  &gt; node index.js
+4:09:49 p.m. web.1 |  Listening on 5001
+</code></pre>
+<p>Just like Heroku, <code>heroku local</code> examines the Procfile to determine what to run.</p>
+
+<p>Open <a href="http://localhost:5001/">http://localhost:5001</a> with your web browser to see your app running locally.</p>
+
+<p>To stop the app from running locally, in the CLI, press <code>Ctrl</code>+<code>C</code> to exit.</p>
+
+<h2 data-next-message="I can push local changes" id="push-local-changes">Push Local Changes</h2>
+
+<p>In this step, you learn how to propagate a local change to the application through to Heroku. As an example, you modify the application to add an additional dependency and the code to use it.</p>
+
+<p>Begin by adding a dependency for <code>cool-ascii-faces</code> in <code>package.json</code>.  Run this command.</p>
+<pre><code>$ npm install cool-ascii-faces
+added 11 packages in 2s
+</code></pre>
+<p>Modify <code>index.js</code> so that it <code>requires</code> this module at the start. Also add a new route (<code>/cool</code>) that uses it. You want the final code to look like:</p>
+<pre><code>const cool = require('cool-ascii-faces')
+const express = require('express')
+const path = require('path')
+
+const PORT = process.env.PORT || 5001
+
+express()
+  .use(express.static(path.join(__dirname, 'public')))
+  .set('views', path.join(__dirname, 'views'))
+  .set('view engine', 'ejs')
+  .get('/', (req, res) =&gt; res.render('pages/index'))
+  .get('/cool', (req, res) =&gt; res.send(cool()))
+  .listen(PORT, () =&gt; console.log(`Listening on ${ PORT }`))
+</code></pre>
+<p>Test locally.</p>
+<pre><code>$ npm install
+$ heroku local --port 5001
+</code></pre>
+<p>When you visit your application at <a href="http://localhost:5001/cool">http://localhost:5001/cool</a>, the sample application shows you cute faces on each refresh: <code>( ⚆ _ ⚆ )</code>.</p>
+
+<p>Deploy. Almost every deploy to Heroku follows this same pattern. First, add the modified files to the local Git repository.</p>
+<pre><code>$ git add .
+</code></pre>
+<p>Commit the changes to the repository.</p>
+<pre><code>$ git commit -m "Add cool face API"
+</code></pre>
+<p>Deploy, just as you did previously.</p>
+<pre><code>$ git push heroku main
+</code></pre>
+<p>Check that everything works.</p>
+<pre><code>$ heroku open cool
+</code></pre>
+<p>If everything is in working order, you see another face.</p>
+
+<h2 data-next-message="I've used an add-on" id="provision-add-ons">Provision Add-Ons</h2>
+
+<!-- needs to be after config vars -->
+
+<p>Add-ons are third-party cloud services that provide out-of-the-box additional services for your application, from persistence through logging to monitoring and more.</p>
+
+<p>By default, Heroku stores 1,500 lines of logs from your application. However, it makes the full log stream available as a service. Several add-on providers have logging services that provide things such as log persistence, search, and email and SMS alerts.</p>
+
+<p>In this step, you provision one of these logging add-ons, Papertrail.</p>
+
+<p>Provision the <a href="https://devcenter.heroku.com/articles/papertrail">papertrail</a> logging add-on.</p>
+<pre><code>$ heroku addons:create papertrail
+Creating papertrail on ⬢ shrouded-anchorage-35377... free
+Welcome to Papertrail. Questions and ideas are welcome (technicalsupport@solarwinds.com). Happy logging!
+Created papertrail-fluffy-46630 as PAPERTRAIL_API_TOKEN
+Use heroku addons:docs papertrail to view documentation
+</code></pre>
+<p>The add-on is now deployed and configured for your application. You can list add-ons for your app.</p>
+<pre><code>$ heroku addons
+</code></pre>
+<p>To see this particular add-on in action, visit your application’s Heroku URL a few times. Each visit generates more log messages, which route to the papertrail add-on.  Visit the papertrail console to see the log messages.</p>
+<pre><code>$ heroku addons:open papertrail
+</code></pre>
+<p>Your browser opens a Papertrail web console showing the latest log events. You can search and set up alerts.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Screenshot of console"></p>
+
+<h2 data-next-message="I created a one-off dyno that ran a console" id="start-a-console">Start a Console</h2>
+
+<p>To get a feel for how dynos work, you can create another one-off dyno and run the <code>bash</code> command, which opens a shell on that dyno. You can then execute commands there. Each dyno has its own ephemeral filespace, populated with your app and its dependencies. When the command completes, in this case <code>bash</code>, the dyno is removed.</p>
+<pre><code>$ heroku run bash
+Running bash on ⬢ shrouded-anchorage-35377... up, run.1662 (Eco)
+~ $ ls
+Procfile  README.md  app.json  index.js  node_modules  package-lock.json  package.json  public  test.js  views
+~ $ exit
+exit
+</code></pre>
+<p>If you receive <code>Error connecting to process</code>, try <a href="https://devcenter.heroku.com/articles/one-off-dynos#timeout-awaiting-process">configuring your firewall</a>.</p>
+
+<p>To exit the shell and terminate the dyno, type <code>exit</code>.</p>
+
+<h2 data-next-message="I understand config vars" id="define-config-vars">Define Config Vars</h2>
+
+<p>With Heroku, you can externalize configuration, storing data such as encryption keys or external resource addresses in <a href="https://devcenter.heroku.com/articles/config-vars">config vars</a>.</p>
+
+<p>At runtime, config vars are exposed as environment variables to the application. For example, lets modify <code>index.js</code> to introduce a new route, <code>/times</code>, that repeats an action depending on the value of the <code>TIMES</code> environment variable. Copy the following into <code>index.js</code>:</p>
+<pre><code>const cool = require('cool-ascii-faces')
+const express = require('express')
+const path = require('path')
+
+const PORT = process.env.PORT || 5001
+
+function showTimes() {
+  const times = process.env.TIMES || 5
+  let result = ''
+  for (i = 0; i &lt; times; i++) {
+    result += i + ' '
+  }
+  return result
+}
+
+express()
+  .use(express.static(path.join(__dirname, 'public')))
+  .set('views', path.join(__dirname, 'views'))
+  .set('view engine', 'ejs')
+  .get('/', (req, res) =&gt; res.render('pages/index'))
+  .get('/cool', (req, res) =&gt; res.send(cool()))
+  .get('/times', (req, res) =&gt; res.send(showTimes()))
+  .listen(PORT, () =&gt; console.log(`Listening on ${ PORT }`))
+</code></pre>
+<p><code>heroku local</code> automatically sets up the environment based on the contents of the <code>.env</code> file in your local directory. In the top-level directory of your project, an <code>.env</code> file has these contents.</p>
+<pre><code>TIMES=2
+</code></pre>
+<p>If you run the app with <code>heroku local --port 5001</code> and then open <a href="http://localhost:5001/times">http://localhost:5001/times</a>, you see two numbers generated every time.</p>
+
+<p>To set the config var on Heroku, execute this command.</p>
+<pre><code>$ heroku config:set TIMES=2
+</code></pre>
+<p>View the config vars that are set using <code>heroku config</code>.</p>
+<pre><code>$ heroku config
+=== shrouded-anchorage-35377 Config Vars
+PAPERTRAIL_API_TOKEN: w9EnziexBT2mzMDtS4M
+TIMES:                2
+</code></pre>
+<p>Deploy your changed application to Heroku, and then visit it by running <code>heroku open times</code>.</p>
+
+<h2 data-next-message="I understand how to add a database" id="provision-a-database">Provision a Database</h2>
+
+<p>Adding a database to complete this tutorial counts towards your usage. To control costs, delete your database as soon as you’re done. Learn about our <a href="https://blog.heroku.com/new-low-cost-plans">low-cost plans</a>. Eligible students can apply for platform credits through our <a href="https://blog.heroku.com/github-student-developer-program">Heroku for GitHub Students program</a>.</p>
+
+<p>The <a href="https://elements.heroku.com/addons/categories/data-stores">add-on marketplace</a> has a large number of data stores, from Redis and MongoDB providers to Postgres and MySQL. In this step, you add a Heroku Postgres Essential-0 database to your app.</p>
+
+<p>Add the database.</p>
+<pre><code>$ heroku addons:create heroku-postgresql:essential-0
+Creating heroku-postgresql:essential-0 on ⬢ shrouded-anchorage-35377... ~$0.007/hour (max $5/month)
+Database should be available soon
+postgresql-asymmetrical-00466 is being created in the background. The app will restart when complete...
+Use heroku addons:info postgresql-asymmetrical-00466 to check creation progress
+Use heroku addons:docs heroku-postgresql to view documentation
+</code></pre>
+<p>This action creates a database and sets a <code>DATABASE_URL</code> environment variable that you can check by running <code>heroku config</code>.</p>
+
+<p>Use <code>npm</code> to add <a href="https://node-postgres.com/">node-postgres</a> to your dependencies.</p>
+<pre><code>$ npm install pg
+added 14 packages in 2s
+</code></pre><pre><code>  "dependencies": {
+    "cool-ascii-faces": "^1.3.4",
+    "ejs": "^3.1.5",
+    "express": "^4.15.2",
+    "pg": "^8.11.3"
+  },
+</code></pre>
+<p>Edit your <code>index.js</code> file to use this module to connect to the database specified in your <code>DATABASE_URL</code> environment variable. Add this code near the top.</p>
+<pre><code>const { Pool } = require('pg')
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+})
+</code></pre>
+<p>Add another route, <code>/db</code>, by adding this code just after the existing <code>.get('/', ...)</code>.</p>
+<pre><code>.get('/db', async (req, res) =&gt; {
+    try {
+      const client = await pool.connect();
+      const result = await client.query('SELECT * FROM test_table');
+      const results = { 'results': (result) ? result.rows : null};
+      res.render('pages/db', results );
+      client.release();
+    } catch (err) {
+      console.error(err);
+      res.send("Error " + err);
+    }
+  })
+</code></pre>
+<p>This action ensures that when you access your app using the <code>/db</code> route, it returns all rows in the <code>test_table</code> table.</p>
+
+<p>Deploy your code to Heroku. If you access <code>/db</code>, you receive an error because there’s no table in the database. Assuming that you have <a href="https://devcenter.heroku.com/articles/heroku-postgresql#local-setup">Postgres installed locally</a>, use the <code>heroku pg:psql</code> command to connect to the remote database, create a table, and insert a row.</p>
+<pre><code>$ heroku pg:psql
+--&gt; Connecting to postgresql-asymmetrical-00466
+psql (14.7 (Homebrew))
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+shrouded-anchorage-35377::DATABASE=&gt; create table test_table (id integer, name text);
+CREATE TABLE
+shrouded-anchorage-35377::DATABASE=&gt; insert into test_table values (1, 'hello database');
+INSERT 0 1
+shrouded-anchorage-35377::DATABASE=&gt; \q
+</code></pre>
+<p>Now when you access your app’s <code>/db</code> route with <code>heroku open db</code>, you see something like:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Database results are 1 hello database"></p>
+
+<p>Read more about <a href="https://devcenter.heroku.com/articles/heroku-postgresql">Heroku PostgreSQL</a>.</p>
+
+<p>You can use a similar technique to install <a href="https://elements.heroku.com/addons/categories/data-stores">MongoDB or Redis add-ons</a>.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now you know how to deploy an app, change its configuration, view logs, scale, and attach add-ons. For more information, here’s some recommended reading.</p>
+
+<ul>
+<li>For a technical overview of the concepts that you encounter while writing, configuring, deploying, and running applications, read <a href="https://devcenter.heroku.com/articles/how-heroku-works">How Heroku Works</a>.</li>
+<li>To learn more about developing and deploying Node.js applications, visit the <a href="https://devcenter.heroku.com/categories/nodejs-support">Node.js category</a>.</li>
+<li>To understand how to take an existing Node.js app and deploy it to Heroku, read <a href="https://devcenter.heroku.com/articles/deploying-nodejs">Deploying Node.js Apps on Heroku</a>.</li>
+</ul>
+  </div></div>
+  </div>
+</body>
+</html>

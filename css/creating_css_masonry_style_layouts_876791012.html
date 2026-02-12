@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Creating CSS masonry-style layouts</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Creating CSS masonry-style layouts</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/logrocket/creating-css-masonry-style-layouts-50b7">https://dev.to/logrocket/creating-css-masonry-style-layouts-50b7</a></p>
+    <p><strong>Tags:</strong> css, webdev</p>
+    <p><strong>Bookmark ID:</strong> 876791012</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1409609" id="article-body">
+            <p><strong>Written by <a href="https://blog.logrocket.com/author/nwanivictory/" target="_blank" rel="noopener noreferrer">Nwani Victory</a>✏️</strong></p>
+
+<p>When designing a page with content overflowing the viewport, an indirect way to instruct users to keep scrolling is to display new content partially. One such approach is the masonry layout, which places elements inline and allows them to move up to fill empty spaces. </p>
+
+<p>Within this tutorial, we will explore the experimental masonry layout added to the <a href="https://blog.logrocket.com/css-grid-guide/" target="_blank" rel="noopener noreferrer">CSS Grid Level 3 Specification</a>. We will also consider other similar ways to replicate the masonry layout with CSS. </p>
+
+<p>Jump ahead:</p>
+
+<ul>
+<li>  <a href="#understanding-masonry-layout">Understanding the masonry layout</a>
+</li>
+<li>  <a href="#creating-sample-masonry-css-project">Creating a sample masonry CSS project</a>
+</li>
+<li>  <a href="#adding-initial-styles-css-masonry-project">Adding initial styles to our CSS masonry project</a>
+</li>
+<li>  <a href="#achieving-masonry-layout-css-grid-experimental-feature">Achieving a masonry layout with CSS grid’s experimental feature</a>
+</li>
+<li>  <a href="#imitating-masonry-layout-columns">Imitating a masonry layout using columns</a>
+</li>
+</ul>
+
+<p>Before you begin building, let’s take some time out to understand how the concept of masonry-style layouts came about.</p>
+
+<h2>
+  <a name="understanding-the-masonry-layout" href="#understanding-the-masonry-layout">
+  </a>
+  Understanding the masonry layout <a name="understanding-masonry-layout">
+</a>
+</h2>
+
+<p>As its name suggests, the masonry layout has to do with the masonry craft in which workers called masons laid bricks to build concrete walls. </p>
+
+<p>In the practice of their craft, masons often stacked bricks using the stretcher bond pattern, meaning the bricks were staggered by half over each other. Besides its stability and aesthetic appeal, the stretcher bond pattern also reduced material waste, as there was no need to cut the bricks in half at every joint. </p>
+
+<p>When it comes to front-end development, the masonry layout has proven to be an effective way to display multiple items in a grid by partially revealing content. This layout has become widely adopted and popularized by platforms such as Pinterest. </p>
+
+<p>With no native <a href="https://drafts.csswg.org/css-grid-3/#masonry-layout" target="_blank" rel="noopener noreferrer">CSS grid support for masonry layouts</a>, developers relied on using libraries such as <a href="https://github.com/desandro/masonry" target="_blank" rel="noopener noreferrer">Masonry.js</a> or <a href="https://github.com/callmecavs/bricks.js/" target="_blank" rel="noopener noreferrer">Brick.js</a> to replicate this visual design. These libraries can accomplish masonry-style layouts without CSS by using JavaScript to manipulate the DOM, then placing each element within the appropriate spaces. </p>
+
+<p>However, these libraries were reported to have a drastic impact on performance. They had to make frequent expensive computations to find the available areas within the layout, resulting in a laggy scroll experience. </p>
+
+<p>Fast forward to more recent years — now that CSS specifications have improved and become more robust, can developers achieve masonry layouts using only CSS? Let’s explore how to create a masonry layout in CSS by building the feed page of a sample blog website.</p>
+
+<h2>
+  <a name="creating-a-sample-masonry-css-project" href="#creating-a-sample-masonry-css-project">
+  </a>
+  Creating a sample masonry CSS project <a name="creating-sample-masonry-css-project">
+</a>
+</h2>
+
+<p>Let’s create a page to display the blog posts. Each post element will contain a cover image, title, and description as shown in the prototype below: <a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fblog.logrocket.com%2Fwp-content%2Fuploads%2F2023%2F03%2Fimg1-CSS-masonry-layout-prototype.png"><img src="data:application/octet-stream;base64," alt="Prototype Of Page Styled Using Css Masonry Layout With Element Tiles Represented With Grey Boxes And Lines" loading="lazy"></a> </p>
+
+<p>To get started, create a directory to store the HTML and CSS files for the website about to be built. </p>
+
+<p>Within your new directory, create an <code>index.html</code> file and add the contents of the code block below into the file. To make it easier to use, the images within the code have been remotely <a href="https://blog.logrocket.com/handling-images-with-cloudinary-in-react/" target="_blank" rel="noopener noreferrer">stored within a bucket on Cloudinary</a>:<br>
+</p>
+
+<div>
+<pre><code><span>&lt;!DOCTYPE html&gt;</span>
+<span>&lt;html</span> <span>lang=</span><span>"en"</span><span>&gt;</span>
+ <span>&lt;head&gt;</span>
+   <span>&lt;meta</span> <span>charset=</span><span>"UTF-8"</span> <span>/&gt;</span>
+   <span>&lt;meta</span> <span>http-equiv=</span><span>"X-UA-Compatible"</span> <span>content=</span><span>"IE=edge"</span> <span>/&gt;</span>
+   <span>&lt;meta</span> <span>name=</span><span>"viewport"</span> <span>content=</span><span>"width=device-width, initial-scale=1.0"</span> <span>/&gt;</span>
+   <span>&lt;title&gt;</span>CSS Masonry Playground<span>&lt;/title&gt;</span>
+
+   <span>&lt;link</span> <span>rel=</span><span>"stylesheet"</span> <span>href=</span><span>"/index.css"</span> <span>/&gt;</span>
+ <span>&lt;/head&gt;</span>
+ <span>&lt;body&gt;</span>
+   <span>&lt;div</span> <span>class=</span><span>"container"</span><span>&gt;</span>
+     <span>&lt;div&gt;</span>
+       <span>&lt;h1&gt;</span>CSS Masonry Playground<span>&lt;/h1&gt;</span>
+
+       <span>&lt;p&gt;</span>
+         Lorem ipsum dolor sit amet consectetur adipisicing elit. A recusandae
+         sunt perspiciatis magnam neque, quae aliquid cupiditate dignissimos
+         omnis adipisci praesentium et maiores vero corporis atque ipsum harum
+         quisquam iusto.
+       <span>&lt;/p&gt;</span>
+     <span>&lt;/div&gt;</span>
+
+     <span>&lt;div</span> <span>class=</span><span>"gallery-container"</span><span>&gt;</span>
+       <span>&lt;figure&gt;</span>
+         <span>&lt;img</span>
+           <span>src=</span><span>"https://res.cloudinary.com/dkfptto8m/image/upload/v1674371886/logrocket-css-masonry/10.jpg"</span>
+           <span>alt=</span><span>"blog post one"</span>
+         <span>/&gt;</span>
+         <span>&lt;h2&gt;</span>One Blog Title Here<span>&lt;/h2&gt;</span>
+         <span>&lt;figcaption&gt;</span>
+           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta eos
+           expedita quis perspiciatis dicta qui magni?
+         <span>&lt;/figcaption&gt;</span>
+       <span>&lt;/figure&gt;</span>
+
+       <span>&lt;figure&gt;</span>
+         <span>&lt;img</span>
+           <span>src=</span><span>"https://res.cloudinary.com/dkfptto8m/image/upload/v1674344289/logrocket-css-masonry/8.jpg"</span>
+           <span>alt=</span><span>"blog post two"</span>
+         <span>/&gt;</span>
+         <span>&lt;h2&gt;</span>Two Blog Title Here<span>&lt;/h2&gt;</span>
+         <span>&lt;figcaption&gt;</span>
+           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta eos
+           expedita quis perspiciatis dicta qui magni?
+         <span>&lt;/figcaption&gt;</span>
+       <span>&lt;/figure&gt;</span>
+
+       <span>&lt;figure&gt;</span>
+         <span>&lt;img</span>
+           <span>src=</span><span>"https://res.cloudinary.com/dkfptto8m/image/upload/v1674373487/logrocket-css-masonry/window.jpg"</span>
+           <span>alt=</span><span>"blog post three"</span>
+         <span>/&gt;</span>
+         <span>&lt;h2&gt;</span>Three Blog Title Here<span>&lt;/h2&gt;</span>
+         <span>&lt;p&gt;</span>
+           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta eos
+           expedita quis perspiciatis dicta qui magni?
+         <span>&lt;/p&gt;</span>
+       <span>&lt;/figure&gt;</span>
+
+       <span>&lt;figure&gt;</span>
+         <span>&lt;img</span>
+           <span>src=</span><span>"https://res.cloudinary.com/dkfptto8m/image/upload/v1674344282/logrocket-css-masonry/4.jpg"</span>
+           <span>alt=</span><span>"blog post four"</span>
+         <span>/&gt;</span>
+         <span>&lt;h2&gt;</span>Four Blog Title Here<span>&lt;/h2&gt;</span>
+         <span>&lt;figcaption&gt;</span>
+           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta eos
+           expedita quis perspiciatis dicta qui magni?
+         <span>&lt;/figcaption&gt;</span>
+       <span>&lt;/figure&gt;</span>
+
+       <span>&lt;figure&gt;</span>
+         <span>&lt;img</span>
+           <span>src=</span><span>"https://res.cloudinary.com/dkfptto8m/image/upload/v1674344280/logrocket-css-masonry/7.jpg"</span>
+           <span>alt=</span><span>"blog post five"</span>
+         <span>/&gt;</span>
+         <span>&lt;h2&gt;</span>Five Blog Title Here<span>&lt;/h2&gt;</span>
+         <span>&lt;figcaption&gt;</span>
+           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta eos
+           expedita quis perspiciatis dicta qui magni?
+         <span>&lt;/figcaption&gt;</span>
+       <span>&lt;/figure&gt;</span>
+
+       <span>&lt;figure&gt;</span>
+         <span>&lt;img</span>
+           <span>src=</span><span>"https://res.cloudinary.com/dkfptto8m/image/upload/v1674344279/logrocket-css-masonry/6.jpg"</span>
+           <span>alt=</span><span>"blog post six"</span>
+         <span>/&gt;</span>
+         <span>&lt;h2&gt;</span>Six Blog Title Here<span>&lt;/h2&gt;</span>
+         <span>&lt;figcaption&gt;</span>
+           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta eos
+           expedita quis perspiciatis dicta qui magni?
+         <span>&lt;/figcaption&gt;</span>
+       <span>&lt;/figure&gt;</span>
+
+       <span>&lt;figure&gt;</span>
+         <span>&lt;img</span>
+           <span>src=</span><span>"https://res.cloudinary.com/dkfptto8m/image/upload/v1674344278/logrocket-css-masonry/1.jpg"</span>
+           <span>alt=</span><span>"blog post seven"</span>
+         <span>/&gt;</span>
+         <span>&lt;h2&gt;</span>Seven Blog Title Here<span>&lt;/h2&gt;</span>
+         <span>&lt;figcaption&gt;</span>
+           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta eos
+           expedita quis perspiciatis dicta qui magni?
+         <span>&lt;/figcaption&gt;</span>
+       <span>&lt;/figure&gt;</span>
+
+       <span>&lt;figure&gt;</span>
+         <span>&lt;img</span>
+           <span>src=</span><span>"https://res.cloudinary.com/dkfptto8m/image/upload/v1674344277/logrocket-css-masonry/9.jpg"</span>
+           <span>alt=</span><span>"blog post eight"</span>
+         <span>/&gt;</span>
+         <span>&lt;h2&gt;</span>Eight Blog Title Here<span>&lt;/h2&gt;</span>
+         <span>&lt;figcaption&gt;</span>
+           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta eos
+           expedita quis perspiciatis dicta qui magni?
+         <span>&lt;/figcaption&gt;</span>
+       <span>&lt;/figure&gt;</span>
+
+       <span>&lt;figure&gt;</span>
+         <span>&lt;img</span>
+           <span>src=</span><span>"https://res.cloudinary.com/dkfptto8m/image/upload/v1674344276/logrocket-css-masonry/3.jpg"</span>
+           <span>alt=</span><span>"blog post nine"</span>
+         <span>/&gt;</span>
+         <span>&lt;h2&gt;</span>Nine Blog Title Here<span>&lt;/h2&gt;</span>
+         <span>&lt;figcaption&gt;</span>
+           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta eos
+           expedita quis perspiciatis dicta qui magni?
+         <span>&lt;/figcaption&gt;</span>
+       <span>&lt;/figure&gt;</span>
+     <span>&lt;/div&gt;</span>
+   <span>&lt;/div&gt;</span>
+ <span>&lt;/body&gt;</span>
+<span>&lt;/html&gt;</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>At this point, the website has been built; however, it has no styles because the <code>/index.css</code> file has not been created. </p>
+
+<p>Let’s proceed to add some styling in the next section.</p>
+
+<h2>
+  <a name="adding-initial-styles-to-our-css-masonry-project" href="#adding-initial-styles-to-our-css-masonry-project">
+  </a>
+  Adding initial styles to our CSS masonry project <a name="adding-initial-styles-css-masonry-project">
+</a>
+</h2>
+
+<p>Within the project directory, create a file and name it <code>index.css</code> to store the CSS stylesheets. </p>
+
+<p>Add the following CSS code into the <code>index.css</code> file to only style the <code>div</code> and <code>img</code> elements within the page:<br>
+</p>
+
+<div>
+<pre><code><span>.container</span> <span>{</span>
+   <span>max-width</span><span>:</span> <span>1224px</span><span>;</span>
+   <span>margin</span><span>:</span> <span>0</span> <span>auto</span><span>;</span>
+<span>}</span>
+
+<span>img</span> <span>{</span>
+   <span>width</span><span>:</span> <span>500px</span><span>;</span>
+   <span>object-fit</span><span>:</span> <span>contain</span><span>;</span>
+   <span>border-radius</span><span>:</span> <span>15px</span><span>;</span>
+<span>}</span>
+
+<span>figure</span> <span>{</span>
+   <span>margin</span><span>:</span> <span>0</span><span>;</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>As shown in the image below, the parent <code>div</code> containing the list of images was not styled to achieve the masonry layout: <a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fblog.logrocket.com%2Fwp-content%2Fuploads%2F2023%2F03%2Fimg2-Images-list-no-masonry-styling.png"><img src="data:application/octet-stream;base64," alt="Project Images Displayed In List Without Css Masonry Styling" loading="lazy"></a> </p>
+
+<p>Over the next subsections, you will explore various ways to create a masonry look in various CSS layout modules. Let’s start with the experimental CSS grid masonry support.</p>
+
+<h2>
+  <a name="achieving-a-masonry-layout-with-css-grids-experimental-feature" href="#achieving-a-masonry-layout-with-css-grids-experimental-feature">
+  </a>
+  Achieving a masonry layout with CSS grid’s experimental feature <a name="achieving-masonry-layout-css-grid-experimental-feature">
+</a>
+</h2>
+
+<p>Open the <code>index.css</code> file and add the <code>.gallery-container</code> selector to the existing selectors you added during the previous step:<br>
+</p>
+
+<div>
+<pre><code><span>.gallery-container</span> <span>{</span>
+   <span>display</span><span>:</span> <span>grid</span><span>;</span>
+   <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span><span>3</span><span>,</span> <span>1</span><span>fr</span><span>);</span>
+   <span>grid-gap</span><span>:</span> <span>1rem</span> <span>3rem</span><span>;</span>
+   <span>grid-template-rows</span><span>:</span> <span>masonry</span><span>;</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The magic word within the <code>.gallery-container</code> selector above is the <code>masonry</code> value provided to the <code>grid-template-rows</code> property. </p>
+
+<p>As a feature still in draft status at this time, the grid masonry layout will only work in a browser with support for beta features. Hence, the <code>grid-template-rows</code> property will not be applied when you open the blog website via stable browsers such as Chrome, Mozilla, or Safari. </p>
+
+<p>The image below shows the layout of the blogs being viewed via Chrome browser. Notice that the <a href="https://blog.logrocket.com/responsive-image-gallery-css-flexbox/" target="_blank" rel="noopener noreferrer">images are arranged in a grid</a>, but not a masonry-style grid. The columns have a strict axis, causing a blank space below blog posts with a smaller image: <a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fblog.logrocket.com%2Fwp-content%2Fuploads%2F2023%2F03%2Fimg3-Images-arranged-grids-not-masonry-style.png"><img src="data:application/octet-stream;base64," alt="Project Images Arranged In Grid But With Whitespace Between Content Due To Absence Of Masonry Css Styling" loading="lazy"></a> To see the masonry layout, download and open the website using <a href="https://www.mozilla.org/en-US/firefox/channel/desktop/" target="_blank" rel="noopener noreferrer">the Firefox Nightly build</a>, allowing you to experience yet-to-be-released next-generation features of the web: <a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fblog.logrocket.com%2Fwp-content%2Fuploads%2F2023%2F03%2Fimg4-Masonry-layout-Firefox-Nightly.png"><img src="data:application/octet-stream;base64," alt="Project Images In Masonry Layout Using Experimental Css Grid Feature Displayed In Firefox Nightly" loading="lazy"></a> </p>
+
+<p>Note that <a href="https://support.google.com/chrome/answer/10612145?hl=en" target="_blank" rel="noopener noreferrer">the Google Chrome browser</a> and <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Experimental_features" target="_blank" rel="noopener noreferrer">the Mozilla Firefox browser</a> also allow you to test experimental features by setting the flags for these experimental features. </p>
+
+<p>At this point, you have learned how to create a masonry layout using the experimental CSS <code>grid-template-rows</code> property. Considering that this property is yet to be released with full browser support, you cannot use it while building for the public. </p>
+
+<p>Let’s consider another solution on how to create a masonry layout using the multi-column layout.</p>
+
+<h2>
+  <a name="imitating-a-masonry-layout-using-columns" href="#imitating-a-masonry-layout-using-columns">
+  </a>
+  Imitating a masonry layout using columns <a name="imitating-masonry-layout-columns">
+</a>
+</h2>
+
+<p>This approach will leverage the CSS <a href="https://www.w3.org/TR/css-multicol-1/" target="_blank" rel="noopener noreferrer">CSS multi-column layout</a> with a defined <code>column-count</code> to have the browser figure out how to <a href="https://blog.logrocket.com/understanding-grid-template-columns-css/" target="_blank" rel="noopener noreferrer">arrange elements within the columns</a> without a strict height, thus creating a masonry layout. </p>
+
+<p>Replace the rules within the <code>.gallery-container</code> and <code>figure</code> class selectors within the <code>index.css</code> file with the code below:<br>
+</p>
+
+<div>
+<pre><code><span>.gallery-container</span> <span>{</span>
+ <span>column-count</span><span>:</span> <span>3</span><span>;</span>
+ <span>column-gap</span><span>:</span> <span>20px</span> <span>20px</span><span>;</span>
+ <span>width</span><span>:</span> <span>1200px</span><span>;</span>
+<span>}</span>
+
+<span>figure</span> <span>{</span>
+ <span>margin</span><span>:</span> <span>0</span><span>;</span>
+ <span>display</span><span>:</span> <span>inline-block</span><span>;</span>
+ <span>margin-bottom</span><span>:</span> <span>0px</span><span>;</span>
+ <span>width</span><span>:</span> <span>100%</span><span>;</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The new CSS rules above will style the blog posts into a three column layout without a defined vertical axis. This will cause the elements to fill up the available vertical space, making it appear visually similar to a masonry layout: <a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fblog.logrocket.com%2Fwp-content%2Fuploads%2F2023%2F03%2Fimg5-Images-arranged-three-columns-visually-similar-masonry-style.png"><img src="data:application/octet-stream;base64," alt="Project Images Arranged In Three Columns To Imitate Css Masonry Styling But Displayed In Nonintuitive Order" loading="lazy"></a> </p>
+
+<p>As pointed out in the image above, the ordering and sequence of the blog posts are vertical — from top to bottom — rather than being shown horizontally from left to right. This causes a disconnect between the visual order as seen by users and the DOM order. </p>
+
+<p>Before you adopt this approach of creating a masonry-style layout using CSS, it is important that you consider the effect the lack of intuitive ordering will have on users, especially those who depend on <a href="https://blog.logrocket.com/a-guide-to-improving-web-accessibility-with-css/" target="_blank" rel="noopener noreferrer">web accessibility features</a>. </p>
+
+<p>Without text or some visual element to explain the ordering of elements, users will expect that the elements are ordered from left to right. Those who rely on their keyboards to navigate the list will find this very confusing, as each press of the tab key will move them through the content from top to bottom, rather than right to left as visually expected.</p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>Huge congratulations to you on completing this tutorial! </p>
+
+<p>At the start of the tutorial, we set out to learn more about the masonry layout and how we could achieve it using only CSS. To achieve our goal, we dug deeper into the origin of the masonry layout and built the post feed page of a vanilla HTML website using two different approaches with CSS. </p>
+
+<p>As you anticipate the general release of the masonry CSS grid layout, you can check if a user’s browser supports it through <a href="https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports" target="_blank" rel="noopener noreferrer">the <code>CSS.supports()</code> method</a>. By doing this, you can replace your masonry hacks with the simplified masonry layout implementation once it’s supported. </p>
+
+<p>If you enjoyed learning about the experimental masonry property for the grid layout, check out some <a href="https://blog.logrocket.com/tag/css/" target="_blank" rel="noopener noreferrer">articles about other new CSS features</a>, such as <a href="https://blog.logrocket.com/building-color-palette-css/#exploring-relative-color-syntax-css-lch-lab" target="_blank" rel="noopener noreferrer">LCH and LAB support</a>.</p>
+
+
+<hr>
+
+<h2>
+  <a name="is-your-frontend-hogging-your-users-cpu" href="#is-your-frontend-hogging-your-users-cpu">
+  </a>
+  Is your frontend hogging your users' CPU?
+</h2>
+
+<p>As web frontends get increasingly complex, resource-greedy features demand more and more from the browser. If you’re interested in monitoring and tracking client-side CPU usage, memory usage, and more for all of your users in production, <a href="https://logrocket.com/signup/" target="_blank" rel="noopener noreferrer">try LogRocket</a>.</p>
+
+<p><a href="https://logrocket.com/signup/" target="_blank" rel="noopener noreferrer"><img src="data:application/octet-stream;base64," alt="LogRocket Dashboard Free Trial Banner" loading="lazy"></a></p>
+
+<p><a href="https://logrocket.com/signup/" target="_blank" rel="noopener noreferrer">LogRocket</a> is like a DVR for web apps, recording everything that happens in your web app or site. Instead of guessing why problems happen, you can aggregate and report on key frontend performance metrics, replay user sessions along with application state, log network requests, and automatically surface all errors.</p>
+
+<p>Modernize how you debug web apps — <a href="https://logrocket.com/signup/" target="_blank" rel="noopener noreferrer">Start monitoring for free</a>.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

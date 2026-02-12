@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Project: rspec-mocks - The Ruby Toolbox</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Project: rspec-mocks - The Ruby Toolbox</h1>
+    <p><strong>URL:</strong> <a href="https://www.ruby-toolbox.com/projects/rspec-mocks">https://www.ruby-toolbox.com/projects/rspec-mocks</a></p>
+    <p><strong>Tags:</strong> rspec</p>
+    <p><strong>Bookmark ID:</strong> 876782164</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="readme"><article>
+<p dir="auto">rspec-mocks is a test-double framework for rspec with support for method stubs,
+fakes, and message expectations on generated test-doubles and real objects
+alike.</p>
+<p dir="auto"><h2 dir="auto">Install</h2></p>
+<div><pre><code>gem install rspec       # for rspec-core, rspec-expectations, rspec-mocks
+gem install rspec-mocks # for rspec-mocks only
+</code></pre></div>
+<p dir="auto">Want to run against the <code>main</code> branch? You'll need to include the dependent
+RSpec repos as well. Add the following to your <code>Gemfile</code>:</p>
+<div dir="auto"><pre><span>%w[</span><span>rspec-core</span> <span>rspec-expectations</span> <span>rspec-mocks</span> <span>rspec-support</span><span>]</span><span>.</span><span>each</span> <span>do</span> |<span>lib</span>|
+  <span>gem</span> <span>lib</span><span>,</span> <span>:git</span> <span>=&gt;</span> <span>"https://github.com/rspec/<span><span>#{</span><span>lib</span><span>}</span></span>.git"</span><span>,</span> <span>:branch</span> <span>=&gt;</span> <span>'main'</span>
+<span>end</span></pre></div>
+<p dir="auto"><h2 dir="auto">Contributing</h2></p>
+<p dir="auto">Once you've set up the environment, you'll need to cd into the working
+directory of whichever repo you want to work in. From there you can run the
+specs and cucumber features, and make patches.</p>
+<p dir="auto">NOTE: You do not need to use rspec-dev to work on a specific RSpec repo. You
+can treat each RSpec repo as an independent project.</p>
+<p dir="auto">For information about contributing to RSpec, please refer to the following markdown files:</p>
+<ul dir="auto">
+<li><a href="https://github.com/rspec/rspec-mocks/blob/main/BUILD_DETAIL.md">Build details</a></li>
+<li><a href="https://github.com/rspec/rspec-mocks/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li><a href="https://github.com/rspec/rspec-mocks/blob/main/CONTRIBUTING.md">Detailed contributing guide</a></li>
+<li><a href="https://github.com/rspec/rspec-mocks/blob/main/DEVELOPMENT.md">Development setup guide</a></li>
+</ul>
+<p dir="auto"><h2 dir="auto">Test Doubles</h2></p>
+<p dir="auto">A test double is an object that stands in for another object in your system
+during a code example. Use the <code>double</code> method, passing in an optional identifier, to create one:</p>
+<div dir="auto"><pre><span>book</span> <span>=</span> <span>double</span><span>(</span><span>"book"</span><span>)</span></pre></div>
+<p dir="auto">Most of the time you will want some confidence that your doubles resemble an
+existing object in your system. Verifying doubles are provided for this
+purpose. If the existing object is available, they will prevent you from adding
+stubs and expectations for methods that do not exist or that have an invalid
+number of parameters.</p>
+<div dir="auto"><pre><span>book</span> <span>=</span> <span>instance_double</span><span>(</span><span>"Book"</span><span>,</span> <span>:pages</span> <span>=&gt;</span> <span>250</span><span>)</span></pre></div>
+<p dir="auto">Verifying doubles have some clever tricks to enable you to both test in
+isolation without your dependencies loaded while still being able to validate
+them against real objects. More detail is available in <a href="https://github.com/rspec/rspec-mocks/blob/main/features/verifying_doubles">their
+documentation</a>.</p>
+<p dir="auto">Verifying doubles can also accept custom identifiers, just like double(), e.g.:</p>
+<div dir="auto"><pre><span>books</span> <span>=</span> <span>[</span><span>]</span>
+<span>books</span> &lt;&lt; <span>instance_double</span><span>(</span><span>"Book"</span><span>,</span> <span>:rspec_book</span><span>,</span> <span>:pages</span> <span>=&gt;</span> <span>250</span><span>)</span>
+<span>books</span> &lt;&lt; <span>instance_double</span><span>(</span><span>"Book"</span><span>,</span> <span>"(Untitled)"</span><span>,</span> <span>:pages</span> <span>=&gt;</span> <span>5000</span><span>)</span>
+
+<span>puts</span> <span>books</span><span>.</span><span>inspect</span> <span># with names, it's clearer which were actually added</span></pre></div>
+<p dir="auto"><h2 dir="auto">Method Stubs</h2></p>
+<p dir="auto">A method stub is an implementation that returns a pre-determined value.  Method
+stubs can be declared on test doubles or real objects using the same syntax.
+rspec-mocks supports 3 forms for declaring method stubs:</p>
+<div dir="auto"><pre><span>allow</span><span>(</span><span>book</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:title</span><span>)</span> <span>{</span> <span>"The RSpec Book"</span> <span>}</span>
+<span>allow</span><span>(</span><span>book</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:title</span><span>)</span><span>.</span><span>and_return</span><span>(</span><span>"The RSpec Book"</span><span>)</span>
+<span>allow</span><span>(</span><span>book</span><span>)</span><span>.</span><span>to</span> <span>receive_messages</span><span>(</span>
+    <span>:title</span> <span>=&gt;</span> <span>"The RSpec Book"</span><span>,</span>
+    <span>:subtitle</span> <span>=&gt;</span> <span>"Behaviour-Driven Development with RSpec, Cucumber, and Friends"</span><span>)</span></pre></div>
+<p dir="auto">You can also use this shortcut, which creates a test double and declares a
+method stub in one statement:</p>
+<div dir="auto"><pre><span>book</span> <span>=</span> <span>double</span><span>(</span><span>"book"</span><span>,</span> <span>:title</span> <span>=&gt;</span> <span>"The RSpec Book"</span><span>)</span></pre></div>
+<p dir="auto">The first argument is a name, which is used for documentation and appears in
+failure messages. If you don't care about the name, you can leave it out,
+making the combined instantiation/stub declaration very terse:</p>
+<div dir="auto"><pre><span>double</span><span>(</span><span>:foo</span> <span>=&gt;</span> <span>'bar'</span><span>)</span></pre></div>
+<p dir="auto">This is particularly nice when providing a list of test doubles to a method
+that iterates through them:</p>
+<div dir="auto"><pre><span>order</span><span>.</span><span>calculate_total_price</span><span>(</span><span>double</span><span>(</span><span>:price</span> <span>=&gt;</span> <span>1.99</span><span>)</span><span>,</span> <span>double</span><span>(</span><span>:price</span> <span>=&gt;</span> <span>2.99</span><span>)</span><span>)</span></pre></div>
+<p dir="auto"><h3 dir="auto">Stubbing a chain of methods</h3></p>
+<p dir="auto">You can use <code>receive_message_chain</code> in place of <code>receive</code> to stub a chain of messages:</p>
+<div dir="auto"><pre><span>allow</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive_message_chain</span><span>(</span><span>"foo.bar"</span><span>)</span> <span>{</span> <span>:baz</span> <span>}</span>
+<span>allow</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive_message_chain</span><span>(</span><span>:foo</span><span>,</span> <span>:bar</span> <span>=&gt;</span> <span>:baz</span><span>)</span>
+<span>allow</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive_message_chain</span><span>(</span><span>:foo</span><span>,</span> <span>:bar</span><span>)</span> <span>{</span> <span>:baz</span> <span>}</span>
+
+<span># Given any of the above forms:</span>
+<span>double</span><span>.</span><span>foo</span><span>.</span><span>bar</span> <span># =&gt; :baz</span></pre></div>
+<p dir="auto">Chains can be arbitrarily long, which makes it quite painless to violate the Law of Demeter in violent ways, so you should consider any use of <code>receive_message_chain</code> a code smell. Even though not all code smells indicate real problems (think fluent interfaces), <code>receive_message_chain</code> still results in brittle examples. For example, if you write <code>allow(foo).to receive_message_chain(:bar, :baz =&gt; 37)</code> in a spec and then the implementation calls <code>foo.baz.bar</code>, the stub will not work.</p>
+<p dir="auto"><h2 dir="auto">Consecutive return values</h2></p>
+<p dir="auto">When a stub might be invoked more than once, you can provide additional
+arguments to <code>and_return</code>.  The invocations cycle through the list. The last
+value is returned for any subsequent invocations:</p>
+<div dir="auto"><pre><span>allow</span><span>(</span><span>die</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:roll</span><span>)</span><span>.</span><span>and_return</span><span>(</span><span>1</span><span>,</span> <span>2</span><span>,</span> <span>3</span><span>)</span>
+<span>die</span><span>.</span><span>roll</span> <span># =&gt; 1</span>
+<span>die</span><span>.</span><span>roll</span> <span># =&gt; 2</span>
+<span>die</span><span>.</span><span>roll</span> <span># =&gt; 3</span>
+<span>die</span><span>.</span><span>roll</span> <span># =&gt; 3</span>
+<span>die</span><span>.</span><span>roll</span> <span># =&gt; 3</span></pre></div>
+<p dir="auto">To return an array in a single invocation, declare an array:</p>
+<div dir="auto"><pre><span>allow</span><span>(</span><span>team</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:players</span><span>)</span><span>.</span><span>and_return</span><span>(</span><span>[</span><span>double</span><span>(</span><span>:name</span> <span>=&gt;</span> <span>"David"</span><span>)</span><span>]</span><span>)</span></pre></div>
+<p dir="auto"><h2 dir="auto">Message Expectations</h2></p>
+<p dir="auto">A message expectation is an expectation that the test double will receive a
+message some time before the example ends. If the message is received, the
+expectation is satisfied. If not, the example fails.</p>
+<div dir="auto"><pre><span>validator</span> <span>=</span> <span>double</span><span>(</span><span>"validator"</span><span>)</span>
+<span>expect</span><span>(</span><span>validator</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:validate</span><span>)</span> <span>{</span> <span>"02134"</span> <span>}</span>
+<span>zipcode</span> <span>=</span> <span>Zipcode</span><span>.</span><span>new</span><span>(</span><span>"02134"</span><span>,</span> <span>validator</span><span>)</span>
+<span>zipcode</span><span>.</span><span>valid?</span></pre></div>
+<p dir="auto"><h2 dir="auto">Test Spies</h2></p>
+<p dir="auto">Verifies the given object received the expected message during the course of
+the test. For a message to be verified, the given object must be setup to spy
+on it, either by having it explicitly stubbed or by being a null object double
+(e.g. <code>double(...).as_null_object</code>). Convenience methods are provided to easily
+create null object doubles for this purpose:</p>
+<div dir="auto"><pre><span>spy</span><span>(</span><span>"invitation"</span><span>)</span> <span># =&gt; same as `double("invitation").as_null_object`</span>
+<span>instance_spy</span><span>(</span><span>"Invitation"</span><span>)</span> <span># =&gt; same as `instance_double("Invitation").as_null_object`</span>
+<span>class_spy</span><span>(</span><span>"Invitation"</span><span>)</span> <span># =&gt; same as `class_double("Invitation").as_null_object`</span>
+<span>object_spy</span><span>(</span><span>"Invitation"</span><span>)</span> <span># =&gt; same as `object_double("Invitation").as_null_object`</span></pre></div>
+<p dir="auto">Verifying messages received in this way implements the Test Spy pattern.</p>
+<div dir="auto"><pre><span>invitation</span> <span>=</span> <span>spy</span><span>(</span><span>'invitation'</span><span>)</span>
+
+<span>user</span><span>.</span><span>accept_invitation</span><span>(</span><span>invitation</span><span>)</span>
+
+<span>expect</span><span>(</span><span>invitation</span><span>)</span><span>.</span><span>to</span> <span>have_received</span><span>(</span><span>:accept</span><span>)</span>
+
+<span># You can also use other common message expectations. For example:</span>
+<span>expect</span><span>(</span><span>invitation</span><span>)</span><span>.</span><span>to</span> <span>have_received</span><span>(</span><span>:accept</span><span>)</span><span>.</span><span>with</span><span>(</span><span>mailer</span><span>)</span>
+<span>expect</span><span>(</span><span>invitation</span><span>)</span><span>.</span><span>to</span> <span>have_received</span><span>(</span><span>:accept</span><span>)</span><span>.</span><span>twice</span>
+<span>expect</span><span>(</span><span>invitation</span><span>)</span><span>.</span><span>to_not</span> <span>have_received</span><span>(</span><span>:accept</span><span>)</span><span>.</span><span>with</span><span>(</span><span>mailer</span><span>)</span>
+
+<span># One can specify a return value on the spy the same way one would a double.</span>
+<span>invitation</span> <span>=</span> <span>spy</span><span>(</span><span>'invitation'</span><span>,</span> <span>:accept</span> <span>=&gt;</span> <span>true</span><span>)</span>
+<span>expect</span><span>(</span><span>invitation</span><span>)</span><span>.</span><span>to</span> <span>have_received</span><span>(</span><span>:accept</span><span>)</span><span>.</span><span>with</span><span>(</span><span>mailer</span><span>)</span>
+<span>expect</span><span>(</span><span>invitation</span><span>.</span><span>accept</span><span>)</span><span>.</span><span>to</span> <span>eq</span><span>(</span><span>true</span><span>)</span></pre></div>
+<p dir="auto">Note that <code>have_received(...).with(...)</code> is unable to work properly when
+passed arguments are mutated after the spy records the received message.
+For example, this does not work properly:</p>
+<div dir="auto"><pre><span>greeter</span> <span>=</span> <span>spy</span><span>(</span><span>"greeter"</span><span>)</span>
+
+<span>message</span> <span>=</span> <span>"Hello"</span>
+<span>greeter</span><span>.</span><span>greet_with</span><span>(</span><span>message</span><span>)</span>
+<span>message</span> &lt;&lt; <span>", World"</span>
+
+<span>expect</span><span>(</span><span>greeter</span><span>)</span><span>.</span><span>to</span> <span>have_received</span><span>(</span><span>:greet_with</span><span>)</span><span>.</span><span>with</span><span>(</span><span>"Hello"</span><span>)</span></pre></div>
+<p dir="auto"><h2 dir="auto">Nomenclature</h2></p>
+<p dir="auto"><h3 dir="auto">Mock Objects and Test Stubs</h3></p>
+<p dir="auto">The names Mock Object and Test Stub suggest specialized Test Doubles.  i.e.
+a Test Stub is a Test Double that only supports method stubs, and a Mock
+Object is a Test Double that supports message expectations and method
+stubs.</p>
+<p dir="auto">There is a lot of overlapping nomenclature here, and there are many
+variations of these patterns (fakes, spies, etc). Keep in mind that most of
+the time we're talking about method-level concepts that are variations of
+method stubs and message expectations, and we're applying to them to <em>one</em>
+generic kind of object: a Test Double.</p>
+<p dir="auto"><h3 dir="auto">Test-Specific Extension</h3></p>
+<p dir="auto">a.k.a. Partial Double, a Test-Specific Extension is an extension of a
+real object in a system that is instrumented with test-double like
+behaviour in the context of a test. This technique is very common in Ruby
+because we often see class objects acting as global namespaces for methods.
+For example, in Rails:</p>
+<div dir="auto"><pre><span>person</span> <span>=</span> <span>double</span><span>(</span><span>"person"</span><span>)</span>
+<span>allow</span><span>(</span><span>Person</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:find</span><span>)</span> <span>{</span> <span>person</span> <span>}</span></pre></div>
+<p dir="auto">In this case we're instrumenting Person to return the person object we've
+defined whenever it receives the <code>find</code> message. We can also set a message
+expectation so that the example fails if <code>find</code> is not called:</p>
+<div dir="auto"><pre><span>person</span> <span>=</span> <span>double</span><span>(</span><span>"person"</span><span>)</span>
+<span>expect</span><span>(</span><span>Person</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:find</span><span>)</span> <span>{</span> <span>person</span> <span>}</span></pre></div>
+<p dir="auto">RSpec replaces the method we're stubbing or mocking with its own
+test-double-like method. At the end of the example, RSpec verifies any message
+expectations, and then restores the original methods.</p>
+<p dir="auto"><h2 dir="auto">Expecting Arguments</h2></p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span>*<span>args</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to_not</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span>*<span>args</span><span>)</span></pre></div>
+<p dir="auto">You can set multiple expectations for the same message if you need to:</p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>"A"</span><span>,</span> <span>1</span><span>,</span> <span>3</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>"B"</span><span>,</span> <span>2</span><span>,</span> <span>4</span><span>)</span></pre></div>
+<p dir="auto"><h2 dir="auto">Argument Matchers</h2></p>
+<p dir="auto">Arguments that are passed to <code>with</code> are compared with actual arguments
+received using ===. In cases in which you want to specify things about the
+arguments rather than the arguments themselves, you can use any of the
+matchers that ship with rspec-expectations. They don't all make syntactic
+sense (they were primarily designed for use with RSpec::Expectations), but
+you are free to create your own custom RSpec::Matchers.</p>
+<p dir="auto">rspec-mocks also adds some keyword Symbols that you can use to
+specify certain kinds of arguments:</p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>no_args</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>any_args</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>1</span><span>,</span> <span>any_args</span><span>)</span> <span># any args acts like an arg splat and can go anywhere</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>1</span><span>,</span> <span>kind_of</span><span>(</span><span>Numeric</span><span>)</span><span>,</span> <span>"b"</span><span>)</span> <span>#2nd argument can be any kind of Numeric</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>1</span><span>,</span> <span>boolean</span><span>(</span><span>)</span><span>,</span> <span>"b"</span><span>)</span> <span>#2nd argument can be true or false</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>1</span><span>,</span> <span>/abc/</span><span>,</span> <span>"b"</span><span>)</span> <span>#2nd argument can be any String matching the submitted Regexp</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>1</span><span>,</span> <span>anything</span><span>(</span><span>)</span><span>,</span> <span>"b"</span><span>)</span> <span>#2nd argument can be anything at all</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>1</span><span>,</span> <span>duck_type</span><span>(</span><span>:abs</span><span>,</span> <span>:div</span><span>)</span><span>,</span> <span>"b"</span><span>)</span> <span>#2nd argument can be object that responds to #abs and #div</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>hash_including</span><span>(</span><span>:a</span> <span>=&gt;</span> <span>5</span><span>)</span><span>)</span> <span># first arg is a hash with a: 5 as one of the key-values</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>array_including</span><span>(</span><span>5</span><span>)</span><span>)</span> <span># first arg is an array with 5 as one of the key-values</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>hash_excluding</span><span>(</span><span>:a</span> <span>=&gt;</span> <span>5</span><span>)</span><span>)</span> <span># first arg is a hash without a: 5 as one of the key-values</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>start_with</span><span>(</span><span>'a'</span><span>)</span><span>)</span> <span># any matcher, custom or from rspec-expectations</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>satisfy</span> <span>{</span> |<span>data</span>| <span>data</span><span>.</span><span>dig</span><span>(</span><span>:a</span><span>,</span> <span>:b</span><span>,</span> <span>:c</span><span>)</span> == <span>5</span> <span>}</span><span>)</span> <span># assert anything you want</span></pre></div>
+<p dir="auto"><h2 dir="auto">Receive Counts</h2></p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>once</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>twice</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>exactly</span><span>(</span><span>n</span><span>)</span><span>.</span><span>time</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>exactly</span><span>(</span><span>n</span><span>)</span><span>.</span><span>times</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>at_least</span><span>(</span><span>:once</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>at_least</span><span>(</span><span>:twice</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>at_least</span><span>(</span><span>n</span><span>)</span><span>.</span><span>time</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>at_least</span><span>(</span><span>n</span><span>)</span><span>.</span><span>times</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>at_most</span><span>(</span><span>:once</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>at_most</span><span>(</span><span>:twice</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>at_most</span><span>(</span><span>n</span><span>)</span><span>.</span><span>time</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>at_most</span><span>(</span><span>n</span><span>)</span><span>.</span><span>times</span></pre></div>
+<p dir="auto"><h2 dir="auto">Ordering</h2></p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>ordered</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:other_msg</span><span>)</span><span>.</span><span>ordered</span>
+  <span># This will fail if the messages are received out of order</span></pre></div>
+<p dir="auto">This can include the same message with different arguments:</p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>"A"</span><span>,</span> <span>1</span><span>,</span> <span>3</span><span>)</span><span>.</span><span>ordered</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>with</span><span>(</span><span>"B"</span><span>,</span> <span>2</span><span>,</span> <span>4</span><span>)</span><span>.</span><span>ordered</span></pre></div>
+<p dir="auto"><h2 dir="auto">Setting Responses</h2></p>
+<p dir="auto">Whether you are setting a message expectation or a method stub, you can
+tell the object precisely how to respond. The most generic way is to pass
+a block to <code>receive</code>:</p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span> <span>{</span> <span>value</span> <span>}</span></pre></div>
+<p dir="auto">When the double receives the <code>msg</code> message, it evaluates the block and returns
+the result.</p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_return</span><span>(</span><span>value</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>exactly</span><span>(</span><span>3</span><span>)</span><span>.</span><span>times</span><span>.</span><span>and_return</span><span>(</span><span>value1</span><span>,</span> <span>value2</span><span>,</span> <span>value3</span><span>)</span>
+  <span># returns value1 the first time, value2 the second, etc</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_raise</span><span>(</span><span>error</span><span>)</span>
+  <span># `error` can be an instantiated object (e.g. `StandardError.new(some_arg)`) or a class (e.g. `StandardError`)</span>
+  <span># if it is a class, it must be instantiable with no args</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_throw</span><span>(</span><span>:msg</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_yield</span><span>(</span><span>values</span><span>,</span> <span>to</span><span>,</span> <span>yield</span><span>)</span>
+<span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_yield</span><span>(</span><span>values</span><span>,</span> <span>to</span><span>,</span> <span>yield</span><span>)</span><span>.</span><span>and_yield</span><span>(</span><span>some</span><span>,</span> <span>other</span><span>,</span> <span>values</span><span>,</span> <span>this</span><span>,</span> <span>time</span><span>)</span>
+  <span># for methods that yield to a block multiple times</span></pre></div>
+<p dir="auto">Any of these responses can be applied to a stub as well</p>
+<div dir="auto"><pre><span>allow</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_return</span><span>(</span><span>value</span><span>)</span>
+<span>allow</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_return</span><span>(</span><span>value1</span><span>,</span> <span>value2</span><span>,</span> <span>value3</span><span>)</span>
+<span>allow</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_raise</span><span>(</span><span>error</span><span>)</span>
+<span>allow</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_throw</span><span>(</span><span>:msg</span><span>)</span>
+<span>allow</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_yield</span><span>(</span><span>values</span><span>,</span> <span>to</span><span>,</span> <span>yield</span><span>)</span>
+<span>allow</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span><span>.</span><span>and_yield</span><span>(</span><span>values</span><span>,</span> <span>to</span><span>,</span> <span>yield</span><span>)</span><span>.</span><span>and_yield</span><span>(</span><span>some</span><span>,</span> <span>other</span><span>,</span> <span>values</span><span>,</span> <span>this</span><span>,</span> <span>time</span><span>)</span></pre></div>
+<p dir="auto"><h2 dir="auto">Arbitrary Handling</h2></p>
+<p dir="auto">Once in a while you'll find that the available expectations don't solve the
+particular problem you are trying to solve. Imagine that you expect the message
+to come with an Array argument that has a specific length, but you don't care
+what is in it. You could do this:</p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span> <span>do</span> |<span>arg</span>|
+  <span>expect</span><span>(</span><span>arg</span><span>.</span><span>size</span><span>)</span><span>.</span><span>to</span> <span>eq</span> <span>7</span>
+<span>end</span></pre></div>
+<p dir="auto">If the method being stubbed itself takes a block, and you need to yield to it
+in some special way, you can use this:</p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:msg</span><span>)</span> <span>do</span> |&amp;<span>arg</span>|
+  <span>begin</span>
+    <span>arg</span><span>.</span><span>call</span>
+  <span>ensure</span>
+    <span># cleanup</span>
+  <span>end</span>
+<span>end</span></pre></div>
+<p dir="auto"><h2 dir="auto">Delegating to the Original Implementation</h2></p>
+<p dir="auto">When working with a partial mock object, you may occasionally
+want to set a message expectation without interfering with how
+the object responds to the message. You can use <code>and_call_original</code>
+to achieve this:</p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>Person</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:find</span><span>)</span><span>.</span><span>and_call_original</span>
+<span>Person</span><span>.</span><span>find</span> <span># =&gt; executes the original find method and returns the result</span></pre></div>
+<p dir="auto"><h2 dir="auto">Combining Expectation Details</h2></p>
+<p dir="auto">Combining the message name with specific arguments, receive counts and responses
+you can get quite a bit of detail in your expectations:</p>
+<div dir="auto"><pre><span>expect</span><span>(</span><span>double</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:&lt;&lt;</span><span>)</span><span>.</span><span>with</span><span>(</span><span>"illegal value"</span><span>)</span><span>.</span><span>once</span><span>.</span><span>and_raise</span><span>(</span><span>ArgumentError</span><span>)</span></pre></div>
+<p dir="auto">While this is a good thing when you really need it, you probably don't really
+need it! Take care to specify only the things that matter to the behavior of
+your code.</p>
+<p dir="auto"><h2 dir="auto">Stubbing and Hiding Constants</h2></p>
+<p dir="auto">See the <a href="https://github.com/rspec/rspec-mocks/blob/main/features/mutating_constants/README.md">mutating constants
+README</a>
+for info on this feature.</p>
+<p dir="auto"><h2 dir="auto">Use <code>before(:example)</code>, not <code>before(:context)</code>
+</h2></p>
+<p dir="auto">Stubs in <code>before(:context)</code> are not supported. The reason is that all stubs and mocks get cleared out after each example, so any stub that is set in <code>before(:context)</code> would work in the first example that happens to run in that group, but not for any others.</p>
+<p dir="auto">Instead of <code>before(:context)</code>, use <code>before(:example)</code>.</p>
+<p dir="auto"><h2 dir="auto">Settings mocks or stubs on any instance of a class</h2></p>
+<p dir="auto">rspec-mocks provides two methods, <code>allow_any_instance_of</code> and
+<code>expect_any_instance_of</code>, that will allow you to stub or mock any instance
+of a class. They are used in place of <code>allow</code> or <code>expect</code>:</p>
+<div dir="auto"><pre><span>allow_any_instance_of</span><span>(</span><span>Widget</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:name</span><span>)</span><span>.</span><span>and_return</span><span>(</span><span>"Wibble"</span><span>)</span>
+<span>expect_any_instance_of</span><span>(</span><span>Widget</span><span>)</span><span>.</span><span>to</span> <span>receive</span><span>(</span><span>:name</span><span>)</span><span>.</span><span>and_return</span><span>(</span><span>"Wobble"</span><span>)</span></pre></div>
+<p dir="auto">These methods add the appropriate stub or expectation to all instances of
+<code>Widget</code>.</p>
+<p dir="auto">This feature is sometimes useful when working with legacy code, though in
+general we discourage its use for a number of reasons:</p>
+<ul dir="auto">
+<li>The <code>rspec-mocks</code> API is designed for individual object instances, but this
+feature operates on entire classes of objects. As a result there are some
+semantically confusing edge cases. For example in
+<code>expect_any_instance_of(Widget).to receive(:name).twice</code> it isn't clear
+whether each specific instance is expected to receive <code>name</code> twice, or if two
+receives total are expected. (It's the former.)</li>
+<li>Using this feature is often a design smell. It may be
+that your test is trying to do too much or that the object under test is too
+complex.</li>
+<li>It is the most complicated feature of <code>rspec-mocks</code>, and has historically
+received the most bug reports. (None of the core team actively use it,
+which doesn't help.)</li>
+</ul>
+<p dir="auto"><h2 dir="auto">Further Reading</h2></p>
+<p dir="auto">There are many different viewpoints about the meaning of mocks and stubs. If
+you are interested in learning more, here is some recommended reading:</p>
+<ul dir="auto">
+<li>Mock Objects: <a href="http://www.mockobjects.com/" rel="nofollow">http://www.mockobjects.com/</a>
+</li>
+<li>Endo-Testing: <a href="http://www.ccs.neu.edu/research/demeter/related-work/extreme-programming/MockObjectsFinal.PDF" rel="nofollow">http://www.ccs.neu.edu/research/demeter/related-work/extreme-programming/MockObjectsFinal.PDF</a>
+</li>
+<li>Mock Roles, Not Objects: <a href="http://www.jmock.org/oopsla2004.pdf" rel="nofollow">http://www.jmock.org/oopsla2004.pdf</a>
+</li>
+<li>Test Double: <a href="http://www.martinfowler.com/bliki/TestDouble.html" rel="nofollow">http://www.martinfowler.com/bliki/TestDouble.html</a>
+</li>
+<li>Test Double Patterns: <a href="http://xunitpatterns.com/Test%20Double%20Patterns.html" rel="nofollow">http://xunitpatterns.com/Test%20Double%20Patterns.html</a>
+</li>
+<li>Mocks aren't stubs: <a href="http://www.martinfowler.com/articles/mocksArentStubs.html" rel="nofollow">http://www.martinfowler.com/articles/mocksArentStubs.html</a>
+</li>
+</ul>
+<p dir="auto"><h2 dir="auto">Also see</h2></p>
+<ul dir="auto">
+<li><a href="https://github.com/rspec/rspec">https://github.com/rspec/rspec</a></li>
+<li><a href="https://github.com/rspec/rspec-core">https://github.com/rspec/rspec-core</a></li>
+<li><a href="https://github.com/rspec/rspec-expectations">https://github.com/rspec/rspec-expectations</a></li>
+<li><a href="https://github.com/rspec/rspec-rails">https://github.com/rspec/rspec-rails</a></li>
+</ul>
+</article></div></div>
+  </div>
+</body>
+</html>

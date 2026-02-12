@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>An Introduction to Spatial Econometrics in R</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>An Introduction to Spatial Econometrics in R</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/an-introduction-to-spatial-econometrics-in-r">https://www.r-bloggers.com/an-introduction-to-spatial-econometrics-in-r</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876794071</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+
+	<p>This tutorial was prepared for the Ninth Annual Midwest Graduate Student Summit on Applied Economics, Regional, and Urban Studies (AERUS) on April 23rd-24th, 2016 at the University of Illinois at Urbana Champaign.</p>
+
+<p>This notes illustrate the usage of <code>R</code> for spatial econometric analysis. The theory is heavily borrowed from Anselin and Bera (1998) and Arbia (2014) and the practical aspect is an updated version of Anselin (2003), with some additions in visualizing spatial data on <code>R</code>.</p>
+
+<h2 id="whats-r-and-why-use-it">What’s R and why use it?</h2>
+
+<p>R is a free, open-source, and object oriented language. Free and open-source means that anyone is free to use, redistribute and change the software in any way. Moreover, “R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS.” (<a href="http://cran.r-project.org/" rel="nofollow" target="_blank">http://cran.r-project.org</a>)</p>
+
+<p>There are lot of software out there to do data analysis that are prettier and seem easier than R, so why should I invest learning R? There are in my opinion at least three characteristics of R that make it worthwhile learning it. First of all, it is free. Many fancier looking software used today are quite expensive, but R is free and is going to be always free. R also is a language, which means that you don’t only get to use the functions that are build in the software but you can create your own (just to get an on the of the power of the R language you can take a look Professor <a href="http://cran.r-project.org/web/packages/quantreg/index.html" rel="nofollow" target="_blank">Koenker’s Quantile Regression</a> package). The last reason is that R is extremely well supported. If you have a question you just can <a href="https://www.google.com/" rel="nofollow" target="_blank">Google</a> it, post it to <a href="http://stackoverflow.com/" rel="nofollow" target="_blank">StackOverflow</a> or use <a href="https://www.r-bloggers.com/" rel="nofollow" target="_blank">R-blogger</a>. If you are not convinced yet, just can type “why use the R language”” in Google and I think the results will speak by themselves. All these characteristics plus the fact that researchers at the frontier of the profession use <code>R</code> as part of their research make <code>R</code> a great tool for spatial data analysis.</p>
+
+
+
+<h2 id="motivation-for-using-spatial-analysis">Motivation for using spatial analysis</h2>
+
+<p>Probably the most important argument for taking a spatial approach is that the independence assumption between observation is no longer valid. Attributes of observation <em>i</em> may influence the attributes of observation <em>j</em>.</p>
+
+<p>To illustrate a very small set of what can be achieved in <code>R</code> for spatial analysis our running example will be examining violent crimes and foreclosures in the City of Chicago. The crime data as well as tracts shapefiles used here comes from <a href="https://data.cityofchicago.org/" rel="nofollow" target="_blank">Chicago Data Portal</a> while foreclosures data come from the <a href="https://www.huduser.gov/portal/datasets/NSP.html" rel="nofollow" target="_blank">U.S. Department of Housing and Urban Development (HUD)</a>, all of these are public available.</p>
+
+<h2 id="r-packages-for-spatial-data-analysis">R packages for spatial data analysis.</h2>
+
+<p>In R, the fundamental unit of shareable code is the package. A package bundles together code, data, documentation, and tests, and is easy to share with others. As of April 2016, there were over 8,200 packages available on the Comprehensive R Archive Network, or CRAN, the public clearing house for R packages. This huge variety of packages is one of the reasons that R is so successful: the chances are that someone has already solved a problem that you’re working on, and you can benefit from their work by downloading their package. (Wickham (2015))</p>
+
+<p>Today we’ll focus on three packages <code>maptools</code> (R. Bivand and Lewin-Koh (2016)), <code>spdep</code> (R. Bivand and Piras (2015), R. Bivand, Hauke, and Kossowski (2013)) and <code>leaflet</code> (Cheng and Xie (2015)) and use a fourth one, the <code>RColorBrewer</code> package (Neuwirth (2014)) to make our plots more attractive. To install the packages, we simple have to type</p>
+
+<div><pre>install.packages("maptools", dependencies = TRUE)
+install.packages("spdep", dependencies = TRUE)
+install.packages("leaflet", dependencies = TRUE)
+install.packages("RColorBrewer", dependencies = TRUE)
+</pre>
+</div>
+
+<p>The <code>maptools</code> package has the functions needed to read geographic data, in particular ESRI shapefiles. The <code>spdep</code> package on the other hand contains the functions that will use in the spatial data analysis. The <strong>dependencies</strong> option installs uninstalled packages which these packages depend on. To access the functions and data in the package we must first call it. The function to call a package is <code>library</code></p>
+
+<div><pre>library(spdep)
+</pre>
+</div>
+
+<div><pre>## Loading required package: sp
+
+## Loading required package: Matrix
+</pre>
+</div>
+
+<div><pre>library(maptools)
+</pre>
+</div>
+
+<div><pre>## Checking rgeos availability: TRUE
+</pre>
+</div>
+
+<p>Now that the packages are loaded we can read in our data.</p>
+
+<h2 id="reading-and-mapping-spatial-data-in-r">Reading and Mapping spatial data in R</h2>
+
+<p>Spatial data comes in many “shapes” and “sizes”, the most common types of spatial data are:</p>
+
+<ul>
+  <li><strong>Points</strong> are the most basic form of spatial data. Denotes a single point location, such as cities, a GPS reading or any other discrete object defined in space.</li>
+  <li><strong>Lines</strong> are a set of ordered points, connected by straight line segments</li>
+  <li><strong>Polygons</strong> denote an area, and can be thought as a sequence of connected points, where the first point is the same as the last</li>
+  <li><strong>Grid</strong> (Raster) are a collection of points or rectangular cells, organized in a regular lattice</li>
+</ul>
+
+<p>For more details, see R. S. Bivand, Pebesma, and Gomez-Rubio (2008). Today we’ll focus on <strong>Polygons</strong>. Spatial data usually comes in <code>shapefile</code>. This type of files stores non topological geometry and attribute information for the spatial features in a data set. Moreover, they don’t require a lot of disk space and are easy to read and write. (ESRI (1998))</p>
+
+<p>First we have to download and save the files in our computer from our server at <a href="http://www.econ.uiuc.edu/~lab/workshop/foreclosures/" rel="nofollow" target="_blank">http://www.econ.uiuc.edu/~lab/workshop/foreclosures/</a>. I saved mine in my desktop. We’ve downloaded 3 files:</p>
+
+<ul>
+  <li>Main file: foreclosures.shp</li>
+  <li>Index file: foreclosures.shx</li>
+  <li>dBASE table: foreclosures.dbf</li>
+</ul>
+
+<p>The main file describes a shape with a list of its vertices. In the index file, each record contains the offset of the corresponding main file record from the beginning of the main file. The dBASE table contains feature attributes with one record per feature. (ESRI (1998))</p>
+
+<p>To read data from a polygon shapefile into <code>R</code> we use the function <code>readShapePoly</code> that will create a <code>SpatialPolygonsDataFrame</code> object. To learn more about the function, the command <code>?readShapePoly</code> will give you access to the help file.</p>
+
+<p>But before reading in the shapefile we first set our working directory. R is always pointing to a directory on your computer, to find which one use <code>getwd()</code> (get working directory). To specify a working directory:</p>
+
+<div><pre>setwd('~/Desktop/foreclosures')
+</pre>
+</div>
+
+<p>On windows you may have to use <code>\</code>. The <strong>foreclosures</strong> folder contain the shapefiles that I downloaded before. Now we are ready to read in our shapefile.</p>
+
+<div><pre>chi.poly &lt;- readShapePoly('foreclosures.shp')
+</pre>
+</div>
+
+<p>the shapefile is now read and stored in an object called <code>chi.poly</code>. To check that it is a <code>SpatialPolygonsDataFrame</code> we can use the function <code>class</code></p>
+
+<div><pre>class(chi.poly)
+</pre>
+</div>
+
+<div><pre>## [1] "SpatialPolygonsDataFrame"
+## attr(,"package")
+## [1] "sp"
+</pre>
+</div>
+
+<p>A <code>SpatialPolygonsDataFrame</code> objects brings together the spatial representations of the polygons with data. The identifying tags of the polygons in the slot are matched with the row names of the data frame to make sure that the correct data rows are associated with the correct spatial object. (R. S. Bivand, Pebesma, and Gomez-Rubio (2008))</p>
+
+<p>This object has four “parts” or <code>slots</code>: the first one is the <em>data</em> slot that contains the variables that will be used for our analysis; the second one is the <em>polygon</em> slot and contains the “shape” information. The third slot, <em>bbox</em>, is the bounding box drawn around the boundaries and the fourth slot is the <em>proj4string</em> which contains the projections. To access the <em>data</em> slot we can use the <code>slot</code> function or the <code>@</code> symbol. For a compact look of the data slot we can use the <code>str</code> function:</p>
+
+<div><pre>str(slot(chi.poly,"data"))
+</pre>
+</div>
+
+<div><pre>## 'data.frame':    897 obs. of  16 variables:
+##  $ SP_ID     : Factor w/ 897 levels "1","10","100",..: 1 112 223 334 445 556 667 778 887 2 ...
+##  $ fips      : Factor w/ 897 levels "17031010100",..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ est_fcs   : int  43 129 55 21 64 56 107 43 7 51 ...
+##  $ est_mtgs  : int  904 2122 1151 574 1427 1241 1959 830 208 928 ...
+##  $ est_fcs_rt: num  4.76 6.08 4.78 3.66 4.48 4.51 5.46 5.18 3.37 5.5 ...
+##  $ res_addr  : int  2530 3947 3204 2306 5485 2994 3701 1694 443 1552 ...
+##  $ est_90d_va: num  12.61 12.36 10.46 5.03 8.44 ...
+##  $ bls_unemp : num  8.16 8.16 8.16 8.16 8.16 8.16 8.16 8.16 8.16 8.16 ...
+##  $ county    : Factor w/ 1 level "Cook County": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ fips_num  : num  1.7e+10 1.7e+10 1.7e+10 1.7e+10 1.7e+10 ...
+##  $ totpop    : int  5391 10706 6649 5325 10944 7178 10799 5403 1089 3634 ...
+##  $ tothu     : int  2557 3981 3281 2464 5843 3136 3875 1768 453 1555 ...
+##  $ huage     : int  61 53 56 60 54 58 48 57 61 48 ...
+##  $ oomedval  : int  169900 147000 119800 151500 143600 145900 153400 170500 215900 114700 ...
+##  $ property  : num  646 914 478 509 641 612 678 332 147 351 ...
+##  $ violent   : num  433 421 235 159 240 266 272 146 78 84 ...
+##  - attr(*, "data_types")= chr  "C" "C" "N" "N" ...
+</pre>
+</div>
+
+<p>The first part is the <code>data.frame</code> part that contains the data for our analysis. We can see the variables contained in the data portion of the file including:</p>
+
+<ul>
+  <li>est_fcs: estimated count of foreclosure starts from Jan. 2007 through June 2008</li>
+  <li>est_mtgs: estimated number of active mortgages from Jan. 2007 through June 2008</li>
+  <li>est_fcs_rt: number of foreclosure starts divided by number of mortgages times 100</li>
+  <li>bls_unemp: June 2008 place or county unemployment rate</li>
+  <li>totpop: total population from 2000 Census</li>
+  <li>violent: number of violent crimes reported between Jan. 2007 through December 2008</li>
+  <li>property: number of property crimes reported between Jan. 2007 through December 2008</li>
+</ul>
+
+<p>We can also get summary statistics of the variables of interest using the function summary. For example,</p>
+
+<div><pre>summary(chi.poly@data$violent)
+</pre>
+</div>
+
+<div><pre>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+##     0.0    49.0   103.0   169.3   226.0  1521.0
+</pre>
+</div>
+
+<p>Here we accessed the data portion of the shapefile with the <code>@</code> sign and then the variable with the <code>$</code> sign. To see the other slots, we can proceed in the same fashion.</p>
+
+<p>A nice feature of the class of spatial objects is that we can use the traditional plotting features of <code>R</code>. The following command give’s us a plot of Chicago’s Census Tracts:</p>
+
+<div><pre>plot(chi.poly)
+</pre>
+</div>
+
+<p><img src="https://i2.wp.com/ignaciomsarmiento.github.io/assets/images/spatial/unnamed-chunk-9-1.png?w=400&amp;ssl=1" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/ignaciomsarmiento.github.io/assets/images/spatial/unnamed-chunk-9-1.png?w=400&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"> <br></p>
+
+<p>but we can go a step further and make nicer plots using the <code>leaflet</code> package. This generates an interactive map that can be rendered on HTML pages.</p>
+
+<div><pre>library(leaflet)
+leaflet(chi.poly) %&gt;%
+  addPolygons(stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5) %&gt;%
+  addTiles() #adds a map tile, the default is OpenStreetMap
+</pre>
+</div>
+
+<!--html_preserve-->
+
+
+							</div></div>
+  </div>
+</body>
+</html>

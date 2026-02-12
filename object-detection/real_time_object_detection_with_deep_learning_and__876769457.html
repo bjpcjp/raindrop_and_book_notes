@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Real-time object detection with deep learning and OpenCV - PyImageSearch</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Real-time object detection with deep learning and OpenCV - PyImageSearch</h1>
+    <p><strong>URL:</strong> <a href="https://www.pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv">https://www.pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv</a></p>
+    <p><strong>Tags:</strong> object-detection, vision</p>
+    <p><strong>Bookmark ID:</strong> 876769457</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article aria-label="Real-time object detection with deep learning and OpenCV"><div>
+
+
+
+
+
+
+
+<p>Today’s blog post was inspired by PyImageSearch reader, Emmanuel. Emmanuel emailed me after last week’s tutorial on <a href="https://pyimagesearch.com/2017/09/11/object-detection-with-deep-learning-and-opencv/" target="_blank" rel="noopener noreferrer">object detection with deep learning + OpenCV</a> and asked:</p>
+
+
+<div>
+<figure><img src="https://b2633864.smushcdn.com/2633864/wp-content/uploads/2017/09/real_time_object_detection_animation.gif?lossy=2&amp;strip=1&amp;webp=1" alt="" width="410" height="250" srcset="https://b2633864.smushcdn.com/2633864/wp-content/uploads/2017/09/real_time_object_detection_animation.gif?lossy=2&amp;strip=1&amp;webp=1 200w,https://b2633864.smushcdn.com/2633864/wp-content/uploads/2017/09/real_time_object_detection_animation.gif?size=126x77&amp;lossy=2&amp;strip=1&amp;webp=1 126w" sizes="(max-width: 200px) 100vw, 200px" data-old-src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20410%20250'%3E%3C/svg%3E"></figure></div>
+
+
+<blockquote><p>Hi Adrian,</p><p>I really enjoyed last week’s blog post on <a rel="noopener noreferrer" href="https://pyimagesearch.com/2017/09/11/object-detection-with-deep-learning-and-opencv/" target="_blank">object detection with deep learning and OpenCV</a>, thanks for putting it together and for making deep learning with OpenCV so accessible.</p><p>I want to apply the same technique to real-time video.</p><p>What is the best way to do this?</p><p>How can I achieve the most efficiency?</p><p>If you could do a tutorial on real-time object detection with deep learning and OpenCV I would really appreciate it.</p></blockquote>
+
+
+
+<p>Great question, thanks for asking Emmanuel.</p>
+
+
+
+<p>Luckily, extending our previous tutorial on object detection with deep learning and OpenCV to <em><strong>real-time video streams</strong></em> is fairly straightforward — we simply need to combine some <a href="https://pyimagesearch.com/2016/01/04/unifying-picamera-and-cv2-videocapture-into-a-single-class-with-opencv/" target="_blank" rel="noopener noreferrer">efficient, boilerplate code for real-time video access</a> and then add in our object detection.</p>
+
+
+
+<p><strong>By the end of this tutorial you’ll be able to apply deep learning-based object detection to real-time video streams using OpenCV and Python — to learn how, <em>just keep reading</em>.</strong></p>
+
+
+<div id="pyi-source-code-block">
+        <p><img width="128" height="128" src="https://b2633864.smushcdn.com/2633864/wp-content/uploads/2020/01/source-code-icon.png?lossy=2&amp;strip=1&amp;webp=1" alt="" data-old-src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20128%20128'%3E%3C/svg%3E" data-lazy-src="https://b2633864.smushcdn.com/2633864/wp-content/uploads/2020/01/source-code-icon.png?size=128x128&amp;lossy=2&amp;strip=1&amp;webp=1"></p><h4>Looking for the source code to this post?</h4>
+                    <a href="#download-the-code">Jump Right To The Downloads Section </a>
+            </div>
+
+
+
+
+
+
+
+<p>Today’s blog post is broken into two parts.</p>
+
+
+
+<p>In the first part we’ll learn how to extend <a href="https://pyimagesearch.com/2017/09/11/object-detection-with-deep-learning-and-opencv/" target="_blank" rel="noopener noreferrer">last week’s tutorial</a> to apply real-time object detection using deep learning and OpenCV to work with video streams and video files. This will be accomplished using the highly efficient <code data-enlighter-language="python">VideoStream</code>  class discussed <a href="https://pyimagesearch.com/2016/01/04/unifying-picamera-and-cv2-videocapture-into-a-single-class-with-opencv/" target="_blank" rel="noopener noreferrer">in this tutorial</a>.</p>
+
+
+
+<p>From there, we’ll apply our deep learning + object detection code to actual video streams and measure the FPS processing rate.</p>
+
+
+
+<h3>Object detection in video with deep learning and OpenCV</h3>
+
+
+
+<p>To build our deep learning-based real-time object detector with OpenCV we’ll need to (1) access our webcam/video stream in an efficient manner and (2) apply object detection to each frame.</p>
+
+
+
+<p>To see how this is done, open up a new file, name it <code data-enlighter-language="shell">real_time_object_detection.py</code>  and insert the following code:</p>
+
+
+
+<pre data-enlighter-language="python" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="true" data-enlighter-lineoffset="" data-enlighter-title="Real-time object detection with deep learning and OpenCV" data-enlighter-group="2"># import the necessary packages
+from imutils.video import VideoStream
+from imutils.video import FPS
+import numpy as np
+import argparse
+import imutils
+import time
+import cv2
+</pre>
+
+
+<p>We begin by importing packages on <strong>Lines 2-8</strong>. For this tutorial, you will need <a href="https://pyimagesearch.com/2015/02/02/just-open-sourced-personal-imutils-package-series-opencv-convenience-functions/" target="_blank" rel="noopener noreferrer">imutils</a> and OpenCV 3.3.</p>
+<p>To get your system set up, simply <a href="https://pyimagesearch.com/opencv-tutorials-resources-guides/" target="_blank" rel="noopener noreferrer">install OpenCV</a> using the relevant instructions for your system (while ensuring you’re following any Python virtualenv commands).</p>
+<p><em><strong>Note: </strong>Make sure to download and install <a href="https://github.com/opencv/opencv/releases/tag/3.3.0" target="_blank" rel="noopener noreferrer">opencv</a> and and <a href="https://github.com/opencv/opencv_contrib/releases/tag/3.3.0" target="_blank" rel="noopener noreferrer">opencv-contrib</a> releases for OpenCV 3.3. This will ensure that the deep neural network (<code data-enlighter-language="generic">dnn</code>) module is installed. You <strong>must</strong> have OpenCV 3.3 (or newer) to run the code in this tutorial.<br>
+</em></p>
+<p>Next, we’ll parse our command line arguments:</p>
+
+
+<pre data-enlighter-language="python" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="true" data-enlighter-lineoffset="10" data-enlighter-title="Real-time object detection with deep learning and OpenCV" data-enlighter-group="4"># construct the argument parse and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--prototxt", required=True,
+	help="path to Caffe 'deploy' prototxt file")
+ap.add_argument("-m", "--model", required=True,
+	help="path to Caffe pre-trained model")
+ap.add_argument("-c", "--confidence", type=float, default=0.2,
+	help="minimum probability to filter weak detections")
+args = vars(ap.parse_args())
+</pre>
+
+
+<p>Compared to last week, we don’t need the image argument since we’re working with streams and videos — other than that the following arguments remain the same:</p>
+<ul>
+<li><code data-enlighter-language="python">--prototxt</code> : The path to the Caffe prototxt file.</li>
+<li><code data-enlighter-language="python">--model</code> : The path to the pre-trained model.</li>
+<li><code data-enlighter-language="python">--confidence</code> : The minimum probability threshold to filter weak detections. The default is 20%.</li>
+</ul>
+<p>We then initialize a class list and a color set:</p>
+
+
+<pre data-enlighter-language="python" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="true" data-enlighter-lineoffset="20" data-enlighter-title="Real-time object detection with deep learning and OpenCV" data-enlighter-group="8"># initialize the list of class labels MobileNet SSD was trained to
+# detect, then generate a set of bounding box colors for each class
+CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
+	"bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+	"dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+	"sofa", "train", "tvmonitor"]
+COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
+</pre>
+
+
+<p>On <strong>Lines 22-26</strong> we initialize <code data-enlighter-language="python">CLASS</code>  labels and corresponding random <code data-enlighter-language="python">COLORS</code> . For more information on these classes (and how the network was trained), please refer to <a href="https://pyimagesearch.com/2017/09/11/object-detection-with-deep-learning-and-opencv/" target="_blank" rel="noopener noreferrer">last week’s blog post</a>.</p>
+<p>Now, let’s load our model and set up our video stream:</p>
+
+
+<pre data-enlighter-language="python" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="true" data-enlighter-lineoffset="28" data-enlighter-title="Real-time object detection with deep learning and OpenCV" data-enlighter-group="11"># load our serialized model from disk
+print("[INFO] loading model...")
+net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
+
+# initialize the video stream, allow the cammera sensor to warmup,
+# and initialize the FPS counter
+print("[INFO] starting video stream...")
+vs = VideoStream(src=0).start()
+time.sleep(2.0)
+fps = FPS().start()
+</pre>
+
+
+<p>We load our serialized model, providing the references to our prototxt and model files on <strong>Line 30</strong> — notice how easy this is in OpenCV 3.3.</p>
+<p>Next let’s initialize our video stream (this can be from a video file or a camera). First we start the <code data-enlighter-language="python">VideoStream</code>  (<strong>Line 35</strong>), then we wait for the camera to warm up (<strong>Line 36</strong>), and finally we start the frames per second counter (<strong>Line 37</strong>). The <code data-enlighter-language="python">VideoStream</code>  and <code data-enlighter-language="python">FPS</code>  classes are part of my <code data-enlighter-language="python">imutils</code>  package.</p>
+<p>Now, let’s loop over each and every frame (for speed purposes, you could skip frames):</p>
+
+
+<pre data-enlighter-language="python" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="true" data-enlighter-lineoffset="39" data-enlighter-title="Real-time object detection with deep learning and OpenCV" data-enlighter-group="16"># loop over the frames from the video stream
+while True:
+	# grab the frame from the threaded video stream and resize it
+	# to have a maximum width of 400 pixels
+	frame = vs.read()
+	frame = imutils.resize(frame, width=400)
+
+	# grab the frame dimensions and convert it to a blob
+	(h, w) = frame.shape[:2]
+	blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)),
+		0.007843, (300, 300), 127.5)
+
+	# pass the blob through the network and obtain the detections and
+	# predictions
+	net.setInput(blob)
+	detections = net.forward()
+</pre>
+
+
+<p>First, we read  a <code data-enlighter-language="python">frame</code>  (<strong>Line 43</strong>) from the stream, followed by resizing it (<strong>Line 44</strong>).</p>
+<p>Since we will need the width and height later, we grab these now on <strong>Line 47</strong>. This is followed by converting the <code data-enlighter-language="python">frame</code>  to a <code data-enlighter-language="python">blob</code>  with the <code data-enlighter-language="python">dnn</code>  module (<strong>Lines 48 and 49</strong>).</p>
+<p>Now for the heavy lifting: we set the <code data-enlighter-language="python">blob</code>  as the input to our neural network (<strong>Line 53</strong>) and feed the input through the <code data-enlighter-language="python">net</code>  (<strong>Line 54</strong>) which gives us our <code data-enlighter-language="python">detections</code> .</p>
+<p>At this point, we have detected objects in the input frame. It is now time to look at confidence values and determine if we should draw a box + label surrounding the object– you’ll recognize this code block from last week:</p>
+
+
+<pre data-enlighter-language="python" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="true" data-enlighter-lineoffset="55" data-enlighter-title="Real-time object detection with deep learning and OpenCV" data-enlighter-group="24">	# loop over the detections
+	for i in np.arange(0, detections.shape[2]):
+		# extract the confidence (i.e., probability) associated with
+		# the prediction
+		confidence = detections[0, 0, i, 2]
+
+		# filter out weak detections by ensuring the `confidence` is
+		# greater than the minimum confidence
+		if confidence &gt; args["confidence"]:
+			# extract the index of the class label from the
+			# `detections`, then compute the (x, y)-coordinates of
+			# the bounding box for the object
+			idx = int(detections[0, 0, i, 1])
+			box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+			(startX, startY, endX, endY) = box.astype("int")
+
+			# draw the prediction on the frame
+			label = "{}: {:.2f}%".format(CLASSES[idx],
+				confidence * 100)
+			cv2.rectangle(frame, (startX, startY), (endX, endY),
+				COLORS[idx], 2)
+			y = startY - 15 if startY - 15 &gt; 15 else startY + 15
+			cv2.putText(frame, label, (startX, y),
+				cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
+</pre>
+
+
+<p>We start by looping over our <code data-enlighter-language="generic">detections</code> , keeping in mind that multiple objects can be detected in a single image. We also apply a check to the confidence (i.e., probability) associated with each detection. If the confidence is high enough (i.e. above the threshold), then we’ll display the prediction in the terminal as well as draw the prediction on the image with text and a colored bounding box. Let’s break it down line-by-line:</p>
+<p>Looping through our <code data-enlighter-language="generic">detections</code> , first we extract the <code data-enlighter-language="generic">confidence</code>  value (<strong>Line 60</strong>).</p>
+<p>If the <code data-enlighter-language="generic">confidence</code>  is above our minimum threshold (<strong>Line 64</strong>), we extract the class label index (<strong>Line 68</strong>) and compute the bounding box coordinates around the detected object (<strong>Line 69</strong>).</p>
+<p>Then, we extract the <em>(x, y)</em>-coordinates of the box (<strong>Line 70</strong>) which we will will use shortly for drawing a rectangle and displaying text.</p>
+<p>We build a text <code data-enlighter-language="python">label</code>  containing the <code data-enlighter-language="python">CLASS</code>  name and the <code data-enlighter-language="python">confidence</code>  (<strong>Lines 73 and 74</strong>).</p>
+<p>Let’s also draw a colored rectangle around the object using our class color and previously extracted <em>(x, y)</em>-coordinates (<strong>Lines 75 and 76</strong>).</p>
+<p>In general, we want the label to be displayed above the rectangle, but if there isn’t room, we’ll display it just below the top of the rectangle (<strong>Line 77</strong>).</p>
+<p>Finally, we overlay the colored text onto the <code data-enlighter-language="python">frame</code>  using the <em>y</em>-value that we just calculated (<strong>Lines 78 and 79</strong>).</p>
+<p>The remaining steps in the frame capture loop involve (1) displaying the frame, (2) checking for a quit key, and (3) updating our frames per second counter:</p>
+
+
+<pre data-enlighter-language="python" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="true" data-enlighter-lineoffset="80" data-enlighter-title="Real-time object detection with deep learning and OpenCV" data-enlighter-group="33">	# show the output frame
+	cv2.imshow("Frame", frame)
+	key = cv2.waitKey(1) &amp; 0xFF
+
+	# if the `q` key was pressed, break from the loop
+	if key == ord("q"):
+		break
+
+	# update the FPS counter
+	fps.update()
+</pre>
+
+
+<p>The above code block is pretty self-explanatory — first we display the frame (<strong>Line 82</strong>). Then we capture a key press (<strong>Line 83</strong>) while checking if the ‘q’ key (for “quit”) is pressed, at which point we break out of the frame capture loop (<strong>Lines 86 and 87</strong>).</p>
+<p>Finally we update our fps counter (<strong>Line 90</strong>).</p>
+<p>If we break out of the loop (‘q’ key press or end of the video stream), we have some housekeeping to take care of:</p>
+
+
+<pre data-enlighter-language="python" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="true" data-enlighter-lineoffset="91" data-enlighter-title="Real-time object detection with deep learning and OpenCV" data-enlighter-group="34"># stop the timer and display FPS information
+fps.stop()
+print("[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
+print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+
+# do a bit of cleanup
+cv2.destroyAllWindows()
+vs.stop()
+</pre>
+
+
+<p>When we’ve exited the loop, we stop the <code data-enlighter-language="generic">fps</code>  counter (<strong>Line 93</strong>) and print information about the frames per second to our terminal (<strong>Lines 94 and 95</strong>).</p>
+<p>We close the open window (<strong>Line 98</strong>) followed by stopping the video stream (<strong>Line 99</strong>).</p>
+<p>If you’ve made it this far, you’re probably ready to give it a try with your webcam — to see how it’s done, let’s move on to the next section.</p>
+<h3>Real-time deep learning object detection results</h3>
+<p>To see our real-time deep-learning based object detector in action, make sure you use the <em><strong>“Downloads”</strong></em> section of this guide to download the example code + pre-trained Convolutional Neural Network.</p>
+<p>From there, open up a terminal and execute the following command:</p>
+
+
+<pre data-enlighter-language="shell" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="true" data-enlighter-lineoffset="" data-enlighter-title="Real-time object detection with deep learning and OpenCV" data-enlighter-group="36">$ python real_time_object_detection.py \
+	--prototxt MobileNetSSD_deploy.prototxt.txt \
+	--model MobileNetSSD_deploy.caffemodel
+[INFO] loading model...
+[INFO] starting video stream...
+[INFO] elapsed time: 55.07
+[INFO] approx. FPS: 6.54
+</pre>
+
+
+<p>Provided that OpenCV can access your webcam you should see the output video frame with any detected objects. I have included sample results of applying deep learning object detection to an example video below:</p>
+<figure id="attachment_6104" aria-describedby="caption-attachment-6104"><a href="https://pyimagesearch.com/wp-content/uploads/2017/09/real_time_object_detection_animation.gif"><img src="https://b2633864.smushcdn.com/2633864/wp-content/uploads/2017/09/real_time_object_detection_animation.gif?lossy=2&amp;strip=1&amp;webp=1" width="350" height="214" srcset="https://b2633864.smushcdn.com/2633864/wp-content/uploads/2017/09/real_time_object_detection_animation.gif?lossy=2&amp;strip=1&amp;webp=1 200w,https://b2633864.smushcdn.com/2633864/wp-content/uploads/2017/09/real_time_object_detection_animation.gif?size=126x77&amp;lossy=2&amp;strip=1&amp;webp=1 126w" sizes="(max-width: 200px) 100vw, 200px" data-old-src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20350%20214'%3E%3C/svg%3E"></a><figcaption id="caption-attachment-6104"><strong>Figure 1:</strong> A short clip of real-time object detection with deep learning and OpenCV + Python.</figcaption></figure>
+<p>Notice how our deep learning object detector can detect not only myself (a <em>person</em>), but also the <em>sofa</em> I am sitting on and the <em>chair</em> next to me — <em><strong>all in real-time!</strong></em></p>
+<p>The full video can be found below:</p>
+
+<div id="pitch">
+	<h3>What's next? We recommend <a target="_blank" href="https://pyimagesearch.com/pyimagesearch-university/?utm_source=blogPost&amp;utm_medium=bottomBanner&amp;utm_campaign=What%27s%20next%3F%20I%20recommend">PyImageSearch University</a>.</h3>
+
+	
+
+	<p><strong>Course information:</strong><br>
+		84 total classes • 114+ hours of on-demand code walkthrough videos • Last updated: February 2024<br>
+		<span>★★★★★</span> 4.84 (128 Ratings) • 16,000+ Students Enrolled
+	</p>
+
+	<p><strong>I strongly believe that if you had the right teacher you could <em>master</em> computer vision and deep learning.</strong></p>
+
+	<p>Do you think learning computer vision and deep learning has to be time-consuming, overwhelming, and complicated? Or has to involve complex mathematics and equations? Or requires a degree in computer science?</p>
+
+	<p>That’s <em>not</em> the case.</p>
+
+	<p>All you need to master computer vision and deep learning is for someone to explain things to you in <em>simple, intuitive</em> terms. <em>And that’s exactly what I do</em>. My mission is to change education and how complex Artificial Intelligence topics are taught.</p>
+
+	<p>If you're serious about learning computer vision, your next stop should be PyImageSearch University, the most comprehensive computer vision, deep learning, and OpenCV course online today. Here you’ll learn how to <em>successfully</em> and <em>confidently</em> apply computer vision to your work, research, and projects. Join me in computer vision mastery.</p>
+
+	<p><strong>Inside PyImageSearch University you'll find:</strong></p>
+
+	<ul>
+		<li>✓ <strong>86 courses</strong> on essential computer vision, deep learning, and OpenCV topics</li>
+		<li>✓ <strong>86 Certificates</strong> of Completion</li>
+		<li>✓ <strong>115+ hours</strong> of on-demand video</li>
+		<li>✓ <strong>Brand new courses released <em>regularly</em></strong>, ensuring you can keep up with state-of-the-art techniques</li>
+		<li>✓ <strong>Pre-configured Jupyter Notebooks in Google Colab</strong></li>
+		<li>✓ Run all code examples in your web browser — works on Windows, macOS, and Linux (no dev environment configuration required!)</li>
+		<li>✓ Access to <strong>centralized code repos for <em>all</em> 540+ tutorials</strong> on PyImageSearch</li>
+		<li>✓ <strong> Easy one-click downloads</strong> for code, datasets, pre-trained models, etc.</li>
+		<li>✓ <strong>Access</strong> on mobile, laptop, desktop, etc.</li>
+	</ul>
+
+	<p>
+		<a target="_blank" href="https://pyimagesearch.com/pyimagesearch-university/?utm_source=blogPost&amp;utm_medium=bottomBanner&amp;utm_campaign=What%27s%20next%3F%20I%20recommend">Click here to join PyImageSearch University</a>
+	</p>
+</div>
+<h2>Summary</h2>
+<p>In today’s blog post we learned how to perform real-time object detection using deep learning + OpenCV + video streams.</p>
+<p>We accomplished this by combing two separate tutorials:</p>
+<ol>
+<li><a href="https://pyimagesearch.com/2017/09/11/object-detection-with-deep-learning-and-opencv/" target="_blank" rel="noopener noreferrer">Object detection with deep learning and OpenCV</a></li>
+<li><a href="https://pyimagesearch.com/2016/01/04/unifying-picamera-and-cv2-videocapture-into-a-single-class-with-opencv/" target="_blank" rel="noopener noreferrer">Efficient, threaded video streams with OpenCV</a></li>
+</ol>
+<p>The end result is a deep learning-based object detector that can process approximately 6-8 FPS (depending on the speed of your system, of course).</p>
+<p>Further speed improvements can be obtained by:</p>
+<ol>
+<li>Applying skip frames.</li>
+<li>Swapping different variations of MobileNet (that are faster, but less accurate).</li>
+<li>Potentially using the quantized variation of SqueezeNet (I haven’t tested this, but imagine it would be faster due to smaller network footprint).</li>
+</ol>
+<p>In future blog posts we’ll be discussing deep learning object detection methods in more detail.</p>
+<p>In the meantime, be sure to take a look at my book, <em><a href="https://pyimagesearch.com/deep-learning-computer-vision-python-book/" target="_blank" rel="noopener noreferrer">Deep Learning for Computer Vision with Python</a></em>, where I’ll be reviewing object detection frameworks such as Faster R-CNNs and Single Shot Detectors!</p>
+<p>If you’re interested in studying deep learning for computer vision and image classification tasks, you just can’t beat this book — <a href="https://pyimagesearch.com/deep-learning-computer-vision-python-book/" target="_blank" rel="noopener noreferrer">click here to learn more</a>.</p>
+<div id="download-the-code">
+				<p><img width="410" height="567" src="https://b2633864.smushcdn.com/2633864/wp-content/uploads/2020/01/cta-source-guide-1.png?lossy=2&amp;strip=1&amp;webp=1" alt="" srcset="https://b2633864.smushcdn.com/2633864/wp-content/uploads/2020/01/cta-source-guide-1.png?lossy=2&amp;strip=1&amp;webp=1 410w,https://b2633864.smushcdn.com/2633864/wp-content/uploads/2020/01/cta-source-guide-1.png?size=126x174&amp;lossy=2&amp;strip=1&amp;webp=1 126w,https://b2633864.smushcdn.com/2633864/wp-content/uploads/2020/01/cta-source-guide-1.png?size=252x348&amp;lossy=2&amp;strip=1&amp;webp=1 252w" sizes="(max-width: 410px) 100vw, 410px" data-old-src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20410%20567'%3E%3C/svg%3E" data-lazy-src="https://b2633864.smushcdn.com/2633864/wp-content/uploads/2020/01/cta-source-guide-1.png?size=410x567&amp;lossy=2&amp;strip=1&amp;webp=1"></p>
+				
+				<p><h4>Download the Source Code and FREE 17-page Resource Guide</h4></p>
+				<p>Enter your email address below to get a .zip of the code and a <strong>FREE 17-page Resource Guide on Computer Vision, OpenCV, and Deep Learning.</strong> Inside you'll find my hand-picked tutorials, books, courses, and libraries to help you master CV and DL!</p>
+
+
+			</div><!-- RightMessage WP -->
+<!--<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+			xmlns:dc="http://purl.org/dc/elements/1.1/"
+			xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+		<rdf:Description rdf:about="https://pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv/"
+    dc:identifier="https://pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv/"
+    dc:title="Real-time object detection with deep learning and OpenCV"
+    trackback:ping="https://pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv/trackback/" />
+</rdf:RDF>-->
+</div></article></div>
+  </div>
+</body>
+</html>

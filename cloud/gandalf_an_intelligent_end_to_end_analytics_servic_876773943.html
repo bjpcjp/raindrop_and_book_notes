@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Gandalf: an intelligent, end-to-end analytics service for safe deployment i</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Gandalf: an intelligent, end-to-end analytics service for safe deployment i</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2020/02/28/microsoft-gandalf">https://blog.acolyer.org/2020/02/28/microsoft-gandalf</a></p>
+    <p><strong>Tags:</strong> cloud, devops</p>
+    <p><strong>Bookmark ID:</strong> 876773943</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><a href="https://www.usenix.org/system/files/nsdi20spring_li_prepub.pdf">Gandalf: an intelligent, end-to-end analytics service for safe deployment in cloud-scale infrastructure</a>, Li et al., NSDI’20</p>
+<p>Modern software systems at scale are incredibly complex ever changing environments. Despite all the pre-deployment testing you might employ, this makes it really tough to change them with confidence. Thus it’s common to use some form of phased rollout, monitoring progress as you go, with the idea of rolling back a change if it looks like it’s causing problems. So far so good, but observing a problem and then connecting it back to a given deployment can be far from straightforward. This paper describes <em>Gandalf,</em> the software deployment monitor in production at Microsoft Azure for the past eighteen months plus. Gandalf analyses more than 20TB of data <em>per day</em> : 270K platform events on average (770K peak), 600 million API calls, with data on over 2,000 different fault types. If Gandalf doesn’t like what that data is telling it, it will pause a rollout and send an alert to the development team.</p>
+<p>Since its introduction, Gandalf has significantly improved deployment times, cutting them in half across the entire production fleet. As teams gained more experience with Gandalf, and saw how it was able to detect complex failures that even human experts can miss, their initial mistrust of an automated system turned around completely:</p>
+<blockquote>
+<p>For many teams, the deployment policy has become that the rollout will not continue to the next region unless Gandalf gives a green light decision.</p>
+</blockquote>
+<p>The transparency that Gandalf gives to all its decisions, providing full interactive access to all of the supporting evidence, has played a big role in it gaining that trust.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2020/02/gandalf-fig-14.jpeg?w=480" alt=""></p>
+<h3>Why is it so hard to spot a bad rollout?</h3>
+<p>First off, there are a lot of them! So it’s not like you’re trying to assess the impact of one change against a stable base. Instead there are multiple waves of change rolling out through the fleet at any point in time.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2020/02/gandalf-fig-3.jpeg?w=480" alt=""></p>
+<p>Each of those changes will go through a phase deployment typically consisting of stage, canary, light region, heavier region, half region pairs, and the other half of region pairs. More than 70% of the rollouts target multiple clusters.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2020/02/gandalf-fig-1.jpeg?w=480" alt=""></p>
+<p>More than 20% of rollouts last for over 1,000 minutes.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2020/02/gandalf-fig-2.jpeg?w=480" alt=""></p>
+<p>And that’s before we stay to layer in some of the confounding factors: there are faults going on all the time, not all of them caused by software rollouts (we don’t want false alarms); there can be substantial delays between a rollout and the occurrence of problems (e.g. memory leaks that take hours to build up into an issue); and there can be problems that only exhibit themselves with certain user, hardware, or software configurations.</p>
+<p>All of this means that Gandalf faces four key challenges in making sense of all that data:</p>
+<ol>
+<li>Gandalf needs to be able to cope with <em>constant change</em> in systems and signals: new components emerge, and existing components evolve, changing the failure patterns and telemetry signals.</li>
+<li>Ambient faults due to e.g. hardware faults, network timeouts, and gray failures are occurring all the time, and many of these are unrelated to deployments. Gandalf therefore operates in a very <em>noisy</em> environment.</li>
+<li>Detecting problems quickly, while also gathering comprehensive information over time to catch delayed issues.</li>
+<li>Once a genuine problem has been detected, figuring out which change is the likely cause!</li>
+</ol>
+<blockquote>
+<p>An n-to-m mapping relationship exists between components and failures: one component may cause multiple types of failure, while a single type of failure may be caused by issues in multiple components. Figuring out which failure is likely caused by which component is not easy due to the complexity of component behaviors.</p>
+</blockquote>
+<h3>Gandalf system design</h3>
+<p>At a high level Gandalf looks like this:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2020/02/gandalf-fig-10.jpeg?w=640" alt=""></p>
+<p>It ingests performance data, failure signals, and component update events and passes them through both fast and slow paths (a <em>lambda</em> architecture). The fast path is able to detect simple, immediate issues and provide quick feedback (within 5 minutes). The batch layer can detect deferred (latent) issues, analyse more complex failure scenarios, and also provide more detailed supporting evidence.</p>
+<blockquote>
+<p>The analysis engine in the speed layer only considers fault signals that happen 1 hour before and after each deployment in each node, and runs lightweight analysis algorithms to provide a rapid response. In Azure, most catastrophic issues happen within 1 hour after the rollout. Latent faults occurring after 1 hour will be capture by the batch layer later.</p>
+</blockquote>
+<p>The combined outputs of the fast and slow paths are fed into Gandalf’s system interface, with a front-end that developers used to view rollout status in real-time and a UI for diagnosing issues. The Azure deployment engine subscribes to Gandalf’s go/no-go decisions, and stops a rollout if a ‘no-go’ decision is published.</p>
+<h3>From signals to decisions</h3>
+<blockquote>
+<p>In designing the algorithms for Gandalf, we considered existing options from supervised learning, anomaly detection and correlation analysis but found major limitations for each of them.</p>
+</blockquote>
+<p>Supervised learning struggles with the constant changing of signal and failure patterns in the underlying system. Anomaly detection is insufficient since there are many rollouts occurring simultaneously and it can’t tell them apart. Correlation analysis based on Pearson correlation can’t capture the complex causal relationships that arise.</p>
+<p>The authors ended up with a three-phase analysis pipeline: anomaly detection, correlation analysis, and then a decision engine.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2020/02/gandalf-fig-11.jpeg?w=520" alt=""></p>
+<p>Gandalf does the normal trick of text clustering around log messages to generate fault signatures, and then applies anomaly detection based on the occurrences of each signature. Given the changing nature of workloads and the system itself, simple thresholding isn’t sufficient and so Gandalf uses <a href="https://grisha.org/blog/2016/01/29/triple-exponential-smoothing-forecasting/">Holt-Winters forecasting</a> to estimate a baseline using the previous 30 days worth of data, and a one hour step interval.</p>
+<p>It’s the job of the correlation analysis phase to try and figure out which component might be responsible for a detected anomaly (if any). Correlation is based on ensemble voting with vetoes. For a component change deployed on some node at time <em>t</em>, a fault happening <em>after</em> <em>t</em> votes for that component change  as a possible cause. A fault happening before <em>t</em> vetoes that component change as a possible cause. Four different time windows are used for ‘before’ and ‘after’ (1 hour, 1 day, 3 days, …). The votes and vetoes from each time period are weighted (exponential decay) so that smaller intervals contribute more.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2020/02/gandalf-fig-12.jpeg?w=520" alt=""></p>
+<p>To produce the final <em>blame score</em> the a second exponential time decay factor is incorporated that gives more weight to recent rollouts.</p>
+<p>Given a component and a blame score, it’s time to make a go/no-go decision.</p>
+<blockquote>
+<p>We make a go/no-go decision for the component <img src="https://s0.wp.com/latex.php?latex=c_j&amp;bg=ffffff&amp;fg=000000&amp;s=1&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=c_j&amp;bg=ffffff&amp;fg=000000&amp;s=1&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=c_j&amp;bg=ffffff&amp;fg=000000&amp;s=1&amp;c=20201002&amp;zoom=4.5 4x" alt="c_j"> by evaluating the impacting scopes of the deployment such as the number of impacted clusters, the number of impacted nodes, number of customers impacted, etc.. Instead of setting static thresholds for each feature, the decision criteria are trained dynamically with a Gaussian discriminant classifier. The training data is generated from historical deployment cases with feedback from component teams.</p>
+</blockquote>
+<h3>Gandalf in action</h3>
+<p>Gandalf makes decisions in about 5 minutes end-to-end on the fast path, and in about 3 hours on the batch layer.  In a 8 month window Gandlef captured 155 critical failures at an early stage of <em>data plane</em> rollout, achieving a precision of 92.4% and 100% recall (no high impact incidents got past Gandalf). For the control plane, Gandalf filed 39 incidents with 2 false alarms.  Precision here was 94.9%, with 99.8% recall.</p>
+<blockquote>
+<p>The most common issues Gandalf caught are compatibility issues and contract breaking issues. Compatibility issues arise with updates are tested in an environment with the latest hardware or software stack, but the deployed nodes may have different hardware SKUs or OS or library versions. Contract breaking issues occur when the component does not obey its API specifications and breaks dependent components.</p>
+</blockquote>
+</div></div>
+  </div>
+</body>
+</html>

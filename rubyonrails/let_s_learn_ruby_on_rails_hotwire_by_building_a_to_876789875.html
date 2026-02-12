@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Let's Learn Ruby on Rails Hotwire by Building a To-Do List</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Let's Learn Ruby on Rails Hotwire by Building a To-Do List</h1>
+    <p><strong>URL:</strong> <a href="https://www.akshaykhot.com/building-to-do-list-using-hotwire-and-stimulus">https://www.akshaykhot.com/building-to-do-list-using-hotwire-and-stimulus</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876789875</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-canvas-grid="content" data-canvas-grid-self="full">
+            <p><em>Note: This is a long article (&gt; 5000 words), so don't expect to finish reading it in one sitting. Also, make sure you keep the </em><a href="https://guides.rubyonrails.org/?ref=writesoftwarewell.com"><em>Rails</em></a><em> and </em><a href="https://turbo.hotwired.dev/?ref=writesoftwarewell.com"><em>Hotwire</em></a><em> documentation open while programming.</em>   </p><p>Here's a list of topics this article covers:</p><ol><li><a href="#a-brief-introduction-to-hotwire">A brief introduction to Hotwire</a></li><li><a href="#step-1-create-a-new-rails-application">Create a New Rails Application</a></li><li><a href="#step-2-install-tailwind-css">Install Tailwind CSS</a></li><li><a href="#step-3-create-the-task-resource">Create, Read, Update, and Delete Tasks</a></li><li><a href="#how-turbo-drive-works">How Turbo Drive Works</a></li><li><a href="#step-6-using-stimulus-for-completing-tasks">Using Stimulus for Completing Tasks</a></li><li><a href="#step-8-introducing-turbo-frames">Introducing Turbo Frames for In-Place Editing</a></li><li><a href="#conclusion-why-hotwire">Conclusion: Why Hotwire?</a></li></ol><h2 id="a-brief-introduction-to-hotwire">A Brief Introduction to Hotwire</h2><p>Hotwire is a suite of front-end frameworks shipped with Rails 7. It stands for <em>HTML over the wire</em>. It is a collection of techniques that tries to get the best of both worlds, keeping the original, simple web architecture of sending HTML over the wire, while not losing the performance benefits of Single Page Applications.</p><figure><img src="data:application/octet-stream;base64," alt="Hotwire" loading="lazy" width="900" height="610" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 900w" sizes="(min-width: 720px) 720px"><figcaption><span>Hotwire</span></figcaption></figure><p><strong>Hotwire is not a single framework; it’s a suite of different frameworks.</strong></p><ol><li><strong>Turbo</strong> uses different techniques to reduce the amount of JavaScript most web applications have to write. This is the most important part of Hotwire.</li><li><strong>Stimulus </strong>is a JavaScript framework when you absolutely need to use JavaScript. It sprinkles the client-side interactivity for your application when a server-side trip is not justified. </li><li><strong>Strada</strong> (not yet released) works with native applications, making it easy to progressively level-up web interactions with native replacements.</li></ol><p>Turbo uses the following techniques to provide a SPA-like experience, while still keeping the simplicity of traditional web applications, i.e. sending HTML over the wire. </p><ol><li><strong>Turbo Drive</strong> accelerates links and form submissions. It listens for link clicks or form submissions, performs them in the background, and updates the page without a full reload.</li><li><strong>Turbo Frames</strong> divide pages into independent contexts called frames (not <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe?ref=writesoftwarewell.com">iframe</a>). Turbo captures link clicks and form submissions inside a frame, automatically updating the frame contents after receiving a response.</li><li><strong>Turbo Streams</strong> delivers page changes over WebSocket, SSE, or in response to form submissions using just HTML and a set of CRUD-like actions.</li></ol><p>If all these different frameworks and techniques are already sounding confusing, <strong>don’t worry</strong>. You won’t be using all of them equally, all the time. Here’s a diagram that might help you understand how it all fits together.</p><figure><img src="data:application/octet-stream;base64," alt="The Hotwire Stack" loading="lazy" width="1041" height="659" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1041w" sizes="(min-width: 720px) 720px"><figcaption><span>The Hotwire Stack</span></figcaption></figure><p><strong>Turbo makes the foundation of Hotwire.</strong> When you need to work with some JavaScript to add client-side interactivity, you use <strong>Stimulus</strong>, and you only need <strong>Strada</strong> when your application needs to have mobile apps on Android and iOS.</p><p>Inside Turbo, <strong>Turbo Drive</strong> will satisfy most of your needs for fast performance, by only replacing the page body when you click a link. When you need additional responsiveness for updating parts of the page, you use <strong>Turbo Frames.</strong> Finally, in a few cases where you need to bring your application alive, such as sending live updates from the server, you will use <strong>Turbo Streams</strong>.</p><p><em>For more details, please check out the following article that compares and contrasts the traditional web application architecture with single-page applications, also explaining the drawbacks of single-page applications.</em></p><figure><a href="https://www.writesoftwarewell.com/introduction-to-hotwire/"><div><p>A Brief Introduction to Hotwire</p><p>This post introduces Hotwire, the suite of front-end frameworks shipped with Rails 7. It starts with a brief overview of the existing approaches to building web applications, introduces Hotwire, and wraps up with a short description of the different sub-frameworks that make Hotwire. We’ll also see h…</p><p><img src="data:application/octet-stream;base64," alt=""><span>Akshay's Blog</span><span>Akshay Khot</span></p></div><p><img src="data:application/octet-stream;base64," alt=""></p></a></figure><p>With that quick summary out of the way, let's build our to-do list. </p><h2 id="why-a-to-do-list">Why a To-Do List?</h2><p>There’s nothing like building a simple, run-of-the-mill to-do list when learning a new framework. It teaches you the basics of creating, reading, updating, and deleting data from various levels of the technology stack, including the front-end, back-end, and database. </p><p>We will start with a new Rails app from scratch and learn about Hotwire as we build our application. I am also going to use <a href="https://tailwindcss.com/?ref=writesoftwarewell.com">Tailwind</a> CSS to style our app, but it’s not a requirement, and the code examples should still work without it. But, if you haven’t worked with Tailwind, I highly recommend that you give it a try.</p><p>Before we start coding, this is a quick preview of what we are going to build. It’s a simple CRUD application. You can add new tasks, edit existing ones, delete a task, and also complete them.</p><figure><img src="data:application/octet-stream;base64," alt="Finished To-Do List" loading="lazy" width="1228" height="871" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1228w" sizes="(min-width: 720px) 720px"><figcaption><span>Finished To-Do List</span></figcaption></figure><p>I’ll assume that you have installed the required dependencies for building a Rails app. If not, just follow the Rails <a href="https://guides.rubyonrails.org/getting_started.html?ref=writesoftwarewell.com#creating-a-new-rails-project">getting started</a> guide, and you should be all set. For this application, I will use the following stack:</p><ul><li>Ruby on Rails</li><li>Hotwire (Turbo Drive + Stimulus)</li><li>Sqlite</li><li>Tailwind CSS</li></ul><p>With that out of the way, let’s start by creating a new Rails app.</p><h2 id="step-1-create-a-new-rails-application">Step 1: Create a New Rails Application</h2><p>Run the following command to create a new Rails application in a new terminal window. I will call my app <code>taskify</code>.</p><pre><code>➜ rails new taskify
+➜ cd taskify
+</code></pre><p>Open the app in your favorite editor. I will use VS Code.</p><pre><code>➜ code .
+</code></pre><p>Let’s run the app to make sure everything is set up correctly. Use the following command to start the server and visit the <a href="https://localhost:3000/?ref=writesoftwarewell.com">https://localhost:3000</a> URL to see your app.</p><pre><code>➜ bin/rails server 
+</code></pre><p>If everything works, Rails should greet you with the following screen.</p><figure><img src="data:application/octet-stream;base64," alt="Rails Welcome Page" loading="lazy" width="1228" height="871" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1228w" sizes="(min-width: 720px) 720px"><figcaption><span>Rails Welcome Page</span></figcaption></figure><h2 id="step-2-install-tailwind-css">Step 2: Install Tailwind CSS</h2><p>You can build this app using plain CSS or SASS, but I highly suggest that you consider using <a href="https://tailwindcss.com/?ref=writesoftwarewell.com">Tailwind CSS</a>. It will dramatically increase your productivity when designing UI (not constantly switching back and forth between HTML and CSS) and help you write more maintainable CSS. </p><p>Now I have to warn you first if you have never seen Tailwind. It takes a while to get used to, but once you've taken the pill, you will never want to go back. I surely don't. That said, if you don’t want to use it, the rest of the tutorial should still work for you.</p><figure><img src="data:application/octet-stream;base64," alt="Tailwind is not just inline-css" loading="lazy" width="640" height="550" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 640w"><figcaption><span>No, it's not just inline CSS </span><a href="https://cleancommit.io/blog/why-we-use-tailwind-css-as-our-primary-framework/?ref=writesoftwarewell.com"><i><em>credit</em></i></a></figcaption></figure><p>First, install the <code>tailwindcss-rails</code> gem that makes the setup painless.</p><pre><code>➜  bin/bundle add tailwindcss-rails
+</code></pre><p>Then run the Tailwind installer, which will set up Tailwind for you, additionally setting up <code>foreman</code>, which makes running multiple processes very easy. For more details, check out <a href="https://www.writesoftwarewell.com/launching-multiple-processes-using-foreman/">my post on Foreman</a>.</p><pre><code>➜  bin/rails tailwindcss:install
+</code></pre><p>The next step is to configure the template paths in the <code>config/tailwind.config.js</code> file. Tailwind watches these files to generate the final CSS. However, the <code>tailwindcss-rails</code> gem does it automatically for you, also setting the tailwind directives in the <code>application.tailwind.css</code> file.</p><pre><code>module.exports = {
+  content: [
+    './app/helpers/**/*.rb',
+    './app/javascript/**/*.js',
+    './app/views/**/*',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+</code></pre><p>Finally, launch the Foreman script that will launch the Rails server and the Tailwind CLI to watch for changes in your HTML or ERB files and generate the CSS.</p><pre><code>➜ bin/dev
+19:25:54 web.1  | started with pid 29201
+19:25:54 css.1  | started with pid 29202
+</code></pre><p><em>Note: Make sure you’ve already stopped the Rails app using <code>ctrl + c</code> that you launched earlier. Otherwise, the above command will throw an error saying, “a server is already running”.</em></p><p>If everything worked, you should still be greeted by the Rail logo if you reload your browser. We are now ready to start building our task manager.</p><h2 id="step-3-create-the-task-resource">Step 3: Create the Task Resource</h2><p>Now, we could take the easy way out and generate a rails scaffold instead of a resource, which will set up everything for us, including the routes, controller actions, views, style, etc. However, we want to really learn how to build this task manager step-by-step, so we will take the long and hard route. I promise that it's worth the effort, and you will learn a lot in the process.</p><p><strong>What's a resource? </strong>A resource is any object that you want users to be able to access via URI and perform CRUD (create, read, update, delete) operations on. </p><p>We need a <code>Task</code> resource for our to-do list, which has <code>description</code> and <code>completed</code> attributes. So let’s generate the Task model using the <code>rails generate resource</code> command. This command creates an empty model, controller, and migration to create the <code>tasks</code> table.</p><pre><code>➜  bin/rails generate resource task description:string{200} completed:boolean</code></pre><p>Running this command will create a <code>20220212031029_create_tasks.rb</code> migration file under the <code>db/migrate</code> directory. The exact name will be different as Rails uses the timestamp to generate the name of the migration file.</p><p>This file should have the following content.</p><pre><code>class CreateTasks &lt; ActiveRecord::Migration[7.0]
+  def change
+    create_table :tasks do |t|
+      t.string :description, limit: 200
+      t.boolean :completed
+
+      t.timestamps
+    end
+  end
+end
+</code></pre><p>Let’s run the migration to create the <code>tasks</code> table. This will run the SQL command to create the table in the database.</p><pre><code>➜  bin/rails db:migrate
+== 20220212031029 CreateTasks: migrating ======================================
+-- create_table(:tasks)
+   -&gt; 0.0021s
+== 20220212031029 CreateTasks: migrated (0.0022s) =============================
+</code></pre><p>If you open your SQLite database using a database viewer such as <a href="https://sqlitebrowser.org/?ref=writesoftwarewell.com">DB Browser</a>, you should see a <code>tasks</code> table in the database.</p><h2 id="step-4-set-up-home-page">Step 4: Set up Home page</h2><p>Let's change the <code>routes.rb</code> file to change the home page to the <code>tasks</code> page instead of the Rails welcome page. For this, open the <code>routes.rb</code> file and add the following directive at the top.</p><pre><code>Rails.application.routes.draw do
+  root "tasks#index"
+  
+  resources :tasks
+end
+</code></pre><p>Rails recommends putting the root route at the top of config/routes.rb, as it will be matched first, since a home page is the most popular route of most Rails applications.</p><p>Now restart your Rails app, and reload the browser. You should see an error.</p><figure><img src="data:application/octet-stream;base64," alt="Unknown action error" loading="lazy" width="631" height="191" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 631w"><figcaption><span>Unknown action error</span></figcaption></figure><p>Rails throws this error because we haven’t created our <code>index</code> action yet. Let's create that now. </p><p>In addition to the migration, the <code>generate resource</code> command should have also created an empty <code>TasksController</code> for you.</p><pre><code>class TasksController &lt; ApplicationController
+end
+</code></pre><p>Let’s create our first action called <code>index</code> to display all the tasks. In this action, we will fetch all the tasks from the database.</p><pre><code>class TasksController &lt; ApplicationController
+  def index
+    @tasks = Task.all
+  end
+end
+</code></pre><p>Creating action is not enough. If you reload the page, you should see a different error because we didn’t create the template (view) corresponding to this action.</p><figure><img src="data:application/octet-stream;base64," alt="missing template error" loading="lazy" width="739" height="251" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 739w" sizes="(min-width: 720px) 720px"><figcaption><span>missing template error</span></figcaption></figure><p>Let’s fix that. In the <code>app/views/tasks</code> directory, add a file named <code>index.html.erb</code>.</p><pre><code>&lt;h1 class="font-bold text-2xl"&gt;Task Manager&lt;/h1&gt;
+</code></pre><p>If you reload the browser now, the words “Task Manager” should greet you. If you see the following view, that means Tailwind is working correctly, too.</p><figure><img src="data:application/octet-stream;base64," alt="home page" loading="lazy" width="1038" height="701" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1038w" sizes="(min-width: 720px) 720px"><figcaption><span>home page</span></figcaption></figure><h2 id="step-5-create-new-tasks">Step 5: Create New Tasks</h2><p>A task manager without any tasks is boring. So let’s add a form using which the users can add new tasks.</p><p>Start by creating a <code>new</code> task in the <code>index</code> action on our <code>TasksController</code>. Our form will use this as the default task.</p><pre><code>class TasksController &lt; ApplicationController
+  def index
+    @tasks = Task.all
+    @task = Task.new
+  end
+end
+</code></pre><p>Next, we will create the form partial by adding a <code>_form.html.erb</code> file in the <code>app/views/tasks</code> directory. This form has an input field and a button to submit the task.</p><pre><code>&lt;%= form_with(model: task, class: "mb-7") do |form| %&gt;
+  &lt;div class="mb-5"&gt;
+    &lt;%= form.text_field :description, placeholder: "Add new task", class: "inline-block w-96 px-3 py-2 mt-2 shadow rounded-md border border-gray-200 outline-none" %&gt;
+    &lt;%= form.submit "Save", class: "btn py-2 ml-2 bg-blue-600 text-white" %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre><p>Add the following code to the <code>index.html.erb</code> file to display this form partial on the home page.</p><pre><code>&lt;h1 class="font-bold text-2xl"&gt;Task Manager&lt;/h1&gt;
+
+&lt;div class="mt-4"&gt;
+  &lt;%= render "form", task: @task %&gt;
+&lt;/div&gt;
+</code></pre><p>Notice that we are rendering the form as a <a href="https://guides.rubyonrails.org/layouts_and_rendering.html?ref=writesoftwarewell.com#using-partials">partial</a>, so we can reuse it later, possibly in a separate page that lets users add more details to a task.</p><blockquote>Partials allow you to break the rendering process into more manageable chunks. With a partial, you can move the code for rendering a particular piece of a response to its own file.</blockquote><p>Finally, add some style in the <code>application.tailwind.css</code> file, so our buttons look good. I’ve also removed the <code>flex</code> class on my <code>main</code> element in the <code>application.html.erb</code> file to keep things simple.</p><pre><code>@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn {
+        @apply mt-3 rounded-lg py-1 px-5 inline-block font-medium cursor-pointer;
+    }
+}
+</code></pre><p>Now reload the page. You should see the following form:</p><figure><img src="data:application/octet-stream;base64," alt="Form to create a new task" loading="lazy" width="1004" height="716" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1004w" sizes="(min-width: 720px) 720px"><figcaption><span>Form to create a new task</span></figcaption></figure><p><br>If you add some text and click “Save”, the page reloads. However, opening the Devtools shows an error in the networks tab because we are not handling form submissions on the back-end.</p><figure><img src="data:application/octet-stream;base64," alt="devtools-error" loading="lazy" width="1042" height="701" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1042w" sizes="(min-width: 720px) 720px"></figure><p>Let’s fix it by adding a <code>create</code> action on the <code>TasksController</code>.</p><pre><code>class TasksController &lt; ApplicationController
+  def create
+    @task = Task.new(task_params)
+
+    respond_to do |format|
+      if @task.save
+        format.html { redirect_to tasks_url, notice: "Task was successfully created" }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  private
+
+  def task_params
+    params.require(:task).permit(:description)
+  end
+end
+</code></pre><p><strong>Strong Parameters in Rails</strong></p><p>You might wonder why we are using <code>task_params</code> method instead of fetching them directly from <code>params</code> hash. </p><div><p>This technique called strong parameters, and it allows you to choose which attributes should be permitted for mass updating and thus prevent accidentally exposing that which shouldn’t be exposed.</p><p>The <code>require</code> method is used to mark parameters as required, and <code>permit</code> is used to set the parameter as permitted and limit which attributes should be allowed for mass updating. <a href="https://api.rubyonrails.org/classes/ActionController/Parameters.html?ref=writesoftwarewell.com">source</a></p></div><p>To learn more, check out the following post:</p><figure><a href="https://www.writesoftwarewell.com/why-use-strong-parameters-in-rails/"><div><p>Why You Need Strong Parameters in Rails</p><p>In this post, I will explain the Mass Assignment vulnerability and how you can use the Rails strong parameters API to address it.</p><p><img src="data:application/octet-stream;base64," alt=""><span>Akshay's Blog</span><span>Akshay Khot</span></p></div><p><img src="data:application/octet-stream;base64," alt=""></p></a></figure><p>Finally, update the <code>index.html.erb</code> template to show the notice message at the top.</p><pre><code>&lt;% if notice.present? %&gt;
+  &lt;p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"&gt;
+    &lt;%= notice %&gt;
+  &lt;/p&gt;
+&lt;% end %&gt;
+
+&lt;h1 class="font-bold text-2xl"&gt;Task Manager&lt;/h1&gt;
+
+&lt;div class="mt-4"&gt;
+  &lt;%= render "form", task: @task %&gt;
+&lt;/div&gt;
+</code></pre><p>Let’s add a new task and hit the Save button. You should see the success message, saying that the task was successfully saved in the database.</p><figure><img src="data:application/octet-stream;base64," alt="save task successfully" loading="lazy" width="1004" height="716" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1004w" sizes="(min-width: 720px) 720px"></figure><p><strong>But, wait? Where is my task?</strong> It’s not showing up because we haven’t added any code on our view template to display the tasks. Let’s fix that by adding the following code (the last <code>div</code> below) in the <code>index.html.erb</code> file.</p><pre><code>&lt;% if notice.present? %&gt;
+  &lt;p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"&gt;
+    &lt;%= notice %&gt;
+  &lt;/p&gt;
+&lt;% end %&gt;
+
+&lt;h1 class="font-bold text-2xl"&gt;Task Manager&lt;/h1&gt;
+
+&lt;div class="mt-4"&gt;
+  &lt;%= render "form", task: @task %&gt;
+&lt;/div&gt;
+
+&lt;div id="tasks"&gt;
+  &lt;h1 class="font-bold text-lg mb-7"&gt;Tasks&lt;/h1&gt;
+
+  &lt;div class="px-5"&gt;
+    &lt;%= render @tasks %&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre><p>We are again using the <code>task</code> partial in the <code>&lt;%= render @tasks %&gt;</code> statement, which is a shortcut for looping over each task and rendering the <code>_task</code> partial for that task. Also, remember that we had set the <code>@tasks</code> variable in our <code>index</code> action on the <code>TasksController</code> class.</p><p>So let’s create the <code>_task</code> partial by creating a <code>_task.html.erb</code> file in the <code>app/views/tasks</code> directory.</p><pre><code>&lt;div class="block mb-2"&gt;
+  &lt;%= task.description %&gt;
+&lt;/div&gt;
+</code></pre><p>If you reload the page, you will see our first task. Hey, we did it!</p><figure><img src="data:application/octet-stream;base64," alt="display task" loading="lazy" width="1004" height="716" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1004w" sizes="(min-width: 720px) 720px"></figure><p>Go ahead and add a few more tasks.</p><figure><img src="data:application/octet-stream;base64," alt="add more tasks" loading="lazy" width="1004" height="716" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1004w" sizes="(min-width: 720px) 720px"></figure><h2 id="wait-wheres-hotwire">Wait, Where's Hotwire?</h2><p>At this point, you might be wondering, <strong>“Hey, you said we were going to use Hotwire in this tutorial. When are we going to get to that part?”</strong> If so, I have a surprise for you. We are already using Hotwire. At least, a sub-framework of Hotwire called <a href="https://turbo.hotwired.dev/handbook/drive?ref=writesoftwarewell.com">Turbo Drive</a>, which is activated by default in a Rails 7 app.</p><p>Notice that the browser is not doing a full page reload when we add a new task. It also feels very responsive. The server redirects you to the index page whenever you click the button. However, you can see that the browser is not reloading the page, and your task shows up automatically. What gives?</p><p>The answer is the Turbo Drive framework that’s part of the Hotwire stack. It’s working behind the scenes to make your application faster.</p><h2 id="how-turbo-drive-works">How Turbo Drive Works</h2><p>Turbo Drive intercepts all clicks on anchor links to the same domain. When you click a link or submit a form, Turbo Drive does the following:</p><ol><li>Prevent the browser from following the link,</li><li>Change the browser URL using the History API,</li><li>Request the new page using a <code>fetch</code> request</li><li>Render the response HTML by replacing the current <code>&lt;body&gt;</code> element with the response and merging the <code>&lt;head&gt;</code> element’s content.</li></ol><p>The JavaScript <code>window</code> and <code>document</code> objects as well as the <code>&lt;html&gt;</code> element persist from one rendering to the next. </p><p>The same goes for an HTML form. Turbo Drive converts Form submissions into fetch requests. Then it follows the redirect and renders the HTML response. As a result, your browser doesn’t have to reload, and the app feels much faster.</p><p>To see how the app will behave without Hotwire, disable the Turbo Drive framework by adding the following line in the <code>app/javascript/application.js</code> file.</p><pre><code>Turbo.session.drive = false
+</code></pre><p>Now if you try to add a task, you can verify that the browser did a full reload like traditional web applications. Re-enable it, and reload the page. Try adding a new task, and notice that it didn't reload the page. </p><p>Some of you must have noticed that there’s no way to complete our tasks. What fun is there to keep piling more and more tasks, without having a way to complete them? We need a checkbox that will mark a task as <strong>complete</strong> or <strong>incomplete</strong>.</p><p>We will use another Hotwire framework called <a href="https://stimulus.hotwired.dev/?ref=writesoftwarewell.com">Stimulus</a> to achieve this. As advertised, it is a modest JavaScript framework for the HTML you already have. </p><p>I love the way it describes itself on its <a href="https://stimulus.hotwired.dev/?ref=writesoftwarewell.com">website</a>.</p><blockquote>Stimulus is a JavaScript framework with modest ambitions. It doesn’t seek to take over your entire front-end—in fact, it’s not concerned with rendering HTML at all. Instead, it’s designed to augment your HTML with just enough behavior to make it shine.</blockquote><p>Let's dig deeper.</p><h2 id="step-6-using-stimulus-for-completing-tasks">Step 6: Using Stimulus for Completing Tasks</h2><p>First, let’s wrap our task in a form to add a checkbox. Add the following code in the <code>_task.html.erb</code> file.</p><pre><code>&lt;div class="block"&gt;
+  &lt;%= form_with(model: task, class:"text-lg inline-block my-3 w-72") do |form| %&gt;
+    &lt;%= form.check_box :completed,
+                       class: "mr-2 align-middle bg-gray-50 border-gray-300 focus:ring-3 focus:ring-blue-300 h-5 w-5 rounded checked:bg-green-500" %&gt;
+    &lt;%= task.description %&gt;
+  &lt;% end %&gt;
+&lt;/div&gt;
+</code></pre><p>Reloading the page shows the beautiful checkbox next to our task.</p><figure><img src="data:application/octet-stream;base64," alt="add checkbox for tasks" loading="lazy" width="1004" height="716" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1004w" sizes="(min-width: 720px) 720px"></figure><p>Next, we will add a <code>data-controller</code> attribute in our <code>index.html.erb</code> template. </p><p>In Stimulus, we mark our elements of interest by annotating their data attributes, such as <code>data-controller</code> and <code>data-action</code>.</p><p><strong>Stimulus continuously monitors the page waiting for HTML data-controller attributes to appear. For each attribute, Stimulus looks at the attribute’s value to find a corresponding controller class, creates a new instance of that class, and connects it to the element.</strong></p><p>I have skipped the rest of the code for brevity. You are only adding the <code>data-controller="tasks"</code> attribute on the <code>div</code> element rendering the tasks.</p><pre><code>...
+&lt;div class="px-5" data-controller="tasks"&gt;
+  &lt;%= render @tasks %&gt;
+&lt;/div&gt;
+</code></pre><p>For this <code>data-controller</code> to work, we need to add a <code>tasks_controller.js</code> file in the <code>app/javascript/controllers</code> directory. Or, you can also run the Rails generator to create Stimulus controllers for you.</p><pre><code>➜  bin/rails generate stimulus tasks
+      create  app/javascript/controllers/tasks_controller.js</code></pre><p>Add the following code to this file.</p><pre><code>import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+    connect() {
+        console.log(this.element)
+    }
+}
+</code></pre><p>Stimulus calls the <code>connect</code> method each time it connects a controller to the document. Simply reload the page and open the dev tools window to test it’s working. You should see the following output in the console. That means Stimulus has connected the element to our controller.</p><figure><img src="data:application/octet-stream;base64," alt="connect stimulus" loading="lazy" width="1004" height="716" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1004w" sizes="(min-width: 720px) 720px"></figure><p>Next, we will make a back-end request whenever the user clicks the checkbox. For this, update the <code>task</code> partial (in the <code>_task.html.erb</code> file) by adding the data attribute.</p><pre><code>&lt;div class="block"&gt;
+  &lt;%= form_with(model: task, class:"text-lg inline-block my-3 w-72") do |form| %&gt;
+    &lt;%= form.check_box :completed,
+                       data: {
+                         id: task.id,
+                         action: "tasks#toggle"
+                       },
+                       class: "mr-2 align-middle bg-gray-50 border-gray-300 focus:ring-3 focus:ring-blue-300 h-5 w-5 rounded checked:bg-green-500" %&gt;
+    &lt;%= task.description %&gt;
+  &lt;% end %&gt;
+&lt;/div&gt;
+</code></pre><p>When Rails renders this template, it spits out the following HTML.</p><pre><code>&lt;input data-id="1" data-action="tasks#toggle" class="mr-2 .." type="checkbox" value="1" name="task[completed]" id="task_completed"&gt;
+</code></pre><ul><li>The <code>data-id</code> attribute is not specific to Stimulus, but we are using it to pass the task id to the controller so that we can pass it to the server.</li><li>The <code>data-action</code> attribute tells Stimulus that whenever a user clicks on this checkbox, call the <code>toggle</code> method defined on the controller in the <code>tasks_controller.js</code> file.</li></ul><blockquote>Note: The data-action attribute must be nested inside an element that’s getting connected to the Stimulus controller. In our case, the task partial is rendered inside our div element in the index template. That’s how Stimulus knows which controller action to call.</blockquote><p>Now add the <code>toggle</code> method in our <code>tasks_controller</code> file, which makes a JavaScript fetch call to the server. Again, Stimulus will call this method whenever the user clicks the checkbox.</p><pre><code>import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+    connect() {
+        console.log(this.element)
+    }
+
+    toggle(e) {
+        const id = e.target.dataset.id
+        const csrfToken = document.querySelector("[name='csrf-token']").content
+
+        fetch(`/tasks/${id}/toggle`, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({ completed: e.target.checked }) // body data type must match "Content-Type" header
+        })
+          .then(response =&gt; response.json())
+          .then(data =&gt; {
+             alert(data.message)
+           })
+    }
+}
+</code></pre><p>There are a few points to note in the above method.</p><ol><li>The <code>toggle</code> method takes the event as a parameter. We can access the checkbox element from the <code>target</code> property of the event.</li><li>We retrieve the task <code>id</code> from the data attribute on the element, which we set earlier. Then we pass the <code>id</code> in the URL.</li><li>We are passing the <code>csrfToken</code> in the header. I wrote about the Cross-Site Request Forgery vulnerability and CSRF tokens in my post <a href="https://www.writesoftwarewell.com/understanding-authenticity-tokens-in-rails/">Understanding Authenticity Tokens in Rails</a>. Check it out if you're interested in learning more. </li><li>The body contains whether the checkbox was selected or not, letting the server know if the task is completed or marked incomplete.</li></ol><p>With the front-end ready, let’s add the back-end code to handle this POST request from the browser. There are two steps to it.</p><p><strong>Step 1: </strong>Add a route in the <code>routes.rb</code> file that tells the router to call the <code>toggle</code> action on the TasksController, whenever a POST request is made with a specific URL pattern.</p><pre><code>Rails.application.routes.draw do
+  # ...
+  post "tasks/:id/toggle", to: "tasks#toggle"
+end
+</code></pre><p><strong>Step 2: </strong>Add the <code>toggle</code> method on the <code>TasksController</code> which finds the task using the <code>id</code> and updates the <code>completed</code> attribute. Once toggling the task, it returns the message "Success" in the JSON response.</p><pre><code>def toggle
+  @task = Task.find(params[:id])
+  @task.update(completed: params[:completed])
+
+  render json: { message: "Success" }
+end
+</code></pre><p>You’re all set! Go ahead and mark a few tasks complete (of course, after you’ve finished them in the real world). To make sure the changes were persisted in the database, reload the page, and you should see the completed tasks checked off.</p><figure><img src="data:application/octet-stream;base64," alt="complete tasks" loading="lazy" width="1004" height="716" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1004w" sizes="(min-width: 720px) 720px"></figure><h2 id="step-7-edit-and-delete-tasks">Step 7: Edit and Delete Tasks</h2><p>As the last step, we will allow the users of our task manager to edit and delete their tasks. Let’s start by adding the corresponding actions in the <code>tasks_controller.rb</code> file. This is standard Rails, so I won't go too deep here. </p><pre><code>class TasksController &lt; ApplicationController
+  def edit
+    @task = Task.find(params[:id])
+  end
+
+  def update
+    @task = Task.find(params[:id])
+    respond_to do |format|
+      if @task.update(task_params)
+        format.html { redirect_to tasks_url, notice: "Task was successfully updated" }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def destroy
+    @task = Task.find(params[:id])
+    @task.destroy
+    redirect_to tasks_url, notice: "Post was successfully deleted."
+  end
+  
+end
+</code></pre><p>The <code>edit</code> action finds the task that we want to edit, and the corresponding view displays the edit form. Add the <code>edit.html.erb</code> file in the <code>app/views/tasks</code> directory with the following code.</p><pre><code>&lt;div&gt;
+  &lt;h1 class="font-bold text-2xl mb-3"&gt;Editing Task&lt;/h1&gt;
+
+  &lt;div id="&lt;%= dom_id @task %&gt;"&gt;
+    &lt;%= render "form", task: @task %&gt;
+    &lt;%= link_to "Never Mind", tasks_path, class: "btn mb-3 bg-gray-100" %&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre><p>Finally, add the <code>edit</code> and <code>delete</code> buttons next to the task, in the <code>_task.html.erb</code> file.</p><pre><code>&lt;div class="block"&gt;
+  &lt;%= form_with(model: task, class:"text-lg inline-block my-3 w-72") do |form| %&gt;
+    ...
+  &lt;% end %&gt;
+
+  &lt;%= link_to "Edit", edit_task_path(task),
+              class: "btn bg-gray-100"
+  %&gt;
+  &lt;div class="inline-block ml-2"&gt;
+    &lt;%= button_to "Delete", task_path(task),
+                  method: :delete,
+                  class: "btn bg-red-100" %&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre><p>That’s it. Reload the page, and you should see our buttons to edit and delete the tasks. Clicking the <code>Delete</code> button should delete that task, without a full page reload.</p><figure><img src="data:application/octet-stream;base64," alt="delete task" loading="lazy" width="989" height="659" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 989w" sizes="(min-width: 720px) 720px"></figure><p>Clicking the <code>Edit</code> button should show you the form with the task in it. After making changes, it should redirect you to the home page. Again, without a full page reload. Turbo Drive makes the fetch request, gets the response, and replaces the DOM content.</p><figure><img src="data:application/octet-stream;base64," alt="edit task" loading="lazy" width="989" height="659" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 989w" sizes="(min-width: 720px) 720px"></figure><p>That’s it. Congratulations, you have just implemented a fully-featured to-do list using Ruby on Rails and Hotwire frameworks.</p><h2 id="step-8-introducing-turbo-frames">Step 8: Introducing Turbo-Frames</h2><p>So far, we've used Turbo Drive to replace the entire body of the page with the response from the server. </p><figure><img src="data:application/octet-stream;base64," alt="Turbo Drive" loading="lazy" width="1187" height="581" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1187w" sizes="(min-width: 720px) 720px"><figcaption><span>Turbo Drive</span></figcaption></figure><p>However, this feels very inefficient if the only thing that's changing is a small section on the web page. This was the appeal behind single-page applications, where most of the page remained as it was, only updating small sections independently.</p><p><strong>What if you could just send the specific HTML that changed, without touching the rest of the page? The response would be much smaller, and the rest of the HTML could be easily cached, making the application even more responsive.</strong></p><p><strong>Turbo Frames</strong> allows us to do the exactly same thing. The only difference is, the part of the page that's updated is retrieved from the response HTML, instead of making an API call to retrieve the JSON response. </p><figure><img src="data:application/octet-stream;base64," alt="Turbo Frames" loading="lazy" width="1187" height="589" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1187w" sizes="(min-width: 720px) 720px"><figcaption><span>Turbo Frames</span></figcaption></figure><p>Turbo Frames allow you to dynamically update sections on the page in response to some action, such as clicking a link or submitting a form. In contrast to Turbo Drive, Turbo Frames let you contain the scope of the change, reducing the size of the HTML your server has to send.</p><p>Usually, to build the final response HTML, you compose various views or partials together. With Turbo Frames, you can place those independent segments inside <code>&lt;turbo-frame&gt;</code> elements. Turbo replaces the existing frame that matches the response and updates it dynamically. This also allows you to lazily load frames in parallel, improving the perceived performance of your web application.</p><p>A key concept to understand with Turbo Frames is that any user interaction inside a specific <code>&lt;turbo-frame&gt;</code> element is scoped within that frame. The rest of the page doesn't change or reload, unless you specifically target it.</p><p>You can make any section on your page a Turbo Frame by wrapping it inside a <code>&lt;turbo-frame&gt;</code> tag. For example:</p><pre><code>&lt;turbo-frame id="turbo-messages"&gt;
+  &lt;div&gt;..
+  &lt;/div&gt;
+&lt;/turbo-frame&gt;</code></pre><p>The server can provide a full document or just a part of it. The only condition is that the response contains the updated <code>&lt;turbo frame id="turbo-messages"&gt;</code> element. Upon receiving the response, Turbo extracts the specific frame from it and replaces the existing frame with the matching ID.</p><p><strong>Points to note:</strong></p><ul><li>Each <code>&lt;turbo-frame&gt;</code> element must have a unique ID. Turbo uses this ID to match the content it will replace when a response arrives from the server.</li><li>A single page can contain multiple turbo frames, allowing different contexts. They can be lazy-loaded or replaced independently.</li></ul><p>That's enough theory. Let's use a concrete example that demonstrates how useful Turbo Frames can be when used properly.</p><h2 id="step-9-using-turbo-frames-for-in-place-editing">Step 9: Using Turbo-Frames for In-Place Editing</h2><p>Let's try to edit a task with the DevTools' Network tab open. Notice that the server builds and sends the whole response HTML, which is about 5.2 kB. Upon receiving the response HTML, Turbo Drive extracts and replaces the body.</p><figure><img src="data:application/octet-stream;base64," alt="inline editing with turbo frames" loading="lazy" width="2000" height="1267" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1600w, data:application/octet-stream;base64, 2400w" sizes="(min-width: 720px) 720px"></figure><p>Let's improve this functionality by rendering the edit form in-place on the index page, instead of taking the user to a separate page. We will achieve this in three simple steps using Turbo Frames.</p><h2 id="a-highlight-the-turbo-frames">A) Highlight the Turbo Frames</h2><p>Well, this is an optional step, but it will make understanding Turbo Frames easy. Turbo Frames are just <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements?ref=writesoftwarewell.com">custom HTML elements</a> and are invisible by default. During development, it's useful to highlight them to understand what's going on. </p><p>Let's add some CSS to make them visible. Add this code in the <code>app/assets/stylesheets/application.css</code> file.</p><pre><code>turbo-frame {
+  border: 1px solid lightblue;
+  border-radius: 5px;
+  padding: 0.1em 1em;
+  margin: 1em 0;
+}</code></pre><h2 id="b-wrap-the-task-in-a-turbo-frame">B) Wrap the Task in a Turbo Frame</h2><p>Frames are created by wrapping a segment of the page in a <code>&lt;turbo-frame&gt;</code> element. Since we want to update the task we want to edit with the form to insert the new task, let's wrap the task in a Turbo Frame element. </p><pre><code>&lt;turbo-frame id="&lt;%= dom_id task %&gt;" class="block"&gt;
+  ...
+
+  &lt;%= link_to "Edit", edit_task_path(task), class: "btn bg-gray-100" %&gt;
+
+  ...
+&lt;/turbo-frame&gt;</code></pre><p>Notice that we're also using the Rails' <code>dom_id</code> helper to generate a unique ID for each <code>&lt;turbo-frame&gt;</code> element. Each frame element must have a unique ID, which is used to match the content being replaced when requesting new pages from the server.</p><p>Also, note that we added class <code>block</code> to the frame. Since <code>&lt;turbo-frame&gt;</code> elements are custom elements, and all custom elements are displayed <code>inline</code> by default, we need to make sure they're displayed as <code>block</code> elements.</p><p>After reloading the browser, this is how it should look. </p><figure><img src="data:application/octet-stream;base64," alt="explicitly styled turbo frames" loading="lazy" width="1240" height="918" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1240w" sizes="(min-width: 720px) 720px"></figure><h2 id="c-wrap-the-response-in-a-turbo-frame">C) Wrap the Response in a Turbo Frame</h2><p>This is how Turbo Frames work: <em>any links and forms inside a frame are captured, and the frame contents are automatically updated after receiving a response. </em></p><p>When the link to edit the task is clicked, the response provided by <code>/tasks/1/edit</code> has its <code>&lt;turbo-frame id="task_1"&gt;</code> segment extracted, and the content replaces the frame from where the click originated.</p><p>Update the <code>edit.html.erb</code> response by wrapping the form inside a <code>&lt;turbo-frame&gt;</code> tag.</p><pre><code>&lt;div&gt;
+  &lt;h1 class="font-bold text-2xl mb-3"&gt;Editing Task&lt;/h1&gt;
+
+  &lt;turbo-frame id="&lt;%= dom_id @task %&gt;"&gt;
+    &lt;%= render "form", task: @task %&gt;
+    &lt;%= link_to "Never Mind", tasks_path, class: "btn mb-3 bg-gray-100" %&gt;
+  &lt;/turbo-frame&gt;
+&lt;/div&gt;</code></pre><p>Notice that we haven't wrapped the <code>&lt;h1&gt;</code> element inside the <code>&lt;turbo-frame&gt;</code> tag. This is because whether the server provides a full document, or just a fragment containing an updated version of the requested frame, only that particular frame will be extracted from the response to replace the existing content.</p><p>That's it. We are done. Reload the page and be prepared to be amazed. </p><p>Upon clicking the Edit button, the edit form is rendered inline, without having to redirect to a separate page.</p><figure><img src="data:application/octet-stream;base64," alt="inline editing using turbo frames" loading="lazy" width="1240" height="918" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1240w" sizes="(min-width: 720px) 720px"></figure><p>Notice that the &lt;h1&gt; tag containing the text <strong>Editing Task</strong> is not showing up. This is because Turbo replaces the existing <code>&lt;turbo-frame&gt;</code> tag with the matching <code>&lt;turbo-frame&gt;</code> tag with the same ID. Everything else is ignored.</p><p>What's more, if you open the Network tab and click Edit, you will see the response is only 2.1 kB, and only contains the template, without any layout. This is because Rails being smart, sets the layout to <code>false</code> if it's a <code>&lt;turbo-frame&gt;</code> request. For more details, checkout the <a href="https://github.com/hotwired/turbo-rails/blob/main/app/controllers/turbo/frames/frame_request.rb?ref=writesoftwarewell.com">frame_request.rb</a> file in the <strong>turbo-rails</strong> repository.</p><figure><img src="data:application/octet-stream;base64," alt="inspecting turbo frame response" loading="lazy" width="2000" height="1267" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1600w, data:application/octet-stream;base64, 2032w" sizes="(min-width: 720px) 720px"></figure><p>Upon editing and hitting <strong>Save</strong> or <strong>Never Mind</strong> buttons, Turbo conveniently gets the response from the server and replaces the edit form with the now updated task.</p><p>Now comment out the CSS that makes the <code>&lt;turbo-frame&gt;</code> tags visible, and our application feels even more impressive.</p><figure><img src="data:application/octet-stream;base64," alt="invisible turbo frames" loading="lazy" width="1270" height="904" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1270w" sizes="(min-width: 720px) 720px"></figure><p>Note: You'll have to update the <code>delete</code> button as follows for it to work. See the comments for more details. </p><pre><code>&lt;%= button_to "Delete", task_path(task), method: :delete, data: { "turbo-frame": "_top" }, class: "btn bg-red-100" %&gt;</code></pre><h2 id="conclusion-why-hotwire">Conclusion: Why Hotwire?</h2><p>So that concludes our project. Hopefully, you read through the article and have built a nice to-do list for yourself. </p><p>Now you might be wondering if Hotwire is just yet another shiny, new tool and if it's worth it for you to learn yet another JavaScript library. I get it. I was skeptical at first, too, but changed my mind after playing with it just for a few days.</p><p>Using Hotwire gives you fast first-load pages, and allows you to render templates on the server, where you have access to your whole domain model. It is a simple and more productive development experience in Ruby on Rails, without sacrificing any of the speed or responsiveness associated with traditional single-page applications.</p><p>After using it professionally for almost a year, I am a big fan of the Hotwire way of building web apps, and don't want to go back to the complexity of front-end JavaScript frameworks like React. </p><p>I hope you give it a try.</p><hr><p>Wow, that was a really long article. I hope it was helpful and you learned something new. If you're stuck at any step or have any questions, feel free to reach out to me by <a href="mailto:akshay.khot@hey.com">email</a>. I'd be happy to help.</p><p>Please subscribe to my blog below if you'd like to receive future articles directly in your email. If you're already a subscriber, thank you.</p><p>If you enjoyed this article, you might like these, too.</p><figure><a href="https://www.writesoftwarewell.com/how-rails-concerns-work-and-how-to-use-them/"><div><p>Concerns in Rails: Everything You Need to Know</p><p>Concerns are an important concept in Rails that can be confusing to understand for those new to Rails as well as seasoned practitioners. This post explains why we need concerns, how they work, and how to use them to simplify your code.</p><p><img src="data:application/octet-stream;base64," alt=""><span>Akshay's Blog</span><span>Akshay Khot</span></p></div><p><img src="data:application/octet-stream;base64," alt=""></p></a></figure><figure><a href="https://www.writesoftwarewell.com/definitive-guide-to-rack/"><div><p>The Definitive Guide to Rack for Rails Developers</p><p>This article explains pretty much everything you need to know about Rack as a Ruby and Rails developer. We will start with the basics and move to more advanced concepts like middleware and the Rack DSL.</p><p><img src="data:application/octet-stream;base64," alt=""><span>Akshay's Blog</span><span>Akshay Khot</span></p></div><p><img src="data:application/octet-stream;base64," alt=""></p></a></figure><figure><a href="https://www.writesoftwarewell.com/introduction-to-rails-initializers/"><div><p>A Brief Introduction to Rails Initializers</p><p>After loading the framework and any gems in your application, Rails runs the initializers under the `config/initializers` directory. This article explains how initializers work and how they’re implemented.</p><p><img src="data:application/octet-stream;base64," alt=""><span>Akshay's Blog</span><span>Akshay Khot</span></p></div><p><img src="data:application/octet-stream;base64," alt=""></p></a></figure><figure><a href="https://www.writesoftwarewell.com/why-use-strong-parameters-in-rails/"><div><p>Why You Need Strong Parameters in Rails</p><p>In this post, I will explain the Mass Assignment vulnerability and how you can use the Rails strong parameters API to address it.</p><p><img src="data:application/octet-stream;base64," alt=""><span>Akshay's Blog</span><span>Akshay Khot</span></p></div><p><img src="data:application/octet-stream;base64," alt=""></p></a></figure>
+        </div></div>
+  </div>
+</body>
+</html>

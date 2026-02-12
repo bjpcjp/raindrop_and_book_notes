@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Beating C with 70 Lines of Go</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Beating C with 70 Lines of Go</h1>
+    <p><strong>URL:</strong> <a href="https://ajeetdsouza.github.io/blog/posts/beating-c-with-70-lines-of-go">https://ajeetdsouza.github.io/blog/posts/beating-c-with-70-lines-of-go</a></p>
+    <p><strong>Tags:</strong> golang</p>
+    <p><strong>Bookmark ID:</strong> 876772892</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+				<p>Chris Penner’s recent article, <a href="https://chrispenner.ca/posts/wc"><em>Beating C with 80 Lines of Haskell</em></a>, has generated quite some controversy over the Internet, and it has since turned into a game of trying to take on the venerable <code>wc</code> with different languages:</p>
+<ul>
+<li><a href="http://verisimilitudes.net/2019-11-11">Ada</a></li>
+<li><a href="https://github.com/expr-fi/fastlwc/">C</a></li>
+<li><a href="http://verisimilitudes.net/2019-11-12">Common Lisp</a></li>
+<li><a href="https://ummaycoc.github.io/wc.apl/">Dyalog APL</a></li>
+<li><a href="https://futhark-lang.org/blog/2019-10-25-beating-c-with-futhark-on-gpu.html">Futhark</a></li>
+<li><a href="https://chrispenner.ca/posts/wc">Haskell</a></li>
+<li><a href="https://medium.com/@martinmroz/beating-c-with-120-lines-of-rust-wc-a0db679fe920">Rust</a></li>
+</ul>
+<p>Today, we will be pitting <a href="http://golang.org/">Go</a> against <code>wc</code>. Being a compiled language with excellent concurrency primitives, it should be trivial to achieve <a href="https://benchmarksgame-team.pages.debian.net/benchmarksgame/fastest/go-gcc.html">comparable performance</a> to C.</p>
+<p>While <code>wc</code> is also designed to read from <code>stdin</code>, handle non-ASCII text encodings, and parse command line flags (<a href="https://ss64.com/osx/wc.html">manpage</a>), we will not be doing that here. Instead, like the articles mentioned above, we will focus on keeping our implementation as simple as possible.</p>
+<p>The source code for this post can be found <a href="https://github.com/ajeetdsouza/blog-wc-go">here</a>.</p>
+<h2 id="benchmarking--comparison">Benchmarking &amp; comparison</h2>
+<p>We will use the GNU <a href="https://www.gnu.org/software/time/">time</a> utility to compare elapsed time and maximum resident set size.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span>$ /usr/bin/time -f <span>"%es %MKB"</span> wc test.txt
+</span></span></code></pre></div><p>We will use the <a href="https://opensource.apple.com/source/text_cmds/text_cmds-68/wc/wc.c.auto.html">same version of wc</a> as the original article, compiled with <code>gcc 9.2.1</code> and <code>-O3</code>. For our own implementation, we will use <code>go 1.13.4</code> (I did try <code>gccgo</code> too, but the results were not very promising). We will run all benchmarks with the following setup:</p>
+<ul>
+<li>Intel Core i5-6200U @ 2.30 GHz (2 physical cores, 4 threads)</li>
+<li>4+4 GB RAM @ 2133 MHz</li>
+<li>240 GB M.2 SSD</li>
+<li>Fedora 31</li>
+</ul>
+<p>For a fair comparison, all implementations will use a 16 KB buffer for reading input. The input will be two <code>us-ascii</code> encoded text files of 100 MB and 1 GB.</p>
+<h2 id="a-naïve-approach">A naïve approach</h2>
+<p>Parsing arguments is easy, since we only require the file path:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>if</span> <span>len</span>(os.Args) &lt; <span>2</span> {
+</span></span><span><span>    <span>panic</span>(<span>"no file path specified"</span>)
+</span></span><span><span>}
+</span></span><span><span>filePath <span>:=</span> os.Args[<span>1</span>]
+</span></span><span><span>
+</span></span><span><span>file, err <span>:=</span> os.<span>Open</span>(filePath)
+</span></span><span><span><span>if</span> err <span>!=</span> <span>nil</span> {
+</span></span><span><span>    <span>panic</span>(err)
+</span></span><span><span>}
+</span></span><span><span><span>defer</span> file.<span>Close</span>()
+</span></span></code></pre></div><p>We’re going to iterate through the text bytewise, keeping track of state. Fortunately, in this case, we require only 2 states:</p>
+<ul>
+<li>The previous byte was whitespace</li>
+<li>The previous byte was not whitespace</li>
+</ul>
+<p>When going from a whitespace character to a non-whitespace character, we increment the word counter. This approach allows us to read directly from a byte stream, keeping memory consumption low.</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>const</span> bufferSize = <span>16</span> <span>*</span> <span>1024</span>
+</span></span><span><span>reader <span>:=</span> bufio.<span>NewReaderSize</span>(file, bufferSize)
+</span></span><span><span>
+</span></span><span><span>lineCount <span>:=</span> <span>0</span>
+</span></span><span><span>wordCount <span>:=</span> <span>0</span>
+</span></span><span><span>byteCount <span>:=</span> <span>0</span>
+</span></span><span><span>
+</span></span><span><span>prevByteIsSpace <span>:=</span> <span>true</span>
+</span></span><span><span><span>for</span> {
+</span></span><span><span>    b, err <span>:=</span> reader.<span>ReadByte</span>()
+</span></span><span><span>    <span>if</span> err <span>!=</span> <span>nil</span> {
+</span></span><span><span>        <span>if</span> err <span>==</span> io.EOF {
+</span></span><span><span>            <span>break</span>
+</span></span><span><span>        } <span>else</span> {
+</span></span><span><span>            <span>panic</span>(err)
+</span></span><span><span>        }
+</span></span><span><span>    }
+</span></span><span><span>
+</span></span><span><span>    byteCount<span>++</span>
+</span></span><span><span>
+</span></span><span><span>    <span>switch</span> b {
+</span></span><span><span>    <span>case</span> <span>'\n'</span>:
+</span></span><span><span>        lineCount<span>++</span>
+</span></span><span><span>        prevByteIsSpace = <span>true</span>
+</span></span><span><span>    <span>case</span> <span>' '</span>, <span>'\t'</span>, <span>'\r'</span>, <span>'\v'</span>, <span>'\f'</span>:
+</span></span><span><span>        prevByteIsSpace = <span>true</span>
+</span></span><span><span>    <span>default</span>:
+</span></span><span><span>        <span>if</span> prevByteIsSpace {
+</span></span><span><span>            wordCount<span>++</span>
+</span></span><span><span>            prevByteIsSpace = <span>false</span>
+</span></span><span><span>        }
+</span></span><span><span>    }
+</span></span><span><span>}
+</span></span></code></pre></div><p>To display the result, we will use the native <code>println()</code> function - in my tests, importing the <code>fmt</code> library caused a ~400 KB increase in executable size!</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>println</span>(lineCount, wordCount, byteCount, file.<span>Name</span>())
+</span></span></code></pre></div><p>Let’s run this:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>input size</th>
+<th>elapsed time</th>
+<th>max memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wc</code></td>
+<td>100 MB</td>
+<td>0.58 s</td>
+<td>2052 KB</td>
+</tr>
+<tr>
+<td><code>wc-naive</code></td>
+<td>100 MB</td>
+<td>0.77 s</td>
+<td>1416 kB</td>
+</tr>
+<tr>
+<td><code>wc</code></td>
+<td>1 GB</td>
+<td>5.56 s</td>
+<td>2036 KB</td>
+</tr>
+<tr>
+<td><code>wc-naive</code></td>
+<td>1 GB</td>
+<td>7.69 s</td>
+<td>1416 KB</td>
+</tr>
+</tbody>
+</table>
+<p>The good news is that our first attempt has already landed us pretty close to C in terms of performance. In fact, we’re actually doing <em>better</em> in terms of memory usage!</p>
+<h2 id="splitting-the-input">Splitting the input</h2>
+<p>While buffering I/O reads is critical to improving performance, calling <code>ReadByte()</code> and checking for errors in a loop introduces a lot of unnecessary overhead. We can avoid this by manually buffering our read calls, rather than relying on <code>bufio.Reader</code>.</p>
+<p>To do this, we will split our input into buffered chunks that can be processed individually. Fortunately, to process a chunk, the only thing we need to know about the previous chunk (as we saw earlier) is if its last character was whitespace.</p>
+<p>Let’s write a few utility functions:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>type</span> Chunk <span>struct</span> {
+</span></span><span><span>    PrevCharIsSpace <span>bool</span>
+</span></span><span><span>    Buffer          []<span>byte</span>
+</span></span><span><span>}
+</span></span><span><span>
+</span></span><span><span><span>type</span> Count <span>struct</span> {
+</span></span><span><span>    LineCount <span>int</span>
+</span></span><span><span>    WordCount <span>int</span>
+</span></span><span><span>}
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>GetCount</span>(chunk Chunk) Count {
+</span></span><span><span>    count <span>:=</span> Count{}
+</span></span><span><span>
+</span></span><span><span>    prevCharIsSpace <span>:=</span> chunk.PrevCharIsSpace
+</span></span><span><span>    <span>for</span> _, b <span>:=</span> <span>range</span> chunk.Buffer {
+</span></span><span><span>        <span>switch</span> b {
+</span></span><span><span>        <span>case</span> <span>'\n'</span>:
+</span></span><span><span>            count.LineCount<span>++</span>
+</span></span><span><span>            prevCharIsSpace = <span>true</span>
+</span></span><span><span>        <span>case</span> <span>' '</span>, <span>'\t'</span>, <span>'\r'</span>, <span>'\v'</span>, <span>'\f'</span>:
+</span></span><span><span>            prevCharIsSpace = <span>true</span>
+</span></span><span><span>        <span>default</span>:
+</span></span><span><span>            <span>if</span> prevCharIsSpace {
+</span></span><span><span>                prevCharIsSpace = <span>false</span>
+</span></span><span><span>                count.WordCount<span>++</span>
+</span></span><span><span>            }
+</span></span><span><span>        }
+</span></span><span><span>    }
+</span></span><span><span>
+</span></span><span><span>    <span>return</span> count
+</span></span><span><span>}
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>IsSpace</span>(b <span>byte</span>) <span>bool</span> {
+</span></span><span><span>    <span>return</span> b <span>==</span> <span>' '</span> <span>||</span> b <span>==</span> <span>'\t'</span> <span>||</span> b <span>==</span> <span>'\n'</span> <span>||</span> b <span>==</span> <span>'\r'</span> <span>||</span> b <span>==</span> <span>'\v'</span> <span>||</span> b <span>==</span> <span>'\f'</span>
+</span></span><span><span>}
+</span></span></code></pre></div><p>Now, we can split the input into <code>Chunk</code>s and feed them to the <code>GetCount</code> function.</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span>totalCount <span>:=</span> Count{}
+</span></span><span><span>lastCharIsSpace <span>:=</span> <span>true</span>
+</span></span><span><span>
+</span></span><span><span><span>const</span> bufferSize = <span>16</span> <span>*</span> <span>1024</span>
+</span></span><span><span>buffer <span>:=</span> <span>make</span>([]<span>byte</span>, bufferSize)
+</span></span><span><span>
+</span></span><span><span><span>for</span> {
+</span></span><span><span>    bytes, err <span>:=</span> file.<span>Read</span>(buffer)
+</span></span><span><span>    <span>if</span> err <span>!=</span> <span>nil</span> {
+</span></span><span><span>        <span>if</span> err <span>==</span> io.EOF {
+</span></span><span><span>            <span>break</span>
+</span></span><span><span>        } <span>else</span> {
+</span></span><span><span>            <span>panic</span>(err)
+</span></span><span><span>        }
+</span></span><span><span>    }
+</span></span><span><span>
+</span></span><span><span>    count <span>:=</span> <span>GetCount</span>(Chunk{lastCharIsSpace, buffer[:bytes]})
+</span></span><span><span>    lastCharIsSpace = <span>IsSpace</span>(buffer[bytes<span>-</span><span>1</span>])
+</span></span><span><span>
+</span></span><span><span>    totalCount.LineCount <span>+=</span> count.LineCount
+</span></span><span><span>    totalCount.WordCount <span>+=</span> count.WordCount
+</span></span><span><span>}
+</span></span></code></pre></div><p>To obtain the byte count, we can make one system call to query the file size:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span>fileStat, err <span>:=</span> file.<span>Stat</span>()
+</span></span><span><span><span>if</span> err <span>!=</span> <span>nil</span> {
+</span></span><span><span>    <span>panic</span>(err)
+</span></span><span><span>}
+</span></span><span><span>byteCount <span>:=</span> fileStat.<span>Size</span>()
+</span></span></code></pre></div><p>Now that we’re done, let’s see how this performs:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>input size</th>
+<th>elapsed time</th>
+<th>max memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wc</code></td>
+<td>100 MB</td>
+<td>0.58 s</td>
+<td>2052 KB</td>
+</tr>
+<tr>
+<td><code>wc-chunks</code></td>
+<td>100 MB</td>
+<td>0.34 s</td>
+<td>1404 KB</td>
+</tr>
+<tr>
+<td><code>wc</code></td>
+<td>1 GB</td>
+<td>5.56 s</td>
+<td>2036 KB</td>
+</tr>
+<tr>
+<td><code>wc-chunks</code></td>
+<td>1 GB</td>
+<td>3.31 s</td>
+<td>1416 KB</td>
+</tr>
+</tbody>
+</table>
+<p>Looks like we’ve blown past <code>wc</code> on both counts, and we haven’t even begun to parallelize our program yet.<sup id="fnref:1"><a href="#fn:1" role="doc-noteref">1</a></sup> <a href="https://github.com/XAMPPRocky/tokei"><code>tokei</code></a> reports that this program is just 70 lines of code!</p>
+<h2 id="parallelization">Parallelization</h2>
+<p>Admittedly, a parallel <code>wc</code> is overkill, but let’s see how far we can go. The original article reads from the input file in parallel, and while it improved runtime, the author does admit that performance gains due to parallel reads might be limited to only certain kinds of storage, and would be detrimental elsewhere.</p>
+<p>For our implementation, we want our code to be performant on <em>all</em> devices, so we will not be doing this. We will set up 2 channels, <code>chunks</code> and <code>counts</code>. Each worker will read and process data from <code>chunks</code> until the channel is closed, and then write the result to <code>counts</code>.</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>func</span> <span>ChunkCounter</span>(chunks <span>&lt;-</span><span>chan</span> Chunk, counts <span>chan</span><span>&lt;-</span> Count) {
+</span></span><span><span>    totalCount <span>:=</span> Count{}
+</span></span><span><span>
+</span></span><span><span>    <span>for</span> chunk <span>:=</span> <span>range</span> chunks
+</span></span><span><span>        count <span>:=</span> <span>GetCount</span>(chunk)
+</span></span><span><span>        totalCount.LineCount <span>+=</span> count.LineCount
+</span></span><span><span>        totalCount.WordCount <span>+=</span> count.WordCount
+</span></span><span><span>    }
+</span></span><span><span>
+</span></span><span><span>    counts <span>&lt;-</span> totalCount
+</span></span><span><span>}
+</span></span></code></pre></div><p>We will spawn one worker per logical CPU core:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span>numWorkers <span>:=</span> runtime.<span>NumCPU</span>()
+</span></span><span><span>
+</span></span><span><span>chunks <span>:=</span> <span>make</span>(<span>chan</span> Chunk)
+</span></span><span><span>counts <span>:=</span> <span>make</span>(<span>chan</span> Count)
+</span></span><span><span>
+</span></span><span><span><span>for</span> i <span>:=</span> <span>0</span>; i &lt; numWorkers; i<span>++</span> {
+</span></span><span><span>    <span>go</span> <span>ChunkCounter</span>(chunks, counts)
+</span></span><span><span>}
+</span></span></code></pre></div><p>Now, we run in a loop, reading from the disk and assigning jobs to each worker:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>const</span> bufferSize = <span>16</span> <span>*</span> <span>1024</span>
+</span></span><span><span>lastCharIsSpace <span>:=</span> <span>true</span>
+</span></span><span><span>
+</span></span><span><span><span>for</span> {
+</span></span><span><span>    buffer <span>:=</span> <span>make</span>([]<span>byte</span>, bufferSize)
+</span></span><span><span>    bytes, err <span>:=</span> file.<span>Read</span>(buffer)
+</span></span><span><span>    <span>if</span> err <span>!=</span> <span>nil</span> {
+</span></span><span><span>        <span>if</span> err <span>==</span> io.EOF {
+</span></span><span><span>            <span>break</span>
+</span></span><span><span>        } <span>else</span> {
+</span></span><span><span>            <span>panic</span>(err)
+</span></span><span><span>        }
+</span></span><span><span>    }
+</span></span><span><span>    chunks <span>&lt;-</span> Chunk{lastCharIsSpace, buffer[:bytes]}
+</span></span><span><span>    lastCharIsSpace = <span>IsSpace</span>(buffer[bytes<span>-</span><span>1</span>])
+</span></span><span><span>}
+</span></span><span><span><span>close</span>(chunks)
+</span></span></code></pre></div><p>Once this is done, we can simply sum up the counts from each worker:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span>totalCount <span>:=</span> Count{}
+</span></span><span><span><span>for</span> i <span>:=</span> <span>0</span>; i &lt; numWorkers; i<span>++</span> {
+</span></span><span><span>    count <span>:=</span> <span>&lt;-</span>counts
+</span></span><span><span>    totalCount.LineCount <span>+=</span> count.LineCount
+</span></span><span><span>    totalCount.WordCount <span>+=</span> count.WordCount
+</span></span><span><span>}
+</span></span><span><span><span>close</span>(counts)
+</span></span></code></pre></div><p>Let’s run this and see how it compares to the previous results:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>input size</th>
+<th>elapsed time</th>
+<th>max memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wc</code></td>
+<td>100 MB</td>
+<td>0.58 s</td>
+<td>2052 KB</td>
+</tr>
+<tr>
+<td><code>wc-channel</code></td>
+<td>100 MB</td>
+<td>0.27 s</td>
+<td>6644 KB</td>
+</tr>
+<tr>
+<td><code>wc</code></td>
+<td>1 GB</td>
+<td>5.56 s</td>
+<td>2036 KB</td>
+</tr>
+<tr>
+<td><code>wc-channel</code></td>
+<td>1 GB</td>
+<td>2.22 s</td>
+<td>6752 KB</td>
+</tr>
+</tbody>
+</table>
+<p>Our <code>wc</code> is now a lot faster, but there has been quite a regression in memory usage. In particular, notice how our input loop allocates memory at every iteration! Channels are a great abstraction over sharing memory, but they aren’t always the best tool for the job.</p>
+<h2 id="better-parallelization">Better parallelization</h2>
+<p>In this section, we will allow every worker to read from the file, and use <code>sync.Mutex</code> to ensure that reads don’t happen simultaneously. We can create a new <code>struct</code> to handle this for us:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>type</span> FileReader <span>struct</span> {
+</span></span><span><span>    File            <span>*</span>os.File
+</span></span><span><span>    LastCharIsSpace <span>bool</span>
+</span></span><span><span>    mutex           sync.Mutex
+</span></span><span><span>}
+</span></span><span><span>
+</span></span><span><span><span>func</span> (fileReader <span>*</span>FileReader) <span>ReadChunk</span>(buffer []<span>byte</span>) (Chunk, <span>error</span>) {
+</span></span><span><span>    fileReader.mutex.<span>Lock</span>()
+</span></span><span><span>    <span>defer</span> fileReader.mutex.<span>Unlock</span>()
+</span></span><span><span>
+</span></span><span><span>    bytes, err <span>:=</span> fileReader.File.<span>Read</span>(buffer)
+</span></span><span><span>    <span>if</span> err <span>!=</span> <span>nil</span> {
+</span></span><span><span>        <span>return</span> Chunk{}, err
+</span></span><span><span>    }
+</span></span><span><span>
+</span></span><span><span>    chunk <span>:=</span> Chunk{fileReader.LastCharIsSpace, buffer[:bytes]}
+</span></span><span><span>    fileReader.LastCharIsSpace = <span>IsSpace</span>(buffer[bytes<span>-</span><span>1</span>])
+</span></span><span><span>
+</span></span><span><span>    <span>return</span> chunk, <span>nil</span>
+</span></span><span><span>}
+</span></span></code></pre></div><p>We then rewrite our worker function to read directly from the file:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span><span>func</span> <span>FileReaderCounter</span>(fileReader <span>*</span>FileReader, counts <span>chan</span> Count) {
+</span></span><span><span>    <span>const</span> bufferSize = <span>16</span> <span>*</span> <span>1024</span>
+</span></span><span><span>    buffer <span>:=</span> <span>make</span>([]<span>byte</span>, bufferSize)
+</span></span><span><span>
+</span></span><span><span>    totalCount <span>:=</span> Count{}
+</span></span><span><span>
+</span></span><span><span>    <span>for</span> {
+</span></span><span><span>        chunk, err <span>:=</span> fileReader.<span>ReadChunk</span>(buffer)
+</span></span><span><span>        <span>if</span> err <span>!=</span> <span>nil</span> {
+</span></span><span><span>            <span>if</span> err <span>==</span> io.EOF {
+</span></span><span><span>                <span>break</span>
+</span></span><span><span>            } <span>else</span> {
+</span></span><span><span>                <span>panic</span>(err)
+</span></span><span><span>            }
+</span></span><span><span>        }
+</span></span><span><span>        count <span>:=</span> <span>GetCount</span>(chunk)
+</span></span><span><span>        totalCount.LineCount <span>+=</span> count.LineCount
+</span></span><span><span>        totalCount.WordCount <span>+=</span> count.WordCount
+</span></span><span><span>    }
+</span></span><span><span>
+</span></span><span><span>    counts <span>&lt;-</span> totalCount
+</span></span><span><span>}
+</span></span></code></pre></div><p>Like earlier, we can now spawn these workers, one per CPU core:</p>
+<div><pre tabindex="0"><code data-lang="go"><span><span>fileReader <span>:=</span> <span>&amp;</span>FileReader{
+</span></span><span><span>    File:            file,
+</span></span><span><span>    LastCharIsSpace: <span>true</span>,
+</span></span><span><span>}
+</span></span><span><span>counts <span>:=</span> <span>make</span>(<span>chan</span> Count)
+</span></span><span><span>
+</span></span><span><span><span>for</span> i <span>:=</span> <span>0</span>; i &lt; numWorkers; i<span>++</span> {
+</span></span><span><span>    <span>go</span> <span>FileReaderCounter</span>(fileReader, counts)
+</span></span><span><span>}
+</span></span><span><span>
+</span></span><span><span>totalCount <span>:=</span> Count{}
+</span></span><span><span><span>for</span> i <span>:=</span> <span>0</span>; i &lt; numWorkers; i<span>++</span> {
+</span></span><span><span>    count <span>:=</span> <span>&lt;-</span>counts
+</span></span><span><span>    totalCount.LineCount <span>+=</span> count.LineCount
+</span></span><span><span>    totalCount.WordCount <span>+=</span> count.WordCount
+</span></span><span><span>}
+</span></span><span><span><span>close</span>(counts)
+</span></span></code></pre></div><p>Let’s see how this performs:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>input size</th>
+<th>elapsed time</th>
+<th>max memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wc</code></td>
+<td>100 MB</td>
+<td>0.58 s</td>
+<td>2052 KB</td>
+</tr>
+<tr>
+<td><code>wc-mutex</code></td>
+<td>100 MB</td>
+<td>0.12 s</td>
+<td>1580 KB</td>
+</tr>
+<tr>
+<td><code>wc</code></td>
+<td>1 GB</td>
+<td>5.56 s</td>
+<td>2036 KB</td>
+</tr>
+<tr>
+<td><code>wc-mutex</code></td>
+<td>1 GB</td>
+<td>1.21 s</td>
+<td>1576 KB</td>
+</tr>
+</tbody>
+</table>
+<p>Our parallelized implementation runs at more than 4.5x the speed of <code>wc</code>, with lower memory consumption! This is pretty significant, especially if you consider that Go is a garbage collected language.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>While in no way does this article imply that Go &gt; C, I hope it demonstrates that Go can be a viable alternative to C as a systems programming language.</p>
+<p>If you have suggestions, questions, or complaints, feel free to <a href="mailto:98ajeet@gmail.com">drop me a mail</a>!</p>
+<section role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><strong>How is this possible?</strong> Being a garbage-collected language with a runtime, one would not expect Go to beat C in a fair test. Upon closer inspection of the source code, we see the main reason this is happening - <code>wc</code> is calling <code>iswspace()</code> in a loop, which is built to support wide characters as well as different locales. Our implementation uses a much more naïve comparison, and changing the C code to reflect this gives us a major performance boost there too!&nbsp;<a href="#fnref:1" role="doc-backlink">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+			</div></div>
+  </div>
+</body>
+</html>

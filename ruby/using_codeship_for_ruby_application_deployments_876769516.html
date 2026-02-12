@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using Codeship for Ruby Application Deployments</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using Codeship for Ruby Application Deployments</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/kellyjandrews/using-codeship-for-ruby-application-deployments">https://dev.to/kellyjandrews/using-codeship-for-ruby-application-deployments</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876769516</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="5608" id="article-body">
+            <blockquote>
+<p>This post was originally published on the <a href="https://blog.codeship.com/using-codeship-for-ruby-application-deployments/">Codeship Blog</a> and is posted here with the author's permission.</p>
+</blockquote>
+
+<p><a href="https://blog.codeship.com/using-docker-compose-for-ruby-development/">In the first part of this series</a>, I walked through developing a simple <code>todo</code> API using Ruby on Rails and PostgreSQL using <a href="https://docs.docker.com/compose/">Docker Compose</a>. In this post, I will cover <a href="https://codeship.com/features/pro/">creating a CI/CD pipeline using Codeship Pro</a>.</p>
+
+<h2>
+  <a name="requirements-for-this-tutorial" href="#requirements-for-this-tutorial">
+  </a>
+  Requirements for This Tutorial
+</h2>
+
+<p>This tutorial requires you to have a few items before you can get started:</p>
+
+<ul>
+<li>  Install <a href="https://store.docker.com/search?type=edition&amp;offering=community">Docker Community Edition</a>
+</li>
+<li>  Install <a href="https://docs.docker.com/compose/install/">Docker Compose</a>
+</li>
+<li>  Download <a href="https://github.com/codeship-library/ruby-rails-todoapp/tree/dockerized">Todo App Example - Dockerized branch</a> from our Codeship Library</li>
+<li>  <a href="http://codeship.com/">Codeship</a> account</li>
+<li>  <a href="https://documentation.codeship.com/pro/builds-and-configuration/cli/">Codeship Jet CLI</a>
+</li>
+<li>  <a href="https://www.heroku.com/">Heroku</a> account</li>
+<li>  <a href="https://github.com/">GitHub</a>, <a href="https://bitbucket.org/product">Bitbucket</a>, or <a href="https://about.gitlab.com/">GitLab</a> account</li>
+<li>  You have read Part I: <a href="https://blog.codeship.com/using-docker-compose-for-ruby-development/">Using Docker Compose for Ruby Developmment</a>
+</li>
+</ul>
+
+<p>In our example, we are deploying our code directly into Heroku without Docker. While we will be using Docker locally and in CI/CD, Codeship Pro allows us to deploy Docker apps to production even when production is not using Docker, such as classic Heroku. The deployment in this case can be exchanged with any other server, image repository, or Docker host.</p>
+
+<p>Essentially, you can modify this example to suit your needs, by using any Docker image that does what you need, <em>eg</em>, deploy to AWS. Our <a href="https://documentation.codeship.com/pro/">documentation</a> has examples that you can review.</p>
+
+<p>Once you have everything set up, you can move on to the next section.</p>
+
+<h2>
+  <a name="testing-ruby-apps-with-codeship" href="#testing-ruby-apps-with-codeship">
+  </a>
+  Testing Ruby Apps with Codeship
+</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/Continuous_integration">Continuous integration</a> is defined as follows:</p>
+
+<blockquote>
+<p>In software engineering, continuous integration (CI) is the practice of merging all developer working copies to a shared mainline (like a master branch) several times a day.</p>
+</blockquote>
+
+<p>We want to automate all of this with Codeship so every pushed commit will be built and tested prior to allowing a merge. Let’s set up the necessary files and test our pipeline locally.</p>
+
+<h3>
+  <a name="codeship-services-file" href="#codeship-services-file">
+  </a>
+  Codeship services file
+</h3>
+
+<p>The first file we need to create is the <a href="https://documentation.codeship.com/pro/builds-and-configuration/services/">Codeship services definition file</a>. This will instruct Codeship as to the services we need during the build.<br>
+</p>
+
+<div>
+<pre><code>/&gt; <span>touch </span>codeship-services.yml
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The <code>codeship-services.yml</code> syntax is directly influenced by Docker Compose syntax, and the <code>docker-compose.yml</code> file created in the <a href="https://blog.codeship.com/using-docker-compose-for-ruby-development/">last post</a> gets us most of the way there. Open the <code>codeship-services.yml</code> in your editor, copy the following code, and paste there.<br>
+</p>
+
+<div>
+<pre><code><span>web</span><span>:</span>
+  <span>build</span><span>:</span> <span>./</span>
+  <span>links</span><span>:</span>
+    <span>-</span> <span>postgres</span>
+  <span>environment</span><span>:</span>
+    <span>DATABASE_URL</span><span>:</span> <span>postgres://todoapp@postgres/todos</span>
+  <span>cached</span><span>:</span> <span>true</span>
+<span>postgres</span><span>:</span>
+  <span>image</span><span>:</span> <span>postgres:9.6.2-alpine</span>
+  <span>environment</span><span>:</span>
+    <span>POSTGRES_USER</span><span>:</span> <span>todoapp</span>
+    <span>POSTGRES_DB</span><span>:</span> <span>todos</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The differences from the original <code>docker-compose.yml</code> file to define the <code>codeship-services.yml</code> file are quite minimal here. Next we can define the actual steps to run during the build and automated tests.</p>
+
+<h3>
+  <a name="codeship-steps-file" href="#codeship-steps-file">
+  </a>
+  Codeship steps file
+</h3>
+
+<p>The next file to create is the <code>codeship-steps.yml</code> file, which will tell Codeship what steps to run and in what order. You can <a href="https://documentation.codeship.com/pro/builds-and-configuration/steps/">learn more about the <code>codeship-steps.yml</code> file in our documentation</a>. Go ahead and create the new steps file and open it up in your editor.<br>
+</p>
+
+<div>
+<pre><code>/&gt; <span>touch </span>codeship-steps.yml
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Each step defined in the <code>codeship-steps.yml</code> file is based on what you define as your pipeline. This example starts with a <code>lint</code> test and <code>integration</code> test, and eventually will deploy the code as well. Your pipeline can be completely customized to suit your specific needs.<br>
+</p>
+
+<div>
+<pre><code><span>-</span> <span>type</span><span>:</span> <span>parallel</span>
+  <span>steps</span><span>:</span>
+  <span>-</span> <span>name</span><span>:</span> <span>rspec</span>
+    <span>service</span><span>:</span> <span>web</span>
+    <span>command</span><span>:</span> <span>rspec</span>
+  <span>-</span> <span>name</span><span>:</span> <span>rubocop</span>
+    <span>service</span><span>:</span> <span>web</span>
+    <span>command</span><span>:</span> <span>rubocop</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The steps here run in parallel: <code>rspec</code> and <code>rubocop</code>. Running our tests simultaneously works great here, because if either of these tests fail, the build will fail, and saves us some time overall. You can find more information on Codeship Pro step types <a href="https://documentation.codeship.com/pro/builds-and-configuration/steps/#group-steps">here</a>.</p>
+
+<h3>
+  <a name="bin-scripts" href="#bin-scripts">
+  </a>
+  Bin scripts
+</h3>
+
+<p>Now that things are more automated, we end up introducing a small race case that we can easily get around with some simple scripts. As the project is built, the integration tests require that <code>Postgres</code> is running to perform the migrations. We can't guarantee that will happen with the <code>codeship-services.yml</code> file alone. One approach is to check that the database is available before starting the migration.<br>
+</p>
+
+<div>
+<pre><code>/&gt; <span>mkdir </span>bin <span>&amp;&amp;</span> <span>touch </span>bin/<span>{</span>wait-for-postgres,ci<span>}</span>
+/&gt; <span>chmod</span> +x bin/<span>**</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h4>
+  <a name="waitfor-postgres" href="#waitfor-postgres">
+  </a>
+  wait-for postgres
+</h4>
+
+<p>The contents of the <code>wait-for-postgres</code> script are the following:<br>
+</p>
+
+<div>
+<pre><code><span>#!/bin/sh</span>
+<span># wait-for-postgres</span>
+<span>set</span> <span>-e</span>
+
+<span>TIMEOUT</span><span>=</span>60
+<span>COUNT</span><span>=</span>0
+
+<span>until </span>pg_isready <span>-h</span> <span>"postgres"</span> <span>-p</span> <span>"5432"</span> <span>||</span> <span>[</span> <span>$COUNT</span> <span>-eq</span> <span>$TIMEOUT</span> <span>]</span><span>;</span>
+<span>do
+  </span><span>echo</span> <span>$COUNT</span>
+  <span>echo</span> <span>$TIMEOUT</span>
+  <span>sleep </span>1
+  <span>COUNT</span><span>=</span><span>$((</span>COUNT+1<span>))</span>
+<span>done</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>I am relying on the <a href="https://www.postgresql.org/docs/9.3/static/app-pg-isready.html"><code>pg_isready</code></a> function to check for the readiness of the <code>postgres</code> database. If it isn't ready, we sleep for a second and try again. We need to make a small change to the <code>Dockerfile</code> to add the <code>pg_isready</code> function.<br>
+</p>
+
+<div>
+<pre><code><span>RUN </span>apk update <span>&amp;&amp;</span> apk add nodejs build-base libxml2-dev libxslt-dev postgresql postgresql-dev
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The function times out after 60 seconds, but you can tweak that if you see it taking longer. It typically takes only a few seconds to connect.</p>
+
+<h4>
+  <a name="ci" href="#ci">
+  </a>
+  ci
+</h4>
+
+<p>The <code>ci</code> script is as follows:<br>
+</p>
+
+<div>
+<pre><code><span>#!/bin/sh</span>
+<span># Usage: bin/ci [setup]</span>
+<span>set</span> <span>-e</span>
+
+bin/wait-for-postgres
+
+<span>time </span>bundle <span>exec </span>rake db:create
+<span>time </span>bundle <span>exec </span>rake db:migrate
+<span>time </span>bundle <span>exec </span>rake db:seed
+
+<span>time </span>bundle <span>exec </span>rspec <span>$2</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Not too much heavy lifting here. This script runs the <code>wait-for-postgres</code> script to finish up, then it will perform the migration, and the last line takes the first parameter and will run that. This allows me to change a line in <code>codeship-steps.yml</code> to run this script first.<br>
+</p>
+
+<div>
+<pre><code><span>-</span> <span>name</span><span>:</span> <span>rspec</span>
+  <span>service</span><span>:</span> <span>web</span>
+  <span>command</span><span>:</span> <span>bin/ci rspec</span> <span># you only need to change the command here</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="local-testing-with-codeship-jet-cli" href="#local-testing-with-codeship-jet-cli">
+  </a>
+  Local testing with Codeship Jet CLI
+</h3>
+
+<p>We are able to test our setup locally using <code>Codeship Jet CLI</code>. If you haven’t done it yet, check out our <a href="https://documentation.codeship.com/pro/builds-and-configuration/cli/">Getting Started with Codeship Jet CLI documentation</a>. <code>Codeship Jet CLI</code> will run through the steps file just as it would on Codeship. This is a quick way to catch errors early before committing and pushing to your repository.<br>
+</p>
+
+<div>
+<pre><code>/&gt; jet steps
+<span>## build stuff, run tests ##</span>
+<span>{</span><span>StepFinished</span><span>=</span>step_name:<span>"tests"</span> <span>type</span>:STEP_FINISHED_TYPE_SUCCESS<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>If you see the final result above, you have set everything up correctly. If you receive instead <code>type:STEP_FINISHED_TYPE_ERROR</code>, something didn't go right and you should check some things. <code>Codeship Jet CLI</code> will produce a log that you can review to try to locate the problem. Having the ability to catch any errors prior to pushing to your repository makes this a particularly powerful tool in the Codeship arsenal.</p>
+
+<p>The finished version of this project is also available on <a href="https://github.com/codeship-library/ruby-rails-todoapp">GitHub</a>, in case you get stuck and want to skip ahead.</p>
+
+<h2>
+  <a name="setting-up-your-codeship-pro-project" href="#setting-up-your-codeship-pro-project">
+  </a>
+  Setting Up Your Codeship Pro Project
+</h2>
+
+<p>The next phase is to set up the Codeship project, so that new pushes into your repository will kick off the build. In this step, we will make sure you have a repository set up, create the project, and push a build.</p>
+
+<h3>
+  <a name="source-code-management-setup" href="#source-code-management-setup">
+  </a>
+  Source code management setup
+</h3>
+
+<p>Log into your GitHub, Bitbucket, or GitLab account and create a new repo there that you have <strong>admin</strong> access to. Grab the clone URL and switch to the <a href="https://app.codeship.com/">Codeship application</a>.</p>
+
+<h3>
+  <a name="create-project" href="#create-project">
+  </a>
+  Create project
+</h3>
+
+<p>When your repo is ready to go, you can now set up the Codeship project.</p>
+
+<ul>
+<li>  Navigate to Projects, then click the "New Project" button.</li>
+</ul>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--5lJ33IYK--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://blog.codeship.com/wp-content/uploads/2017/06/image3.png"><img src="data:application/octet-stream;base64," alt="New Project button" loading="lazy" width="880" height="550"></a></p>
+
+<ul>
+<li>  Connect your SCM by selecting the source code management (SCM) tool you set up in the previous step.</li>
+</ul>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--nW5rGl1P--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://blog.codeship.com/wp-content/uploads/2017/06/image1.png"><img src="data:application/octet-stream;base64," alt="SCM" loading="lazy" width="880" height="550"></a></p>
+
+<blockquote>
+<p>If you originally signed up with an SCM different than above, we will connect to the service during this step.</p>
+</blockquote>
+
+<ul>
+<li>  Choose your repository by copy/pasting the Repository Clone URL link from the previous step. Click the Connect button.</li>
+</ul>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--th9HWEUY--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://blog.codeship.com/wp-content/uploads/2017/06/image5.png"><img src="data:application/octet-stream;base64," alt="Repository Clone URL" loading="lazy" width="880" height="550"></a></p>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--vZk_sS05--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://blog.codeship.com/wp-content/uploads/2017/06/image4.png"><img src="data:application/octet-stream;base64," alt="Connect" loading="lazy" width="880" height="550"></a></p>
+
+<ul>
+<li>  Configure your project by clicking the "Select Pro Project" button.</li>
+</ul>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--Sy7pFM8i--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://blog.codeship.com/wp-content/uploads/2017/06/image2.png"><img src="data:application/octet-stream;base64," alt="Select Pro Project" loading="lazy" width="880" height="550"></a></p>
+
+<p>Your project is set up at this time, and any code committed and pushed to the repository will now run builds automatically.</p>
+
+<h3>
+  <a name="push-your-first-build" href="#push-your-first-build">
+  </a>
+  Push your first build
+</h3>
+
+<p>Let's run a build now. In your command line, or using your favorite <code>git</code> tool, make sure the repo is initialized, connect the remote, add the files, commit, and push.<br>
+</p>
+
+<div>
+<pre><code>/&gt; git init
+/&gt; git remote add origin &amp;lt<span>;</span>&amp;lt<span>;</span>YOUR_REPOSITORY_CLONE_URL&gt;&gt;
+/&gt; git add <span>.</span>
+/&gt; git commit <span>-am</span> <span>"initial build"</span>
+/&gt; git push <span>-u</span> origin master
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>If you head back to Codeship and click into your project, you should see the build running. Make sure at this point you get a green build. Otherwise you may need to go back and check some things:</p>
+
+<ul>
+<li>  Make sure you have added all of your files to your repo.</li>
+<li>  Review your <code>codeship-services.yml</code> and <code>codeship-steps.yml</code> files.</li>
+<li>  Run <code>Codeship Jet CLI</code> locally to double-check it works locally.</li>
+</ul>
+
+<p>Once you have the CI working, you can move on to the deployment section, where we will automatically deploy our code to Heroku.</p>
+
+<h2>
+  <a name="continuous-deployment-to-heroku-with-codeship-pro" href="#continuous-deployment-to-heroku-with-codeship-pro">
+  </a>
+  Continuous Deployment to Heroku with Codeship Pro
+</h2>
+
+<p>So far, we have the integration steps running, and every new commit will run tests to make sure that the code is ready to merge.</p>
+
+<p>When the branch is <code>master</code>, however, we want to run another step to actually <strong>deploy</strong> the application when the tests are passing.</p>
+
+<h3>
+  <a name="creating-the-heroku-app" href="#creating-the-heroku-app">
+  </a>
+  Creating the Heroku app
+</h3>
+
+<p>You can create an application using the Heroku UI, which is the simplest way to get started. If you are familiar with the Heroku CLI, you can also perform these steps using that as well. Once you have the application created, there are a some steps to get everything Codeship needs for the deployment.</p>
+
+<h4>
+  <a name="heroku-postgresql-addon" href="#heroku-postgresql-addon">
+  </a>
+  Heroku PostgreSQL add-on
+</h4>
+
+<p>These steps will set up the Heroku PostgreSQL add-on for your app to use as its database when deployed.</p>
+
+<ol>
+<li> Click <strong>Resources</strong>.</li>
+<li> Under <strong>Add-ons</strong>, search for <code>postgres</code>.</li>
+<li> In the results dropdown, click <strong>Heroku Postgres</strong>.</li>
+<li> Leave the selection as <strong>Hobby Dev - Free</strong>, then click <strong>Provision</strong>.</li>
+</ol>
+
+<h4>
+  <a name="get-your-heroku-api-key" href="#get-your-heroku-api-key">
+  </a>
+  Get your Heroku API key
+</h4>
+
+<ol>
+<li> Click on your avatar in the upper right, then click <strong>Account Settings</strong>.</li>
+<li> Near the bottom of the settings page, you will find an API key. Click <strong>Reveal</strong>.</li>
+<li> Copy the API key.</li>
+</ol>
+
+<p>Set this up in a <code>deployment.env</code> file with your terminal:<br>
+</p>
+
+<div>
+<pre><code>/&gt; <span>echo</span> <span>"HEROKU_API_KEY=YOUR_API_KEY_HERE"</span> <span>&gt;</span> deployment.env
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h4>
+  <a name="create-the-heroku-procfile" href="#create-the-heroku-procfile">
+  </a>
+  Create the Heroku procfile
+</h4>
+
+<p>This is a simple one-liner, but it’s required for Heroku to run the application:<br>
+</p>
+
+<div>
+<pre><code>/&gt; <span>echo</span> <span>"web: bundle exec puma -C config/puma.rb"</span> <span>&gt;</span> Procfile
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="encrypting-with-codeship-jet-cli" href="#encrypting-with-codeship-jet-cli">
+  </a>
+  Encrypting with Codeship Jet CLI
+</h3>
+
+<p>Since we have some sensitive keys that we will need to use, <code>Codeship Jet CLI</code> provides some encryption tools to secure your keys. In this instance, it’s an environment variable needed for the deployment, however you can encrypt all of your secrets. For more information, you can read the Codeship documentation on <a href="https://documentation.codeship.com/pro/builds-and-configuration/environment-variables/#encrypting-your-environment-variables">Encrypting Environment Variables</a>.</p>
+
+<p>In the Codeship UI, follow these steps:</p>
+
+<ol>
+<li> Click <strong>Projects</strong>, then the project you are currently working in.</li>
+<li> Click <strong>Settings</strong>, then click <strong>General</strong>.</li>
+<li> Locate and copy the <code>AES Key</code>.</li>
+</ol>
+
+<p>In your terminal, include:<br>
+</p>
+
+<div>
+<pre><code>/&gt; <span>echo</span> <span>"YOUR_AES_KEY"</span> <span>&gt;</span> codeship.aes
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<blockquote>
+<p>NOTE: Make sure that both <code>codeship.aes</code> and <code>deployment.env</code> are ignored in your <code>.gitignore</code> file. Since they contain sensitive data, you don't want these to be pushed into your repository.</p>
+</blockquote>
+
+<p>All that's left to do is encrypt the <code>deployment.env</code> file. We do this using <code>Codeship Jet CLI</code>.<br>
+</p>
+
+<div>
+<pre><code>/&gt; jet encrypt deployment.env deployment.env.encrypted
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The <code>deployment.env.encrypted</code> will then be included in your repository and decrypted in Codeship.</p>
+
+<h3>
+  <a name="adding-the-heroku-deployment-service" href="#adding-the-heroku-deployment-service">
+  </a>
+  Adding the Heroku deployment service
+</h3>
+
+<p>In Codeship Pro, we are able to create any service we need using Docker. What this means to you is that if it runs on Docker, it runs on Codeship. In this example, we are using a service that Codeship provides specifically for <a href="https://hub.docker.com/r/codeship/heroku-deployment/">Heroku deployment</a>. Let's add the service to the end of our <code>codeship-services.yml</code> file.<br>
+</p>
+
+<div>
+<pre><code><span>web</span><span>:</span>
+  <span>build</span><span>:</span> <span>./</span>
+  <span>links</span><span>:</span>
+    <span>-</span> <span>postgres</span>
+  <span>environment</span><span>:</span>
+    <span>DATABASE_URL</span><span>:</span> <span>postgres://todoapp@postgres/todos</span>
+  <span>cached</span><span>:</span> <span>true</span>
+<span>postgres</span><span>:</span>
+  <span>image</span><span>:</span> <span>postgres:9.6.2-alpine</span>
+  <span>environment</span><span>:</span>
+    <span>POSTGRES_USER</span><span>:</span> <span>todoapp</span>
+    <span>POSTGRES_DB</span><span>:</span> <span>todos</span>
+<span>deploy</span><span>:</span>
+  <span>image</span><span>:</span> <span>codeship/heroku-deployment</span>
+  <span>encrypted_env_file</span><span>:</span> <span>deployment.env.encrypted</span>
+  <span>volumes</span><span>:</span>
+    <span>-</span> <span>./:/deploy</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Note that we add the <code>encrypted_env_file</code> here. This instructs Codeship as to which file to use to find the Heroku API key used inside the container.</p>
+
+<h3>
+  <a name="adding-the-deployment-step" href="#adding-the-deployment-step">
+  </a>
+  Adding the deployment step
+</h3>
+
+<p>The only steps left is to tell Codeship when to use the <code>deploy</code> service. Open up the <code>codeship-steps.yml</code> file and add the following:<br>
+</p>
+
+<div>
+<pre><code><span>-</span> <span>type</span><span>:</span> <span>parallel</span>
+  <span>steps</span><span>:</span>
+  <span>-</span> <span>name</span><span>:</span> <span>rspec</span>
+    <span>service</span><span>:</span> <span>web</span>
+    <span>command</span><span>:</span> <span>bin/ci rspec</span>
+  <span>-</span> <span>name</span><span>:</span> <span>rubocop</span>
+    <span>service</span><span>:</span> <span>web</span>
+    <span>command</span><span>:</span> <span>rubocop</span>
+<span>-</span> <span>name</span><span>:</span> <span>deploy</span> <span>#step added</span>
+  <span>tag</span><span>:</span> <span>master</span>
+  <span>service</span><span>:</span> <span>deploy</span>
+  <span>command</span><span>:</span> <span>codeship_heroku deploy /deploy ruby-rails-todoapp</span>
+<span>-</span> <span>name</span><span>:</span> <span>migrate</span> <span>#step added</span>
+  <span>tag</span><span>:</span> <span>master</span>
+  <span>service</span><span>:</span> <span>deploy</span>
+  <span>command</span><span>:</span> <span>heroku run --app ruby-rails-todoapp -- bundle exec rake db:migrate</span>
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>What this <code>codeship-steps.yml</code> file indicates now is that if the branch, listed as <code>tag</code>, is equal to <code>master</code>, it will run the deploy service. If we push to any other branch, everything will run <strong>except</strong> the deployment. You can read more about <a href="https://documentation.codeship.com/pro/builds-and-configuration/steps/#limiting-steps-to-specific-branches--tags">the <code>tag</code> and <code>exclude</code> attributes and limiting steps in Codeship Pro</a>.</p>
+
+<p>The image <code>codeship/heroku-deployment</code> has the command <code>codeship_heroku deploy</code>, which accepts two parameters: the path of the files and the name of the Heroku app. In this case, these are <code>/deploy</code> and <code>ruby-rails-todoapp</code>. As long as all tests pass and the branch is <code>master</code>, our code will be deployed to Heroku. The <code>codeship/heroku-deployment</code> image also allows us to run Heroku command line tools as well. In this case, after we have deployed the application, <code>codeship-steps.yml</code> will then perform <code>heroku run --app ruby-rails-todoapp -- bundle exec rake db:migrate</code> to make sure our latest schema is migrated to the Heroku PostgreSQL database.</p>
+
+<p>The <code>codeship/heroku-deployment</code> image is running several commands to test for proper access to the application, tarball the code, and deploy to Heroku with their API. Just to reiterate, this can be anything you need it to be, <em>eg</em>, deployment to AWS. If it runs in a Docker container, Codeship Pro can run it.</p>
+
+<h3>
+  <a name="starting-the-build-on-codeship-pro" href="#starting-the-build-on-codeship-pro">
+  </a>
+  Starting the build on Codeship Pro
+</h3>
+
+<p>Now we can push these changes into our SCM and let Codeship take it from here.</p>
+
+<blockquote>
+<p>Make sure you have added your <code>codeship.aes</code> and <code>deployment.env</code> files to <code>.gitignore</code>. You want to ignore these files so you are not publicly exposing secrets in your repository. Do that now if you haven't already.<br>
+</p>
+</blockquote>
+
+<div>
+<pre><code>git add <span>.</span>
+git commit <span>-am</span> <span>"adding deployment"</span>
+git push
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Head over to your Codeship Pro project and watch your build and deployment from the dashboard.</p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>The two posts in this series cover quite a bit. Initially, we are tasked with testing and deploying our application manually. This process is not only tedious, it takes up someone’s time and is error prone. The <a href="https://blog.codeship.com/using-docker-compose-for-ruby-development/">first post</a> covered setting up our local development and testing workflow using Docker Compose. In this post, we then used Codeship Pro and Jet CLI to automate our steps even further. Now we are able to push a new commit to <code>master</code>, which then runs our tests and deploys to Heroku all through Codeship Pro.</p>
+
+<p>Here are some of the resources for you from the two posts:</p>
+
+<h4>
+  <a name="docker" href="#docker">
+  </a>
+  Docker
+</h4>
+
+<ul>
+<li>  <a href="https://store.docker.com/search?type=edition&amp;offering=community">Docker Community Edition</a>
+</li>
+<li>  <a href="https://docs.docker.com/engine/reference/builder/">Dockerfile Reference</a>
+</li>
+<li>  <a href="https://docs.docker.com/compose/overview/">Docker Compose Overview</a>
+</li>
+<li>  <a href="https://docs.docker.com/compose/reference/overview/">Docker Compose CLI</a>
+</li>
+</ul>
+
+<h4>
+  <a name="docker-images-used" href="#docker-images-used">
+  </a>
+  Docker Images Used
+</h4>
+
+<ul>
+<li>  <a href="https://store.docker.com/images/0f900dcb-7e32-45e4-b095-6dfa2f5b597b?tab=description">Ruby</a>
+</li>
+<li>  <a href="https://store.docker.com/images/022689bf-dfd8-408f-9e1c-19acac32e57b?tab=description">PostgreSQL</a>
+</li>
+<li>  <a href="https://hub.docker.com/r/codeship/heroku-deployment/">Codeship Heroku Deployment</a>
+</li>
+</ul>
+
+<h4>
+  <a name="codeship-pro" href="#codeship-pro">
+  </a>
+  Codeship Pro
+</h4>
+
+<ul>
+<li>  <a href="https://documentation.codeship.com/pro/">Codeship Pro Documentation</a>
+</li>
+<li>  <a href="https://documentation.codeship.com/pro/builds-and-configuration/cli/">Codeship Jet CLI Docs</a>
+</li>
+<li>  <a href="https://documentation.codeship.com/pro/builds-and-configuration/environment-variables/#encrypting-your-environment-variables">Encrypting Environment Variables</a>
+</li>
+<li>  <a href="https://documentation.codeship.com/pro/builds-and-configuration/steps/">Codeship Steps Docs</a>
+</li>
+<li>  <a href="https://documentation.codeship.com/pro/builds-and-configuration/services/">Codeship Services Docs</a>
+</li>
+</ul>
+
+<h4>
+  <a name="article-resources" href="#article-resources">
+  </a>
+  Article Resources
+</h4>
+
+<ul>
+<li>  <a href="https://blog.codeship.com/using-docker-compose-for-ruby-development/">Using Docker Compose for Ruby Development</a>
+</li>
+<li>  <a href="https://github.com/codeship-library/ruby-rails-todoapp">Ruby on Rails Todo App Repo</a>
+</li>
+<li>  <a href="https://blog.codeship.com/alpine-based-docker-images-make-difference-real-world-apps/">Alpine Based Docker Images Make a Difference in Real World Apps</a>
+</li>
+</ul>
+
+<h4>
+  <a name="additional-tools-and-resources-used" href="#additional-tools-and-resources-used">
+  </a>
+  Additional Tools and Resources Used
+</h4>
+
+<ul>
+<li>  <a href="http://rubyonrails.org/">Ruby on Rails</a>
+</li>
+<li>  <a href="http://batsov.com/rubocop/">Rubocop</a>
+</li>
+<li>  <a href="http://rspec.info/">Rspec</a>
+</li>
+<li>  <a href="https://www.heroku.com/">Heroku</a>
+</li>
+<li>  <a href="https://github.com/">GitHub</a>
+</li>
+<li>  <a href="https://bitbucket.org/product">Bitbucket</a>
+</li>
+<li>  <a href="https://about.gitlab.com/">GitLab</a>
+</li>
+<li>  <a href="https://www.postgresql.org/">PostgreSQL</a>
+</li>
+<li>  <a href="http://todobackend.com/">Todo Backend</a>
+</li>
+</ul>
+
+<p>[Tweet ""Using Codeship for Ruby Application Deployments" via <a href="https://dev.to/kellyjandrews">@kellyjandrews</a>"]</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

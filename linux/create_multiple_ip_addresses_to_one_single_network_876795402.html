@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Create Multiple IP Addresses to One Single Network Interface</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Create Multiple IP Addresses to One Single Network Interface</h1>
+    <p><strong>URL:</strong> <a href="https://www.tecmint.com/create-multiple-ip-addresses-to-one-single-network-interface?fbclid=IwAR13oMF7DttwAGYtWlr-9vUG5ER6cPOrgCXft1YpdEJMs5cGCGaiBJCQUAU">https://www.tecmint.com/create-multiple-ip-addresses-to-one-single-network-interface?fbclid=IwAR13oMF7DttwAGYtWlr-9vUG5ER6cPOrgCXft1YpdEJMs5cGCGaiBJCQUAU</a></p>
+    <p><strong>Tags:</strong> linux</p>
+    <p><strong>Bookmark ID:</strong> 876795402</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="text">
+<p>The concept of creating or configuring multiple IP addresses on a single network interface is called <strong>IP aliasing</strong>, which is very useful for setting up multiple virtual sites on a web server using one single network interface with different <strong>IP addresses</strong> on a single subnet network.</p>
+<p>The main advantage of using this IP aliasing is that you don’t need to have a physical adapter attached to each IP. Instead, you can create multiple or many virtual interfaces (aliases) for a single physical card.</p>
+<p>The instructions given here apply to all <a title="RedHat-based Linux Distributions" href="https://www.tecmint.com/redhat-based-linux-distributions/" target="_blank" rel="noopener">RHEL-based distributions</a> such as Fedora, CentOS, Rocky, and Alma Linux. Creating multiple interfaces and assigning IP addresses to them manually is a daunting task.</p>
+<p>Here, we’ll see how to assign IP addresses by defining a set of IP ranges. We’ll also understand how to create a virtual interface and assign a different range of IP addresses to it all at once.</p>
+<p>In this article, we used LAN IPs, so replace those with the ones you will be using.</p>
+
+<center></center><p>Here, I have an interface named ‘<strong>ifcfg-eth0</strong>‘, which is the default network interface card for the ethernet device. If you’ve connected a second ethernet device, it will appear as ‘<strong>ifcfg-eth1</strong>‘, and so on for each additional device.</p>
+<p>These network files for the devices are found in the ‘<strong>/etc/sysconfig/network-scripts/</strong>‘ directory and you can list all devices using the following <a title="ls Command in Linux" href="https://www.tecmint.com/ls-command-in-linux/" target="_blank" rel="noopener">ls command</a>.</p>
+<pre>ls -l /etc/sysconfig/network-scripts/
+</pre>
+<p><strong>Sample Output</strong>:</p>
+<pre>ifcfg-eth0   ifdown-isdn    ifup-aliases  ifup-plusb     init.ipv6-global
+ifcfg-lo     ifdown-post    ifup-bnep     ifup-post      net.hotplug
+ifdown       ifdown-ppp     ifup-eth      ifup-ppp       network-functions
+ifdown-bnep  ifdown-routes  ifup-ippp     ifup-routes    network-functions-ipv6
+ifdown-eth   ifdown-sit     ifup-ipv6     ifup-sit
+ifdown-ippp  ifdown-tunnel  ifup-isdn     ifup-tunnel
+ifdown-ipv6  ifup           ifup-plip     ifup-wireless
+</pre>
+<p>Let’s assume that we want to create three additional virtual interfaces to bind three IP addresses (<strong>172.16.16.126</strong>, <strong>172.16.16.127</strong>, and <strong>172.16.16.128</strong>) to the NIC.</p>
+<p>So, we need to create three additional alias files, while “<strong>ifcfg-eth0</strong>” keeps the same primary IP address. This is how we move forward to set up three aliases to bind the following IP addresses.</p>
+<pre><strong>Adapter</strong>            <strong>IP Address</strong>                <strong>Type</strong>
+-------------------------------------------------
+eth0              172.16.16.125            Primary
+eth0:0            172.16.16.126            Alias 1
+eth0:1            172.16.16.127            Alias 2
+eth0:2            172.16.16.128            Alias 3
+</pre>
+<p>Where <code>":X"</code> represents the device (interface) number for creating aliases for interface <strong>eth0</strong>. For each alias, you must assign a number sequentially.</p>
+<p>For example, we copy existing parameters from the interface “<strong>ifcfg-eth0</strong>” to virtual interfaces named <strong>ifcfg-eth0:0</strong>, <strong>ifcfg-eth0:1</strong>, and <strong>ifcfg-eth0:2</strong>.</p>
+<p>Navigate to the network directory and create the files as shown below.</p>
+<pre>cd /etc/sysconfig/network-scripts/
+cp ifcfg-eth0 ifcfg-eth0:0
+cp ifcfg-eth0 ifcfg-eth0:1
+cp ifcfg-eth0 ifcfg-eth0:2
+</pre>
+<p>Open a file “<strong>ifcfg-eth0</strong>” and view the contents.</p>
+<pre>vi ifcfg-eth0
+</pre>
+<p><strong>Sample Output</strong>:</p>
+<pre>DEVICE="eth0"
+BOOTPROTO=static
+ONBOOT=yes
+TYPE="Ethernet"
+<strong>IPADDR</strong>=172.16.16.125
+NETMASK=255.255.255.224
+GATEWAY=172.16.16.100
+HWADDR=00:0C:29:28:FD:4C
+</pre>
+<p>Here, we only need two parameters (<strong>DEVICE</strong> and <strong>IPADDR</strong>). So, open each file with <a title="My Favorite Editors for Linux" href="https://www.tecmint.com/linux-command-line-editors/" target="_blank" rel="noopener">your favorite editor</a>, rename the <strong>DEVICE</strong> name to its corresponding alias, and change the <strong>IPADDR</strong> address.</p>
+<p>For example, open files ‘<strong>ifcfg-eth0:0</strong>‘, ‘<strong>ifcfg-eth0:1</strong>‘, and ‘<strong>ifcfg-eth0:2</strong>‘ using the <a title="Install and Use Vi Editor in Linux" href="https://www.tecmint.com/vi-editor-usage/" target="_blank" rel="noopener">VI editor</a> and update both parameters.</p>
+<p>Finally, it will look similar to the example below.</p>
+<h5>ifcfg-eth0:0</h5>
+<pre><strong>DEVICE="eth0:0"</strong>
+BOOTPROTO=static
+ONBOOT=yes
+TYPE="Ethernet"
+<strong>IPADDR=172.16.16.126</strong>
+NETMASK=255.255.255.224
+GATEWAY=172.16.16.100
+HWADDR=00:0C:29:28:FD:4C</pre>
+<h5>ifcfg-eth0:1</h5>
+<pre><strong>DEVICE="eth0:1"</strong>
+BOOTPROTO=static
+ONBOOT=yes
+TYPE="Ethernet"
+<strong>IPADDR=172.16.16.127</strong>
+NETMASK=255.255.255.224
+GATEWAY=172.16.16.100
+HWADDR=00:0C:29:28:FD:4C</pre>
+<h5>ifcfg-eth0:2</h5>
+<pre><strong>DEVICE="eth0:2"</strong>
+BOOTPROTO=static
+ONBOOT=yes
+TYPE="Ethernet"
+<strong>IPADDR=172.16.16.128</strong>
+NETMASK=255.255.255.224
+GATEWAY=172.16.16.100
+HWADDR=00:0C:29:28:FD:4C</pre>
+<p>Once, you’ve made all changes, save all your changes and restart/start the network service for the changes to reflect.</p>
+<pre>systemctl restart network
+</pre>
+<p>To verify all the aliases (virtual interface) are up and running, you can use “<a title="ifconfig commands" href="https://www.tecmint.com/ifconfig-command-examples/" target="_blank" rel="noopener">ifconfig</a>” or “<a title="ip command examples" href="https://www.tecmint.com/ip-command-examples/" target="_blank" rel="noopener">ip</a>” command.</p>
+<pre>ifconfig
+</pre>
+<p><strong>Sample Output</strong>:</p>
+<pre>eth0      Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:172.16.16.125  Bcast:172.16.16.100  Mask:255.255.255.224
+          inet6 addr: fe80::20c:29ff:fe28:fd4c/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:237 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:198 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:25429 (24.8 KiB)  TX bytes:26910 (26.2 KiB)
+          Interrupt:18 Base address:0x2000
+
+<strong>eth0:0</strong>    Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:<strong>172.16.16.126</strong>  Bcast:172.16.16.100  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          Interrupt:18 Base address:0x2000
+
+<strong>eth0:1</strong>    Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:<strong>172.16.16.127</strong>  Bcast:172.16.16.100  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          Interrupt:18 Base address:0x2000
+
+<strong>eth0:2</strong>    Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:<strong>172.16.16.128</strong>  Bcast:172.16.16.100  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          Interrupt:18 Base address:0x2000
+</pre>
+<p>Now try to <a title="Test Your Network" href="https://www.tecmint.com/ping-command/" target="_blank" rel="noopener">ping each of them</a> from a different machine. If everything is set up correctly, you will receive a ping response from each of them.</p>
+<pre>ping 172.16.16.126
+ping 172.16.16.127
+ping 172.16.16.128
+</pre>
+<p><strong>Sample Output</strong>:</p>
+<pre><strong>ping 172.16.16.126</strong>
+PING 172.16.16.126 (172.16.16.126) 56(84) bytes of data.
+64 bytes from 172.16.16.126: icmp_seq=1 ttl=64 time=1.33 ms
+64 bytes from 172.16.16.126: icmp_seq=2 ttl=64 time=0.165 ms
+64 bytes from 172.16.16.126: icmp_seq=3 ttl=64 time=0.159 ms
+
+<strong>ping 172.16.16.127</strong>
+PING 172.16.16.127 (172.16.16.127) 56(84) bytes of data.
+64 bytes from 172.16.16.127: icmp_seq=1 ttl=64 time=1.33 ms
+64 bytes from 172.16.16.127: icmp_seq=2 ttl=64 time=0.165 ms
+64 bytes from 172.16.16.127: icmp_seq=3 ttl=64 time=0.159 ms
+
+<strong>ping 172.16.16.128</strong>
+PING 172.16.16.128 (172.16.16.128) 56(84) bytes of data.
+64 bytes from 172.16.16.128: icmp_seq=1 ttl=64 time=1.33 ms
+64 bytes from 172.16.16.128: icmp_seq=2 ttl=64 time=0.165 ms
+64 bytes from 172.16.16.128: icmp_seq=3 ttl=64 time=0.159 ms
+</pre>
+<p>It appears that everything is working smoothly. With these new IPs, you can <a title="Apache Virtual Hosting" href="https://www.tecmint.com/apache-ip-based-and-name-based-virtual-hosting/" target="_blank" rel="noopener">set up virtual sites in Apache</a>, FTP accounts, and many other things.</p>
+<h2>Assign Multiple IP Addresses Range</h2>
+<p>If you would like to create a range of multiple IP addresses to a particular interface called “<strong>ifcfg-eth0</strong>“, we use “<strong>ifcfg-eth0-range0</strong>” and copy the contents of <strong>ifcfg-eth0</strong> on it as shown below.</p>
+<pre>cd /etc/sysconfig/network-scripts/
+cp -p ifcfg-eth0 ifcfg-eth0-range0
+</pre>
+<p>Now open the “<strong>ifcfg-eth0-range0</strong>” file.</p>
+<pre>vi ifcfg-eth0-range0
+</pre>
+<p>and add “<strong>IPADDR_START</strong>” and “<strong>IPADDR_END</strong>” IP address ranges as shown below.</p>
+<pre>#DEVICE="eth0"
+#BOOTPROTO=none
+#NM_CONTROLLED="yes"
+#ONBOOT=yes
+TYPE="Ethernet"
+<strong>IPADDR_START=172.16.16.126</strong>
+<strong>IPADDR_END=172.16.16.130</strong>
+IPV6INIT=no
+#GATEWAY=172.16.16.100
+</pre>
+<p>Save it and restart/start the network service</p>
+<pre>systemctl restart network
+</pre>
+<p>Verify that virtual interfaces are created with <strong>IP Addresses</strong>.</p>
+<pre>ifconfig
+</pre>
+<p><strong>Sample Output</strong>:</p>
+<pre>eth0      Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:172.16.16.125  Bcast:172.16.16.100  Mask:255.255.255.224
+          inet6 addr: fe80::20c:29ff:fe28:fd4c/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:1385 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1249 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:127317 (124.3 KiB)  TX bytes:200787 (196.0 KiB)
+          Interrupt:18 Base address:0x2000
+
+<strong>eth0:0</strong>     Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:<strong>172.16.16.126</strong>  Bcast:172.16.16.100  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          Interrupt:18 Base address:0x2000
+
+<strong>eth0:1</strong>    Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:<strong>172.16.16.127</strong>  Bcast:172.16.16.100  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          Interrupt:18 Base address:0x2000
+
+<strong>eth0:2</strong>    Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:<strong>172.16.16.128</strong>  Bcast:172.16.16.100  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          Interrupt:18 Base address:0x2000
+
+<strong>eth0:3</strong>    Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:<strong>172.16.16.129</strong>  Bcast:172.16.16.100  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          Interrupt:18 Base address:0x2000
+
+<strong>eth0:4</strong>    Link encap:Ethernet  HWaddr 00:0C:29:28:FD:4C
+          inet addr:<strong>172.16.16.130</strong>  Bcast:172.16.16.100  Mask:255.255.255.224
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          Interrupt:18 Base address:0x2000</pre>
+<p>By following these methods, you can effectively create and manage multiple IP addresses on a single network interface in Red Hat Enterprise Linux systems. This flexibility enables you to optimize network communication and connectivity according to your specific requirements.</p>
+</div></div>
+  </div>
+</body>
+</html>

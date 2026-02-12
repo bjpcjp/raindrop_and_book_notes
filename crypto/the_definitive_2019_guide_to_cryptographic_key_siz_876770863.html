@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Definitive 2019 Guide to Cryptographic Key Sizes and Algorithm Recommen</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The Definitive 2019 Guide to Cryptographic Key Sizes and Algorithm Recommen</h1>
+    <p><strong>URL:</strong> <a href="https://paragonie.com/blog/2019/03/definitive-2019-guide-cryptographic-key-sizes-and-algorithm-recommendations">https://paragonie.com/blog/2019/03/definitive-2019-guide-cryptographic-key-sizes-and-algorithm-recommendations</a></p>
+    <p><strong>Tags:</strong> crypto</p>
+    <p><strong>Bookmark ID:</strong> 876770863</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+                    <p>A lot has been written about cryptography key lengths from academics (e.g. <a href="https://infoscience.epfl.ch/record/164539/files/NPDF-32.pdf">Lenstra's equation</a>) and various standard committees (<a href="http://www.ecrypt.eu.org/csa/documents/D5.4-FinalAlgKeySizeProt.pdf">ECRYPT-CSA</a>, Germany's <a href="https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102.pdf?__blob=publicationFile">BSI</a>, America's <a href="https://csrc.nist.gov/Projects/Key-Management/publications">NIST</a>, etc.) over the years.</p>
+<p>Despite the abundance of coverage on this material on the Internet, these resources lack the clarity that we look for when drafting recommendations for software developers and system administrators. Additionally, many of them are showing their age and desperately need to be brought up to speed with a modern understanding of real world cryptography.</p>
+<h2>An Important Note About Cryptographic Key Sizes</h2>
+<p>The most important thing to keep in mind about cryptographic key sizes in 2019 is <strong>they don't matter <em>nearly</em> as much as the general public likes to think</strong>.</p>
+<p>Many people in the security industry focus entirely on maximizing the difficulty of a brute force attack, provided they can still achieve their performance goals. They choose the largest possible keys that meet their target benchmarks and feel safer in doing so. Meanwhile, they're not actually making optimal security choices, and may in fact be hurting their own security.</p>
+<p>We call this <strong>security theater</strong>.</p>
+<p>In practical terms, beyond a certain threshold (e.g. the 96-bit security level for symmetric encryption), a larger number of possible keys <a href="https://pthree.org/2016/06/19/the-physics-of-brute-force">buys you almost nothing</a>.</p>
+<h3>When Key Size Actually Hurts Security</h3>
+<!--
+There are many scenarios in which focusing entirely on *key size* hurts the overall security of a system, but let's focus on two.
+
+#### Key Size and Algorithm Selection
+-->
+<p>Consider these two block ciphers; which is more secure?</p>
+<ul>
+<li>
+<strong>Blowfish</strong>, which supports up to 448-bit keys.</li>
+<li>
+<strong>AES</strong>, which supports up to 256-bit keys.</li>
+</ul>
+<p>If you chose Blowfish, you fell for the trap.</p>
+<ul>
+<li>Blowfish has a <strong>block size</strong> of 64 bits, whereas AES has a block size of 128 bits.</li>
+<li>Blowfish is <a href="https://sweet32.info/">vulnerable to attacks because of its small block size</a> that AES is not.</li>
+<li>In the real world, AES has hardware acceleration (AES-NI) that makes it very fast while being immune to cache-timing attacks. Blowfish does not have hardware acceleration available.</li>
+</ul>
+<p>Focusing entirely on key size, while ignoring other important properties of these algorithms, can lead to making sub-optimal security decisions.</p>
+<p>But what if you have a <em>ceteris paribus</em> scenario where you're always using AES, but deciding between using 128-bit and 256-bit keys for your application. Should you always go for the larger key size?</p>
+<!-- REDACTED: https://news.ycombinator.com/item?id=19396697
+#### Key Size and Real-World Threat Models
+
+In the previous section we mentioned hardware-accelerated AES (called AES-NI). This is a very important consideration because AES when implemented in software is either very slow or vulnerable to [cache-timing attacks](https://cr.yp.to/antiforgery/cachetiming-20050414.pdf) (PDF).
+
+Put another way, there are three possibilities for AES:
+
+<table class="table table-striped">
+<thead><tr><th>AES Type</th><th>Fast?</th><th>Secure?</th></thead>
+<tbody>
+<tr><td>AES-NI</td><th>YES</th><th>YES</th></tr>
+<tr><td>Bitsliced Software AES</td><td>No</td><th>YES</th></tr>
+<tr><td>Naive Software AES</td><th>YES</th><td>No</td></tr>
+</tbody>
+</table>
+
+It should be very obvious, from this table, that you always want to use AES-NI.
+
+Some other facts that need to be considered:
+
+* AES is a block cipher with a variable number of rounds.
+  * AES with 128-bit keys has 10 rounds.
+  * AES with 256-bit keys has 14 rounds.
+* The way that AES-NI is implemented is that each round key is stored in a register in the processor.
+* Your processor needs several available registers just to be useful.
+* Your processor has a limited number of total available registers in a given core (you can assume 16 on most 64-bit processors).
+
+Given all of the above, on many processors, you can only use AES-NI with 128-bit keys. Thus, selecting AES-256 means you're either using bitsliced AES (secure, but slow) or naive software AES (which is vulnerable to the attack linked in the PDF above). Often times, you won't get to decide this trade-off yourself; whatever library provides your AES implementation makes that choice for you (and might not even make it immediately obvious how they made their choice).
+
+Therefore, even when you're consistently using AES, choosing a 256-bit key isn't *always* safer than choosing a 128-bit key.
+
+This security consideration is mostly relevant if you're dealing with one long-running key used directly with the AES block cipher. In libraries such as [Defuse Security's PHP encryption library](https://github.com/defuse/php-encryption), where each message's AES key is derived with HKDF-HMAC-SHA256 with a random 256-bit salt, there isn't an immediately obvious avenue for exfiltrating the master key since each message is encrypted under a different AES key.
+
+Recommendation: For 256-bit AES, if you can't use AES-NI, just make sure you're using the bitsliced implementation and don't worry about it. 256-bit AES is fine; don't simply stop using it in favor of AES-128 just because of the limitation discussed above.
+-->
+<p>The only meaningful difference between the security of AES-128 and AES-256 is the threat of quantum computers.</p>
+<p>If a practical quantum computer is ever developed, Grover's algorithm breaks 128-bit AES but not 256-bit AES. But in most protocols, your asymmetric cryptography falls faster (a little more than $2^{32}$ time for 2048-bit RSA and 256-bit ECC versus $2^{64}$ time for AES).</p>
+<p>Since most AES keys are exchanged using asymmetric cryptography, opting for a 256-bit key probably won't be enough to protect your message confidentiality against a quantum attacker.</p>
+
+<p>If you have a cryptography expert on your team who disagrees with any of these recommendations, listen to your expert. They probably know something specific to your needs that this blog post doesn't.</p>
+<h3>Asymmetric ("Public Key") Encryption</h3>
+<p>Use, in order of preference:</p>
+<ol>
+<li>X25519 (for which the key size never changes) then symmetric encryption.</li>
+<li>ECDH with secp256r1 (for which the key size never changes) then symmetric encryption.</li>
+<li>RSA with 2048-bit keys.</li>
+</ol>
+<p>The security of a 256-bit elliptic curve cryptography key is about even with 3072-bit RSA.</p>
+<p>Although many organizations are recommending migrating from 2048-bit RSA to 3072-bit RSA (or even 4096-bit RSA) in the coming years, don't follow that recommendation. Instead migrate from RSA to elliptic curve cryptography, and then breathe easy while you keep an eye out for post-quantum cryptography recommendations.</p>
+<p>Additionally, there are a lot of complex issues to consider with <a href="https://paragonie.com/blog/2018/04/protecting-rsa-based-protocols-against-adaptive-chosen-ciphertext-attacks">making RSA encryption secure</a>, but it's a thorny subject and doesn't bear rehashing in this post. You're better off not using RSA if you can help it.</p>
+<blockquote>
+<p><strong>ECDH: 256-bit keys</strong><br>
+<strong>RSA: 2048-bit keys</strong></p>
+</blockquote>
+<h3>Asymmetric ("Public Key") Signatures</h3>
+<p>Use, in order of preference:</p>
+<ol>
+<li>Ed25519 (for which the key size never changes).</li>
+<li>ECDSA with secp256r1 (for which the key size never changes).</li>
+<li>RSA with 2048-bit keys.</li>
+</ol>
+<p>Everything we just said about RSA encryption applies to RSA signatures.</p>
+<blockquote>
+<p><strong>ECDSA: 256-bit keys</strong><br>
+<strong>RSA: 2048-bit keys</strong></p>
+</blockquote>
+<h3>Symmetric-Key Encryption</h3>
+<p>Use, in order of preference:</p>
+<ol>
+<li>XChaCha20-Poly1305 or XSalsa20-Poly1305 (which always have 256-bit keys)</li>
+<li>AES-GCM-SIV (regardless of key size)</li>
+<li>ChaCha20-Poly1305 (which always has 256-bit keys)</li>
+<li>AES-GCM (regardless of key size)</li>
+</ol>
+<p>If you're using a reputable TLS library (OpenSSL is the most common), any of these options are fine. Feel free to use 256-bit keys for everything, but don't sweat it too bad if you're forced to use 128-bit keys.</p>
+<p>For application-layer symmetric-key encryption, two additional options should be considered.</p>
+<ol start="5">
+<li>AES-CTR (regardless of key size) + HMAC-SHA2 (Encrypt then MAC)</li>
+<li>AES-CBC (regardless of key size) + HMAC-SHA2 (Encrypt then MAC)</li>
+</ol>
+<p>If you want to use something else, ask your cryptographer. If you don't have a cryptographer, hire one. Don't try to get too creative with encryption unless you have one on your team; and even then, <a href="https://tonyarcieri.com/all-the-crypto-code-youve-ever-written-is-probably-broken">proceed with caution</a>.</p>
+<blockquote>
+<p><strong>128-bit or 256-bit keys</strong> are both fine, provided you're using one of the options in this list.</p>
+</blockquote>
+<h3>Symmetric-Key Authentication</h3>
+<p>Use HMAC with a SHA2-family hash function, with a key size equal to the hash function size.</p>
+<p>There's a lot of good options here. Just make sure you're using at least 224-bit keys for SHA-224.</p>
+<p>More importantly, don't design your own message authentication protocol out of a hash function. Use HMAC.</p>
+<p>If your symmetric encryption includes Poly1305 authentication, that's great, but it requires expert care to use it safely. Don't use Poly1305 standalone unless you're an expert.</p>
+<blockquote>
+<p><strong>224-bit, 256-bit, 384-bit, 512-bit</strong> are all good key sizes, provided your algorithm is reasonable.</p>
+</blockquote>
+<h2>Protocol-Specific Recommendations</h2>
+<h3>HTTPS / TLS</h3>
+<p>Easy mode: Use <a href="https://mozilla.github.io/server-side-tls/ssl-config-generator/">Mozilla's Server-Side TLS Configuration Generator</a>.</p>
+<p>Hard mode: Carefully construct your ciphersuite to include ECDHE, CHACHA20-POLY1305, and AES-GCM without much else, then use tools like <a href="https://www.ssllabs.com/ssltest">Qualys SSL Labs</a> to validate your configuration.</p>
+<p>More importantly, try to only support TLS 1.2 or newer if you can help it.</p>
+<h3>SSH</h3>
+<p>Easy mode: Follow <a href="https://infosec.mozilla.org/guidelines/openssh">Mozilla's OpenSSH server configuration guidelines</a>.</p>
+<p>Additionally, make sure you're using Ed25519 keys. You can accomplish this by passing <code>-t ed25519</code> to <code>ssh-keygen</code>.</p>
+<h3>VPN</h3>
+<p>Just use <a href="https://www.wireguard.com/">WireGuard</a>.</p>
+<p>If you're forced to use OpenVPN, there are <a href="https://blog.g3rt.nl/openvpn-security-tips.html">some steps you can follow to harden your OpenVPN configuration</a>. Just know that, generally, the OpenVPN defaults are terrible for security. For example, the default encryption method is Blowfish.</p>
+<p>WireGuard is leaps and bounds ahead of any other VPN software in 2019. <!-- $$ --></p>
+<h2>General Cryptography Recommendations</h2>
+<p>If you're looking for a general list of Cryptographic Right Answers, rather than an article  focused on key lengths, please refer to <a href="https://latacora.micro.blog/2018/04/03/cryptographic-right-answers.html">this post by Latacora</a>.</p>
+<h2>Update</h2>
+<p>An earlier version of this post claimed that there was a hardware limitation that meant AES-NI was only available with 128-bit keys and not 256-bit keys on some processors. This was misinformation that the author accumulated many years ago and perfectly explained a perceived performance issue, but it turns out, is incorrect. The relevant section has been redacted from the article (but persists in the source code for the article).</p>
+            </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Introduction to TCP and Sockets</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Introduction to TCP and Sockets</h1>
+    <p><strong>URL:</strong> <a href="https://www.scottklement.com/rpg/socktut/introduction.html">https://www.scottklement.com/rpg/socktut/introduction.html</a></p>
+    <p><strong>Tags:</strong> webdev</p>
+    <p><strong>Bookmark ID:</strong> 876787603</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+        <h2><a name="CONCEPTS">1.1. TCP/IP Concepts
+        and Terminology</a></h2>
+
+        <p>This section is an introduction to TCP/IP programming
+        using a sockets API. (Sockets can also be used to work with
+        other network protocols, such as IPX/SPX and Appletalk, but
+        that is beyond the scope of this document.) The standard
+        socket API was originally developed in the Unix world, but
+        has been ported to OS/400 as part of the "Unix-type" APIs,
+        and a modified version was also ported to the Windows
+        platform under the name "Windows Sockets" (or "Winsock" for
+        short)</p>
+
+        <p>Usually when someone refers to "TCP/IP" they are
+        referring to the entire suite of protocols, all based on
+        the Internet Protocol ("IP"). Unlike a single network,
+        where every computer is directly connected to every other
+        computer, an "inter-network" (or "internet") is a
+        collection of one or more networks. These networks are all
+        connected together to form a larger "virtual network". Any
+        host on this virtual network can exchange data with any
+        other host, by referring to the hosts "address".</p>
+
+        <p>The address is a 32-bit number which is unique across
+        the entire internet. Typically, this number is broken into
+        4 8-bit pieces, separated by periods to make it easier for
+        humans to read. This human readable format is called
+        "dotted-decimal" format, or just "dot-notation". An address
+        displayed in this fashion looks something like
+        "192.168.66.21".</p>
+
+        <p>Different parts of this "IP Address" are used to
+        identify which network a host is located on, and the rest
+        of the address is used to identify the host itself. Which
+        part of the address and which part is the host is
+        determined by a "network mask" (or "netmask" for short.)
+        The netmask is another 32-bit number which acts like like a
+        "guide" to the IP address. Each bit that is turned on in
+        the netmask means that the corresponding bit in the IP
+        address is part of the network's address. Each bit that is
+        turned off means that the corresponding bit in the IP
+        address is part of the host's address.</p>
+
+        <p>Here's an example of an IP address and netmask:</p>
+
+        
+<pre>                           dotted-decimal   same number in binary format:
+                           --------------   -----------------------------------
+            IP Address:    192.168.66.21    11000000 10101000 01000010 00010101
+               Netmask:    255.255.255.0    11111111 11111111 11111111 00000000
+      
+       Network Address is: 192.168.66       11000000 10101000 01000010  
+          Host Address is:           .21                               00010101
+       
+</pre>
+        <p>A slightly more complicated example:</p>
+<pre>                           dotted-decimal   same number in binary format:
+                           --------------   -----------------------------------
+            IP Address:    192.168.41.175   11000000 10101000 00101001 10101111
+               Netmask:    255.255.255.248  11111111 11111111 11111111 11111000
+      
+       Network Address is: 192.168.41.168   11000000 10101000 00101001 10101
+          Host Address is:              7                                   111 
+       
+</pre>
+
+        <p>When a system sends data over the network using internet
+        protocol, the data is sent fixed-length data records called
+        datagrams. (These are sometimes referred to as "packets")
+        The datagram consists of a "header" followed by a "data
+        section". The header contains addressing information, much
+        like an envelope that you send through your local postal
+        service. The header contains a "destination" and a "return
+        to" address, as well as other information used by the
+        internet protocol. Another similarity between IP and your
+        postal service is that each packet that gets sent isn't
+        guarenteed to arrive at the destination. Although every
+        effort is made to get it there, sometimes datagrams get
+        lost or duplicated in transit. Furthermore, if you send 5
+        datagrams at once, there's no guarantee that they'll arrive
+        at their destination at the same time or in the same
+        order.</p>
+
+        <p>What's really needed is a straight-forward way to ensure
+        that all the packets that get sent arrive at their
+        destination. When they arrive, make sure they're in the
+        same sequence, and that all duplicated datagrams get
+        discarded. To solve this problem, the Transmission Control
+        Protocol (TCP) was created. It runs on top of IP, and takes
+        care of the chore of making certain that every packet that
+        is sent will arrive at its destination. It also allows many
+        packets to be joined together into a "continuous stream" of
+        bytes, eliminating the need for you to split your data into
+        packets and re-join them at the other end.</p>
+
+        <p>It's useful to remember that TCP runs "on top of" IP.
+        That means that any data you send via TCP gets converted
+        into one or more datagrams, then sent over the networking
+        using IP, then is reassembled into a stream of data on the
+        other end.</p>
+
+        <p>TCP is a "connection oriented protocol", which means
+        that when you want to use it, you must first "establish a
+        connection." To do this, one program must take the role of
+        a "server", and another program must take the role of a
+        "client." The server will wait for connections, and the
+        client will make a connection. Once this connection has
+        been established, data may be sent in both directions
+        reliably until the connection is closed. In order to allow
+        multiple TCP connections to and from a given host, "port"
+        numbers are established. Each TCP packet contains an
+        "origin port" and a "destination port", which is used to
+        determine which program running under which of the system's
+        tasks is to receive the data.</p>
+
+        <p>There are two other protocols that are used over IP.
+        They are the "User Datagram Protocol (UDP)", and the
+        "Internet Control Message Protocol" (ICMP).</p>
+
+        <p>UDP is similar to TCP, except that data is sent one
+        datagram at a time. The major difference between the UDP
+        datagrams and the "raw" IP datagrams is that UDP adds port
+        numbers to the packets. This way, like TCP, many tasks on
+        the system can use UDP at the same time. UDP is usually
+        used when you know that you only want to send a tiny amount
+        of data (one packets worth) at a time, and therefore you
+        don't need all the extra overhead of TCP.</p>
+
+        <p>ICMP is used internally by the internet protocol to
+        exchange diagnostic and error messages. For example, when
+        you attempt to connect to a port on a remote machine, and
+        that machine chooses to refuse your connection, it needs
+        some way of telling you that the connection has been
+        refused. This is done by sending ICMP messages. You never
+        need to write or receive ICMP messages directly, they are
+        always handled by the TCP/IP stack. They are strictly a
+        "control message protocol."</p>
+
+        <p>Another important concept is that of a socket. A socket
+        is an "endpoint for network communications." In other
+        words, it's the virtual device that your program uses to
+        communicate with the network. When you want to write bytes
+        out over the network, you write them to a socket. When you
+        read from the network, you read from that socket. In this
+        way, it is similar to the way a "file" is used to interact
+        with hard drive storage.</p>
+
+        <p>The last thing that I'd like to cover here is "domain
+        names." As you read above, all TCP/IP communications are
+        done using an "address." Without this address, no data can
+        be sent or received. However, while addresses work very
+        well for the computer, they're a little hard for people to
+        remember. Perhaps you wanted to connect to a computer the
+        computer that keeps track of inventory at Acme, Inc. How do
+        you know it's address? If you knew it's IP address already,
+        how would you remember it, along with all of the other
+        addresses that you use? The answer is the "domain name
+        system" or "DNS".</p>
+
+        <p>DNS is a large, distributed, database containing
+        mappings between human readable names (such as
+        "inventory.acme.com") and IP addresses (such as
+        "199.124.84.12") When you ask the computer for the IP
+        address for "inventory.acme.com", it follows these
+        steps:</p>
+
+        <div>
+          <ol type="1">
+            <li>
+              <p>Checks to see if that host name is in the local
+              computer's "host table". (On the AS/400, you can type
+              'CFGTCP' and choose opt#10 to work with the host
+              table) If it finds an entry for "inventory.acme.com",
+              it returns this to your program. If not, it tries
+              step #2.</p>
+            </li>
+
+            <li>
+              <p>It tries to contact a DNS server. (The DNS server
+              may be on the same machine, or on another machine on
+              the network, it doesn't matter)</p>
+            </li>
+
+            <li>
+              <p>The DNS server may already know the IP address
+              that's associated with "inventory.acme.com". Each
+              time it looks up a new name, it "caches" it for a
+              period of time. So, if this particular name is in
+              it's cache, it can return it right away. If not, it
+              goes on to the next step.</p>
+            </li>
+
+            <li>
+              <p>Since there are so many millions (billons?) of
+              host names in the world, you cannot store them all on
+              one server. Instead, the names are served by an
+              entire hierarchy of DNS servers. Each level of the
+              hierarchy relates to a different component of the
+              host's name. The components are separated by
+              periods.</p>
+            </li>
+
+            <li>
+              <p>So, "inventory.acme.com" gets separated into
+              "inventory", "acme" and "com". The DNS server asks
+              the "root level" DNS servers for the server that
+              handles "com" domains. (The DNS server will cache
+              these requests as well, so once it knows who handles
+              "com" domains, it won't ask again). The root server
+              returns the IP address for "com" domains.</p>
+            </li>
+
+            <li>
+              <p>The DNS server then asks the server for "com"
+              domains for the address of the server that handles
+              "acme" domains. The "com" server will then return the
+              address of acme's DNS server. The DNS server caches
+              this, as well.</p>
+            </li>
+
+            <li>
+              <p>The DNS server asks the "acme" server for the
+              address of the "inventory" host. This address gets
+              returned, and cached by your DNS server.</p>
+            </li>
+
+            <li>
+              <p>Finally, the DNS server returns this address to
+              your program.</p>
+            </li>
+          </ol>
+        </div>
+      </div></div>
+  </div>
+</body>
+</html>

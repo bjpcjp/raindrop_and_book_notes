@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>https://blog.thundra.io/do-you-really-need-kubernetes</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>https://blog.thundra.io/do-you-really-need-kubernetes</h1>
+    <p><strong>URL:</strong> <a href="https://blog.thundra.io/do-you-really-need-kubernetes">https://blog.thundra.io/do-you-really-need-kubernetes</a></p>
+    <p><strong>Tags:</strong> devops, kubernetes</p>
+    <p><strong>Bookmark ID:</strong> 876776115</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+<!-- This content will take up 3/12 (or 1/4) of the container -->                 
+<p><span id="hs_cos_wrapper_post_body" data-hs-cos-general-type="meta_field" data-hs-cos-type="rich_text"><p>When it comes to container orchestration, everyone thinks “Kubernetes!” After all, this is what the cool kids do. But as you guessed from the title of this article, you might want to pause for a moment before jumping on the bandwagon. Indeed, Kubernetes has a (very) steep learning curve, a bewilderingly vast ecosystem, and a seemingly infinite landscape of third-party providers attempting to sell you some kind of “easy Kubernetes” (which in itself is a telltale sign of its complexity). At the end of the day, dealing with Kubernetes can be mind-numbing.</p>
+<!--more--><p>In this article, we’ll take a look at various use cases where Kubernetes is one solution, but where there are also alternatives that actually might be better.</p>
+<h2 id="sub_1">Example of a Three-Tier Website</h2>
+<p>Let’s consider first the archetypal use case of a three-tier website: load balancing, app, database. And let’s assume the app tier can automatically scale out and in, based on traffic. Now, let’s take a look at how different options handle this setup.</p>
+<h3>With Kubernetes</h3>
+<p>Kubernetes can handle all three tiers and provides solutions for each of them. It can also provide autoscaling, although interestingly this is not native in Kubernetes and requires plug-ins.</p>
+<p>The configuration, however, will be quite complicated, including stateful storage for the database tier. Autoscaling would typically be based on Prometheus alarms as well, meaning you would have one more software to understand, install, and configure…</p>
+<p>It is interesting to note that at the end of the day, Kubernetes will interface with your cloud vendor to provision VMs, storage, load balancers, etc. So whether you use Kubernetes or not, you’ll most likely end up using the same cloud resources either way.</p>
+<p>Importantly, Kubernetes’ worker nodes and control-plane nodes still require <a href="http://web.archive.org/web/20201116225940/https://blog.gruntwork.io/zero-downtime-server-updates-for-your-kubernetes-cluster-902009df5b33" rel="noopener" target="_blank">regular maintenance and patching</a>. So the onus is essentially on you to perform such maintenance activities, and the disruption to the Kubernetes cluster is quite significant. To be blunt, this is actually quite a significant pain point and is technically outside of Kubernetes’ scope since Kubernetes only manages the containers, not the VMs running the containers.</p>
+<h3>Alternative on AWS: Use Managed Services</h3>
+<p>With AWS, all three tiers can be handled by AWS services. The load-balancing tier can be handled with <a href="http://web.archive.org/web/20201116225940/https://aws.amazon.com/elasticloadbalancing/" rel="noopener" target="_blank">Elastic Load Balancing</a>, and such a solution has multiple advantages: high availability, built-in autoscaling, and zero maintenance.</p>
+<p>The app tier can be handled by <a href="http://web.archive.org/web/20201116225940/https://aws.amazon.com/ecs/" rel="noopener" target="_blank">ECS</a>, a container-orchestration system like Kubernetes. Although it’s simpler and offers less features, ECS is much easier to configure and integrates well with other AWS services, such as Parameter Store and IAM. If you’re using <a href="http://web.archive.org/web/20201116225940/https://aws.amazon.com/fargate/" rel="noopener" target="_blank">Fargate</a> as the backend (and you probably should unless you have very specific requirements), you’re also freed from any maintenance operations. Plus, autoscaling uses CloudWatch alarms, so you don’t need to install and configure extra software. Furthermore, AWS Fargate is a step change in container orchestration and relieves you from having to think about worker nodes; e.g., you no longer have to manage two layers of autoscaling (containers and worker nodes).&nbsp;</p>
+<p>You should definitely consider ECS backed by Fargate unless there are specific reasons why you can’t use it, for instance, if you need GPU-equipped instances, which Fargate doesn’t support, yet.&nbsp;</p>
+<p>The database tier will typically be handled by <a href="http://web.archive.org/web/20201116225940/https://aws.amazon.com/rds/" rel="noopener" target="_blank">RDS</a>. In just a few tick boxes, you can configure daily backups, a standby instance in a different <a href="http://web.archive.org/web/20201116225940/https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html" rel="noopener" target="_blank">availability zone</a> with automated failover, read replicas, etc. Again, no maintenance is required from you, as this is managed automatically by RDS, and obviously, you don’t have to handle the configuration of stateful storages, etc.</p>
+<h3>Another Alternative on AWS: A Serverless Website</h3>
+<p>If your website is “modern” (i.e., it consists of a set of static files with JavaScript that perform API calls), you can use the API Gateway backed by Lambda functions. This allows for both your web server and app tiers to be easily handled using serverless services.</p>
+<p>Additionally, the database tier can be handled by Aurora Serverless (watch out for the costs, though!) for an entirely serverless solution. With such an architecture, autoscaling and high availability are built in, and you’ll have no hassle with maintenance and patching.</p>
+<h2 id="sub_2">Another Use Case: Batch Jobs</h2>
+<p>Let’s take another example: long-running, compute-intensive jobs. Typically, a job queue would enqueue job requests, which would be served by a compute cluster. Let’s again assume that the cluster can automatically scale out and back in, based on the size of the job queue (i.e., how many jobs are pending).</p>
+<h3>With Kubernetes</h3>
+<p>This use case requires a job queue to store and manage job requests. Unfortunately, Kubernetes <a href="http://web.archive.org/web/20201116225940/https://kubernetes.io/docs/tasks/job/fine-parallel-processing-work-queue/" rel="noopener" target="_blank">doesn’t offer any built-in solution</a>. So once again, you would have to rely on additional software such as RabbitMQ or Redis.</p>
+<p>The autoscaling part would again be tricky, since you would have to extract the required information (number of pending job requests) from that third-party software.</p>
+<h3>With AWS</h3>
+<p>Such an architecture would typically be based on <a href="http://web.archive.org/web/20201116225940/https://aws.amazon.com/batch/" rel="noopener" target="_blank">AWS Batch</a>, which manages your batch jobs and offers a built-in job queue. It can use either Docker or EC2 instances as its backend, and you can save money by using Fargate or <a href="http://web.archive.org/web/20201116225940/https://aws.amazon.com/ec2/spot/" rel="noopener" target="_blank">Spot Instances</a>.</p>
+<p>Again, the simplicity and efficiency of a managed solution shines through.</p>
+<h3>With Docker Swarm</h3>
+<p>Docker now offers a “<a href="http://web.archive.org/web/20201116225940/https://docs.docker.com/engine/swarm/" rel="noopener" target="_blank">Swarm mode</a>.” The main advantage of Docker Swarm is that it’s very easy to set up; your Docker Swarm cluster can be created, configured, and go live in just a couple of hours.</p>
+<p>Unfortunately, Docker Swarm is quite limited and offers no built-in queue, so you need to bring your own solution for that; plus, there’s no easy way to manage autoscaling...</p>
+<h2 id="sub_3">The Main Argument: Avoid Vendor Lock-In</h2>
+<p>Many companies choose Kubernetes in order to avoid vendor lock-in. The argument here is that since Kubernetes itself is independent of any cloud vendor, it should be easy to switch vendors at any time. However, this reasoning is usually flawed. The rational decision would be to compare the cost of changing cloud vendors to the cost of creating and maintaining a truly cloud-agnostic Kubernetes cluster.</p>
+<p>Given there are only three major cloud providers (<a href="http://web.archive.org/web/20201116225940/https://aws.amazon.com/" rel="noopener" target="_blank">Amazon AWS</a>, <a href="http://web.archive.org/web/20201116225940/https://cloud.google.com/" rel="noopener" target="_blank">Google GCP</a>, and <a href="http://web.archive.org/web/20201116225940/https://azure.microsoft.com/" rel="noopener" target="_blank">Microsoft Azure</a>), you don’t have many choices when it comes to switching, anyway. As to smaller providers, they are notoriously less reliable–you might as well jump off a cliff before deciding on one of them. So, the odds of you changing cloud providers for a given workload are quite low; and if you do change, you’d probably do it only once.</p>
+<p>Kubernetes is difficult, and you would typically require a full-time DevOps engineer (maybe part-time after the initial setup phase) for a not-so-complex Kubernetes cluster. You need to take this cost into account when deciding on whether to adopt Kubernetes or not.</p>
+<p>All in all, it can certainly be argued that fears surrounding vendor lock-in are often exaggerated and that the cost of a single move from one cloud provider to another may be less than the cost of setting up and maintaining a truly cloud-agnostic Kubernetes cluster. Remember, if you use a managed solution, such as <a href="http://web.archive.org/web/20201116225940/https://aws.amazon.com/eks/" rel="noopener" target="_blank">Amazon Elastic Kubernetes Service</a> or <a href="http://web.archive.org/web/20201116225940/https://cloud.google.com/kubernetes-engine/" rel="noopener" target="_blank">Google Kubernetes Engine</a>, you are not truly cloud-agnostic.</p>
+<h2 id="sub_4">Conclusion</h2>
+<p>The main takeaway here is that you should think twice before following the crowd and going down a path that could be both perilous and costly. Make sure to take into account the costs associated with both you and your team getting familiar with Kubernetes, as this is often overlooked and can actually be quite large.&nbsp;</p>
+<p>If you do decide to go with Kubernetes, you should generally use a managed solution, such as GKE (Google Cloud) or EKS (AWS). These will make your life a lot easier than doing <a href="http://web.archive.org/web/20201116225940/https://github.com/kelseyhightower/kubernetes-the-hard-way" rel="noopener" target="_blank">Kubernetes the hard way</a>, and you would only be trading a bit of vendor lock-in for a much simpler life.</p>
+<p>At the end of the day, container orchestration is meant to solve a problem. So first, make sure you are clear on what you want to solve, and then consider other options besides Kubernetes before making a decision.</p>
+<p>Also keep in mind that serverless is growing in popularity and can be used to solve many problems that used to be addressed by either traditional architectures or container-based architectures. Running your code without having to worry about the maintenance, availability, and scaling of the underlying infrastructure is definitely a step change in cloud computing.</p>
+<p>One final note about security: Using Kubernetes (and the additional services typically required to run a Kubernetes cluster, such as Helm and Prometheus), increase the surface attack of your architecture. The infamous <a href="http://web.archive.org/web/20201116225940/https://www.theregister.co.uk/2018/12/03/kubernetes_flaw_cve_2018_1002105/" rel="noopener" target="_blank">CVE-2018-1002105</a> was, after all, a high-profile and very dangerous vulnerability in Kubernetes…</p>
+<p>So, keep your eyes open and your mind sharp. The cool kids’ toys might simply not be the best for you. And if you’re having issues with debugging, tracing, or securing your cloud architecture, Thundra is here to help.</p></span>
+</p>
+</div></div>
+  </div>
+</body>
+</html>

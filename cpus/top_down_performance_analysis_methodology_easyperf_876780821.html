@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Top-Down performance analysis methodology. | Easyperf</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Top-Down performance analysis methodology. | Easyperf</h1>
+    <p><strong>URL:</strong> <a href="https://easyperf.net/blog/2019/02/09/Top-Down-performance-analysis-methodology">https://easyperf.net/blog/2019/02/09/Top-Down-performance-analysis-methodology</a></p>
+    <p><strong>Tags:</strong> cpus</p>
+    <p><strong>Bookmark ID:</strong> 876780821</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+				<p><strong>Contents:</strong></p>
+<ul id="markdown-toc">
+  <li><a href="#tmam-concept" id="markdown-toc-tmam-concept">TMAM concept</a></li>
+  <li><a href="#step-1" id="markdown-toc-step-1">Step 1</a></li>
+  <li><a href="#step-2" id="markdown-toc-step-2">Step 2</a></li>
+  <li><a href="#fixing-the-issue" id="markdown-toc-fixing-the-issue">Fixing the issue</a></li>
+  <li><a href="#additional-resources-and-links" id="markdown-toc-additional-resources-and-links">Additional resources and links:</a></li>
+</ul>
+
+<hr>
+<p><strong>Subscribe to my <a href="https://products.easyperf.net/newsletter">newsletter</a>, support me on <a href="https://www.patreon.com/dendibakh">Patreon</a> or by PayPal <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TBM3NW8TKTT34&amp;currency_code=USD&amp;source=url">donation</a>.</strong></p>
+
+<hr>
+
+<p>This post aims to help people that want to better understand performance bottlenecks in their application. There are many existing <a href="http://www.brendangregg.com/methodology.html">methodolgies to do performance anlysis</a>, but not so many of them are robust and formal. When I was just starting with performance work I usually just profiled the app and tried to grasp through the hotspots of the benchmark hoping to find something there. This often lead to random experiments with unrolling, vectorization, inlining, you name it. I’m not saying it’s always a loosing strategy. Sometimes you can be lucky to get big performance boost from random experiments. But usually you need to have very good intuition and luck :).</p>
+
+<p>In this post I show more formal way to do performance analysis. It’s called <a href="http://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-optimization-manual.html">Top-down Microarchitecture Analysis Method (TMAM)</a> (Intel® 64 and IA-32 Architectures Optimization Reference Manual, Appendix B.1). In this metodology we try to detect what was stalling our execution starting from the high-level components (like Front End, Back End, Retiring, Branch predictor) and narrowing down the source of performance inefficiencies.</p>
+
+<p>It’s an iterative process with 2 steps:</p>
+<ol>
+  <li>Identify the type of the performance problem.</li>
+  <li>Locate the exact place in the code using PEBS (precise event).</li>
+</ol>
+
+<p>After fixing performance issue you repeat the process again.</p>
+
+<p>If it doesn’t make sense to you yet, don’t worry, it’ll become clear with the example.</p>
+
+<h3 id="tmam-concept">TMAM concept</h3>
+
+<p>TMAM conceptually works in a “black box” manner, with assumption that we don’t know nothing about the benchmark. Let’s imagine we have the binary (<code>a.out</code>) and it runs for 8.5 sec:</p>
+<div><pre><code><span>$ </span><span>time</span> <span>-p</span> ./a.out
+real 8.53
+</code></pre></div>
+
+<p>TMAM methodology is implemented in <a href="https://github.com/andikleen/pmu-tools/wiki/toplev-manual">toplev</a> tool that is a part of <a href="https://github.com/andikleen/pmu-tools">pmu-tools</a> written by Andi Kleen.</p>
+
+<h3 id="step-1">Step 1</h3>
+
+<p>This is the two most important pictures for TMAM (taken from Intel manual, see link above). First is the breakdown of metric levels in TMAM and second shows reasoning for a single <a href="https://easyperf.net/blog/2018/09/04/Performance-Analysis-Vocabulary">uop</a>:</p>
+
+<p><img src="data:application/octet-stream;base64," alt=""> <img src="data:application/octet-stream;base64," alt=""></p>
+
+<p>We will run our app and collect specific metrics that will help us to characterize our application. We will try to detect in which category our application will fall to.</p>
+
+<p>Let’s run it, collecting level-1 metrics on our binary:</p>
+<div><pre><code><span>$ </span>~/pmu-tools/toplev.py <span>--core</span> S0-C0 <span>-l1</span> <span>-v</span> <span>--no-desc</span> taskset <span>-c</span> 0 ./a.out
+...
+S0-C0    FE             Frontend_Bound:          13.81 +-     0.00 % Slots below
+S0-C0    BAD            Bad_Speculation:          0.22 +-     0.00 % Slots below
+S0-C0    BE             Backend_Bound:           53.43 +-     0.00 % Slots       &lt;<span>==</span>
+S0-C0    RET            Retiring:                32.53 +-     0.00 % Slots below
+S0-C0-T0                MUX:                    100.00 +-     0.00 %            
+S0-C0-T1                MUX:                    100.00 +-     0.00 %            
+</code></pre></div>
+<p>All right, now we know that we are bounded by backend. Let’s drill one level down:</p>
+<div><pre><code><span>$ </span>~/pmu-tools/toplev.py <span>--core</span> S0-C0 <span>-l2</span> <span>-v</span> <span>--no-desc</span> taskset <span>-c</span> 0 ./a.out
+...
+S0-C0    FE             Frontend_Bound:                             13.92 +-     0.00 % Slots below
+S0-C0    BAD            Bad_Speculation:                             0.23 +-     0.00 % Slots below
+S0-C0    BE             Backend_Bound:                              53.39 +-     0.00 % Slots      
+S0-C0    RET            Retiring:                                   32.49 +-     0.00 % Slots      
+S0-C0    FE             Frontend_Bound.Frontend_Latency:            12.11 +-     0.00 % Slots below
+S0-C0    FE             Frontend_Bound.Frontend_Bandwidth:           1.84 +-     0.00 % Slots below
+S0-C0    BAD            Bad_Speculation.Branch_Mispredicts:          0.22 +-     0.00 % Slots below
+S0-C0    BAD            Bad_Speculation.Machine_Clears:              0.01 +-     0.00 % Slots below
+S0-C0    BE/Mem         Backend_Bound.Memory_Bound:                 44.59 +-     0.00 % Slots       &lt;<span>==</span>
+S0-C0    BE/Core        Backend_Bound.Core_Bound:                    8.80 +-     0.00 % Slots below
+S0-C0    RET            Retiring.Base:                              24.83 +-     0.00 % Slots below
+S0-C0    RET            Retiring.Microcode_Sequencer:                7.65 +-     0.00 % Slots                
+</code></pre></div>
+<p>Okay, we see that we are actually bounded by memory. Almost half of the execution time CPU was stalled waiting for memory requests to arrive. Let’s try one level deeper:</p>
+<div><pre><code><span>$ </span>~/pmu-tools/toplev.py <span>--core</span> S0-C0 <span>-l3</span> <span>-v</span> <span>--no-desc</span> taskset <span>-c</span> 0 ./a.out
+...
+S0-C0    FE             Frontend_Bound:                                 13.91 +-     0.00 % Slots below     
+S0-C0    BAD            Bad_Speculation:                                 0.24 +-     0.00 % Slots below     
+S0-C0    BE             Backend_Bound:                                  53.36 +-     0.00 % Slots           
+S0-C0    RET            Retiring:                                       32.41 +-     0.00 % Slots           
+S0-C0    FE             Frontend_Bound.Frontend_Latency:                12.10 +-     0.00 % Slots below     
+S0-C0    FE             Frontend_Bound.Frontend_Bandwidth:               1.85 +-     0.00 % Slots below     
+S0-C0    BAD            Bad_Speculation.Branch_Mispredicts:              0.23 +-     0.00 % Slots below     
+S0-C0    BAD            Bad_Speculation.Machine_Clears:                  0.01 +-     0.00 % Slots below     
+S0-C0    BE/Mem         Backend_Bound.Memory_Bound:                     44.58 +-     0.00 % Slots           
+S0-C0    BE/Core        Backend_Bound.Core_Bound:                        8.78 +-     0.00 % Slots below     
+S0-C0    RET            Retiring.Base:                                  24.77 +-     0.00 % Slots below     
+S0-C0    RET            Retiring.Microcode_Sequencer:                    7.63 +-     0.00 % Slots           
+S0-C0    FE             Frontend_Bound.Frontend_Bandwidth.MITE:          7.33 +-     0.00 % CoreClocks below
+S0-C0    FE             Frontend_Bound.Frontend_Bandwidth.DSB:           2.19 +-     0.00 % CoreClocks below
+S0-C0    FE             Frontend_Bound.Frontend_Bandwidth.LSD:           0.00 +-     0.00 % CoreClocks below
+S0-C0-T0 FE             Frontend_Bound.Frontend_Latency.ICache_Misses:            0.05 +-     0.00 % Clocks below          
+S0-C0-T0 FE             Frontend_Bound.Frontend_Latency.ITLB_Misses:              0.00 +-     0.00 % Clocks below          
+S0-C0-T0 FE             Frontend_Bound.Frontend_Latency.Branch_Resteers:          0.10 +-     0.00 % Clocks_Estimated below
+S0-C0-T0 FE             Frontend_Bound.Frontend_Latency.DSB_Switches:             0.00 +-     0.00 % Clocks below          
+S0-C0-T0 FE             Frontend_Bound.Frontend_Latency.LCP:                      0.00 +-     0.00 % Clocks below          
+S0-C0-T0 FE             Frontend_Bound.Frontend_Latency.MS_Switches:              3.86 +-     0.00 % Clocks                
+S0-C0-T0 BE/Mem         Backend_Bound.Memory_Bound.L1_Bound:                      4.39 +-     0.00 % Stalls below          
+S0-C0-T0 BE/Mem         Backend_Bound.Memory_Bound.L2_Bound:                      2.42 +-     0.00 % Stalls below          
+S0-C0-T0 BE/Mem         Backend_Bound.Memory_Bound.L3_Bound:                      5.75 +-     0.00 % Stalls                
+S0-C0-T0 BE/Mem         Backend_Bound.Memory_Bound.DRAM_Bound:                   47.11 +-     0.00 % Stalls                 &lt;<span>==</span>
+S0-C0-T0 BE/Mem         Backend_Bound.Memory_Bound.Store_Bound:                   0.69 +-     0.00 % Stalls below          
+S0-C0-T0 BE/Core        Backend_Bound.Core_Bound.Divider:                         8.56 +-     0.00 % Clocks below          
+S0-C0-T0 BE/Core        Backend_Bound.Core_Bound.Ports_Utilization:              11.31 +-     0.00 % Clocks below          
+S0-C0-T0 RET            Retiring.Base.FP_Arith:                                   1.45 +-     0.00 % Uops below            
+S0-C0-T0 RET            Retiring.Base.Other:                                     98.55 +-     0.00 % Uops below            
+S0-C0-T0 RET            Retiring.Microcode_Sequencer.Assists:                     0.00 +-     0.00 % Slots_Estimated below 
+S0-C0-T0                MUX:                                                      3.45 +-     0.00 %                       
+</code></pre></div>
+<p>Cool! We found the bottleneck. Step #1 is completed. Let’s now go to the step #2.</p>
+
+<h3 id="step-2">Step 2</h3>
+
+<p>To locate the place in the code where this is happening, we need to refer to the <a href="https://download.01.org/perfmon/TMA_Metrics.xlsx">TMA metrics</a> table. I know, I know, it looks scary and big. Don’t worry. It’s complex only when you see it the first time.</p>
+
+<p>For Skylake architecture <code>DRAM_Bound</code> metric is calculated using <code>CYCLE_ACTIVITY.STALLS_L3_MISS</code> performance event. Let’s collect it:</p>
+
+<div><pre><code><span>$ </span>perf <span>stat</span> <span>-e</span> cycles,cpu/event<span>=</span>0xa3,umask<span>=</span>0x6,cmask<span>=</span>0x6,name<span>=</span>CYCLE_ACTIVITY.STALLS_L3_MISS/ ./a.out
+       32226253316      cycles                                                      
+       19764641315      CYCLE_ACTIVITY.STALLS_L3_MISS                                   
+</code></pre></div>
+
+<p>According to the definition of <code>CYCLE_ACTIVITY.STALLS_L3_MISS</code> it counts cycles when execution stalls while L3 cache miss demand load is outstanding. We can see that there are ~60% of such cycles which is pretty bad.</p>
+
+<p>In the <code>Locate-with</code> column there is performance event that we can use to locate exact place in the code where the issue occurs. For <code>DRAM_Bound</code> metric we should use <code>MEM_LOAD_RETIRED.L3_MISS_PS</code> precise event. Let’s sample on it:</p>
+
+<div><pre><code><span>$ </span>perf record <span>-e</span> cpu/event<span>=</span>0xd1,umask<span>=</span>0x20,name<span>=</span>MEM_LOAD_RETIRED.L3_MISS/ppp ./a.out
+</code></pre></div>
+<p>If you don’t understand the underlying mechanics of what we just did, I encourage you to read one of my previous posts: <a href="https://easyperf.net/blog/2018/08/26/Basics-of-profiling-with-perf">Basics of profiling with perf</a> and <a href="https://easyperf.net/blog/2018/08/29/Understanding-performance-events-skid">Understanding performance events skid</a>. Let’s look into the profile:</p>
+<div><pre><code><span>$ </span>perf report <span>-n</span> <span>--stdio</span>
+...
+<span># Samples: 33K of event 'MEM_LOAD_RETIRED.L3_MISS'</span>
+<span># Event count (approx.): 71363893</span>
+<span>#</span>
+<span># Overhead       Samples  Command  Shared Object      Symbol                          </span>
+<span># ........  ............  .......  .................  ................................</span>
+<span>#</span>
+    99.95%         33811  a.out    a.out              <span>[</span>.] foo                      &lt;<span>==</span>
+     0.03%            52  a.out    <span>[</span>kernel.kallsyms]  <span>[</span>k] get_page_from_freelist
+     0.01%             3  a.out    <span>[</span>kernel.kallsyms]  <span>[</span>k] free_pages_prepare
+     0.00%             1  a.out    <span>[</span>kernel.kallsyms]  <span>[</span>k] free_pcppages_bulk
+</code></pre></div>
+
+<p>All L3 misses are caused by our code. Let’s drill down to assembly:</p>
+
+<div><pre><code><span>$ </span>perf annotate <span>--stdio</span> <span>-M</span> intel foo
+Percent |      Source code &amp; Disassembly of a.out <span>for </span>MEM_LOAD_RETIRED.L3_MISS
+<span>-------------------------------------------------------------------------------</span>
+         :      Disassembly of section .text:
+         :
+         :      0000000000400a00 &lt;foo&gt;:
+         :      foo<span>()</span>:
+    0.00 :        400a00:       nop    DWORD PTR <span>[</span>rax+rax<span>*</span>1+0x0]
+    0.00 :        400a08:       nop    DWORD PTR <span>[</span>rax+rax<span>*</span>1+0x0]
+                  ...
+    0.00 :        400df0:       nop    DWORD PTR <span>[</span>rax+rax<span>*</span>1+0x0]
+    0.00 :        400df8:       nop    DWORD PTR <span>[</span>rax+rax<span>*</span>1+0x0]
+    0.00 :        400e00:       mov    rax,QWORD PTR <span>[</span>rdi]
+    0.00 :        400e03:       mov    rax,QWORD PTR <span>[</span>rdi+0xa]
+  100.00 :        400e07:       mov    rax,QWORD PTR <span>[</span>rdi+rsi<span>*</span>1]   &lt;<span>==</span>
+    0.00 :        400e0b:       mov    rax,QWORD PTR <span>[</span>rdi+rax<span>*</span>1]
+    0.00 :        400e0f:       mov    rax,QWORD PTR <span>[</span>rdi+0x14]
+    0.00 :        400e13:       xor    rax,rax
+    0.00 :        400e16:       ret 
+</code></pre></div>
+
+<p>Just out of curiosity I collected the number of L3 misses:</p>
+<div><pre><code><span>$ </span>perf <span>stat</span> <span>-e</span> cpu/event<span>=</span>0xd1,umask<span>=</span>0x20,name<span>=</span>MEM_LOAD_RETIRED.L3_MISS/ ./a.out
+          71370594      MEM_LOAD_RETIRED.L3_MISS                                    
+</code></pre></div>
+<p>It shows that 7 out of each 10 iterations had loads that missed in L3.</p>
+
+<p>Now that we know what instructions caused so many L3 misses let’s fix it.</p>
+
+<h3 id="fixing-the-issue">Fixing the issue</h3>
+
+<p>Let’s look at the code:</p>
+
+<div><pre><code><span>extern</span> <span>"C"</span> <span>{</span> <span>void</span> <span>foo</span><span>(</span><span>char</span><span>*</span> <span>a</span><span>,</span> <span>int</span> <span>n</span><span>);</span> <span>}</span>
+
+<span>const</span> <span>int</span> <span>_200MB</span> <span>=</span> <span>1024</span><span>*</span><span>1024</span><span>*</span><span>200</span><span>;</span>
+
+<span>int</span> <span>main</span><span>()</span> <span>{</span>
+  <span>char</span><span>*</span> <span>a</span> <span>=</span> <span>(</span><span>char</span><span>*</span><span>)</span><span>malloc</span><span>(</span><span>_200MB</span><span>);</span> <span>// 200 MB buffer</span>
+  <span>...</span>
+  <span>for</span> <span>(</span><span>int</span> <span>i</span> <span>=</span> <span>0</span><span>;</span> <span>i</span> <span>&lt;</span> <span>100000000</span><span>;</span> <span>i</span><span>++</span><span>)</span> <span>{</span>
+    <span>int</span> <span>random_int</span> <span>=</span> <span>distribution</span><span>(</span><span>generator</span><span>);</span>
+    <span>foo</span><span>(</span><span>a</span><span>,</span> <span>random_int</span><span>);</span>
+  <span>}</span>
+  <span>...</span>
+<span>}</span>
+</code></pre></div>
+
+<p>I allocate a big enough array to make it not fit in the L3 cache (L3 cache on the machine I was using is 38,5 MB - Intel(R) Xeon(R) Platinum 8180 CPU). Inside <code>foo</code> function (written in assembly in order to avoid compiler optimizations) I’m reading random memory location:</p>
+
+<pre><code>foo:
+One_KB_of_nops		# emulate some irrelevant work
+
+mov     rax, QWORD [rdi + 0]   # constant load
+mov     rax, QWORD [rdi + 10]  # constant load
+
+mov     rax, QWORD [rdi + rsi] # load that goes to DRAM
+mov     rax, QWORD [rdi + rax] # introduce dependency chain
+
+mov     rax, QWORD [rdi + 20]  # constant load
+</code></pre>
+
+<p>You probably already guessed what we should do. Yes, it’s prefetching. Because there is some significant time between the moment we get the next address we will read and actual load instruction, we can add prefetch hint (more details about <code>__builtin_prefetch</code> <a href="https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html">here</a>):</p>
+
+<div><pre><code>  <span>for</span> <span>(</span><span>int</span> <span>i</span> <span>=</span> <span>0</span><span>;</span> <span>i</span> <span>&lt;</span> <span>100000000</span><span>;</span> <span>i</span><span>++</span><span>)</span> <span>{</span>
+    <span>int</span> <span>random_int</span> <span>=</span> <span>distribution</span><span>(</span><span>generator</span><span>);</span>
+<span>+</span>   <span>__builtin_prefetch</span> <span>(</span> <span>a</span> <span>+</span> <span>random_int</span><span>,</span> <span>0</span><span>,</span> <span>1</span><span>);</span>
+    <span>foo</span><span>(</span><span>a</span><span>,</span> <span>random_int</span><span>);</span>
+  <span>}</span>
+</code></pre></div>
+
+<p>Code samples can be found on my <a href="https://github.com/dendibakh/dendibakh.github.io/tree/master/_posts/code/TMAM">github</a>.</p>
+
+<p>This hint improved execution time by 2 seconds (+30% <a href="https://randomascii.wordpress.com/2018/02/04/what-we-talk-about-when-we-talk-about-performance/">speedup</a>):</p>
+
+<div><pre><code>       24621931288      cycles                                                      
+        2069238765      CYCLE_ACTIVITY.STALLS_L3_MISS                                   
+           8889566      MEM_LOAD_RETIRED.L3_MISS                                    
+       6,498080824 seconds time elapsed
+</code></pre></div>
+
+<p>Notice 10x less values for <code>CYCLE_ACTIVITY.STALLS_L3_MISS</code> and <code>MEM_LOAD_RETIRED.L3_MISS</code>. However, it didn’t fully go away. There is one technique based on using LBR that can help us to estimate our prefetch window. If there will be interest in it I can write additional post about it. Just leave a comment if you interested. <strong>UPD 3rd April 2019 I wrote this article: <a href="https://easyperf.net/blog/2019/04/03/Precise-timing-of-machine-code-with-Linux-perf">Precise timing of machine code with Linux perf</a></strong>.</p>
+
+<p>Remember that TMAM is an iterative process, so we now need to repeat the process from the step #1. Likely it will move the bottleneck into some other bucket, probably Retiring. Ideally we want to be 100% bound by Retirement. Most of the time that means good thing, however not always. There are situations when you have very high retirement, but still app performs slow. This usually happens when Microcode sequencer starts feeding uops to the pipeline, like shown <a href="https://easyperf.net/blog/2018/11/08/Using-denormal-floats-is-slow-how-to-detect-it">here</a>.</p>
+
+<h3 id="additional-resources-and-links">Additional resources and links:</h3>
+
+<ul>
+  <li><a href="http://intelstudios.edgesuite.net/idf/2015/sf/aep/ARCS002/ARCS002.html">Recording</a> of the presentation made by the author of TMAM.</li>
+  <li>Andi Kleen’s blog - <a href="http://halobates.de/blog/p/262">pmu-tools, part II: toplev</a>.</li>
+  <li><a href="https://github.com/andikleen/pmu-tools/wiki/toplev-manual">Toplev manual</a> - very nice description of TMAM.</li>
+  <li>Intel® VTune™ Amplifier has built-in support ofr TMAM - <a href="https://software.intel.com/en-us/articles/understanding-how-general-exploration-works-in-intel-vtune-amplifier-xe">Understanding How General Exploration Works in Intel® VTune™ Amplifier</a></li>
+</ul>
+
+			</div></div>
+  </div>
+</body>
+</html>

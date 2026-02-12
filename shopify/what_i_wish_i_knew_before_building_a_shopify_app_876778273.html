@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>What I wish I knew before building a Shopify App</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>What I wish I knew before building a Shopify App</h1>
+    <p><strong>URL:</strong> <a href="https://ma.ttias.ch/what-i-wish-i-knew-before-building-a-shopify-app.html">https://ma.ttias.ch/what-i-wish-i-knew-before-building-a-shopify-app.html</a></p>
+    <p><strong>Tags:</strong> ecommerce, prodmgmt, shopify</p>
+    <p><strong>Bookmark ID:</strong> 876778273</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+                
+<p>About 6 minutes to read. Posted on March 19, 2021 10:56</p><p>I spent the last week building an App for the Shopify Marketplace. It was unlike anything I've done before on the Web. Knowing some of the things I'm going to share, before you start building, could save you some headache.</p>
+<p>Here is the summary of my experience, more details below.</p>
+<blockquote><span>Key insights</span><ul><li>They expect you to make a onepage application (SPA)</li>
+<li>The polaris design system officially only supports react</li>
+<li>Integration with the shop frontend is difficult if you're not making a theme<br></li>
+<li>Integrating functionality via webhooks is more tedious than it needs to be<br></li>
+<li>Payments are simple to implement, once you understand how</li>
+<li>The API is constantly changing in big ways<br></li>
+<li>The&nbsp;API is surprisingly unreliable</li>
+<li>Backend reliability isn't great<br></li>
+<li>Local development of integrated apps is hard</li>
+<li>Modifying the checkout is not possible</li>
+</ul>
+</blockquote>
+<p>Once you start studying the documentation and examples you'll quickly notice all the examples use NodeJS and React. No big deal, right? That's what's all the rage these days, so it makes sense to build the docs to match that.</p>
+<p>What wasn't so obvious to me is that the way their API, permissions and App requirements are setup result in making it really hard to use anything other than a Single Page Application (SPA).</p>
+<p>If you think about it, it makes sense why. You're going to integrate your code into their proprietary platform, so they need the integration to be as straightforward as possible. Thus an SPA is a very good candidate.</p>
+<p>My problem wasn't as much that this requirement exists, but that this requirement is not made very obvious from the beginning. I chose to use technologies I am familiar with (more backend focused). That came back to haunt me bigtime.</p>
+
+<p>Shopify offers a design framework for you to work with, in an effort to make all Shopify Apps on the marketplace look the same. Or at least very similar. This framework is called <a href="https://polaris.shopify.com/">Polaris</a>. That is awesome!</p>
+<p>Since I'm more of a backend guy, I loved the idea of having a design framework to pick and choose components from. In a sense it's very similar to using bootstrap&nbsp;— or so I thought.</p>
+<p>It turns out the only components they offer are for react. There is no CSS file you can download, no HTML reference, no other implementation guide outside react. You can download the design files with the components, but as a developer that's an even bigger hurdle than the react components.</p>
+<p>For my App I decided to use community resources that support my chosen technology (VueJS). But it quickly turned out the community resources were outdated and incomplete. That fact is probably also related to a later point in this article (Their API is  constantly changing).</p>
+
+<p>Making an App for an ecommerce store will probably fall into one of two categories: Either you're making an App to export Data (to an ERP, custom PoS, CRM, PIM, etc) or to modify the customer experience on the store itself. Making an app in the first category is straightforward enough, you probably don't even need to make an "embedded" app. All you need is a server somewhere talking to the Shopify API.</p>
+<p>On the other hand, making an App to modify the customer experience on the shop is on a whole other level. Yet again the main problem seems to be the fact that shopify is a&nbsp;&nbsp;proprietary platform.</p>
+<p>They offer excellent tools to modify your shop in the form of a Theme Editor, Template Editor and purchasable themes. Integrating with these solutions is very hard though.</p>
+<p>Early on I decided that I don't want to require the user to install a custom theme that enables new features (because they'd have to move away from their existing theme) and I don't want to require them to edit any template files. The reason is that I don't expect the user to be able to do anything beyond inserting a single tag (like for Google Analytics) and that can be one as a custom HTML element in the theme designer.</p>
+<p>So that's the way I went: Installing my app only requires you to add a single HTML element to your page. Easy for the user, but harder for me to implement. I needed to build a widget that can hook itself into an existing page with a single script tag. It didn't turn out to be impossible, but definitely not something I've done before.</p>
+
+<p>Webhooks are a widely used technology and generally accepted as a good solution. This also applies to Shopify: Once you're all setup they work exactly as expected.</p>
+<p>What came as a surprise to me is the way they need to be setup. Each and every webhook you want to listen to has to be setup via the REST API for <i>each Shop</i> that has your App installed. That means you need to have some sort of install and update routine to manage the webhooks for each client.</p>
+<p>I much prefer the way Stripe has solved this: You setup your webhook once in the backend and select the events you want from the UI. It's a onetime thing and I don't need to write any code.</p>
+<p>A big surprise was also the fact that there are <i>mandatory webhooks</i>. They are related to GDPR and handle things like providing and deleting user data. Again, I think this is a good thing but came as a surprise and additional time spent on non-customer related things.</p>
+
+<p>One of the reasons I wanted to try Shopify was the hope that they make a lot of the "boring" stuff easy. If you've ever thought about starting a product you might know there are a bunch of things to consider: payments, refunds, a Privacy Policy, Terms of Service, accounts, forgotten passwords, cancellations, etc.</p>
+<p>This actually held true for almost everything. The only thing I found was strange, was the fact that you need to implement a payment workflow in your app. Right now I simply redirect to the payment page right after installation of the app. Then I need to check if the payment was complete and decide if I want to let the user on the app. Why can't Shopify handle this flow on their side? Sure, more control is probably great for some Apps, but why require each app to implement it's own payment flow, instead of having at least one built-in way of doing things?</p>
+
+<p>A new version of the Shopify API is released every <a href="https://shopify.dev/concepts/about-apis/versioning#release-schedule">3 months</a>. In general it's great how they have a steady and scheduled improvement cycle. But looking at their <a href="https://shopify.dev/changelog">changelog</a>&nbsp;you get a different view on their pace of change. Most recently they annouced <a href="https://shopify.dev/changelog/all-embedded-apps-submitted-for-app-review-are-required-to-adopt-session-tokens">big changes for embedded apps</a>.</p>
+<p>The point I'm trying to make is that Shopify is a constantly changing ecosystem. That's great for existing clients and developers, but it also makes a lot of information and community resources outdated at an extreme rate. If you're new to the platform you might find perfectly functional and documented features deprecated only a few weeks after you start working with it.</p>
+
+<p>As you can imagine I was refreshing my App a lot during development. With each refresh the app made a request to a resource. To my surprise every 10 refreshes or so, I would get a 404 error. For the hardcoded resource no less! It's frustrating to work with an API that already seems unreliable when testing locally.</p>
+<p>I don't know if this was just a strange coincidence. Every Platform has some hiccups once in a while, but this didn't leave the best impression.</p>
+
+<p>During the development I have a few issues that forced me to take a break for a while. Not because I was frustrated, but because the Shopify Portal stopped working.</p>
+<p>One issue was that after merging my Trial Account into a Partner account, all pages simply errored out and I couldn't view any authenticated pages anymore. I had to delete all cookies for all shopify domains to get things to work again.</p>
+<p>Another issue was during the testing of my App. I was installing the App on my development store again and again (to test the installation procedure) and suddenly the Partner Portal stopped working altogether. I took a break for an hour or so and things were back to normal, but left a bad impression.</p>
+
+<p>As mentioned above your App will be integrated into the Shopify backend. They achieve this via an iframe. In development you have two choices of working on your app:</p>
+<p>Either you work in the Shopify Admin which is slower and requires a public HTTPS connection (usually solved via ngrok, as per the docs). Or, if you don't want to pay for yet another service, you can develop the App on your local machine like you're probably used to.</p>
+<p>The later way of doing things has the downside that you might run into a few gotchas when testing your app for real. The iframe technique requires you to do a few things like framebusting for payment or oauth flows. Both things you'll probably never notice when developing locally.</p>
+
+<p>The last thing that surprised me is that the SaaS part of shopify has zero (0) ways of modifying the checkout. The only way you can change things on the checkout page is via <a href="https://www.shopify.com/plus">Shopify Plus</a>. Since that plan is marketed towards enterprise and doesn't even have a price listed on their landing page, I wouldn't call it the target audience for your typical Shopify Marketplace App. I suspect most of the Plus clients will have their own Shopify developers inhouse or via an Agency.</p>
+
+<p>Contrary to what this article might imply, I have a lot of good impressions about the Shopify Platform. The biggest downside I see is the focus on very specific technologies (such as React) that just aren't attractive to me and due to the staggering speed of change, community resources on other technologies are quickly outdated.</p>
+
+    <h2>Thank you for reading</h2>
+    <p>
+        I hope you enjoyed the article and maybe even learned something.
+        If you would like to stay in contact I have a <a href="http://eepurl.com/hrkncH">mailing list</a>
+        or you can reach out to me via <a href="https://ma.ttias.ch/about.html#social">social media</a>.
+    </p>
+    
+        </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>openai-to-sqlite - a tool for Datasette</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>openai-to-sqlite - a tool for Datasette</h1>
+    <p><strong>URL:</strong> <a href="https://datasette.io/tools/openai-to-sqlite">https://datasette.io/tools/openai-to-sqlite</a></p>
+    <p><strong>Tags:</strong> sqlite, gpt</p>
+    <p><strong>Bookmark ID:</strong> 876790659</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+    
+<p><a href="https://pypi.org/project/openai-to-sqlite/" rel="nofollow"><img src="data:application/octet-stream;base64," alt="PyPI" data-canonical-src="https://img.shields.io/pypi/v/openai-to-sqlite.svg"></a>
+<a href="https://github.com/simonw/openai-to-sqlite/releases"><img src="data:application/octet-stream;base64," alt="Changelog" data-canonical-src="https://img.shields.io/github/v/release/simonw/openai-to-sqlite?include_prereleases&amp;label=changelog"></a>
+<a href="https://github.com/simonw/openai-to-sqlite/actions?query=workflow%3ATest"><img src="data:application/octet-stream;base64," alt="Tests"></a>
+<a href="https://github.com/simonw/openai-to-sqlite/blob/main/LICENSE"><img src="data:application/octet-stream;base64," alt="License" data-canonical-src="https://img.shields.io/badge/license-Apache%202.0-blue.svg"></a></p>
+<p>This tool provides utilities for interacting with OpenAI APIs and storing the results in a SQLite database.</p>
+<p>See <a href="https://simonwillison.net/2023/Jan/13/semantic-search-answers/" rel="nofollow">Semantic search answers: Q&amp;A against documentation with GPT3 + OpenAI embeddings</a> for background on this project.</p>
+<p>For a tutorial on using this for related content, see <a href="https://til.simonwillison.net/llms/openai-embeddings-related-content" rel="nofollow">Storing and serving related documents with openai-to-sqlite and embeddings</a>.</p>
+
+<p>Install this tool using <code>pip</code>:</p>
+<div><pre>pip install openai-to-sqlite</pre></div>
+
+<p>You will need an OpenAI API key to use this tool.</p>
+<p>You can create one at <a href="https://beta.openai.com/account/api-keys" rel="nofollow">https://beta.openai.com/account/api-keys</a></p>
+<p>You can then either set the API key as an environment variable:</p>
+<div><pre><span>export</span> OPENAI_API_KEY=sk-...</pre></div>
+<p>Or pass it to each command using the <code>--token sk-...</code> option.</p>
+
+<p>The <code>openai-to-sqlite query</code> command can be used to execute SQL queries that call OpenAI APIs.</p>
+<p>Functions available are:</p>
+<ul>
+<li>
+<code>chatgpt(prompt)</code> - call the OpenAI Chat API using model <code>gpt-3.5-turbo</code> with the specified prompt.</li>
+<li>
+<code>chatgpt(prompt, system)</code> - call that API with the prompt and the specified system prompt.</li>
+</ul>
+<p>More functions are planned in the future.</p>
+<p>Here's how to use this command to run basic sentiment analysis against content in a table:</p>
+<div><pre>openai-to-sqlite query database.db <span><span>"</span></span>
+<span>  update messages set sentiment = chatgpt(</span>
+<span>    'Sentiment analysis for this message: ' || message ||</span>
+<span>    ' - ONLY return a lowercase string from: positive, negative, neutral, unknown'</span>
+<span>  )</span>
+<span>  where sentiment not in ('positive', 'negative', 'neutral', 'unknown')</span>
+<span>    or sentiment is null</span>
+<span><span>"</span></span></pre></div>
+<p>This updates the <code>sentiment</code> column in a table called <code>messages</code>. It populates it with the response from the specified prompt.</p>
+<p>The command will display a progress bar indicating how many rows are being processed.</p>
+<p>You can add an empty <code>sentiment</code> column to a table using <a href="https://sqlite-utils.datasette.io/" rel="nofollow">sqlite-utils</a> like this:</p>
+<div><pre>sqlite-utils add-column database.db messages sentiment</pre></div>
+
+<p>The <code>embeddings</code> command can be used to calculate and store <a href="https://beta.openai.com/docs/guides/embeddings" rel="nofollow">OpenAI embeddings</a> for strings of text.</p>
+<p>Each embedding has a cost, so be sure to familiarize yourself with <a href="https://openai.com/api/pricing/" rel="nofollow">the pricing</a> for the embedding model.</p>
+<p>The command can accept data in four different ways:</p>
+<ul>
+<li>As a JSON file containing a list of objects</li>
+<li>As a CSV file</li>
+<li>As a TSV file</li>
+<li>By running queries against a SQLite database</li>
+</ul>
+<p>For all of these formats there should be an <code>id</code> column, followed by one or more text columns.</p>
+<p>The ID will be stored as the content ID. Any other columns will be concatenated together and used as the text to be embedded.</p>
+<p>The embeddings from the API will then be saved as binary blobs in the <code>embeddings</code> table of the specified SQLite database - or another table, if you pass the <code>-t/--table</code> option.</p>
+
+<p>Given a CSV file like this:</p>
+<pre lang="csv"><code>id,content
+1,This is a test
+2,This is another test
+</code></pre>
+<p>Embeddings can be stored like so:</p>
+<div><pre>openai-to-sqlite embeddings embeddings.db data.csv</pre></div>
+<p>The resulting schema looks like this:</p>
+<div><pre>CREATE TABLE [embeddings] (
+   [id] <span>TEXT</span> <span>PRIMARY KEY</span>,
+   [embedding] BLOB
+);</pre></div>
+<p>The same data can be provided as TSV data:</p>
+<pre><code>id    content
+1     This is a test
+2     This is another test
+</code></pre>
+<p>Then imported like this:</p>
+<div><pre>openai-to-sqlite embeddings embeddings.db data.tsv</pre></div>
+<p>Or as JSON data:</p>
+<div><pre>[
+  {<span>"id"</span>: <span>1</span>, <span>"content"</span>: <span><span>"</span>This is a test<span>"</span></span>},
+  {<span>"id"</span>: <span>2</span>, <span>"content"</span>: <span><span>"</span>This is another test<span>"</span></span>}
+]</pre></div>
+<p>Imported like this:</p>
+<div><pre>openai-to-sqlite embeddings embeddings.db data.json</pre></div>
+<p>In each of these cases the tool automatically detects the format of the data. It does this by inspecting the data itself - it does not consider the file extension.</p>
+<p>If the automatic detection is not working, you can pass <code>--format json</code>, <code>csv</code> or <code>tsv</code> to explicitly specify a format:</p>
+<div><pre>openai-to-sqlite embeddings embeddings.db data.tsv --format tsv</pre></div>
+
+<p>You can use a filename of <code>-</code> to pipe data in to standard input:</p>
+<div><pre>cat data.tsv <span>|</span> openai-to-sqlite embeddings embeddings.db -</pre></div>
+
+<p>The <code>--sql</code> option can be used to read data to be embedded from the attached SQLite database. The query must return an <code>id</code> column and one or more text columns to be embedded.</p>
+<div><pre>openai-to-sqlite embeddings content.db \
+  --sql <span><span>"</span>select id, title from documents<span>"</span></span></pre></div>
+<p>This will create a <code>embeddings</code> table in the <code>content.db</code> database and populate it with embeddings calculated from the <code>title</code> column in that query.</p>
+<p>You can also store embeddings in one database while reading data from another database, using the <code>--attach alias filename.db</code> option:</p>
+<div><pre>openai-to-sqlite embeddings embeddings.db \
+  --attach documents documents.db \
+  --sql <span><span>"</span>select id, title from documents.documents<span>"</span></span></pre></div>
+<p>A progress bar will be displayed when using <code>--sql</code> that indicates how long the embeddings are likely to take to calculate.</p>
+<p>The CSV/TSV/JSON options do not correctly display the progress bar. You can work around this by importing your data into SQLite first (e.g. <a href="https://sqlite-utils.datasette.io/en/stable/cli.html#inserting-json-data" rel="nofollow">using sqlite-utils</a>) and then running the embeddings using <code>--sql</code>.</p>
+
+<p>Embeddings will be sent to the OpenAI embeddings API in batches of 100. If you know that your data is short strings you can increase the batch size, up to 2048, using the <code>--batch-size</code> option:</p>
+<div><pre>openai-to-sqlite embeddings embeddings.db data.csv --batch-size 2048</pre></div>
+
+<p>The <code>embedding</code> column is a SQLite blob containing 1536 floating point numbers encoded as a sequence of 4 byte values.</p>
+<p>You can extract them back to an array of floating point values in Python like this:</p>
+<div><pre><span>import</span> <span>struct</span>
+
+<span>vector</span> <span>=</span> <span>struct</span>.<span>unpack</span>(
+    <span>"f"</span> <span>*</span> <span>1536</span>, <span>binary_embedding</span>
+)</pre></div>
+
+<p>Having saved the embeddings for content, you can run searches using the <code>search</code> command:</p>
+<div><pre>openai-to-sqlite search embeddings.db <span><span>'</span>this is my search term<span>'</span></span></pre></div>
+<p>The output will be a list of cosine similarity scores and content IDs:</p>
+<div><pre>openai-to-sqlite search blog.db <span><span>'</span>cool datasette demo<span>'</span></span></pre></div>
+<pre><code>0.843 7849
+0.830 8036
+0.828 8195
+0.826 8098
+0.818 8086
+0.817 8171
+0.816 8121
+0.815 7860
+0.815 7872
+0.814 8169
+</code></pre>
+<p>Add the <code>-t/--table</code> option if your embeddings are stored in a different table:</p>
+<div><pre>openai-to-sqlite search content.db <span><span>'</span>this is my search term<span>'</span></span> -t documents
+
+Add <span><span>`</span>--count 20<span>`</span></span> to retrieve 20 results (the default is 10).</pre></div>
+
+<p>Having saved the embeddings for content, you can search for similar content with the <code>similar</code> command:</p>
+<div><pre>oopenai-to-sqlite similar embeddings.db <span><span>'</span>&lt;content identifier&gt;<span>'</span></span></pre></div>
+<p>The output will be a list of cosine similarity scores and content IDs:</p>
+<div><pre>openai-to-sqlite similar embeddings-bjcp-2021.db <span><span>'</span>23G Gose<span>'</span></span></pre></div>
+<pre><code>23G Gose
+  1.000 23G Gose
+  0.929 24A Witbier
+  0.921 23A Berliner Weisse
+  0.909 05B Kölsch
+  0.907 01D American Wheat Beer
+  0.906 27 Historical Beer: Lichtenhainer
+  0.905 23D Lambic
+  0.905 10A Weissbier
+  0.904 04B Festbier
+  0.904 01B American Lager
+</code></pre>
+<p>You can pass more than one IDs to see similarities calculated for each one:</p>
+<div><pre>openai-to-sqlite similar embeddings-bjcp-2021.db \
+  <span><span>'</span>23G Gose<span>'</span></span> <span><span>'</span>01A American Light Lager<span>'</span></span></pre></div>
+<p>Or pass <code>--all</code> to run similarity for every item in the database. This runs similarity calculations for the number of items squared so it can be quite a long running operation:</p>
+<div><pre>openai-to-sqlite similar embeddings-bjcp-2021.db --all</pre></div>
+
+<p>To save these calculations to a <code>similarities</code> table in the database, use the <code>--save</code> option:</p>
+<div><pre>openai-to-sqlite similar embeddings-bjcp-2021.db --all --save</pre></div>
+<p>The <code>--save</code> option disables output. You can re-enable output with <code>--print</code>:</p>
+<div><pre>openai-to-sqlite similar embeddings-bjcp-2021.db --all --save --print</pre></div>
+<p>To save to a database table with a name other than <code>similarities</code>, use <code>--table</code>:</p>
+<div><pre>openai-to-sqlite similar embeddings-bjcp-2021.db \
+  --all --save --table my_similarities</pre></div>
+
+<p>Re-calculating similarities for every row in the database can be quite a lengthy operation.</p>
+<p>If you know which rows have just been added, you can speed things up using <code>--recalculate-for-matches</code>.</p>
+<p>This tells <code>openai-to-sqlite similar</code> to only re-calculate similarities for rows that are close matches to the specified rows.</p>
+<p>This means you can add one or two additional records and then trigger an update of the saved similarity scores for just those new records plus for the twenty closest matches to those new records like this:</p>
+<div><pre>openai-to-sqlite similar embeddings-bjcp-2021.db \
+  --save <span><span>'</span>23G Gose<span>'</span></span> <span><span>'</span>01A American Light Lager<span>'</span></span> \
+  --recalculate-for-matches \
+  --count 20 \
+  --print</pre></div>
+
+<p>To contribute to this tool, first checkout the code. Then create a new virtual environment:</p>
+<div><pre><span>cd</span> openai-to-sqlite
+python -m venv venv
+<span>source</span> venv/bin/activate</pre></div>
+<p>Now install the dependencies and test dependencies:</p>
+<div><pre>pip install -e <span><span>'</span>.[test]<span>'</span></span></pre></div>
+<p>To run the tests:</p>
+<div><pre>pytest</pre></div>
+
+    </div></div>
+  </div>
+</body>
+</html>

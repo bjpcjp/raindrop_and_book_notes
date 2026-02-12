@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Graph neural networks: a review of methods and applications | the morning paper</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Graph neural networks: a review of methods and applications | the morning paper</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2019/02/08/graph-neural-networks-a-review-of-methods-and-applications">https://blog.acolyer.org/2019/02/08/graph-neural-networks-a-review-of-methods-and-applications</a></p>
+    <p><strong>Tags:</strong> deep-learning, graphs</p>
+    <p><strong>Bookmark ID:</strong> 876770852</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-8230">
+	<!-- .entry-header -->
+
+	<div>
+		
+<p><a href="https://arxiv.org/abs/1812.08434">Graph neural networks: a review of methods and applications</a> Zhou et al., <em>arXiv 2019</em></p>
+
+
+
+<p>It’s another graph neural networks survey paper today! Cue the obligatory bus joke. Clearly, this covers much of the same territory as we looked at earlier in the week, but when we’re lucky enough to get two surveys published in short succession it can add a lot to compare the two different perspectives and sense of what’s important. In particular here, Zhou et al., have a different formulation for describing the core GNN problem, and a nice approach to splitting out the various components. Rather than make this a standalone write-up, I’m going to lean heavily on the <a href="https://blog.acolyer.org/2019/02/06/a-comprehensive-survey-on-graph-neural-networks/">Graph neural network survey</a>  we looked at on Wednesday and try to enrich my understanding starting from there.</p>
+
+
+
+<h3>An abstract GNN model</h3>
+
+
+
+<p>For this survey,  the GNN problem is framed based on the formulation in the original GNN paper, ‘<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1015.7227&amp;rep=rep1&amp;type=pdf">The graph neural network model</a>,’  Scarselli 2009.</p>
+
+
+
+<p>Associated with each node is an s-dimensional state vector.</p>
+
+
+
+<blockquote><p>   The target of GNN is to learn a state embedding <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bh%7D_v+%5Cin+%5Cmathbb%7BR%7D%5Es&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bh%7D_v+%5Cin+%5Cmathbb%7BR%7D%5Es&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bh%7D_v+%5Cin+%5Cmathbb%7BR%7D%5Es&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{h}_v \in \mathbb{R}^s"> which contains the information of the neighbourhood for each node. </p><p>Given the state embedding we can produce a node-level output <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bo%7D_v&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bo%7D_v&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bo%7D_v&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{o}_v">, for example, a label. </p></blockquote>
+
+
+
+<p>The <em>local transition function</em>, <img src="https://s0.wp.com/latex.php?latex=f&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=f&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=f&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="f">, updates a node’s state based on its input neighbourhood, and the <em>local output function</em>, <img src="https://s0.wp.com/latex.php?latex=g&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=g&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=g&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="g">, describes how the output is produced.  We can express <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bh%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bh%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bh%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{h}"> and <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bo%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bo%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7Bo%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{o}"> in terms of <img src="https://s0.wp.com/latex.php?latex=f&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=f&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=f&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="f"> and <img src="https://s0.wp.com/latex.php?latex=g&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=g&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=g&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="g">:</p>
+
+
+
+
+
+
+
+<p>If we stack all the embedded states into one vector, <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BH%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BH%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7BH%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{H}">, the outputs into one vector <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BO%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BO%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7BO%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{O}">, the node and edge features into one vector <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BX%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BX%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7BX%7D&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{X}"> and the just the node features into <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BX%7D_N&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BX%7D_N&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7BX%7D_N&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{X}_N"> then we have:</p>
+
+
+
+<ul><li><img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BH%7D+%3D+F%28%5Cmathbf%7BH%7D%2C+%5Cmathbf%7BX%7D%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BH%7D+%3D+F%28%5Cmathbf%7BH%7D%2C+%5Cmathbf%7BX%7D%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7BH%7D+%3D+F%28%5Cmathbf%7BH%7D%2C+%5Cmathbf%7BX%7D%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{H} = F(\mathbf{H}, \mathbf{X})">, and</li><li><img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BO%7D+%3D+G%28%5Cmathbf%7BH%7D%2C+%5Cmathbf%7BX%7D_N%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BO%7D+%3D+G%28%5Cmathbf%7BH%7D%2C+%5Cmathbf%7BX%7D_N%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7BO%7D+%3D+G%28%5Cmathbf%7BH%7D%2C+%5Cmathbf%7BX%7D_N%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{O} = G(\mathbf{H}, \mathbf{X}_N)"></li></ul>
+
+
+
+<p>Where <em>F</em> is the <em>global transition function and _G</em> is the <em>global output function</em>.</p>
+
+
+
+<p>The original GNN iterates to a fix point using <img src="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BH%7D%5E%7Bt%2B1%7D+%3D+F%28%5Cmathbf%7BH%7D%5Et%2C+%5Cmathbf%7BX%7D%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Cmathbf%7BH%7D%5E%7Bt%2B1%7D+%3D+F%28%5Cmathbf%7BH%7D%5Et%2C+%5Cmathbf%7BX%7D%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Cmathbf%7BH%7D%5E%7Bt%2B1%7D+%3D+F%28%5Cmathbf%7BH%7D%5Et%2C+%5Cmathbf%7BX%7D%29&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\mathbf{H}^{t+1} = F(\mathbf{H}^t, \mathbf{X})">.</p>
+
+
+
+<h3>Graph types, propagation steps, and training methods</h3>
+
+
+
+<p>Zhou et al. break their analysis down into three main component parts: the <em>types of graph</em> that a method can work with, the kind of <em>propagation step</em> that is used, and the <em>training method</em>.</p>
+
+
+
+<h4>Graph types</h4>
+
+
+
+<p>In the basic GNN, edges are bidirectional, and nodes are homogenous.  Zhou et al. consider three extensions: directed graphs, heterogenous graphs, and attributed edges.</p>
+
+
+
+<figure><img src="https://blog.acolyer.org/wp-content/uploads/2019/02/gnn-review-fig-2a.jpeg?w=480" alt=""></figure>
+
+
+
+<p>When edges have attributes there are two basic strategies: you can associate a weight matrix with the edges, or you can split the original edge into two introducing an ‘edge node’ in the middle (which then holds the edge attributes). If there are multiple different types of edges you can use one weight and one adjacency matrix per edge type.</p>
+
+
+
+<p>For graphs with several different kinds of node the simplest strategy is to concatenate a one-hot encoded node type vector to the node features. <em>GraphInception</em> creates one neighbourhood per node type and deals with each as if it were a sub-graph in a homogenous graph.</p>
+
+
+
+<h4>Propagation steps</h4>
+
+
+
+<p>There are lots of different approaches to propagation. Many of which we looked at earlier this week .</p>
+
+
+
+<figure><img src="https://blog.acolyer.org/wp-content/uploads/2019/02/gnn-review-fig-2c.jpeg?w=640" alt=""></figure>
+
+
+
+<p>Gated approaches use Gate Recurrent Units (GRU) or LSTM models to try and improve long-term propagation of information across the graph structure.  Gated Graph Neural Network (GGNN) uses GRUs with update functions that incorporate information from other nodes and from the previous timestep.  Graph LSTM approaches adapt LSTM propagation based on a tree or graph. In Tree-LSTM each unit contains one forget gate and parameter matrix per child, allowing the unit to selectively incorporate per-child information.  The tree approach can be generalised to an arbitrary graph, one application of which is in sentence encoding: Sentence-LSTM (S-LSTM) converts the text into a graph and then uses a Graph LSTM to learn a representation.</p>
+
+
+
+<p>Another classic approach to try and improve learning across many layers is the introduction of skip connections. Highway GCN uses ‘highway gates’ which sum the output of a layer with its input and gating weights. The Jump Knowledge Network selects from amongst all the intermediate representations for each node at the last layer (the selected representation ‘jumps’ to the output layer).</p>
+
+
+
+<p>The following monster table shows how some of the different GNN methods map into the abstract model we started with.</p>
+
+
+
+<figure><img src="https://blog.acolyer.org/wp-content/uploads/2019/02/gnn-review-table-2.jpeg?w=640" alt=""></figure>
+
+
+
+<h4>Training methods</h4>
+
+
+
+<p>GNNs struggle with large graphs, so a number of training enhancements have been proposed.</p>
+
+
+
+<figure><img src="https://blog.acolyer.org/wp-content/uploads/2019/02/gnn-review-fig-2b.jpeg?w=480" alt=""></figure>
+
+
+
+<p>GraphSage, as we saw earlier this week, uses <em>neighbourhood sampling</em>.  The <em>control-variate</em> based approach uses historical activations of nodes to limit the receptive field in the 1-hop neighbourhood (I’d need to read the referenced paper to really understand what that means here!). Co-training GCN and Self-training GCN both try to deal with performance drop-off in different ways: co-training enlarges the training data set by finding nearest neighbours, and self-training uses boosting.</p>
+
+
+
+<h3>The Graph Network</h3>
+
+
+
+<p>Section 2.3.3 in the paper discusses Graph Networks, which generalise and extend Message-Passing Neural Networks (MPNNs) and Non-Local Neural Networks (NLNNs). Graph networks support flexible representations for global, node, and edge attributes; different functions can be used within blocks; and blocks can be composed to construct complex architectures.</p>
+
+
+
+<h3>More applications of GNNs</h3>
+
+
+
+<p>Section 3 discusses many applications of graph neural networks, including the following handy table with references to example papers and algorithms.</p>
+
+
+
+<figure><img src="https://blog.acolyer.org/wp-content/uploads/2019/02/gnn-review-table-3.jpeg?w=640" alt=""></figure>
+
+
+
+<h3>Research challenges</h3>
+
+
+
+<p>There is good agreement on the open challenges with graph neural networks (depth, scale, skew, dynamic graphs with structure that changes over time).  There’s also a discussion of the challenges involved in taking unstructured inputs and turning them into structured forms – this is a different kind of <em>graph generation</em> problem.</p>
+
+
+
+<blockquote><p>
+  …finding the best graph generation approach will offer a wider range of fields where GNN could make a contribution.
+</p></blockquote>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+
+	</article></div>
+  </div>
+</body>
+</html>

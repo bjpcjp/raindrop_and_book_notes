@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bash scripting cheatsheet</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Bash scripting cheatsheet</h1>
+    <p><strong>URL:</strong> <a href="https://devhints.io/bash">https://devhints.io/bash</a></p>
+    <p><strong>Tags:</strong> bash, linux</p>
+    <p><strong>Bookmark ID:</strong> 876780239</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-js-main-body="" data-js-anchors="" role="main"> <section><h2 id="getting-started">Getting started</h2><div>
+
+<section><h3 id="introduction">Introduction</h3><div>
+
+<p>This is a quick reference to getting started with Bash scripting.</p>
+
+<ul>
+  <li><a href="https://learnxinyminutes.com/docs/bash/">Learn bash in y minutes</a> <em>(learnxinyminutes.com)</em></li>
+  <li><a href="http://mywiki.wooledge.org/BashGuide">Bash Guide</a> <em>(mywiki.wooledge.org)</em></li>
+  <li><a href="https://web.archive.org/web/20230406205817/https://wiki.bash-hackers.org/">Bash Hackers Wiki</a> <em>(wiki.bash-hackers.org)</em></li>
+</ul>
+
+</div></section><section><h3 id="example">Example</h3><div>
+
+<pre><code><span>#!/usr/bin/env bash</span>
+
+<span>name</span><span>=</span><span>"John"</span>
+<span>echo</span> <span>"Hello <span>$name</span>!"</span>
+</code></pre>
+
+</div></section><section><h3 id="variables">Variables</h3><div>
+
+<pre><code><span>name</span><span>=</span><span>"John"</span>
+<span>echo</span> <span>$name</span>  <span># see below</span>
+<span>echo</span> <span>"<span>$name</span>"</span>
+<span>echo</span> <span>"<span>${name}</span>!"</span>
+</code></pre>
+
+<p>Generally quote your variables unless they contain wildcards to expand or command fragments.</p>
+
+<pre><code><span>wildcard</span><span>=</span><span>"*.txt"</span>
+<span>options</span><span>=</span><span>"iv"</span>
+<span>cp</span> -<span>$options</span> <span>$wildcard</span> /tmp
+</code></pre>
+
+</div></section><section><h3 id="string-quotes">String quotes</h3><div>
+
+<pre><code><span>name</span><span>=</span><span>"John"</span>
+<span>echo</span> <span>"Hi <span>$name</span>"</span>  <span>#=&gt; Hi John</span>
+<span>echo</span> <span>'Hi $name'</span>  <span>#=&gt; Hi $name</span>
+</code></pre>
+
+</div></section><section><h3 id="shell-execution">Shell execution</h3><div>
+
+<pre><code><span>echo</span> <span>"I'm in <span><span>$(</span><span>pwd</span><span>)</span></span>"</span>
+<span>echo</span> <span>"I'm in <span><span>`</span><span>pwd</span><span>`</span></span>"</span>  <span># obsolescent</span>
+<span># Same</span>
+</code></pre>
+
+<p>See <a href="https://web.archive.org/web/20230326081741/https://wiki.bash-hackers.org/syntax/expansion/cmdsubst">Command substitution</a></p>
+
+</div></section><section><h3 id="conditional-execution">Conditional execution</h3><div>
+
+<pre><code><span>git</span> commit <span>&amp;&amp;</span> <span>git</span> push
+<span>git</span> commit <span>||</span> <span>echo</span> <span>"Commit failed"</span>
+</code></pre>
+
+</div></section><section><h3 id="functions-example">Functions</h3><div>
+
+<pre><code><span>get_name</span><span>(</span><span>)</span> <span>{</span>
+  <span>echo</span> <span>"John"</span>
+<span>}</span>
+
+<span>echo</span> <span>"You are <span><span>$(</span>get_name<span>)</span></span>"</span>
+</code></pre>
+
+<p>See: <a href="#functions">Functions</a></p>
+
+</div></section><section><h3 id="conditionals-example">Conditionals</h3><div>
+
+<pre><code><span>if</span> <span>[</span><span>[</span> -z <span>"<span>$string</span>"</span> <span>]</span><span>]</span><span>;</span> <span>then</span>
+  <span>echo</span> <span>"String is empty"</span>
+<span>elif</span> <span>[</span><span>[</span> -n <span>"<span>$string</span>"</span> <span>]</span><span>]</span><span>;</span> <span>then</span>
+  <span>echo</span> <span>"String is not empty"</span>
+<span>fi</span>
+</code></pre>
+
+<p>See: <a href="#conditionals">Conditionals</a></p>
+
+</div></section><section><h3 id="strict-mode">Strict mode</h3><div>
+
+<pre><code><span>set</span> -euo pipefail
+<span><span>IFS</span></span><span>=</span><span>$'<span title="\n">\n</span><span title="\t">\t</span>'</span>
+</code></pre>
+
+<p>See: <a href="http://redsymbol.net/articles/unofficial-bash-strict-mode/">Unofficial bash strict mode</a></p>
+
+</div></section><section><h3 id="brace-expansion">Brace expansion</h3><div>
+
+<pre><code><span>echo</span> <span>{</span>A,B<span>}</span>.js
+</code></pre>
+
+<table>
+  <thead>
+    <tr>
+      <th>Expression</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>{A,B}</code></td>
+      <td>Same as <code>A B</code></td>
+    </tr>
+    <tr>
+      <td><code>{A,B}.js</code></td>
+      <td>Same as <code>A.js B.js</code></td>
+    </tr>
+    <tr>
+      <td><code>{1..5}</code></td>
+      <td>Same as <code>1 2 3 4 5</code></td>
+    </tr>
+    <tr>
+      <td><code>{{1..3},{7..9}}</code></td>
+      <td>Same as <code>1 2 3 7 8 9</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>See: <a href="https://web.archive.org/web/20230207192110/https://wiki.bash-hackers.org/syntax/expansion/brace">Brace expansion</a></p>
+
+</div></section></div></section><section><h2 id="parameter-expansions">Parameter expansions</h2><div>
+
+<section><h3 id="basics">Basics</h3><div>
+
+<pre><code><span>name</span><span>=</span><span>"John"</span>
+<span>echo</span> <span>"<span>${name}</span>"</span>
+<span>echo</span> <span>"<span>${name<span>/</span>J<span>/</span>j}</span>"</span>    <span>#=&gt; "john" (substitution)</span>
+<span>echo</span> <span>"<span>${name<span>:</span>0<span>:</span>2}</span>"</span>    <span>#=&gt; "Jo" (slicing)</span>
+<span>echo</span> <span>"<span>${name<span>:</span><span>:</span>2}</span>"</span>     <span>#=&gt; "Jo" (slicing)</span>
+<span>echo</span> <span>"<span>${name<span>:</span><span>:-</span>1}</span>"</span>    <span>#=&gt; "Joh" (slicing)</span>
+<span>echo</span> <span>"<span>${name<span>:</span>(-1)}</span>"</span>   <span>#=&gt; "n" (slicing from right)</span>
+<span>echo</span> <span>"<span>${name<span>:</span>(-2)<span>:</span>1}</span>"</span> <span>#=&gt; "h" (slicing from right)</span>
+<span>echo</span> <span>"<span>${food<span>:-</span>Cake}</span>"</span>  <span>#=&gt; $food or "Cake"</span>
+</code></pre>
+
+<pre><code><span>length</span><span>=</span><span>2</span>
+<span>echo</span> <span>"<span>${name<span>:</span>0<span>:</span>length}</span>"</span>  <span>#=&gt; "Jo"</span>
+</code></pre>
+
+<p>See: <a href="https://web.archive.org/web/20230408142504/https://wiki.bash-hackers.org/syntax/pe">Parameter expansion</a></p>
+
+<pre><code><span>str</span><span>=</span><span>"/path/to/foo.cpp"</span>
+<span>echo</span> <span>"<span>${str<span>%</span>.cpp}</span>"</span>    <span># /path/to/foo</span>
+<span>echo</span> <span>"<span>${str<span>%</span>.cpp}</span>.o"</span>  <span># /path/to/foo.o</span>
+<span>echo</span> <span>"<span>${str<span>%</span><span>/</span>*}</span>"</span>      <span># /path/to</span>
+
+<span>echo</span> <span>"<span>${str<span>##</span>*.}</span>"</span>     <span># cpp (extension)</span>
+<span>echo</span> <span>"<span>${str<span>##</span>*<span>/</span>}</span>"</span>     <span># foo.cpp (basepath)</span>
+
+<span>echo</span> <span>"<span>${str<span>#</span>*<span>/</span>}</span>"</span>      <span># path/to/foo.cpp</span>
+<span>echo</span> <span>"<span>${str<span>##</span>*<span>/</span>}</span>"</span>     <span># foo.cpp</span>
+
+<span>echo</span> <span>"<span>${str<span>/</span>foo<span>/</span>bar}</span>"</span> <span># /path/to/bar.cpp</span>
+</code></pre>
+
+<pre><code><span>str</span><span>=</span><span>"Hello world"</span>
+<span>echo</span> <span>"<span>${str<span>:</span>6<span>:</span>5}</span>"</span>    <span># "world"</span>
+<span>echo</span> <span>"<span>${str<span>:</span> -5<span>:</span>5}</span>"</span>  <span># "world"</span>
+</code></pre>
+
+<pre><code><span>src</span><span>=</span><span>"/path/to/foo.cpp"</span>
+<span>base</span><span>=</span><span>${src<span>##</span>*<span>/</span>}</span>   <span>#=&gt; "foo.cpp" (basepath)</span>
+<span>dir</span><span>=</span><span>${src<span>%</span>$base}</span>  <span>#=&gt; "/path/to/" (dirpath)</span>
+</code></pre>
+
+</div></section><section><h3 id="prefix-name-expansion">Prefix name expansion</h3><div>
+
+<pre><code><span>prefix_a</span><span>=</span>one
+<span>prefix_b</span><span>=</span>two
+<span>echo</span> <span>${<span>!</span>prefix_*}</span>  <span># all variables names starting with `prefix_`</span>
+prefix_a prefix_b
+</code></pre>
+
+</div></section><section><h3 id="indirection">Indirection</h3><div>
+
+<pre><code><span>name</span><span>=</span>joe
+<span>pointer</span><span>=</span>name
+<span>echo</span> <span>${<span>!</span>pointer}</span>
+joe
+</code></pre>
+
+</div></section><section><h3 id="substitution">Substitution</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>${foo%suffix}</code></td>
+      <td>Remove suffix</td>
+    </tr>
+    <tr>
+      <td><code>${foo#prefix}</code></td>
+      <td>Remove prefix</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td><code>${foo%%suffix}</code></td>
+      <td>Remove long suffix</td>
+    </tr>
+    <tr>
+      <td><code>${foo/%suffix}</code></td>
+      <td>Remove long suffix</td>
+    </tr>
+    <tr>
+      <td><code>${foo##prefix}</code></td>
+      <td>Remove long prefix</td>
+    </tr>
+    <tr>
+      <td><code>${foo/#prefix}</code></td>
+      <td>Remove long prefix</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td><code>${foo/from/to}</code></td>
+      <td>Replace first match</td>
+    </tr>
+    <tr>
+      <td><code>${foo//from/to}</code></td>
+      <td>Replace all</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td><code>${foo/%from/to}</code></td>
+      <td>Replace suffix</td>
+    </tr>
+    <tr>
+      <td><code>${foo/#from/to}</code></td>
+      <td>Replace prefix</td>
+    </tr>
+  </tbody>
+</table>
+
+</div></section><div>
+
+<pre><code><span># Single line comment</span>
+</code></pre>
+
+<pre><code><span>:</span> <span>'
+This is a
+multi line
+comment
+'</span>
+</code></pre>
+
+</div><section><h3 id="substrings">Substrings</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Expression</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>${foo:0:3}</code></td>
+      <td>Substring <em>(position, length)</em></td>
+    </tr>
+    <tr>
+      <td><code>${foo:(-3):3}</code></td>
+      <td>Substring from the right</td>
+    </tr>
+  </tbody>
+</table>
+
+</div></section><section><h3 id="length">Length</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Expression</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>${#foo}</code></td>
+      <td>Length of <code>$foo</code></td>
+    </tr>
+  </tbody>
+</table>
+
+</div></section><section><h3 id="manipulation">Manipulation</h3><div>
+
+<pre><code><span>str</span><span>=</span><span>"HELLO WORLD!"</span>
+<span>echo</span> <span>"<span>${str<span>,</span>}</span>"</span>   <span>#=&gt; "hELLO WORLD!" (lowercase 1st letter)</span>
+<span>echo</span> <span>"<span>${str<span>,,</span>}</span>"</span>  <span>#=&gt; "hello world!" (all lowercase)</span>
+
+<span>str</span><span>=</span><span>"hello world!"</span>
+<span>echo</span> <span>"<span>${str<span>^</span>}</span>"</span>   <span>#=&gt; "Hello world!" (uppercase 1st letter)</span>
+<span>echo</span> <span>"<span>${str<span>^^</span>}</span>"</span>  <span>#=&gt; "HELLO WORLD!" (all uppercase)</span>
+</code></pre>
+
+</div></section><section><h3 id="default-values">Default values</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Expression</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>${foo:-val}</code></td>
+      <td><code>$foo</code>, or <code>val</code> if unset (or null)</td>
+    </tr>
+    <tr>
+      <td><code>${foo:=val}</code></td>
+      <td>Set <code>$foo</code> to <code>val</code> if unset (or null)</td>
+    </tr>
+    <tr>
+      <td><code>${foo:+val}</code></td>
+      <td><code>val</code> if <code>$foo</code> is set (and not null)</td>
+    </tr>
+    <tr>
+      <td><code>${foo:?message}</code></td>
+      <td>Show error message and exit if <code>$foo</code> is unset (or null)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Omitting the <code>:</code> removes the (non)nullity checks, e.g. <code>${foo-val}</code> expands to <code>val</code> if unset otherwise <code>$foo</code>.</p>
+
+</div></section></div></section><section><h2 id="loops">Loops</h2><div>
+
+<section><h3 id="basic-for-loop">Basic for loop</h3><div>
+
+<pre><code><span>for</span> <span>i</span> <span>in</span> /etc/rc.*<span>;</span> <span>do</span>
+  <span>echo</span> <span>"<span>$i</span>"</span>
+<span>done</span>
+</code></pre>
+
+</div></section><section><h3 id="c-like-for-loop">C-like for loop</h3><div>
+
+<pre><code><span>for</span> <span><span>((</span>i <span>=</span> <span>0</span> <span>;</span> i <span>&lt;</span> <span>100</span> <span>;</span> i<span>++</span><span>))</span></span><span>;</span> <span>do</span>
+  <span>echo</span> <span>"<span>$i</span>"</span>
+<span>done</span>
+</code></pre>
+
+</div></section><section><h3 id="ranges">Ranges</h3><div>
+
+<pre><code><span>for</span> <span>i</span> <span>in</span> <span>{</span><span>1</span><span>..</span><span>5</span><span>}</span><span>;</span> <span>do</span>
+    <span>echo</span> <span>"Welcome <span>$i</span>"</span>
+<span>done</span>
+</code></pre>
+
+<h4 id="with-step-size">With step size</h4>
+
+<pre><code><span>for</span> <span>i</span> <span>in</span> <span>{</span><span>5</span><span>..</span><span>50</span><span>..</span><span>5</span><span>}</span><span>;</span> <span>do</span>
+    <span>echo</span> <span>"Welcome <span>$i</span>"</span>
+<span>done</span>
+</code></pre>
+
+</div></section><section><h3 id="reading-lines">Reading lines</h3><div>
+
+<pre><code><span>while</span> <span>read</span> -r line<span>;</span> <span>do</span>
+  <span>echo</span> <span>"<span>$line</span>"</span>
+<span>done</span> <span>&lt;</span>file.txt
+</code></pre>
+
+</div></section><section><h3 id="forever">Forever</h3><div>
+
+<pre><code><span>while</span> <span>true</span><span>;</span> <span>do</span>
+  ···
+<span>done</span>
+</code></pre>
+
+</div></section></div></section><section><h2 id="functions">Functions</h2><div>
+
+<section><h3 id="defining-functions">Defining functions</h3><div>
+
+<pre><code><span>myfunc</span><span>(</span><span>)</span> <span>{</span>
+    <span>echo</span> <span>"hello <span>$1</span>"</span>
+<span>}</span>
+</code></pre>
+
+<pre><code><span># Same as above (alternate syntax)</span>
+<span>function</span> <span>myfunc</span> <span>{</span>
+    <span>echo</span> <span>"hello <span>$1</span>"</span>
+<span>}</span>
+</code></pre>
+
+<pre><code>myfunc <span>"John"</span>
+</code></pre>
+
+</div></section><section><h3 id="returning-values">Returning values</h3><div>
+
+<pre><code><span>myfunc</span><span>(</span><span>)</span> <span>{</span>
+    <span>local</span> <span>myresult</span><span>=</span><span>'some value'</span>
+    <span>echo</span> <span>"<span>$myresult</span>"</span>
+<span>}</span>
+</code></pre>
+
+<pre><code><span>result</span><span>=</span><span><span>$(</span>myfunc<span>)</span></span>
+</code></pre>
+
+</div></section><section><h3 id="raising-errors">Raising errors</h3><div>
+
+<pre><code><span>myfunc</span><span>(</span><span>)</span> <span>{</span>
+  <span>return</span> <span>1</span>
+<span>}</span>
+</code></pre>
+
+<pre><code><span>if</span> myfunc<span>;</span> <span>then</span>
+  <span>echo</span> <span>"success"</span>
+<span>else</span>
+  <span>echo</span> <span>"failure"</span>
+<span>fi</span>
+</code></pre>
+
+</div></section><section><h3 id="arguments">Arguments</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Expression</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>$#</code></td>
+      <td>Number of arguments</td>
+    </tr>
+    <tr>
+      <td><code>$*</code></td>
+      <td>All positional arguments (as a single word)</td>
+    </tr>
+    <tr>
+      <td><code>$@</code></td>
+      <td>All positional arguments (as separate strings)</td>
+    </tr>
+    <tr>
+      <td><code>$1</code></td>
+      <td>First argument</td>
+    </tr>
+    <tr>
+      <td><code>$_</code></td>
+      <td>Last argument of the previous command</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Note</strong>: <code>$@</code> and <code>$*</code> must be quoted in order to perform as described.
+Otherwise, they do exactly the same thing (arguments as separate strings).</p>
+
+<p>See <a href="https://web.archive.org/web/20230318164746/https://wiki.bash-hackers.org/syntax/shellvars#special_parameters_and_shell_variables">Special parameters</a>.</p>
+
+</div></section></div></section><section><h2 id="conditionals">Conditionals</h2><div>
+
+<section><h3 id="conditions">Conditions</h3><div>
+
+<p>Note that <code>[[</code> is actually a command/program that returns either <code>0</code> (true) or <code>1</code> (false). Any program that obeys the same logic (like all base utils, such as <code>grep(1)</code> or <code>ping(1)</code>) can be used as condition, see examples.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Condition</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>[[ -z STRING ]]</code></td>
+      <td>Empty string</td>
+    </tr>
+    <tr>
+      <td><code>[[ -n STRING ]]</code></td>
+      <td>Not empty string</td>
+    </tr>
+    <tr>
+      <td><code>[[ STRING == STRING ]]</code></td>
+      <td>Equal</td>
+    </tr>
+    <tr>
+      <td><code>[[ STRING != STRING ]]</code></td>
+      <td>Not Equal</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td><code>[[ NUM -eq NUM ]]</code></td>
+      <td>Equal</td>
+    </tr>
+    <tr>
+      <td><code>[[ NUM -ne NUM ]]</code></td>
+      <td>Not equal</td>
+    </tr>
+    <tr>
+      <td><code>[[ NUM -lt NUM ]]</code></td>
+      <td>Less than</td>
+    </tr>
+    <tr>
+      <td><code>[[ NUM -le NUM ]]</code></td>
+      <td>Less than or equal</td>
+    </tr>
+    <tr>
+      <td><code>[[ NUM -gt NUM ]]</code></td>
+      <td>Greater than</td>
+    </tr>
+    <tr>
+      <td><code>[[ NUM -ge NUM ]]</code></td>
+      <td>Greater than or equal</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td><code>[[ STRING =~ STRING ]]</code></td>
+      <td>Regexp</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td><code>(( NUM &lt; NUM ))</code></td>
+      <td>Numeric conditions</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="more-conditions">More conditions</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Condition</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>[[ -o noclobber ]]</code></td>
+      <td>If OPTIONNAME is enabled</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td><code>[[ ! EXPR ]]</code></td>
+      <td>Not</td>
+    </tr>
+    <tr>
+      <td><code>[[ X &amp;&amp; Y ]]</code></td>
+      <td>And</td>
+    </tr>
+    <tr>
+      <td><code>[[ X || Y ]]</code></td>
+      <td>Or</td>
+    </tr>
+  </tbody>
+</table>
+
+</div></section><section><h3 id="file-conditions">File conditions</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Condition</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>[[ -e FILE ]]</code></td>
+      <td>Exists</td>
+    </tr>
+    <tr>
+      <td><code>[[ -r FILE ]]</code></td>
+      <td>Readable</td>
+    </tr>
+    <tr>
+      <td><code>[[ -h FILE ]]</code></td>
+      <td>Symlink</td>
+    </tr>
+    <tr>
+      <td><code>[[ -d FILE ]]</code></td>
+      <td>Directory</td>
+    </tr>
+    <tr>
+      <td><code>[[ -w FILE ]]</code></td>
+      <td>Writable</td>
+    </tr>
+    <tr>
+      <td><code>[[ -s FILE ]]</code></td>
+      <td>Size is &gt; 0 bytes</td>
+    </tr>
+    <tr>
+      <td><code>[[ -f FILE ]]</code></td>
+      <td>File</td>
+    </tr>
+    <tr>
+      <td><code>[[ -x FILE ]]</code></td>
+      <td>Executable</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td><code>[[ FILE1 -nt FILE2 ]]</code></td>
+      <td>1 is more recent than 2</td>
+    </tr>
+    <tr>
+      <td><code>[[ FILE1 -ot FILE2 ]]</code></td>
+      <td>2 is more recent than 1</td>
+    </tr>
+    <tr>
+      <td><code>[[ FILE1 -ef FILE2 ]]</code></td>
+      <td>Same files</td>
+    </tr>
+  </tbody>
+</table>
+
+</div></section><section><h3 id="example-1">Example</h3><div>
+
+<pre><code><span># String</span>
+<span>if</span> <span>[</span><span>[</span> -z <span>"<span>$string</span>"</span> <span>]</span><span>]</span><span>;</span> <span>then</span>
+  <span>echo</span> <span>"String is empty"</span>
+<span>elif</span> <span>[</span><span>[</span> -n <span>"<span>$string</span>"</span> <span>]</span><span>]</span><span>;</span> <span>then</span>
+  <span>echo</span> <span>"String is not empty"</span>
+<span>else</span>
+  <span>echo</span> <span>"This never happens"</span>
+<span>fi</span>
+</code></pre>
+
+<pre><code><span># Combinations</span>
+<span>if</span> <span>[</span><span>[</span> X <span>&amp;&amp;</span> Y <span>]</span><span>]</span><span>;</span> <span>then</span>
+  <span>..</span>.
+<span>fi</span>
+</code></pre>
+
+<pre><code><span># Equal</span>
+<span>if</span> <span>[</span><span>[</span> <span>"<span>$A</span>"</span> <span>==</span> <span>"<span>$B</span>"</span> <span>]</span><span>]</span>
+</code></pre>
+
+<pre><code><span># Regex</span>
+<span>if</span> <span>[</span><span>[</span> <span>"A"</span> <span>=~</span> <span>.</span> <span>]</span><span>]</span>
+</code></pre>
+
+<pre><code><span>if</span> <span><span>((</span> $a <span>&lt;</span> $b <span>))</span></span><span>;</span> <span>then</span>
+   <span>echo</span> <span>"<span>$a</span> is smaller than <span>$b</span>"</span>
+<span>fi</span>
+</code></pre>
+
+<pre><code><span>if</span> <span>[</span><span>[</span> -e <span>"file.txt"</span> <span>]</span><span>]</span><span>;</span> <span>then</span>
+  <span>echo</span> <span>"file exists"</span>
+<span>fi</span>
+</code></pre>
+
+</div></section></div></section><section><h2 id="arrays">Arrays</h2><div>
+
+<section><h3 id="defining-arrays">Defining arrays</h3><div>
+
+<pre><code><span>Fruits</span><span>=</span><span>(</span><span>'Apple'</span> <span>'Banana'</span> <span>'Orange'</span><span>)</span>
+</code></pre>
+
+<pre><code>Fruits<span>[</span><span>0</span><span>]</span><span>=</span><span>"Apple"</span>
+Fruits<span>[</span><span>1</span><span>]</span><span>=</span><span>"Banana"</span>
+Fruits<span>[</span><span>2</span><span>]</span><span>=</span><span>"Orange"</span>
+</code></pre>
+
+</div></section><section><h3 id="working-with-arrays">Working with arrays</h3><div>
+
+<pre><code><span>echo</span> <span>"<span>${Fruits<span>[</span>0<span>]</span>}</span>"</span>           <span># Element #0</span>
+<span>echo</span> <span>"<span>${Fruits<span>[</span>-1<span>]</span>}</span>"</span>          <span># Last element</span>
+<span>echo</span> <span>"<span>${Fruits<span>[</span>@<span>]</span>}</span>"</span>           <span># All elements, space-separated</span>
+<span>echo</span> <span>"<span>${<span>#</span>Fruits<span>[</span>@<span>]</span>}</span>"</span>          <span># Number of elements</span>
+<span>echo</span> <span>"<span>${<span>#</span>Fruits}</span>"</span>             <span># String length of the 1st element</span>
+<span>echo</span> <span>"<span>${<span>#</span>Fruits<span>[</span>3<span>]</span>}</span>"</span>          <span># String length of the Nth element</span>
+<span>echo</span> <span>"<span>${Fruits<span>[</span>@<span>]</span><span>:</span>3<span>:</span>2}</span>"</span>       <span># Range (from position 3, length 2)</span>
+<span>echo</span> <span>"<span>${<span>!</span>Fruits<span>[</span>@<span>]</span>}</span>"</span>          <span># Keys of all elements, space-separated</span>
+</code></pre>
+
+</div></section><section><h3 id="operations">Operations</h3><div>
+
+<pre><code><span>Fruits</span><span>=</span><span>(</span><span>"<span>${Fruits<span>[</span>@<span>]</span>}</span>"</span> <span>"Watermelon"</span><span>)</span>    <span># Push</span>
+<span>Fruits</span><span>+=</span><span>(</span><span>'Watermelon'</span><span>)</span>                  <span># Also Push</span>
+<span>Fruits</span><span>=</span><span>(</span> <span>"<span>${Fruits<span>[</span>@<span>]</span><span>/</span>Ap*<span>/</span>}</span>"</span> <span>)</span>          <span># Remove by regex match</span>
+<span>unset</span> Fruits<span>[</span><span>2</span><span>]</span>                         <span># Remove one item</span>
+<span>Fruits</span><span>=</span><span>(</span><span>"<span>${Fruits<span>[</span>@<span>]</span>}</span>"</span><span>)</span>                 <span># Duplicate</span>
+<span>Fruits</span><span>=</span><span>(</span><span>"<span>${Fruits<span>[</span>@<span>]</span>}</span>"</span> <span>"<span>${Veggies<span>[</span>@<span>]</span>}</span>"</span><span>)</span> <span># Concatenate</span>
+<span>lines</span><span>=</span><span>(</span><span><span>`</span><span>cat</span> <span>"logfile"</span><span>`</span></span><span>)</span>                 <span># Read from file</span>
+</code></pre>
+
+</div></section><section><h3 id="iteration">Iteration</h3><div>
+
+<pre><code><span>for</span> <span>i</span> <span>in</span> <span>"<span>${arrayName<span>[</span>@<span>]</span>}</span>"</span><span>;</span> <span>do</span>
+  <span>echo</span> <span>"<span>$i</span>"</span>
+<span>done</span>
+</code></pre>
+
+</div></section></div></section><section><h2 id="dictionaries">Dictionaries</h2><div>
+
+<section><h3 id="defining">Defining</h3><div>
+
+<pre><code><span>declare</span> -A sounds
+</code></pre>
+
+<pre><code>sounds<span>[</span>dog<span>]</span><span>=</span><span>"bark"</span>
+sounds<span>[</span>cow<span>]</span><span>=</span><span>"moo"</span>
+sounds<span>[</span>bird<span>]</span><span>=</span><span>"tweet"</span>
+sounds<span>[</span>wolf<span>]</span><span>=</span><span>"howl"</span>
+</code></pre>
+
+<p>Declares <code>sound</code> as a Dictionary object (aka associative array).</p>
+
+</div></section><section><h3 id="working-with-dictionaries">Working with dictionaries</h3><div>
+
+<pre><code><span>echo</span> <span>"<span>${sounds<span>[</span>dog<span>]</span>}</span>"</span> <span># Dog's sound</span>
+<span>echo</span> <span>"<span>${sounds<span>[</span>@<span>]</span>}</span>"</span>   <span># All values</span>
+<span>echo</span> <span>"<span>${<span>!</span>sounds<span>[</span>@<span>]</span>}</span>"</span>  <span># All keys</span>
+<span>echo</span> <span>"<span>${<span>#</span>sounds<span>[</span>@<span>]</span>}</span>"</span>  <span># Number of elements</span>
+<span>unset</span> sounds<span>[</span>dog<span>]</span>     <span># Delete dog</span>
+</code></pre>
+
+</div></section><section><h3 id="iteration-1">Iteration</h3><div>
+
+<h4 id="iterate-over-values">Iterate over values</h4>
+
+<pre><code><span>for</span> <span>val</span> <span>in</span> <span>"<span>${sounds<span>[</span>@<span>]</span>}</span>"</span><span>;</span> <span>do</span>
+  <span>echo</span> <span>"<span>$val</span>"</span>
+<span>done</span>
+</code></pre>
+
+<h4 id="iterate-over-keys">Iterate over keys</h4>
+
+<pre><code><span>for</span> <span>key</span> <span>in</span> <span>"<span>${<span>!</span>sounds<span>[</span>@<span>]</span>}</span>"</span><span>;</span> <span>do</span>
+  <span>echo</span> <span>"<span>$key</span>"</span>
+<span>done</span>
+</code></pre>
+
+</div></section></div></section><section><h2 id="options">Options</h2><div>
+
+<section><h3 id="options-1">Options</h3><div>
+
+<pre><code><span>set</span> -o noclobber  <span># Avoid overlay files (echo "hi" &gt; foo)</span>
+<span>set</span> -o errexit    <span># Used to exit upon error, avoiding cascading errors</span>
+<span>set</span> -o pipefail   <span># Unveils hidden failures</span>
+<span>set</span> -o nounset    <span># Exposes unset variables</span>
+</code></pre>
+
+</div></section><section><h3 id="glob-options">Glob options</h3><div>
+
+<pre><code><span>shopt</span> -s nullglob    <span># Non-matching globs are removed  ('*.foo' =&gt; '')</span>
+<span>shopt</span> -s failglob    <span># Non-matching globs throw errors</span>
+<span>shopt</span> -s nocaseglob  <span># Case insensitive globs</span>
+<span>shopt</span> -s dotglob     <span># Wildcards match dotfiles ("*.sh" =&gt; ".foo.sh")</span>
+<span>shopt</span> -s globstar    <span># Allow ** for recursive matches ('lib/**/*.rb' =&gt; 'lib/a/b/c.rb')</span>
+</code></pre>
+
+<p>Set <code>GLOBIGNORE</code> as a colon-separated list of patterns to be removed from glob
+matches.</p>
+
+</div></section></div></section><section><h2 id="history">History</h2><div>
+
+<section><h3 id="commands">Commands</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Command</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>history</code></td>
+      <td>Show history</td>
+    </tr>
+    <tr>
+      <td><code>shopt -s histverify</code></td>
+      <td>Don’t execute expanded result immediately</td>
+    </tr>
+  </tbody>
+</table>
+
+</div></section><section><h3 id="expansions">Expansions</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Expression</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>!$</code></td>
+      <td>Expand last parameter of most recent command</td>
+    </tr>
+    <tr>
+      <td><code>!*</code></td>
+      <td>Expand all parameters of most recent command</td>
+    </tr>
+    <tr>
+      <td><code>!-n</code></td>
+      <td>Expand <code>n</code>th most recent command</td>
+    </tr>
+    <tr>
+      <td><code>!n</code></td>
+      <td>Expand <code>n</code>th command in history</td>
+    </tr>
+    <tr>
+      <td><code>!&lt;command&gt;</code></td>
+      <td>Expand most recent invocation of command <code>&lt;command&gt;</code></td>
+    </tr>
+  </tbody>
+</table>
+
+</div></section><section><h3 id="operations-1">Operations</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>!!</code></td>
+      <td>Execute last command again</td>
+    </tr>
+    <tr>
+      <td><code>!!:s/&lt;FROM&gt;/&lt;TO&gt;/</code></td>
+      <td>Replace first occurrence of <code>&lt;FROM&gt;</code> to <code>&lt;TO&gt;</code> in most recent command</td>
+    </tr>
+    <tr>
+      <td><code>!!:gs/&lt;FROM&gt;/&lt;TO&gt;/</code></td>
+      <td>Replace all occurrences of <code>&lt;FROM&gt;</code> to <code>&lt;TO&gt;</code> in most recent command</td>
+    </tr>
+    <tr>
+      <td><code>!$:t</code></td>
+      <td>Expand only basename from last parameter of most recent command</td>
+    </tr>
+    <tr>
+      <td><code>!$:h</code></td>
+      <td>Expand only directory from last parameter of most recent command</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>!!</code> and <code>!$</code> can be replaced with any valid expansion.</p>
+
+</div></section><section><h3 id="slices">Slices</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>!!:n</code></td>
+      <td>Expand only <code>n</code>th token from most recent command (command is <code>0</code>; first argument is <code>1</code>)</td>
+    </tr>
+    <tr>
+      <td><code>!^</code></td>
+      <td>Expand first argument from most recent command</td>
+    </tr>
+    <tr>
+      <td><code>!$</code></td>
+      <td>Expand last token from most recent command</td>
+    </tr>
+    <tr>
+      <td><code>!!:n-m</code></td>
+      <td>Expand range of tokens from most recent command</td>
+    </tr>
+    <tr>
+      <td><code>!!:n-$</code></td>
+      <td>Expand <code>n</code>th token to last from most recent command</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>!!</code> can be replaced with any valid expansion i.e. <code>!cat</code>, <code>!-2</code>, <code>!42</code>, etc.</p>
+
+</div></section></div></section><section><h2 id="miscellaneous">Miscellaneous</h2><div>
+
+<section><h3 id="numeric-calculations">Numeric calculations</h3><div>
+
+<pre><code><span><span>$((</span>a <span>+</span> <span>200</span><span>))</span></span>      <span># Add 200 to $a</span>
+</code></pre>
+
+<pre><code><span><span>$((</span>$RANDOM<span>%</span><span>200</span><span>))</span></span>  <span># Random number 0..199</span>
+</code></pre>
+
+<pre><code><span>declare</span> -i count  <span># Declare as type integer</span>
+<span>count</span><span>+=</span><span>1</span>          <span># Increment</span>
+</code></pre>
+
+</div></section><section><h3 id="subshells">Subshells</h3><div>
+
+<pre><code><span>(</span>cd somedir<span>;</span> <span>echo</span> <span>"I'm now in <span>$PWD</span>"</span><span>)</span>
+<span>pwd</span> <span># still in first directory</span>
+</code></pre>
+
+</div></section><section><h3 id="redirection">Redirection</h3><div>
+
+<pre><code>python hello.py <span>&gt;</span> output.txt            <span># stdout to (file)</span>
+python hello.py <span>&gt;&gt;</span> output.txt           <span># stdout to (file), append</span>
+python hello.py <span><span>2</span>&gt;</span> error.log            <span># stderr to (file)</span>
+python hello.py <span><span>2</span>&gt;</span><span>&amp;1</span>                    <span># stderr to stdout</span>
+python hello.py <span><span>2</span>&gt;</span>/dev/null             <span># stderr to (null)</span>
+python hello.py <span>&gt;</span>output.txt <span><span>2</span>&gt;</span><span>&amp;1</span>        <span># stdout and stderr to (file), equivalent to &amp;&gt;</span>
+python hello.py <span>&amp;&gt;</span>/dev/null             <span># stdout and stderr to (null)</span>
+<span>echo</span> <span>"<span>$0</span>: warning: too many users"</span> <span>&gt;</span><span>&amp;2</span>  <span># print diagnostic message to stderr</span>
+</code></pre>
+
+<pre><code>python hello.py <span>&lt;</span> foo.txt      <span># feed foo.txt to stdin for python</span>
+<span>diff</span> <span>&lt;</span><span>(</span><span>ls</span> -r<span>)</span> <span>&lt;</span><span>(</span><span>ls</span><span>)</span>            <span># Compare two stdout without files</span>
+</code></pre>
+
+</div></section><section><h3 id="inspecting-commands">Inspecting commands</h3><div>
+
+<pre><code><span>command</span> -V <span>cd</span>
+<span>#=&gt; "cd is a function/alias/whatever"</span>
+</code></pre>
+
+</div></section><section><h3 id="trap-errors">Trap errors</h3><div>
+
+<pre><code><span>trap</span> <span>'echo Error at about $LINENO'</span> ERR
+</code></pre>
+
+<p>or</p>
+
+<pre><code><span>traperr</span><span>(</span><span>)</span> <span>{</span>
+  <span>echo</span> <span>"ERROR: <span>${<span>BASH_SOURCE</span><span>[</span>1<span>]</span>}</span> at about <span>${<span>BASH_LINENO</span><span>[</span>0<span>]</span>}</span>"</span>
+<span>}</span>
+
+<span>set</span> -o errtrace
+<span>trap</span> traperr ERR
+</code></pre>
+
+</div></section><section><h3 id="caseswitch">Case/switch</h3><div>
+
+<pre><code><span>case</span> <span>"<span>$1</span>"</span> <span>in</span>
+  start <span>|</span> up<span>)</span>
+    vagrant up
+    <span>;</span><span>;</span>
+
+  *<span>)</span>
+    <span>echo</span> <span>"Usage: <span>$0</span> {start|stop|ssh}"</span>
+    <span>;</span><span>;</span>
+<span>esac</span>
+</code></pre>
+
+</div></section><section><h3 id="source-relative">Source relative</h3><div>
+
+<pre><code><span>source</span> <span>"<span>${0<span>%</span><span>/</span>*}</span>/../share/foo.sh"</span>
+</code></pre>
+
+</div></section><section><h3 id="printf">printf</h3><div>
+
+<pre><code><span>printf</span> <span>"Hello %s, I'm %s"</span> Sven Olga
+<span>#=&gt; "Hello Sven, I'm Olga</span>
+
+<span>printf</span> <span>"1 + 1 = %d"</span> <span>2</span>
+<span>#=&gt; "1 + 1 = 2"</span>
+
+<span>printf</span> <span>"This is how you print a float: %f"</span> <span>2</span>
+<span>#=&gt; "This is how you print a float: 2.000000"</span>
+
+<span>printf</span> <span>'%s\n'</span> <span>'#!/bin/bash'</span> <span>'echo hello'</span> <span>&gt;</span>file
+<span># format string is applied to each group of arguments</span>
+<span>printf</span> <span>'%i+%i=%i\n'</span> <span>1</span> <span>2</span> <span>3</span>  <span>4</span> <span>5</span> <span>9</span>
+</code></pre>
+
+</div></section><section><h3 id="transform-strings">Transform strings</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Command option</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>-c</code></td>
+      <td>Operations apply to characters not in the given set</td>
+    </tr>
+    <tr>
+      <td><code>-d</code></td>
+      <td>Delete characters</td>
+    </tr>
+    <tr>
+      <td><code>-s</code></td>
+      <td>Replaces repeated characters with single occurrence</td>
+    </tr>
+    <tr>
+      <td><code>-t</code></td>
+      <td>Truncates</td>
+    </tr>
+    <tr>
+      <td><code>[:upper:]</code></td>
+      <td>All upper case letters</td>
+    </tr>
+    <tr>
+      <td><code>[:lower:]</code></td>
+      <td>All lower case letters</td>
+    </tr>
+    <tr>
+      <td><code>[:digit:]</code></td>
+      <td>All digits</td>
+    </tr>
+    <tr>
+      <td><code>[:space:]</code></td>
+      <td>All whitespace</td>
+    </tr>
+    <tr>
+      <td><code>[:alpha:]</code></td>
+      <td>All letters</td>
+    </tr>
+    <tr>
+      <td><code>[:alnum:]</code></td>
+      <td>All letters and digits</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="example-2">Example</h4>
+
+<pre><code><span>echo</span> <span>"Welcome To Devhints"</span> <span>|</span> <span>tr</span> <span>'[:lower:]'</span> <span>'[:upper:]'</span>
+WELCOME TO DEVHINTS
+</code></pre>
+
+</div></section><section><h3 id="directory-of-script">Directory of script</h3><div>
+
+<pre><code><span>dir</span><span>=</span><span>${0<span>%</span><span>/</span>*}</span>
+</code></pre>
+
+</div></section><section><h3 id="getting-options">Getting options</h3><div>
+
+<pre><code><span>while</span> <span>[</span><span>[</span> <span>"<span>$1</span>"</span> <span>=~</span> ^- <span>&amp;&amp;</span> <span>!</span> <span>"<span>$1</span>"</span> <span>==</span> <span>"--"</span> <span>]</span><span>]</span><span>;</span> <span>do</span> <span>case</span> <span>$1</span> <span>in</span>
+  -V <span>|</span> --version <span>)</span>
+    <span>echo</span> <span>"<span>$version</span>"</span>
+    <span>exit</span>
+    <span>;</span><span>;</span>
+  -s <span>|</span> --string <span>)</span>
+    <span>shift</span><span>;</span> <span>string</span><span>=</span><span>$1</span>
+    <span>;</span><span>;</span>
+  -f <span>|</span> --flag <span>)</span>
+    <span>flag</span><span>=</span><span>1</span>
+    <span>;</span><span>;</span>
+<span>esac</span><span>;</span> <span>shift</span><span>;</span> <span>done</span>
+<span>if</span> <span>[</span><span>[</span> <span>"<span>$1</span>"</span> <span>==</span> <span>'--'</span> <span>]</span><span>]</span><span>;</span> <span>then</span> <span>shift</span><span>;</span> <span>fi</span>
+</code></pre>
+
+</div></section><section><h3 id="heredoc">Heredoc</h3><div>
+
+<pre><code><span>cat</span> <span>&lt;&lt;</span><span>END
+hello world
+END</span>
+</code></pre>
+
+</div></section><section><h3 id="reading-input">Reading input</h3><div>
+
+<pre><code><span>echo</span> -n <span>"Proceed? [y/n]: "</span>
+<span>read</span> -r ans
+<span>echo</span> <span>"<span>$ans</span>"</span>
+</code></pre>
+
+<p>The <code>-r</code> option disables a peculiar legacy behavior with backslashes.</p>
+
+<pre><code><span>read</span> -n <span>1</span> ans    <span># Just one character</span>
+</code></pre>
+
+</div></section><section><h3 id="special-variables">Special variables</h3><div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Expression</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>$?</code></td>
+      <td>Exit status of last task</td>
+    </tr>
+    <tr>
+      <td><code>$!</code></td>
+      <td>PID of last background task</td>
+    </tr>
+    <tr>
+      <td><code>$$</code></td>
+      <td>PID of shell</td>
+    </tr>
+    <tr>
+      <td><code>$0</code></td>
+      <td>Filename of the shell script</td>
+    </tr>
+    <tr>
+      <td><code>$_</code></td>
+      <td>Last argument of the previous command</td>
+    </tr>
+    <tr>
+      <td><code>${PIPESTATUS[n]}</code></td>
+      <td>return value of piped commands (array)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>See <a href="https://web.archive.org/web/20230318164746/https://wiki.bash-hackers.org/syntax/shellvars#special_parameters_and_shell_variables">Special parameters</a>.</p>
+
+</div></section><section><h3 id="go-to-previous-directory">Go to previous directory</h3><div>
+
+<pre><code><span>pwd</span> <span># /home/user/foo</span>
+<span>cd</span> bar/
+<span>pwd</span> <span># /home/user/foo/bar</span>
+<span>cd</span> -
+<span>pwd</span> <span># /home/user/foo</span>
+</code></pre>
+
+</div></section><section><h3 id="check-for-commands-result">Check for command’s result</h3><div>
+
+<pre><code><span>if</span> <span>ping</span> -c <span>1</span> google.com<span>;</span> <span>then</span>
+  <span>echo</span> <span>"It appears you have a working internet connection"</span>
+<span>fi</span>
+</code></pre>
+
+</div></section><section><h3 id="grep-check">Grep check</h3><div>
+
+<pre><code><span>if</span> <span>grep</span> -q <span>'foo'</span> ~/.bash_history<span>;</span> <span>then</span>
+  <span>echo</span> <span>"You appear to have typed 'foo' in the past"</span>
+<span>fi</span>
+</code></pre>
+
+</div></section></div></section><section><h2 id="also-see">Also see</h2><div><ul>
+  <li><a href="https://web.archive.org/web/20230406205817/https://wiki.bash-hackers.org/">Bash-hackers wiki</a> <em>(bash-hackers.org)</em></li>
+  <li><a href="https://web.archive.org/web/20230318164746/https://wiki.bash-hackers.org/syntax/shellvars">Shell vars</a> <em>(bash-hackers.org)</em></li>
+  <li><a href="https://learnxinyminutes.com/docs/bash/">Learn bash in y minutes</a> <em>(learnxinyminutes.com)</em></li>
+  <li><a href="http://mywiki.wooledge.org/BashGuide">Bash Guide</a> <em>(mywiki.wooledge.org)</em></li>
+  <li><a href="https://www.shellcheck.net/">ShellCheck</a> <em>(shellcheck.net)</em></li>
+</ul>
+</div></section> </div></div>
+  </div>
+</body>
+</html>

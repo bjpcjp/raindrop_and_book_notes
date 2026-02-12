@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Why you should be using pathlib</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Why you should be using pathlib</h1>
+    <p><strong>URL:</strong> <a href="http://treyhunner.com/2018/12/why-you-should-be-using-pathlib">http://treyhunner.com/2018/12/why-you-should-be-using-pathlib</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876770662</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>When I discovered Python’s new <a href="https://docs.python.org/3/library/pathlib.html">pathlib</a> module a few years ago, I initially wrote it off as being a slightly more awkward and unnecessarily object-oriented version of the <code>os.path</code> module.
+I was wrong.
+Python’s <code>pathlib</code> module is actually <a href="https://jefftriplett.com/2017/pathlib-is-wonderful/">wonderful</a>!</p>
+
+<p>In this article I’m going to try to sell you on <code>pathlib</code>.
+I hope that this article will inspire you to <strong>use Python’s <code>pathlib</code> module pretty much anytime you need to work with files in Python</strong>.</p>
+
+<p><strong>Update</strong>: I wrote a follow-up article to address further comments and concerns that were raised after this one.  Read this article first and then take a look at <a href="https://treyhunner.com/2019/01/no-really-pathlib-is-great/">the follow-up article here</a>.</p>
+
+<ul data-toc=".entry-content"></ul>
+
+
+<h2>os.path is clunky</h2>
+
+<p>The <code>os.path</code> module has always been what we reached for to work with paths in Python.
+It’s got pretty much all you need, but it can be very clunky sometimes.</p>
+
+<p>Should you import it like this?</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+</pre></td><td><pre><code><span><span>import</span> <span>os.path</span>
+</span><span>
+</span><span><span>BASE_DIR</span> <span>=</span> <span>os</span><span>.</span><span>path</span><span>.</span><span>dirname</span><span>(</span><span>os</span><span>.</span><span>path</span><span>.</span><span>dirname</span><span>(</span><span>os</span><span>.</span><span>path</span><span>.</span><span>abspath</span><span>(</span><span>__file__</span><span>)))</span>
+</span><span><span>TEMPLATES_DIR</span> <span>=</span> <span>os</span><span>.</span><span>path</span><span>.</span><span>join</span><span>(</span><span>BASE_DIR</span><span>,</span> <span>'templates'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>Or like this?</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+</pre></td><td><pre><code><span><span>from</span> <span>os.path</span> <span>import</span> <span>abspath</span><span>,</span> <span>dirname</span><span>,</span> <span>join</span>
+</span><span>
+</span><span><span>BASE_DIR</span> <span>=</span> <span>dirname</span><span>(</span><span>dirname</span><span>(</span><span>abspath</span><span>(</span><span>__file__</span><span>)))</span>
+</span><span><span>TEMPLATES_DIR</span> <span>=</span> <span>join</span><span>(</span><span>BASE_DIR</span><span>,</span> <span>'templates'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>Or maybe that <code>join</code> function is too generically named… so we could do this instead:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+</pre></td><td><pre><code><span><span>from</span> <span>os.path</span> <span>import</span> <span>abspath</span><span>,</span> <span>dirname</span><span>,</span> <span>join</span> <span>as</span> <span>joinpath</span>
+</span><span>
+</span><span><span>BASE_DIR</span> <span>=</span> <span>dirname</span><span>(</span><span>dirname</span><span>(</span><span>abspath</span><span>(</span><span>__file__</span><span>)))</span>
+</span><span><span>TEMPLATES_DIR</span> <span>=</span> <span>joinpath</span><span>(</span><span>BASE_DIR</span><span>,</span> <span>'templates'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>I find all of these a bit awkward.
+We’re passing strings into functions that return strings which we then pass into other functions that return strings.
+All of these strings happen to represent paths, but they’re still just strings.</p>
+
+<p>The string-in-string-out functions in <code>os.path</code> are really awkward when nested because the code has to be read from the inside out.
+Wouldn’t it be nice if we could take these nested function calls and turn them into chained method calls instead?</p>
+
+<p>With the <code>pathlib</code> module we can!</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+</pre></td><td><pre><code><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span>
+</span><span><span>BASE_DIR</span> <span>=</span> <span>Path</span><span>(</span><span>__file__</span><span>)</span><span>.</span><span>resolve</span><span>()</span><span>.</span><span>parent</span><span>.</span><span>parent</span>
+</span><span><span>TEMPLATES_DIR</span> <span>=</span> <span>BASE_DIR</span><span>.</span><span>joinpath</span><span>(</span><span>'templates'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>The <code>os.path</code> module requires function nesting, but <strong>the <code>pathlib</code> modules' <code>Path</code> class allows us to chain methods and attributes</strong> on <code>Path</code> objects to get an equivalent path representation.</p>
+
+<p>I know what you’re thinking: wait these <code>Path</code> objects aren’t the same thing: they’re objects, not path strings!
+I’ll address that later (hint: these can pretty much be used interchangeably with path strings).</p>
+
+<h2>The os module is crowded</h2>
+
+<p>Python’s classic <code>os.path</code> module is just for working with paths.
+Once you want to actually <em>do</em> something with a path (e.g. create a directory) you’ll need to reach for another Python module, often the <code>os</code> module.</p>
+
+<p>The <code>os</code> module has lots of utilities for working with files and directories: <code>mkdir</code>, <code>getcwd</code>, <code>chmod</code>, <code>stat</code>, <code>remove</code>, <code>rename</code>, and <code>rmdir</code>.
+Also <code>chdir</code>, <code>link</code>, <code>walk</code>, <code>listdir</code>, <code>makedirs</code>, <code>renames</code>, <code>removedirs</code>, <code>unlink</code> (same as <code>remove</code>), and <code>symlink</code>.
+And a bunch of other stuff that isn’t related to the filesystems at all: <code>fork</code>, <code>getenv</code>, <code>putenv</code>, <code>environ</code>, <code>getlogin</code>, and <code>system</code>.
+Plus dozens of things I didn’t mention in this paragraph.</p>
+
+<p><strong>Python’s <code>os</code> module does a little bit of everything; it’s sort of a junk drawer for system-related stuff</strong>.
+There’s a lot of lovely stuff in the <code>os</code> module, but it can be hard to find what you’re looking for sometimes:
+if you’re looking for path-related or filesystem-related things in the <code>os</code> module, you’ll need to do a bit of digging.</p>
+
+<p>The <code>pathlib</code> module replaces many of these filesystem-related <code>os</code> utilities with methods on the <code>Path</code> object.</p>
+
+<p>Here’s some code that makes a <code>src/__pypackages__</code> directory and renames our <code>.editorconfig</code> file to <code>src/.editorconfig</code>:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+</pre></td><td><pre><code><span><span>import</span> <span>os</span>
+</span><span><span>import</span> <span>os.path</span>
+</span><span>
+</span><span><span>os</span><span>.</span><span>makedirs</span><span>(</span><span>os</span><span>.</span><span>path</span><span>.</span><span>join</span><span>(</span><span>'src'</span><span>,</span> <span>'__pypackages__'</span><span>),</span> <span>exist_ok</span><span>=</span><span>True</span><span>)</span>
+</span><span><span>os</span><span>.</span><span>rename</span><span>(</span><span>'.editorconfig'</span><span>,</span> <span>os</span><span>.</span><span>path</span><span>.</span><span>join</span><span>(</span><span>'src'</span><span>,</span> <span>'.editorconfig'</span><span>))</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>This code does the same thing using <code>Path</code> objects:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+</pre></td><td><pre><code><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span>
+</span><span><span>Path</span><span>(</span><span>'src/__pypackages__'</span><span>)</span><span>.</span><span>mkdir</span><span>(</span><span>parents</span><span>=</span><span>True</span><span>,</span> <span>exist_ok</span><span>=</span><span>True</span><span>)</span>
+</span><span><span>Path</span><span>(</span><span>'.editorconfig'</span><span>)</span><span>.</span><span>rename</span><span>(</span><span>'src/.editorconfig'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>Notice that the <code>pathlib</code> code puts the path first because of method chaining!</p>
+
+<p>As the Zen of Python says, “namespaces are one honking great idea, let’s do more of those”.
+The <code>os</code> module is a very large namespace with a bunch of stuff in it.
+<strong>The pathlib.Path class is a much smaller and more specific namespace than the os module</strong>.
+Plus the methods in this <code>Path</code> namespace return <code>Path</code> objects, which allows for method chaining instead of nested string-iful function calls.</p>
+
+<h2>Don’t forget about the glob module!</h2>
+
+<p>The <code>os</code> and <code>os.path</code> modules aren’t the only filepath/filesystem-related utilities in the Python standard library.
+The <code>glob</code> module is another handy path-related module.</p>
+
+<p>We can use the <code>glob.glob</code> function for finding files that match a certain pattern:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+</pre></td><td><pre><code><span><span>from</span> <span>glob</span> <span>import</span> <span>glob</span>
+</span><span>
+</span><span><span>top_level_csv_files</span> <span>=</span> <span>glob</span><span>(</span><span>'*.csv'</span><span>)</span>
+</span><span><span>all_csv_files</span> <span>=</span> <span>glob</span><span>(</span><span>'**/*.csv'</span><span>,</span> <span>recursive</span><span>=</span><span>True</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>The new <code>pathlib</code> module includes glob-like utilities as well.</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+</pre></td><td><pre><code><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span>
+</span><span><span>top_level_csv_files</span> <span>=</span> <span>Path</span><span>.</span><span>cwd</span><span>()</span><span>.</span><span>glob</span><span>(</span><span>'*.csv'</span><span>)</span>
+</span><span><span>all_csv_files</span> <span>=</span> <span>Path</span><span>.</span><span>cwd</span><span>()</span><span>.</span><span>rglob</span><span>(</span><span>'*.csv'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>After you’ve started using <code>pathlib</code> more heavily, <strong>you can pretty much forget about the glob module entirely</strong>: you’ve got all the glob functionality you need with <code>Path</code> objects.</p>
+
+<h2>pathlib makes the simple cases simpler</h2>
+
+<p>The <code>pathlib</code> module makes a number of complex cases somewhat simpler, but <strong>it also makes some of the simple cases even simpler</strong>.</p>
+
+<p>Need to read all the text in one or more files?</p>
+
+<p>You could open the file, read its contents and close the file using a <code>with</code> block:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+<span>6</span>
+</pre></td><td><pre><code><span><span>from</span> <span>glob</span> <span>import</span> <span>glob</span>
+</span><span>
+</span><span><span>file_contents</span> <span>=</span> <span>[]</span>
+</span><span><span>for</span> <span>filename</span> <span>in</span> <span>glob</span><span>(</span><span>'**/*.py'</span><span>,</span> <span>recursive</span><span>=</span><span>True</span><span>):</span>
+</span><span>    <span>with</span> <span>open</span><span>(</span><span>filename</span><span>)</span> <span>as</span> <span>python_file</span><span>:</span>
+</span><span>        <span>file_contents</span><span>.</span><span>append</span><span>(</span><span>python_file</span><span>.</span><span>read</span><span>())</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>Or you could use the <code>read_text</code> method on <code>Path</code> objects and a list comprehension to read the file contents into a new list all in one line:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+<span>6</span>
+</pre></td><td><pre><code><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span>
+</span><span><span>file_contents</span> <span>=</span> <span>[</span>
+</span><span>    <span>path</span><span>.</span><span>read_text</span><span>()</span>
+</span><span>    <span>for</span> <span>path</span> <span>in</span> <span>Path</span><span>.</span><span>cwd</span><span>()</span><span>.</span><span>rglob</span><span>(</span><span>'*.py'</span><span>)</span>
+</span><span><span>]</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>What if you need to write to a file?</p>
+
+<p>You could use the <code>open</code> context manager again:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+</pre></td><td><pre><code><span><span>with</span> <span>open</span><span>(</span><span>'.editorconfig'</span><span>)</span> <span>as</span> <span>config</span><span>:</span>
+</span><span>    <span>config</span><span>.</span><span>write</span><span>(</span><span>'# config goes here'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>Or you could use the <code>write_text</code> method:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+</pre></td><td><pre><code><span><span>Path</span><span>(</span><span>'.editorconfig'</span><span>)</span><span>.</span><span>write_text</span><span>(</span><span>'# config goes here'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>If you prefer using <code>open</code>, whether as a context manager or otherwise, you could instead use the <code>open</code> method on your <code>Path</code> object:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+</pre></td><td><pre><code><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span>
+</span><span><span>path</span> <span>=</span> <span>Path</span><span>(</span><span>'.editorconfig'</span><span>)</span>
+</span><span><span>with</span> <span>path</span><span>.</span><span>open</span><span>(</span><span>mode</span><span>=</span><span>'wt'</span><span>)</span> <span>as</span> <span>config</span><span>:</span>
+</span><span>    <span>config</span><span>.</span><span>write</span><span>(</span><span>'# config goes here'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>Or, as of Python 3.6, you can even pass your <code>Path</code> object to the built-in <code>open</code> function:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+</pre></td><td><pre><code><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span>
+</span><span><span>path</span> <span>=</span> <span>Path</span><span>(</span><span>'.editorconfig'</span><span>)</span>
+</span><span><span>with</span> <span>open</span><span>(</span><span>path</span><span>,</span> <span>mode</span><span>=</span><span>'wt'</span><span>)</span> <span>as</span> <span>config</span><span>:</span>
+</span><span>    <span>config</span><span>.</span><span>write</span><span>(</span><span>'# config goes here'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<h2>Path objects make your code more explicit</h2>
+
+<p>What do the following 3 variables point to?
+What do their values represent?</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+</pre></td><td><pre><code><span><span>person</span> <span>=</span> <span>'{"name": "Trey Hunner", "location": "San Diego"}'</span>
+</span><span><span>pycon_2019</span> <span>=</span> <span>"2019-05-01"</span>
+</span><span><span>home_directory</span> <span>=</span> <span>'/home/trey'</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>Each of those variables points to a string.</p>
+
+<p>Those strings represent different things: one is a JSON blob, one is a date, and one is a file path.</p>
+
+<p>These are a little bit more useful representations for these objects:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+<span>6</span>
+</pre></td><td><pre><code><span><span>from</span> <span>datetime</span> <span>import</span> <span>date</span>
+</span><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span>
+</span><span><span>person</span> <span>=</span> <span>{</span><span>"name"</span><span>:</span> <span>"Trey Hunner"</span><span>,</span> <span>"location"</span><span>:</span> <span>"San Diego"</span><span>}</span>
+</span><span><span>pycon_2019</span> <span>=</span> <span>date</span><span>(</span><span>2019</span><span>,</span> <span>5</span><span>,</span> <span>1</span><span>)</span>
+</span><span><span>home_directory</span> <span>=</span> <span>Path</span><span>(</span><span>'/home/trey'</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>JSON objects deserialize to dictionaries, dates are represented natively using <code>datetime.date</code> objects, and <strong>filesystem paths can now be generically represented using <code>pathlib.Path</code> objects</strong>.</p>
+
+<p>Using <code>Path</code> objects makes your code more explicit.
+If you’re trying to represent a date, you can use a <code>date</code> object.
+If you’re trying to represent a filepath, you can use a <code>Path</code> object.</p>
+
+<p>I’m not a strong advocate of object-oriented programming.
+Classes add another layer of abstraction and abstractions can sometimes add more complexity than simplicity.
+But the <code>pathlib.Path</code> class is <strong>a useful abstraction</strong>.
+It’s also quickly becoming a universally recognized abstraction.</p>
+
+<p>Thanks to <a href="https://www.python.org/dev/peps/pep-0519/#standard-library-changes">PEP 519</a>, file path objects are now becoming the standard for working with paths.
+As of Python 3.6, the built-in <code>open</code> function and the various functions in the <code>os</code>, <code>shutil</code>, and <code>os.path</code> modules all work properly with <code>pathlib.Path</code> objects.
+<strong>You can start using pathlib today without changing most of your code that works with paths</strong>!</p>
+
+<h2>What’s missing from pathlib?</h2>
+
+<p>While <code>pathlib</code> is great, it’s not all-encompassing.
+There are definitely <strong>a few missing features I’ve stumbled upon that I wish the <code>pathlib</code> module included</strong>.</p>
+
+<p>The first gap I’ve noticed is the lack of <code>shutil</code> equivalents within the <code>pathlib.Path</code> methods.</p>
+
+<p>While you can pass <code>Path</code> objects (and path-like objects) to the higher-level <code>shutil</code> functions for copying/deleting/moving files and directories, there’s no equivalent to these functions on <code>Path</code> objects.</p>
+
+<p>So to copy a file you still have to do something like this:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+<span>6</span>
+</pre></td><td><pre><code><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span><span>from</span> <span>shutil</span> <span>import</span> <span>copyfile</span>
+</span><span>
+</span><span><span>source</span> <span>=</span> <span>Path</span><span>(</span><span>'old_file.txt'</span><span>)</span>
+</span><span><span>destination</span> <span>=</span> <span>Path</span><span>(</span><span>'new_file.txt'</span><span>)</span>
+</span><span><span>copyfile</span><span>(</span><span>source</span><span>,</span> <span>destination</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p><strong>Update</strong>: <a href="https://docs.python.org/3.14/whatsnew/3.14.html#pathlib">Python 3.14 will add</a> <code>copy</code>, <code>copy_into</code>, <code>move</code>, and <code>move_into</code> methods to <code>pathlib.Path</code> objects.</p>
+
+<p>There’s also no <code>pathlib</code> equivalent of <code>os.chdir</code>.</p>
+
+<p>This just means you’ll need to import <code>chdir</code> if you ever need to change the current working directory:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+</pre></td><td><pre><code><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span><span>from</span> <span>os</span> <span>import</span> <span>chdir</span>
+</span><span>
+</span><span><span>parent</span> <span>=</span> <span>Path</span><span>(</span><span>'..'</span><span>)</span>
+</span><span><span>chdir</span><span>(</span><span>parent</span><span>)</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p><strike>The <code>os.walk</code> function has no <code>pathlib</code> equivalent either.</strike></p>
+
+<p><strong>Update</strong>: <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.walk">Python 3.12 added a <code>walk</code> method</a> to <code>pathlib.Path</code> objects.</p>
+
+<p>My hope is that <code>pathlib.Path</code> objects might eventually include methods for some of these missing operations.
+But even with these missing features, <strong>I still find it much more manageable to use “<code>pathlib</code> and friends” than “<code>os.path</code> and friends”</strong>.</p>
+
+<h2>Should you always use pathlib?</h2>
+
+<p>Since Python 3.6, <strong>pathlib.Path objects work nearly everywhere you’re already using path strings</strong>.
+So I see no reason <em>not</em> to use <code>pathlib</code> if you’re on Python 3.6 (or higher).</p>
+
+<p>If you’re on an earlier version of Python 3, you can always wrap your <code>Path</code> object in a <code>str</code> call to get a string out of it when you need an escape hatch back to string land.
+It’s awkward but it works:</p>
+
+<figure><figcaption><span></span></figcaption><div><table><tbody><tr><td><pre><span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+</pre></td><td><pre><code><span><span>from</span> <span>os</span> <span>import</span> <span>chdir</span>
+</span><span><span>from</span> <span>pathlib</span> <span>import</span> <span>Path</span>
+</span><span>
+</span><span><span>chdir</span><span>(</span><span>Path</span><span>(</span><span>'/home/trey'</span><span>))</span>  <span># Works on Python 3.6+</span>
+</span><span><span>chdir</span><span>(</span><span>str</span><span>(</span><span>Path</span><span>(</span><span>'/home/trey'</span><span>)))</span>  <span># Works on earlier versions also</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>Regardless of which version of Python 3 you’re on, I would recommend giving <code>pathlib</code> a try.</p>
+
+<p>And if you’re stuck on Python 2 still (the clock is ticking!) the third-party <a href="https://github.com/mcmtroffaes/pathlib2">pathlib2</a> module on PyPI is a backport so you can use <code>pathlib</code> on any version of Python.</p>
+
+<p>I find that using <code>pathlib</code> often makes my code more readable.
+Most of my code that works with files now defaults to using <code>pathlib</code> and I recommend that you do the same.
+<strong>If you can use <code>pathlib</code>, you should</strong>.</p>
+
+<p>If you’d like to continue reading about pathlib, check out my follow-up article called <a href="https://treyhunner.com/2019/01/no-really-pathlib-is-great/">No really, pathlib is great</a>.</p>
+</div></div>
+  </div>
+</body>
+</html>

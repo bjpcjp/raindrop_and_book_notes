@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Testing a Feature with Rails and RSpec: A deep dive</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Testing a Feature with Rails and RSpec: A deep dive</h1>
+    <p><strong>URL:</strong> <a href="https://chrisherring.co/posts/testing-a-feature-with-rails-and-rspec-a-deep-dive">https://chrisherring.co/posts/testing-a-feature-with-rails-and-rspec-a-deep-dive</a></p>
+    <p><strong>Tags:</strong> rspec, ruby</p>
+    <p><strong>Bookmark ID:</strong> 876777219</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <div>
+  <p>May  9, 2017</p>
+  
+</div>
+
+<p>Testing your code is important. We all as Rubyists know this, we hear about testing all the time. Fast tests, slow tests, it’s everywhere in the Ruby community. However for all the talk of testing something that seems to be a recurring theme for developers that are new to Ruby, or just new to testing … How do I do it? How do I get started?</p>
+
+<p>Previously I have written about an <a href="https://chrisherring.co/posts/don-t-waste-your-time-test-outside-in">Outside In</a> testing approach, but the code it covered was quite trivial. Let’s take another look at testing with this approach, see how it can be used to take a feature that you need for your application from nothing to a working version and along the way see how it can drive your thinking into a better design as you build, leaving you with a finished product that you can be confident in not only running but also being able to change as you have your desired behaviour well defined with your tests.</p>
+
+<h5 id="the-feature">The Feature</h5>
+
+<p>Not long ago I wrote an example rate limiting feature for a Rails application and built it using BDD and RSpec. It is in an empty Rails application but is a good example I feel for us to use to walk through some BDD with RSpec from the beginning of the feature to the end. So what are we trying to build?</p>
+
+<ul>
+  <li>Create a new Rails controller that has an index action. All this action does is return a plain text “ok” and a 200 status code.</li>
+  <li>Implement code to limit requests to this controller. A user should be able to make 100 requests in a 60 minute period. If they try to make a request that exceeds this number they should receive a 429 status code and a message: “Rate limit exceeded. Try again in #{n} seconds.”</li>
+</ul>
+
+<p>That’s it. Not a super complex set of requirements, so let’s get going on what we need. We need a Rails app, and we need RSpec.</p>
+
+<h5 id="installing-rspec">Installing RSpec</h5>
+
+<p>For this article, I am going with no assumed knowledge of getting a rails app up and running with RSpec beyond that you have a bare Rails app that you could work with. Once you have that, we need to install RSpec. To do this first, we need to add to our Gemfile:</p>
+
+<div><pre>group <span>:test</span> <span>do</span>
+  gem <span><span>'</span><span>rspec-rails</span><span>'</span></span>
+<span>end</span>
+</pre></div>
+
+<p>After we’ve added this and saved we need to run bundler to install it:</p>
+
+<div><pre>&gt; bundle
+</pre></div>
+
+<p>Now we have RSpec gems (<a href="https://github.com/rspec">there are a few of them</a>) installed in our application to write and run our tests. Now we just need to install the basic RSpec configuration so that we can start with writing some tests and some code:</p>
+
+<div><pre>&gt; bin/rails generate rspec:install
+</pre></div>
+
+<p>Now we have a spec directory as well as a rails_helper.rb file with the basics that we need to get moving with some tests.</p>
+
+<h5 id="getting-started-with-the-tests">Getting started with the tests</h5>
+
+<p>Now, we have no code and no tests, where do we start. Well, we look at what the end goal of our feature is. A controller action that responds with “ok” and responds with an HTTP status code 429 and a message if the rate limit has been exceeded. To do this we need a request spec, so let’s create a file for it and write our first test headings.</p>
+
+<div><pre>
+
+require <span><span>'</span><span>rails_helper</span><span>'</span></span>
+
+describe <span><span>"</span><span>Requests to the home controller</span><span>"</span></span> <span>do</span>
+
+  it <span><span>"</span><span>returns ok and a 200 for a successful request.</span><span>"</span></span>
+
+  it <span><span>"</span><span>returns a 429 and a failure message when the rate limit is exceeded.</span><span>"</span></span>
+
+<span>end</span>
+</pre></div>
+
+<p>This is the feature, defined in what we want to achieve in an RSpec spec file. To get started and have something working, we start with the easiest part first, a 200 and ok for a request to that controller. So let’s write the test for that.</p>
+
+<div><pre>
+it <span><span>"</span><span>returns ok and a 200 for a successful request</span><span>"</span></span> <span>do</span>
+  get home_index_path
+  expect(response.status).to eq(<span>200</span>)
+  expect(response.body).to eq(<span><span>"</span><span>ok</span><span>"</span></span>)
+<span>end</span>
+</pre></div>
+
+<p>This test that we have now will make a get request to home index action and expect that response to work and to render the text ok. So we can now go and run this test:</p>
+
+<div><pre>&gt; bundle exec rspec spec/requests/home_controller_spec.rb
+
+Failures:
+
+  1) Requests to the home controller returns ok and a 200 for a successful request
+     Failure/Error: get home_index_path
+
+     NameError:
+       undefined local variable or method `home_index_path' for #&lt;RSpec::ExampleGroups::HomeController:0x007fc4c8691808&gt;
+     # ./spec/requests/home_controller_spec.rb:6:in `block (2 levels) in &lt;top (required)&gt;'
+
+</pre></div>
+
+<p>Of course, as we haven’t written any code for this, this test will fail. As we can see from the failure, we don’t have a home_index_path yet. So we need to create a route for this controller to be accessed by an HTTP request. Let’s make that now.</p>
+
+<div><pre>
+<span>Rails</span>.application.routes.draw <span>do</span>
+
+  resources <span>:home</span>
+
+<span>end</span>
+</pre></div>
+
+<p>Now we have our standard routes made for a controller and will be able to make a request to it, so let’s run our tests again.</p>
+
+<div><pre>&gt; bundle exec rspec spec/requests/home_controller_spec.rb
+
+Failures:
+
+  1) Requests to the home controller returns ok and a 200 for a successful request
+     Failure/Error: get home_index_path
+
+     ActionController::RoutingError:
+       uninitialized constant HomeController
+     # ./spec/requests/home_controller_spec.rb:6:in `block (2 levels) in &lt;top (required)&gt;'
+     # ------------------
+     # --- Caused by: ---
+     # NameError:
+     #   uninitialized constant HomeController
+     #   ./spec/requests/home_controller_spec.rb:6:in `block (2 levels) in &lt;top (required)&gt;'
+
+Finished in 0.20764 seconds (files took 3.97 seconds to load)
+
+</pre></div>
+
+<p>Our tests are still failing. As we can see from the error, We have an uninitialized constant HomeController, so our request is now trying to get the home controller since we have set the route, but it’s not there to do anything with the request. So let’s add a home controller to handle the request.</p>
+
+<div><pre>
+<span>class</span> <span>HomeController</span> &lt; <span>ApplicationController</span>
+
+<span>end</span>
+</pre></div>
+
+<p>We can now run our test again to get feedback from RSpec on code and does it pass.</p>
+
+<div><pre>&gt; bundle exec rspec spec/requests/home_controller_spec.rb
+
+Failures:
+
+  1) Requests to the home controller returns ok and a 200 for a successful request
+     Failure/Error: get home_index_path
+
+     AbstractController::ActionNotFound:
+       The action 'index' could not be found for HomeController
+     # ./spec/requests/home_controller_spec.rb:6:in `block (2 levels) in &lt;top (required)&gt;'
+
+Finished in 0.23111 seconds (files took 3.27 seconds to load)
+</pre></div>
+
+<p>As we can see, it can’t see an action for the home controller to render for the index. So we can add some more code to get a passing test here.</p>
+
+<div><pre>
+<span>class</span> <span>HomeController</span> &lt; <span>ApplicationController</span>
+
+  <span>def</span> <span>index</span>
+    render <span>plain</span>: <span><span>"</span><span>ok</span><span>"</span></span>
+  <span>end</span>
+
+<span>end</span>
+</pre></div>
+
+<p>And after we run our tests again:</p>
+
+<div><pre>&gt; bundle exec rspec spec/reqeusts/home_controller_spec.rb
+.*
+
+Pending: (Failures listed here are expected and do not affect your suite's status)
+
+  1) Home Controller renders a 429 if the rate limit threshold has been hit
+     # Not yet implemented
+     # ./spec/requests/home_controller_spec.rb:11
+
+
+Finished in 0.21951 seconds (files took 3.23 seconds to load)
+2 examples, 0 failures, 1 pending
+</pre></div>
+
+<p>Now it passes. We have a controller that renders and ok and 200 to a successful request. That might seem like a lot of steps to get such a simple piece of code working, but we want to make sure to go through all the steps here and be thorough. As you get more used to testing your code, a lot of this would become automatic, and you’ll get a feel for when you want to run your tests that you are using to drive your application’s behaviour until then, err more on the side of running them more often.</p>
+
+<h5 id="lets-get-down-to-business">Let’s get down to business</h5>
+
+<p>Now that we have the easy part out of the way, we have to look at how we want to limit the number of requests that are made to the application, a maximum of 100 per 60 minutes. Given that minimal web application that we have running here doesn’t have any users or anything, I would say that the IP address of the request being made is probably the easiest/best way of identifying who is making a request. Obviously, this is not perfect, but it fits our purposes for this. So we need to know two things. Who made a request and when it was made. With this information about our requests, we can decide whether requests are to be allowed or not.</p>
+
+<h5 id="we-need-to-keep-track">We need to keep track</h5>
+
+<p>For us to do this, we need to be able to keep track of rate limited requests. The easiest way to get started with this is to store them in a database. We can look them up quickly this way with a well-indexed request; it’s a decent way to get started with this feature. So we need a database migration and Rails model for this.</p>
+
+<div><pre>&gt; bundle exec rails generate migration create_rate_limits
+</pre></div>
+
+<p>And now we have a migration to fill in:</p>
+
+<div><pre><span>class</span> <span>CreateRateLimits</span> &lt; <span>ActiveRecord</span>::<span>Migration</span>[<span>5.0</span>]
+  <span>def</span> <span>change</span>
+    create_table <span>:rate_limits</span> <span>do</span> |t|
+      t.string <span>:ip_address</span>
+      t.datetime <span>:requested_at</span>
+
+      t.timestamps
+    <span>end</span>
+
+    add_index <span>:rate_limits</span>, [<span>:ip_address</span>, <span>:requested_at</span>]
+  <span>end</span>
+<span>end</span>
+</pre></div>
+
+<p>We want to store the ip_address and the requested_at time, as well as index them for when we have to look them up later. So now we need to update our database schema:</p>
+
+<div><pre>&gt; bundle exec rake db:migrate
+</pre></div>
+
+<p>Now that we have a place to keep track of the requests that we need to be rate limited, we need to keep track of them, but when do we do that. If we do it when a request is coming in from a user, what about if a request that we have received throws an error, should that request count against their rate limit? Probably not, so we probably want to count it after a successful request. So what do we do next? We write a test.</p>
+
+<div><pre>
+it <span><span>"</span><span>returns ok and a 200 for a successful request</span><span>"</span></span> <span>do</span>
+  get home_index_path
+  expect(response.status).to eq(<span>200</span>)
+  expect(response.body).to eq(<span><span>"</span><span>ok</span><span>"</span></span>)
+<span>end</span>
+
+
+
+it <span><span>'</span><span>takes record of a successful request</span><span>'</span></span> <span>do</span>
+  expect { get home_index_path }.to change{ <span>RateLimit</span>.count }.by(<span>1</span>)
+<span>end</span>
+</pre></div>
+
+<p>So as we can see, with this test that we have now, we can be sure that we are counting requests. Of course, as part of our BDD write a test first approach, we run the tests to see it fail:</p>
+
+<div><pre>&gt; bundle exec rspec spec/requests/home_controller_spec.rb
+
+Failures:
+
+  1) Home Controller takes record of a successful request
+     Failure/Error: expect { get home_index_path }.to change{ RateLimit.count }.by(1)
+       expected result to have changed by 1, but was changed by 0
+     # ./spec/requests/home_controller_spec.rb:12:in `block (2 levels) in &lt;top (required)&gt;'
+</pre></div>
+
+<p>And then the code to count our rate limited request after a successful request:</p>
+
+<div><pre><span>class</span> <span>HomeController</span> &lt; <span>ApplicationController</span>
+
+  after_action <span>:record_rate_limit_request</span>
+
+  <span>def</span> <span>index</span>
+    render <span>plain</span>: <span><span>"</span><span>ok</span><span>"</span></span>
+  <span>end</span>
+
+  private
+
+  <span>def</span> <span>record_rate_limit_request</span>
+    <span>RateLimit</span>.create(<span>ip_address</span>: request.remote_ip, <span>requested_at</span>: <span>Time</span>.zone.now)
+  <span>end</span>
+
+<span>end</span>
+</pre></div>
+
+<p>Now when a request is made to the controller, we grab the IP address and the Time that it was made (in the zone the application is running in) and we save it so we can count it. In proper BDD fashion, we want to see our passing test:</p>
+
+<div><pre>&gt; bundle exec rspec spec/requests/home_controller_spec.rb
+..*
+
+Pending: (Failures listed here are expected and do not affect your suite's status)
+
+  1) Home Controller renders a 429 if the rate limit threshold has been hit
+     # Not yet implemented
+     # ./spec/requests/home_spec.rb:15
+
+
+Finished in 0.27077 seconds (files took 2.01 seconds to load)
+3 examples, 0 failures, 1 pending
+</pre></div>
+
+<h5 id="but-how-do-we-count-them-all">But how do we count them all?</h5>
+
+<p>Now we find ourselves moving into the next part of our build. We need to be able to take a request before we allow it to be run the controller action and check if that IP address has reached it’s maximum allowed requests. As we know the spec that we are build to has said that they can make 100 requests in a 60 minute period. Which 60 minute period? Do we have to count back to the beginning of their requests and use 60 minute periods from then? What if they haven’t made requests for a while? The requirement of the 60 minutes is not very clear, so I decided that the way to proceed is to use a rolling 60 minute period that counts back on any given request and sees if 100 requests have been hit in the last 60 minutes and if they haven’t, then allow the request.</p>
+
+<h5 id="lets-write-the-spec-for-this">Let’s write the spec for this</h5>
+
+<p>So we know what we want our RateLimit class to do now. Only allow a request if there have been less than 100 in the last 60 minutes. Let’s get started:</p>
+
+<div><pre>
+require <span><span>'</span><span>rails_helper</span><span>'</span></span>
+
+describe <span>RateLimit</span> <span>do</span>
+
+  it <span><span>'</span><span>requires an IP address</span><span>'</span></span> <span>do</span>
+
+  it <span><span>'</span><span>requires the time a request was made</span><span>'</span></span> <span>do</span>
+
+  context <span>do</span>
+
+    it <span><span>'</span><span>can count up requests for over a time period</span><span>'</span></span>
+
+    it <span><span>'</span><span>can count up requests for a requesting IP address</span><span>'</span></span>
+
+    it <span><span>'</span><span>can count requests for a requesting IP address over a time period</span><span>'</span></span>
+
+    it <span><span>'</span><span>reports if a request is permitted</span><span>'</span></span>
+
+    it <span><span>'</span><span>reports if a request is not permitted</span><span>'</span></span>
+
+  <span>end</span>
+<span>end</span>
+</pre></div>
+
+<p>Let’s also create our empty ActiveRecord class for our model to save a bit of time as well:</p>
+
+<div><pre>
+
+<span>class</span> <span>RateLimit</span> &lt; <span>ActiveRecord</span>::<span>Base</span>
+
+<span>end</span>
+</pre></div>
+
+<p>So let’s have a look at what we’re looking to test here. First up, we need an IP Address and time that a request was made so that we can rate limit the requests. After that we need to be able to get the requests for a given time period, we need to be able to get the requests for an IP address, and we need to be able to do the two together. After that, we need to know if a request is permitted to be made by the IP address or if their rate limit has been reached and it is not permitted.</p>
+
+<h5 id="lets-start-with-the-easy-ones">Let’s start with the easy ones</h5>
+
+<p>As ever, it feels good to get some quick wins on the board when we are building stuff, so let’s get the easy stuff done first, validating we have an IP address and time. These are pretty simple tests to write:</p>
+
+<div><pre>
+
+it <span><span>'</span><span>requires an IP address</span><span>'</span></span> <span>do</span>
+  rate_limit_request = <span>RateLimit</span>.new
+  rate_limit_request.requested_at = <span>Time</span>.zone.now
+  expect(rate_limit_request).to_not be_valid
+  rate_limit_request.ip_address = <span><span>'</span><span>127.0.0.1</span><span>'</span></span>
+  expect(rate_limit_request.save).to eq(<span>true</span>)
+<span>end</span>
+
+it <span><span>'</span><span>requires the time a request was made</span><span>'</span></span> <span>do</span>
+  rate_limit_request = <span>RateLimit</span>.new
+  rate_limit_request.ip_address = <span><span>'</span><span>127.0.0.1</span><span>'</span></span>
+  expect(rate_limit_request).to_not be_valid
+  rate_limit_request.requested_at = <span>Time</span>.zone.now
+  expect(rate_limit_request.save).to eq(<span>true</span>)
+<span>end</span>
+</pre></div>
+
+<p>So to ensure that we have the information that we need to limit our requests, we make some objects missing required information, and then see if they are valid or not. At the moment because we have no code yet, of course, they will be valid, and our tests will fail:</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/rate_limit_spec.rb
+FF
+
+Failures:
+
+  1) RateLimit requires an ip address
+     Failure/Error: expect(rate_limit_request).to_not be_valid
+       expected #&lt;RateLimit id: nil, ip_address: nil, requested_at: "2017-04-17 10:07:52", created_at: nil, updated_at: nil&gt; not to be valid
+     # ./spec/models/rate_limit_spec.rb:8:in `block (2 levels) in &lt;top (required)&gt;'
+
+  2) RateLimit requires the time a request was made
+     Failure/Error: expect(rate_limit_request).to_not be_valid
+       expected #&lt;RateLimit id: nil, ip_address: "127.0.0.1", requested_at: nil, created_at: nil, updated_at: nil&gt; not to be valid
+     # ./spec/models/rate_limit_spec.rb:16:in `block (2 levels) in &lt;top (required)&gt;'
+
+Finished in 0.16029 seconds (files took 1.13 seconds to load)
+</pre></div>
+
+<p>As expected, so let’s add in some code to get them passing how we want.</p>
+
+<div><pre>
+
+<span>class</span> <span>RateLimit</span> &lt; <span>ActiveRecord</span>::<span>Base</span>
+
+  validates <span>:ip_address</span>, <span>:requested_at</span>, <span>presence</span>: <span>true</span>
+
+<span>end</span>
+</pre></div>
+
+<p>And now they pass, nice and easy.</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/rate_limit_spec.rb
+..
+
+Finished in 0.15267 seconds (files took 1.12 seconds to load)
+2 examples, 0 failures
+</pre></div>
+
+<h5 id="lets-create-some-test-data">Let’s create some test data</h5>
+
+<p>We’re into the meat of the functionality now. We need to start getting out the rate limit requests for an IP address, and also for a time range. So let’s fill in our test file and see what we have to do that.</p>
+
+<div><pre>
+
+context <span>do</span>
+
+  let(<span>:request_ip</span>) { <span><span>'</span><span>127.0.0.1</span><span>'</span></span> }
+  let(<span>:other_ip</span>) { <span><span>'</span><span>10.0.0.10</span><span>'</span></span> }
+  let!(<span>:previous_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>RateLimit</span>.create(<span>ip_address</span>: request_ip, <span>requested_at</span>: number.minutes.ago)} }
+  let!(<span>:other_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>RateLimit</span>.create(<span>ip_address</span>: other_ip, <span>requested_at</span>: number.minutes.ago)} }
+
+  it <span><span>'</span><span>can count up requests for over a time period</span><span>'</span></span> <span>do</span>
+    expect(<span>RateLimit</span>.within_interval(<span>60</span>.minutes.ago).size).to eq(<span>20</span>)
+  <span>end</span>
+
+  it <span><span>'</span><span>can count up requests for a requesting IP address</span><span>'</span></span> <span>do</span>
+    expect(<span>RateLimit</span>.for_ip_address(request_ip).size).to eq(<span>10</span>)
+    expect(<span>RateLimit</span>.for_ip_address(other_ip).size).to eq(<span>10</span>)
+  <span>end</span>
+
+<span>end</span>
+</pre></div>
+
+<p>So to be able to test that we can count the requests to be rate limited, we need to have data on them. That means that before we run these tests, we have to build that data. These tests are in a context block purely to ensure that the test data that we build for them won’t get built for any other tests that don’t need them. The time this saves is small, but as your test suite grows these small gains will add up and contribute to keeping your test suite healthy and fast. Let’s take a look at the data we’re building for these tests:</p>
+
+<div><pre>
+let(<span>:request_ip</span>) { <span><span>'</span><span>127.0.0.1</span><span>'</span></span> }
+let(<span>:other_ip</span>) { <span><span>'</span><span>10.0.0.10</span><span>'</span></span> }
+</pre></div>
+
+<p>Here we are using the let command. It creates a variable that is set to the value returned by its block identified by the name given as a symbol to it. So in this case we have variables called request_ip and other_ip to use in our tests, each with a made up IP address. Next:</p>
+
+<div><pre>
+
+let!(<span>:previous_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>RateLimit</span>.create(<span>ip_address</span>: request_ip, <span>requested_at</span>: number.minutes.ago)} }
+
+let!(<span>:other_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>RateLimit</span>.create(<span>ip_address</span>: other_ip, <span>requested_at</span>: number.minutes.ago)} }
+</pre></div>
+
+<p>We have arrays of rate limit requests, 10 for each of the IP addresses. By using let! instead of let, we can force the creation of these objects right away, meaning these will be recorded in our database at the start of each test. It is good to use let rather than let! where possible as it means that object will not be created until it is called. In this instance, we need these for all the tests so that we can use let! for the requests, which will call the IP addresses and create them, making if fine to just use let for them. Now we can run our tests that use this data and get our failures.</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/rate_limit_spec.rb
+..FF
+
+Failures:
+
+  1) RateLimit  can count up requests for over a time period
+     Failure/Error: expect(RateLimit.within_interval(60.minutes.ago).size).to eq(20)
+
+     NoMethodError:
+       undefined method `within_interval' for #&lt;Class:0x007f8927a99cc0&gt;
+     # ./spec/models/rate_limit_spec.rb:28:in `block (3 levels) in &lt;top (required)&gt;'
+
+  2) RateLimit  can count up requests for a requesting IP address
+     Failure/Error: expect(RateLimit.for_ip_address(request_ip).size).to eq(10)
+
+     NoMethodError:
+       undefined method `for_ip_address' for #&lt;Class:0x007f8927a99cc0&gt;
+     # ./spec/models/rate_limit_spec.rb:32:in `block (3 levels) in &lt;top (required)&gt;'
+
+</pre></div>
+
+<p>Now we have some code to write. Let’s start with the within interval code. We need this to get all the saved rate limit requests that have happened in any given interval.</p>
+
+<div><pre>
+
+<span>class</span> <span>RateLimit</span> &lt; <span>ActiveRecord</span>::<span>Base</span>
+
+  validates <span>:ip_address</span>, <span>:requested_at</span>, <span>presence</span>: <span>true</span>
+
+  scope <span>:within_interval</span>, -&gt; (threshold_time) { where(<span><span>"</span><span>requested_at &gt; ?</span><span>"</span></span>, threshold_time) }
+
+<span>end</span>
+</pre></div>
+
+<p>So we add an ActiveRecord scope that can do a database look-up for us to pull the saved records that have happened after any given time. If we run our tests we’ll see that now that passes, it’ll retrieve all 20 saved records that we are setting up with our tests.</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/rate_limit_spec.rb
+...F
+
+Failures:
+
+  1) RateLimit  can count up requests for a requesting IP address
+     Failure/Error: expect(RateLimit.for_ip_address(request_ip).size).to eq(10)
+
+     NoMethodError:
+       undefined method `for_ip_address' for #&lt;Class:0x007fc402379768&gt;
+     # ./spec/models/rate_limit_spec.rb:32:in `block (3 levels) in &lt;top (required)&gt;'
+
+</pre></div>
+
+<p>Excellent, just as we expected. Now we can write the code for for_ip_address. As the name suggests, it needs to retrieve records that have been saved for any given IP Address.</p>
+
+<div><pre>
+
+<span>class</span> <span>RateLimit</span> &lt; <span>ActiveRecord</span>::<span>Base</span>
+
+  validates <span>:ip_address</span>, <span>:requested_at</span>, <span>presence</span>: <span>true</span>
+
+  scope <span>:within_interval</span>, -&gt; (threshold_time) { where(<span><span>"</span><span>requested_at &gt; ?</span><span>"</span></span>, threshold_time) }
+  scope <span>:for_ip_address</span>, -&gt; (requesting_ip) { where(<span>ip_address</span>: requesting_ip)}
+
+<span>end</span>
+</pre></div>
+
+<p>Another nice and easy ActiveRecord scope, and now when we run our tests, we will see that they are passing.</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/rate_limit_spec.rb
+....
+
+Finished in 0.0753 seconds (files took 1.12 seconds to load)
+4 examples, 0 failures
+</pre></div>
+
+<p>This is some great progress, but it’s only the building blocks of what we need, it’s not anything useful on its own. We need to take these two methods and use them to see what an IP Address has requested over a time period then use that information to decide if a request would exceed the rate limit or not. To do this, we need to have some tests for it:</p>
+
+<div><pre>
+
+context <span>do</span>
+
+  let(<span>:request_ip</span>) { <span><span>'</span><span>127.0.0.1</span><span>'</span></span> }
+  let(<span>:other_ip</span>) { <span><span>'</span><span>10.0.0.10</span><span>'</span></span> }
+  let!(<span>:previous_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>RateLimit</span>.create(<span>ip_address</span>: request_ip, <span>requested_at</span>: number.minutes.ago)} }
+  let!(<span>:other_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>RateLimit</span>.create(<span>ip_address</span>: other_ip, <span>requested_at</span>: number.minutes.ago)} }
+
+  it <span><span>'</span><span>can count up requests for over a time period</span><span>'</span></span> <span>do</span>
+    expect(<span>RateLimit</span>.within_interval(<span>60</span>.minutes.ago).size).to eq(<span>20</span>)
+  <span>end</span>
+
+  it <span><span>'</span><span>can count up requests for a requesting IP address</span><span>'</span></span> <span>do</span>
+    expect(<span>RateLimit</span>.for_ip_address(request_ip).size).to eq(<span>10</span>)
+    expect(<span>RateLimit</span>.for_ip_address(other_ip).size).to eq(<span>10</span>)
+  <span>end</span>
+
+  it <span><span>'</span><span>can count requests for a requesting IP address over a time period</span><span>'</span></span>
+
+  it <span><span>'</span><span>reports if a request is permitted</span><span>'</span></span>
+
+  it <span><span>'</span><span>reports if a request is not permitted</span><span>'</span></span>
+
+<span>end</span>
+</pre></div>
+
+<p>These tests describe what we need to do here, let’s implement them. Now that we have a bit more of a flow of how to write some tests and code, I’m just going to fill them in:</p>
+
+<div><pre>
+
+    it <span><span>'</span><span>can count requests for a requesting IP address over a time period</span><span>'</span></span> <span>do</span>
+      expect(<span>RateLimit</span>.requests_for_ip_during_time_period(request_ip).size).to eq(<span>10</span>)
+      expect(<span>RateLimit</span>.requests_for_ip_during_time_period(request_ip, <span>time_period</span>: <span>6</span>.minutes.ago).size).to eq(<span>5</span>)
+    <span>end</span>
+
+    it <span><span>'</span><span>reports if a request is permitted</span><span>'</span></span> <span>do</span>
+      expect(<span>RateLimit</span>.request_permitted(request_ip)).to eq(<span>true</span>)
+    <span>end</span>
+
+    it <span><span>'</span><span>reports if a request is not permitted</span><span>'</span></span> <span>do</span>
+      expect(<span>RateLimit</span>.request_permitted(request_ip, <span>maximum_requests</span>: <span>1</span>, <span>time_period</span>: <span>5</span>.minutes.ago)).to eq(<span>false</span>)
+    <span>end</span>
+</pre></div>
+
+<p>Because we have our test data already being setup for each test that is run, we don’t need to do anything here except for call the method that we want to test and put an expectation on it. So we are checking that we can tell that each of the IP addresses has 10 requests, then that a request is permitted for an IP address, and if for some reason we had a different threshold time, which it would report that it’s not permitted. The code to get these passing:</p>
+
+<div><pre>
+<span>class</span> <span>RateLimit</span> &lt; <span>ActiveRecord</span>::<span>Base</span>
+
+  validates <span>:ip_address</span>, <span>:requested_at</span>, <span>presence</span>: <span>true</span>
+
+  scope <span>:within_interval</span>, -&gt; (threshold_time) { where(<span><span>"</span><span>requested_at &gt; ?</span><span>"</span></span>, threshold_time) }
+  scope <span>:for_ip_address</span>, -&gt; (requesting_ip) { where(<span>ip_address</span>: requesting_ip)}
+
+  <span>def</span> <span>self</span>.<span>requests_for_ip_during_time_period</span>(ip_address, <span>time_period</span>: <span>60</span>.minutes.ago)
+    for_ip_address(ip_address).within_interval(time_period)
+  <span>end</span>
+
+  <span>def</span> <span>self</span>.<span>request_permitted</span>(ip_address, <span>maximum_requests</span>: <span>100</span>, <span>time_period</span>: <span>60</span>.minutes.ago)
+    requests = requests_for_ip_during_time_period(ip_address, <span>time_period</span>: time_period)
+    requests.size &lt; maximum_requests
+  <span>end</span>
+
+<span>end</span>
+</pre></div>
+
+<p>Now if we run our tests we will see that they pass, meaning we can now check an IP address and whether they are exceeding their rate limit or not:</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/rate_limit_spec.rb
+.......
+
+Finished in 0.16166 seconds (files took 1.27 seconds to load)
+7 examples, 0 failures
+</pre></div>
+
+<h5 id="turns-out-its-two-classes">Turns out it’s two classes</h5>
+
+<p>Up until this point, I had been going along my merry way building everything into the RateLimit class. However once I got to this point, and I was about to write my tests to return a message about when how long a user would have to wait to make another request it dawned on me why it wasn’t quite feeling right. I was trying to make one class and have it do two things. Represent a Request in the system, and decide that if a request was exceeding the limit or not, which is not really ideal. What we really want to be able to do, where possible, is have a class represent one thing, one object, and take care of its actions as well as store its data. To have this, we need two classes. Request and RateLimit. Request can store the requests that we need to check, and RateLimit can check them. Two classes, each with a clear and distinct responsibility.</p>
+
+<p>To achieve this, we need to change what we already have. RateLimit needs to become Request. In the spirit of BDD, we need to first change our tests to represent what we want. First, we should rename the files to what they will be:</p>
+
+<div><pre>&gt; mv spec/models/rate_limit_spec.rb spec/models/request_spec.rb
+&gt; mv app/models/rate_limit.rb app/models/request.rb
+</pre></div>
+
+<p>We need to change our database table as well. Luckily this is not a production system, meaning we can just alter our single migration, drop our database and re-run. If this were code that had been in production, we would need to tread more carefully and make more thorough adjustments, but for the purpose of this exercise, we can just change the migration:</p>
+
+<div><pre>
+<span>class</span> <span>CreateRequests</span> &lt; <span>ActiveRecord</span>::<span>Migration</span>[<span>5.0</span>]
+  <span>def</span> <span>change</span>
+    create_table <span>:requests</span> <span>do</span> |t|
+      t.string <span>:ip_address</span>
+      t.datetime <span>:requested_at</span>
+
+      t.timestamps
+    <span>end</span>
+
+    add_index <span>:requests</span>, [<span>:ip_address</span>, <span>:requested_at</span>]
+  <span>end</span>
+<span>end</span>
+</pre></div>
+
+<p>Then we can just get our database back up to speed with these commands:</p>
+
+<div><pre>&gt; bundle exec rake <span>db</span>:drop
+&gt; bundle exec rake <span>db</span>:create
+&gt; bundle exec rake <span>db</span>:migrate
+</pre></div>
+
+<p>Now we can change our tests to work with the newly renamed and ActiveRecord backed Request class:</p>
+
+<div><pre>
+require <span><span>'</span><span>rails_helper</span><span>'</span></span>
+
+describe <span>Request</span> <span>do</span>
+
+  it <span><span>'</span><span>requires an IP address</span><span>'</span></span> <span>do</span>
+    request = <span>Request</span>.new
+    request.requested_at = <span>Time</span>.zone.now
+    expect(request).to_not be_valid
+    request.ip_address = <span><span>'</span><span>127.0.0.1</span><span>'</span></span>
+    expect(request.save).to eq(<span>true</span>)
+  <span>end</span>
+
+  it <span><span>'</span><span>requires the time a request was made</span><span>'</span></span> <span>do</span>
+    request = <span>Request</span>.new
+    request.ip_address = <span><span>'</span><span>127.0.0.1</span><span>'</span></span>
+    expect(request).to_not be_valid
+    request.requested_at = <span>Time</span>.zone.now
+    expect(request.save).to eq(<span>true</span>)
+  <span>end</span>
+
+  context <span>do</span>
+    let(<span>:request_ip</span>) { <span><span>'</span><span>127.0.0.1</span><span>'</span></span> }
+    let(<span>:other_ip</span>) { <span><span>'</span><span>10.0.0.10</span><span>'</span></span> }
+    let!(<span>:previous_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>Request</span>.create(<span>ip_address</span>: request_ip, <span>requested_at</span>: number.minutes.ago)} }
+    let!(<span>:other_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>Request</span>.create(<span>ip_address</span>: other_ip, <span>requested_at</span>: number.minutes.ago)} }
+
+    it <span><span>'</span><span>can count up requests for over a time period</span><span>'</span></span> <span>do</span>
+      expect(<span>Request</span>.within_interval(<span>60</span>.minutes.ago).size).to eq(<span>20</span>)
+    <span>end</span>
+
+    it <span><span>'</span><span>can count up requests for a requesting IP address</span><span>'</span></span> <span>do</span>
+      expect(<span>Request</span>.for_ip_address(request_ip).size).to eq(<span>10</span>)
+      expect(<span>Request</span>.for_ip_address(other_ip).size).to eq(<span>10</span>)
+    <span>end</span>
+
+    it <span><span>'</span><span>can count requests for a requesting IP address over a time period</span><span>'</span></span> <span>do</span>
+      expect(<span>Request</span>.requests_for_ip_during_time_period(request_ip).size).to eq(<span>10</span>)
+      expect(<span>Request</span>.requests_for_ip_during_time_period(request_ip, <span>time_period</span>: <span>6</span>.minutes.ago).size).to eq(<span>5</span>)
+    <span>end</span>
+
+    it <span><span>'</span><span>reports if a request is permitted</span><span>'</span></span> <span>do</span>
+      expect(<span>Request</span>.request_permitted(request_ip)).to eq(<span>true</span>)
+    <span>end</span>
+
+    it <span><span>'</span><span>reports if a request is not permitted</span><span>'</span></span> <span>do</span>
+      expect(<span>Request</span>.request_permitted(request_ip, <span>maximum_requests</span>: <span>1</span>, <span>time_period</span>: <span>5</span>.minutes.ago)).to eq(<span>false</span>)
+    <span>end</span>
+
+  <span>end</span>
+<span>end</span>
+</pre></div>
+
+<p>Because we are making a pretty major change here, be sure to take a moment and run the tests:</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/request_spec.rb
+bundler: failed to load command: rspec (/Users/chris/.rbenv/versions/2.4.0/bin/rspec)
+LoadError: Unable to autoload constant Request, expected /Users/chris/projects/mine/rate-limiter/app/models/request.rb to define it
+</pre></div>
+
+<p>As expected, this doesn’t pass. Luckily as we’ve decided to make a change before we get too much further, the code change for this is quite simple. We just need to change the name of our model to Request:</p>
+
+<div><pre>
+
+<span>class</span> <span>Request</span> &lt; <span>ActiveRecord</span>::<span>Base</span>
+  
+<span>end</span>
+</pre></div>
+
+<p>And then our tests will be passing again:</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/request_spec.rb
+.......
+
+Finished in 0.15694 seconds (files took 1.15 seconds to load)
+7 examples, 0 failures
+</pre></div>
+
+<p>We do have one last set of changes to make. In the Home controller we need to create a Request now after a successful request:</p>
+
+<div><pre>
+
+it <span><span>'</span><span>takes record of a successful request</span><span>'</span></span> <span>do</span>
+  expect { get home_index_path }.to change(<span>Request</span>.count).by(<span>1</span>)
+<span>end</span>
+</pre></div>
+
+<p>And in the controller:</p>
+
+<div><pre>
+
+private
+
+<span>def</span> <span>record_rate_limit_request</span>
+  <span>Request</span>.create(<span>ip_address</span>: request.remote_ip, <span>requested_at</span>: <span>Time</span>.zone.now)
+<span>end</span>
+</pre></div>
+
+<p>That should do it. So now that we’ve made a change to a better object model, we can run the tests and make sure that we are ready to move on.</p>
+
+<div><pre>&gt; bundle exec rspec spec
+.........*
+
+Pending: (Failures listed here are expected and do not affect your suite's status)
+
+  1) Home Controller renders a 429 if the rate limit threshold has been hit
+     # Not yet implemented
+     # ./spec/requests/home_controller_spec.rb:17
+
+
+Finished in 0.37571 seconds (files took 1.13 seconds to load)
+10 examples, 0 failures, 1 pending
+</pre></div>
+
+<p>Excellent. Having tests has meant that we were able to start the change of how the rate limiter is designed and be confident that it’s still going to work the way that we want and that is when your test suite is really going to shine, when you inevitably have to change and refactor your code, but of course need it to still function correctly.</p>
+
+<h5 id="the-rate-limiter">The Rate Limiter</h5>
+
+<p>Now that we have refined our data model for the solution, it’s time to add the thing that we came here for. The Rate Limiter. The Rate Limiter needs to work with the Request object that we’ve built and decide if a new request should be permitted based on the requests that we’ve received, and if it’s not, how long until a new request is allowed. Let’s think about the tests that we need to acheive this.</p>
+
+<div><pre>
+describe <span>RateLimiter</span> <span>do</span>
+
+  it <span><span>'</span><span>knows the IP address that the rate limit is for</span><span>'</span></span>
+
+  context <span>do</span>
+
+    it <span><span>'</span><span>can get the requests for a time period</span><span>'</span></span>
+
+    it <span><span>'</span><span>reports if a request is permitted</span><span>'</span></span>
+
+    it <span><span>'</span><span>reports if a request is not permitted</span><span>'</span></span>
+
+    it <span><span>'</span><span>reports how long until a request from a non-permitted IP address can be made</span><span>'</span></span>
+
+  <span>end</span>
+
+<span>end</span>
+
+</pre></div>
+
+<p>As you can see, I’ve also added a thing for IP address, the Rate limiter will need to know what IP address it should be using to find the right requests to count and potentially reject. Let’s start with the IP address for the rate limiter.</p>
+
+<div><pre>
+describe <span>RateLimiter</span> <span>do</span>
+
+  let(<span>:ip_address</span>) { <span><span>'</span><span>127.0.0.1</span><span>'</span></span> }
+
+  it <span><span>'</span><span>knows the IP address that the rate limit is for</span><span>'</span></span> <span>do</span>
+    rate_limiter = <span>RateLimit</span>.new(ip_address)
+    expect(rate_limiter.ip_address).to eq(ip_address)
+  <span>end</span>
+
+<span>end</span>
+</pre></div>
+
+<p>Now that we have defined the API that we expect from the RateLimiter class we can start putting it together in code.</p>
+
+<div><pre>
+
+
+<span>class</span> <span>RateLimit</span>
+
+  attr_accessor <span>:ip_address</span>, <span>:maximum_requests</span>, <span>:time_period</span>
+  attr_reader <span>:requests</span>
+
+  <span>def</span> <span>initialize</span>(ip_address, <span>maximum_requests</span>: <span>100</span>, <span>time_period</span>: <span>60</span>.minutes.ago)
+    <span>self</span>.ip_address = ip_address
+    <span>self</span>.maximum_requests = maximum_requests
+    <span>self</span>.time_period = time_period
+  <span>end</span>
+
+  <span>def</span> <span>requests</span>
+    <span>@requests</span> ||= <span>Request</span>.requests_for_ip_during_time_period(ip_address, <span>time_period</span>: time_period).limit(maximum_requests)
+  <span>end</span>
+
+<span>end</span>
+</pre></div>
+
+<p>So we’ve added a fair bit of code here to get it working, let’s take a quick look at what that is and what it does. To get the requests that we are checking to limit, we need to know the IP address, but we also need to know what the maximum amount of requests we are expecting and what time period that is for. Since this is not and ActiveRecord class, we aren’t storing anything in it, its only job is to check the requests being retained by the Request class, we need to add virtual attributes for IP address, maximum_requests and time_period as they are all set when we make a new object. We also need an attr_reader for requests, it can’t be set, it is only retrieved by the program based on the input received.</p>
+
+<p>For the requests we want to be retrieved and set up by the Rate Limiter, we are setting the IP address, and a default for maximum requests and time_period. We have the defaults as what is expected by the requirements, 100 requests per 60 minutes, but we want to flexible enough to allow different scenarios, especially when it’s as simple to do as using some default named parameters.</p>
+
+<p>After we call a new object like in our test, then we have the information to retrieved the requests that we want to check. We get the requests for the IP address during a timer period using the code we’ve already used, and we are going to use the memoize operator to assign it to the instance variable that the class will use for requests. For those that are unfamiliar with it, memoize assigns a value to the variable if it doesn’t exist. So when we call requests for the first time on this object, it will assign the result of the lookup to Request, but after it has a value, it will just return the value of @requests. This means we can use our value without having to recall it if we have to use requests more than once (which we will).</p>
+
+<p>Now we can run our test that we have and see the results.</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/rate_limiter_spec.rb
+.****
+
+Pending: (Failures listed here are expected and do not affect your suite's status)
+
+  1) RateLimiter  can get the requests for a time period
+     # Not yet implemented
+     # ./spec/models/rate_limiter_spec.rb:12
+
+  2) RateLimiter  reports if a request is permitted
+     # Not yet implemented
+     # ./spec/models/rate_limiter_spec.rb:14
+
+  3) RateLimiter  reports if a request is not permitted
+     # Not yet implemented
+     # ./spec/models/rate_limiter_spec.rb:16
+
+  4) RateLimiter  reports how long until a request from a non permitted ip can be made
+     # Not yet implemented
+     # ./spec/models/rate_limiter_spec.rb:18
+
+
+Finished in 0.00618 seconds (files took 1.07 seconds to load)
+5 examples, 0 failures, 4 pending
+</pre></div>
+
+<p>Which is good. We have our requests now, so we can about finishing off what we need to achieve. So we have already added the code that grabs the requests and for a certain time period, but as an extra test to make sure, let’s check that we have the correct number of requests that we expect:</p>
+
+<div><pre>
+context <span>do</span>
+  let(<span>:request_ip</span>) { <span><span>'</span><span>127.0.0.1</span><span>'</span></span> }
+  let(<span>:other_ip</span>) { <span><span>'</span><span>10.0.0.10</span><span>'</span></span> }
+  let!(<span>:previous_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>Request</span>.create(<span>ip_address</span>: request_ip, <span>requested_at</span>: number.minutes.ago)} }
+  let!(<span>:other_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>Request</span>.create(<span>ip_address</span>: other_ip, <span>requested_at</span>: number.minutes.ago)} }
+  let(<span>:rate_limiter</span>) { <span>RateLimit</span>.new(ip_address) }
+
+  it <span><span>'</span><span>can get the requests for a time period</span><span>'</span></span> <span>do</span>
+    expect(rate_limiter.requests.size).to eq(<span>10</span>)
+  <span>end</span>
+<span>end</span>
+</pre></div>
+
+<p>Here we have added requests for two different IP addresses so that we can test that we only get the requests for the IP address that is making the request. Now we can run the tests and see that we get the requests that we expect:</p>
+
+<div><pre>&gt; bundle exec rpsec spec/models/rate_limiter_spec.rb
+..***
+
+Pending: (Failures listed here are expected and do not affect your suite's status)
+
+  1) RateLimiter  reports if a request is permitted
+     # Not yet implemented
+     # ./spec/models/rate_limit_spec.rb:23
+
+  2) RateLimiter  reports if a request is not permitted
+     # Not yet implemented
+     # ./spec/models/rate_limit_spec.rb:25
+
+  3) RateLimiter  reports how long until a request from a non permitted ip can be made
+     # Not yet implemented
+     # ./spec/models/rate_limit_spec.rb:27
+
+
+Finished in 0.06271 seconds (files took 2.17 seconds to load)
+5 examples, 0 failures, 3 pending
+</pre></div>
+
+<p>We’re really close to having a functioning feature now. Now it’s time to tackle whether a request is permitted to be made or not, so let’s add some tests for it:</p>
+
+<div><pre>
+context <span>do</span>
+  let(<span>:request_ip</span>) { <span><span>'</span><span>127.0.0.1</span><span>'</span></span> }
+  let(<span>:other_ip</span>) { <span><span>'</span><span>10.0.0.10</span><span>'</span></span> }
+  let!(<span>:previous_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>Request</span>.create(<span>ip_address</span>: request_ip, <span>requested_at</span>: number.minutes.ago)} }
+  let!(<span>:other_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>Request</span>.create(<span>ip_address</span>: other_ip, <span>requested_at</span>: number.minutes.ago)} }
+  let(<span>:rate_limiter</span>) { <span>RateLimit</span>.new(ip_address) }
+
+  it <span><span>'</span><span>can get the requests for a time period</span><span>'</span></span> <span>do</span>
+    expect(rate_limiter.requests.size).to eq(<span>10</span>)
+  <span>end</span>
+
+  it <span><span>'</span><span>reports if a request is permitted</span><span>'</span></span> <span>do</span>
+    expect(rate_limiter.request_permitted?).to eq(<span>true</span>)
+  <span>end</span>
+
+  it <span><span>'</span><span>reports if a request is not permitted</span><span>'</span></span> <span>do</span>
+    rate_limiter = <span>RateLimit</span>.new(ip_address, <span>maximum_requests</span>: <span>5</span>, <span>time_period</span>: <span>10</span>.minutes.ago)
+    expect(rate_limiter.request_permitted?).to eq(<span>false</span>)
+  <span>end</span>
+<span>end</span>
+</pre></div>
+
+<p>The tests here are a little different for a request that is permitted, and one that is not. Based on our defaults the data that we have setup means that a request should be permitted by the rate limiter, which means we can just straight up check if the request is permitted and expect it to be allowed. However for one to be denied, we would need to setup some extra data, which is certainly not a big deal, but the option I am going for here is testing the flexibility of the rate limiter as well. By changing the maximum requests and time period, we can check that we can both limit requests, but also that we can use a different amount of requests in a different time period and things will still work as we expect. These tests will fail so let’s add the code to check if a request is permitted:</p>
+
+<div><pre>
+<span>class</span> <span>RateLimit</span>
+
+  attr_accessor <span>:ip_address</span>, <span>:maximum_requests</span>, <span>:time_period</span>
+  attr_reader <span>:requests</span>
+
+  <span>def</span> <span>initialize</span>(ip_address, <span>maximum_requests</span>: <span>100</span>, <span>time_period</span>: <span>60</span>.minutes.ago)
+    <span>self</span>.ip_address = ip_address
+    <span>self</span>.maximum_requests = maximum_requests
+    <span>self</span>.time_period = time_period
+  <span>end</span>
+
+  <span>def</span> <span>requests</span>
+    <span>@requests</span> ||= <span>Request</span>.requests_for_ip_during_time_period(ip_address, <span>time_period</span>: time_period).limit(maximum_requests)
+  <span>end</span>
+
+  
+  <span>def</span> <span>request_permitted?</span>
+    requests.size &lt; maximum_requests
+  <span>end</span>
+<span>end</span>
+</pre></div>
+
+<p>Some really nice simple code here, and we can run the tests as and see that it passes:</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/rate_limiter_spec.rb
+....*
+
+Pending: (Failures listed here are expected and do not affect your suite's status)
+
+  1) RateLimiter  reports how long until a request from a non permitted ip can be made
+     # Not yet implemented
+     # ./spec/models/rate_limiter_spec.rb:31
+
+
+Finished in 0.08781 seconds (files took 1.1 seconds to load)
+5 examples, 0 failures, 1 pending
+</pre></div>
+
+<p>This is great, we can allow or deny requests with this code. There is just one more thing to test in this class that it can return a message saying how long someone will have to wait until they can make a request.</p>
+
+<div><pre>
+context <span>do</span>
+  let(<span>:request_ip</span>) { <span><span>'</span><span>127.0.0.1</span><span>'</span></span> }
+  let(<span>:other_ip</span>) { <span><span>'</span><span>10.0.0.10</span><span>'</span></span> }
+  let!(<span>:previous_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>Request</span>.create(<span>ip_address</span>: request_ip, <span>requested_at</span>: number.minutes.ago)} }
+  let!(<span>:other_requests</span>) { (<span>1</span>..<span>10</span>).each { |number| <span>Request</span>.create(<span>ip_address</span>: other_ip, <span>requested_at</span>: number.minutes.ago)} }
+  let(<span>:rate_limiter</span>) { <span>RateLimit</span>.new(ip_address) }
+
+it <span><span>'</span><span>reports how long until a request from a non permitted ip can be made</span><span>'</span></span> <span>do</span>
+    rate_limiter = <span>RateLimit</span>.new(ip_address, <span>maximum_requests</span>: <span>5</span>, <span>time_period</span>: <span>6</span>.minutes.ago)
+    expect(rate_limiter.time_until_next_request_permitted).to eq(<span><span>"</span><span>Rate limit exceeded, please try again in </span><span><span>#{</span><span>59</span><span>}</span></span><span> seconds</span><span>"</span></span>)
+  <span>end</span>
+
+<span>end</span>
+</pre></div>
+
+<p>And some code to work this out:</p>
+
+<div><pre>
+<span>class</span> <span>RateLimit</span>
+  
+
+  <span>def</span> <span>request_permitted?</span>
+    requests.size &lt; maximum_requests
+  <span>end</span>
+
+  <span>def</span> <span>time_until_next_request_permitted</span>
+    interval = <span>Time</span>.zone.now - time_period 
+    next_request_at = (requests.last.requested_at + interval)
+    next_request_in = (next_request_at - <span>Time</span>.zone.now).to_i
+    <span><span>"</span><span>Rate limit exceeded, please try again in </span><span><span>#{</span>next_request_in<span>}</span></span><span> seconds</span><span>"</span></span>
+  <span>end</span>
+
+<span>end</span>
+</pre></div>
+
+<p>This is the only sort of complicated code that we have. That is mainly because this can’t be worked out in one step. We do want the code to be as simple as possible, but that doesn’t mean it will always be simple. To make it as easy to work with as possible, use good names that describe the purpose of each variable. Those along with your tests should reveal what you are trying to do, use comments as a last resort, which you can see I’ve done with one thing here. I felt like it was something that was going to take me a moment to understand again when I come back to the code, so I added one. Let’s go through the code. We get the rate limiting period in seconds, this will help us because we have to report in seconds how long it is until someone can make a request. Also every time period possible is made up of a number of seconds which is of course not true of minutes, hours, etc.</p>
+
+<p>Now we need to be able to find out when the next request is allowed, to do this we get the oldest request in the time period and find what time it was made, then we add the time period we are limiting for to it, this will tell us the time that next_request_at is allowed. We also need to know how far away that is, so we check the difference between next_request_at and the current time, we use Time.zone.now because apps can operate on different timezones per user and we want to use whatever Time Zone the app is working in on a particular request, and we convert it to seconds (to_i) and then we have the number of seconds until the next request is allowed and we return it as a message. Now that we have gone through the code, let’s run the tests:</p>
+
+<div><pre>&gt; bundle exec rspec spec/models/rate_limiter_spec.rb
+.....
+
+Finished in 0.11633 seconds (files took 1.2 seconds to load)
+5 examples, 0 failures
+</pre></div>
+
+<p>There we have it, a function rate limit class that does what we want.</p>
+
+<h5 id="almost-done">Almost done</h5>
+
+<p>Now that we have all the pieces that we need to limit a request, it’s time to put it to use in our application. So let’s go back and see what we have in our request spec.</p>
+
+<div><pre>
+require <span><span>'</span><span>rails_helper</span><span>'</span></span>
+
+describe <span><span>"</span><span>Home Controller</span><span>"</span></span> <span>do</span>
+
+  it <span><span>"</span><span>renders a 200 for a request</span><span>"</span></span> <span>do</span>
+    get home_index_path
+    expect(response.status).to eq(<span>200</span>)
+    expect(response.body).to eq(<span><span>"</span><span>ok</span><span>"</span></span>)
+  <span>end</span>
+
+  it <span><span>'</span><span>takes record of a successful request</span><span>'</span></span> <span>do</span>
+    expect(<span>Request</span>.count).to eq(<span>0</span>)
+    get home_index_path
+    expect(<span>Request</span>.count).to eq(<span>1</span>)
+  <span>end</span>
+
+  it <span><span>'</span><span>renders a 429 if the rate limit threshold has been hit</span><span>'</span></span>
+
+
+<span>end</span>
+</pre></div>
+
+<p>Now we just need to limit a request that is not allowed. Let’s add our test:</p>
+
+<div><pre>
+context <span><span>'</span><span>hitting the rate limit</span><span>'</span></span> <span>do</span>
+  let!(<span>:requests</span>) <span>do</span>
+    (<span>1</span>..<span>99</span>).each { |number| <span>Request</span>.create(<span>ip_address</span>: <span><span>'</span><span>127.0.0.1</span><span>'</span></span>, <span>requested_at</span>: number.seconds.ago )}
+  <span>end</span>
+
+  it <span><span>'</span><span>renders a 429 if the rate limit threshold has been hit</span><span>'</span></span> <span>do</span>
+    get home_index_path
+    expect(response.status).to eq(<span>200</span>)
+    expect(response.body).to eq(<span><span>"</span><span>ok</span><span>"</span></span>)
+    get home_index_path
+    expect(response.status).to eq(<span>429</span>)
+    expect(response.body).to include(<span><span>"</span><span>Rate limit exceeded, please try again</span><span>"</span></span>)
+  <span>end</span>
+
+<span>end</span>
+</pre></div>
+
+<p>As I have done before, I’ve added a context block so that we don’t set up extra data for tests that don’t need it and slow our tests down. So this test is pretty simple. We are setting up 99 requests made by an IP address in well under the 60 minutes that they are allowed. It makes a request, it is allowed through, but then when it makes another one it receives the 429 status code, and it is not allowed with a message. Let’s be thorough and see it fail first:</p>
+
+<div><pre>&gt; bundle exec rspec spec/requests/home_controller_spec.rb
+Failure/Error: expect(response.status).to eq(429)
+
+       expected: 429
+            got: 200
+
+       (compared using ==)
+     # ./spec/requests/home_controller_spec.rb:27:in `block (3 levels) in &lt;top (required)&gt;'
+
+Finished in 0.3859 seconds (files took 1.11 seconds to load)
+3 examples, 1 failure
+</pre></div>
+
+<p>This is as expected, we haven’t added code to limit a real request being made to the application, let’s go add it in:</p>
+
+<div><pre>
+<span>class</span> <span>HomeController</span> &lt; <span>ApplicationController</span>
+  before_action <span>:check_rate_limit</span>
+
+  
+  private
+
+  <span>def</span> <span>check_rate_limit</span>
+    rate_limiter = <span>RateLimit</span>.new(request.remote_ip)
+    render <span>plain</span>: rate_limiter.time_until_next_request_permitted, <span>status</span>: <span>429</span> <span>unless</span> rate_limiter.request_permitted?
+  <span>end</span>
+
+  
+
+<span>end</span>
+</pre></div>
+
+<p>So here, before a request is made, we setup a rate limiter object with the IP address of the request being made. We have setup our Rate limiter with the defaults that will satisfy the requirements, so this is all it needs to know. So now we just need to render a message and return a 429 code unless the request is permitted, all things the Rate limiter knows. So now we can run our test:</p>
+
+<div><pre>&gt; bundle exec rspec spec/requests/home_controller_spec.rb
+...
+
+Finished in 0.27506 seconds (files took 1.13 seconds to load)
+3 examples, 0 failures
+</pre></div>
+
+<p>Passes, and now we can run all the tests to see the whole feature from start to finish passing:</p>
+
+<div><pre>&gt; bundle exec rspec spec
+..............
+
+Finished in 0.49885 seconds (files took 1.1 seconds to load)
+14 examples, 0 failures
+</pre></div>
+
+<h5 id="all-done">All Done</h5>
+
+<p>There we have it. That’s a whole feature you could realistically be adding to an application, built from outside to inside using BDD and RSpec. It’s a lot to take in, but as you can see, it’s a bunch of really small steps that all work together. It’s also really important to remember, that this can be hard, but if your code is really really hard to test, it’s probably still too big and needs to be broken into smaller pieces.</p>
+
+<p>I hope this helps with getting started with some testing, and gives some insight into how I test things when I have to build a new feature. Start with defining what your feature needs to do in a request spec(s) and just write the code that you need to make that happen. For most features this will involve you adding code to your models/business logic of your applicaiton, in my case here, the Request and RateLimit class. Add tests for what they need to do, then use that code to finish off what your request specs need, rinse, repeat.</p>
+
+<p>Of course if you’re still a bit stuck, then hit me up, I’d be more than happy to help with ideas on how to test what you’re doing, but one thing I always remind myself, if it’s really hard to test, I probably haven’t figured out quite what it needs to be yet.</p>
+
+<p>Happy testing!</p>
+
+
+
+
+
+
+    </div></div>
+  </div>
+</body>
+</html>

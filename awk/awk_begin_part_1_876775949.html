@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Awk: `Begin { ` Part 1</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Awk: `Begin { ` Part 1</h1>
+    <p><strong>URL:</strong> <a href="https://jemma.dev/blog/awk-part-1">https://jemma.dev/blog/awk-part-1</a></p>
+    <p><strong>Tags:</strong> awk</p>
+    <p><strong>Bookmark ID:</strong> 876775949</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div aria-label="Content">
+        <article itemscope="" itemtype="http://schema.org/BlogPosting">
+
+  
+
+  <div itemprop="articleBody">
+    <p>The other day, I was watching Bryan Cantrill’s 2018 talk, <a href="https://www.youtube.com/watch?v=2wZ1pCpJUIM">Rust, and Other Interesting Things</a>, and he made an offhanded comment while discussing values of different programming languages and communities. He said, “If you get the <a href="https://www.gnu.org/software/gawk/manual/gawk.html">awk programming language manual</a>…you’ll read it in about two hours and then you’re done. That’s it. You know all of awk.”</p>
+
+<p>Only two hours to learn an entire language?! …. Challenge accepted!</p>
+
+<p>I had previously used snippets of awk here and there. Most of them were given to me by Stack Overflow answers when googling for niche data file manipulations. But, I did not know enough to successfully write an awk program from scratch. I definitely did not have a real grasp on the language nor its power. And, a couple of hours sounded like a relatively small time investment to learn what Bryan Cantrill said was a language he used three times a day.</p>
+
+<p>It turns out it takes more than two hours to learn awk, and I am by no means an expert… yet (growth mindset!). But, I now know enough to write a little about the essentials. Here goes!</p>
+
+<h3 id="what-is-awk-useful-for">What is awk useful for?</h3>
+
+<p>Awk is useful for data file manipulation. Already, having used it for a few days only, I wish I had invested time in learning it earlier. My usual workflow when encountering a data file is to import it into Google Sheets and use their builtin functions. If those weren’t enough, I would write little code snippets to somewhat awk..wardly get the information I want. Awk is way more powerful than what I was doing before. Let’s take a look:</p>
+
+<h3 id="running-awk-programs">Running awk programs</h3>
+
+<p>If we’re going to learn awk, we need to know how to run an awk program. The syntax to run an awk program in a shell is:</p>
+<div><pre><code><span>$ </span><span>awk</span> <span>'awk_program_contents'</span> data-file-1 data-file-2
+</code></pre></div>
+<p>We can also write a longer awk program to run instead of writing the awk code inline. We could write a file with awk codeand then pass inline to awk with <code>-f &lt;awk-program-filename&gt;</code></p>
+<div><pre><code><span>$ </span><span>awk</span> <span>-f</span> awk-program.awk data-file-1 data-file-2
+</code></pre></div>
+
+<h3 id="awk-program-contents">awk program contents</h3>
+
+<p>Well, what is an awk program? We know it is best used for simple data reformatting or manipulation. The way it does this is by performing different actions on different patterns within a data file. The basic syntax of an awk program depends on these pattern and actions.</p>
+
+<div><pre><code>pattern <span>{</span> action <span>}</span>
+pattern <span>{</span> action <span>}</span>
+...
+</code></pre></div>
+
+<p>We can give as many <code>pattern { action }</code> pairs as we want. Each pair will be executed independently of the others. This means if a line matches more than one pattern, it will have more than one corresponding action. In the example above we use newlines to separate distinct pairs. Similar to bash, we can also use <code>;</code> to separate commands and put everything on one line: <code>pattern { action }; pattern { action }</code></p>
+
+<h3 id="awk-with-data-files">awk with data files</h3>
+
+<p>But, it turns out awk is much more useful (and fun!) with a data file. The UN has a few <a href="https://data.un.org/">publicly available datasets</a>. I picked <a href="https://data.un.org/_Docs/SYB/CSV/SYB62_309_201906_Education.csv">this one</a> on education at the primary, secondary and tertiary levels to delve into first.</p>
+
+<p>Let’s start by using awk to get a sense of what the data looks like.  <code>NR</code> is a predefined variable which records the number of rows read in a file so far. We can use it to look at the first few lines of a program. In this case, our pattern will be <code>NR &lt;= 5</code>, and by not including an action, the implied action will be <code>print</code>:</p>
+<div><pre><code><span>$ </span><span>awk</span> <span>'NR &lt;= 5'</span> education.csv
+T07,<span>"Enrolment in primary, secondary and tertiary education levels"</span>,,,,,
+Region/Country/Area,,Year,Series,Value,Footnotes,Source
+1,<span>"Total, all countries or areas"</span>,2005,Students enrolled <span>in </span>primary education <span>(</span>thousands<span>)</span>,<span>"678,991.6070"</span>,,<span>"United Nations Educational, Scientific and Cultural Organization (UNESCO), Montreal, the UNESCO Institute for Statistics (UIS) statistics database, last accessed March 2019."</span>
+1,<span>"Total, all countries or areas"</span>,2005,Gross enrollement ratio - Primary <span>(</span>male<span>)</span>,104.9360,,<span>"United Nations Educational, Scientific and Cultural Organization (UNESCO), Montreal, the UNESCO Institute for Statistics (UIS) statistics database, last accessed March 2019."</span>
+1,<span>"Total, all countries or areas"</span>,2005,Gross enrollment ratio - Primary <span>(</span>female<span>)</span>,99.9214,,<span>"United Nations Educational, Scientific and Cultural Organization (UNESCO), Montreal, the UNESCO Institute for Statistics (UIS) statistics database, last accessed March 2019."</span>
+</code></pre></div>
+<p>Okay, so looks like this is giving us a bit of information about our file. Notably:</p>
+<ol>
+  <li>There are two header rows: a title row, and a row telling us what the fields are</li>
+  <li>The file is comma separated</li>
+  <li>… except there are sometimes commas within double quoted strings: <code>"Total, all countries or areas"</code></li>
+</ol>
+
+<p>Let’s address these one by one!</p>
+
+
+
+<p>We can ignore the first two header rows by using our nifty <code>NR</code> moving forward. We can pattern match that <code>NR &gt; 2</code>. Note: awk is 1-indexed.</p>
+<div><pre><code><span>$ </span><span>awk</span> <span>'NR &gt; 2'</span> education.csv
+</code></pre></div>
+
+<h3 id="field-separators">Field Separators</h3>
+
+<p>awk’s <a href="https://www.gnu.org/software/gawk/manual/gawk.html#Default-Field-Splitting">default field separator</a> is a space. We can actually see this by printing the first field. To access the value of a field, we use <code>$&lt;field_index&gt;</code>. So <code>$1</code> is the first field, <code>$2</code> the second, and so on. <code>$0</code> refers to the entire row.</p>
+
+<p>If we try this:</p>
+<div><pre><code><span>$ </span><span>awk</span> <span>'NR &lt;= 5 { print $1 }'</span> education.csv
+T07,<span>"Enrolment
+Region/Country/Area,,Year,Series,Value,Footnotes,Source
+1,"</span>Total,
+1,<span>"Total,
+1,"</span>Total,
+</code></pre></div>
+<p>we can confirm that we’re splitting on spaces. awk has the option to specify a different field separator with the <code>-F 'separator'</code> flag:</p>
+<div><pre><code><span>$ </span><span>awk</span> <span>-F</span> <span>','</span> <span>'NR &lt;= 5 { print $1 }'</span> education.csv
+T07
+Region/Country/Area
+1
+1
+1
+</code></pre></div>
+
+<p>Great! But…. we had commas embedded within strings with double quotes. Sure enough, if we print the second field (<code>$2</code>), we see:</p>
+
+<div><pre><code><span>$ </span><span>awk</span> <span>-F</span> <span>','</span> <span>'NR &lt;= 5 { print $2 }'</span> education.csv
+<span>"Enrolment in primary
+
+"</span>Total
+<span>"Total
+"</span>Total
+</code></pre></div>
+
+<p>Hmmm. What we want here is to split fields by <em>content</em>. Which awk does not have, but gawk (GNU awk) does: <a href="https://www.gnu.org/software/gawk/manual/gawk.html#Splitting-By-Content">FPAT</a>! From the gawk manual: “All properly written awk programs should work with gawk. So most of the time, we don’t distinguish between gawk and other awk implementations.”</p>
+
+<p>Sounds like we can use gawk here instead then. Let’s try pattern matching. I’m not going to go into regex here, but the pattern we want, defined by <code>"[^,]*|\"[^\"]+\""</code> is anything that either starts with a non-comma character, or starts with a double quote, contains only non-quote characters, and ends with a double quote:</p>
+
+<div><pre><code><span>$ </span>gawk <span>'BEGIN { FPAT = "[^,]*|\"[^\"]+\"" } NR &lt;= 5 { print $2 }'</span> education.csv
+<span>"Enrolment in primary, secondary and tertiary education levels"</span>
+
+<span>"Total, all countries or areas"</span>
+<span>"Total, all countries or areas"</span>
+<span>"Total, all countries or areas"</span>
+</code></pre></div>
+
+<p>I snuck a <code>BEGIN</code> in there without explaining it. Let’s go on a brief tangent…</p>
+
+<h3 id="begin--tangent-">BEGIN { tangent }</h3>
+
+<p>Beyond the pattern and actions, awk also has a concept of <code>BEGIN</code> and <code>END</code> blocks. The <code>BEGIN</code> is executed before any of the data is processed. It can be useful for declaring variables or printing text to appear at the beginning. Analogously, the <code>END</code> is executed after the data is processed. It can be useful for performing manipulations on aggregates of the data, like averaging a sum.</p>
+
+<p>This means if we wanted to write a little “Hello, awk!” program, we could do it without even needing a data file.</p>
+
+<div><pre><code><span>$ </span><span>awk</span> <span>'BEGIN { print "Hello, awk!" }'</span>
+Hello, <span>awk</span><span>!</span>
+</code></pre></div>
+
+<h3 id="end--tangent-">END { tangent }</h3>
+
+<p>…back to our example. In our case, we used a <code>BEGIN</code> block to declare the <code>FPAT</code> <em>before</em> reading our data file.</p>
+
+<p>But, we’ve only looked at the first 5 lines. For all we know, the rest of the file could look completely different. Let’s use <code>NR</code> again to see some more of the file. First, let’s figure out how long the file is. We can use the <code>END</code> block here. After we’ve parsed the whole file, we can see what the value of <code>NR</code> is, and that’ll tell us how many lines it is:</p>
+
+<div><pre><code><span>$ </span><span>awk</span> <span>'END { print NR }'</span> education.csv
+8630
+</code></pre></div>
+
+<p>Okay, so maybe if we print every 500 lines, we’ll get a sense of what data we’re looking at. We can set our pattern to be only if <code>NR</code> is a multiple of <code>500</code>:</p>
+<div><pre><code><span>$ </span><span>awk</span> <span>'NR % 500 == 0'</span> education.csv
+</code></pre></div>
+
+<p>… and I’m going to leave this blog post on a real cliff hanger. Mostly because it already feels too long! There’s <a href="https://jemma.dev/blog/awk-part-2">a second post</a> about awk actually looking at the data and manipulating it to figure out which countries have stark differences in number of males and females that they educate.</p>
+
+<h3 id="tldr-or-tlskimmed-far-enough-to-get-here-please-give-me-the-shorter-version">TL;DR or TL;Skimmed far enough to get here, please give me the shorter version:</h3>
+<p>To rehash what we’ve learned about awk:</p>
+<ul>
+  <li>awk is run using <code>awk 'awk_program' data-file</code></li>
+  <li>awk programs have the form <code>pattern { action }; pattern { action };</code></li>
+  <li><code>BEGIN</code> blocks are executed before reading data files</li>
+  <li><code>END</code> blocks are executed after reading data files</li>
+  <li><code>NR</code> is a variable that tells us the number of rows read</li>
+  <li><code>-F '&lt;separator&gt;'</code> is how we can define a field separator for a file</li>
+  <li>Space is the default field separator</li>
+  <li><code>FPAT="..."</code> is a way to use regex to define a pattern for each field</li>
+  <li><code>FPAT</code> is only defined in gawk</li>
+</ul>
+
+
+  </div>
+  
+</article>
+
+      </div></div>
+  </div>
+</body>
+</html>

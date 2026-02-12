@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>We Don’t Use Docker</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>We Don’t Use Docker</h1>
+    <p><strong>URL:</strong> <a href="https://launchyourapp.meezeeworkouts.com/2021/03/why-we-dont-use-docker-we-dont-need-it.html">https://launchyourapp.meezeeworkouts.com/2021/03/why-we-dont-use-docker-we-dont-need-it.html</a></p>
+    <p><strong>Tags:</strong> devops, docker</p>
+    <p><strong>Bookmark ID:</strong> 876778234</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="post-body-8443824020157869905" itemprop="description articleBody">
+<p><a href="http://web.archive.org/web/20210506073242/https://1.bp.blogspot.com/-jzH3lfGdlvA/YEuDIUgf6MI/AAAAAAAAALg/lVKC8nDelM8mIsAlT-lvBaBaFHAR7CMYQCLcBGAsYHQ/s1202/1%2BJUOITpaBdlrMP9D__-K5Fw.png"><img data-original-height="309" data-original-width="1202" src="http://web.archive.org/web/20210506073242im_/https://1.bp.blogspot.com/-jzH3lfGdlvA/YEuDIUgf6MI/AAAAAAAAALg/lVKC8nDelM8mIsAlT-lvBaBaFHAR7CMYQCLcBGAsYHQ/s320/1%2BJUOITpaBdlrMP9D__-K5Fw.png" width="320"></a></p><p>UPDATE: minor edits to mention that we do have a dedicated build server after this got posted to reddit.</p><p><br>This might end up getting a lot of hate.<span>&nbsp; </span>In other jobs, we’ve used docker and it’s
+worked out just fine (for the most part… there was that time the RedHat filesystem
+on our prod server got mysteriously hosed -- maybe it wasn’t docker’s fault.)<span>&nbsp; </span>But no, the reason we don’t use docker is
+because we don’t need it. Literally.<span>&nbsp;
+</span>Writing golang web services and static html embedded with with golang
+1.16’s new //embed directive, we end up with a single deployable binary.
+
+</p><p>As a self-sustaining startup, we have limited resources to
+devote to tasks.<span>&nbsp; </span>We chose golang exactly
+for this reason.<span>&nbsp; </span>It sure would be *nice*
+if we could spend a couple weeks building the perfect CI/CD pipeline, an elegant
+deployment process, along with pretty dashboards.<span>&nbsp; </span>But we have software we need to ship in order
+to get users in order to drive subscriptions.<span>&nbsp;
+</span>Anything that doesn’t directly serve that goal is a complication.<span>&nbsp; </span>So at best, docker is a complication.<span>&nbsp; </span>A 9 million LoC complication that brings its
+own bugs and its own idiosyncrasie</p><p>Golang allows us to build web services that are insanely
+fast (at least for the level of growth we are currently at) and insanely scalable
+(again, for the level of growth we are currently at).<span>&nbsp; </span>We can handle thousands of transactions per
+second on a single server.<span>&nbsp; </span>We don’t have
+anywhere close to a thousand transactions per second.<span>&nbsp; </span>But, sure, we could have probably done the same
+with node or deno.<span>&nbsp; </span>The V8 engine is also
+insanely fast.<span>&nbsp; </span>When high traffic for
+your app is probably 2 transactions per second (we have a workout video app – we
+don’t have the same scalability problems as Twitter), it really doesn’t matter
+what programming language you choose.<span>&nbsp; </span>If
+you run out of capacity, upgrade your single server.</p>
+
+<div><p>No, the reason we went with go was because golang’s
+packaging is *so* much better than node.<span>&nbsp;
+</span>Or java.<span>&nbsp; </span>Or C#.<span>&nbsp; </span>We get a single binary.<span>&nbsp; </span></p><p>
+
+Building is as easy as:</p></div>
+
+<div><p>&nbsp;&nbsp;&nbsp; go build</p><p>
+
+Testing is as easy as</p><p>
+&nbsp;&nbsp;&nbsp;&nbsp; go test</p><p>
+
+Deploying the app is as easy as:</p><p>
+&nbsp;&nbsp;&nbsp;&nbsp; scp app user@host:<br>&nbsp;&nbsp;&nbsp;&nbsp; ssh user@host “nohup ./app”<span>&nbsp;&nbsp; <br></span></p></div>
+
+<div><p>Note, we did get a *little* more complicated and create a SystemD
+script to launch it at startup.<span>&nbsp; We also made sure we had a dedicated build server, which essentially runs a 10 line shell script that does all the build goodness needed (git clone, go build, go test, go lint, go vet)&nbsp; </span>But
+there were those of us arguing that even that was too complicated.&nbsp; At some point we may even add a UI like https://www.rundeck.com/ to control deploys. </p><p>
+
+Total time to create our build and deploy system was so small we don’t even
+know how to measure it.</p><p>
+
+Now, think about how much time you’ve spent learning docker. Deploying docker.
+Troubleshooting docker.<span>&nbsp; </span>Even if you love
+it, it changed your life, it’s better than sliced bread and it solves world
+hunger… in the end can you really say it’s simpler than what we’ve got for free
+built in to golang?<span>&nbsp; </span>I guarantee you it’s
+not.</p><p>Please comment below if you like these thoughts.&nbsp; And while you're at it, you could give our app a try as well: <a href="http://web.archive.org/web/20210506073242/https://meezeeworkouts.com/getapp?r=docker">https://meezeeworkouts.com/getapp</a></p></div><p><a href="http://web.archive.org/web/20210506073242/https://1.bp.blogspot.com/-B5z998DlalM/YEuDWuXk9UI/AAAAAAAAALk/qAfLKHxl6B8oP6DyyqQBQ8OxJDfjagb-QCLcBGAsYHQ/s1024/%2528COPY%2529%2BUntitled%2Bdesign.png"><img data-original-height="1024" data-original-width="1024" height="320" src="http://web.archive.org/web/20210506073242im_/https://1.bp.blogspot.com/-B5z998DlalM/YEuDWuXk9UI/AAAAAAAAALk/qAfLKHxl6B8oP6DyyqQBQ8OxJDfjagb-QCLcBGAsYHQ/s320/%2528COPY%2529%2BUntitled%2Bdesign.png"></a></p>
+
+
+
+
+</div></div>
+  </div>
+</body>
+</html>

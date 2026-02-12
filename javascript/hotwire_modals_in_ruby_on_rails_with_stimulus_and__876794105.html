@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hotwire Modals in Ruby on Rails with Stimulus and Turbo Frames</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Hotwire Modals in Ruby on Rails with Stimulus and Turbo Frames</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2024/02/21/hotwire-modals-in-ruby-on-rails-with-stimulus-and-turbo-frames.html">https://blog.appsignal.com/2024/02/21/hotwire-modals-in-ruby-on-rails-with-stimulus-and-turbo-frames.html</a></p>
+    <p><strong>Tags:</strong> html, javascript, rubyonrails, ui-ux</p>
+    <p><strong>Bookmark ID:</strong> 876794105</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Modals are widely used on the web, but they are rarely built with accessibility in mind. When a modal is displayed, the background is dimmed visually but it's still visible to screen readers and keyboard-only users.</p>
+<p>In this post, the first of a two-part series, we'll look at presenting accessible modals in Rails using two different approaches powered by Hotwire's Turbo and Stimulus libraries.</p>
+<p>But first, let's see what we need to do to make modals accessible.</p>
+<h2 id="how-can-we-make-modals-accessible">How Can We Make Modals Accessible?</h2>
+<p>To make modals accessible, we need to:</p>
+<ul>
+<li>Hide the background from screen readers.</li>
+<li>Implement "focus trapping" so keyboard users cannot focus on elements outside the modal.</li>
+<li>Shift focus to the first focusable element in the modal (if there is one).</li>
+<li>Dismiss the modal with the <code>Esc</code> key.</li>
+</ul>
+<p>We could accomplish the first two by setting <code>inert="true"</code> on the background elements, but this attribute can't be set on an ancestor of the modal. We can do the last two with some more custom JavaScript. As you can imagine this is rather tedious.</p>
+<p>The HTML <code>&lt;dialog&gt;</code> element gives us most of the above list for free, and is supported for <a href="https://caniuse.com/?search=dialog">94.25% of global users</a>, meaning it's ideal in most cases.</p>
+<p>Let's look a bit more closely at the <code>&lt;dialog&gt;</code> element.</p>
+<h2 id="the-dialog-element">The <code>&lt;dialog&gt;</code> Element</h2>
+<p>According to <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog">MDN</a>:</p>
+<blockquote>
+<p>The HTML <code>&lt;dialog&gt;</code> element is used to create both modal and non-modal dialog boxes. Modal dialog boxes interrupt interaction with the rest of the page being inert, while non-modal dialog boxes allow interaction with the rest of the page.</p>
+</blockquote>
+<p>This means that a <code>&lt;dialog&gt;</code> isn't necessarily a modal. It can be presented within the document flow as well.</p>
+<h3 id="presenting-a-dialog">Presenting a <code>&lt;dialog&gt;</code></h3>
+<p>To present a dialog as a modal, we need to use JavaScript:</p>
+
+
+<p>When presenting a dialog this way, the background is made inert, focus is trapped in the modal, and it can be dismissed using the <code>Esc</code> key.</p>
+<p>To present a <code>&lt;dialog&gt;</code> in a non-modal context, and hence make it visible by default, we use the <code>open</code> attribute:</p>
+
+<p>We won't get the accessibility features using this method, though, as the dialog hasn't been presented "modally".</p>
+<h3 id="dismissing-a-dialog">Dismissing a <code>&lt;dialog&gt;</code></h3>
+<p>A modally presented <code>&lt;dialog&gt;</code> can be dismissed using JavaScript:</p>
+
+<p>It can also be closed using a <code>&lt;form&gt;</code> with the <code>dialog</code> method. This is a great way to implement a "close" button.</p>
+
+<p>That covers the basics of the <code>&lt;dialog&gt;</code> element, so let's look at using it with Hotwire.</p>
+<h2 id="modal-presentation-using-stimulus-in-ruby-on-rails">Modal Presentation Using Stimulus in Ruby on Rails</h2>
+<p><a href="https://stimulus.hotwired.dev/">Stimulus</a> is a JavaScript library under the <a href="https://hotwired.dev/">Hotwire</a> umbrella. It allows us to attach pieces of JavaScript logic to HTML elements encapsulated in <em>controllers</em>. This post assumes a basic familiarity with its API.</p>
+<p>Let's start with a Rails controller and view. As an example use case, we'll use a <em>support</em> page which has a button to display some contact details in a modal. Generate a controller and action using:</p>
+
+<p>Amend the created route to a more user-friendly path:</p>
+
+<p>Sketch out a button and dialog in the newly generated view file:</p>
+
+
+<p>Run the Rails server and navigate to the <code>/support</code> path. You should see a button there, but it doesn't do anything at the moment. Let's create a Stimulus controller and wire it up.</p>
+<h3 id="the-stimulus-controller-in-rails">The Stimulus Controller in Rails</h3>
+<p>Use the generator to create a Stimulus controller.</p>
+
+<p>When the button is clicked, we need to get a reference to the <code>&lt;dialog&gt;</code> and call <code>showModal()</code> on it. To keep the controller generic, we'll pass in the element's <code>id</code> as a <em>param</em>.</p>
+
+<p>We can now decorate the button with the required <code>data-</code> attributes:</p>
+
+<p>Refresh the page and the button should now work!</p>
+<p>There's an opportunity to remove some boilerplate code here. The <code>modal</code> controller should always be attached to a button that shows the modal. We can remove the <code>data-action</code> from the markup and set it in the controller:</p>
+
+<h3 id="styling-the-modal">Styling the Modal</h3>
+<p>The dialog looks fairly basic, so let's add some styles:</p>
+
+<p>The <code>::backdrop</code> pseudo-element is a really great way to style the modal's background!</p>
+<p>Try using the <code>Tab</code> key to navigate around the page and you'll see that the focus is trapped within the modal. It's worth reviewing the page <a href="https://github.com/basecamp/accessibility/blob/master/Section-1/Autiditing-Accessibility-On-The-Web.md#review-the-page-using-voiceover-mac-or-nvda-win-screen-reader">with a screen reader</a> as well.</p>
+<p>This is the simplest way to modally present a <code>&lt;dialog&gt;</code>. Next, we'll look at a server-driven way to present modals: Turbo Frame.</p>
+<h2 id="turbo-frame-powered-modals-for-ruby">Turbo Frame Powered Modals for Ruby</h2>
+<p><a href="https://turbo.hotwired.dev/reference/frames">Turbo Frames</a> are a subset of the <a href="https://turbo.hotwired.dev/">Turbo</a> library which is also under the Hotwire umbrella. It allows us to scope navigation to specific parts of a page, updating them in isolation from the rest of the page.</p>
+<p>We can use Turbo Frames to present a modal rendered from the server.</p>
+<h3 id="setting-up">Setting Up</h3>
+<p>Let's add another button to display a modal <em>contact form</em>. We'll need a controller and action to render the form:</p>
+
+<p>Replace the auto-generated routes with:</p>
+
+<p>We'll also need a global Turbo Frame to render modals, so let's put it in the main <em>application</em> layout:</p>
+
+<p>Add a link to show the contact form:</p>
+
+<p>And you're done!</p>
+<h3 id="rendering-and-presenting-the-form">Rendering and Presenting the Form</h3>
+<p>Clicking the <em>Show contact form</em> link will expect a <code>&lt;turbo-frame&gt;</code> with <code>id="remote_modal"</code> in the response and update the global Turbo Frame with its content. Fill in the view with the form:</p>
+
+<p>We've now got a text area in the modal which is a focusable element. For accessibility, it should be focused by default when the modal is presented. The <code>autofocus</code> attribute is used to accomplish this.</p>
+<p>Refresh the page and try clicking <em>Show contact form</em>. Nothing will happen visually, but on inspecting the HTML, you'll notice the <code>&lt;dialog&gt;</code> has been rendered in the <code>remote_modal</code> Turbo Frame. We haven't presented it yet, which is why it's invisible.</p>
+<p>We could render it with the <code>open</code> attribute, but that would defeat the purpose as it'd be presented in a non-modal context without the modal accessibility features.</p>
+<p>Let's create another Stimulus controller to present the form:</p>
+
+
+<p>And hook it up to the dialog:</p>
+
+<p>Refresh the page and try viewing the contact form again. This time it should work. We've just rendered a modal from the server!</p>
+<p>While this is quite convenient, it's not ideal to create a new Stimulus controller just to present a modal. There's another method we can use as well: Turbo Streaming Modals. We'll take a look at those in part two of this series.</p>
+<h2 id="up-next-turbo-streaming-modals">Up Next: Turbo Streaming Modals</h2>
+<p>In this post, we explored two different methods to present modals using Hotwire: Stimulus and Turbo Frames.</p>
+<p>In part two, we'll look at another way to present modals: using Turbo Streams.</p>
+<p>Until then, happy coding!</p>
+<p><strong>P.S. If you'd like to read Ruby Magic posts as soon as they get off the press, <a href="https://blog.appsignal.com/ruby-magic">subscribe to our Ruby Magic newsletter and never miss a single post</a>!</strong></p></div></div>
+  </div>
+</body>
+</html>

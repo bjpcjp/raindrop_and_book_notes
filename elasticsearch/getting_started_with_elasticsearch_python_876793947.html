@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Getting started with Elasticsearch Python</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Getting started with Elasticsearch Python</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/iuliaferoli/getting-started-with-elasticsearch-python-5adi">https://dev.to/iuliaferoli/getting-started-with-elasticsearch-python-5adi</a></p>
+    <p><strong>Tags:</strong> elasticsearch, python</p>
+    <p><strong>Bookmark ID:</strong> 876793947</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1753776" id="article-body">
+            <p>This blog will introduce you to some core concepts and building blocks of working with the official Elasticsearch Python client. We will cover connecting to the client, creating and populating an index, adding a custom mapping, and running some initial simple queries.</p>
+
+<p>But wait, what is Elasticsearch? Elastic is a platform offering search-powered solutions - from the Elasticsearch engine to observability and dashboarding solutions like Kibaba, security software, and much more. </p>
+
+<p>Elasticsearch is based on <a href="https://lucene.apache.org/">Lucene</a> and is used by various companies and developers across the world to build custom search solutions. </p>
+
+<h2>
+  <a name="getting-connected" href="#getting-connected">
+  </a>
+  Getting connected
+</h2>
+
+<p>You can deploy Elastic locally or in your cloud of choice. <br>
+In this example, I'm connecting to Elastic Cloud with an API Key (the recommended security option), but there are a lot of <a href="https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/connecting.html">other authentication options you can see here.</a></p>
+
+<p>Elasticsearch can be accessed via API calls through various interfaces, from the Dev Console available in the cloud browser to various language models, or tools like Postman that can send in requests.</p>
+
+<p>The Python client is a high-level client that allows us to interact with Elasticsearch from our IDE and add functionalities like search to our projects. </p>
+
+<p>You can install the client in your environment: <code>! pip install elasticsearch</code> and start coding. </p>
+
+<blockquote>
+<p><a href="https://elasticsearch-py.readthedocs.io/en/v8.12.0/">The docs for the client</a> are available here.</p>
+</blockquote>
+
+<p>Using your credentials you can create an instance of the Elasticsearch client that will communicate with your (in this case cloud) deployment.<br>
+</p>
+
+<div>
+<pre><code><span>from</span> <span>getpass</span> <span>import</span> <span>getpass</span>  <span># For securely getting user input
+</span><span>from</span> <span>elasticsearch</span> <span>import</span> <span>Elasticsearch</span>
+
+<span># Prompt the user to enter their Elastic Cloud ID and API Key securely
+</span><span>ELASTIC_CLOUD_ID</span> <span>=</span> <span>getpass</span><span>(</span><span>"</span><span>Elastic Cloud ID: </span><span>"</span><span>)</span>
+<span>ELASTIC_API_KEY</span> <span>=</span> <span>getpass</span><span>(</span><span>"</span><span>Elastic API Key: </span><span>"</span><span>)</span>
+
+<span># Create an Elasticsearch client using the provided credentials
+</span><span>client</span> <span>=</span> <span>Elasticsearch</span><span>(</span>
+    <span>cloud_id</span><span>=</span><span>ELASTIC_CLOUD_ID</span><span>,</span>  <span># cloud id can be found under deployment management
+</span>    <span>api_key</span><span>=</span><span>ELASTIC_API_KEY</span> 
+<span>)</span> <span># API keys can be generated under management / security
+</span></code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="creating-an-index" href="#creating-an-index">
+  </a>
+  Creating an Index
+</h3>
+
+<p>Next up we want to add data.<br>
+Elasticsearch indexes data in the form of documents (that look like dictionaries or JSON files). Think of it as a collection of properties and values. <br>
+To make this example fun, I'll be using a <a href="https://www.kaggle.com/datasets/gulsahdemiryurek/harry-potter-dataset">dataset of Harry Potter Characters from Kaggle. </a></p>
+
+<p>Then each entry in our dataset (or document in our index) will represent one character. A simplified version of such a document would look like:<br>
+</p>
+
+<div>
+<pre><code><span>document</span> <span>=</span> <span>{</span> 
+    <span>"</span><span>Name</span><span>"</span> <span>:</span> <span>"</span><span>Iulia</span><span>"</span><span>,</span>
+    <span>"</span><span>Eye colour</span><span>"</span><span>:</span> <span>"</span><span>hazel</span><span>"</span><span>,</span>
+    <span>"</span><span>House</span><span>"</span><span>:</span> <span>"</span><span>Slytherin</span><span>"</span><span>,</span>
+    <span>"</span><span>Loyalty</span><span>"</span><span>:</span> <span>"</span><span>Order of the Phoenix</span><span>"</span><span>,</span>
+    <span>"</span><span>Patronus</span><span>"</span><span>:</span> <span>"</span><span>Basset Hound Puppy</span><span>"</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>So let's create this index! We can first create a mapping - which tells Elasticsearch what kind of features it can expect from the incoming data we want to add, to ensure everything is stored in the right format. Read more about <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html">the various field types here.</a></p>
+
+<h3>
+  <a name="custom-mapping" href="#custom-mapping">
+  </a>
+  Custom Mapping
+</h3>
+
+
+
+<div>
+<pre><code><span>index</span> <span>=</span> <span>"</span><span>hp_characters</span><span>"</span>
+<span>settings</span> <span>=</span> <span>{}</span>
+<span>mappings</span> <span>=</span> <span>{</span>
+    <span>"</span><span>_meta</span><span>"</span> <span>:</span> <span>{</span>
+        <span>"</span><span>created_by</span><span>"</span> <span>:</span> <span>"</span><span>Iulia Feroli</span><span>"</span>
+    <span>},</span>
+    <span>"</span><span>properties</span><span>"</span> <span>:</span> <span>{</span>
+        <span>"</span><span>Name</span><span>"</span> <span>:</span> <span>{</span>
+            <span>"</span><span>type</span><span>"</span> <span>:</span> <span>"</span><span>keyword</span><span>"</span><span>,</span>
+            <span>"</span><span>type</span><span>"</span> <span>:</span> <span>"</span><span>text</span><span>"</span>
+        <span>},</span>
+        <span>"</span><span>Eye colour</span><span>"</span><span>:</span> <span>{</span>
+          <span>"</span><span>type</span><span>"</span><span>:</span> <span>"</span><span>keyword</span><span>"</span>
+        <span>},</span>
+        <span>"</span><span>House</span><span>"</span><span>:</span> <span>{</span>
+          <span>"</span><span>type</span><span>"</span><span>:</span> <span>"</span><span>keyword</span><span>"</span>
+        <span>},</span>
+        <span>"</span><span>Loyalty</span><span>"</span><span>:</span> <span>{</span>
+          <span>"</span><span>type</span><span>"</span><span>:</span> <span>"</span><span>text</span><span>"</span>
+        <span>},</span>
+        <span>"</span><span>Patronus</span><span>"</span><span>:</span> <span>{</span>
+          <span>"</span><span>type</span><span>"</span><span>:</span> <span>"</span><span>keyword</span><span>"</span>
+    <span>}</span>
+<span>}</span>
+
+<span>client</span><span>.</span><span>indices</span><span>.</span><span>create</span><span>(</span><span>index</span><span>=</span><span>index</span><span>,</span> <span>settings</span><span>=</span><span>settings</span><span>,</span> <span>mappings</span><span>=</span><span>mappings</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="adding-data" href="#adding-data">
+  </a>
+  Adding data
+</h3>
+
+<p>Now, we can either add the documents to our index one at a time, like for our first example:<br>
+</p>
+
+<div>
+<pre><code><span>response</span> <span>=</span> <span>client</span><span>.</span><span>index</span><span>(</span><span>index</span> <span>=</span> <span>index</span><span>,</span> <span>id</span> <span>=</span> <span>1</span><span>,</span> <span>document</span> <span>=</span> <span>doc_test</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Or we can do a bulk index, adding the entire dataset at once, leveraging the Elasticsearch <code>bulk</code> <a href="https://www.elastic.co/guide/en/elasticsearch/reference/8.11/docs-bulk.html">API.</a><br>
+</p>
+
+<div>
+<pre><code><span>def</span> <span>generate_operations</span><span>(</span><span>documents</span><span>,</span> <span>index_name</span><span>):</span>
+  <span>operations</span> <span>=</span> <span>[]</span>
+  <span>for</span> <span>i</span><span>,</span> <span>document</span> <span>in</span> <span>enumerate</span><span>(</span><span>documents</span><span>):</span>
+      <span>operations</span><span>.</span><span>append</span><span>({</span><span>"</span><span>index</span><span>"</span><span>:</span> <span>{</span><span>"</span><span>_index</span><span>"</span><span>:</span> <span>index_name</span><span>,</span> <span>"</span><span>_id</span><span>"</span><span>:</span> <span>i</span><span>}})</span>
+      <span>operations</span><span>.</span><span>append</span><span>(</span><span>document</span><span>)</span>
+  <span>return</span> <span>operations</span>
+
+<span>client</span><span>.</span><span>bulk</span><span>(</span><span>index</span><span>=</span><span>index_name</span><span>,</span> <span>operations</span><span>=</span><span>generate_operations</span><span>(</span><span>characters</span><span>,</span> <span>index_name</span><span>),</span> <span>refresh</span><span>=</span><span>True</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Done! Now we have the index in Elastic - which means we can start searching.</p>
+
+<h3>
+  <a name="you-know-for-search" href="#you-know-for-search">
+  </a>
+  You know, for search.
+</h3>
+
+<p>We can create simple queries based on just one feature and value, like this:<br>
+</p>
+
+<div>
+<pre><code><span>response</span> <span>=</span> <span>client</span><span>.</span><span>search</span><span>(</span><span>index</span><span>=</span><span>"</span><span>hp_characters</span><span>"</span><span>,</span> <span>query</span><span>=</span><span>{</span>
+    <span>"</span><span>match</span><span>"</span><span>:</span> <span>{</span>
+        <span>"</span><span>Loyalty</span><span>"</span><span>:</span> <span>"</span><span>Dumbledores Army</span><span>"</span>
+    <span>}</span>
+<span>})</span>
+
+<span>print</span><span>(</span><span>"</span><span>We get back {total} results, here are the top ones:</span><span>"</span><span>.</span><span>format</span><span>(</span><span>total</span><span>=</span><span>response</span><span>[</span><span>"</span><span>hits</span><span>"</span><span>][</span><span>'</span><span>total</span><span>'</span><span>][</span><span>'</span><span>value</span><span>'</span><span>]))</span>
+<span>for</span> <span>hit</span> <span>in</span> <span>response</span><span>[</span><span>"</span><span>hits</span><span>"</span><span>][</span><span>"</span><span>hits</span><span>"</span><span>]:</span>
+    <span>print</span><span>(</span><span>hit</span><span>[</span><span>'</span><span>_source</span><span>'</span><span>][</span><span>'</span><span>Name</span><span>'</span><span>])</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>You'll notice we also processed the result a little since by default Elasticsearch returns a pretty comprehensive JSON with loads of metadata from our search. In this case, we'll get the name of every character associated with Dumbledore's army (so pretty much the entire Gryffindor 5th years and their allies). </p>
+
+<p>As an FYI, this is what a query and result would look like from the Dev Tools interface on Cloud:</p>
+
+<p><a href="https://media.dev.to/cdn-cgi/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F5tr7sbgduyn6jl0rsdrh.png"><img src="data:application/octet-stream;base64," alt="Image description" loading="lazy" width="800" height="410"></a> </p>
+
+<h3>
+  <a name="building-up" href="#building-up">
+  </a>
+  Building up
+</h3>
+
+<p>From here, we can start mixing and matching all kinds of <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-your-data.html">query types</a> to create increasingly specific searches:<br>
+</p>
+
+<div>
+<pre><code><span>response</span> <span>=</span> <span>client</span><span>.</span><span>search</span><span>(</span><span>index</span><span>=</span><span>"</span><span>hp</span><span>"</span><span>,</span> <span>query</span> <span>=</span> <span>{</span>
+    <span>"</span><span>bool</span><span>"</span><span>:</span> <span>{</span>
+      <span>"</span><span>must</span><span>"</span> <span>:</span> <span>[</span>
+        <span>{</span>
+          <span>"</span><span>multi_match</span><span>"</span> <span>:</span> <span>{</span>
+            <span>"</span><span>query</span><span>"</span><span>:</span>    <span>"</span><span>quidditch chaser keeper beater seeker</span><span>"</span><span>,</span> 
+            <span>"</span><span>fields</span><span>"</span><span>:</span> <span>[</span> <span>"</span><span>Job</span><span>"</span><span>,</span> <span>"</span><span>Skills</span><span>"</span> <span>]</span> 
+          <span>}</span>
+        <span>},</span>
+        <span>{</span>
+          <span>"</span><span>match</span><span>"</span> <span>:</span> <span>{</span>
+            <span>"</span><span>House</span><span>"</span> <span>:</span> <span>"</span><span>Gryffindor</span><span>"</span>
+          <span>}</span>
+        <span>}</span>
+      <span>],</span>
+      <span>"</span><span>must_not</span><span>"</span><span>:</span> <span>{</span>
+          <span>"</span><span>range</span><span>"</span><span>:</span> <span>{</span>
+            <span>"</span><span>Birth</span><span>"</span><span>:</span> <span>{</span>
+              <span>"</span><span>lte</span><span>"</span><span>:</span><span>"</span><span>1980-01-01</span><span>"</span>
+              <span>}</span>
+          <span>}</span>
+        <span>},</span>
+      <span>"</span><span>filter</span><span>"</span><span>:</span> <span>{</span>
+        <span>"</span><span>term</span><span>"</span><span>:</span> <span>{</span>
+          <span>"</span><span>Hair colour</span><span>"</span><span>:</span> <span>"</span><span>Red</span><span>"</span>
+        <span>}</span>
+
+      <span>}</span>
+    <span>}</span>  
+  <span>})</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Can you guess the answer to this one? It translates to - Red-haired quidditch-associated Gryffindors born after 1980. <br>
+<em>(the answer is Ginny &amp; Ron)</em></p>
+
+<h3>
+  <a name="thats-it-everyone" href="#thats-it-everyone">
+  </a>
+  That's it, everyone!
+</h3>
+
+<p>That's the basics of interacting with Elasticsearch via the Python client to run searches. </p>
+
+<p>There's loads more you can do in Elastic, from observability &amp; visualizations to semantic / vector search, and way more. </p>
+
+<p>Stay tuned for the next articles :) </p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

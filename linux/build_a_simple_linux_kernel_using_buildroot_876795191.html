@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Build a Simple Linux Kernel Using Buildroot</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Build a Simple Linux Kernel Using Buildroot</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/devdoesit17/build-a-simple-linux-kernel-using-buildroot-4d29">https://dev.to/devdoesit17/build-a-simple-linux-kernel-using-buildroot-4d29</a></p>
+    <p><strong>Tags:</strong> linux</p>
+    <p><strong>Bookmark ID:</strong> 876795191</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main-title">
+            <a href="https://media.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fkq7uh989s9dit6rv2r9b.jpg">
+              <img src="data:application/octet-stream;base64," width="1000" height="420" alt="Cover image for Build a Simple Linux Kernel Using Buildroot">
+            </a>
+
+          
+        </div><div data-article-id="1771364" id="article-body">
+            <h2>
+  <a name="introduction" href="#introduction">
+  </a>
+  Introduction
+</h2>
+
+<p>Welcome to this guide on how to build a Linux kernel using <a href="https://buildroot.org/" target="_blank" rel="noopener noreferrer">Buildroot</a>!</p>
+
+<p>This guide will give you a basic introduction to Linux kernel development. By the end of this guide you will know how to set up a Buildroot project, config the project, and flash the image to an SD card and have it running on a Raspberry Pi.</p>
+
+<h2>
+  <a name="prerequisites" href="#prerequisites">
+  </a>
+  Prerequisites
+</h2>
+
+<p>Before you embark on your Buildroot adventure, make sure your PC isn't begging for more space because of all the memes and apps you don't use.</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fi.kym-cdn.com%2Fphotos%2Fimages%2Foriginal%2F001%2F512%2F106%2F411.jpg"><img src="data:application/octet-stream;base64," alt="no space here" loading="lazy"></a></p>
+
+<p>Aim for at least ~35GB of free space.</p>
+
+<p>Ensure that you have the necessary packages on your Linux machine found in the <a href="https://buildroot.org/downloads/manual/manual.html#requirement" target="_blank" rel="noopener noreferrer">requirements section within Buildroot Doc</a></p>
+
+<p>Some minimal familiarity with Embedded Systems and Linux Ubuntu OS, as this will be the main OS we will be using.</p>
+
+<p>Before we start, we need to understand what Buildroot is, and I'll make sure for it to be short and sweet!</p>
+
+<h2>
+  <a name="what-is-buildroot" href="#what-is-buildroot">
+  </a>
+  What is Buildroot?
+</h2>
+
+<p>To use their own definition, "Buildroot is a simple, efficient and easy-to-use tool to generate embedded Linux systems through cross-compilation.". Cross-compilation is basically building software (SW) on one platform to be used on another platform.</p>
+
+<p>Now, let’s get this started!</p>
+
+<h2>
+  <a name="building-a-linux-kernel" href="#building-a-linux-kernel">
+  </a>
+  Building a Linux Kernel
+</h2>
+
+<p>Clone the <a href="https://gitlab.com/buildroot.org/buildroot/" target="_blank" rel="noopener noreferrer">GitHub repo</a> to download Buildroot using the following command.</p>
+
+<div>
+<pre><code>
+
+<span>$ </span>git clone https://gitlab.com/buildroot.org/buildroot.git
+
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+<p>Once downloaded, open the newly created buildroot directory.</p>
+
+<div>
+<pre><code>
+
+<span>$ </span><span>cd </span>buildroot
+
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+<p>Grab the configuration file.</p>
+
+<div>
+<pre><code>
+
+<span>$ </span>make rasberrypi4_defconfig
+
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+<ul>
+<li>This will create a config.in file into your local buildroot directory.</li>
+</ul>
+
+<p>Time to config the kernel configuration. Run <code>make menuconfig</code> to access Buildroot's configuration menu. Here, specify the target architecture, select desired packages and features, and configure any custom settings according to your project requirements.</p>
+
+<p>For my case, I will just be updating the startup boot manager. This is found in <code>System Configuration -&gt; System banner</code></p>
+
+<div>
+<pre><code>
+
+<span>$ </span>make menuconfig
+
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F9wk377gcgoy0teszm045.png"><img src="data:application/octet-stream;base64," alt="Menuconfig image" loading="lazy"></a></p>
+
+<p>Navigate to <code>System Configuration</code> and update <code>System banner</code></p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fdiir8abz8ormrj2da9d8.png"><img src="data:application/octet-stream;base64," alt="System Configuration" loading="lazy"></a></p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F01dqy1juzkdinibjhp3u.png"><img src="data:application/octet-stream;base64," alt="System banner" loading="lazy"></a></p>
+
+<p>Exit and save your kernel config</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F1eqmhj1u34zvx7hx3x6l.png"><img src="data:application/octet-stream;base64," alt="Menu Save Image" loading="lazy"></a></p>
+
+<p>Build your kernel</p>
+
+<div>
+<pre><code>
+
+<span>$ </span>make
+
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+<p>After two hours later...</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Ff2sy29ldczvoqkzm9etw.jpg"><img src="data:application/octet-stream;base64," alt="Two Hours Later Meme" loading="lazy"></a></p>
+
+<p>You should have your bootable image inside the <code>output/images</code> directory that you can add to your SD card</p>
+
+<p>Insert the SD card into the Raspberry Pi 4 and power it on to boot into the custom Linux system.</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F7bz7dg8a0cbkhxyjutvx.png"><img src="data:application/octet-stream;base64," alt="Final Result" loading="lazy"></a></p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>By following these steps and along with installing the prerequisites, you will have everything you need to build a simple Linux kernel using Buildroot.</p>
+
+<p>I can’t wait to see what you’ll build; if you follow these steps and get stuck or have any questions, feel free to reach out on <a href="https://www.linkedin.com/in/devontaereid" target="_blank" rel="noopener noreferrer">LinkedIn</a> or send a DM on <a href="https://twitter.com/_yodev_" target="_blank" rel="noopener noreferrer">Twitter</a>.</p>
+
+<p>Cover Photo by <a href="https://unsplash.com/@stefanbc?utm_content=creditCopyText&amp;utm_medium=referral&amp;utm_source=unsplash" target="_blank" rel="noopener noreferrer">Stefan Cosma</a> on <a href="https://unsplash.com/photos/green-and-black-computer-motherboard-f3Yk7gW6chM?utm_content=creditCopyText&amp;utm_medium=referral&amp;utm_source=unsplash" target="_blank" rel="noopener noreferrer">Unsplash</a></p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

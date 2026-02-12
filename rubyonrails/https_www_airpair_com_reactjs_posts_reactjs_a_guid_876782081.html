@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>https://www.airpair.com/reactjs/posts/reactjs-a-guide-for-rails-developers</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>https://www.airpair.com/reactjs/posts/reactjs-a-guide-for-rails-developers</h1>
+    <p><strong>URL:</strong> <a href="https://www.airpair.com/reactjs/posts/reactjs-a-guide-for-rails-developers">https://www.airpair.com/reactjs/posts/reactjs-a-guide-for-rails-developers</a></p>
+    <p><strong>Tags:</strong> reactjs, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876782081</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div no-compile=""><h2 id="introduction-to-react-js">Introduction to React.js</h2>
+<p>React.js is the new popular guy around the "JavaScript Frameworks" block, and it shines for its simplicity. Where other frameworks implement a complete <em>MVC</em> framework, we could say React only implements the <em>V</em> (in fact, some people replace their framework's <em>V</em> with React). React applications are built over 2 main principles: <em>Components</em> and <em>States</em>. <em>Components</em> can be made of other smaller components, built-in or custom; the <em>State</em> drives what the guys at Facebook call <em>one-way reactive data flow</em>, meaning that our UI will react to every change of state.</p>
+<p>One of the good things about React is that it doesn't require any additional dependencies, making it pluggable with virtually any other JS library. Taking advantage of this feature, we are going to include it into our Rails stack to build a frontend-powered application, or you might say, a Rails view on steroids.</p>
+<h2 id="a-mock-expense-tracking-app">A mock expense tracking app</h2>
+<p>For this guide, we are building a small application from scratch to keep track of our expenses; each record will consist of a date, a title and an amount. A record will be treated as <em>Credit</em> if its amount is greater than zero, otherwise it will be treated as <em>Debit</em>. Here is a mockup of the project:</p>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/QB8S7ap.png" alt="Mockup"></p>
+<p>Summarizing, the application will behave as follows:</p>
+<ul>
+<li>When the user creates a new record through the horizontal form, it will be appended to the records table</li>
+<li>The user will be able to inline-edit any existing record</li>
+<li>Clicking on any <em>Delete</em> button will remove the associated record from the table</li>
+<li>Adding, editing or removing an existing record will update the amount boxes at the top of the page</li>
+</ul>
+<h2 id="initializing-our-react-js-on-rails-project">Initializing our React.js on Rails project</h2>
+<p>First things first, we need to start our brand new Rails project, we are naming it <code>Accounts</code>:</p>
+<pre><code>  rails new accounts
+</code></pre><p>For this project's UI, we'll be using Twitter Bootstrap. The installation process is out of the scope of this post, but you can install the <code>bootstrap-sass</code> official gem following the instructions from the <a href="http://web.archive.org/web/20220618210019/https://github.com/twbs/bootstrap-sass">official github repo</a>.</p>
+<p>Once our project has been initialized, we proceed to include <strong>React</strong>. For this post I decided to include it via the official gem <a href="http://web.archive.org/web/20220618210019/https://github.com/reactjs/react-rails">react-rails</a> because we are going to take advantage of some cool features included in this gem, but there are other ways to achieve this task, like using <a href="http://web.archive.org/web/20220618210019/https://rails-assets.org/">Rails assets</a> or even downloading the source package from <a href="http://web.archive.org/web/20220618210019/https://facebook.github.io/react/">the official page</a> and pasting it into our <code>javascripts</code> folder.</p>
+<p>If you have been developing Rails apps, you know how easy it is to install a gem: Add <code>react-rails</code> to your <em>Gemfile</em>.</p>
+<pre><code>  gem 'react-rails', '~&gt; 1.0'
+</code></pre>
+<p>Then, (kindly) tell Rails to install the new gems:</p>
+<pre><code>  bundle install
+</code></pre><p><code>react-rails</code> comes with an installation script, which will create a <code>components.js</code> file and a <code>components</code> directory under <code>app/assets/javascripts</code> where our React components will live.</p>
+<pre><code>  rails g react:install
+</code></pre><p>If you take a look at your <code>application.js</code> file after running the installer, you will notice three new lines:</p>
+<pre><code>  //= require react
+  //= require react_ujs
+  //= require components
+</code></pre>
+<p>Basically, it includes the actual <strong>react</strong> library, the <code>components</code> manifest file and a kind of familiar file ended in <em>ujs</em>. As you might have guessed for the file's name, <em>react-rails</em> includes an unobtrusive JavaScript driver which will help us to mount our React components and will also handle <em>Turbolinks</em> events.</p>
+<h2 id="creating-the-resource">Creating the Resource</h2>
+<p>We are going to build a <code>Record</code> resource, which will include a <code>date</code>, a <code>title</code>, and an <code>amount</code>. Instead of using the <code>scaffold</code> generator, we are going to use the <code>resource</code> generator, as we are not going to be using all of the files and methods created by the <code>scaffold</code>generator. Another option might be running the <code>scaffold</code> generator and then proceed to delete the unused files/methods, but our project can turn a little messy after this. Inside your project, run the following command:</p>
+<pre><code>  rails g resource Record title date:date amount:float
+</code></pre><p>After some magic, we will end up with a new <code>Record</code> model, controller, and routes. We just need to create our database and run pending migrations.</p>
+<pre><code>  rake db:create db:migrate
+</code></pre><p>As a plus, you can create a couple of records through <code>rails console</code>:</p>
+<pre><code>  Record.create title: 'Record 1', date: Date.today, amount: 500
+  Record.create title: 'Record 2', date: Date.today, amount: -100
+</code></pre><p>Don't forget to start your server with <code>rails s</code>.</p>
+<p>Done! We're ready to write some code.</p>
+<h2 id="nesting-components-listing-records">Nesting Components: Listing Records</h2>
+<p>For our first task, we need to render any existing record inside a table. First of all, we need to create an <code>index</code> action inside of our <code>RecordsController</code>:</p>
+<pre><code>  # app/controllers/records_controller.rb
+
+  class RecordsController &lt; ApplicationController
+    def index
+      @records = Record.all
+    end
+  end
+</code></pre>
+<p>Next, we need to create a new file <code>index.html.erb</code> under <code>apps/views/records/</code>, this file will act as a bridge between our Rails app and our React Components. To achieve this task, we will use the helper method <code>react_component</code>, which receives the name of the React component we want to render along with the data we want to pass into it.</p>
+<pre><code>  &lt;%# app/views/records/index.html.erb %&gt;
+
+  &lt;%= react_component 'Records', { data: @records } %&gt;
+</code></pre>
+<p>It is worth mentioning this helper is provided by the <code>react-rails</code> gem, if you decide to use other React integration method, this helper will not be available.</p>
+<p>You can now navigate to <code>localhost:3000/records</code>. Obviously, this won't work yet because of the lack of a <code>Records</code> React component, but if we take a look at the generated HTML inside the browser window, we can spot something like the following code</p>
+<pre><code>  &lt;div data-react-class="Records" data-react-props="{...}"&gt;
+  &lt;/div&gt;
+</code></pre>
+<p>With this markup present, <code>react_ujs</code> will detect we are trying to render a React component and will instantiate it, including the properties we sent through <code>react_component</code>, in our case, the contents of <code>@records</code>.</p>
+<p>The time has come for us to build our First React component, inside the <code>javascripts/components</code> directory, create a new file called <code>records.js.coffee</code>, this file will contain our <code>Records</code> component.</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    render: -&gt;
+      React.DOM.div
+        className: 'records'
+        React.DOM.h2
+          className: 'title'
+          'Records'
+</code></pre>
+<p>Each component requires a <code>render</code> method, which will be in charge of rendering the component itself. The render method should return an instance of <code>ReactComponent</code>, this way, when React executes a re-render, it will be performed in an optimal way (as React detects the existence of new nodes through building a virtual DOM in memory). In the snippet above we created an instance of <code>h2</code>, a built-in <code>ReactComponent</code>.</p>
+<p>NOTE: Another way to instantiate ReactComponents inside the render method is through <code>JSX</code> syntax. The following snippet is equivalent to the previous one:</p>
+<pre><code>  render: -&gt;
+    `&lt;div className="records"&gt;
+      &lt;h2 className="title"&gt; Records &lt;/h2&gt;
+    &lt;/div&gt;`
+</code></pre>
+<p>Personally, when I am working with CoffeeScript, I prefer using the <code>React.DOM</code> syntax over <code>JSX</code> because the code will arrange in a hierarchical structure by itself, similar to <em>HAML</em>. On the other hand, if you are trying to integrate React into an existing application built with <em>erb</em>, you have the option to reuse your existing <em>erb</em> code and convert it into <em>JSX</em>.</p>
+<p>You can refresh your browser now.</p>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/jrehS5B.png" alt="Records component"></p>
+<p>Perfect! We have rendered our first React Component. Now, it's time to display our records.</p>
+<p>Besides the <code>render</code> method, React components rely on the use of <em>properties</em> to communicate with other components and <em>states</em> to detect whether a re-render is required or not. We need to initialize our component's state and properties with the desired values:</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    getInitialState: -&gt;
+      records: @props.data
+    getDefaultProps: -&gt;
+      records: []
+    render: -&gt;
+      ...
+</code></pre>
+<p>The method <code>getDefaultProps</code> will initialize our component's properties in case we forget to send any data when instantiating it, and the <code>getInitialState</code> method will generate the initial state of our component. Now we need to actually display the records provided by our Rails view.</p>
+<p>It looks like we are going to need a helper method to format <em>amount</em> strings, we can implement a simple string formatter and make it accesible to all of our <em>coffee</em> files. Create a new <code>utils.js.coffee</code> file under <code>javascripts/</code> with the following contents:</p>
+<pre><code>  # app/assets/javascripts/utils.js.coffee
+
+  @amountFormat = (amount) -&gt;
+    '$ ' + Number(amount).toLocaleString()
+</code></pre>
+<p>We need to create a new <code>Record</code> component to display each individual record, create a new file <code>record.js.coffee</code> under the <code>javascripts/components</code> directory and insert the following contents:</p>
+<pre><code>  # app/assets/javascripts/components/record.js.coffee
+
+  @Record = React.createClass
+    render: -&gt;
+      React.DOM.tr null,
+        React.DOM.td null, @props.record.date
+        React.DOM.td null, @props.record.title
+        React.DOM.td null, amountFormat(@props.record.amount)
+</code></pre>
+<p>The <code>Record</code> component will display a table row containing table cells for each record attribute. Don't worry about those <code>null</code>s in the <code>React.DOM.*</code> calls, it means we are not sending attributes to the components. Now update the <code>render</code> method inside the <code>Records</code> component with the following code:</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    ...
+    render: -&gt;
+      React.DOM.div
+        className: 'records'
+        React.DOM.h2
+          className: 'title'
+          'Records'
+        React.DOM.table
+          className: 'table table-bordered'
+          React.DOM.thead null,
+            React.DOM.tr null,
+              React.DOM.th null, 'Date'
+              React.DOM.th null, 'Title'
+              React.DOM.th null, 'Amount'
+          React.DOM.tbody null,
+            for record in @state.records
+              React.createElement Record, key: record.id, record: record
+</code></pre>
+<p>Did you see what just happened? We created a table with a header row, and inside of the body table we are creating a <code>Record</code> element for each existing record. In other words, we are nesting built-in/custom React components. Pretty cool, huh?</p>
+<p>When we handle dynamic children (in this case, records) we need to provide a <code>key</code> property to the dynamically generated elements so React won't have a hard time refreshing our UI, that's why we send <code>key: record.id</code> along with the actual record when creating <code>Record</code> elements. If we don't do so, we will receive a warning message in the browser's JS console (and probably some headaches in the near future).</p>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/vETiEeF.png" alt="Records component"></p>
+<p>You can take a look at the resulting code of this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/tree/bf1d80cf3d23a9a5e4aa48c86368262b7a7bd809">here</a>, or just the changes introduced by this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/commit/bf1d80cf3d23a9a5e4aa48c86368262b7a7bd809">here</a>.</p>
+<h2 id="parent-child-communication-creating-records">Parent-Child communication: Creating Records</h2>
+<p>Now that we are displaying all the existing records, it would be nice to include a form to create new records, let's add this new feature to our React/Rails application.</p>
+<p>First, we need to add the <code>create</code> method to our Rails controller (don't forget to use _strong<em>params</em>):</p>
+<pre><code>  # app/controllers/records_controller.rb
+
+  class RecordsController &lt; ApplicationController
+    ...
+
+    def create
+      @record = Record.new(record_params)
+
+      if @record.save
+        render json: @record
+      else
+        render json: @record.errors, status: :unprocessable_entity
+      end
+    end
+
+    private
+
+      def record_params
+        params.require(:record).permit(:title, :amount, :date)
+      end
+  end
+</code></pre>
+<p>Next, we need to build a React component to handle the creation of new records. The component will have its own <em>state</em> to store <code>date</code>, <code>title</code> and <code>amount</code>. Create a new <code>record_form.js.coffee</code> file under <code>javascripts/components</code> with the following code:</p>
+<pre><code>  # app/assets/javascripts/components/record_form.js.coffee
+
+  @RecordForm = React.createClass
+    getInitialState: -&gt;
+      title: ''
+      date: ''
+      amount: ''
+    render: -&gt;
+      React.DOM.form
+        className: 'form-inline'
+        React.DOM.div
+          className: 'form-group'
+          React.DOM.input
+            type: 'text'
+            className: 'form-control'
+            placeholder: 'Date'
+            name: 'date'
+            value: @state.date
+            onChange: @handleChange
+        React.DOM.div
+          className: 'form-group'
+          React.DOM.input
+            type: 'text'
+            className: 'form-control'
+            placeholder: 'Title'
+            name: 'title'
+            value: @state.title
+            onChange: @handleChange
+        React.DOM.div
+          className: 'form-group'
+          React.DOM.input
+            type: 'number'
+            className: 'form-control'
+            placeholder: 'Amount'
+            name: 'amount'
+            value: @state.amount
+            onChange: @handleChange
+        React.DOM.button
+          type: 'submit'
+          className: 'btn btn-primary'
+          disabled: !@valid()
+          'Create record'
+</code></pre>
+<p>Nothing too fancy, just a regular Bootstrap inline form. Notice how we are defining the <code>value</code> attribute to set the input's value and the <code>onChange</code> attribute to attach a handler method which will be called on every keystroke; the <code>handleChange</code> handler method will use the <code>name</code> attribute to detect which input triggered the event and update the related <code>state</code> value:</p>
+<pre><code>  # app/assets/javascripts/components/record_form.js.coffee
+
+  @RecordForm = React.createClass
+    ...
+    handleChange: (e) -&gt;
+      name = e.target.name
+      @setState "#{ name }": e.target.value
+    ...
+</code></pre>
+<p>We are just using string interpolation to dynamically define object keys, equivalent to <code>@setState title: e.target.value</code> when <code>name</code> equals <code>title</code>. But why do we have to use <code>@setState</code>? Why can't we just set the desired value of <code>@state</code> as we usually do in regular JS Objects? Because <code>@setState</code> will perform 2 actions, it:</p>
+<ol>
+<li>Updates the component's <code>state</code></li>
+<li>Schedules a UI verification/refresh based on the new state</li>
+</ol>
+<p>It is very important to have this information in mind every time we use <code>state</code> inside our components.</p>
+<p>Lets take a look at the <em>submit</em> button, just at the very end of the <code>render</code> method:</p>
+<pre><code>  # app/assets/javascripts/components/record_form.js.coffee
+
+  @RecordForm = React.createClass
+    ...
+    render: -&gt;
+      ...
+      React.DOM.form
+        ...
+        React.DOM.button
+          type: 'submit'
+          className: 'btn btn-primary'
+          disabled: !@valid()
+          'Create record'
+</code></pre>
+<p>We defined a <code>disabled</code> attribute with the value of <code>!@valid()</code>, meaning that we are going to implement a <code>valid</code> method to evaluate if the data provided by the user is correct.</p>
+<pre><code>  # app/assets/javascripts/components/record_form.js.coffee
+
+  @RecordForm = React.createClass
+    ...
+    valid: -&gt;
+      @state.title &amp;&amp; @state.date &amp;&amp; @state.amount
+    ...
+</code></pre>
+<p>For the sake of simplicity we are only validating <code>@state</code> attributes against empty strings. This way, every time the state gets updated, the <em>Create record</em> button is enabled/disabled depending on the validity of the data.</p>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/EuPQ64m.png" alt="New record form">
+<img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/ZsPiUxq.png" alt="New record form"></p>
+<p>Now that we have our controller and form in place, it's time to submit our new record to the server. We need to handle the form's <code>submit</code> event. To achieve this task, we need to add an <code>onSubmit</code> attribute to our form and a new <code>handleSubmit</code> method (the same way we handled <code>onChange</code> events before):</p>
+<pre><code>  # app/assets/javascripts/components/record_form.js.coffee
+
+  @RecordForm = React.createClass
+    ...
+    handleSubmit: (e) -&gt;
+      e.preventDefault()
+      $.post '', { record: @state }, (data) =&gt;
+        @props.handleNewRecord data
+        @setState @getInitialState()
+      , 'JSON'
+
+    render: -&gt;
+      React.DOM.form
+        className: 'form-inline'
+        onSubmit: @handleSubmit
+      ...
+</code></pre>
+<p>Let's review the new method line by line:</p>
+<ol>
+<li>Prevent the form's HTTP submit</li>
+<li>POST the new <code>record</code> information to the current URL</li>
+<li>Success callback</li>
+</ol>
+<p>The <code>success</code> callback is the key of this process, after successfully creating the new record <em>someone</em> will be notified about this action and the <code>state</code> is restored to its initial value. Do you remember early in the post when I mentioned that components communicate with other components through properties (or <em>@props</em>)? Well, this is it. Our current component sends data back to the parent component through <code>@props.handleNewRecord</code> to notify it about the existence of a new record.</p>
+<p>As you might have guessed, wherever we create our <code>RecordForm</code> element, we need to pass a <code>handleNewRecord</code> property with a method reference into it, something like <code>React.createElement RecordForm, handleNewRecord: @addRecord</code>. Well, the parent <code>Records</code> component is the "wherever", as it has a <em>state</em> with all of the existing records, we need to update its state with the newly created record.</p>
+<p>Add the new <code>addRecord</code> method inside <code>records.js.coffee</code> and create the new <code>RecordForm</code> element, just after the <code>h2</code> title (inside the <code>render</code> method).</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    ...
+    addRecord: (record) -&gt;
+      records = @state.records.slice()
+      records.push record
+      @setState records: records
+    render: -&gt;
+      React.DOM.div
+        className: 'records'
+        React.DOM.h2
+          className: 'title'
+          'Records'
+        React.createElement RecordForm, handleNewRecord: @addRecord
+        React.DOM.hr null
+      ...
+</code></pre>
+<p>Refresh your browser, fill in the form with a new record, click <em>Create record</em>... No suspense this time, the record was added almost immediately and the form gets cleaned after submit, refresh again just to make sure the backend has stored the new data.</p>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/635Wuv7.png" alt="New record"></p>
+<p>If you have used other JS frameworks along with Rails (for example, AngularJS) to build similar features, you might have run into problems because your <code>POST</code> requests don't include the <code>CSRF</code> token required by Rails, so, why didn't we run into this same issue? Easy, because we are using <code>jQuery</code> to interact with our backend, and Rails' <code>jquery_ujs</code> unobtrusive driver will include the <code>CSRF</code> token on every <em>AJAX</em> request for us. Cool!</p>
+<p>You can take a look at the resulting code of this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/tree/f4708e19f8be929471bc0c8c2bda93f36b9a7f23">here</a>, or just the changes introduced by this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/commit/f4708e19f8be929471bc0c8c2bda93f36b9a7f23">here</a>.</p>
+<h2 id="reusable-components-amount-indicators">Reusable Components: Amount Indicators</h2>
+<p>What would an application be without some (nice) indicators? Let's add some boxes at the top of our window with some useful information. We goal for this section is to show 3 values: Total credit amount, total debit amount and Balance. This looks like a job for 3 components, or maybe just one with properties?</p>
+<p>We can build a new <code>AmountBox</code> component which will receive three properties: <code>amount</code>, <code>text</code> and <code>type</code>. Create a new file called <code>amount_box.js.coffee</code> under <code>javascripts/components/</code> and paste the following code:</p>
+<pre><code>  # app/assets/javascripts/components/amount_box.js.coffee
+
+  @AmountBox = React.createClass
+    render: -&gt;
+      React.DOM.div
+        className: 'col-md-4'
+        React.DOM.div
+          className: "panel panel-#{ @props.type }"
+          React.DOM.div
+            className: 'panel-heading'
+            @props.text
+          React.DOM.div
+            className: 'panel-body'
+            amountFormat(@props.amount)
+</code></pre>
+<p>We are just using Bootstrap's <code>panel</code> element to display the information in a "blocky" way, and setting the color through the <code>type</code> property. We have also included a really simple amount formatter method called <code>amountFormat</code> which reads the <code>amount</code> property and displays it in currency format.</p>
+<p>In order to have a complete solution, we need to create this element (3 times) inside of our main component, sending the required properties depending on the data we want to display. Let's build the calculator methods first, open the <code>Records</code> component and add the following methods:</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    ...
+    credits: -&gt;
+      credits = @state.records.filter (val) -&gt; val.amount &gt;= 0
+      credits.reduce ((prev, curr) -&gt;
+        prev + parseFloat(curr.amount)
+      ), 0
+    debits: -&gt;
+      debits = @state.records.filter (val) -&gt; val.amount &lt; 0
+      debits.reduce ((prev, curr) -&gt;
+        prev + parseFloat(curr.amount)
+      ), 0
+    balance: -&gt;
+      @debits() + @credits()
+    ...
+</code></pre>
+<p><code>credits</code> sums all the records with an amount greater than 0, <code>debits</code> sums all the records with an amount lesser than 0 and balance is self-explanatory. Now that we have the calculator methods in place, we just need to create the <code>AmountBox</code> elements inside the <code>render</code> method (just above the <code>RecordForm</code> component):</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    ...
+    render: -&gt;
+      React.DOM.div
+        className: 'records'
+        React.DOM.h2
+          className: 'title'
+          'Records'
+        React.DOM.div
+          className: 'row'
+          React.createElement AmountBox, type: 'success', amount: @credits(), text: 'Credit'
+          React.createElement AmountBox, type: 'danger', amount: @debits(), text: 'Debit'
+          React.createElement AmountBox, type: 'info', amount: @balance(), text: 'Balance'
+        React.createElement RecordForm, handleNewRecord: @addRecord
+    ...
+</code></pre>
+<p>We are done with this feature! Refresh your browser, you should see three boxes displaying the amounts we've calculated earlier. But wait! There's more! Create a new record and see the magic work...</p>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/YWEcQHh.png" alt="Indicators"></p>
+<p>You can take a look at the resulting code of this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/tree/8d6f0a4fb62f2a9abd5d34d502461388863302cb">here</a>, or just the changes introduced by this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/commit/8d6f0a4fb62f2a9abd5d34d502461388863302cb">here</a>.</p>
+<h2 id="setstate-replacestate-deleting-records">setState/replaceState: Deleting Records</h2>
+<p>The next feature in our list is the ability to delete records, we need a new <code>Actions</code> column in our records table, this column will have a <code>Delete</code> button for each record, pretty standard UI. As in our previous example, we need to create the <code>destroy</code> method in our Rails controller:</p>
+<pre><code>  # app/controllers/records_controller.rb
+
+  class RecordsController &lt; ApplicationController
+    ...
+
+    def destroy
+      @record = Record.find(params[:id])
+      @record.destroy
+      head :no_content
+    end
+
+    ...
+  end
+</code></pre>
+<p>That is all the server-side code we will need for this feature. Now, open your <code>Records</code> React component and add the <em>Actions</em> column at the rightmost position of the table header:</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    ...
+    render: -&gt;
+      ...
+      # almost at the bottom of the render method
+      React.DOM.table
+        React.DOM.thead null,
+          React.DOM.tr null,
+            React.DOM.th null, 'Date'
+            React.DOM.th null, 'Title'
+            React.DOM.th null, 'Amount'
+            React.DOM.th null, 'Actions'
+        React.DOM.tbody null,
+          for record in @state.records
+            React.createElement Record, key: record.id, record: record
+</code></pre>
+<p>And finally, open the <code>Record</code> component and add an extra column with a <em>Delete</em> link:</p>
+<pre><code>  # app/assets/javascripts/components/record.js.coffee
+
+  @Record = React.createClass
+    render: -&gt;
+      React.DOM.tr null,
+        React.DOM.td null, @props.record.date
+        React.DOM.td null, @props.record.title
+        React.DOM.td null, amountFormat(@props.record.amount)
+        React.DOM.td null,
+          React.DOM.a
+            className: 'btn btn-danger'
+            'Delete'
+</code></pre>
+<p>Save your file, refresh your browser and... We have a useless button with no events attached to it!</p>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/JV1KVNK.png" alt="Delete records"></p>
+<p>Let's add some functionality to it. As we learned from our <code>RecordForm</code> component, the way to go here is:</p>
+<ol>
+<li>Detect an event inside the child <code>Record</code> component (<em>onClick</em>)</li>
+<li>Perform an action (send a <em>DELETE</em> request to the server in this case)</li>
+<li>Notify the parent <code>Records</code> component about this action (sending/receiving a handler method through <em>props</em>)</li>
+<li>Update the <code>Record</code> component's state</li>
+</ol>
+<p>To implement <em>step 1</em>, we can add a handler for <code>onClick</code> to <code>Record</code> the same way we added a handler for <code>onSubmit</code> to <code>RecordForm</code> to create new records. Fortunately for us, React implements most of the common browser events in a normalized way, so we don't have to worry about cross-browser compatibility (you can take a look at the complete events list <a href="http://web.archive.org/web/20220618210019/http://facebook.github.io/react/docs/events.html#supported-events">here</a>).</p>
+<p>Re-open the <code>Record</code> component, add a new <code>handleDelete</code> method and an <code>onClick</code> attribute to our "useless" delete button as follows:</p>
+<pre><code>  # app/assets/javascripts/components/record.js.coffee
+
+  @Record = React.createClass
+    handleDelete: (e) -&gt;
+      e.preventDefault()
+      # yeah... jQuery doesn't have a $.delete shortcut method
+      $.ajax
+        method: 'DELETE'
+        url: "/records/#{ @props.record.id }"
+        dataType: 'JSON'
+        success: () =&gt;
+          @props.handleDeleteRecord @props.record
+    render: -&gt;
+      React.DOM.tr null,
+        React.DOM.td null, @props.record.date
+        React.DOM.td null, @props.record.title
+        React.DOM.td null, amountFormat(@props.record.amount)
+        React.DOM.td null,
+          React.DOM.a
+            className: 'btn btn-danger'
+            onClick: @handleDelete
+            'Delete'
+</code></pre>
+<p>When the <em>delete</em> button gets clicked, <code>handleDelete</code> sends an AJAX request to the server to delete the record in the backend and, after this, it notifies the parent component about this action through the <code>handleDeleteRecord</code> handler available through <em>props</em>, this means we need to adjust the creation of <code>Record</code> elements in the parent component to include the extra property <code>handleDeleteRecord</code>, and also implement the actual handler method in the parent:</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    ...
+    deleteRecord: (record) -&gt;
+      records = @state.records.slice()
+      index = records.indexOf record
+      records.splice index, 1
+      @replaceState records: records
+    render: -&gt;
+      ...
+      # almost at the bottom of the render method
+      React.DOM.table
+        React.DOM.thead null,
+          React.DOM.tr null,
+            React.DOM.th null, 'Date'
+            React.DOM.th null, 'Title'
+            React.DOM.th null, 'Amount'
+            React.DOM.th null, 'Actions'
+        React.DOM.tbody null,
+          for record in @state.records
+            React.createElement Record, key: record.id, record: record, handleDeleteRecord: @deleteRecord
+</code></pre>
+<p>Basically, our <code>deleteRecord</code> method copies the current component's <code>records</code> state, performs an index search of the record to be deleted, splices it from the array and updates the component's state, pretty standard JavaScript operations.</p>
+<p>We introduced a new way of interacting with the <em>state</em>, <code>replaceState</code>; the main difference between <code>setState</code> and <code>replaceState</code> is that the first one will only update one key of the <em>state</em> object, the second one will completely <strong>override</strong> the current state of the component with whatever new object we send.</p>
+<p>After updating this last bit of code, refresh your browser window and try to delete a record, a couple of things should happen:</p>
+<ol>
+<li>The records should disappear from the table and...</li>
+<li>The indicators should update the amounts instantly, no additional code is required</li>
+</ol>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/fjoCUYN.png" alt="Delete records"></p>
+<p>We are almost done with our application, but before implementing our last feature, we can apply a small refactor and, at the same time, introduce a new React feature.</p>
+<p>You can take a look at the resulting code of this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/tree/1a4dc646e53fecebc821c709347aae774e9ef170">here</a>, or just the changes introduced by this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/commit/1a4dc646e53fecebc821c709347aae774e9ef170">here</a>.</p>
+<h2 id="refactor-state-helpers">Refactor: State Helpers</h2>
+<p>At this point, we have a couple of methods where the state gets updated without any difficulty as our data is not what you might call "complex", but imagine a more complex application with a multi-level JSON state, you can picture yourself performing deep copies and juggling with your state data. React includes some fancy <em>state helpers</em> to help you with some of the heavy lifting, no matter how deep your <em>state</em> is, these helpers will let you manipulate it with more freedom using a kind-of MongoDB's query language (or at least that's what <a href="http://web.archive.org/web/20220618210019/https://facebook.github.io/react/docs/update.html">React's documentation says</a>).</p>
+<p>Before using these helpers, first we need to configure our Rails application to include them. Open your project's <code>config/application.rb</code> file and add <code>config.react.addons = true</code> at the bottom of the Application block:</p>
+<pre><code>  # config/application.rb
+
+  ...
+  module Accounts
+    class Application &lt; Rails::Application
+      ...
+      config.react.addons = true
+    end
+  end
+</code></pre>
+<p>For the changes to take effect, restart your rails server, I repeat, <strong>restart your rails server</strong>. Now we have access to the state helpers through <code>React.addons.update</code>, which will process our <em>state</em> object (or any other object we send to it) and apply the provided <em>commands</em>. The two commands we will be using are <code>$push</code> and <code>$splice</code> (I'm borrowing the explanation of these commands from the official <a href="http://web.archive.org/web/20220618210019/https://facebook.github.io/react/docs/update.html#available-commands">React documentation</a>):</p>
+<ul>
+<li><code>{$push: array}</code> <code>push()</code> all the items in <code>array</code> on the target.</li>
+<li><code>{$splice: array of arrays}</code> for each item in <code>arrays</code> call <code>splice()</code> on the target with the parameters provided by the item.</li>
+</ul>
+<p>We're about to simplify <code>addRecord</code> and <code>deleteRecord</code> from the <code>Record</code> component using these helpers, as follows:</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    ...
+    addRecord: (record) -&gt;
+      records = React.addons.update(@state.records, { $push: [record] })
+      @setState records: records
+    deleteRecord: (record) -&gt;
+      index = @state.records.indexOf record
+      records = React.addons.update(@state.records, { $splice: [[index, 1]] })
+      @replaceState records: records
+</code></pre>
+<p>Shorter, more elegant and with the same results, feel free to reload your browser and ensure nothing got broken.</p>
+<p>You can take a look at the resulting code of this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/tree/d19127f40ae2f795a30b7de6470cde95d3734eee">here</a>, or just the changes introduced by this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/commit/d19127f40ae2f795a30b7de6470cde95d3734eee">here</a>.</p>
+<h2 id="reactive-data-flow-editing-records">Reactive Data Flow: Editing Records</h2>
+<p>For the final feature, we are adding an extra <em>Edit</em> button, next to each <em>Delete</em> button in our records table. When this <em>Edit</em> button gets clicked, it will toggle the entire row from a read-only <em>state</em> (wink wink) to an editable state, revealing an inline form where the user can update the record's content. After submitting the updated content or canceling the action, the record's row will return to its original read-only <em>state</em>.</p>
+<p>As you might have guessed from the previous paragraph, we need to handle <em>mutable</em> data to toggle each record's state inside of our <code>Record</code> component. This is a use case of what React calls <em>reactive data flow</em>. Let's add an <code>edit</code> flag and a <code>handleToggle</code> method to <code>record.js.coffee</code>:</p>
+<pre><code>  # app/assets/javascripts/components/record.js.coffee
+
+  @Record = React.createClass
+    getInitialState: -&gt;
+      edit: false
+    handleToggle: (e) -&gt;
+      e.preventDefault()
+      @setState edit: !@state.edit
+    ...
+</code></pre>
+<p>The <code>edit</code> flag will default to <code>false</code>, and <code>handleToggle</code> will change <code>edit</code> from false to true and vice versa, we just need to trigger <code>handleToggle</code> from a user <code>onClick</code> event.</p>
+<p>Now, we need to handle two row versions (read-only and form) and display them conditionally depending on <code>edit</code>. Luckily for us, as long as our <code>render</code> method returns a React element, we are free to perform any actions in it; we can define a couple of helper methods <code>recordRow</code> and <code>recordForm</code> and call them conditionally inside of <code>render</code> depending on the contents of <code>@state.edit</code>.</p>
+<p>We already have an initial version of <code>recordRow</code>, it's our current <code>render</code> method. Let's move the contents of <code>render</code> to our brand new <code>recordRow</code> method and add some additional code to it:</p>
+<pre><code>  # app/assets/javascripts/components/record.js.coffee
+
+  @Record = React.createClass
+    ...
+    recordRow: -&gt;
+      React.DOM.tr null,
+        React.DOM.td null, @props.record.date
+        React.DOM.td null, @props.record.title
+        React.DOM.td null, amountFormat(@props.record.amount)
+        React.DOM.td null,
+          React.DOM.a
+            className: 'btn btn-default'
+            onClick: @handleToggle
+            'Edit'
+          React.DOM.a
+            className: 'btn btn-danger'
+            onClick: @handleDelete
+            'Delete'
+    ...
+</code></pre>
+<p>We only added an additional <code>React.DOM.a</code> element which listens to <code>onClick</code> events to call <code>handleToggle</code>.</p>
+<p>Moving forward, the implementation of <code>recordForm</code> will follow a similar structure, but with input fields in each cell. We are going to use a new <code>ref</code> attribute for our inputs to make them accessible; as this component doesn't handle a <em>state</em>, this new attribute will let our component read the data provided by the user through <code>@refs</code>:</p>
+<pre><code>  # app/assets/javascripts/components/record.js.coffee
+
+  @Record = React.createClass
+    ...
+    recordForm: -&gt;
+      React.DOM.tr null,
+        React.DOM.td null,
+          React.DOM.input
+            className: 'form-control'
+            type: 'text'
+            defaultValue: @props.record.date
+            ref: 'date'
+        React.DOM.td null,
+          React.DOM.input
+            className: 'form-control'
+            type: 'text'
+            defaultValue: @props.record.title
+            ref: 'title'
+        React.DOM.td null,
+          React.DOM.input
+            className: 'form-control'
+            type: 'number'
+            defaultValue: @props.record.amount
+            ref: 'amount'
+        React.DOM.td null,
+          React.DOM.a
+            className: 'btn btn-default'
+            onClick: @handleEdit
+            'Update'
+          React.DOM.a
+            className: 'btn btn-danger'
+            onClick: @handleToggle
+            'Cancel'
+    ...
+</code></pre>
+<p>Do not be afraid, this method might look big, but it is just our HAML-like syntax. Notice we are calling <code>@handleEdit</code> when the user clicks on the <em>Update</em> button, we are about to use a similar flow as the one implemented to delete records.</p>
+<p>Do you notice something different on how <code>React.DOM.input</code>s are being created? We are using <code>defaultValue</code> instead of <code>value</code> to set the initial input values, this is because <strong>using just <code>value</code> without <code>onChange</code> will end up creating read-only inputs</strong>.</p>
+<p>Finally, the <code>render</code> method boils down to the following code:</p>
+<pre><code>  # app/assets/javascripts/components/record.js.coffee
+
+  @Record = React.createClass
+    ...
+    render: -&gt;
+      if @state.edit
+        @recordForm()
+      else
+        @recordRow()
+</code></pre>
+<p>You can refresh your browser to play around with the new toggle behavior, but don't submit any changes yet as we haven't implemented the actual <em>update</em> functionality. </p>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/dwNuuXw.png" alt="Toggle row">
+<img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/jaQ1rId.png" alt="Toggle row"></p>
+<p>To handle record updates, we need to add the <code>update</code> method to our Rails controller:</p>
+<pre><code>  # app/controllers/records_controller.rb
+
+  class RecordsController &lt; ApplicationController
+    ...
+    def update
+      @record = Record.find(params[:id])
+      if @record.update(record_params)
+        render json: @record
+      else
+        render json: @record.errors, status: :unprocessable_entity
+      end
+    end
+    ...
+  end
+</code></pre>
+<p>Back to our <code>Record</code> component, we need to implement the <code>handleEdit</code> method which will send an <em>AJAX</em> request to the server with the updated <code>record</code> information, then it will notify the parent component by sending the updated version of the record via the <code>handleEditRecord</code> method, this method will be received through <code>@props</code>, the same way we did it before when deleting records:</p>
+<pre><code>  # app/assets/javascripts/components/record.js.coffee
+
+  @Record = React.createClass
+    ...
+    handleEdit: (e) -&gt;
+      e.preventDefault()
+      data =
+        title: React.findDOMNode(@refs.title).value
+        date: React.findDOMNode(@refs.date).value
+        amount: React.findDOMNode(@refs.amount).value
+      # jQuery doesn't have a $.put shortcut method either
+      $.ajax
+        method: 'PUT'
+        url: "/records/#{ @props.record.id }"
+        dataType: 'JSON'
+        data:
+          record: data
+        success: (data) =&gt;
+          @setState edit: false
+          @props.handleEditRecord @props.record, data
+    ...
+</code></pre>
+<p>For the sake of simplicity, we are not validating user data, we just read it through <code>React.findDOMNode(@refs.fieldName).value</code> and sending it verbatim to the backend. Updating the state to toggle <em>edit</em> mode on <code>success</code> is not mandatory, but the user will definitely thank us for that.</p>
+<p>Last, but not least, we just need to update the state on the <code>Records</code> component to overwrite the former record with the newer version of the child record and let React perform its magic. The implementation might look like this:</p>
+<pre><code>  # app/assets/javascripts/components/records.js.coffee
+
+  @Records = React.createClass
+    ...
+    updateRecord: (record, data) -&gt;
+      index = @state.records.indexOf record
+      records = React.addons.update(@state.records, { $splice: [[index, 1, data]] })
+      @replaceState records: records
+    ...
+    render: -&gt;
+      ...
+      # almost at the bottom of the render method
+      React.DOM.table
+        React.DOM.thead null,
+          React.DOM.tr null,
+            React.DOM.th null, 'Date'
+            React.DOM.th null, 'Title'
+            React.DOM.th null, 'Amount'
+            React.DOM.th null, 'Actions'
+        React.DOM.tbody null,
+          for record in @state.records
+            React.createElement Record, key: record.id, record: record, handleDeleteRecord: @deleteRecord, handleEditRecord: @updateRecord
+</code></pre>
+<p>As we have learned on the previous section, using <code>React.addons.update</code> to change our state might result on more concrete methods. The final link between <code>Records</code> and <code>Record</code> is the method <code>@updateRecord</code> sent through the <code>handleEditRecord</code> property.</p>
+<p>Refresh your browser for the last time and try updating some existing records, notice how the amount boxes at the top of the page keep track of every record you change.</p>
+<p><img src="http://web.archive.org/web/20220618210019im_/https://i.imgur.com/qLPVSlU.png" alt="Edit record"></p>
+<p>We are done! Smile, we have just built a small Rails + React application from scratch!</p>
+<p>You can take a look at the resulting code of this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/tree/1a62dd0e48b31aa55659e0035e754cee1776aa61">here</a>, or just the changes introduced by this section <a href="http://web.archive.org/web/20220618210019/https://github.com/fervisa/accounts-react-rails/commit/1a62dd0e48b31aa55659e0035e754cee1776aa61">here</a>.</p>
+<h2 id="closing-thoughts-react-js-simplicity-flexibility">Closing thoughts: React.js Simplicity &amp; Flexibility</h2>
+<p>We have examined some of React's functionalities and we learned that it barely introduces new concepts. I have heard comments of people saying X or Y JavaScript framework has a steep learning curve because of all the new concepts introduced, this is not React's case; it implements core JavaScript concepts such as event handlers and bindings, making it easy to adopt and learn. Again, one of its strengths is its simplicity.</p>
+<p>We also learned by the example how to integrate it into the Rails' assets pipeline and how well it plays along with CoffeeScript, jQuery, Turbolinks, and the rest of the Rails' orchestra. But this is not the only way of achieving the desired results. For example, if you don't use Turbolinks (hence, you don't need <code>react_ujs</code>) you can use <a href="http://web.archive.org/web/20220618210019/https://rails-assets.org/">Rails Assets</a> instead of the <code>react-rails</code> gem, you could use <a href="http://web.archive.org/web/20220618210019/https://github.com/rails/jbuilder">Jbuilder</a> to build more complex <em>JSON</em> responses instead of rendering <em>JSON</em> objects, and so on; you would still be able to get the same wonderful results.</p>
+<p>React will definitely boost your frontend abilities, making it a great library to have under your Rails' toobelt.</p>
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>What Shoulda Matchers Is Actually Doing For You</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>What Shoulda Matchers Is Actually Doing For You</h1>
+    <p><strong>URL:</strong> <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you">https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 1558649810</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>If you’ve worked on a Rails app, you’ve probably written or seen something like:</p>
+<div><pre><code><span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>validate_presence_of</span><span>(</span><span>:email</span><span>)</span> <span>}</span>
+<span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>have_many</span><span>(</span><span>:orders</span><span>).</span><span>dependent</span><span>(</span><span>:destroy</span><span>)</span> <span>}</span>
+</code></pre></div>
+<p>It feels a bit like a magic trick: one short line, and a lot of behavior is being tested.</p>
+
+<p>In this post, we’ll peek behind the curtain and see what these matchers are actually doing for you.</p>
+<h2 id="more-than-shorter-specs">
+  <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you#more-than-shorter-specs">
+    More than shorter specs
+  </a>
+</h2>
+
+<p>Those one-liners aren’t just shorter, they’re less fragile. Each matcher:</p>
+
+<ul>
+<li>Builds an isolated setup focused only on the behavior under test</li>
+<li>Encapsulates battle-tested patterns for exercising Rails features</li>
+<li>Makes your specs read like documentation and creates <a href="https://thoughtbot.com/blog/the-self-contained-test">self-contained tests</a></li>
+</ul>
+
+<p>That third point is easy to miss, so let’s make it concrete.</p>
+
+<p>Imagine you wrote a presence test that happens to reuse some factory or setup. Later, you add a new validation to the model. Suddenly:</p>
+
+<ul>
+<li>Your old “valid” setup is now invalid, or</li>
+<li>An example that used to fail now passes for the <em>wrong</em> reason</li>
+</ul>
+<h2 id="presence-validation-in-practice">
+  <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you#presence-validation-in-practice">
+    Presence validation in practice
+  </a>
+</h2>
+
+<p>Say we want to test that <code>User</code> requires an email.</p>
+<h3 id="without-shoulda-matchers">
+  <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you#without-shoulda-matchers">
+    Without Shoulda Matchers
+  </a>
+</h3>
+<div><pre><code><span>RSpec</span><span>.</span><span>describe</span> <span>User</span><span>,</span> <span>type: :model</span> <span>do</span>
+  <span>it</span> <span>"is invalid without an email"</span> <span>do</span>
+    <span>user</span> <span>=</span> <span>User</span><span>.</span><span>new</span><span>(</span><span>email: </span><span>nil</span><span>)</span>
+
+    <span>expect</span><span>(</span><span>user</span><span>).</span><span>not_to</span> <span>be_valid</span>
+    <span>expect</span><span>(</span><span>user</span><span>.</span><span>errors</span><span>[</span><span>:email</span><span>]).</span><span>to</span> <span>include</span><span>(</span><span>"can't be blank"</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>This works, but:</p>
+
+<ul>
+<li>It’s verbose</li>
+<li>It couples the test to specific error messages</li>
+<li>You’ll repeat this pattern for every attribute in every model</li>
+<li>If you add more validations later, this setup might fail for unrelated reasons</li>
+</ul>
+<h3 id="with-shoulda-matchers">
+  <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you#with-shoulda-matchers">
+    With Shoulda Matchers
+  </a>
+</h3>
+<div><pre><code><span>RSpec</span><span>.</span><span>describe</span> <span>User</span><span>,</span> <span>type: :model</span> <span>do</span>
+  <span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>validate_presence_of</span><span>(</span><span>:email</span><span>)</span> <span>}</span>
+<span>end</span>
+</code></pre></div>
+<p>Now the spec says exactly what matters:</p>
+
+<blockquote>
+<p>“User validates presence of email.”</p>
+</blockquote>
+
+<p>The “magic” is that the matcher hides the mechanics (building the record, calling <code>valid?</code>, checking <code>errors</code>) and focuses on the behavior you care about. As validations evolve, the matcher’s own setup logic is less likely to silently drift away from your intent.</p>
+<h2 id="under-the-hood-it39s-just-ruby">
+  <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you#under-the-hood-it39s-just-ruby">
+    Under the hood: it’s just Ruby
+  </a>
+</h2>
+
+<p>Matchers can look mysterious, but <a href="https://thoughtbot.com/blog/building-custom-rspec-matchers-with-regular-objects">they’re just Ruby objects that respond to the <code>matches?</code> method</a> and know how to describe failures.</p>
+
+<p>Conceptually:</p>
+<div><pre><code><span>expect</span><span>(</span><span>user</span><span>).</span><span>to</span> <span>matcher</span>
+<span># becomes something like:</span>
+<span>matcher</span><span>.</span><span>matches?</span><span>(</span><span>user</span><span>)</span>
+</code></pre></div>
+<p>shoulda-matchers uses that extension point to embed Rails knowledge into each matcher:</p>
+
+<ul>
+<li>How to trigger validations correctly</li>
+<li>How to introspect associations</li>
+<li>How to avoid common false positives</li>
+<li>How to construct focused setups that don’t accidentally depend on unrelated behavior</li>
+</ul>
+
+<p>So that one line is really calling into a well-designed object that knows how to exercise that slice of Rails for you.</p>
+<h2 id="validate_uniqueness_of-catching-subtle-bugs">
+  <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you#validate_uniqueness_of-catching-subtle-bugs">
+    <code>validate_uniqueness_of</code>: catching subtle bugs
+  </a>
+</h2>
+
+<p>Uniqueness is where manually written tests tests often mislead you. A typical spec might look like:</p>
+<div><pre><code><span>it</span> <span>"is invalid when another user has the same email"</span> <span>do</span>
+  <span>User</span><span>.</span><span>create!</span><span>(</span><span>email: </span><span>"test@example.com"</span><span>)</span>
+  <span>user</span> <span>=</span> <span>User</span><span>.</span><span>new</span><span>(</span><span>email: </span><span>"test@example.com"</span><span>)</span>
+
+  <span>expect</span><span>(</span><span>user</span><span>).</span><span>not_to</span> <span>be_valid</span>
+<span>end</span>
+</code></pre></div>
+<p>This passes. But imagine you later add <code>validates :name, presence: true</code>. Now the test still passes, but because <code>name</code> is blank, not because the email is duplicated. Your uniqueness validation could be completely broken and this test wouldn’t tell you.</p>
+
+<p>With shoulda-matchers:</p>
+<div><pre><code><span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>validate_uniqueness_of</span><span>(</span><span>:email</span><span>).</span><span>case_insensitive</span> <span>}</span>
+</code></pre></div>
+<p>That one expectation:</p>
+
+<ul>
+<li>Creates only strictly necessary records</li>
+<li>Checks case sensitivity when requested</li>
+<li>Focuses on the uniqueness behavior itself</li>
+<li>Won’t be “accidentally” satisfied by unrelated validations</li>
+<li>Knows about edge cases and provides helpful error messages when your test setup or validation logic has issues</li>
+</ul>
+
+<p>Because shoulda-matchers builds its own minimal setup focused on the behavior under test, your spec is less likely to accidentally start passing or failing due to unrelated model changes. You still need higher-level tests for real-world flows, but this gives you a focused unit check with less brittleness.</p>
+<h2 id="have_many-and-friends-specs-as-documentation">
+  <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you#have_many-and-friends-specs-as-documentation">
+    <code>have_many</code> and friends: specs as documentation
+  </a>
+</h2>
+
+<p>Associations work the same way. Compare:</p>
+<div><pre><code><span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>have_many</span><span>(</span><span>:orders</span><span>).</span><span>dependent</span><span>(</span><span>:destroy</span><span>)</span> <span>}</span>
+</code></pre></div>
+<p>with the manual version:</p>
+<div><pre><code><span>it</span> <span>"has many orders with dependent destroy"</span> <span>do</span>
+  <span>association</span> <span>=</span> <span>User</span><span>.</span><span>reflect_on_association</span><span>(</span><span>:orders</span><span>)</span>
+
+  <span>expect</span><span>(</span><span>association</span><span>.</span><span>macro</span><span>).</span><span>to</span> <span>eq</span><span>(</span><span>:has_many</span><span>)</span>
+  <span>expect</span><span>(</span><span>association</span><span>.</span><span>options</span><span>[</span><span>:dependent</span><span>]).</span><span>to</span> <span>eq</span><span>(</span><span>:destroy</span><span>)</span>
+<span>end</span>
+</code></pre></div>
+<p>Both assert the same thing, but the matcher:</p>
+
+<ul>
+<li>Reads like a sentence in your domain</li>
+<li>Hides reflection details</li>
+<li>Encourages a consistent style across models</li>
+</ul>
+
+<p>A block of matchers at the top of a spec file often gives you an instant overview of a model’s contract:</p>
+<div><pre><code><span>RSpec</span><span>.</span><span>describe</span> <span>User</span><span>,</span> <span>type: :model</span> <span>do</span>
+  <span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>validate_presence_of</span><span>(</span><span>:email</span><span>)</span> <span>}</span>
+  <span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>validate_uniqueness_of</span><span>(</span><span>:email</span><span>).</span><span>case_insensitive</span> <span>}</span>
+
+  <span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>have_many</span><span>(</span><span>:orders</span><span>).</span><span>dependent</span><span>(</span><span>:destroy</span><span>)</span> <span>}</span>
+  <span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>belong_to</span><span>(</span><span>:account</span><span>)</span> <span>}</span>
+<span>end</span>
+</code></pre></div>
+<p>Skimming that tells you:</p>
+
+<ul>
+<li>What must be present</li>
+<li>What must be unique</li>
+<li>How the record relates to others</li>
+</ul>
+
+<p>Your tests double as living documentation and because each matcher targets one piece of behavior, they tend to age more gracefully as the model grows.</p>
+<h2 id="when-not-to-use-shoulda-matchers">
+  <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you#when-not-to-use-shoulda-matchers">
+    When not to use shoulda-matchers
+  </a>
+</h2>
+
+<p>shoulda-matchers shines for Rails-y behavior, but it’s not the right tool for everything.</p>
+
+<p>You’ll usually prefer explicit specs when:</p>
+
+<ul>
+<li>You’re testing business logic or product rules</li>
+<li>You’re describing multi-step flows or user behavior</li>
+<li>A matcher would hide more than it reveals</li>
+</ul>
+
+<p>A simple rule of thumb:</p>
+
+<blockquote>
+<p>Will Future Me understand this expectation faster with or without a matcher?</p>
+</blockquote>
+
+<p>If a plain expectation tells the story better, use that instead.</p>
+<h2 id="wrapping-up">
+  <a href="https://thoughtbot.com/blog/what-shoulda-matchers-is-actually-doing-for-you#wrapping-up">
+    Wrapping up
+  </a>
+</h2>
+
+<p>When you write:</p>
+<div><pre><code><span>it</span> <span>{</span> <span>is_expected</span><span>.</span><span>to</span> <span>validate_presence_of</span><span>(</span><span>:email</span><span>)</span> <span>}</span>
+</code></pre></div>
+<p>you’re not just saving a few lines. You’re:</p>
+
+<ul>
+<li>Reusing a well-tested pattern for exercising Rails behavior</li>
+<li>Turning your specs into readable documentation</li>
+<li>Making tests less fragile as your models evolve</li>
+<li>Sharing a common testing language with your team</li>
+</ul>
+
+<p>shoulda-matchers is a small, sharp tool that helps your tests say exactly what you mean, even as the code underneath continues to change. Once you understand the trick, it stops being magic and starts being part of your everyday toolkit.</p>
+
+
+
+    </div></div>
+  </div>
+</body>
+</html>

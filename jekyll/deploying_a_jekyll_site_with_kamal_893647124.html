@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Deploying a Jekyll site with Kamal</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Deploying a Jekyll site with Kamal</h1>
+    <p><strong>URL:</strong> <a href="https://greg.molnar.io/blog/deploying-a-jekyll-site-with-kamal/">https://greg.molnar.io/blog/deploying-a-jekyll-site-with-kamal/</a></p>
+    <p><strong>Tags:</strong> jekyll, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 893647124</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+    <p>
+      I'd like to let you know that my book is finally done and if you want to learn about how to avoid security issues during code review, you should read it: <a href="https://greg.molnar.io/books/secure-code-review-for-rails-developers/" target="_blank">Secure code review for Rails Developers</a>.
+    </p>
+
+    <p>Since Kamal 2 can host multiple sites on the same server, I am consolidating my
+apps into larger hosts so I have less servers to worry about. Most of my apps
+are Rails apps, but I have a few static jekyll sites like this blog and I
+decided to look into how could I move this site to a server I host other Rails
+apps on.</p>
+
+<p>The first step of the process is to “dockerize” the jekyll site. Kamal Proxy
+will handle SSL and only requires something to process HTTP requests, so we will
+create a container with nginx, serving the static HTML files over port 80. To
+achieve this, we need to create the following Dockerfile in the root of the
+jekyll project:</p>
+
+<div><pre tabindex="0"><code># Dockerfile
+# syntax = docker/dockerfile:1
+FROM nginx
+
+EXPOSE 80
+</code></pre></div>
+
+<p>I build my jekyll sites into the <code>_site</code> folder, so the next step is to copy
+that to default folder of nginx so it can serve those files:</p>
+
+<div><pre tabindex="0"><code># Dockerfile
+# syntax = docker/dockerfile:1
+FROM nginx
+
+COPY ./_site /usr/share/nginx/html
+
+EXPOSE 80
+</code></pre></div>
+
+<p>The next step is to setup Kamal for deployment. Once you installed the gem, run
+<code>kamal init</code> to create the default config file. We will adapt it to do the
+following:</p>
+
+<ul>
+  <li>load the <code>.env</code> file so we can set the <code>KAMAL_REGISTRY_PASSWORD</code> from that</li>
+  <li>set the service name to our static site</li>
+  <li>configure the image name</li>
+  <li>configure a web host</li>
+  <li>enable SSL for the proxy and setting the hostnames we want to use</li>
+  <li>set the healthcheck path to the root of the site</li>
+  <li>configure the registry</li>
+  <li>set the builder context to “.”, so we don’t need to commit the build to the
+git repository</li>
+</ul>
+
+<p>This is how <code>config/deploy.yml</code> should look after doing all of the above:</p>
+
+<div><pre tabindex="0"><code># config/deploy.yml
+&lt;% require "dotenv"; Dotenv.load(".env") %&gt;
+# Name of your application. Used to uniquely configure containers.
+service: mystaticsite
+
+# Name of the container image.
+image: registry/static-site
+
+# Deploy to these servers.
+servers:
+  web:
+    hosts:
+      - 1.1.1.1 # server IP
+
+# Enable SSL auto certification via Let's Encrypt (and allow for multiple apps on one server).
+# Set ssl: false if using something like Cloudflare to terminate SSL (but keep host!).
+proxy:
+  ssl: true
+  hosts:
+    - domain.com
+    - www.domain.com
+  healthcheck:
+    path: /
+    interval: 3
+    timeout: 30
+# Credentials for your image host.
+registry:
+  server: registry.digitalocean.com
+  username:
+    - KAMAL_REGISTRY_PASSWORD
+  # Always use an access token rather than real password when possible.
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Configure builder setup.
+builder:
+  arch: amd64
+  context: .
+</code></pre></div>
+
+<p>Now you just need to put the <code>KAMAL_REGISTRY_PASSWORD</code> in the <code>.env</code> file and you are basically ready to deploy. But you should add a <code>.dockerignore</code> file and put everything else than your build directory into it:</p>
+
+<div><pre tabindex="0"><code># .dockerignore
+
+# Ignore everything
+*
+# Allow build folder
+!/_site
+</code></pre></div>
+
+<p>To make sure you always build before deployment, you can use a Kamal hook. Put
+the following to <code>.kamal/hooks/pre-build</code>:</p>
+
+<div><pre tabindex="0"><code>#!/bin/sh
+JEKYLL_ENV=production bundle exec jekyll build
+</code></pre></div>
+
+<p>All you have to do now is to deploy the app with <code>kamal deploy</code>.</p>
+
+    
+
+    
+
+  </div></div>
+  </div>
+</body>
+</html>

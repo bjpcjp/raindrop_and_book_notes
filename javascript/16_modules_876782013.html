@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>16. Modules</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>16. Modules</h1>
+    <p><strong>URL:</strong> <a href="http://exploringjs.com/es6/ch_modules.html#ch_modules">http://exploringjs.com/es6/ch_modules.html#ch_modules</a></p>
+    <p><strong>Tags:</strong> javascript</p>
+    <p><strong>Bookmark ID:</strong> 876782013</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="page-content">
+
+
+
+
+<hr>
+
+<ul>
+  <li>16.1. <a href="#sec_overview-modules">Overview</a>
+    <ul>
+      <li>16.1.1. Multiple named exports</li>
+      <li>16.1.2. Single default export</li>
+      <li>16.1.3. Browsers: scripts versus modules</li>
+    </ul>
+  </li>
+  <li>16.2. <a href="#sec_modules-in-javascript">Modules in JavaScript</a>
+    <ul>
+      <li>16.2.1. ECMAScript 5 module systems</li>
+      <li>16.2.2. ECMAScript 6 modules</li>
+    </ul>
+  </li>
+  <li>16.3. <a href="#sec_basics-of-es6-modules">The basics of ES6 modules</a>
+    <ul>
+      <li>16.3.1. Named exports (several per module)</li>
+      <li>16.3.2. Default exports (one per module)</li>
+      <li>16.3.3. Imports and exports must be at the top level</li>
+      <li>16.3.4. Imports are hoisted</li>
+      <li>16.3.5. Imports are read-only views on exports</li>
+      <li>16.3.6. Support for cyclic dependencies</li>
+    </ul>
+  </li>
+  <li>16.4. <a href="#sec_importing-exporting-details">Importing and exporting in detail</a>
+    <ul>
+      <li>16.4.1. Importing styles</li>
+      <li>16.4.2. Named exporting styles: inline versus clause</li>
+      <li>16.4.3. Re-exporting</li>
+      <li>16.4.4. All exporting styles</li>
+      <li>16.4.5. Having both named exports and a default export in a module</li>
+    </ul>
+  </li>
+  <li>16.5. <a href="#sec_module-loader-api">The ECMAScript 6 module loader API</a>
+    <ul>
+      <li>16.5.1. Loaders</li>
+      <li>16.5.2. Loader method: importing modules</li>
+      <li>16.5.3. More loader methods</li>
+      <li>16.5.4. Configuring module loading</li>
+    </ul>
+  </li>
+  <li>16.6. <a href="#sec_modules-in-browsers">Using ES6 modules in browsers</a>
+    <ul>
+      <li>16.6.1. Browsers: asynchronous modules versus synchronous scripts</li>
+    </ul>
+  </li>
+  <li>16.7. <a href="#sec_imports-as-views-on-exports">Details: imports as views on exports</a>
+    <ul>
+      <li>16.7.1. In CommonJS, imports are copies of exported values</li>
+      <li>16.7.2. In ES6, imports are live read-only views on exported values</li>
+      <li>16.7.3. Implementing views</li>
+      <li>16.7.4. Imports as views in the spec</li>
+    </ul>
+  </li>
+  <li>16.8. <a href="#sec_design-goals-es6-modules">Design goals for ES6 modules</a>
+    <ul>
+      <li>16.8.1. Default exports are favored</li>
+      <li>16.8.2. Static module structure</li>
+      <li>16.8.3. Support for both synchronous and asynchronous loading</li>
+      <li>16.8.4. Support for cyclic dependencies between modules</li>
+    </ul>
+  </li>
+  <li>16.9. <a href="#sec_faq-modules">FAQ: modules</a>
+    <ul>
+      <li>16.9.1. Can I use a variable to specify from which module I want to import?</li>
+      <li>16.9.2. Can I import a module conditionally or on demand?</li>
+      <li>16.9.3. Can I use variables in an <code>import</code> statement?</li>
+      <li>16.9.4. Can I use destructuring in an <code>import</code> statement?</li>
+      <li>16.9.5. Are named exports necessary? Why not default-export objects?</li>
+      <li>16.9.6. Can I <code>eval()</code> the code of module?</li>
+    </ul>
+  </li>
+  <li>16.10. <a href="#sec_advantages-es6-modules">Advantages of ECMAScript 6 modules</a>
+</li>
+  <li>16.11. <a href="#sec_further-reading-modules">Further reading</a>
+</li>
+</ul>
+
+<hr>
+
+
+<h3 id="sec_overview-modules">
+<span>16.1 </span>Overview </h3>
+
+<p>JavaScript has had modules for a long time. However, they were implemented via libraries, not built into the language. ES6 is the first time that JavaScript has built-in modules.</p>
+
+<p>ES6 modules are stored in files. There is exactly one module per file and one file per module. You have two ways of exporting things from a module. <a href="#sec_mixing-named-and-default-exports">These two ways can be mixed</a>, but it is usually better to use them separately.</p>
+
+<h4 id="_multiple-named-exports">
+<span>16.1.1 </span>Multiple named exports </h4>
+
+<p>There can be multiple <em>named exports</em>:</p>
+
+<figure>
+<div><pre><code></code><code>//------ lib.js ------</code>
+<code>export</code> <code>const</code> <code>sqrt</code> <code>=</code> <code>Math</code><code>.</code><code>sqrt</code><code>;</code>
+<code>export</code> <code>function</code> <code>square</code><code>(</code><code>x</code><code>)</code> <code>{</code>
+    <code>return</code> <code>x</code> <code>*</code> <code>x</code><code>;</code>
+<code>}</code>
+<code>export</code> <code>function</code> <code>diag</code><code>(</code><code>x</code><code>,</code> <code>y</code><code>)</code> <code>{</code>
+    <code>return</code> <code>sqrt</code><code>(</code><code>square</code><code>(</code><code>x</code><code>)</code> <code>+</code> <code>square</code><code>(</code><code>y</code><code>));</code>
+<code>}</code>
+
+<code>//------ main.js ------</code>
+<code>import</code> <code>{</code> <code>square</code><code>,</code> <code>diag</code> <code>}</code> <code>from</code> <code>'lib'</code><code>;</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>square</code><code>(</code><code>11</code><code>));</code> <code>// 121</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>diag</code><code>(</code><code>4</code><code>,</code> <code>3</code><code>));</code> <code>// 5</code>
+</pre></div>
+
+</figure>
+
+<p>You can also import the complete module:</p>
+
+<figure>
+<div><pre><code></code><code>//------ main.js ------</code>
+<code>import</code> <code>*</code> <code>as</code> <code>lib</code> <code>from</code> <code>'lib'</code><code>;</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>lib</code><code>.</code><code>square</code><code>(</code><code>11</code><code>));</code> <code>// 121</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>lib</code><code>.</code><code>diag</code><code>(</code><code>4</code><code>,</code> <code>3</code><code>));</code> <code>// 5</code>
+</pre></div>
+
+</figure>
+
+<h4 id="_single-default-export">
+<span>16.1.2 </span>Single default export </h4>
+
+<p>There can be a single <em>default export</em>. For example, a function:</p>
+
+<figure>
+<div><pre><code></code><code>//------ myFunc.js ------</code>
+<code>export</code> <code>default</code> <code>function</code> <code>()</code> <code>{</code> <code>···</code> <code>}</code> <code>// no semicolon!</code>
+
+<code>//------ main1.js ------</code>
+<code>import</code> <code>myFunc</code> <code>from</code> <code>'myFunc'</code><code>;</code>
+<code>myFunc</code><code>();</code>
+</pre></div>
+
+</figure>
+
+<p>Or a class:</p>
+
+<figure>
+<div><pre><code></code><code>//------ MyClass.js ------</code>
+<code>export</code> <code>default</code> <code>class</code> <code>{</code> <code>···</code> <code>}</code> <code>// no semicolon!</code>
+
+<code>//------ main2.js ------</code>
+<code>import</code> <code>MyClass</code> <code>from</code> <code>'MyClass'</code><code>;</code>
+<code>const</code> <code>inst</code> <code>=</code> <code>new</code> <code>MyClass</code><code>();</code>
+</pre></div>
+
+</figure>
+
+<p>Note that there is no semicolon at the end if you default-export a function or a class (which are anonymous declarations).</p>
+
+<h4 id="_browsers-scripts-versus-modules">
+<span>16.1.3 </span>Browsers: scripts versus modules </h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>Scripts</th>
+      <th>Modules</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>HTML element</td>
+      <td><code>&lt;script&gt;</code></td>
+      <td><code>&lt;script type="module"&gt;</code></td>
+    </tr>
+    <tr>
+      <td>Default mode</td>
+      <td>non-strict</td>
+      <td>strict</td>
+    </tr>
+    <tr>
+      <td>Top-level variables are</td>
+      <td>global</td>
+      <td>local to module</td>
+    </tr>
+    <tr>
+      <td>Value of <code>this</code> at top level</td>
+      <td><code>window</code></td>
+      <td><code>undefined</code></td>
+    </tr>
+    <tr>
+      <td>Executed</td>
+      <td>synchronously</td>
+      <td>asynchronously</td>
+    </tr>
+    <tr>
+      <td>Declarative imports (<code>import</code> statement)</td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>Programmatic imports (Promise-based API)</td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>File extension</td>
+      <td><code>.js</code></td>
+      <td><code>.js</code></td>
+    </tr>
+  </tbody>
+
+</table>
+
+
+
+<h3 id="sec_modules-in-javascript">
+<span>16.2 </span>Modules in JavaScript </h3>
+
+<p>Even though JavaScript never had built-in modules, the community has converged on a simple style of modules, which is supported by libraries in ES5 and earlier. This style has also been adopted by ES6:</p>
+
+<ul>
+  <li>Each module is a piece of code that is executed once it is loaded.</li>
+  <li>In that code, there may be declarations (variable declarations, function declarations, etc.).
+    <ul>
+      <li>By default, these declarations stay local to the module.</li>
+      <li>You can mark some of them as exports, then other modules can import them.</li>
+    </ul>
+  </li>
+  <li>A module can import things from other modules. It refers to those modules via <em>module specifiers</em>, strings that are either:
+    <ul>
+      <li>Relative paths (<code>'../model/user'</code>): these paths are interpreted relatively to the location of the importing module. The file extension <code>.js</code> can usually be omitted.</li>
+      <li>Absolute paths (<code>'/lib/js/helpers'</code>): point directly to the file of the module to be imported.</li>
+      <li>Names (<code>'util'</code>): What modules names refer to has to be configured.</li>
+    </ul>
+  </li>
+  <li>Modules are singletons. Even if a module is imported multiple times, only a single “instance” of it exists.</li>
+</ul>
+
+<p>This approach to modules avoids global variables, the only things that are global are module specifiers.</p>
+
+
+<h4 id="_ecmascript-5-module-systems">
+<span>16.2.1 </span>ECMAScript 5 module systems </h4>
+
+<p>It is impressive how well ES5 module systems work without explicit support from the language. The two most important (and unfortunately incompatible) standards are:</p>
+
+<ul>
+  <li>
+<strong>CommonJS Modules:</strong> The dominant implementation of this standard is <a href="http://nodejs.org/api/modules.html">in Node.js</a> (Node.js modules have a few features that go beyond CommonJS). Characteristics:
+    <ul>
+      <li>Compact syntax</li>
+      <li>Designed for synchronous loading and servers</li>
+    </ul>
+  </li>
+  <li>
+<strong>Asynchronous Module Definition (AMD):</strong> The most popular implementation of this standard is <a href="http://requirejs.org/">RequireJS</a>. Characteristics:
+    <ul>
+      <li>Slightly more complicated syntax, enabling AMD to work without eval() (or a compilation step)</li>
+      <li>Designed for asynchronous loading and browsers</li>
+    </ul>
+  </li>
+</ul>
+
+<p>The above is but a simplified explanation of ES5 modules. If you want more in-depth material, take a look at “<a href="http://addyosmani.com/writing-modular-js/">Writing Modular JavaScript With AMD, CommonJS &amp; ES Harmony</a>” by Addy Osmani.</p>
+
+
+<h4 id="_ecmascript-6-modules">
+<span>16.2.2 </span>ECMAScript 6 modules </h4>
+
+<p>The goal for ECMAScript 6 modules was to create a format that both users of CommonJS and of AMD are happy with:</p>
+
+<ul>
+  <li>Similarly to CommonJS, they have a compact syntax, a preference for single exports and support for cyclic dependencies.</li>
+  <li>Similarly to AMD, they have direct support for asynchronous loading and configurable module loading.</li>
+</ul>
+
+<p>Being built into the language allows ES6 modules to go beyond CommonJS and AMD (details are explained later):</p>
+
+<ul>
+  <li>Their syntax is even more compact than CommonJS’s.</li>
+  <li>Their structure can be statically analyzed (for static checking, optimization, etc.).</li>
+  <li>Their support for cyclic dependencies is better than CommonJS’s.</li>
+</ul>
+
+<p>The ES6 module standard has two parts:</p>
+
+<ul>
+  <li>Declarative syntax (for importing and exporting)</li>
+  <li>Programmatic loader API: to configure how modules are loaded and to conditionally load modules</li>
+</ul>
+
+
+<h3 id="sec_basics-of-es6-modules">
+<span>16.3 </span>The basics of ES6 modules </h3>
+
+<p>There are two kinds of exports: named exports (several per module) and default exports (one per module). <a href="#sec_mixing-named-and-default-exports">As explained later</a>, it is possible use both at the same time, but usually best to keep them separate.</p>
+
+
+<h4 id="_named-exports-several-per-module">
+<span>16.3.1 </span>Named exports (several per module) </h4>
+
+<p>A module can export multiple things by prefixing its declarations with the keyword <code>export</code>. These exports are distinguished by their names and are called <em>named exports</em>.</p>
+
+<figure>
+<div><pre><code></code><code>//------ lib.js ------</code>
+<code>export</code> <code>const</code> <code>sqrt</code> <code>=</code> <code>Math</code><code>.</code><code>sqrt</code><code>;</code>
+<code>export</code> <code>function</code> <code>square</code><code>(</code><code>x</code><code>)</code> <code>{</code>
+    <code>return</code> <code>x</code> <code>*</code> <code>x</code><code>;</code>
+<code>}</code>
+<code>export</code> <code>function</code> <code>diag</code><code>(</code><code>x</code><code>,</code> <code>y</code><code>)</code> <code>{</code>
+    <code>return</code> <code>sqrt</code><code>(</code><code>square</code><code>(</code><code>x</code><code>)</code> <code>+</code> <code>square</code><code>(</code><code>y</code><code>));</code>
+<code>}</code>
+
+<code>//------ main.js ------</code>
+<code>import</code> <code>{</code> <code>square</code><code>,</code> <code>diag</code> <code>}</code> <code>from</code> <code>'lib'</code><code>;</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>square</code><code>(</code><code>11</code><code>));</code> <code>// 121</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>diag</code><code>(</code><code>4</code><code>,</code> <code>3</code><code>));</code> <code>// 5</code>
+</pre></div>
+
+</figure>
+
+<p>There are other ways to specify named exports (which are explained later), but I find this one quite convenient: simply write your code as if there were no outside world, then label everything that you want to export with a keyword.</p>
+
+<p>If you want to, you can also import the whole module and refer to its named exports via property notation:</p>
+
+<figure>
+<div><pre><code></code><code>//------ main.js ------</code>
+<code>import</code> <code>*</code> <code>as</code> <code>lib</code> <code>from</code> <code>'lib'</code><code>;</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>lib</code><code>.</code><code>square</code><code>(</code><code>11</code><code>));</code> <code>// 121</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>lib</code><code>.</code><code>diag</code><code>(</code><code>4</code><code>,</code> <code>3</code><code>));</code> <code>// 5</code>
+</pre></div>
+
+</figure>
+
+<p><strong>The same code in CommonJS syntax:</strong> For a while, I tried several clever strategies to be less redundant with my module exports in Node.js. Now I prefer the following simple but slightly verbose style that is reminiscent of the <a href="http://christianheilmann.com/2007/08/22/again-with-the-module-pattern-reveal-something-to-the-world/">revealing module pattern</a>:</p>
+
+<figure>
+<div><pre><code></code><code>//------ lib.js ------</code>
+<code>var</code> <code>sqrt</code> <code>=</code> <code>Math</code><code>.</code><code>sqrt</code><code>;</code>
+<code>function</code> <code>square</code><code>(</code><code>x</code><code>)</code> <code>{</code>
+    <code>return</code> <code>x</code> <code>*</code> <code>x</code><code>;</code>
+<code>}</code>
+<code>function</code> <code>diag</code><code>(</code><code>x</code><code>,</code> <code>y</code><code>)</code> <code>{</code>
+    <code>return</code> <code>sqrt</code><code>(</code><code>square</code><code>(</code><code>x</code><code>)</code> <code>+</code> <code>square</code><code>(</code><code>y</code><code>));</code>
+<code>}</code>
+<code>module</code><code>.</code><code>exports</code> <code>=</code> <code>{</code>
+    <code>sqrt</code><code>:</code> <code>sqrt</code><code>,</code>
+    <code>square</code><code>:</code> <code>square</code><code>,</code>
+    <code>diag</code><code>:</code> <code>diag</code><code>,</code>
+<code>};</code>
+
+<code>//------ main.js ------</code>
+<code>var</code> <code>square</code> <code>=</code> <code>require</code><code>(</code><code>'lib'</code><code>).</code><code>square</code><code>;</code>
+<code>var</code> <code>diag</code> <code>=</code> <code>require</code><code>(</code><code>'lib'</code><code>).</code><code>diag</code><code>;</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>square</code><code>(</code><code>11</code><code>));</code> <code>// 121</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>diag</code><code>(</code><code>4</code><code>,</code> <code>3</code><code>));</code> <code>// 5</code>
+</pre></div>
+
+</figure>
+
+
+<h4 id="_default-exports-one-per-module">
+<span>16.3.2 </span>Default exports (one per module) </h4>
+
+<p>Modules that only export single values are very popular in the Node.js community. But they are also common in frontend development where you often have classes for models and components, with one class per module. An ES6 module can pick a <em>default export</em>, the main exported value. Default exports are especially easy to import.</p>
+
+<p>The following ECMAScript 6 module “is” a single function:</p>
+
+<figure>
+<div><pre><code></code><code>//------ myFunc.js ------</code>
+<code>export</code> <code>default</code> <code>function</code> <code>()</code> <code>{}</code> <code>// no semicolon!</code>
+
+<code>//------ main1.js ------</code>
+<code>import</code> <code>myFunc</code> <code>from</code> <code>'myFunc'</code><code>;</code>
+<code>myFunc</code><code>();</code>
+</pre></div>
+
+</figure>
+
+<p>An ECMAScript 6 module whose default export is a class looks as follows:</p>
+
+<figure>
+<div><pre><code></code><code>//------ MyClass.js ------</code>
+<code>export</code> <code>default</code> <code>class</code> <code>{}</code> <code>// no semicolon!</code>
+
+<code>//------ main2.js ------</code>
+<code>import</code> <code>MyClass</code> <code>from</code> <code>'MyClass'</code><code>;</code>
+<code>const</code> <code>inst</code> <code>=</code> <code>new</code> <code>MyClass</code><code>();</code>
+</pre></div>
+
+</figure>
+
+<p>There are two styles of default exports:</p>
+
+<ol>
+  <li>Labeling declarations</li>
+  <li>Default-exporting values directly</li>
+</ol>
+
+<h5 id="_default-export-style-1-labeling-declarations">
+<span>16.3.2.1 </span>Default export style 1: labeling declarations </h5>
+
+<p>You can prefix any function declaration (or generator function declaration) or class declaration with the keywords <code>export default</code> to make it the default export:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>default</code> <code>function</code> <code>foo</code><code>()</code> <code>{}</code> <code>// no semicolon!</code>
+<code>export</code> <code>default</code> <code>class</code> <code>Bar</code> <code>{}</code> <code>// no semicolon!</code>
+</pre></div>
+
+</figure>
+
+<p>You can also omit the name in this case. That makes default exports the only place where JavaScript has anonymous function declarations and anonymous class declarations:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>default</code> <code>function</code> <code>()</code> <code>{}</code> <code>// no semicolon!</code>
+<code>export</code> <code>default</code> <code>class</code> <code>{}</code> <code>// no semicolon!</code>
+</pre></div>
+
+</figure>
+
+<h6 id="_why-anonymous-function-declarations-and-not-anonymous-function-expressions">
+<span>16.3.2.1.1 </span>Why anonymous function declarations and not anonymous function expressions? </h6>
+
+<p>When you look at the previous two lines of code, you’d expect the operands of <code>export default</code> to be expressions. They are only declarations for reasons of consistency: operands can be named declarations, interpreting their anonymous versions as expressions would be confusing (even more so than introducing new kinds of declarations).</p>
+
+
+<p>If you want the operands to be interpreted as expressions, you need to use parentheses:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>default</code> <code>(</code><code>function</code> <code>()</code> <code>{});</code>
+<code>export</code> <code>default</code> <code>(</code><code>class</code> <code>{});</code>
+</pre></div>
+
+</figure>
+
+<h5 id="_default-export-style-2-default-exporting-values-directly">
+<span>16.3.2.2 </span>Default export style 2: default-exporting values directly </h5>
+
+<p>The values are produced via expressions:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>default</code> <code>'abc'</code><code>;</code>
+<code>export</code> <code>default</code> <code>foo</code><code>();</code>
+<code>export</code> <code>default</code> <code>/^xyz$/</code><code>;</code>
+<code>export</code> <code>default</code> <code>5</code> <code>*</code> <code>7</code><code>;</code>
+<code>export</code> <code>default</code> <code>{</code> <code>no</code><code>:</code> <code>false</code><code>,</code> <code>yes</code><code>:</code> <code>true</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<p>Each of these default exports has the following structure.</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>default</code> <code>«</code><code>expression</code><code>»</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<p>That is equivalent to:</p>
+
+<figure>
+<div><pre><code></code><code>const</code> <code>__default__</code> <code>=</code> <code>«</code><code>expression</code><code>»</code><code>;</code>
+<code>export</code> <code>{</code> <code>__default__</code> <code>as</code> <code>default</code> <code>};</code> <code>// (A)</code>
+</pre></div>
+
+</figure>
+
+<p>The statement in line A is an <em>export clause</em> (which is explained in <a href="#sec_all-exporting-styles">a later section</a>).</p>
+
+<h6 id="_why-two-default-export-styles">
+<span>16.3.2.2.1 </span>Why two default export styles? </h6>
+
+<p>The second default export style was introduced because variable declarations can’t be meaningfully turned into default exports if they declare multiple variables:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>default</code> <code>const</code> <code>foo</code> <code>=</code> <code>1</code><code>,</code> <code>bar</code> <code>=</code> <code>2</code><code>,</code> <code>baz</code> <code>=</code> <code>3</code><code>;</code> <code>// not legal JavaScript!</code>
+</pre></div>
+
+</figure>
+
+<p>Which one of the three variables <code>foo</code>, <code>bar</code> and <code>baz</code> would be the default export?</p>
+
+
+<h4 id="_imports-and-exports-must-be-at-the-top-level">
+<span>16.3.3 </span>Imports and exports must be at the top level </h4>
+
+<p>As explained in more detail later, the structure of ES6 modules is <em>static</em>, you can’t conditionally import or export things. That brings a variety of benefits.</p>
+
+<p>This restriction is enforced syntactically by only allowing imports and exports at the top level of a module:</p>
+
+<figure>
+<div><pre><code></code><code>if</code> <code>(</code><code>Math</code><code>.</code><code>random</code><code>())</code> <code>{</code>
+    <code>import</code> <code>'foo'</code><code>;</code> <code>// SyntaxError</code>
+<code>}</code>
+
+<code>// You can’t even nest `import` and `export`</code>
+<code>// inside a simple block:</code>
+<code>{</code>
+    <code>import</code> <code>'foo'</code><code>;</code> <code>// SyntaxError</code>
+<code>}</code>
+</pre></div>
+
+</figure>
+
+
+<h4 id="_imports-are-hoisted">
+<span>16.3.4 </span>Imports are hoisted </h4>
+
+<p>Module imports are hoisted (internally moved to the beginning of the current scope). Therefore, it doesn’t matter where you mention them in a module and the following code works without any problems:</p>
+
+<figure>
+<div><pre><code></code><code>foo</code><code>();</code>
+
+<code>import</code> <code>{</code> <code>foo</code> <code>}</code> <code>from</code> <code>'my_module'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+
+<h4 id="_imports-are-read-only-views-on-exports">
+<span>16.3.5 </span>Imports are read-only views on exports </h4>
+
+<p>The imports of an ES6 module are read-only views on the exported entities. That means that the connections to variables declared inside module bodies remain live, as demonstrated in the following code.</p>
+
+<figure>
+<div><pre><code></code><code>//------ lib.js ------</code>
+<code>export</code> <code>let</code> <code>counter</code> <code>=</code> <code>3</code><code>;</code>
+<code>export</code> <code>function</code> <code>incCounter</code><code>()</code> <code>{</code>
+    <code>counter</code><code>++</code><code>;</code>
+<code>}</code>
+
+<code>//------ main.js ------</code>
+<code>import</code> <code>{</code> <code>counter</code><code>,</code> <code>incCounter</code> <code>}</code> <code>from</code> <code>'./lib'</code><code>;</code>
+
+<code>// The imported value `counter` is live</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>counter</code><code>);</code> <code>// 3</code>
+<code>incCounter</code><code>();</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>counter</code><code>);</code> <code>// 4</code>
+</pre></div>
+
+</figure>
+
+<p>How that works under the hood is explained <a href="#sec_imports-as-views-on-exports">in a later section</a>.</p>
+
+<p>Imports as views have the following advantages:</p>
+
+<ul>
+  <li>They enable cyclic dependencies, even for unqualified imports (as explained in the next section).</li>
+  <li>Qualified and unqualified imports work the same way (they are both indirections).</li>
+  <li>You can split code into multiple modules and it will continue to work (as long as you don’t try to change the values of imports).</li>
+</ul>
+
+
+<h4 id="sec_cyclic-dependencies">
+<span>16.3.6 </span>Support for cyclic dependencies </h4>
+
+<p>Two modules A and B are <a href="http://en.wikipedia.org/wiki/Circular_dependency">cyclically dependent</a> on each other if both A (possibly indirectly/transitively) imports B and B imports A. If possible, cyclic dependencies should be avoided, they lead to A and B being <em>tightly coupled</em> – they can only be used and evolved together.</p>
+
+<p>Why support cyclic dependencies, then? Occasionally, you can’t get around them, which is why support for them is an important feature. <a href="#sec_rationale-cyclic-dependencies">A later section</a> has more information.</p>
+
+<p>Let’s see how CommonJS and ECMAScript 6 handle cyclic dependencies.</p>
+
+<h5 id="sec_cyclic-dependencies-commonjs">
+<span>16.3.6.1 </span>Cyclic dependencies in CommonJS </h5>
+
+<p>The following CommonJS code correctly handles two modules <code>a</code> and <code>b</code> cyclically depending on each other.</p>
+
+<figure>
+<div><pre><code></code><code>//------ a.js ------</code>
+<code>var</code> <code>b</code> <code>=</code> <code>require</code><code>(</code><code>'b'</code><code>);</code>
+<code>function</code> <code>foo</code><code>()</code> <code>{</code>
+    <code>b</code><code>.</code><code>bar</code><code>();</code>
+<code>}</code>
+<code>exports</code><code>.</code><code>foo</code> <code>=</code> <code>foo</code><code>;</code>
+
+<code>//------ b.js ------</code>
+<code>var</code> <code>a</code> <code>=</code> <code>require</code><code>(</code><code>'a'</code><code>);</code> <code>// (i)</code>
+<code>function</code> <code>bar</code><code>()</code> <code>{</code>
+    <code>if</code> <code>(</code><code>Math</code><code>.</code><code>random</code><code>())</code> <code>{</code>
+        <code>a</code><code>.</code><code>foo</code><code>();</code> <code>// (ii)</code>
+    <code>}</code>
+<code>}</code>
+<code>exports</code><code>.</code><code>bar</code> <code>=</code> <code>bar</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<p>If module <code>a</code> is imported first then, in line i, module <code>b</code> gets <code>a</code>’s exports object before the exports are added to it. Therefore, <code>b</code> cannot access <code>a.foo</code> in its top level, but that property exists once the execution of <code>a</code> is finished. If <code>bar()</code> is called afterwards then the method call in line ii works.</p>
+
+<p>As a general rule, keep in mind that with cyclic dependencies, you can’t access imports in the body of the module. That is inherent to the phenomenon and doesn’t change with ECMAScript 6 modules.</p>
+
+<p>The limitations of the CommonJS approach are:</p>
+
+<ul>
+  <li>Node.js-style single-value exports don’t work. There, you export single values instead of objects:
+    <figure>
+<div><pre><code></code>  <code>module</code><code>.</code><code>exports</code> <code>=</code> <code>function</code> <code>()</code> <code>{</code> <code>···</code> <code>};</code>
+</pre></div>
+
+    </figure>
+
+    <p>If module <code>a</code> did that then module <code>b</code>’s variable <code>a</code> would not be updated once the assignment is made. It would continue to refer to the original exports object.</p>
+  </li>
+  <li>You can’t use named exports directly. That is, module <code>b</code> can’t import <code>foo</code> like this:
+    <figure>
+<div><pre><code></code>  <code>var</code> <code>foo</code> <code>=</code> <code>require</code><code>(</code><code>'a'</code><code>).</code><code>foo</code><code>;</code>
+</pre></div>
+
+    </figure>
+
+    <p><code>foo</code> would simply be <code>undefined</code>. In other words, you have no choice but to refer to <code>foo</code> via <code>a.foo</code>.</p>
+  </li>
+</ul>
+
+<p>These limitations mean that both exporter and importers must be aware of cyclic dependencies and support them explicitly.</p>
+
+<h5 id="_cyclic-dependencies-in-ecmascript-6">
+<span>16.3.6.2 </span>Cyclic dependencies in ECMAScript 6 </h5>
+
+<p>ES6 modules support cyclic dependencies automatically. That is, they do not have the two limitations of CommonJS modules that were mentioned in the previous section: default exports work, as do unqualified named imports (lines i and iii in the following example). Therefore, you can implement modules that cyclically depend on each other as follows.</p>
+
+<figure>
+<div><pre><code></code><code>//------ a.js ------</code>
+<code>import</code> <code>{</code><code>bar</code><code>}</code> <code>from</code> <code>'b'</code><code>;</code> <code>// (i)</code>
+<code>export</code> <code>function</code> <code>foo</code><code>()</code> <code>{</code>
+    <code>bar</code><code>();</code> <code>// (ii)</code>
+<code>}</code>
+
+<code>//------ b.js ------</code>
+<code>import</code> <code>{</code><code>foo</code><code>}</code> <code>from</code> <code>'a'</code><code>;</code> <code>// (iii)</code>
+<code>export</code> <code>function</code> <code>bar</code><code>()</code> <code>{</code>
+    <code>if</code> <code>(</code><code>Math</code><code>.</code><code>random</code><code>())</code> <code>{</code>
+        <code>foo</code><code>();</code> <code>// (iv)</code>
+    <code>}</code>
+<code>}</code>
+</pre></div>
+
+</figure>
+
+<p>This code works, because, as explained in the previous section, imports are views on exports. That means that even unqualified imports (such as <code>bar</code> in line ii and <code>foo</code> in line iv) are indirections that refer to the original data. Thus, in the face of cyclic dependencies, it doesn’t matter whether you access a named export via an unqualified import or via its module: There is an indirection involved in either case and it always works.</p>
+
+
+<h3 id="sec_importing-exporting-details">
+<span>16.4 </span>Importing and exporting in detail </h3>
+
+
+<h4 id="_importing-styles">
+<span>16.4.1 </span>Importing styles </h4>
+
+<p>ECMAScript 6 provides several styles of importing<sup id="fnref-modules_1"><a href="https://exploringjs.com/es6/leanpub-endnotes.html#fn-modules_1" rel="footnote">2</a></sup>:</p>
+
+<ul>
+  <li>Default import:
+    <figure>
+<div><pre><code></code>  <code>import</code> <code>localName</code> <code>from</code> <code>'src/my_lib'</code><code>;</code>
+</pre></div>
+
+    </figure>
+  </li>
+  <li>Namespace import: imports the module as an object (with one property per named export).
+    <figure>
+<div><pre><code></code>  <code>import</code> <code>*</code> <code>as</code> <code>my_lib</code> <code>from</code> <code>'src/my_lib'</code><code>;</code>
+</pre></div>
+
+    </figure>
+  </li>
+  <li>Named imports:
+    <figure>
+<div><pre><code></code>  <code>import</code> <code>{</code> <code>name1</code><code>,</code> <code>name2</code> <code>}</code> <code>from</code> <code>'src/my_lib'</code><code>;</code>
+</pre></div>
+
+    </figure>
+
+    <p>You can rename named imports:</p>
+
+    <figure>
+<div><pre><code></code>  <code>// Renaming: import `name1` as `localName1`</code>
+  <code>import</code> <code>{</code> <code>name1</code> <code>as</code> <code>localName1</code><code>,</code> <code>name2</code> <code>}</code> <code>from</code> <code>'src/my_lib'</code><code>;</code>
+
+  <code>// Renaming: import the default export as `foo`</code>
+  <code>import</code> <code>{</code> <code>default</code> <code>as</code> <code>foo</code> <code>}</code> <code>from</code> <code>'src/my_lib'</code><code>;</code>
+</pre></div>
+
+    </figure>
+  </li>
+  <li>Empty import: only loads the module, doesn’t import anything. The first such import in a program executes the body of the module.
+    <figure>
+<div><pre><code></code>  <code>import</code> <code>'src/my_lib'</code><code>;</code>
+</pre></div>
+
+    </figure>
+  </li>
+</ul>
+
+<p>There are only two ways to combine these styles and the order in which they appear is fixed; the default export always comes first.</p>
+
+<ul>
+  <li>Combining a default import with a namespace import:
+    <figure>
+<div><pre><code></code>  <code>import</code> <code>theDefault</code><code>,</code> <code>*</code> <code>as</code> <code>my_lib</code> <code>from</code> <code>'src/my_lib'</code><code>;</code>
+</pre></div>
+
+    </figure>
+  </li>
+  <li>Combining a default import with named imports
+    <figure>
+<div><pre><code></code>  <code>import</code> <code>theDefault</code><code>,</code> <code>{</code> <code>name1</code><code>,</code> <code>name2</code> <code>}</code> <code>from</code> <code>'src/my_lib'</code><code>;</code>
+</pre></div>
+
+    </figure>
+  </li>
+</ul>
+
+
+<h4 id="_named-exporting-styles-inline-versus-clause">
+<span>16.4.2 </span>Named exporting styles: inline versus clause </h4>
+
+<p>There are <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-exports">two ways</a> in which you can export named things inside modules.</p>
+
+<p>On one hand, you can mark declarations with the keyword <code>export</code>.</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>var</code> <code>myVar1</code> <code>=</code> <code>···</code><code>;</code>
+<code>export</code> <code>let</code> <code>myVar2</code> <code>=</code> <code>···</code><code>;</code>
+<code>export</code> <code>const</code> <code>MY_CONST</code> <code>=</code> <code>···</code><code>;</code>
+
+<code>export</code> <code>function</code> <code>myFunc</code><code>()</code> <code>{</code>
+    <code>···</code>
+<code>}</code>
+<code>export</code> <code>function</code><code>*</code> <code>myGeneratorFunc</code><code>()</code> <code>{</code>
+    <code>···</code>
+<code>}</code>
+<code>export</code> <code>class</code> <code>MyClass</code> <code>{</code>
+    <code>···</code>
+<code>}</code>
+</pre></div>
+
+</figure>
+
+<p>On the other hand, you can list everything you want to export at the end of the module (which is similar in style to the revealing module pattern).</p>
+
+<figure>
+<div><pre><code></code><code>const</code> <code>MY_CONST</code> <code>=</code> <code>···</code><code>;</code>
+<code>function</code> <code>myFunc</code><code>()</code> <code>{</code>
+    <code>···</code>
+<code>}</code>
+
+<code>export</code> <code>{</code> <code>MY_CONST</code><code>,</code> <code>myFunc</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<p>You can also export things under different names:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>{</code> <code>MY_CONST</code> <code>as</code> <code>FOO</code><code>,</code> <code>myFunc</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+
+<h4 id="_re-exporting">
+<span>16.4.3 </span>Re-exporting </h4>
+
+<p>Re-exporting means adding another module’s exports to those of the current module. You can either add all of the other module’s exports:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>*</code> <code>from</code> <code>'src/other_module'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<p>Default exports are ignored<sup id="fnref-modules_2"><a href="https://exploringjs.com/es6/leanpub-endnotes.html#fn-modules_2" rel="footnote">3</a></sup> by <code>export *</code>.</p>
+
+<p>Or you can be more selective (optionally while renaming):</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>{</code> <code>foo</code><code>,</code> <code>bar</code> <code>}</code> <code>from</code> <code>'src/other_module'</code><code>;</code>
+
+<code>// Renaming: export other_module’s foo as myFoo</code>
+<code>export</code> <code>{</code> <code>foo</code> <code>as</code> <code>myFoo</code><code>,</code> <code>bar</code> <code>}</code> <code>from</code> <code>'src/other_module'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<h5 id="_making-a-re-export-the-default-export">
+<span>16.4.3.1 </span>Making a re-export the default export </h5>
+
+<p>The following statement makes the default export of another module <code>foo</code> the default export of the current module:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>{</code> <code>default</code> <code>}</code> <code>from</code> <code>'foo'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<p>The following statement makes the named export <code>myFunc</code> of module <code>foo</code> the default export of the current module:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>{</code> <code>myFunc</code> <code>as</code> <code>default</code> <code>}</code> <code>from</code> <code>'foo'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+
+<h4 id="sec_all-exporting-styles">
+<span>16.4.4 </span>All exporting styles </h4>
+
+<p>ECMAScript 6 provides several styles of exporting<sup id="fnref-modules_3"><a href="https://exploringjs.com/es6/leanpub-endnotes.html#fn-modules_3" rel="footnote">4</a></sup>:</p>
+
+<ul>
+  <li>Re-exporting:
+    <ul>
+      <li>Re-export everything (except for the default export):
+        <figure>
+<div><pre><code></code>  <code>export</code> <code>*</code> <code>from</code> <code>'src/other_module'</code><code>;</code>
+</pre></div>
+
+        </figure>
+      </li>
+      <li>Re-export via a clause:
+        <figure>
+<div><pre><code></code>  <code>export</code> <code>{</code> <code>foo</code> <code>as</code> <code>myFoo</code><code>,</code> <code>bar</code> <code>}</code> <code>from</code> <code>'src/other_module'</code><code>;</code>
+
+  <code>export</code> <code>{</code> <code>default</code> <code>}</code> <code>from</code> <code>'src/other_module'</code><code>;</code>
+  <code>export</code> <code>{</code> <code>default</code> <code>as</code> <code>foo</code> <code>}</code> <code>from</code> <code>'src/other_module'</code><code>;</code>
+  <code>export</code> <code>{</code> <code>foo</code> <code>as</code> <code>default</code> <code>}</code> <code>from</code> <code>'src/other_module'</code><code>;</code>
+</pre></div>
+
+        </figure>
+      </li>
+    </ul>
+  </li>
+  <li>Named exporting via a clause:
+    <figure>
+<div><pre><code></code>  <code>export</code> <code>{</code> <code>MY_CONST</code> <code>as</code> <code>FOO</code><code>,</code> <code>myFunc</code> <code>};</code>
+  <code>export</code> <code>{</code> <code>foo</code> <code>as</code> <code>default</code> <code>};</code>
+</pre></div>
+
+    </figure>
+  </li>
+  <li>Inline named exports:
+    <ul>
+      <li>Variable declarations:
+        <figure>
+<div><pre><code></code>  <code>export</code> <code>var</code> <code>foo</code><code>;</code>
+  <code>export</code> <code>let</code> <code>foo</code><code>;</code>
+  <code>export</code> <code>const</code> <code>foo</code><code>;</code>
+</pre></div>
+
+        </figure>
+      </li>
+      <li>Function declarations:
+        <figure>
+<div><pre><code></code>  <code>export</code> <code>function</code> <code>myFunc</code><code>()</code> <code>{}</code>
+  <code>export</code> <code>function</code><code>*</code> <code>myGenFunc</code><code>()</code> <code>{}</code>
+</pre></div>
+
+        </figure>
+      </li>
+      <li>Class declarations:
+        <figure>
+<div><pre><code></code>  <code>export</code> <code>class</code> <code>MyClass</code> <code>{}</code>
+</pre></div>
+
+        </figure>
+      </li>
+    </ul>
+  </li>
+  <li>Default export:
+    <ul>
+      <li>Function declarations (can be anonymous here):
+        <figure>
+<div><pre><code></code>  <code>export</code> <code>default</code> <code>function</code> <code>myFunc</code><code>()</code> <code>{}</code>
+  <code>export</code> <code>default</code> <code>function</code> <code>()</code> <code>{}</code>
+
+  <code>export</code> <code>default</code> <code>function</code><code>*</code> <code>myGenFunc</code><code>()</code> <code>{}</code>
+  <code>export</code> <code>default</code> <code>function</code><code>*</code> <code>()</code> <code>{}</code>
+</pre></div>
+
+        </figure>
+      </li>
+      <li>Class declarations (can be anonymous here):
+        <figure>
+<div><pre><code></code>  <code>export</code> <code>default</code> <code>class</code> <code>MyClass</code> <code>{}</code>
+  <code>export</code> <code>default</code> <code>class</code> <code>{}</code>
+</pre></div>
+
+        </figure>
+      </li>
+      <li>Expressions: export values. Note the semicolons at the end.
+        <figure>
+<div><pre><code></code>  <code>export</code> <code>default</code> <code>foo</code><code>;</code>
+  <code>export</code> <code>default</code> <code>'Hello world!'</code><code>;</code>
+  <code>export</code> <code>default</code> <code>3</code> <code>*</code> <code>7</code><code>;</code>
+  <code>export</code> <code>default</code> <code>(</code><code>function</code> <code>()</code> <code>{});</code>
+</pre></div>
+
+        </figure>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+<h4 id="sec_mixing-named-and-default-exports">
+<span>16.4.5 </span>Having both named exports and a default export in a module </h4>
+
+<p>The following pattern is surprisingly common in JavaScript: A library is a single function, but additional services are provided via properties of that function. Examples include jQuery and Underscore.js. The following is a sketch of Underscore as a CommonJS module:</p>
+
+<figure>
+<div><pre><code></code><code>//------ underscore.js ------</code>
+<code>var</code> <code>_</code> <code>=</code> <code>function</code> <code>(</code><code>obj</code><code>)</code> <code>{</code>
+    <code>···</code>
+<code>};</code>
+<code>var</code> <code>each</code> <code>=</code> <code>_</code><code>.</code><code>each</code> <code>=</code> <code>_</code><code>.</code><code>forEach</code> <code>=</code>
+    <code>function</code> <code>(</code><code>obj</code><code>,</code> <code>iterator</code><code>,</code> <code>context</code><code>)</code> <code>{</code>
+        <code>···</code>
+    <code>};</code>
+<code>module</code><code>.</code><code>exports</code> <code>=</code> <code>_</code><code>;</code>
+
+<code>//------ main.js ------</code>
+<code>var</code> <code>_</code> <code>=</code> <code>require</code><code>(</code><code>'underscore'</code><code>);</code>
+<code>var</code> <code>each</code> <code>=</code> <code>_</code><code>.</code><code>each</code><code>;</code>
+<code>···</code>
+</pre></div>
+
+</figure>
+
+<p>With ES6 glasses, the function <code>_</code> is the default export, while <code>each</code> and <code>forEach</code> are named exports. As it turns out, you can actually have named exports and a default export at the same time. As an example, the previous CommonJS module, rewritten as an ES6 module, looks like this:</p>
+
+<figure>
+<div><pre><code></code><code>//------ underscore.js ------</code>
+<code>export</code> <code>default</code> <code>function</code> <code>(</code><code>obj</code><code>)</code> <code>{</code>
+    <code>···</code>
+<code>}</code>
+<code>export</code> <code>function</code> <code>each</code><code>(</code><code>obj</code><code>,</code> <code>iterator</code><code>,</code> <code>context</code><code>)</code> <code>{</code>
+    <code>···</code>
+<code>}</code>
+<code>export</code> <code>{</code> <code>each</code> <code>as</code> <code>forEach</code> <code>};</code>
+
+<code>//------ main.js ------</code>
+<code>import</code> <code>_</code><code>,</code> <code>{</code> <code>each</code> <code>}</code> <code>from</code> <code>'underscore'</code><code>;</code>
+<code>···</code>
+</pre></div>
+
+</figure>
+
+<p>Note that the CommonJS version and the ECMAScript 6 version are only roughly similar. The latter has a flat structure, whereas the former is nested.</p>
+
+<h5 id="_recommendation-avoid-mixing-default-exports-and-named-exports">
+<span>16.4.5.1 </span>Recommendation: avoid mixing default exports and named exports </h5>
+
+<p>I generally recommend to keep the two kinds of exporting separate: per module, either only have a default export or only have named exports.</p>
+
+<p>However, that is not a very strong recommendation; it occasionally may make sense to mix the two kinds. One example is a module that default-exports an entity. For unit tests, one could additionally make some of the internals available via named exports.</p>
+
+<h5 id="_the-default-export-is-just-another-named-export">
+<span>16.4.5.2 </span>The default export is just another named export </h5>
+
+<p>The default export is actually just a named export with the special name <code>default</code>. That is, the following two statements are equivalent:</p>
+
+<figure>
+<div><pre><code></code><code>import</code> <code>{</code> <code>default</code> <code>as</code> <code>foo</code> <code>}</code> <code>from</code> <code>'lib'</code><code>;</code>
+<code>import</code> <code>foo</code> <code>from</code> <code>'lib'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<p>Similarly, the following two modules have the same default export:</p>
+
+<figure>
+<div><pre><code></code><code>//------ module1.js ------</code>
+<code>export</code> <code>default</code> <code>function</code> <code>foo</code><code>()</code> <code>{}</code> <code>// function declaration!</code>
+
+<code>//------ module2.js ------</code>
+<code>function</code> <code>foo</code><code>()</code> <code>{}</code>
+<code>export</code> <code>{</code> <code>foo</code> <code>as</code> <code>default</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<h5 id="_default-ok-as-export-name-but-not-as-variable-name">
+<span>16.4.5.3 </span><code>default</code>: OK as export name, but not as variable name </h5>
+
+<p>You can’t use reserved words (such as <code>default</code> and <code>new</code>) as variable names, but you can use them as names for exports (you can also use them as property names in ECMAScript 5). If you want to directly import such named exports, you have to rename them to proper variables names.</p>
+
+<p>That means that <code>default</code> can only appear on the left-hand side of a renaming import:</p>
+
+<figure>
+<div><pre><code></code><code>import</code> <code>{</code> <code>default</code> <code>as</code> <code>foo</code> <code>}</code> <code>from</code> <code>'some_module'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<p>And it can only appear on the right-hand side of a renaming export:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>{</code> <code>foo</code> <code>as</code> <code>default</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<p>In re-exporting, both sides of the <code>as</code> are export names:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>{</code> <code>myFunc</code> <code>as</code> <code>default</code> <code>}</code> <code>from</code> <code>'foo'</code><code>;</code>
+<code>export</code> <code>{</code> <code>default</code> <code>as</code> <code>otherFunc</code> <code>}</code> <code>from</code> <code>'foo'</code><code>;</code>
+
+<code>// The following two statements are equivalent:</code>
+<code>export</code> <code>{</code> <code>default</code> <code>}</code> <code>from</code> <code>'foo'</code><code>;</code>
+<code>export</code> <code>{</code> <code>default</code> <code>as</code> <code>default</code> <code>}</code> <code>from</code> <code>'foo'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+
+<h3 id="sec_module-loader-api">
+<span>16.5 </span>The ECMAScript 6 module loader API </h3>
+
+<p>In addition to the declarative syntax for working with modules, there is also a programmatic API. It allows you to:</p>
+
+<ul>
+  <li>Programmatically work with modules</li>
+  <li>Configure module loading</li>
+</ul>
+
+
+
+
+
+<h4 id="_loaders">
+<span>16.5.1 </span>Loaders </h4>
+
+<p>Loaders handle resolving <em>module specifiers</em> (the string IDs at the end of <code>import-from</code>), loading modules, etc. Their constructor is <code>Reflect.Loader</code>. Each platform keeps a default instance in the global variable <code>System</code> (the <em>system loader</em>), which implements its specific style of module loading.</p>
+
+<h4 id="_loader-method-importing-modules">
+<span>16.5.2 </span>Loader method: importing modules </h4>
+
+<p>You can programmatically import a module, via an API based on <a href="https://exploringjs.com/es6/ch_promises.html#ch_promises">Promises</a>:</p>
+
+<figure>
+<div><pre><code></code><code>System</code><code>.</code><code>import</code><code>(</code><code>'some_module'</code><code>)</code>
+<code>.</code><code>then</code><code>(</code><code>some_module</code> <code>=&gt;</code> <code>{</code>
+    <code>// Use some_module</code>
+<code>})</code>
+<code>.</code><code>catch</code><code>(</code><code>error</code> <code>=&gt;</code> <code>{</code>
+    <code>···</code>
+<code>});</code>
+</pre></div>
+
+</figure>
+
+<p><code>System.import()</code> enables you to:</p>
+
+<ul>
+  <li>Use modules inside <code>&lt;script&gt;</code> elements (where module syntax is not supported, consult <a href="#sec_modules-vs-scripts">the section on modules versus scripts</a> for details).</li>
+  <li>Load modules conditionally.</li>
+</ul>
+
+<p><code>System.import()</code> retrieves a single module, you can use <code>Promise.all()</code> to import several modules:</p>
+
+<figure>
+<div><pre><code></code><code>Promise</code><code>.</code><code>all</code><code>(</code>
+    <code>[</code><code>'module1'</code><code>,</code> <code>'module2'</code><code>,</code> <code>'module3'</code><code>]</code>
+    <code>.</code><code>map</code><code>(</code><code>x</code> <code>=&gt;</code> <code>System</code><code>.</code><code>import</code><code>(</code><code>x</code><code>)))</code>
+<code>.</code><code>then</code><code>(([</code><code>module1</code><code>,</code> <code>module2</code><code>,</code> <code>module3</code><code>])</code> <code>=&gt;</code> <code>{</code>
+    <code>// Use module1, module2, module3</code>
+<code>});</code>
+</pre></div>
+
+</figure>
+
+<h4 id="_more-loader-methods">
+<span>16.5.3 </span>More loader methods </h4>
+
+<p>Loaders have more methods. Three important ones are:</p>
+
+<ul>
+  <li>
+<code>System.module(source, options?)</code><br>
+evaluates the JavaScript code in <code>source</code> to a module (which is delivered asynchronously via a Promise).</li>
+  <li>
+<code>System.set(name, module)</code><br>
+is for registering a module (e.g. one you have created via <code>System.module()</code>).</li>
+  <li>
+<code>System.define(name, source, options?)</code><br>
+both evaluates the module code in <code>source</code> and registers the result.</li>
+</ul>
+
+<h4 id="_configuring-module-loading">
+<span>16.5.4 </span>Configuring module loading </h4>
+
+<p>The module loader API will have various hooks for configuring the loading process. Use cases include:</p>
+
+<ol>
+  <li>Lint modules on import (e.g. via JSLint or JSHint).</li>
+  <li>Automatically translate modules on import (they could contain CoffeeScript or TypeScript code).</li>
+  <li>Use legacy modules (AMD, Node.js).</li>
+</ol>
+
+<p>Configurable module loading is an area where Node.js and CommonJS are limited.</p>
+
+
+<h3 id="sec_modules-in-browsers">
+<span>16.6 </span>Using ES6 modules in browsers </h3>
+
+<p>Let’s look at how ES6 modules are supported in browsers.</p>
+
+
+
+
+<h4 id="sec_modules-vs-scripts">
+<span>16.6.1 </span>Browsers: asynchronous modules versus synchronous scripts </h4>
+
+<p>In browsers, there are two different kinds of entities: scripts and modules. They have slightly different syntax and work differently.</p>
+
+<p>This is an overview of the differences, details are explained later:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>Scripts</th>
+      <th>Modules</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>HTML element</td>
+      <td><code>&lt;script&gt;</code></td>
+      <td><code>&lt;script type="module"&gt;</code></td>
+    </tr>
+    <tr>
+      <td>Default mode</td>
+      <td>non-strict</td>
+      <td>strict</td>
+    </tr>
+    <tr>
+      <td>Top-level variables are</td>
+      <td>global</td>
+      <td>local to module</td>
+    </tr>
+    <tr>
+      <td>Value of <code>this</code> at top level</td>
+      <td><code>window</code></td>
+      <td><code>undefined</code></td>
+    </tr>
+    <tr>
+      <td>Executed</td>
+      <td>synchronously</td>
+      <td>asynchronously</td>
+    </tr>
+    <tr>
+      <td>Declarative imports (<code>import</code> statement)</td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>Programmatic imports (Promise-based API)</td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>File extension</td>
+      <td><code>.js</code></td>
+      <td><code>.js</code></td>
+    </tr>
+  </tbody>
+
+</table>
+
+
+<h5 id="_scripts">
+<span>16.6.1.1 </span>Scripts </h5>
+
+<p>Scripts are the traditional browser way to embed JavaScript and to refer to external JavaScript files. Scripts have an <a href="http://en.wikipedia.org/wiki/Internet_media_type">internet media type</a> that is used as:</p>
+
+<ul>
+  <li>The content type of JavaScript files delivered via a web server.</li>
+  <li>The value of the attribute <code>type</code> of <code>&lt;script&gt;</code> elements. Note that for HTML5, the recommendation is to omit the <code>type</code> attribute in <code>&lt;script&gt;</code> elements if they contain or refer to JavaScript.</li>
+</ul>
+
+<p>The following are the most important values:</p>
+
+<ul>
+  <li>
+<code>text/javascript</code>: is a legacy value and used as the default if you omit the <code>type</code> attribute in a script tag. It is <a href="http://stackoverflow.com/questions/359895/what-are-the-most-likely-causes-of-javascript-errors-in-ie8/703590#703590">the safest choice</a> for Internet Explorer 8 and earlier.</li>
+  <li>
+<code>application/javascript</code>: is <a href="http://tools.ietf.org/html/rfc4329#section-7">recommended</a> for current browsers.</li>
+</ul>
+
+<p>Scripts are normally loaded or executed synchronously. The JavaScript thread stops until the code has been loaded or executed.</p>
+
+<h5 id="_modules">
+<span>16.6.1.2 </span>Modules </h5>
+
+<p>To be in line with JavaScript’s usual run-to-completion semantics, the body of a module must be executed without interruption. That leaves two options for importing modules:</p>
+
+<ol>
+  <li>Load modules synchronously, while the body is executed. That is what Node.js does.</li>
+  <li>Load all modules asynchronously, before the body is executed. That is how AMD modules are handled. It is the best option for browsers, because modules are loaded over the internet and execution doesn’t have to pause while they are. As an added benefit, this approach allows one to load multiple modules in parallel.</li>
+</ol>
+
+<p>ECMAScript 6 gives you the best of both worlds: The synchronous syntax of Node.js plus the asynchronous loading of AMD. To make both possible, ES6 modules are syntactically less flexible than Node.js modules: Imports and exports must happen at the top level. That means that they can’t be conditional, either. This restriction allows an ES6 module loader to analyze statically what modules are imported by a module and load them before executing its body.</p>
+
+<p>The synchronous nature of scripts prevents them from becoming modules. Scripts cannot even import modules declaratively (you have to use the programmatic module loader API if you want to do so).</p>
+
+<p>Modules can be used from browsers via a new variant of the <code>&lt;script&gt;</code> element that is completely asynchronous:</p>
+
+<figure>
+<div><pre><code></code><code>&lt;</code><code>script</code> <code>type</code><code>=</code><code>"module"</code><code>&gt;</code>
+    <code>import</code> <code>$</code> <code>from</code> <code>'lib/jquery'</code><code>;</code>
+    <code>var</code> <code>x</code> <code>=</code> <code>123</code><code>;</code>
+
+    <code>// The current scope is not global</code>
+    <code>console</code><code>.</code><code>log</code><code>(</code><code>'$'</code> <code>in</code> <code>window</code><code>);</code> <code>// false</code>
+    <code>console</code><code>.</code><code>log</code><code>(</code><code>'x'</code> <code>in</code> <code>window</code><code>);</code> <code>// false</code>
+
+    <code>// `this` is undefined</code>
+    <code>console</code><code>.</code><code>log</code><code>(</code><code>this</code> <code>===</code> <code>undefined</code><code>);</code> <code>// true</code>
+<code>&lt;/</code><code>script</code><code>&gt;</code>
+</pre></div>
+
+</figure>
+
+<p>As you can see, the element has its own scope and variables “inside” it are local to that scope. Note that module code is implicitly in strict mode. This is great news – no more <code>'use strict'</code>.</p>
+
+<p>Similar to normal <code>&lt;script&gt;</code> elements, <code>&lt;script type="module"&gt;</code> can also be used to load external modules. For example, the following tag starts a web application via a <code>main</code> module (the attribute name <code>import</code> is my invention, it isn’t yet clear what name will be used).</p>
+
+<figure>
+<div><pre><code></code><code>&lt;</code><code>script</code> <code>type</code><code>=</code><code>"module"</code> <code>import</code><code>=</code><code>"impl/main"</code><code>&gt;&lt;/</code><code>script</code><code>&gt;</code>
+</pre></div>
+
+</figure>
+
+<p>The advantage of supporting modules in HTML via a custom <code>&lt;script&gt;</code> type is that it is easy to bring that support to older engines via a polyfill (a library). There may or may not eventually be a dedicated element for modules (e.g. <code>&lt;module&gt;</code>).</p>
+
+<h5 id="_module-or-script--a-matter-of-context">
+<span>16.6.1.3 </span>Module or script – a matter of context </h5>
+
+<p>Whether a file is a module or a script is only determined by how it is imported or loaded. Most modules have either imports or exports and can thus be detected. But if a module has neither then it is indistinguishable from a script. For example:</p>
+
+<figure>
+<div><pre><code></code><code>var</code> <code>x</code> <code>=</code> <code>123</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<p>The semantics of this piece of code differs depending on whether it is interpreted as a module or as a script:</p>
+
+<ul>
+  <li>As a module, the variable <code>x</code> is created in module scope.</li>
+  <li>As a script, the variable <code>x</code> becomes a global variable and a property of the global object (<code>window</code> in browsers).</li>
+</ul>
+
+<p>More realistic example is a module that installs something, e.g. a polyfill in global variables or a global event listener. Such a module neither imports nor exports anything and is activated via an empty import:</p>
+
+<figure>
+<div><pre><code></code><code>import</code> <code>'./my_module'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+
+
+
+<h3 id="sec_imports-as-views-on-exports">
+<span>16.7 </span>Details: imports as views on exports </h3>
+
+
+
+<p>Imports work differently in CommonJS and ES6:</p>
+
+<ul>
+  <li>In CommonJS, imports are copies of exported values.</li>
+  <li>In ES6, imports are live read-only views on exported values.</li>
+</ul>
+
+<p>The following sections explain what that means.</p>
+
+<h4 id="_in-commonjs-imports-are-copies-of-exported-values">
+<span>16.7.1 </span>In CommonJS, imports are copies of exported values </h4>
+
+<p>With CommonJS (Node.js) modules, things work in relatively familiar ways.</p>
+
+<p>If you import a value into a variable, the value is copied twice: once when it is exported (line A) and once it is imported (line B).</p>
+
+<figure>
+<div><pre><code></code><code>//------ lib.js ------</code>
+<code>var</code> <code>counter</code> <code>=</code> <code>3</code><code>;</code>
+<code>function</code> <code>incCounter</code><code>()</code> <code>{</code>
+    <code>counter</code><code>++</code><code>;</code>
+<code>}</code>
+<code>module</code><code>.</code><code>exports</code> <code>=</code> <code>{</code>
+    <code>counter</code><code>:</code> <code>counter</code><code>,</code> <code>// (A)</code>
+    <code>incCounter</code><code>:</code> <code>incCounter</code><code>,</code>
+<code>};</code>
+
+<code>//------ main1.js ------</code>
+<code>var</code> <code>counter</code> <code>=</code> <code>require</code><code>(</code><code>'./lib'</code><code>).</code><code>counter</code><code>;</code> <code>// (B)</code>
+<code>var</code> <code>incCounter</code> <code>=</code> <code>require</code><code>(</code><code>'./lib'</code><code>).</code><code>incCounter</code><code>;</code>
+
+<code>// The imported value is a (disconnected) copy of a copy</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>counter</code><code>);</code> <code>// 3</code>
+<code>incCounter</code><code>();</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>counter</code><code>);</code> <code>// 3</code>
+
+<code>// The imported value can be changed</code>
+<code>counter</code><code>++</code><code>;</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>counter</code><code>);</code> <code>// 4</code>
+</pre></div>
+
+</figure>
+
+<p>If you access the value via the exports object, it is still copied once, on export:</p>
+
+<figure>
+<div><pre><code></code><code>//------ main2.js ------</code>
+<code>var</code> <code>lib</code> <code>=</code> <code>require</code><code>(</code><code>'./lib'</code><code>);</code>
+
+<code>// The imported value is a (disconnected) copy</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>lib</code><code>.</code><code>counter</code><code>);</code> <code>// 3</code>
+<code>lib</code><code>.</code><code>incCounter</code><code>();</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>lib</code><code>.</code><code>counter</code><code>);</code> <code>// 3</code>
+
+<code>// The imported value can be changed</code>
+<code>lib</code><code>.</code><code>counter</code><code>++</code><code>;</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>lib</code><code>.</code><code>counter</code><code>);</code> <code>// 4</code>
+</pre></div>
+
+</figure>
+
+<h4 id="_in-es6-imports-are-live-read-only-views-on-exported-values">
+<span>16.7.2 </span>In ES6, imports are live read-only views on exported values </h4>
+
+<p>In contrast to CommonJS, imports are views on exported values. In other words, every import is a live connection to the exported data. Imports are read-only:</p>
+
+<ul>
+  <li>Unqualified imports (<code>import x from 'foo'</code>) are like <code>const</code>-declared variables.</li>
+  <li>The properties of a module object <code>foo</code> (<code>import * as foo from 'foo'</code>) are like the properties of a <a href="http://speakingjs.com/es5/ch17.html#freezing_objects">frozen object</a>.</li>
+</ul>
+
+<p>The following code demonstrates how imports are like views:</p>
+
+<figure>
+<div><pre><code></code><code>//------ lib.js ------</code>
+<code>export</code> <code>let</code> <code>counter</code> <code>=</code> <code>3</code><code>;</code>
+<code>export</code> <code>function</code> <code>incCounter</code><code>()</code> <code>{</code>
+    <code>counter</code><code>++</code><code>;</code>
+<code>}</code>
+
+<code>//------ main1.js ------</code>
+<code>import</code> <code>{</code> <code>counter</code><code>,</code> <code>incCounter</code> <code>}</code> <code>from</code> <code>'./lib'</code><code>;</code>
+
+<code>// The imported value `counter` is live</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>counter</code><code>);</code> <code>// 3</code>
+<code>incCounter</code><code>();</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>counter</code><code>);</code> <code>// 4</code>
+
+<code>// The imported value can’t be changed</code>
+<code>counter</code><code>++</code><code>;</code> <code>// TypeError</code>
+</pre></div>
+
+</figure>
+
+<p>If you import the module object via the asterisk (<code>*</code>), you get the same results:</p>
+
+<figure>
+<div><pre><code></code><code>//------ main2.js ------</code>
+<code>import</code> <code>*</code> <code>as</code> <code>lib</code> <code>from</code> <code>'./lib'</code><code>;</code>
+
+<code>// The imported value `counter` is live</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>lib</code><code>.</code><code>counter</code><code>);</code> <code>// 3</code>
+<code>lib</code><code>.</code><code>incCounter</code><code>();</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>lib</code><code>.</code><code>counter</code><code>);</code> <code>// 4</code>
+
+<code>// The imported value can’t be changed</code>
+<code>lib</code><code>.</code><code>counter</code><code>++</code><code>;</code> <code>// TypeError</code>
+</pre></div>
+
+</figure>
+
+<p>Note that while you can’t change the values of imports, you can change the objects that they are referring to. For example:</p>
+
+<figure>
+<div><pre><code></code><code>//------ lib.js ------</code>
+<code>export</code> <code>let</code> <code>obj</code> <code>=</code> <code>{};</code>
+
+<code>//------ main.js ------</code>
+<code>import</code> <code>{</code> <code>obj</code> <code>}</code> <code>from</code> <code>'./lib'</code><code>;</code>
+
+<code>obj</code><code>.</code><code>prop</code> <code>=</code> <code>123</code><code>;</code> <code>// OK</code>
+<code>obj</code> <code>=</code> <code>{};</code> <code>// TypeError</code>
+</pre></div>
+
+</figure>
+
+<h5 id="_why-a-new-approach-to-importing">
+<span>16.7.2.1 </span>Why a new approach to importing? </h5>
+
+<p>Why introduce such a relatively complicated mechanism for importing that deviates from established practices?</p>
+
+<ul>
+  <li>Cyclic dependencies: The main advantage is that it supports <a href="#sec_cyclic-dependencies">cyclic dependencies</a> even for unqualified imports.</li>
+  <li>Qualified and unqualified imports work the same. In CommonJS, they don’t: a qualified import provides direct access to a property of a module’s export object, an unqualified import is a copy of it.</li>
+  <li>You can split code into multiple modules and it will continue to work (as long as you don’t try to change the values of imports).</li>
+  <li>On the flip side, <em>module folding</em>, combining multiple modules into a single module becomes simpler, too.</li>
+</ul>
+
+<p>In my experience, ES6 imports just work, you rarely have to think about what’s going on under the hood.</p>
+
+
+<h4 id="_implementing-views">
+<span>16.7.3 </span>Implementing views </h4>
+
+<p>How do imports work as views of exports under the hood? Exports are managed via the data structure <em>export entry</em>. All export entries (except those for re-exports) have the following two names:</p>
+
+<ul>
+  <li>Local name: is the name under which the export is stored inside the module.</li>
+  <li>Export name: is the name that importing modules need to use to access the export.</li>
+</ul>
+
+<p>After you have imported an entity, that entity is always accessed via a pointer that has the two components <em>module</em> and <em>local name</em>. In other words, that pointer refers to a <em>binding</em> (the storage space of a variable) inside a module.</p>
+
+<p>Let’s examine the export names and local names created by various kinds of exporting. The following table (<a href="http://www.ecma-international.org/ecma-262/6.0/#table-42">adapted from the ES6 spec</a>) gives an overview, subsequent sections have more details.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Statement</th>
+      <th>Local name</th>
+      <th>Export name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>export {v};</code></td>
+      <td><code>'v'</code></td>
+      <td><code>'v'</code></td>
+    </tr>
+    <tr>
+      <td><code>export {v as x};</code></td>
+      <td><code>'v'</code></td>
+      <td><code>'x'</code></td>
+    </tr>
+    <tr>
+      <td><code>export const v = 123;</code></td>
+      <td><code>'v'</code></td>
+      <td><code>'v'</code></td>
+    </tr>
+    <tr>
+      <td><code>export function f() {}</code></td>
+      <td><code>'f'</code></td>
+      <td><code>'f'</code></td>
+    </tr>
+    <tr>
+      <td><code>export default function f() {}</code></td>
+      <td><code>'f'</code></td>
+      <td><code>'default'</code></td>
+    </tr>
+    <tr>
+      <td><code>export default function () {}</code></td>
+      <td><code>'*default*'</code></td>
+      <td><code>'default'</code></td>
+    </tr>
+    <tr>
+      <td><code>export default 123;</code></td>
+      <td><code>'*default*'</code></td>
+      <td><code>'default'</code></td>
+    </tr>
+  </tbody>
+
+</table>
+
+<h5 id="_export-clause">
+<span>16.7.3.1 </span>Export clause </h5>
+
+<figure>
+<div><pre><code></code><code>function</code> <code>foo</code><code>()</code> <code>{}</code>
+<code>export</code> <code>{</code> <code>foo</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<ul>
+  <li>Local name: <code>foo</code>
+</li>
+  <li>Export name: <code>foo</code>
+</li>
+</ul>
+
+<figure>
+<div><pre><code></code><code>function</code> <code>foo</code><code>()</code> <code>{}</code>
+<code>export</code> <code>{</code> <code>foo</code> <code>as</code> <code>bar</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<ul>
+  <li>Local name: <code>foo</code>
+</li>
+  <li>Export name: <code>bar</code>
+</li>
+</ul>
+
+<h5 id="_inline-exports">
+<span>16.7.3.2 </span>Inline exports </h5>
+
+<p>This is an inline export:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>function</code> <code>foo</code><code>()</code> <code>{}</code>
+</pre></div>
+
+</figure>
+
+<p>It is equivalent to the following code:</p>
+
+<figure>
+<div><pre><code></code><code>function</code> <code>foo</code><code>()</code> <code>{}</code>
+<code>export</code> <code>{</code> <code>foo</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<p>Therefore, we have the following names:</p>
+
+<ul>
+  <li>Local name: <code>foo</code>
+</li>
+  <li>Export name: <code>foo</code>
+</li>
+</ul>
+
+<h5 id="_default-exports-1">
+<span>16.7.3.3 </span>Default exports </h5>
+
+<p>There are two kinds of default exports:</p>
+
+<ul>
+  <li>Default exports of <em>hoistable declarations</em> (function declarations, generator function declarations) and class declarations are similar to normal inline exports in that named local entities are created and tagged.</li>
+  <li>All other default exports are about exporting the results of expressions.</li>
+</ul>
+
+<h6 id="_default-exporting-expressions">
+<span>16.7.3.3.1 </span>Default-exporting expressions </h6>
+
+<p>The following code default-exports the result of the expression <code>123</code>:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>default</code> <code>123</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<p>It is equivalent to:</p>
+
+<figure>
+<div><pre><code></code><code>const</code> <code>*</code><code>default</code><code>*</code> <code>=</code> <code>123</code><code>;</code> <code>// *not* legal JavaScript</code>
+<code>export</code> <code>{</code> <code>*</code><code>default</code><code>*</code> <code>as</code> <code>default</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<p>If you default-export an expression, you get:</p>
+
+<ul>
+  <li>Local name: <code>*default*</code>
+</li>
+  <li>Export name: <code>default</code>
+</li>
+</ul>
+
+<p>The local name was chosen so that it wouldn’t clash with any other local name.</p>
+
+<p>Note that a default export still leads to a binding being created. But, due to <code>*default*</code> not being a legal identifier, you can’t access that binding from inside the module.</p>
+
+<h6 id="_default-exporting-hoistable-declarations-and-class-declarations">
+<span>16.7.3.3.2 </span>Default-exporting hoistable declarations and class declarations </h6>
+
+<p>The following code default-exports a function declaration:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>default</code> <code>function</code> <code>foo</code><code>()</code> <code>{}</code>
+</pre></div>
+
+</figure>
+
+<p>It is equivalent to:</p>
+
+<figure>
+<div><pre><code></code><code>function</code> <code>foo</code><code>()</code> <code>{}</code>
+<code>export</code> <code>{</code> <code>foo</code> <code>as</code> <code>default</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<p>The names are:</p>
+
+<ul>
+  <li>Local name: <code>foo</code>
+</li>
+  <li>Export name: <code>default</code>
+</li>
+</ul>
+
+<p>That means that you can change the value of the default export from within the module, by assigning a different value to <code>foo</code>.</p>
+
+<p>(Only) for default exports, you can also omit the name of a function declaration:</p>
+
+<figure>
+<div><pre><code></code><code>export</code> <code>default</code> <code>function</code> <code>()</code> <code>{}</code>
+</pre></div>
+
+</figure>
+
+<p>That is equivalent to:</p>
+
+<figure>
+<div><pre><code></code><code>function</code> <code>*</code><code>default</code><code>*</code><code>()</code> <code>{}</code> <code>// *not* legal JavaScript</code>
+<code>export</code> <code>{</code> <code>*</code><code>default</code><code>*</code> <code>as</code> <code>default</code> <code>};</code>
+</pre></div>
+
+</figure>
+
+<p>The names are:</p>
+
+<ul>
+  <li>Local name: <code>*default*</code>
+</li>
+  <li>Export name: <code>default</code>
+</li>
+</ul>
+
+<p>Default-exporting generator declarations and class declarations works similarly to default-exporting function declarations.</p>
+
+
+<h4 id="_imports-as-views-in-the-spec">
+<span>16.7.4 </span>Imports as views in the spec </h4>
+
+<p>This section gives pointers into the ECMAScript 2015 (ES6) language specification.</p>
+
+<p>Managing imports:</p>
+
+<ul>
+  <li>
+<a href="http://www.ecma-international.org/ecma-262/6.0/#sec-createimportbinding">CreateImportBinding()</a> creates local bindings for imports.</li>
+  <li>
+<a href="http://www.ecma-international.org/ecma-262/6.0/#sec-module-environment-records-getbindingvalue-n-s">GetBindingValue()</a> is used to access them.</li>
+  <li>
+<a href="http://www.ecma-international.org/ecma-262/6.0/#sec-moduledeclarationinstantiation">ModuleDeclarationInstantiation()</a> sets up the environment of a module (compare: <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-functiondeclarationinstantiation">FunctionDeclarationInstantiation()</a>, <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-blockdeclarationinstantiation">BlockDeclarationInstantiation()</a>).</li>
+</ul>
+
+<p>The export names and local names created by the various kinds of exports are shown in <a href="http://www.ecma-international.org/ecma-262/6.0/#table-42">table 42</a> in the section “<a href="http://www.ecma-international.org/ecma-262/6.0/#sec-source-text-module-records">Source Text Module Records</a>”. The section “<a href="http://www.ecma-international.org/ecma-262/6.0/#sec-exports-static-semantics-exportentries">Static Semantics: ExportEntries</a>” has more details. You can see that export entries are set up statically (before evaluating the module), evaluating export statements is described in the section “<a href="http://www.ecma-international.org/ecma-262/6.0/#sec-exports-runtime-semantics-evaluation">Runtime Semantics: Evaluation</a>”.</p>
+
+
+<h3 id="sec_design-goals-es6-modules">
+<span>16.8 </span>Design goals for ES6 modules </h3>
+
+<p>If you want to make sense of ECMAScript 6 modules, it helps to understand what goals influenced their design. The major ones are:</p>
+
+<ul>
+  <li>Default exports are favored</li>
+  <li>Static module structure</li>
+  <li>Support for both synchronous and asynchronous loading</li>
+  <li>Support for cyclic dependencies between modules</li>
+</ul>
+
+<p>The following subsections explain these goals.</p>
+
+
+<h4 id="_default-exports-are-favored">
+<span>16.8.1 </span>Default exports are favored </h4>
+
+<p>The module syntax suggesting that the default export “is” the module may seem a bit strange, but it makes sense if you consider that one major design goal was to make default exports as convenient as possible. Quoting <a href="http://esdiscuss.org/topic/moduleimport#content-0">David Herman</a>:</p>
+
+<blockquote>
+  <p>ECMAScript 6 favors the single/default export style, and gives the sweetest syntax to importing the default. Importing named exports can and even should be slightly less concise.</p>
+</blockquote>
+
+
+<h4 id="static-module-structure">
+<span>16.8.2 </span>Static module structure </h4>
+
+<p>Current JavaScript module formats have a dynamic structure: What is imported and exported can change at runtime. One reason why ES6 introduced its own module format is to enable a static structure, which has several benefits. But before we go into those, let’s examine what the structure being static means.</p>
+
+<p>It means that you can determine imports and exports at compile time (statically) – you only need to look at the source code, you don’t have to execute it. ES6 enforces this syntactically: You can only import and export at the top level (never nested inside a conditional statement). And import and export statements have no dynamic parts (no variables etc. are allowed).</p>
+
+<p>The following are two examples of CommonJS modules that don’t have a static structure. In the first example, you have to run the code to find out what it imports:</p>
+
+<figure>
+<div><pre><code></code><code>var</code> <code>my_lib</code><code>;</code>
+<code>if</code> <code>(</code><code>Math</code><code>.</code><code>random</code><code>())</code> <code>{</code>
+    <code>my_lib</code> <code>=</code> <code>require</code><code>(</code><code>'foo'</code><code>);</code>
+<code>}</code> <code>else</code> <code>{</code>
+    <code>my_lib</code> <code>=</code> <code>require</code><code>(</code><code>'bar'</code><code>);</code>
+<code>}</code>
+</pre></div>
+
+</figure>
+
+<p>In the second example, you have to run the code to find out what it exports:</p>
+
+<figure>
+<div><pre><code></code><code>if</code> <code>(</code><code>Math</code><code>.</code><code>random</code><code>())</code> <code>{</code>
+    <code>exports</code><code>.</code><code>baz</code> <code>=</code> <code>···</code><code>;</code>
+<code>}</code>
+</pre></div>
+
+</figure>
+
+<p>ECMAScript 6 modules are less flexible and force you to be static. As a result, you get several benefits, which are described next.</p>
+
+<h5 id="_benefit-dead-code-elimination-during-bundling">
+<span>16.8.2.1 </span>Benefit: dead code elimination during bundling </h5>
+
+<p>In frontend development, modules are usually handled as follows:</p>
+
+<ul>
+  <li>During development, code exists as many, often small, modules.</li>
+  <li>For deployment, these modules are <em>bundled</em> into a few, relatively large, files.</li>
+</ul>
+
+<p>The reasons for bundling are:</p>
+
+<ol>
+  <li>Fewer files need to be retrieved in order to load all modules.</li>
+  <li>Compressing the bundled file is slightly more efficient than compressing separate files.</li>
+  <li>During bundling, unused exports can be removed, potentially resulting in significant space savings.</li>
+</ol>
+
+<p>Reason #1 is important for HTTP/1, where the cost for requesting a file is relatively high. That will change with HTTP/2, which is why this reason doesn’t matter there.</p>
+
+<p>Reason #3 will remain compelling. It can only be achieved with a module format that has a static structure.</p>
+
+<h5 id="_benefit-compact-bundling-no-custom-bundle-format">
+<span>16.8.2.2 </span>Benefit: compact bundling, no custom bundle format </h5>
+
+<p><a href="https://github.com/rollup/rollup">The module bundler Rollup</a> proved that ES6 modules can be combined efficiently, because they all fit into a single scope (after renaming variables to eliminate name clashes). This is possible due to two characteristics of ES6 modules:</p>
+
+<ul>
+  <li>Their static structure means that the bundle format does not have to account for conditionally loaded modules (a common technique for doing so is putting module code in functions).</li>
+  <li>Imports being read-only views on exports means that you don’t have to copy exports, you can refer to them directly.</li>
+</ul>
+
+<p>As an example, consider the following two ES6 modules.</p>
+
+<figure>
+<div><pre><code></code><code>// lib.js</code>
+<code>export</code> <code>function</code> <code>foo</code><code>()</code> <code>{}</code>
+<code>export</code> <code>function</code> <code>bar</code><code>()</code> <code>{}</code>
+
+<code>// main.js</code>
+<code>import</code> <code>{</code><code>foo</code><code>}</code> <code>from</code> <code>'./lib.js'</code><code>;</code>
+<code>console</code><code>.</code><code>log</code><code>(</code><code>foo</code><code>());</code>
+</pre></div>
+
+</figure>
+
+<p>Rollup can bundle these two ES6 modules into the following single ES6 module (note the eliminated unused export <code>bar</code>):</p>
+
+<figure>
+<div><pre><code></code><code>function</code> <code>foo</code><code>()</code> <code>{}</code>
+
+<code>console</code><code>.</code><code>log</code><code>(</code><code>foo</code><code>());</code>
+</pre></div>
+
+</figure>
+
+<p>Another benefit of Rollup’s approach is that the bundle does not have a custom format, it is just an ES6 module.</p>
+
+<h5 id="_benefit-faster-lookup-of-imports">
+<span>16.8.2.3 </span>Benefit: faster lookup of imports </h5>
+
+<p>If you require a library in CommonJS, you get back an object:</p>
+
+<figure>
+<div><pre><code></code><code>var</code> <code>lib</code> <code>=</code> <code>require</code><code>(</code><code>'lib'</code><code>);</code>
+<code>lib</code><code>.</code><code>someFunc</code><code>();</code> <code>// property lookup</code>
+</pre></div>
+
+</figure>
+
+<p>Thus, accessing a named export via <code>lib.someFunc</code> means you have to do a property lookup, which is slow, because it is dynamic.</p>
+
+<p>In contrast, if you import a library in ES6, you statically know its contents and can optimize accesses:</p>
+
+<figure>
+<div><pre><code></code><code>import</code> <code>*</code> <code>as</code> <code>lib</code> <code>from</code> <code>'lib'</code><code>;</code>
+<code>lib</code><code>.</code><code>someFunc</code><code>();</code> <code>// statically resolved</code>
+</pre></div>
+
+</figure>
+
+<h5 id="_benefit-variable-checking">
+<span>16.8.2.4 </span>Benefit: variable checking </h5>
+
+<p>With a static module structure, you always statically know which variables are visible at any location inside the module:</p>
+
+<ul>
+  <li>Global variables: increasingly, the only completely global variables will come from the language proper. Everything else will come from modules (including functionality from the standard library and the browser). That is, you statically know all global variables.</li>
+  <li>Module imports: You statically know those, too.</li>
+  <li>Module-local variables: can be determined by statically examining the module.</li>
+</ul>
+
+<p>This helps tremendously with checking whether a given identifier has been spelled properly. This kind of check is a popular feature of linters such as JSLint and JSHint; in ECMAScript 6, most of it can be performed by JavaScript engines.</p>
+
+<p>Additionally, any access of named imports (such as <code>lib.foo</code>) can also be checked statically.</p>
+
+<h5 id="_benefit-ready-for-macros">
+<span>16.8.2.5 </span>Benefit: ready for macros </h5>
+
+<p>Macros are still on the roadmap for JavaScript’s future. If a JavaScript engine supports macros, you can add new syntax to it via a library. <a href="http://sweetjs.org/">Sweet.js</a> is an experimental macro system for JavaScript. The following is an example from the Sweet.js website: a macro for classes.</p>
+
+<figure>
+<div><pre><code></code><code>// Define the macro</code>
+<code>macro</code> <code>class</code> <code>{</code>
+    <code>rule</code> <code>{</code>
+        <code>$className</code> <code>{</code>
+                <code>constructor</code> <code>$cparams</code> <code>$cbody</code>
+                <code>$</code><code>(</code><code>$mname</code> <code>$mparams</code> <code>$mbody</code><code>)</code> <code>...</code>
+        <code>}</code>
+    <code>}</code> <code>=&gt;</code> <code>{</code>
+        <code>function</code> <code>$className</code> <code>$cparams</code> <code>$cbody</code>
+        <code>$</code><code>(</code><code>$className</code><code>.</code><code>prototype</code><code>.</code><code>$mname</code>
+            <code>=</code> <code>function</code> <code>$mname</code> <code>$mparams</code> <code>$mbody</code><code>;</code> <code>)</code> <code>...</code>
+    <code>}</code>
+<code>}</code>
+
+<code>// Use the macro</code>
+<code>class</code> <code>Person</code> <code>{</code>
+    <code>constructor</code><code>(</code><code>name</code><code>)</code> <code>{</code>
+        <code>this</code><code>.</code><code>name</code> <code>=</code> <code>name</code><code>;</code>
+    <code>}</code>
+    <code>say</code><code>(</code><code>msg</code><code>)</code> <code>{</code>
+        <code>console</code><code>.</code><code>log</code><code>(</code><code>this</code><code>.</code><code>name</code> <code>+</code> <code>" says: "</code> <code>+</code> <code>msg</code><code>);</code>
+    <code>}</code>
+<code>}</code>
+<code>var</code> <code>bob</code> <code>=</code> <code>new</code> <code>Person</code><code>(</code><code>"Bob"</code><code>);</code>
+<code>bob</code><code>.</code><code>say</code><code>(</code><code>"Macros are sweet!"</code><code>);</code>
+</pre></div>
+
+</figure>
+
+<p>For macros, a JavaScript engine performs a preprocessing step before compilation: If a sequence of tokens in the token stream produced by the parser matches the pattern part of the macro, it is replaced by tokens generated via the body of macro. The preprocessing step only works if you are able to statically find macro definitions. Therefore, if you want to import macros via modules then they must have a static structure.</p>
+
+<h5 id="_benefit-ready-for-types">
+<span>16.8.2.6 </span>Benefit: ready for types </h5>
+
+<p>Static type checking imposes constraints similar to macros: it can only be done if type definitions can be found statically. Again, types can only be imported from modules if they have a static structure.</p>
+
+<p>Types are appealing because they enable statically typed fast dialects of JavaScript in which performance-critical code can be written. One such dialect is <a href="http://lljs.org/">Low-Level JavaScript</a> (LLJS).</p>
+
+<h5 id="_benefit-supporting-other-languages">
+<span>16.8.2.7 </span>Benefit: supporting other languages </h5>
+
+<p>If you want to support compiling languages with macros and static types to JavaScript then JavaScript’s modules should have a static structure, for the reasons mentioned in the previous two sections.</p>
+
+<h5 id="_source-of-this-section-1">
+<span>16.8.2.8 </span>Source of this section </h5>
+
+<ul>
+  <li>“<a href="http://calculist.org/blog/2012/06/29/static-module-resolution/">Static module resolution</a>” by David Herman</li>
+</ul>
+
+
+<h4 id="_support-for-both-synchronous-and-asynchronous-loading">
+<span>16.8.3 </span>Support for both synchronous and asynchronous loading </h4>
+
+<p>ECMAScript 6 modules must work independently of whether the engine loads modules synchronously (e.g. on servers) or asynchronously (e.g. in browsers). Its syntax is well suited for synchronous loading, asynchronous loading is enabled by its static structure: Because you can statically determine all imports, you can load them before evaluating the body of the module (in a manner reminiscent of AMD modules).</p>
+
+
+<h4 id="sec_rationale-cyclic-dependencies">
+<span>16.8.4 </span>Support for cyclic dependencies between modules </h4>
+
+<p>Support for cyclic dependencies was a key goal for ES6 modules. Here is why:</p>
+
+<p>Cyclic dependencies are not inherently evil. Especially for objects, you sometimes even want this kind of dependency. For example, in some trees (such as DOM documents), parents refer to children and children refer back to parents. In libraries, you can usually avoid cyclic dependencies via careful design. In a large system, though, they can happen, especially during refactoring. Then it is very useful if a module system supports them, because the system doesn’t break while you are refactoring.</p>
+
+<p><a href="http://nodejs.org/api/modules.html#modules_cycles">The Node.js documentation acknowledges the importance of cyclic dependencies</a> and <a href="https://mail.mozilla.org/pipermail/es-discuss/2014-July/038250.html">Rob Sayre provides additional evidence</a>:</p>
+
+<blockquote>
+  <p>Data point: I once implemented a system like [ECMAScript 6 modules] for Firefox. I got <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=384168#c7">asked</a> for cyclic dependency support 3 weeks after shipping.</p>
+
+  <p>That system that Alex Fritze invented and I worked on is not perfect, and the syntax isn’t very pretty. But <a href="https://developer.mozilla.org/en-US/docs/Mozilla/JavaScript_code_modules/Using">it’s still getting used</a> 7 years later, so it must have gotten something right.</p>
+</blockquote>
+
+
+<h3 id="sec_faq-modules">
+<span>16.9 </span>FAQ: modules </h3>
+
+<h4 id="_can-i-use-a-variable-to-specify-from-which-module-i-want-to-import">
+<span>16.9.1 </span>Can I use a variable to specify from which module I want to import? </h4>
+
+<p>The <code>import</code> statement is completely static: its module specifier is always fixed. If you want to dynamically determine what module to load, you need to use <a href="#sec_module-loader-api">the programmatic loader API</a>:</p>
+
+<figure>
+<div><pre><code></code><code>const</code> <code>moduleSpecifier</code> <code>=</code> <code>'module_'</code> <code>+</code> <code>Math</code><code>.</code><code>random</code><code>();</code>
+<code>System</code><code>.</code><code>import</code><code>(</code><code>moduleSpecifier</code><code>)</code>
+<code>.</code><code>then</code><code>(</code><code>the_module</code> <code>=&gt;</code> <code>{</code>
+    <code>// Use the_module</code>
+<code>})</code>
+</pre></div>
+
+</figure>
+
+<h4 id="_can-i-import-a-module-conditionally-or-on-demand">
+<span>16.9.2 </span>Can I import a module conditionally or on demand? </h4>
+
+<p>Import statements must always be at the top level of modules. That means that you can’t nest them inside <code>if</code> statements, functions, etc. Therefore, you have to use <a href="#sec_module-loader-api">the programmatic loader API</a> if you want to load a module conditionally or on demand:</p>
+
+<figure>
+<div><pre><code></code><code>if</code> <code>(</code><code>Math</code><code>.</code><code>random</code><code>())</code> <code>{</code>
+    <code>System</code><code>.</code><code>import</code><code>(</code><code>'some_module'</code><code>)</code>
+    <code>.</code><code>then</code><code>(</code><code>some_module</code> <code>=&gt;</code> <code>{</code>
+        <code>// Use some_module</code>
+    <code>})</code>
+<code>}</code>
+</pre></div>
+
+</figure>
+
+<h4 id="_can-i-use-variables-in-an-import-statement">
+<span>16.9.3 </span>Can I use variables in an <code>import</code> statement? </h4>
+
+<p>No, you can’t. Remember – what is imported must not depend on anything that is computed at runtime. Therefore:</p>
+
+<figure>
+<div><pre><code></code><code>// Illegal syntax:</code>
+<code>import</code> <code>foo</code> <code>from</code> <code>'some_module'</code><code>+</code><code>SUFFIX</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<h4 id="_can-i-use-destructuring-in-an-import-statement">
+<span>16.9.4 </span>Can I use destructuring in an <code>import</code> statement? </h4>
+
+<p>No you can’t. The <code>import</code> statement only looks like destructuring, but is completely different (static, imports are views, etc.).</p>
+
+<p>Therefore, you can’t do something like this in ES6:</p>
+
+<figure>
+<div><pre><code></code><code>// Illegal syntax:</code>
+<code>import</code> <code>{</code> <code>foo</code><code>:</code> <code>{</code> <code>bar</code> <code>}</code> <code>}</code> <code>from</code> <code>'some_module'</code><code>;</code>
+</pre></div>
+
+</figure>
+
+<h4 id="_are-named-exports-necessary-why-not-default-export-objects">
+<span>16.9.5 </span>Are named exports necessary? Why not default-export objects? </h4>
+
+<p>You may be wondering – why do we need named exports if we could simply default-export objects (like in CommonJS)? The answer is that you can’t enforce a static structure via objects and lose all of the associated advantages (which are explained <a href="#static-module-structure">in this chapter</a>).</p>
+
+<h4 id="_can-i-eval-the-code-of-module">
+<span>16.9.6 </span>Can I <code>eval()</code> the code of module? </h4>
+
+<p>No, you can’t. Modules are too high-level a construct for <code>eval()</code>. The <a href="#sec_module-loader-api">module loader API</a> provides the means for creating modules from strings. Syntactically, <code>eval()</code> accepts scripts (which don’t allow <code>import</code> and <code>export</code>), not modules.</p>
+
+
+<h3 id="sec_advantages-es6-modules">
+<span>16.10 </span>Advantages of ECMAScript 6 modules </h3>
+
+<p>At first glance, having modules built into ECMAScript 6 may seem like a boring feature – after all, we already have several good module systems. But ECMAScript 6 modules have several new features:</p>
+
+<ul>
+  <li>More compact syntax</li>
+  <li>Static module structure (helping with dead code elimination, optimizations, static checking and more)</li>
+  <li>Automatic support for cyclic dependencies</li>
+</ul>
+
+<p>ES6 modules will also – hopefully – end the fragmentation between the currently dominant standards CommonJS and AMD. Having a single, native standard for modules means:</p>
+
+<ul>
+  <li>No more UMD (<a href="https://github.com/umdjs/umd">Universal Module Definition</a>): UMD is a name for patterns that enable the same file to be used by several module systems (e.g. both CommonJS and AMD). Once ES6 is the only module standard, UMD becomes obsolete.</li>
+  <li>New browser APIs become modules instead of global variables or properties of <code>navigator</code>.</li>
+  <li>No more objects-as-namespaces: Objects such as <code>Math</code> and <code>JSON</code> serve as namespaces for functions in ECMAScript 5. In the future, such functionality can be provided via modules.</li>
+</ul>
+
+
+<h3 id="sec_further-reading-modules">
+<span>16.11 </span>Further reading </h3>
+
+<ul>
+  <li>
+<strong>CommonJS versus ES6:</strong> “<a href="http://jsmodules.io/">JavaScript Modules</a>” (by <a href="https://github.com/wycats/jsmodules">Yehuda Katz</a>) is a quick intro to ECMAScript 6 modules. Especially interesting is a <a href="http://jsmodules.io/cjs.html">second page</a> where CommonJS modules are shown side by side with their ECMAScript 6 versions.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+</div></div>
+  </div>
+</body>
+</html>

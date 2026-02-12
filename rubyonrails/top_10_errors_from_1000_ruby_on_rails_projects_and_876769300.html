@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Top 10 errors from 1000 Ruby on Rails projects (and how to avoid them)</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Top 10 errors from 1000 Ruby on Rails projects (and how to avoid them)</h1>
+    <p><strong>URL:</strong> <a href="https://rollbar.com/blog/top-10-ruby-on-rails-errors">https://rollbar.com/blog/top-10-ruby-on-rails-errors</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876769300</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+                <p>To give back to our community of developers, we looked at our database of thousands of projects and found the top 10 errors in Ruby on Rails projects. We’re going to show you what causes them and how to prevent them from happening. If you avoid these "gotchas," it'll make you a better developer.</p>
+
+<p>Because data is king, we collected, analyzed, and ranked the top 10 <strong><a href="https://rollbar.com/platforms/ruby-error-tracking/">Ruby errors</a></strong> from Ruby on Rails applications. <strong><a href="https://rollbar.com/">Rollbar</a></strong> collects all the errors for each project and summarizes how many times each one occurred. We do this by grouping errors according to <strong><a href="https://docs.rollbar.com/docs/grouping-algorithm/">fingerprinting</a></strong>. Basically, we group two errors if the second one is just a repeat of the first. This gives users a nice overview instead of an overwhelmingly big dump like you’d see in a log file.</p>
+<p>We focused on the errors most likely to affect you and your users. To do this, we ranked errors by the number of projects experiencing them across different companies. We intentionally looked at the number of projects so that high-volume customers wouldn't overwhelm the data set with errors that are not relevant to most readers.</p>
+<h2>Here are the top 10 Rails errors:</h2>
+<p><img decoding="async" src="data:application/octet-stream;base64," alt="Screenshot of Rails Error Statistics"></p>
+<p>You’ve probably noticed some familiar faces in there already. Let’s dig in and take a look at the errors in a bit more detail to see what might cause them in your production application.</p>
+
+<p>We'll provide example solutions based on Rails 5, but if you’re still using Rails 4 they should point you in the right direction.</p>
+<h2>1. ActionController::RoutingError</h2>
+<p>We start with a classic of any web application, the Rails version of the 404 error. An <code>ActionController::RoutingError</code> means that a user has requested a URL that doesn’t exist within your application. Rails will log this and it will look like an error, but for the most part it is not the fault of your application.</p>
+<p>It may be caused by incorrect links pointing at or from within your application. It may also be a malicious user or bot testing your application for common weaknesses. If that’s the case, you might find something like this in your logs:</p>
+<pre><code>ActionController::RoutingError (No route matches [GET] "/wp-admin"):</code></pre>
+<p>There is one common reason you might get an <code>ActionController::RoutingError</code> that is caused by your application and not by errant users: if you deploy your application to Heroku, or any platform that doesn’t allow you to serve static files, then you might find that your CSS and JavaScript doesn’t load. If this is the case, the errors will look like this:</p>
+<pre><code>ActionController::RoutingError (No route matches [GET] "//cdn.rollbar.com/assets/application-eff78fd93759795a7be3aa21209b0bd2.css"):</code></pre>
+<p>To fix this and allow Rails to serve static assets you need to add a line to your application’s <code>config/environments/production.rb</code> file:</p>
+<pre><code>Rails.application.configure do
+  # other config
+  config.public_file_server.enabled = true
+end</code></pre>
+<p>If you aren’t interested in logging 404 errors caused by <code>ActionController::RoutingError</code> then you can avoid them by setting a catch all route and serving the 404 yourself. <strong><a href="https://github.com/roidrage/lograge#handle-actioncontrollerroutingerror" target="_blank" rel="noopener">This method is suggested by the lograge project</a> </strong>. To do so, add the following at the bottom of your <code>config/routes.rb</code> file:</p>
+<pre><code>Rails.application.routes.draw do
+  # all your other routes
+  match '*unmatched', to: 'application#route_not_found', via: :all
+end</code></pre>
+<p>Then add the <code>route_not_found</code> method to your <code>ApplicationController</code>:</p>
+<pre><code>class ApplicationController &lt; ActionController::Base
+  protect_from_forgery with: :exception
+  def route_not_found
+    render file: Rails.public_path.join('404.html'), status: :not_found, layout: false
+  end
+end</code></pre>
+<p>Before implementing this, you should consider whether knowing about 404 errors is important to you. You should also keep in mind that any <strong><a href="https://github.com/ankane/ahoy/issues/29" target="_blank" rel="noopener">route or engine that is mounted after the application loads won’t be reachable</a></strong> as they will be caught by the catch all route.</p>
+<h2>2. NoMethodError: undefined method '[]' for nil:NilClass</h2>
+<p>This means that you are using square bracket notation to read a property from an object, but the object is missing, or <code>nil</code>, and thus it does not support this method. Since we are working with square brackets, it’s likely that we’re digging through hashes or arrays to access properties and something along the way was missing. This could happen when you’re parsing and extracting data from a JSON API or a CSV file, or just getting data from nested parameters in a controller action.</p>
+<p>Consider a user submitting address details through a form. You might expect your parameters to look like this:</p>
+<pre><code>{ user: { address: { street: '123 Fake Street', town: 'Faketon', postcode: '12345' } } }</code></pre>
+<p>You might then access the street by calling <code>params[:user][:address][:street]</code>. If no address was passed then <code>params[:user][:address]</code> would be <code>nil</code> and calling for <code>[:street]</code> would raise a <code>NoMethodError</code>.</p>
+<p>You could perform a nil check on each parameter and return early using the <code>&amp;&amp;</code> operator, like so:</p>
+<pre><code>street = params[:user] &amp;&amp; params[:user][:address] &amp;&amp; params[:user][:address][:street]</code></pre>
+<p>While that will do the job, thankfully there is now a better way to access nested elements in hashes, arrays and event objects like <code>ActionController::Parameters</code>. Since Ruby 2.3, hashes, arrays and <code>ActionController::Parameters</code> have the <code>dig</code><strong><a href="http://ruby-doc.org/core-2.3.0_preview1/Hash.html#method-i-dig" target="_blank" rel="noopener"> method</a></strong>. <code>dig</code> allows you to provide a path to the object you want to retrieve. If at any stage <code>nil</code> is returned, then <code>dig</code> returns <code>nil</code> without throwing a <code>NoMethodError</code>. To get the street from the parameters above you can call:</p>
+<pre><code>street = params.dig(:user, :address, :street)</code></pre>
+<p>You won't get any errors from this, though you do need to be aware that <code>street</code> may still be <code>nil</code>.</p>
+<p>As an aside, if you are also digging through nested objects using dot notation, you can do this safely in Ruby 2.3 too, using the safe navigation operator. So, rather than calling</p>
+<pre><code>street = user.address.street</code></pre>
+<p>and getting a <code>NoMethodError: undefined method street</code> for <code>nil:NilClass</code>, you can now call.</p>
+<pre><code>street = user&amp;.address&amp;.street</code></pre>
+<p>The above will now act the same as using <code>dig</code>. If the address is <code>nil</code> then <code>street</code> will be <code>nil</code> and you will need to handle the <code>nil</code> when you later refer to the <code>street</code>. If all the objects are present, <code>street</code> will be assigned correctly.</p>
+<p>While this suppresses errors from being shown to the user, if it still impacts user experience, you might want to create an internal error to track either in your logs or in an error tracking system like Rollbar so you have visibility to fix the problem.</p>
+<p>If you are not using Ruby 2.3 or above you can achieve the same as above using the <strong><a href="https://github.com/Invoca/ruby_dig" target="_blank" rel="noopener">ruby_dig gem</a></strong> and <strong><a href="http://api.rubyonrails.org/classes/Object.html#method-i-try" target="_blank">ActiveSupport's </a><code>try</code></strong> to achieve similar results.</p>
+<h2>3. ActionController::InvalidAuthenticityToken</h2>
+<p>Number 3 on our list requires careful consideration as it is related to our application's security. <code>ActionController::InvalidAuthenticityToken</code> will be raised when a POST, PUT, PATCH, or DELETE request is missing or has an incorrect CSRF (Cross Site Request Forgery) token.</p>
+<p>CSRF is a potential vulnerability in web applications in which a malicious site makes a request to your application on behalf of an unaware user. If the user is logged in their session cookies will be sent along with the request and the attacker can execute commands as the user.</p>
+<p><strong><a href="http://guides.rubyonrails.org/security.html#cross-site-request-forgery-csrf" target="_blank" rel="noopener">Rails mitigates CSRF attacks</a></strong> by including a secure token in all forms that is known and verified by the site, but can't be known by a third party. This is performed by the familiar <code>ApplicationController</code> line</p>
+<pre><code>class ApplicationController &lt; ActionController::Base
+  protect_from_forgery with: :exception
+end</code></pre>
+<p>So, if your production application is raising <code>ActionController::InvalidAuthenticityToken</code> errors it could mean that an attacker is targeting the users of your site, but the Rails security measures are keeping you safe.</p>
+<p>There are other reasons you may be unintentionally receiving this error though.</p>
+<h3>Ajax</h3>
+<p>For example, if you are making Ajax requests from your front end, you need to ensure you are including the CSRF token within the request. If you are using jQuery and the built in <strong><a href="https://github.com/rails/rails/tree/master/actionview/app/assets/javascripts" target="_blank" rel="noopener">Rails unobtrusive scripting adapter</a></strong> then this is already handled for you. If you want to handle Ajax another way, say using the <strong><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" target="_blank" rel="noopener">Fetch API</a></strong>, you'll need to ensure you include the CSRF token. For either approach, you need to make sure your application layout includes the CSRF meta tag in the <code>&lt;head&gt;</code> of the document:</p>
+<pre><code>&lt;%= csrf_meta_tags %&gt;</code></pre>
+<p>This prints out a meta tag that looks like this:</p>
+<pre><code>&lt;meta name='csrf-token' content='THE-TOKEN'&gt;</code></pre>
+<p>When making an Ajax request, read the meta tag content and add it to the headers as the <code>X-CSRF-Token</code> header.</p>
+<pre><code>const csrfToken = document.querySelector('[name="csrf-token"]').getAttribute('content');
+fetch('/posts', {
+  method: 'POST',
+  body: JSON.stringify(body),
+  headers: {
+    'Content-Type': 'application/json'
+    'X-CSRF-Token': csrfToken
+  }
+).then(function(response) {
+  // handle response
+});</code></pre>
+<h3>Webhooks/APIs</h3>
+<p>Sometimes there are valid reasons to turn off the CSRF protection. If you expect to receive incoming POST requests to certain URLs in your application from third parties, you won’t want to block them on the basis of CSRF. You might be in this position if you are building an API for third party developers or if you expect to receive incoming webhooks from a service.</p>
+<p>You can turn off CSRF protection, but make sure you are whitelisting the endpoints you know don't need this kind of protection. You can do so in a controller by skipping the authentication:</p>
+<pre><code>class ApiController &lt; ApplicationController
+  skip_before_action :verify_authenticity_token
+end</code></pre>
+<p>If you are accepting incoming webhooks, you should be able to verify that the request came from a trusted source in place of verifying the CSRF token.</p>
+<h2>4. Net::ReadTimeout</h2>
+<p>The <code>Net::ReadTimeout</code> is raised when it takes Ruby longer to read data from a socket than the <code>read_timeout</code> value, which is 60 seconds by default. This error can be raised if you are using <code>Net::HTTP</code>, <code>open-uri</code> or <strong><a href="https://github.com/jnunemaker/httparty" target="_blank" rel="noopener"><code>HTTParty</code></a></strong> to make HTTP requests.</p>
+<p>Notably, this doesn't mean that an error will be thrown if the request itself takes longer than the <code>read_timeout</code> value, just that if a particular read takes longer than the <code>read_timeout</code>. You can read more about <strong><a href="https://felipeelias.github.io/ruby/2017/08/20/net-http-timeouts.html" target="_blank" rel="noopener"><code>Net::HTTP</code> and timeouts from Felipe Philipp</a></strong>.</p>
+<p>There are a couple of things we can do to stop getting <code>Net::ReadTimeout</code> errors. Once you understand the HTTP requests that are throwing the error you can try to adjust the <code>read_timeout</code> value to something more sensible. As in the article above, if the server you are making the request to takes a long time to put together a response before sending it all at once, you will want a longer <code>read_timeout</code> value. If the server returns the response in chunks then you will want a shorter <code>read_timeout</code>.</p>
+<p>You can set <code>read_timeout</code> by setting a value in seconds on the respective HTTP client you are using:</p>
+<p><strong>with Net::HTTP</strong></p>
+<pre><code>http = Net::HTTP.new(host, port, read_timout: 10)</code></pre>
+<p><strong>with open-uri</strong></p>
+<pre><code>open(url, read_timeout: 10)</code></pre>
+<p><strong>with HTTParty</strong></p>
+<pre><code>HTTParty.get(url, read_timeout: 10)</code></pre>
+<p>You can't always trust another server to respond within your expected timeouts. If you can run the HTTP request in a background job with retries, like <strong><a href="https://github.com/mperham/sidekiq" target="_blank">Sidekiq</a></strong>, that can mitigate the errors from the other server. You will need to handle the case where the server never responds in time though.</p>
+<p>If you need to run the HTTP request within a controller action, then you should be rescuing the <code>Net::ReadTimeout</code> error and providing your user with an alternative experience and tracking it in your error monitoring solution. For example:</p>
+<pre><code>def show
+  @post = Post.find(params[:slug])
+  begin
+    @comments = HTTParty.get(COMMENTS_SERVER, read_timeout: 10)
+  rescue Net::ReadTimeout =&gt; e
+    @comments = []
+  @error_message = "Comments couldn't be retrieved, please try again later."
+    Rollbar.error(e);
+  end
+end</code></pre>
+<h2>5. ActiveRecord::RecordNotUnique: PG::UniqueViolation</h2>
+<p>This error message is specifically for PostgreSQL databases, but the ActiveRecord adapters for MySQL and SQLite will throw similar errors. The issue here is that a database table in your application has a unique index on one or more fields and a transaction has been sent to the database that violates that index. This is a hard problem to solve completely, but let's look at the low hanging fruit first.</p>
+<p>Imagine you've created a <code>User</code> model and, in the migration, ensured that the user's email address is unique. The migration might look like this:</p>
+<pre><code>class CreateUsers &lt; ActiveRecord::Migration[5.1]
+  def change
+    create_table :users do |t|
+      t.string :email
+      t.timestamps
+    end
+    add_index :users, :email, unique: true
+  end
+end</code></pre>
+<p>To avoid most instances of <code>ActiveRecord::RecordNotUnique</code> you should add a uniqueness validation to your <code>User</code> model too.</p>
+<pre><code>class User &lt; ApplicationRecord
+  validates_uniqueness_of :email
+end</code></pre>
+<p>Without this validation, all email addresses will be sent to the database when calling <code>User#save</code> and will raise an error if they aren't unique. However, the validation can't guarantee that this won't happen. For a full explanation you should read the <strong><a href="http://api.rubyonrails.org/classes/ActiveRecord/Validations/ClassMethods.html#method-i-validates_uniqueness_of" target="_blank" rel="noopener">concurrency and integrity section of the <code>validates_uniqueness_of</code> documentation</a></strong>. The quick description is that the Rails uniqueness check is prone to race conditions based on the order of operation for multiple requests. Being a race condition, this also makes this error hard to reproduce locally.</p>
+<p>To deal with this error requires some context. If the errors are caused by a race condition, that may be because a user has submitted a form twice by mistake. We can try to mitigate that issue with a bit of JavaScript to disable the submit button after the first click. Something a bit like this is a start:</p>
+<pre><code>const forms = document.querySelectorAll('form');
+Array.from(forms).forEach((form) =&gt; {
+  form.addEventListener('submit', (event) =&gt; {
+    const buttons = form.querySelectorAll('button, input[type=submit]')
+    Array.from(buttons).forEach((button) =&gt; {
+      button.setAttribute('disabled', 'disabled');
+    });
+  });
+});</code></pre>
+<p><strong><a href="https://coderwall.com/p/e8zu7q/using-retry-to-rescue-activerecord-recordnotunique" target="_blank" rel="noopener">This tip on Coderwall to use ActiveRecord's <code>first_or_create!</code> along with a rescue and retry</a></strong> when the error is raised is a neat workaround. You should continue to log the error with your error monitoring solution so that you maintain visibility on it.</p>
+<pre><code>def self.set_flag( user_id, flag )
+  # Making sure we only retry 2 times
+  tries ||= 2
+  flag = UserResourceFlag.where( :user_id =&gt; user_id , :flag =&gt; flag).first_or_create!
+rescue ActiveRecord::RecordNotUnique =&gt; e
+  Rollbar.error(e)
+  retry unless (tries -= 1).zero?
+end</code></pre>
+<p><code>ActiveRecord::RecordNotUnique</code> might seem like an edge case, but it's here at number 5 in this top 10, so it is definitely worth considering with regard to your user experience.</p>
+<h2>6. NoMethodError: undefined method 'id' for nil:NilClass</h2>
+<p><code>NoMethodError</code> appears again, though this time with a different explanatory message. This error usually sneaks up around the create action for an object with a relation. The happy path—creating the object successfully—usually works, but this error pops up when validations fail. Let's take a look at an example.</p>
+<p>Here's a controller with actions to create an application for a course.</p>
+<pre><code>class CourseApplicationsController &lt; ApplicationController
+  def new
+    @course_application = CourseApplication.new
+    @course = Course.find(params[:course_id])
+  end
+  def create
+    @course_application = CourseApplication.new(course_application_params)
+    if @course_application.save
+      redirect_to @course_application, notice: 'Application submitted'
+    else
+      render :new
+    end
+  end
+  private
+  def course_application_params
+    params.require(:course_application).permit(:name, :email, :course_id)
+  end
+end</code></pre>
+<p>The form in the new template looks a bit like this:</p>
+<pre><code>&lt;%= form_for [@course, @course_application] do |ca| %&gt;
+  &lt;%# rest of the form %&gt;
+&lt;% end %&gt;</code></pre>
+<p>The problem here is when you call <code>render :new</code> from the <code>create</code> action, the <code>@course</code> instance variable wasn't set. You need to ensure that all the objects the <code>new</code> template needs are initialised in the <code>create</code> action as well. To fix this error, we'd update the <code>create</code> action to look like this:</p>
+<pre><code>  def create
+    @course_application = CourseApplication.new(course_application_params)
+    if @course_application.save
+      redirect_to @course_application, notice: 'Application submitted'
+    else
+      @course = Course.find(params[:course_id])
+      render :new
+    end
+  end</code></pre>
+<p>Check out this article if you are interested in learning more about <strong><a href="https://blog.ragnarson.com/2015/05/06/problems-with-nil.html" target="_blank" rel="noopener">the problems with <code>nil</code> in Rails and how to avoid them</a></strong>.</p>
+<h2>7. ActionController::ParameterMissing</h2>
+<p>This error is part of the Rails <strong><a href="http://edgeguides.rubyonrails.org/action_controller_overview.html#strong-parameters" target="_blank" rel="noopener">strong parameters</a></strong> implementation. It does not manifest as a 500 error though—it is rescued by <code>ActionController::Base</code> and returned as a 400 Bad Request.</p>
+<p>The full error might look like this:</p>
+<pre><code>ActionController::ParameterMissing: param is missing or the value is empty: user</code></pre>
+<p>This will be accompanied by a controller that might look a bit like this:</p>
+<pre><code>class UsersController &lt; ApplicationController
+  def create
+    @user = User.new(user_params)
+    if @user.save
+      redirect_to @user
+    else
+      render :new
+    end
+  end
+  private
+  def user_params
+    params.require(:user).permit(:name, :email)
+  end
+end</code></pre>
+<p>The <code>params.require(:user)</code> means that if <code>user_params</code> is called and <code>params</code> does not have a <code>:user</code> key or <code>params[:user]</code> is empty, <code>ActionController::ParameterMissing</code> will be raised.</p>
+<p>If you are building an application to be used via a web front end and you have built a form to correctly post the <code>user</code> parameters to this action, then a missing <code>user</code> parameter probably means someone is messing with your application. If that is the case, a 400 Bad Request response is likely the best response as you don't need to cater to potentially malicious users.</p>
+<p>If your application is providing an API, then 400 Bad Request is also an appropriate response to a missing parameter.</p>
+<h2>8. ActionView::Template::Error: undefined local variable or method</h2>
+<p>This is our only <code>ActionView</code> error in the top 10 and that's a good sign. The less work the views have to do to render templates the better. Less work leads to fewer errors. We’re still left with this error though, in which a variable or method you expect to exist simply doesn't.</p>
+<p>This crops up most commonly in partials, probably due to the many different ways you can include a partial with local variables on a page. If you have a partial called <code>_post.html.erb</code> that contains a blog post template and an instance variable <code>@post</code> set in your controller, then you can render the partial like this:</p>
+<pre><code>&lt;%= render @post %&gt;</code></pre>
+<p>or</p>
+<pre><code>&lt;%= render 'post', post: @post %&gt;</code></pre>
+<p>or</p>
+<pre><code>&lt;%= render partial: 'post', locals: { post: @post } %&gt;</code></pre>
+<p>Rails likes to give us plenty of options to work with, but the second and third options here are where confusion can creep in. Trying to render a partial like:</p>
+<pre><code>&lt;%= render 'post', locals: { post: @post } %&gt;</code></pre>
+<p>or</p>
+<pre><code>&lt;%= render partial: 'post', post: @post %&gt;</code></pre>
+<p>will leave you with an undefined local variable or method. To avoid this, stay consistent and always render partials with the explicit partial syntax, expressing the local variables in a locals hash:</p>
+<pre><code>&lt;%= render partial: 'post', locals: { post: @post } %&gt;</code></pre>
+<p>There is one other place you can slip up with local variables in partials. If you only sometimes pass a variable to a partial, testing for that variable is different within a partial to regular Ruby code. If, for example, you update the post partial above to take a local variable that tells you whether to show a header image in the partial, you would render the partial like so:</p>
+<pre><code>&lt;%= render partial: 'post', locals: { post: @post, show_header_image: true } %&gt;</code></pre>
+<p>Then the partial itself might look like this:</p>
+<pre><code>&lt;h1&gt;&lt;%= @post.title %&gt;&lt;/h1&gt;
+&lt;%= image_tag(@post.header_image) if show_header_image %&gt;
+&lt;!-- and so on --&gt;</code></pre>
+<p>This will work fine when you pass the <code>show_header_image</code> local variable, but when you call</p>
+<pre><code>&lt;%= render partial: 'post', locals: { post: @post } %&gt;</code></pre>
+<p>it will fail with an undefined local variable. To test for the existence of a local variable inside a partial, you should check whether it is defined before you use it.</p>
+<pre><code>&lt;%= image_tag(@post.header_image) if defined?(show_header_image) &amp;&amp; show_header_image %&gt;</code></pre>
+<p>Even better though, there is a hash called <code>local_assigns</code> within a partial that we can use instead.</p>
+<pre><code>&lt;%= image_tag(@post.header_image) if local_assigns[:show_header_image] %&gt;</code></pre>
+<p>For variables that aren't booleans, we can use other hash methods like <code>fetch</code> to handle this gracefully. Using <code>show_header_image</code> as an example, this scenario would also work:</p>
+<pre><code>&lt;%= image_tag(@post.header_image) if local_assigns.fetch(:show_header_image, false) %&gt;</code></pre>
+<p>Overall, watch out when you are passing variables to partials!</p>
+<h2>9. ActionController::UnknownFormat</h2>
+<p>This error, like the <code>ActionController::InvalidAuthenticityToken</code>, is one that could be caused by careless or malicious users rather than your application. If you've built an application in which the actions respond with HTML templates and someone requests the JSON version of the page, you will find this error in your logs, looking a bit like this:</p>
+<pre><code>ActionController::UnknownFormat (BlogPostsController#index is missing a template for this request format and variant.
+request.formats: ["application/json"]
+request.variant: []):</code></pre>
+<p>The user will receive a 406 Not Acceptable response. In this case they’ll see this error because you haven't defined a template for this response. This is a reasonable response, since if you don't want to return JSON, their request was not acceptable.</p>
+<p>You may, however, have built your Rails application to respond to regular HTML requests and more API-like JSON requests in the same controller. Once you start doing this, you define the formats you <em>do</em> want to respond to and any formats that fall outside of that will also cause an <code>ActionController::UnknownFormat</code>, returning a 406 status. Let’s say you have a blog posts index that looks like:</p>
+<pre><code>class BlogPostsController &lt; ApplicationController
+  def index
+    respond_to do |format|
+      format.html { render :index }
+    end
+  end
+end</code></pre>
+<p>Making a request for the JSON would result in the 406 response and your logs would show this less expressive error:</p>
+<pre><code>ActionController::UnknownFormat (ActionController::UnknownFormat):</code></pre>
+<p>The error this time doesn't complain about a lack of a template—it’s an intentional error because you have defined the only format to respond to is HTML. What if this is unintentional though?</p>
+<p>It’s common to miss a format in a response that you intend to support. Consider an action in which you want to respond to HTML and JSON requests when creating a blog post, so that your page can support an Ajax request. It might look like this:</p>
+<pre><code>class BlogPostsController &lt; ApplicationController
+  def create
+    @blog_post = BlogPost.new(blog_post_params)
+    respond_to do |format|
+      if @blog_post.save
+        format.html { redirect blog_post_path(@blog_post) }
+        format.json { render json: @blog_post.to_json }
+      else
+        render :new
+      end
+    end
+  end
+end</code></pre>
+<p>The error here is raised in the case of the blog post failing validations and not saving. Within the <code>respond_to</code> block, you need to call <code>render</code> within the scope of the format blocks. Rewriting this to accommodate for failure would look like:</p>
+<pre><code>class BlogPostsController &lt; ApplicationController
+  def create
+    @blog_post = BlogPost.new(blog_post_params)
+    respond_to do |format|
+      if @blog_post.save
+        format.html { redirect blog_post_path(@blog_post) }
+        format.json { render json: @blog_post.to_json }
+      else
+        format.html { render :new }
+        format.json { render json: @blog_post.errors.to_json }
+      end
+    end
+  end
+end</code></pre>
+<p>Now all of the formats are covered and there won't be any more unintentional <code>ActionController::UnknownFormat</code> exceptions.</p>
+<h2>10. StandardError: An error has occurred, this and all later migrations canceled</h2>
+<p>This last item on our top 10 disappoints me slightly. <strong><a href="https://ruby-doc.org/core-2.5.0/StandardError.html" target="_blank" rel="noopener"><code>StandardError</code></a></strong> is the base error class that all other errors should inherit from, so using it here makes the error feel very generic, when in reality it is an error that has happened during a database migration. I would prefer to see this error as a descendent of the <code>ActiveRecord::MigrationError</code>. But I digress…</p>
+<p>There are a number of things that can cause a migration to fail. Your migrations may have gotten out of sync with your actual production database, for example. In that case, you're going to have to go digging around to find out what has happened and fix it.</p>
+<p>There is one thing that should be covered here though: data migrations.</p>
+<p>If you need to add or calculate some data for all the objects in a table you might think that a data migration is a good idea. As an example, if you wanted to add a full name field to a user model that included their first and last name (not a likely change, but good enough for a simple example), you might write a migration like this:</p>
+<pre><code>class AddFullNameToUser &lt; ActiveRecord::Migration
+  def up
+    add_column :users, :full_name, :string
+    User.find_each do |user|
+      user.full_name = "#{user.first_name} #{user.last_name}"
+      user.save!
+    end
+  end
+  def down
+    remove_column :users, :full_name
+  end
+end</code></pre>
+<p>There are a lot of problems with this scenario. If there is a user with corrupt data in y x xour set, the <code>user.save!</code> command will throw an error and cancel the migration. Secondly, in production you may have a lot of users, which means the database would take a long time to migrate, possibly keeping your application offline for the entire time. Finally, as your application changes over time, you might remove or rename the <code>User</code> model, which would cause this migration to fail. Some advice suggests that you define a <code>User</code> model within the migration to avoid this. For even greater safety, Elle Meredith advises us to <strong><a href="https://robots.thoughtbot.com/data-migrations-in-rails" target="_blank" rel="noopener">avoid data migrations within ActiveRecord migrations</a></strong> completely and build out temporary data migration tasks instead.</p>
+<p>Changing data outside of the migration ensures you do a few things. Most importantly, it makes you consider how your model works if the data is not present. In our full name example, you would likely define an accessor for the <code>full_name</code> property that could respond if the data was available. If it’s not, then build the full name by concatenating the constituent parts.</p>
+<pre><code>class User &lt; ApplicationRecord
+  def full_name
+    @full_name || "#{first_name} #{last_name}"
+  end
+end</code></pre>
+<p>Running a data migration as a separate task also means the deploy no longer relies on this data changing across the production database. <a href="https://robots.thoughtbot.com/data-migrations-in-rails">Elle's article</a> has more reasons why this works better and includes best practices on writing the task as well.</p>
+<h2>Conclusion</h2>
+<p>The most popular Rails errors can come from anywhere within the application. In this article we've seen common errors manifested in the model, the view, and the controller. Some of the errors aren't necessarily anything to worry about and are just protecting your application. Others should be caught as soon as possible and stamped out.</p>
+<p>Nevertheless, it’s good to track how often these errors happen. This leads to better visibility into problems that are affecting your users or application security, so you can fix them quickly. Otherwise, these error messages will be shown to the user, but the engineering and product management teams will have no idea until users complain to support.</p>
+<p>We hope you learned something new and are better equipped to avoid these errors in the future. However, even with the best practices, unexpected errors do pop up in production. It's important to have visibility into errors that affect your users, and to have good tools to solve them quickly.</p>
+<p>Rollbar gives you visibility to production Ruby errors, which offers more context to solve them quickly, including form validation errors, person tracking, boot errors and more. Check out <strong><a href="https://rollbar.com/features/">Rollbar’s full list of features</a></strong> and <strong><a href="https://docs.rollbar.com/docs/ruby">Ruby SDK documentation</a></strong>.</p>
+<hr>
+<p>If you haven’t already, <strong><a href="https://rollbar.com/signup/">sign up for a 14-day free trial</a></strong> of Rollbar and let us help you take control of impactful Rails errors.</p>
+                </article></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hacker News</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Hacker News</h1>
+    <p><strong>URL:</strong> <a href="https://technology.doximity.com/articles/ruby-delights-built-into-the-language">https://technology.doximity.com/articles/ruby-delights-built-into-the-language</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876789795</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><em>BTW, we're ⚡ hiring Infra, SRE, Web, Mobile, and Data engineers at <a href="https://work.doximity.com/positions">Doximity (see roles)</a> -- find out more about our <a href="https://technology.doximity.com/technology-stack">technical stack</a>.</em></p>
+
+<hr>
+
+<h2 id="ruby-delights-built-into-the-language">Ruby Delights Built Into The Language</h2>
+
+<p>The hidden gems that make Ruby a delight are not always... gems.  There are so many Ruby features <em>built in</em> to the language itself.  In <a href="https://technology.doximity.com/articles/the-hidden-gems-of-ruby-s-irb">the very first episode of this series</a>, we dove deep into the internals of one such gem bundled with Ruby's standard library: IRB.  Keeping on theme, I'd like to take some time to explore some other areas of Ruby's source.</p>
+
+<p>So get ready to open up that IRB console you read all about, and we'll explore some incredible Ruby examples provided to you by Ruby itself.</p>
+
+<h2 id="jump-to-your-favorites">Jump To Your Favorites</h2>
+
+<ol>
+<li> <a href="#benchmark">benchmark.rb – Measure performance of Ruby code</a></li>
+<li> <a href="#a-biorhythm-calculator">biorhythm.rb   – A biorhythm calculator</a></li>
+<li> <a href="#display-a-simple-calendar">cal.rb – A simple calendar display</a></li>
+<li> <a href="#suppress-echo-of-terminal-input-using-ioctl">cbreak.rb – Supress echo of terminal input using ioctl</a></li>
+<li> <a href="#extending-pstore-for-the-cgi-session">cgi-session-pstore.rb – A file-based persistence mechanism for tracking the CGI Session as a Hash</a></li>
+<li> <a href="#a-simple-tcp-server-and-client">clnt.rb, svr.rb and tsvr.rb –    Start a TCP socket server and connect a client</a></li>
+<li> <a href="#test-code-coverage">coverage.rb – Simple test code coverage</a></li>
+<li> <a href="#delegating-methods-with-ease">delegate.rb –&nbsp;Delegating methods with ease</a></li>
+<li> <a href="#directory-access">dir.rb – Directory access</a></li>
+<li> <a href="#drb-distributed-object-system-for-ruby">DRb – Distributed object system for Ruby (think RPC for OO)</a></li>
+<li> <a href="#dualstack-tcp-server-and-client">dualstack-fetch.rb and dualstack-httpd.rb –&nbsp;A simultaneous multi-threaded IPv4/IPv6 TCP server and client</a></li>
+<li> <a href="#evaluating-ruby">eval.rb   – A simple evaluator</a></li>
+<li> <a href="#method-access">export.rb – method access example</a></li>
+<li> <a href="#explore-the-ruby-grammar">exyacc.rb – Extract BNF from the yacc file</a></li>
+<li> <a href="#factorial-calculator">fact.rb   – A factorial calculator</a></li>
+<li> <a href="#fibonacci">fib.rb – Fibonacci number calculations</a></li>
+<li> <a href="#unix-mail-from">from.rb   – Scan mail spool</a></li>
+<li> <a href="#gather-full-paths">fullpath.rb   – Convert ls -lR to fullpath format</a></li>
+<li> <a href="#saving-and-loading-ruby-instruction-sequences">iseq_loader.rb – A sample of compiler/loader for binary compiled file</a></li>
+<li> <a href="#a-front-end-for-the-less-command">less.rb   – A front-end for the <code>less</code> command</a></li>
+</ol>
+
+<hr>
+
+<h2 id="benchmark">Benchmark</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/benchmark.rb">source: benchmark.rb</a></p>
+
+<p>Benchmarking can be an incredibly valuable tool, but is quite the rabbit hole of theory vs. pragmatism.  The "what", and "how", of benchmarking is fraught with sharp opinions and inconsistent recommendations.  For now, we'll throw all that out the window and focus on Ruby's lovely example using the <a href="https://rubyapi.org/3.1/o/benchmark">Benchmark module</a> to calculate the fastest way to assign a single character string to a local variable inside various iterators.</p>
+<div><pre><code>$&gt; ruby sample/benchmark.rb
+[50000 times iterations of `a = "1"']
+              user     system      total        real
+for:      0.023797   0.000935   0.024732 (  0.025606)
+times:    0.017888   0.000440   0.018328 (  0.018801)
+upto:     0.016897   0.000565   0.017462 (  0.017925)
+   0.014552   0.000614   0.015166 (  0.015863)
+   0.016184   0.000804   0.016988 (  0.017833)
+   0.015323   0.000534   0.015857 (  0.016280)
+</code></pre></div>
+<p>I think this is a nice little introduction to the power of the tool.  With a little tweaking we could try to isolate side-affects of the environment and VM (like garbage collection) and show some simple statistics on averages and total timing.  I'll leave that to you :-)</p>
+
+<h3 id="irb-s-friendly-benchmarking-extension-measure">IRB's friendly benchmarking extension: measure</h3>
+
+<p>As of Ruby 3.0, you can now get instant feedback on how long things take to process right  in IRB!</p>
+<div><pre><code><span>irb</span><span>(</span><span>main</span><span>):</span><span>001</span><span>:</span><span>0</span><span>&gt;</span> <span>measure</span>
+<span>TIME</span> <span>is</span> <span>added</span><span>.</span>
+<span>=</span><span>&gt;</span> <span>nil</span>
+
+<span>irb</span><span>(</span><span>main</span><span>):</span><span>002</span><span>:</span><span>0</span><span>&gt;</span> <span>sleep</span> <span>1</span>
+<span>processing</span> <span>time: </span><span>1.004886</span><span>s</span>
+<span>=&gt;</span> <span>1</span>
+
+<span>irb</span><span>(</span><span>main</span><span>):</span><span>003</span><span>:</span><span>0</span><span>&gt;</span> <span>puts</span> <span>"Measure me."</span>
+<span>Measure</span> <span>me</span><span>.</span>
+<span>processing</span> <span>time: </span><span>0.000043</span><span>s</span>
+<span>=&gt;</span> <span>nil</span>
+
+<span>irb</span><span>(</span><span>main</span><span>):</span><span>004</span><span>:</span><span>0</span><span>&gt;</span> <span>measure</span> <span>:off</span>
+<span>=&gt;</span> <span>nil</span>
+</code></pre></div>
+<p>Check out my <a href="https://technology.doximity.com/articles/the-hidden-gems-of-ruby-s-irb">deep-dive on IRB</a> for more juicy features!</p>
+
+<h3 id="learn-more-about-benchmarking-ruby-code">Learn More About Benchmarking Ruby Code</h3>
+
+<p>Benchmarking is a popular (and broad) topic.  This sample is a tiny piece in the very large benchmarking pie.  If you want to dig in more, here are some great entry points:</p>
+
+<ul>
+<li>Much of <code>Benchmark</code> has moved to the <a href="https://github.com/ruby/benchmark">benchmark gem</a></li>
+<li><a href="https://twitter.com/MattStudies">Matthew Gaudet</a>'s 2016 RubyKaigi talk is a great introduction on the science of benchmarking: <a href="https://www.youtube.com/watch?v=kJDOpucaUR4">Ruby3x3: How are we going to measure 3x?</a></li>
+<li>There are many <a href="https://rubybench.org/benchmarks">long-running Ruby benchmarks tracked by RubyBench</a>.</li>
+<li><a href="https://eregon.me/blog/2022/01/06/benchmarking-cruby-mjit-yjit-jruby-truffleruby.html">Benchmarking various Ruby implementations</a></li>
+<li><a href="https://www.mayerdan.com/ruby/2018/03/25/ruby-benchmarking">Learning by Benchmarking A Proposed Ruby Change</a> by <a href="https://twitter.com/danmayer">Dan Mayer</a></li>
+<li><a href="https://github.com/fastruby/fast-ruby">fast-ruby</a>: micro-benchmarks of Ruby idioms.</li>
+<li>The <a href="https://blog.testdouble.com/posts/2021-07-19-benchmarking-your-ruby-with-time_up/">time_up gem</a> is a great tool for benchmarking aggregates and comparing</li>
+</ul>
+
+<hr>
+
+<h2 id="a-biorhythm-calculator">A Biorhythm Calculator</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/biorhythm.rb">source: biorhythm.rb</a></p>
+
+<p>I wasn't able to find the original post from the Newsgroup referenced in the comment, but this was by far one of my favorite examples.  It prompts you for your birth date, and then crunches some planetary numbers to calculate, AND GRAPH, your emotional (E), physical (P), and mental (M) well being!  This week I'm sharp-as-a-tack, and slow and sad as a sack.  Here's to next week!</p>
+<div><pre><code><span>$&gt;</span> ruby sample/biorhythm.rb
+Your birthday <span>(</span>YYYYMMDD<span>)</span>: 19840221
+
+<span>&gt;&gt;&gt;</span> Biorhythm <span>&lt;&lt;&lt;</span>
+The birthday 1984.02.21 is a Tue
+Age <span>in </span>days: <span>[</span>13770]
+
+                     <span>P</span><span>=</span>physical, <span>E</span><span>=</span>emotional, <span>M</span><span>=</span>mental
+             <span>-------------------------</span>+-------------------------
+                     Bad Condition    |    Good Condition
+             <span>-------------------------</span>+-------------------------
+2021.11.03 : .E.......................|........................M
+2021.11.04 : P.E......................|.......................M.
+2021.11.05 : .P...E...................|.....................M...
+2021.11.06 : ...P.....E...............|..................M......
+2021.11.07 : .......P......E..........|..............M..........
+2021.11.08 : ............P......E.....|..........M..............
+2021.11.09 : ..................P......E......M..................
+2021.11.10 : .........................P.M...E...................
+2021.11.11 : .......................M.|......P...E..............
+2021.11.12 : ..................M......|............P..E.........
+             <span>-------------------------</span>+-------------------------
+</code></pre></div>
+<hr>
+
+<h2 id="display-a-simple-calendar">Display A Simple Calendar</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/cal.rb">source: cal.rb</a></p>
+
+<p>Another fun example here with some practical use.  <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/cal.rb">Cal.rb</a> is a clone of the <a href="https://man7.org/linux/man-pages/man1/cal.1.html">linux cal(1) command</a> re-implemented in Ruby.  It will print out a calendar in your terminal in several flavors (examples below). It makes some very interesting use of <a href="https://github.com/ruby/ruby/blob/5b8d22ebe60267283a5ca4a1c2ddba507b3d8ba9/lib/getoptlong.rb#L87">GetoptLong</a> as well as some functional programming techniques extracted from an old 1988 textbook: <a href="https://www.amazon.com/Introduction-Functional-Programming-International-Computing/dp/0134841891/">Introduction to Functional Programming</a>.</p>
+
+<p>Display the current month:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/cal.rb <span>-m</span>
+   November 2021
+ M Tu  W Th  F  S  S
+ 1  2  3  4  5  6  7
+ 8  9 10 11 12 13 14
+15 16 17 18 19 20 21
+22 23 24 25 26 27 28
+29 30
+</code></pre></div>
+<p>Display the current month vertically:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/cal.rb <span>-t</span>
+   November 2021
+ S     7 14 21 28
+ M  1  8 15 22 29
+Tu  2  9 16 23 30
+ W  3 10 17 24
+Th  4 11 18 25
+ F  5 12 19 26
+ S  6 13 20 27
+</code></pre></div>
+<p>Display the whole year:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/cal.rb <span>-y</span>
+
+      January               February               March
+ S  M Tu  W Th  F  S   S  M Tu  W Th  F  S   S  M Tu  W Th  F  S
+                1  2      1  2  3  4  5  6      1  2  3  4  5  6
+ 3  4  5  6  7  8  9   7  8  9 10 11 12 13   7  8  9 10 11 12 13
+10 11 12 13 14 15 16  14 15 16 17 18 19 20  14 15 16 17 18 19 20
+17 18 19 20 21 22 23  21 22 23 24 25 26 27  21 22 23 24 25 26 27
+24 25 26 27 28 29 30  28                    28 29 30 31
+31
+       April                  May                   June
+ S  M Tu  W Th  F  S   S  M Tu  W Th  F  S   S  M Tu  W Th  F  S
+             1  2  3                     1         1  2  3  4  5
+ 4  5  6  7  8  9 10   2  3  4  5  6  7  8   6  7  8  9 10 11 12
+11 12 13 14 15 16 17   9 10 11 12 13 14 15  13 14 15 16 17 18 19
+18 19 20 21 22 23 24  16 17 18 19 20 21 22  20 21 22 23 24 25 26
+25 26 27 28 29 30     23 24 25 26 27 28 29  27 28 29 30
+                      30 31
+        July                 August              September
+ S  M Tu  W Th  F  S   S  M Tu  W Th  F  S   S  M Tu  W Th  F  S
+             1  2  3   1  2  3  4  5  6  7            1  2  3  4
+ 4  5  6  7  8  9 10   8  9 10 11 12 13 14   5  6  7  8  9 10 11
+11 12 13 14 15 16 17  15 16 17 18 19 20 21  12 13 14 15 16 17 18
+18 19 20 21 22 23 24  22 23 24 25 26 27 28  19 20 21 22 23 24 25
+25 26 27 28 29 30 31  29 30 31              26 27 28 29 30
+
+      October               November              December
+ S  M Tu  W Th  F  S   S  M Tu  W Th  F  S   S  M Tu  W Th  F  S
+                1  2      1  2  3  4  5  6            1  2  3  4
+ 3  4  5  6  7  8  9   7  8  9 10 11 12 13   5  6  7  8  9 10 11
+10 11 12 13 14 15 16  14 15 16 17 18 19 20  12 13 14 15 16 17 18
+17 18 19 20 21 22 23  21 22 23 24 25 26 27  19 20 21 22 23 24 25
+24 25 26 27 28 29 30  28 29 30              26 27 28 29 30 31
+31
+</code></pre></div>
+<p>Display the calendar year: 1984</p>
+<div><pre><code><span>$&gt;</span> ruby sample/cal.rb <span>-y</span> 1984
+
+      January               February               March
+ S  M Tu  W Th  F  S   S  M Tu  W Th  F  S   S  M Tu  W Th  F  S
+ 1  2  3  4  5  6  7            1  2  3  4               1  2  3
+ 8  9 10 11 12 13 14   5  6  7  8  9 10 11   4  5  6  7  8  9 10
+15 16 17 18 19 20 21  12 13 14 15 16 17 18  11 12 13 14 15 16 17
+22 23 24 25 26 27 28  19 20 21 22 23 24 25  18 19 20 21 22 23 24
+29 30 31              26 27 28 29           25 26 27 28 29 30 31
+
+       April                  May                   June
+ S  M Tu  W Th  F  S   S  M Tu  W Th  F  S   S  M Tu  W Th  F  S
+ 1  2  3  4  5  6  7         1  2  3  4  5                  1  2
+ 8  9 10 11 12 13 14   6  7  8  9 10 11 12   3  4  5  6  7  8  9
+15 16 17 18 19 20 21  13 14 15 16 17 18 19  10 11 12 13 14 15 16
+22 23 24 25 26 27 28  20 21 22 23 24 25 26  17 18 19 20 21 22 23
+29 30                 27 28 29 30 31        24 25 26 27 28 29 30
+
+        July                 August              September
+ S  M Tu  W Th  F  S   S  M Tu  W Th  F  S   S  M Tu  W Th  F  S
+ 1  2  3  4  5  6  7            1  2  3  4                     1
+ 8  9 10 11 12 13 14   5  6  7  8  9 10 11   2  3  4  5  6  7  8
+15 16 17 18 19 20 21  12 13 14 15 16 17 18   9 10 11 12 13 14 15
+22 23 24 25 26 27 28  19 20 21 22 23 24 25  16 17 18 19 20 21 22
+29 30 31              26 27 28 29 30 31     23 24 25 26 27 28 29
+                                            30
+      October               November              December
+ S  M Tu  W Th  F  S   S  M Tu  W Th  F  S   S  M Tu  W Th  F  S
+    1  2  3  4  5  6               1  2  3                     1
+ 7  8  9 10 11 12 13   4  5  6  7  8  9 10   2  3  4  5  6  7  8
+14 15 16 17 18 19 20  11 12 13 14 15 16 17   9 10 11 12 13 14 15
+21 22 23 24 25 26 27  18 19 20 21 22 23 24  16 17 18 19 20 21 22
+28 29 30 31           25 26 27 28 29 30     23 24 25 26 27 28 29
+                                            30 31
+</code></pre></div>
+<h3 id="learn-more-about-dates-with-ruby">Learn More About Dates With Ruby</h3>
+
+<ul>
+<li>Be sure to check out the Ruby <a href="https://rubyapi.org/3.1/o/date">Date documentation</a></li>
+<li><a href="https://twitter.com/gregnavis">Greg Navis</a> recently shared <a href="https://twitter.com/gregnavis/status/1600882033806364672">a lovely example of how to use Date objects for determining various date facts</a></li>
+</ul>
+
+<hr>
+
+<h2 id="suppress-echo-of-terminal-input-using-ioctl">Suppress Echo of Terminal Input Using ioctl</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/cbreak.rb">source: cbreak.rb</a></p>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/cbreak.rb">cbreak.rb</a> showcases several bit-wise operators and uses a special <a href="https://github.com/ruby/ruby/blob/d92f09a5eea009fa28cd046e9d0eb698e3d94c5c/spec/ruby/core/io/ioctl_spec.rb#L13">IO#ioctl</a> method to buffer an empty string in binary to hide (<em>not</em> echo) the input from <code>STDIN</code>.</p>
+
+<p>While this may be a clever way to way to hide the input stream, as of Ruby 2.0 you can simply use <a href="https://rubyapi.org/3.1/o/io#method-i-noecho">IO#noecho</a> to achieve the same result.</p>
+
+<hr>
+
+<h2 id="extending-pstore-for-the-cgi-session">Extending PStore For The CGI Session</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/cgi-session-pstore.rb">source: cgi-session-pstore.rb</a></p>
+
+<p>While the days of CGI are behind many of us, the <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/cgi-session-pstore.rb">sample/cgi-session-pstore.rb</a> is a simple example of using the more impressive <a href="https://github.com/ruby/ruby/blob/ruby_3_1/lib/cgi/session/pstore.rb#L23">CGI::Session::PStore</a> which extends <a href="https://rubyapi.org/3.1/o/pstore">PStore</a> to create a file-based persistence mechanism for keeping track of the CGI Session as a Hash.</p>
+
+<p>If you ever find the need for an efficient way to persist data represented as a hash to the file system, check out <code>PStore</code>!</p>
+
+<h3 id="learn-more-about-pstore-in-ruby">Learn More About PStore In Ruby</h3>
+
+<ul>
+<li><a href="https://github.com/ruby/pstore">PStore</a> is now it's own gem!</li>
+<li><a href="https://twitter.com/pawelpacana">Paweł Pacana</a> wrote up how they used it to <a href="https://blog.arkency.com/practical-use-of-ruby-pstore/">create a thread-safe persisted cache-store for a faraday plugin</a>!  Neat!</li>
+</ul>
+
+<hr>
+
+<h2 id="a-simple-tcp-server-and-client">A Simple TCP Server and Client</h2>
+
+<p>Source files used in these examples:</p>
+
+<ul>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/svr.rb">source: svr.rb</a></li>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/clnt.rb">source: clnt.rb</a></li>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/tsvr.rb">source: tsvr.rb</a></li>
+</ul>
+
+<p>The <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/svr.rb">svr.rb</a> shows how to start a simple (single-threaded) <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP Socket</a> server that echoes out the input:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/svr.rb
+Trying localhost ... <span>done
+</span>addr: AF_INET6:65390:::1:::1
+server is on 65390:::1:::1
+<span>#&lt;TCPServer:0x00007ff192818bf8&gt; is accepted</span>
+<span>#&lt;TCPSocket:0x00007ff192850eb8&gt; is gone</span>
+</code></pre></div>
+<p>You can then connect to this TCP socket using Ruby with the <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/clnt.rb">clnt.rb</a>:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/clnt.rb
+Trying localhost ... <span>done
+</span>addr: AF_INET6:65392:::1:::1
+peer: AF_INET6:65390:::1:::1
+Check
+Check
+</code></pre></div>
+<p>A multi-threaded TCP socket server example (<a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/tsvr.rb">tsvr.rb</a>) is also included!</p>
+<div><pre><code><span>$&gt;</span> ruby sample/tsvr.rb
+server is on 52276::::::
+<span>#&lt;TCPSocket:0x00007f925101a488&gt; is accepted</span>
+<span>#&lt;TCPSocket:0x00007f925101a488&gt; is gone</span>
+</code></pre></div>
+<p>With a little adjusting, you could easily stream your logs to a simple locally running TCP socket rather than taking up that valuable disk space 😁</p>
+
+<h2 id="test-code-coverage">Test Code Coverage</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/coverage.rb">source: coverage.rb</a></p>
+
+<p>The <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/coverage.rb">sample/coverage.rb</a> example shows how to use Ruby's native <code>Coverage</code> module to analyze and measure what parts of a Ruby program are run.  The file by itself doesn't measure anything, so I made a simple <code>cov.rb</code> file in the root of the <a href="https://github.com/fastruby/fast-ruby">fast-ruby source</a>:</p>
+<div><pre><code><span># cov.rb</span>
+<span>require_relative</span> <span>'../ruby/sample/coverage.rb'</span>
+<span>load</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>'./code/string/gsub-vs-tr.rb'</span><span>)</span>
+</code></pre></div>
+<p>This runs code coverage on <a href="https://github.com/fastruby/fast-ruby/blob/ruby_3_1/code/string/gsub-vs-tr.rb">this gsub-vs-tr.rb benchmark file</a> and generated a <code>./code/string/gsub-vs-tr.rb.cov</code> file with the results:</p>
+<div><pre><code>       1:    1:require 'benchmark/ips'
+       -:    2:
+       1:    3:SLUG = 'writing-fast-ruby'
+       -:    4:
+       1:    5:def slow
+ 4454286:    6:  SLUG.gsub('-', ' ')
+       -:    7:end
+       -:    8:
+       1:    9:def fast
+13655760:   10:  SLUG.tr('-', ' ')
+       -:   11:end
+       -:   12:
+       1:   13:Benchmark.ips do |x|
+ 4454287:   14:  x.report('String#gsub') { slow }
+13655761:   15:  x.report('String#tr')   { fast }
+       1:   16:  x.compare!
+       -:   17:end
+</code></pre></div>
+<h3 id="learn-more-about-code-coverage-in-ruby">Learn More About Code Coverage In Ruby</h3>
+
+<ul>
+<li>For a deeper dive on code coverage in Ruby, check out <a href="https://twitter.com/kevin_j_m">Kevin Murphy</a>'s excellent article, <a href="https://kevinjmurphy.com/posts/rubys-got-you-covered/">"Ruby's Got You Covered"</a>.</li>
+<li><a href="https://www.twitter.com/JemmaIssroff">Jemma Issroff</a> has <a href="https://jemma.dev/blog/ruby-code-coverage">an excellent article on the importance of both line and branch code coverage in Ruby</a>
+– <a href="http://twitter.com/etagwerker">Ernesto Tagwerker</a> has <a href="https://www.fastruby.io/blog/rails/what-is-code-coverage-ruby-on-rails.html">a fantastic breakdown of code coverage reports for the Rails framework</a>. </li>
+</ul>
+
+<hr>
+
+<h2 id="delegating-methods-with-ease">Delegating Methods With Ease</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/delegate.rb">source: delegate.rb</a></p>
+
+<p>Delegating methods is a great way to keep classes lean.  Ruby comes bundled with the <a href="https://github.com/ruby/delegate">Delegator gem</a> which is highlighted in the <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/delegate.rb">delegate.rb</a>.  Two takeaways here are:</p>
+
+<ol>
+<li>You can use <a href="https://rubyapi.org/3.1/o/object#method-i-DelegateClass"><code>DelegateClass</code></a> to proxy all methods to the provided class</li>
+</ol>
+<div><pre><code><span>require</span> <span>"delegate"</span>
+<span>class</span> <span>SuperArray</span> <span>&lt;</span> <span>DelegateClass</span><span>(</span><span>Array</span><span>)</span>
+  <span>def</span> <span>initialize</span><span>()</span>
+    <span>super</span><span>([])</span>
+  <span>end</span>
+<span>end</span>
+
+<span>SuperArray</span><span>.</span><span>new</span><span>.</span><span>push</span> <span>25</span> <span># =&gt; [25]</span>
+</code></pre></div>
+<ol>
+<li>Proxy all methods to an instance:</li>
+</ol>
+<div><pre><code><span>require</span> <span>"delegate"</span>
+<span>woo</span> <span>=</span> <span>Object</span><span>.</span><span>new</span>
+<span>def</span> <span>woo</span><span>.</span><span>hoo</span>
+  <span>puts</span> <span>"woohoo!"</span>
+<span>end</span>
+<span>SimpleDelegator</span><span>.</span><span>new</span><span>(</span><span>woo</span><span>).</span><span>hoo</span> <span># =&gt; "woohoo!"</span>
+</code></pre></div>
+<h3 id="learn-more-about-delegation-in-ruby">Learn More About Delegation In Ruby</h3>
+
+<ul>
+<li>Delegates are a great way to transition legacy objects into new objects that better represent how your application has grown 😁 They are also a common way to <a href="https://refactoring.guru/replace-inheritance-with-delegation">refactor away from inherited classes</a>.</li>
+<li>Avdi has a wonderful article "<a href="https://avdi.codes/sustainable-development-in-ruby-part-3-delegation/">Sustainable Development in Ruby, Part 3: Delegation</a>" where he leaves some wisdom on when to consider using delegation and some caveats.</li>
+</ul>
+
+<hr>
+
+<h2 id="directory-access">Directory Access</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/dir.rb">source: dir.rb</a></p>
+
+<p>This <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/dir.rb">dir.rb</a> provides some insight into the powerful <a href="https://github.com/ruby/ruby/blob/ruby_3_1/dir.rb"><code>Dir</code> class</a>. I modified the example to print out all Ruby files (<code>*.rb</code>) in the root of the Ruby project directory.</p>
+<div><pre><code><span># directory access</span>
+<span># list all .rb files</span>
+<span>dirp</span> <span>=</span> <span>Dir</span><span>.</span><span>open</span><span>(</span><span>"."</span><span>)</span>
+<span>for</span> <span>f</span> <span>in</span> <span>dirp</span>
+  <span>case</span> <span>f</span>
+  <span>when</span> <span>/\.rb\z/</span>
+    <span>print</span> <span>f</span><span>,</span> <span>"</span><span>\n</span><span>"</span>
+  <span>else</span>
+    <span># do not print</span>
+  <span>end</span>
+<span>end</span>
+<span>dirp</span><span>.</span><span>close</span>
+</code></pre></div>
+<p>When I ran this, I found some interesting files! Like, what's the story behind <a href="https://github.com/ruby/ruby/blob/ruby_3_1/golf_prelude.rb"><code>golf_prelude.rb</code></a>?</p>
+<div><pre><code><span>$&gt;</span> ruby sample/dirb.rb
+array.rb
+nilclass.rb
+numeric.rb
+prelude.rb
+ast.rb
+golf_prelude.rb
+ractor.rb
+KNOWNBUGS.rb
+warning.rb
+gem_prelude.rb
+io.rb
+timev.rb
+trace_point.rb
+dir.rb
+kernel.rb
+gc.rb
+pack.rb
+</code></pre></div>
+<h3 id="learning-more-about-working-with-directories-in-ruby">Learning more about working with directories in Ruby</h3>
+
+<ul>
+<li><a href="https://rubyapi.org/3.1/o/dir">Dir</a> is a very powerful feature of Ruby.  I recommend checking out more of what it's capable of in the documentation, which has plenty of treats to discover.</li>
+</ul>
+
+<hr>
+
+<h2 id="drb-distributed-object-system-for-ruby">DRb: Distributed Object System For Ruby</h2>
+
+<p>Source files used in these examples:</p>
+
+<ul>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb">source: drb</a></li>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb/dchats.rb">source: dchats.rb</a></li>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb/dchatc.rb">source: dchatc.rb</a></li>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb/dlogd.rb">source: dlogd.rb</a></li>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb/dlogc.rb">source: dlogc.rb</a></li>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/rinda-ring.rb">source: rinda-ring.rb</a></li>
+</ul>
+
+<p>If you're as unfamiliar with what a distributed object system is as I was, then you'll find some comfort in this <a href="https://www.druby.org/sidruby/2-1-understanding-distributed-object-systems.html">spectacular documentation on the subject</a>.</p>
+
+<p><img src="data:image/jpeg;base64,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" alt="Distributed Object Systems"></p>
+
+<p>TLDR; with <strong>dRuby</strong>, you can create distributed systems as if you were doing normal Ruby programming.  <a href="http://www.slideshare.net/Blaine/scaling-twitter">Twitter originally used dRuby and Rinda</a> before building its own queuing system, called Starling, in Ruby.</p>
+
+<p>Ruby includes <em>many</em> examples of using dRuby in the source, but I'll showcase the most clear use-case I found:</p>
+
+<ol>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb/dchats.rb">Distributed chat server</a></li>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb/dchatc.rb">Distributed chat client</a></li>
+</ol>
+
+<p>With those in place, we can then start a dRuby chat server:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/dchats.rb
+druby://::1:53383
+</code></pre></div>
+<p>Then connect to the dRuby chat server as myself:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/dchatc.rb druby://::1:53383 Valentino
+Hi
+<span>&gt;</span>Valentino&lt; Hi
+</code></pre></div>
+<p>And connect another client named <strong>Robo</strong>:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/dchatc.rb druby://::1:53383 Robo
+Hello
+<span>&gt;</span>Robo&lt; Hello
+</code></pre></div>
+<p>And a small snapshot of our mind-bending conversation from Valentino's client:</p>
+<div><pre><code>Hi
+&gt;Valentino&lt; Hi
+&lt;Robo&gt; Hello
+What is up?
+&gt;Valentino&lt; What is up?
+&lt;Robo&gt; Nuttin Bot
+</code></pre></div>
+<p>Not the prettiest of chat apps, but the power of dRuby is distribution.  The chat clients don't have to be on the same OS, or even the same machine!</p>
+
+<h3 id="learn-more-about-distributed-ruby">Learn More About Distributed Ruby</h3>
+
+<p>The Ruby source has <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb">many other dRuby examples to explore</a>. One that I found of interest was <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb/dlogd.rb">the distributed log server</a> and <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/drb/dlogc.rb">example usage</a>.</p>
+
+<p>For more dRuby in The Real World™, check out <a href="https://rubykaigi.org/2021-takeout/presentations/m_seki.html">Masatoshi Seki's enlightening Ruby Kaigi talk</a> where they use dRuby in embedded software for small medical devices.</p>
+
+<p>Be sure to investigate the source of <a href="https://github.com/ruby/drb">this embedded drb gem</a>.</p>
+
+<hr>
+
+<h2 id="dual-stack-tcp-server-and-client">Dual-stack TCP Server and Client</h2>
+
+<p>Source files used in these examples:</p>
+
+<ul>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/dualstack-httpd.rb">source: dualstack-httpd.rb</a></li>
+<li><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/dualstack-fetch.rb">source: dualstack-fetch.rb</a></li>
+</ul>
+
+<p>First, we start up our multi-protocol daemon using the <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/dualstack-httpd.rb">dualstack-httpd.rb</a>:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/dualstack-httpd.rb
+socket <span>#&lt;TCPServer:0x00007facd68303d0&gt; started, address 0.0.0.0 port 8888</span>
+socket <span>#&lt;TCPServer:0x00007facd6833b98&gt; started, address :: port 8888</span>
+socket 0.0.0.0 port 8888 listener started, pid 39003 thread <span>#&lt;Thread:0x00007facd6833300 sample/dualstack-httpd.rb:24 run&gt;</span>
+socket :: port 8888 listener started, pid 39003 thread <span>#&lt;Thread:0x00007facd6832d38 sample/dualstack-httpd.rb:24 run&gt;</span>
+socket :: port 8888 accepted, thread <span>#&lt;Thread:0x00007facd6831dc0 sample/dualstack-httpd.rb:30 run&gt;</span>
+socket :: port 8888 got string
+socket :: port 8888 processed, thread <span>#&lt;Thread:0x00007facd6831dc0 sample/dualstack-httpd.rb:30 run&gt; terminating</span>
+socket :: port 8888 accepted, thread <span>#&lt;Thread:0x00007facd6853ab0 sample/dualstack-httpd.rb:30 run&gt;</span>
+socket :: port 8888 got string
+socket :: port 8888 processed, thread <span>#&lt;Thread:0x00007facd6853ab0 sample/dualstack-httpd.rb:30 run&gt; terminating</span>
+</code></pre></div>
+<p>Now we can use the <a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/dualstack-fetch.rb">dualstack-fetch.rb</a> example to connect to the server either over IPv4:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/dualstack-fetch.rb http://localhost:8888/
+conntecting to localhost port 8888
+conntected to ::1 port 8888
+HTTP/1.0 200 OK
+Content-type: text/plain
+
+this is <span>test</span>: my name is :: port 8888, you sent:
+<span>---start</span>
+GET / HTTP/1.0
+Host: localhost
+<span>---end</span>
+</code></pre></div>
+<p>Or over IPv6:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/dualstack-fetch.rb http://:::8888/
+conntecting to :: port 8888
+conntected to ::1 port 8888
+HTTP/1.0 200 OK
+Content-type: text/plain
+
+this is <span>test</span>: my name is :: port 8888, you sent:
+<span>---start</span>
+GET / HTTP/1.0
+Host: ::
+<span>---end</span>
+</code></pre></div>
+<h3 id="learn-more-about-ipv6-in-ruby">Learn more about IPv6 In Ruby</h3>
+
+<p><a href="https://twitter.com/lensboel">Claus Lensbøl</a> has <a href="https://blog.cmol.me/ipv6-ruby-part-1-introduction-to-ipv6-f45c7cf18151">a great series on working with IPv6 in Ruby</a>.  He explores both the value of using it, as well as how to provide backwards compatibility for IPv4.</p>
+
+<hr>
+
+<h2 id="evaluating-ruby">Evaluating Ruby</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/eval.rb">source: eval.rb</a></p>
+
+<p>While there are quite a number of ways to evaluate Ruby code, the most notoriously easy of these is <a href="https://rubyapi.org/3.1/o/kernel#method-i-eval"><code>Kernel.eval</code></a>.  In just forty lines of code, this Ruby script creates a super simplified REPL reminiscent of IRB, and it even gracefully handles errors!</p>
+<div><pre><code><span>$&gt;</span> ruby sample/eval.rb
+ruby&gt; puts <span>"Hello Ruby ❤️"</span>
+Hello Ruby ❤️
+nil
+ruby&gt; class BestLanguageEver
+ruby| def is?
+ruby| puts <span>"Ruby, of course!"</span>
+ruby| end
+ruby| end
+:is?
+ruby&gt; BestLanguageEver.new.is?
+Ruby, of course!
+nil
+ruby&gt; hug
+ERR: undefined <span>local </span>variable or method <span>`</span>hug<span>' for main:Object
+ruby&gt;
+</span></code></pre></div>
+<p>It does this by endlessly looping and waiting on <code>STDIN</code> for new lines.  Once one is entered, it pipes the content of that line through <a href="https://github.com/ruby/ruby/blob/ruby_3_1/vm_eval.c#L1802"><code>Kernel</code>'s built-in <code>eval</code> method</a>.  This incredibly powerful method allows you to evaluate and execute arbitrary strings as if it were Ruby itself.  It can even do this <a href="https://github.com/ruby/ruby/blob/ruby_3_1/vm_eval.c#L1731">in the context of a specific binding</a> (if you pass it one), and you can also provide it with a file name and/or line number to attach to the stack trace in case there are any issues with its execution.</p>
+
+<h3 id="learn-more-about-evaluating-ruby-code">Learn more about evaluating Ruby code</h3>
+
+<p>First and foremost, check out Kevin Newton's incredible series: <a href="https://kddnewton.com/2022/11/30/advent-of-yarv-part-0.html">Advent of YARV</a>.  His multi-part exploration into the CRuby internals is absolutely incredible at describing in great detail all that goes into the CRuby stack.</p>
+
+<p>There are so many great resources out there that offer some great detail into how Ruby executes your code.  The gold standard for this is, of course, Pat Shaughnessy's <a href="https://patshaughnessy.net/ruby-under-a-microscope"><em>Ruby Under A Microscope</em></a>.  This delightful book goes above and beyond to explain in the finest of detail how the YARV stack and the Ruby stack work together to evaluate and execute your Ruby code.  In this specific example provided in the Ruby source, it focuses on evaluating Ruby using <code>Kernel</code>; however, there are <a href="https://www.infoq.com/articles/eval-options-in-ruby/">several other ways to execute arbitrary ruby code that are outlined in this great article by Jay Fields</a>.  I also enjoyed this excellent write-up by Ilya Bylich on <a href="https://iliabylich.github.io/2020/01/25/evaluating-ruby-in-ruby.html">Evaluating Ruby in Ruby</a> that goes step-by-step through this process starting from the instruction sequence and following the frames through the stack using various examples.</p>
+
+<hr>
+
+<h2 id="method-access">Method Access</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/export.rb">source: export.rb</a></p>
+
+<p>This tiny example showcases the power of method access with the <code>public</code> and <code>private</code> keywords.  Now, if you're like me, you had <em>no idea these can take arguments</em>!  To make the example more clear as to what is happening, I made a small tweak to this example with some updated naming:</p>
+<div><pre><code><span># sample/method_access.rb</span>
+<span>class</span> <span>PrivatePuts</span>
+   <span>private</span> <span>:puts</span>
+<span>end</span>
+
+<span>begin</span>
+  <span>PrivatePuts</span><span>.</span><span>new</span><span>.</span><span>puts</span>
+<span>rescue</span> <span>NoMethodError</span> <span>=&gt;</span> <span>e</span>
+  <span>printf</span> <span>"Tisk, tisk: %s</span><span>\n</span><span>"</span><span>,</span> <span>e</span><span>.</span><span>message</span>
+<span>end</span>
+
+<span>class</span> <span>PublicPuts</span> <span>&lt;</span> <span>PrivatePuts</span>
+  <span>def</span> <span>puts</span><span>(</span><span>*</span><span>args</span><span>)</span>
+    <span>print</span> <span>"Announcement: "</span>
+    <span>super</span>
+  <span>end</span>
+<span>end</span>
+
+<span>PublicPuts</span><span>.</span><span>new</span><span>.</span><span>puts</span> <span>"Hello, goodbye."</span>
+</code></pre></div>
+<p>When running this, you can see how we can "export", or provide access to, a private method in a parent-class to a public method in a sub-class.</p>
+<div><pre><code><span>$&gt;</span> ruby sample/method_access.rb
+Tisk, tisk: private method <span>`</span>puts<span>' called for #&lt;PrivatePuts:0x00007ff0a4833fa0&gt;
+Announcement: Hello, goodbye.
+</span></code></pre></div>
+<h3 id="learn-more-about-method-access-in-ruby">Learn More About Method Access In Ruby</h3>
+
+<p>"So why is this example called <code>export.rb</code>?" I hear you ask.  Well, as it turns out, <code>public</code> and <code>private</code> (amongst others) are <a href="https://github.com/ruby/ruby/blob/ruby_3_1/vm_method.c#L2268">implemented in the VM with the concept of method visibility</a>.  When these methods are called, they tell the interpreter to "export" the provided method(s) to the VM using <a href="https://github.com/ruby/ruby/blob/ruby_3_1/vm_method.c#L1596"><code>rb_export_method</code></a> and tell it what visibility it should have (<code>public</code>, <code>private</code>, <code>protected</code>).</p>
+
+<p><a href="https://www.rubyguides.com/2018/10/method-visibility/">RubyGuides has a great article on method visibility in Ruby</a> with further examples within a few different contexts that may interest you.</p>
+
+<hr>
+
+<h2 id="explore-the-ruby-grammar">Explore The Ruby Grammar</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/exyacc.rb">source: exyacc.rb</a></p>
+
+<p>Ruby's entire grammar used to parse Ruby's syntax originates in <code>parse.y</code>.  We can use this clever example (taken from the Programming Perl book; yes, the one with a camel on it) to print out the grammar stored in it:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/exyacc.rb parse.y | <span>head</span> <span>-n</span> 28
+</code></pre></div>
+<p>I abbreviated quite a lot of the output for everyone's sanity, but if your curious mind gets to you then you can examine it and discover the excruciating detail of the Ruby language.</p>
+<div><pre><code>program         : top_compstmt
+                <span>;</span>
+
+top_compstmt    : top_stmts opt_terms
+                <span>;</span>
+
+top_stmts       : none
+                | top_stmt
+                | top_stmts terms top_stmt
+                | error top_stmt
+                <span>;</span>
+
+top_stmt        : stmt
+                | keyword_BEGIN begin_block
+                <span>;</span>
+
+begin_block     : <span>'{'</span> top_compstmt <span>'}'</span>
+                <span>;</span>
+
+bodystmt        : compstmt
+                  opt_rescue
+                  k_else
+                  compstmt
+                  opt_ensure
+                | compstmt
+                  opt_rescue
+                  opt_ensure
+                <span>;</span>
+</code></pre></div>
+<p>There are two golden Easter Eggs that I found nestled into this lovely example.  First, if you look closely at the first line, you'll notice that the shebang declared makes use of two special options available in the <code>ruby</code> executable:</p>
+<div><pre><code><span>#! /usr/local/bin/ruby -Kn</span>
+</code></pre></div>
+<ol>
+<li><p><code>-K [ kcode]</code>  This option specifies the multi-byte character set code (e or E for EUC (extended Unix code); s or S for SJIS (Shift-JIS); u or U for UTF8; and a, A, n, or N for ASCII).</p></li>
+<li><p><code>-n</code>  Places code within an input loop (as in <code>while gets; ... end</code>).</p></li>
+</ol>
+
+<p>The second golden feature nestled in here is the use of <code>ARGF</code>. <a href="https://rubyapi.org/3.1/o/argf">From the documentation for ARGF</a>:</p>
+
+<blockquote>
+<p>ARGF is a stream designed for use in scripts that process files given as command-line arguments or passed in via STDIN.</p>
+</blockquote>
+
+<p>As opposed to the more popular <a href="https://rubyapi.org/3.1/o/argv"><code>ARGV</code></a> (for extracting command line <em>arguments</em>), ARGF provides some delightful insight into how Ruby provides a way for easily working with files as arguments!  This functionality is <a href="https://github.com/ruby/ruby/blob/v3_1_2/io.c#L13088">built into Ruby's IO</a> and you can read about how the C code builds an enumerator for iterating over each line in the file(s) (as is done in this example).</p>
+
+<h3 id="learn-more-about-ruby-s-grammar">Learn More About Ruby's Grammar</h3>
+
+<p>The Ruby Hacking Guide has an incredible section all about the Ruby parser and how Ruby uses its grammar to parse and compile Ruby programs.  Anything and everything you'll ever need to know will be in there.</p>
+
+<p>Kevin Newton also has <a href="https://kddnewton.com/2022/02/14/formatting-ruby-part-1.html">a fantastic breakdown of how Ruby makes use of Ripper</a> (a streaming Ruby parser) to parse Ruby syntax.  You can also find the entire history of how Ruby parsing has evolved on his <a href="https://kddnewton.com/parsing-ruby/">Parsing Ruby</a> site.</p>
+
+<hr>
+
+<h2 id="factorial-calculator">Factorial Calculator</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/fact.rb">source: fact.rb</a></p>
+
+<p>This is the first of many examples exploring mathematical concepts and formulas.  Adopting the right mathematical model can drastically improve the performance of your systems, as we'll see improving this example 🚀.</p>
+
+<p>In this case, we're talking about <a href="https://en.wikipedia.org/wiki/Factorial">Factorials</a>.  Facto-what?  Don't worry, even if you're not familiar, the concept is simple.  Given a number <code>n</code>, the factorial is what you end up with by multiplying the number while decrementing it's value down to <code>1</code>. This can be expressed as the following formula:</p>
+<div><pre><code>n! = n * (n - 1)!
+</code></pre></div>
+<p>Running the example we get what we expect out of <code>5!</code>: <code>5 * 4 * 3 * 2 * 1 = 120</code></p>
+<div><pre><code><span>$&gt;</span> ruby samples/fact.rb 5
+120
+</code></pre></div>
+<p>Now, to support common mathematical concepts and formula like this, Ruby comes with the incredible <a href="https://rubyapi.org/3.1/o/math"><code>Math module</code></a>, with a little tweaking of the original example, we can utilize the <a href="https://rubyapi.org/3.1/o/math#method-c-gamma"><code>Math.gamma</code> method</a> which implements a <a href="https://en.wikipedia.org/wiki/Gamma_function">Gamma Function</a> (basically the factorial of n - 1).  I'll be using the <code>benchmark-ips</code> gem to make it easier to understand the comparisons between reports of the benchmark we'll run to see how much we can improve things.</p>
+<div><pre><code><span># sample/fact.rb –&nbsp;Updated to use Math.gamma with benchmark</span>
+<span>require</span> <span>'bundler/inline'</span>
+
+<span>gemfile</span> <span>do</span>
+  <span>source</span> <span>'https://rubygems.org'</span>
+  <span>gem</span> <span>"benchmark-ips"</span><span>,</span> <span>require: </span><span>false</span>
+<span>end</span>
+<span>require</span> <span>"benchmark/ips"</span>
+
+<span>def</span> <span>fact</span><span>(</span><span>n</span><span>)</span>
+  <span>return</span> <span>1</span> <span>if</span> <span>n</span> <span>==</span> <span>0</span>
+  <span>f</span> <span>=</span> <span>1</span>
+  <span>n</span><span>.</span><span>downto</span><span>(</span><span>1</span><span>)</span> <span>do</span> <span>|</span><span>i</span><span>|</span>
+    <span>f</span> <span>*=</span> <span>i</span>
+  <span>end</span>
+  <span>f</span>
+<span>end</span>
+
+<span>def</span> <span>fact_gamma</span><span>(</span><span>n</span><span>)</span>
+  <span>return</span> <span>1</span> <span>if</span> <span>n</span> <span>&lt;=</span> <span>1</span>
+  <span>n</span> <span>*</span> <span>Math</span><span>.</span><span>gamma</span><span>(</span><span>n</span><span>)</span>
+<span>end</span>
+
+<span>Benchmark</span><span>.</span><span>ips</span> <span>do</span> <span>|</span><span>x</span><span>|</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"original factorial example"</span><span>)</span> <span>{</span> <span>fact</span><span>(</span><span>ARGV</span><span>[</span><span>0</span><span>].</span><span>to_i</span><span>)</span> <span>}</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"factorial with gamma"</span><span>)</span> <span>{</span> <span>fact_gamma</span><span>(</span><span>ARGV</span><span>[</span><span>0</span><span>].</span><span>to_i</span><span>)</span> <span>}</span>
+  <span>x</span><span>.</span><span>compare!</span>
+<span>end</span>
+</code></pre></div>
+<p>Now if we re-run the  script to find the factorial of 1000 (<code>1000!</code>):</p>
+<div><pre><code><span>$&gt;</span> ruby sample/fact.rb 1000
+Warming up <span>--------------------------------------</span>
+original factorial example
+                        90.000  i/100ms
+factorial with gamma   203.392k i/100ms
+Calculating <span>-------------------------------------</span>
+original factorial example
+                        896.596  <span>(</span>± 5.7%<span>)</span> i/s -      4.500k <span>in   </span>5.036761s
+factorial with gamma      2.060M <span>(</span>± 3.9%<span>)</span> i/s -     10.373M <span>in   </span>5.044264s
+
+Comparison:
+factorial with gamma:  2059772.9 i/s
+original factorial example:      896.6 i/s - 2297.33x  <span>(</span>± 0.00<span>)</span> slower
+</code></pre></div>
+<p>No, you're not reading that wrong.  Using <code>Math.gamma</code> to calculate factorials is <strong>2,297 times faster</strong>! With a whopping 2.06 million iterations per second!!  Let's make our machine try a little harder and calculate <code>100,000!</code>.</p>
+<div><pre><code><span>$&gt;</span> ruby sample/fact.rb 100000
+Warming up <span>--------------------------------------</span>
+original factorial example
+                         1.000  i/100ms
+factorial with gamma   267.503k i/100ms
+Calculating <span>-------------------------------------</span>
+original factorial example
+                          0.112  <span>(</span>± 0.0%<span>)</span> i/s -      1.000  <span>in   </span>8.945673s
+factorial with gamma      2.563M <span>(</span>± 3.2%<span>)</span> i/s -     12.840M <span>in   </span>5.015354s
+
+Comparison:
+factorial with gamma:  2563085.9 i/s
+original factorial example:        0.1 i/s - 22928528.45x  <span>(</span>± 0.00<span>)</span> slower
+</code></pre></div>
+<p>Incredible.  At a blazing 2.56 million iterations-per-second, this improvement really pulls away from the original with a <strong>22,928,528x improvement</strong>.</p>
+
+<h3 id="learn-more-about-factorials">Learn More About Factorials</h3>
+
+<p>"But wait a minute here," I hear you say, "HOW!??".  It gets this lovely boost by <a href="https://github.com/ruby/ruby/blob/v3_1_2/math.c#L835">storing static values for the first twenty two factorials in a table</a> and fetching them as it goes.  The rest of the <code>Math</code> module is also a great resource and worth exploring what else is in there.</p>
+
+<p>Now that you know how to calculate factorials, there are some really powerful things you can use them for! Factorials are at the foundation of <a href="https://en.wikipedia.org/wiki/Discrete_mathematics#Combinatorics"><em>combinatorics</em> in discrete mathematics</a>, which explores how discrete structures can be combined or arranged; and they also poke their heads in many areas of statistics.  If you ever need to calculate how you can sort your favorite playlist, or figuring out the probability of picking out a blue M&amp;M from the pack.</p>
+
+<hr>
+
+<h2 id="fibonacci">Fibonacci</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/fib.rb">source: fib.rb</a></p>
+
+<p>At first glance, there's not much to this simple example, but aw shucks am I sucker for a good math problem.  It calculates a Fibonacci number at a specific position in the sequence.  At the top of the file is a small note by Matz that says, "calculate Fibonacci(2) for benchmark".  Naturally, I decided to do some light investigation on calculating Fibonacci and setting up some small benchmarks.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Fibonacci_number">After some quick research on Wikipedia</a>, I was surprised to find that Fibonacci numbers were not discovered by the Italian mathematician, but were first described as early as 200 BC in a work by an Indian poet and mathematician: <a href="https://en.wikipedia.org/wiki/Pingala">Acharya Pingala</a> on enumerating possible patterns of Sanskrit poetry formed from syllables of two lengths.  Truly fascinating; but let's get back to our example.</p>
+
+<p>To get things started, let's take a quick look at the original example:</p>
+<div><pre><code><span>def</span> <span>fib</span><span>(</span><span>n</span><span>)</span>
+  <span>if</span> <span>n</span><span>&lt;</span><span>2</span>
+    <span>n</span>
+  <span>else</span>
+    <span>fib</span><span>(</span><span>n</span><span>-</span><span>2</span><span>)</span><span>+</span><span>fib</span><span>(</span><span>n</span><span>-</span><span>1</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>This function takes an <code>Integer</code> <strong>n</strong> and recursively reduces the calculated Fibonacci number at that level.  Now, if this is really used in a benchmark, we should try and make this as fast as possible.  Let's see what kind of power we can bake into this Bad Mama Jama.</p>
+
+<p>Thanks to <a href="https://www.rubyguides.com/2015/08/ruby-recursion-and-memoization/">this excellent article from RubyGuides</a>, there are a couple issues with the initial implementation.</p>
+
+<p>Issue 1: Use of recursion on a boundless calculation</p>
+
+<p>As pointed out in the article, Ruby has some limitations on how many times you can recursively call a method (around 7500 depending on your system; and funny enough, I found <a href="https://bugs.ruby-lang.org/issues/1218">an old rejected feature request to allow getting and setting the recursion limit</a>).  To get around this limitation, it is typical to use an iterative solution.</p>
+
+<p>Issue 2: Lack of caching when reducing calculated</p>
+
+<p>The article also points out that, due to the nature of the calculation, some values are re-calculated as the level of <strong>n</strong> grows.  To further improve our example, we can take advantage of caching the levels while we iterate , which gives us throughput at the expense of memory bloat (for higher levels); but hey, at least we're not StackOverflow'in amirite?  I've included both an inline cache and external cache example so we can see what kind of improvements we get in both a closed-function setting and one in an encapsulated setting (like creating a <code>Fibonacci</code> class :chuckle:)</p>
+<div><pre><code><span>def</span> <span>fib_iterative_internal_cache</span><span>(</span><span>n</span><span>)</span>
+  <span>cache</span> <span>=</span> <span>[</span><span>0</span><span>,</span> <span>1</span><span>]</span>
+  <span>0</span><span>.</span><span>upto</span><span>(</span><span>i</span><span>)</span> <span>do</span> <span>|</span><span>i</span><span>|</span>
+    <span>next</span> <span>if</span> <span>cache</span><span>[</span><span>n</span><span>]</span>
+    <span>cache</span><span>[</span><span>i</span><span>]</span> <span>=</span> <span>i</span> <span>&lt;</span> <span>2</span> <span>?</span> <span>i</span> <span>:</span> <span>cache</span><span>[</span><span>i</span> <span>-</span> <span>1</span><span>]</span> <span>+</span> <span>cache</span><span>[</span><span>i</span> <span>-</span> <span>2</span><span>]</span>
+  <span>end</span>
+  <span>cache</span><span>[</span><span>n</span><span>]</span>
+<span>end</span>
+
+<span>@external_cache</span> <span>=</span> <span>[</span><span>0</span><span>,</span> <span>1</span><span>]</span>
+<span>def</span> <span>fib_iterative_external_cache</span><span>(</span><span>n</span><span>)</span>
+  <span>0</span><span>.</span><span>upto</span><span>(</span><span>n</span><span>)</span> <span>do</span> <span>|</span><span>i</span><span>|</span>
+    <span>next</span> <span>if</span> <span>@external_cache</span><span>[</span><span>i</span><span>]</span>
+
+    <span>@external_cache</span><span>[</span><span>i</span><span>]</span> <span>=</span> <span>i</span> <span>&lt;</span> <span>2</span> <span>?</span> <span>i</span> <span>:</span> <span>@external_cache</span><span>[</span><span>i</span> <span>-</span> <span>1</span><span>]</span> <span>+</span> <span>@external_cache</span><span>[</span><span>i</span> <span>-</span> <span>2</span><span>]</span>
+  <span>end</span>
+  <span>@external_cache</span><span>[</span><span>n</span><span>]</span>
+<span>end</span>
+</code></pre></div>
+<p>A quick benchmark and we can see our improvements!  Also, we can now feel confident that we won't overflow the interpreter.</p>
+<div><pre><code><span># Appended to our above examples</span>
+<span>require</span> <span>"benchmark/ips"</span>
+
+<span>Benchmark</span><span>.</span><span>ips</span> <span>do</span> <span>|</span><span>x</span><span>|</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"original fib"</span><span>)</span> <span>{</span> <span>fib</span><span>(</span><span>20</span><span>)</span> <span>}</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"iterative fib (internal cache)"</span><span>)</span> <span>{</span> <span>fib_iterative_internal_cache</span><span>(</span><span>20</span><span>)</span> <span>}</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"iterative fib (external cache)"</span><span>)</span> <span>{</span> <span>fib_iterative_external_cache</span><span>(</span><span>20</span><span>)</span> <span>}</span>
+  <span>x</span><span>.</span><span>compare!</span>
+<span>end</span>
+</code></pre></div>
+<p>Now running our updated example to see the results:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/fib.rb
+6765
+Warming up <span>--------------------------------------</span>
+        original fib    55.000  i/100ms
+iterative fib <span>(</span>internal cache<span>)</span>
+                        15.498k i/100ms
+iterative fib <span>(</span>external cache<span>)</span>
+                        30.071k i/100ms
+Calculating <span>-------------------------------------</span>
+        original fib    554.945  <span>(</span>± 5.2%<span>)</span> i/s -      2.805k <span>in   </span>5.069228s
+iterative fib <span>(</span>internal cache<span>)</span>
+                        166.978k <span>(</span>± 7.8%<span>)</span> i/s -    836.892k <span>in   </span>5.048092s
+iterative fib <span>(</span>external cache<span>)</span>
+                        291.676k <span>(</span>± 7.2%<span>)</span> i/s -      1.473M <span>in   </span>5.082205s
+
+Comparison:
+iterative fib <span>(</span>external cache<span>)</span>:   291676.1 i/s
+iterative fib <span>(</span>internal cache<span>)</span>:   166977.7 i/s - 1.75x  <span>(</span>± 0.00<span>)</span> slower
+        original fib:      554.9 i/s - 525.59x  <span>(</span>± 0.00<span>)</span> slower
+</code></pre></div>
+<p>A <strong>554x improvement</strong>!  That's what I'm talking about!  Although this is a great speed boost, this is math!  Shouldn't there be some kind of formula we can take advantage of to just, I don't know, <strong>calculate the solution all at once</strong>.  Well, you guessed it, hiding in plain sight, from our trusty Wikipedia article, we can extract two formula:</p>
+
+<ol>
+<li>Finding a positive Fibonacci number at position <strong>n</strong> in the sequence</li>
+</ol>
+<div><pre><code>Fn = [( (1 + √5)^n - (1 - √5)^n ) / (2^n × √5)]
+</code></pre></div>
+<ol>
+<li>Finding a positive or negative Fibonacci number at position <strong>n</strong> in the sequence</li>
+</ol>
+<div><pre><code>Fn = [( (1 + √5)^n ) / (2^n × √5)]
+</code></pre></div>
+<p>Using these lovely new formulas, we can introduce two new examples that utilize the raw power of the CPU to calculate the values in, what some might say, a "zero-sum game" 😂.</p>
+<div><pre><code><span># Appended to our ongoing example</span>
+
+<span># Positive only equation</span>
+<span># Fn = [( (1 + √5)^n ) / (2^n × √5)]</span>
+<span>def</span> <span>fib_math_positives_only</span><span>(</span><span>n</span><span>)</span>
+  <span>sqrt_of_five</span> <span>=</span> <span>Math</span><span>.</span><span>sqrt</span><span>(</span><span>5</span><span>)</span>
+  <span>(</span>
+    <span>((</span><span>1</span> <span>+</span> <span>sqrt_of_five</span><span>)</span><span>**</span><span>n</span><span>)</span> <span>/</span> <span>(</span><span>2</span><span>**</span><span>n</span> <span>*</span> <span>sqrt_of_five</span><span>)</span>
+  <span>).</span><span>round</span>
+<span>end</span>
+
+<span># Positive and negative equation</span>
+<span># Fn = ( (1 + √5)^n - (1 - √5)^n ) / (2^n × √5)</span>
+<span>def</span> <span>fib_math</span><span>(</span><span>n</span><span>)</span>
+  <span>sqrt_of_five</span> <span>=</span> <span>Math</span><span>.</span><span>sqrt</span><span>(</span><span>5</span><span>)</span>
+  <span>(</span>
+    <span>((</span><span>1</span> <span>+</span> <span>sqrt_of_five</span><span>)</span><span>**</span><span>n</span> <span>-</span> <span>(</span><span>1</span> <span>-</span> <span>sqrt_of_five</span><span>)</span> <span>**</span> <span>n</span><span>)</span> <span>/</span> <span>(</span><span>2</span><span>**</span><span>n</span> <span>*</span> <span>sqrt_of_five</span><span>)</span>
+  <span>).</span><span>round</span>
+<span>end</span>
+</code></pre></div>
+<p>Running our benchmark again on all of our examples:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/fib.rb
+Warming up <span>--------------------------------------</span>
+        original fib    49.000  i/100ms
+iterative fib <span>(</span>internal cache<span>)</span>
+                        17.331k i/100ms
+iterative fib <span>(</span>external cache<span>)</span>
+                        31.671k i/100ms
+            fib math    90.836k i/100ms
+fib math <span>(</span>positivesonly<span>)</span>
+                       120.339k i/100ms
+Calculating <span>-------------------------------------</span>
+        original fib    550.045  <span>(</span>± 7.3%<span>)</span> i/s -      2.744k <span>in   </span>5.023195s
+iterative fib <span>(</span>internal cache<span>)</span>
+                        166.070k <span>(</span>± 6.7%<span>)</span> i/s -    831.888k <span>in   </span>5.034572s
+iterative fib <span>(</span>external cache<span>)</span>
+                        302.488k <span>(</span>± 8.8%<span>)</span> i/s -      1.520M <span>in   </span>5.075258s
+            fib math    902.943k <span>(</span>± 6.7%<span>)</span> i/s -      4.542M <span>in   </span>5.057940s
+fib math <span>(</span>positivesonly<span>)</span>
+                          1.159M <span>(</span>± 7.4%<span>)</span> i/s -      5.776M <span>in   </span>5.017804s
+
+Comparison:
+fib math <span>(</span>positivesonly<span>)</span>:  1158712.8 i/s
+            fib math:   902943.5 i/s - 1.28x  <span>(</span>± 0.00<span>)</span> slower
+iterative fib <span>(</span>external cache<span>)</span>:   302487.6 i/s - 3.83x  <span>(</span>± 0.00<span>)</span> slower
+iterative fib <span>(</span>internal cache<span>)</span>:   166070.4 i/s - 6.98x  <span>(</span>± 0.00<span>)</span> slower
+        original fib:      550.0 i/s - 2106.58x  <span>(</span>± 0.00<span>)</span> slower
+
+</code></pre></div>
+<p><strong>WOW!</strong> Using raw computation get's us to a whopping <strong>2106x</strong> improvement!!  It <em>also</em> busts us out of our high-order memory concern albeit at a much smaller expense of the CPU; and we can save that resource benchmark for another time 😂.</p>
+
+<p>So fun!</p>
+
+<hr>
+
+<h2 id="unix-mail-from">Unix Mail From</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/from.rb">source: from.rb</a></p>
+
+<p>This example showcases an implementation of the Unix mail program's "from" sub-command, which takes a list of messages and prints their message headers.</p>
+<div><pre><code><span>$&gt;</span> ruby sample/from.rb codenamev
+You have no mail.
+</code></pre></div>
+<p>Welp, short example, but I'll try again when I get some mail :-)</p>
+
+<hr>
+
+<h2 id="gather-full-paths">Gather Full Paths</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/fullpath.rb">source: fullpath.rb</a></p>
+
+<p>This is a great example showcasing how to take advantage of UNIX Pipes as input to your ruby in scripts!  This example takes the output from an <code>ls -lR</code> call and doctors up the output to show the full paths of the files!</p>
+
+<p>For clarity of what is happening, I'm sampling the last few lines of the output of <code>ls -lR</code> inside of the <code>sample</code> directory of the ruby source:</p>
+<div><pre><code><span>$&gt;</span> <span>ls</span> <span>-lR</span> /Users/codenamev/src/opensource/ruby/sample | <span>tail</span>
+<span>-rw-r--r--</span>  1 codenamev  staff    53 Sep 22 16:57 authors.markdown
+<span>-rw-r--r--</span>  1 codenamev  staff   171 Sep 22 16:57 entry.rb
+<span>-rw-r--r--</span>  1 codenamev  staff  1851 Sep 22 16:57 remarks.markdown
+
+/Users/codenamev/src/opensource/ruby/sample/trick2018/05-tompng:
+total 160
+<span>-rw-r--r--</span>  1 codenamev  staff     67 Sep 22 16:57 authors.markdown
+<span>-rw-r--r--</span>  1 codenamev  staff   1897 Sep 22 16:57 entry.rb
+<span>-rw-r--r--</span>  1 codenamev  staff  66800 Sep 22 16:57 preview_of_output.png
+<span>-rw-r--r--</span>  1 codenamev  staff    828 Sep 22 16:57 remarks.markdown
+</code></pre></div>
+<p>The output is trimmed, but we can at least see how this lovely script will give us a more workable list of full paths for all the files in this directory and their sub-directories:</p>
+<div><pre><code><span>$&gt;</span> <span>ls</span> <span>-lR</span> /Users/codenamev/src/opensource/ruby/sample | ruby sample/fullpath.rb| <span>tail</span>
+<span>-rw-r--r--</span>  1 codenamev  staff  5852 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/03-tompng/output.txt
+<span>-rw-r--r--</span>  1 codenamev  staff   531 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/03-tompng/remarks.markdown
+<span>-rw-r--r--</span>  1 codenamev  staff  5661 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/03-tompng/trick.png
+<span>-rw-r--r--</span>  1 codenamev  staff    53 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/04-colin/authors.markdown
+<span>-rw-r--r--</span>  1 codenamev  staff   171 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/04-colin/entry.rb
+<span>-rw-r--r--</span>  1 codenamev  staff  1851 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/04-colin/remarks.markdown
+<span>-rw-r--r--</span>  1 codenamev  staff     67 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/05-tompng/authors.markdown
+<span>-rw-r--r--</span>  1 codenamev  staff   1897 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/05-tompng/entry.rb
+<span>-rw-r--r--</span>  1 codenamev  staff  66800 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/05-tompng/preview_of_output.png
+<span>-rw-r--r--</span>  1 codenamev  staff    828 Sep 22 16:57 /Users/codenamev/src/opensource/ruby/sample/trick2018/05-tompng/remarks.markdown
+</code></pre></div>
+<h3 id="learn-more-about-piping-to-ruby">Learn More About Piping To Ruby</h3>
+
+<ul>
+<li> <a href="https://ruby.social/@starr">Starr Horne</a> has an incredible write-up on <a href="https://www.honeybadger.io/blog/ruby-unix-command-line/">Level Up Your Command-Line-Fu With Ruby</a>.  So much to learn.  So much to love ❤️</li>
+<li> <a href="https://www.paulfioravanti.com/">Paul Fioravanti</a> wrote this fairly entertaining piece: <a href="https://www.paulfioravanti.com/blog/pipe-codebase-into-ruby/">Pipe a Codebase into Ruby</a>.</li>
+</ul>
+
+<hr>
+
+<h2 id="saving-and-loading-ruby-instruction-sequences">Saving And Loading Ruby Instruction Sequences</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/iseq_loader.rb">source: iseq_loader.rb</a></p>
+
+<p>The super special <a href="https://rubyapi.org/3.1/o/rubyvm/instructionsequence"><code>RubyVM::InstructionSequence</code></a> class is extended in this example to showcase how to compile ruby code into its instruction sequences into a separate file that can then be loaded at a later time.</p>
+
+<p>The <a href="https://rubyapi.org/3.1/o/rubyvm/instructionsequence">Ruby documentation</a> does an excellent job explaining what this special class is and why you might want to use it:</p>
+
+<blockquote>
+<p>The InstructionSequence class represents a compiled sequence of instructions for the Virtual Machine used in MRI. Not all implementations of Ruby may implement this class, and for the implementations that implement it, the methods defined and behavior of the methods can change in any version.</p>
+
+<p>With it, you can get a handle to the instructions that make up a method or a proc, compile strings of Ruby code down to VM instructions, and disassemble instruction sequences to strings for easy inspection. It is mostly useful if you want to learn how YARV works, but it also lets you control various settings for the Ruby iseq compiler.</p>
+</blockquote>
+
+<p>To test this out, I created a <code>simple_math.rb</code> file with <code>1 + 2</code> inside.  Then, I compiled the instructions for this file into another using this sample script:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/iseq_loader.rb simple_math.rb
+Writing to file: simple_math.rb, simple_math.rb.yarb
+</code></pre></div>
+<p>Now that I have the compiled instructions, I opened up an IRB session with this example pre-loaded</p>
+<div><pre><code><span>$&gt;</span> irb <span>-r</span> sample/iseq_loader.rb
+</code></pre></div>
+<p>Then I tested out loading the compiled file:</p>
+<div><pre><code><span>irb</span><span>(</span><span>main</span><span>):</span><span>001</span><span>:</span><span>0</span><span>&gt;</span> <span>simple_math_iseq</span> <span>=</span> <span>RubyVM</span><span>::</span><span>InstructionSequence</span><span>::</span><span>FSStorage</span><span>.</span><span>new</span><span>.</span><span>load_iseq</span> <span>"simple_math.rb"</span>
+<span>=&gt;</span> <span>&lt;</span><span>RubyVM</span><span>::</span><span>InstructionSequence</span><span>:&lt;</span><span>main</span><span>&gt;</span><span>@simple_math</span><span>.</span><span>rb</span><span>:</span><span>1</span><span>&gt;</span>
+<span>irb</span><span>(</span><span>main</span><span>):</span><span>002</span><span>:</span><span>0</span><span>&gt;</span> <span>simple_math_iseq</span><span>.</span><span>eval</span>
+<span>=&gt;</span> <span>3</span>
+<span>irb</span><span>(</span><span>main</span><span>):</span><span>003</span><span>:</span><span>0</span><span>&gt;</span> <span>simple_math_iseq</span><span>.</span><span>to_a</span>
+<span>=&gt;</span>
+<span>[</span><span>"YARVInstructionSequence/SimpleDataFormat"</span><span>,</span>
+ <span>3</span><span>,</span>
+ <span>1</span><span>,</span>
+ <span>1</span><span>,</span>
+ <span>{</span><span>:arg_size</span><span>=&gt;</span><span>0</span><span>,</span> <span>:local_size</span><span>=&gt;</span><span>0</span><span>,</span> <span>:stack_max</span><span>=&gt;</span><span>2</span><span>,</span> <span>:node_id</span><span>=&gt;</span><span>4</span><span>,</span> <span>:code_location</span><span>=&gt;</span><span>[</span><span>1</span><span>,</span> <span>0</span><span>,</span> <span>1</span><span>,</span> <span>5</span><span>],</span> <span>:node_ids</span><span>=&gt;</span><span>[</span><span>0</span><span>,</span> <span>1</span><span>,</span> <span>3</span><span>,</span> <span>-</span><span>1</span><span>]},</span>
+ <span>"&lt;main&gt;"</span><span>,</span>
+ <span>"simple_math.rb"</span><span>,</span>
+ <span>"/Users/codenamev/src/opensource/ruby/sample/simple_math.rb"</span><span>,</span>
+ <span>1</span><span>,</span>
+ <span>:top</span><span>,</span>
+ <span>[],</span>
+ <span>{},</span>
+ <span>[],</span>
+ <span>[</span><span>1</span><span>,</span> <span>:RUBY_EVENT_LINE</span><span>,</span> <span>[</span><span>:putobject_INT2FIX_1_</span><span>],</span> <span>[</span><span>:putobject</span><span>,</span> <span>2</span><span>],</span> <span>[</span><span>:opt_plus</span><span>,</span> <span>{</span><span>:mid</span><span>=&gt;</span><span>:</span><span>+</span><span>,</span> <span>:flag</span><span>=&gt;</span><span>16</span><span>,</span> <span>:orig_argc</span><span>=&gt;</span><span>1</span><span>}],</span> <span>[</span><span>:leave</span><span>]]]</span>
+<span>irb</span><span>(</span><span>main</span><span>):</span><span>004</span><span>:</span><span>0</span><span>&gt;</span> <span>ls</span> <span>simple_math_iseq</span>
+<span>RubyVM</span><span>::</span><span>InstructionSequence</span><span>#methods:</span>
+  <span>absolute_path</span>  <span>base_label</span>  <span>disasm</span>  <span>disassemble</span>  <span>each_child</span>  <span>eval</span>  <span>first_lineno</span>  <span>inspect</span>  <span>label</span>  <span>path</span>  <span>script_lines</span>  <span>to_a</span>  <span>to_binary</span>  <span>trace_points</span>
+<span>=&gt;</span> <span>nil</span>
+<span>irb</span><span>(</span><span>main</span><span>):</span><span>005</span><span>:</span><span>0</span><span>&gt;</span> <span>simple_math_iseq</span><span>.</span><span>disasm</span>
+<span>=&gt;</span> <span>"== disasm: #&lt;ISeq:&lt;main&gt;@simple_math.rb:1 (1,0)-(1,5)&gt; (catch: FALSE)</span><span>\n</span><span>0000 putobject_INT2FIX_1_                                             (   1)[Li]</span><span>\n</span><span>0001 putobject                              2</span><span>\n</span><span>0003 opt_plus                               &lt;calldata!mid:+, argc:1, ARGS_SIMPLE&gt;[CcCr]</span><span>\n</span><span>0005 leave</span><span>\n</span><span>"</span>
+</code></pre></div>
+<p>Neat!  With this, you can peek into the internals of CRuby's VM.  So, how is this useful?  Well, let's say you run into some Ruby code that is doing something you don't expect.  With <code>RubyVM::InstructionSequence</code>, you can peek into what is happening!</p>
+
+<p>I was recently helping a co-worker debug an issue dynamically building keys for a hash.  I had thought that the keys were getting set as strings, but as it turns out, this particular notation of Ruby makes them symbols:</p>
+<div><pre><code><span>irb</span><span>(</span><span>main</span><span>):</span><span>001</span><span>:</span><span>0</span><span>&gt;</span> <span>{</span> <span>"thing1"</span><span>:</span> <span>1</span><span>,</span> <span>"thing2"</span><span>:</span> <span>2</span> <span>}</span>
+<span>=&gt;</span> <span>{</span><span>:thing1</span><span>=&gt;</span><span>1</span><span>,</span> <span>:thing2</span><span>=&gt;</span><span>2</span><span>}</span>
+<span>irb</span><span>(</span><span>main</span><span>):</span><span>002</span><span>:</span><span>0</span><span>&gt;</span>
+</code></pre></div>
+<p>Using our trusty new tool, I disassembled the compiled CRuby code to see what was happening:</p>
+<div><pre><code><span>irb</span><span>(</span><span>main</span><span>):</span><span>003</span><span>:</span><span>0</span><span>&gt;</span> <span>RubyVM</span><span>::</span><span>InstructionSequence</span><span>.</span><span>compile</span><span>(</span><span>'{ "thing1": 1, "thing2": 2 }'</span><span>).</span><span>disasm</span>
+<span>=&gt;</span> <span>"== disasm: #&lt;ISeq:&lt;compiled&gt;@&lt;compiled&gt;:1 (1,0)-(1,28)&gt; (catch: FALSE)</span><span>\n</span><span>0000 duphash                                {:thing1=&gt;1, :thing2=&gt;2}  (   1)[Li]</span><span>\n</span><span>0002 leave</span><span>\n</span><span>"</span>
+</code></pre></div>
+<p>Ah ha! While I thought it was using strings, the CRuby VM is building the hash with symbols!  I was able to confirm this by performing this same test with the old "hashrocket" Hash notation:</p>
+<div><pre><code><span>irb</span><span>(</span><span>main</span><span>):</span><span>004</span><span>:</span><span>0</span><span>&gt;</span> <span>RubyVM</span><span>::</span><span>InstructionSequence</span><span>.</span><span>compile</span><span>(</span><span>'{ "thing1" =&gt; 1, "thing2" =&gt; 2 }'</span><span>).</span><span>disasm</span>
+<span>=&gt;</span> <span>"== disasm: #&lt;ISeq:&lt;compiled&gt;@&lt;compiled&gt;:1 (1,0)-(1,32)&gt; (catch: FALSE)</span><span>\n</span><span>0000 duphash                                {</span><span>\"</span><span>thing1</span><span>\"</span><span>=&gt;1, </span><span>\"</span><span>thing2</span><span>\"</span><span>=&gt;2}(   1)[Li]</span><span>\n</span><span>0002 leave</span><span>\n</span><span>"</span>
+<span>irb</span><span>(</span><span>main</span><span>):</span><span>005</span><span>:</span><span>0</span><span>&gt;</span> <span>{</span> <span>"thing1"</span> <span>=&gt;</span> <span>1</span><span>,</span> <span>"thing2"</span> <span>=&gt;</span> <span>2</span> <span>}</span>
+<span>=&gt;</span> <span>{</span><span>"thing1"</span><span>=&gt;</span><span>1</span><span>,</span> <span>"thing2"</span><span>=&gt;</span><span>2</span><span>}</span>
+</code></pre></div>
+<p>Good times.</p>
+
+<h3 id="learn-more-about-ruby-s-vm">Learn More About Ruby's VM</h3>
+
+<ul>
+<li>Make sure to check out <a href="https://kddnewton.com/2022/11/30/advent-of-yarv-part-0.html">Kevin Newton's incredible Advent of YARV</a> for an in-depth look at CRuby's virtual machine and how you can make use of these instruction sequences!</li>
+<li>For some fun, join Stefanni Brasil and Thiago Araujo over at <a href="https://www.hexdevs.com/">HexDevs</a> combine forces with Aaron Patterson in this great breakdown: <a href="https://www.hexdevs.com/posts/ruby-just-in-time-compiler-tenderjit/">A Tender Introduction to Ruby Internals with TenderJIT</a></li>
+</ul>
+
+<hr>
+
+<h2 id="a-front-end-for-the-less-command">A Front-end For The Less Command</h2>
+
+<p><a href="https://github.com/ruby/ruby/blob/ruby_3_1/sample/less.rb">source: less.rb</a></p>
+
+<p>This nifty little script allows you to combine the powers of <a href="https://man7.org/linux/man-pages/man1/less.1.html">less</a> and <a href="https://man7.org/linux/man-pages/man1/zcat.1p.html">zcat</a> to properly dump the contents of a file to one of these system pagers without having to care about whether it's compressed or not.  I had to alter the paths to match my system, but with that I was able to play around with some options:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/less.rb <span>-NR</span> <span>-p</span> mental <span>--use-color</span> sample/biorhythm.rb
+</code></pre></div>
+<p>This throws me into the less utility at the first occurrence of the pattern I provided ("mental"):</p>
+<div><pre><code>    102   print "                     P=physical, E=emotional, M=mental\n"
+    103   print "             -------------------------+-------------------------\n"
+    104   print "                     Bad Condition    |    Good Condition\n"
+    105   print "             -------------------------+-------------------------\n"
+    106
+    107   (dd - bd).step(dd - bd + display_period) do |z|
+    108     phys, emot, geist = get_position(z)
+    109
+    110     printf "%04d.%02d.%02d : ", dd.year, dd.month, dd.day
+    111     p = (phys / 2.0 + 0.5).to_i
+    112     e = (emot / 2.0 + 0.5).to_i
+    113     g = (geist / 2.0 + 0.5).to_i
+    114     graph = "." * 51
+    115     graph[25] = ?|
+    116     graph[p] = ?P
+    117     graph[e] = ?E
+    118     graph[g] = ?M
+    119     print graph, "\n"
+    120     dd = dd + 1
+    121   end
+    122   print "             -------------------------+-------------------------\n\n"
+biorhythm.rb
+</code></pre></div>
+<p>I gzip'ed the biorhythm.rb file and updated the example to use <code>gzcat</code> (because of <a href="https://serverfault.com/questions/570024/zcat-gzcat-works-in-linux-not-on-osx-general-linux-osx-compatibility">this issue with running <code>zcat</code> on MacOS</a>).  Running the same command on the new compressed file:</p>
+<div><pre><code><span>$&gt;</span> ruby sample/less.rb <span>-NR</span> <span>-p</span> mental <span>--use-color</span> sample/biorhythm.rb.gz
+</code></pre></div>
+<p>And I get the same output above!  Niiiiiice.</p>
+
+<hr>
+
+<h2 id="wrapping-it-up">Wrapping it up</h2>
+
+<p>Whew!  That was a lot to uncover, but there is SO much more ahead of us.  I've said it before, and I'll say it again!  The Ruby source is not so scary! It's not all C code. There's quite a lot of <strong>Ruby</strong> code inside.  And while it may be nice to reach for those external gems and tools, chances are you're missing out on what's already there.</p>
+
+<hr>
+
+<p>Be sure to follow <a href="https://twitter.com/doximity_tech">@doximity_tech</a> if you'd like to be notified about new blog posts.</p>
+</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Five Nine Problems</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Five Nine Problems</h1>
+    <p><strong>URL:</strong> <a href="https://www.thediff.co/r/d17d1475?m=5ba63d9b-6620-4051-8686-515cd8a8f374">https://www.thediff.co/r/d17d1475?m=5ba63d9b-6620-4051-8686-515cd8a8f374</a></p>
+    <p><strong>Tags:</strong> best-practices, quality</p>
+    <p><strong>Bookmark ID:</strong> 876797825</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+<p>A guilty pleasure of mine is the pursuit of perfection. It is certainly a vice in most
+contexts, but there are some problems whose solutions demand a measure of perfection.
+These are problems that I will refer to as “5-9 problems”: problems whose solutions need
+five 9’s (or more) in some dimension. Usually, those nines are correctness of some kind,
+but they can also be availability or for some systems, speed.</p>
+<p>A lot of software engineering today stops at 1 nine, or at best 2. AI is the poster child
+of this: a system which is designed to occasionally fail in order to give you amazing
+results in the cases where it works. This is a fantastic way to produce a product quickly,
+but can be a poor or completely impractical approach to a problem that needs more nines.
+This is a big part of why large companies move slowly compared to startups: the 9’s and the
+proof that you have them.</p>
+<p>Outside of software engineering, many engineers regularly deal with 5-9 problems. At a
+certain level, these problems are actually less about building and more about making sure
+that you built the right thing, leading to a very different process.
+However, software engineers often decry how slow this process of engineering is, and many
+other engineering disciplines can overdo it: if you only need one 9, five of them is a
+big waste.</p>
+<h2 id="solving-5-9-problems">Solving 5-9 Problems</h2>
+<p>5-9 problems are often solved by a process of thinking, building, and proving.
+We will start with the last step, although all three of these steps are often intermixed.
+Proving ideally involves proving that what you have built works 100% of the time, but can
+practically mean getting almost all the way there. This is often the hardest aspect of
+5-9 problems, and will get a section all of its own, but unlike most kinds of software
+engineering, testing alone is usually not sufficient. Directed unit tests provide great
+confidence in a known code path, but tell nothing about the unknown bugs lurking beyond.
+An assurance of 5 nines means an assurance that there are no unknown unknowns.</p>
+<p>Thinking separate from writing code is unfortunately unavoidable when you need to
+be able to prove that you are right. One of the best ways to solve a 5-9 problem is to
+constrain it, and limit its complexity. You also have to think about what you can prove.
+Once you are solving the problem in a constrained space, and you have a way to prove that
+you are correct within those bounds, you can start to build your solution. However,
+thinking alone is often not enough to know what you need to build - prototyping and
+benchtop experiments are very helpful.</p>
+<p>The building phase involves designing, and for software engineers, actually building, the
+solution to the problem. I have often found this to be the shortest and simplest part of
+the process. The proving and thinking parts of the problem set you up for easy success
+here. For people building bridges, the “building” phase does not mean actually building the
+bridge, but building a model of the bridge that can be proven correct. Software engineers
+can do the same thing, but the added step of proving that your final product matches your
+model is difficult for Software, while it is pretty easy for bridges.</p>
+<h2 id="proving-you-are-right">Proving you are Right</h2>
+<p>A common problem with 5-9 problems is that proving you are correct is almost always harder
+than solving the problem. This is often the realm of formal verification or some other
+form of computer-aided logical reasoning. Fortunately, between systems like TLA+ and
+theorem proving software like Lean and Coq, there are a number of options available to the
+academically-inclined software engineer solving a 100% problem. These theorem proving
+systems are an active area of research and still not the most user-friendly, but they are
+the best tools available for ensuring that you are completely right.</p>
+<p>Math libraries are a great example of systems that take advantage of these tools.
+Exhaustive testing with a pair of 64-bit <code>doubles</code> is completely impossible, but theorem
+provers can still allow you to know that your solution is always within an acceptable error
+bound.</p>
+<p>Alternatively, correct-by-construction systems are self-proving that they are correct in a
+certain aspect. However, they usually don’t get all the way to proving that your application
+is correct end-to-end. The 2020-era poster child of correctness-by-construction is Rust’s
+memory safety guarantee. Safe Rust will not have memory safety issues: it is memory-safe by
+construction. You can get similar guarantees on C with static analyzers, but the natural
+experiment of all C and C++ that exists has shown that it’s essentially impossible to get
+rid of all memory safety errors without them being programmatically disallowed.</p>
+<p>A core issue with 5-9 problems is that testing alone cannot guarantee correctness. Testing
+is a helpful way to debug your issues, but testing is an art where you attempt to seek out
+every bug in your possible bug space to send in as a test case that you knock down. Even
+with instrumentation like code coverage, testing alone makes few hard guarantees.</p>
+<p>Digital engineers are probably familiar with the concept of constrained random testing,
+and Software engineers have also probably heard of fuzzing. In both cases, you throw a large
+number of randomly generated inputs at your thing and see what comes out, comparing with a
+model. If what comes out matches the expected value, you have a correct test case, and if
+not, you have an error. This allows you to effectively do science on your input space. These
+are often the practical replacement for formal verification in some systems, and can work
+quite well. Still, doing this kind of science to get to 5 nines is onerous and difficult,
+if it is even possible at all.</p>
+<h4 id="the-unattainable-ideal">The Unattainable Ideal</h4>
+<p>Some 5-9 problems are impossible to prove correct. Generally, proofs of correctness are
+done with deductive reasoning. TLA+ tries every state machine transition to prove it safe,
+and theorem provers like Lean work on symbolic logic. When you must do science to prove
+that you are correct, you are in a situation where it is impossible to do so, and you have
+to merely get close. Thankfully, theorem provers and static analysis tools are getting
+better and better, and will continue to improve. In addition, a second layer is coming
+for formal verification, enabling people who don’t know Coq or TLA to access it:
+for example, <a href="https://zerorisc.com/">ZeroRISC</a> helps to prove RISC-V programs, and
+<a href="https://github.com/formal-land/coq-of-rust">Rust</a> is getting formal verification.</p>
+<p>I have recently been spending time working on <a href="https://arbitrand.com/">true randomness</a>.
+This is another form of 5-9 problem, which I (hubristically) believe I have gotten closer
+to solving than many other people, but we all have the same problem: it is impossible to
+actually prove that you are generating full entropy. The best we can get in testing the
+claim of full entropy is to combine a “bottom up” proof approach based on the physics of
+the system that is generating entropy with a “top down” suite of randomness tests that are
+applied to the output of the random number generator. The testing gives empirical proof of
+both the underlying model and the end-to-end system, but nothing gets to 100%.</p>
+<p>We test RNGs while we attack them in various ways. We involve third-party auditors to
+add credibility to these tests. We test a large number of devices for long times under
+varying environmental conditions. All of this is done to improve confidence that the
+testing both reaches a desired number of nines and hasn’t missed anything. In this case,
+the number of nines on known test cases is quite a bit more than five, but the main
+task is eliminating the unknown unknowns.</p>
+<h2 id="problem-classification">Problem Classification</h2>
+<p>One interesting category error in engineering planning is mis-estimating the number of
+nines you need. Too many or too few nines can result in problems. If you aim for too
+many nines - for example by building a high-availability service when you can accept
+downtime - this is a waste of effort that results in getting to market slower. Conversely,
+too few nines can result in errors or downtime at critical points in your customer’s
+usage.</p>
+<p>On availability, the following guide can help:</p>
+<ul>
+<li>90% available is down for 36.5 days or about 50000 total minutes per year</li>
+<li>99% available is down for 3.65 days or 5000 total minutes</li>
+<li>99.9% available is down for about 9 hours (500 minutes)</li>
+<li>99.99% available is down for 52 minutes</li>
+<li>99.999% available is down for 5 minutes</li>
+<li>99.9999% available is down for 30 seconds</li>
+</ul>
+<p>An interesting example of a service that doesn’t need availability like this is US online
+banking. Most US banks won’t run money transfers except for withdrawals of cash from ATMs
+over the weekend. Aside from checking a balance that won’t change, there is almost nothing
+you can do. As long as you don’t have random downtime, you can be 90% available on an online
+banking service. By contrast, Google and Facebook, while they are mainly ads companies, lose
+incredible amounts of money per second from being offline, and aim for as many 9’s of uptime
+as possible.</p>
+<p>On correctness, we have:</p>
+<ul>
+<li>99% correct means that you can expect an error in every 100 instances</li>
+<li>99.99% correct means that you can expect an error in every 10,000 instances</li>
+<li>99.9999% correct means that you can expect an error in every 1,000,000 instances</li>
+</ul>
+<p>I once wrote a piece of code that worked perfectly unless the input had a 16-bit checksum of 0.
+Since the checksum was 16 bits, this code would fail one time in 65,536. 99.998% correct is
+not bad, but when it first got deployed, it went wrong in one hour. This was rare enough
+that both code review and some (limited) fuzz testing failed to catch the error, but common
+enough to be a problem in prod.</p>
+<p>Interestingly, a problem with a large number of nines of correctness is manufacturing of
+memory arrays. Before DDR5, which had on-device ECC to allow for some errors in the memory
+array, memory devices had to have flawless copies of 100’s of billions of cells.</p>
+<p>At larger scales, more nines naturally become necessary. Running 1000 servers with 99%
+availability will guarantee that at least one is down at any time. This is part of why larger
+companies need more nines. When you have a billion customers spending time on your app, it is
+virtually guaranteed to break in any way it possibly can.</p>
+<h4 id="being-wrong">Being Wrong</h4>
+<p>The worst that happens when you are wrong about a problem being a 100% problem is that you
+are slow. You spend a lot of time thinking, a lot of time doing, and a lot of time testing.
+You burn political capital with your colleagues spending so much time on one thing. Your
+competitors spend almost no time thinking or testing, and outrace you to market.
+If you are wrong about a problem <em>not</em> being a 5-9 problem, the worst that happens is that
+you introduce errors. Often, you lose customers for being wrong. You can lose customer trust
+or you can get sued. Sometimes you can kill people, but usually you won’t.</p>
+<p>The core trade of “move fast and break things” is that asking for forgiveness is not that
+bad, a reputation for being untrustworthy fades, and what you are solving usually doesn’t
+kill people when it goes wrong. It is very much worthwhile to focus on building rather than
+proving when the stakes are low.</p>
+<h4 id="building-on-top-of-things">Building on top of Things</h4>
+<p>Building on top of other products and services accelerates your time to market, but can
+affect your nines. If you rely on a product with 4 nines of uptime, you will never
+exceed 4 nines of uptime. That means that many services cannot underlie things that need
+to make guarantees.</p>
+<p>For a while, AWS’s <code>us-east-1</code> region was notorious for going down. It would be nearly
+impossible to get to more than 3 nines in that region. It got to the point where being
+single-region in <code>us-east-1</code> was a point of pride for some startups, because going down
+when the rest of the internet is also down isn’t really a problem. Clouds today still
+recommend being multi-regional for 5 nines of uptime - some will recommend being multi-cloud.</p>
+<p>Conversely, building with multiple options can add more nines. Having two redundant
+services with 3 nines can remove that from your critical path on reliability - as long as
+the downtime in those services is uncorrelated. This is why regional redundancy works:
+the clouds work hard to avoid global dependencies, so failures between regions
+should be uncorrelated.</p>
+<h2 id="tesla-as-a-case-study-in-nines">Tesla as a Case Study in Nines</h2>
+<p>Tesla is a prime example of a company that is taking a 90% approach to a problem that is
+traditionally approached by 5-9’s engineering. This has allowed Tesla to do the unthinkable:
+they have produced a car company that builds a product with incredible new systems and a
+completely new drivetrain for the time. They did it fast, too, and beat incredible odds.
+Most car startups end in obscurity or failure, and this is a car brand that succeeded in
+going mainstream. Yes, there are some wide panel gaps and the car isn’t perfect, but any
+real problem can get ironed out with an over-the-air update. It turns out consumers largely
+don’t care if you take a 5-9 approach to the manufacturing and design of your body panels -
+they don’t have to be perfect to sell a car.</p>
+<p>However, as Tesla matures, they are running into a problem that appears to be depressingly
+close to a 5-9 problem: self-driving cars. Waymo has had some success getting toward
+self-driving, but they do it by turning a car into an incredibly expensive robot with an
+onboard supercomputer, and mapping their target cities inch by inch. However, the car
+drives like a nervous teenager, and can be disabled with a traffic cone. Waymo has also
+managed to turn the 5-9 problem into a problem with fewer nines by adding a rich interface
+on their side that allows humans to provide feedback to Waymos that aren’t sure about what
+to do. This “centaur” of computers with less and less human intervention (given in a way
+that is trainable) is an incredible self-driver.</p>
+<p>Conversely, two examples of the “move fast and break things” approach, Uber and Tesla, have
+both resulted in fatal collisions while self-driving. Notably, they are not the only ones to
+suffer this sort of incident: Ford is also being investigated for fatal self-driving crashes.</p>
+<h2 id="reconciling-speed-and-correctness">Reconciling Speed and Correctness</h2>
+<p>How you define a problem often is what makes 5-9 problems tractable. Focusing on the “happy
+path” lets you make quicker advances than trying to tackle the whole thing. The dimension in
+which you can do “90%” has shifted compared to most problems: you must be correct, but
+if you can do it 50% of the time (and reliably fail or fall back to something else for the
+other 50%) you can often build great things. The remaining 50% can become a long tail.
+The issue with this method is that your problem detection needs to have five nines of recall.
+To be 100% correct, you need to be able to fall back 100% of the time when you are might be
+wrong.</p>
+<p>During refactors of code that has to match the behavior of previously existing code, a small
+100% problem in itself, rebuilding the hot path of systems is something that I have found to
+be very successful. You can be correct when you know conditions are ideal, using a very
+simple mental model, and fall back to the gnarly error handling of the existing implementation
+if you have any doubt about how ideal things are.</p>
+<p>Defining 5-9 problems into small pieces that can be knocked down one after the other is one
+of the other ways to get to a quick solution. A great senior engineer or architect is someone
+who can do this for a team, handing the problems of implementation and verification out at
+each step. The hard part is making sure you are always correct.</p>
+<h2 id="designing-around-reliability">Designing around Reliability</h2>
+<p>Reliability is an often-unspoken dimension of engineering projects. Often, it is the last
+dimension to be consciously considered in the engineering process, and only after an
+embarrassing incident or two. However, thinking about it ahead of time can be a useful idea.
+Thinking about it honestly is important, though: a vertical SaaS startup can likely eschew
+most reliability concerns beyond 2 nines. A database company or critical infrastructure
+service likely needs to think about 5 from the beginning. Anyone storing data needs to get
+10 or more nines of durability. Understanding your nine requirements can help you figure
+out where you can skimp and where you need to spend effort.</p>
+<p>Services that need strong guarantees are the ones I find the most interesting to
+build. The existing ones are often limited by the available tooling to make sure that
+they are provably correct. However, this leaves a lot of room to build new tooling and new
+systems together to get significant advancements in the state of the art.</p>
+</div></div>
+  </div>
+</body>
+</html>

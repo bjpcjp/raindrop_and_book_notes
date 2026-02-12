@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Build a Booking Engine Similar to Booking.com with Ruby on Rails 6 a</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Build a Booking Engine Similar to Booking.com with Ruby on Rails 6 a</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/kiosan/how-to-build-a-booking-engine-similar-to-booking-com-with-ruby-on-rails-6-and-elasticsearch-7-40nk">https://dev.to/kiosan/how-to-build-a-booking-engine-similar-to-booking-com-with-ruby-on-rails-6-and-elasticsearch-7-40nk</a></p>
+    <p><strong>Tags:</strong> elasticsearch, rubyonrails, search</p>
+    <p><strong>Bookmark ID:</strong> 876779358</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="751601" id="article-body">
+            <p>Think building a booking system is not your cup of tea? I bet, you will change your mind after reading this. </p>
+
+<p>I've made it super easy for you with every steps. Here, I'll share all about building a booking engine for a rental property like booking.com using Ruby on Rails 6 and Elasticsearch 7. </p>
+
+<p>When it comes to <a href="https://reintech.io/hire-ruby-developers" target="_blank" rel="noopener noreferrer">hiring Ruby developers</a>, Elasticsearch is one of the top technology they have to know well.</p>
+
+<p>I was unsure about building a Booking engine, but here is how it went:</p>
+
+<ul>
+<li>It's too hard to code; maybe takes a few years</li>
+<li>But what if... I just give it a try</li>
+<li>Wow, this is amazing, it works!</li>
+</ul>
+
+<p>The funny thing is, building a working "Booking engine" was easier than designing and implementing an interface that manages availability, prices, and properties of the owners. </p>
+
+<p>It's a little more complex than Airbnb. Mainly because it allows hotels to manage multiple rooms with different options with their own availability/prices. </p>
+
+<p>But, here is a short and high-level specification of the project for easier understanding:</p>
+
+<p>We will be building a system that searches for properties by filtering:</p>
+
+<ul>
+<li>Rooms available for a given date range</li>
+<li>Property options</li>
+<li>Room options</li>
+<li>Number of guests</li>
+</ul>
+
+<p>In my real project, there are added requirements like geo-location search, distinct availability statuses, minimum booking nights, and more. </p>
+
+<p>But in this project, I've skipped adding photos, coordinates, and others as I'd like to focus ONLY on booking search.</p>
+
+<h2>
+  <a name="ruby-on-rails-models" href="#ruby-on-rails-models">
+  </a>
+  Ruby on Rails Models
+</h2>
+
+<p>I'll be using the Property model as data model. If you've worked on something similar, you would already know what it does. It's pretty self-explanatory. </p>
+
+<p>I just decided to call it Property rather than Hotel as we have different properties such as hotels, cottages, bed&amp;breakfast, apartments, and others.<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>Property</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>include</span> <span>PropertyElastic</span>
+
+  <span>has_many</span> <span>:rooms</span><span>,</span> <span>dependent: :destroy</span>
+  <span>has_many</span> <span>:booking_rooms</span><span>,</span> <span>through: :rooms</span>
+  <span>has_and_belongs_to_many</span> <span>:property_options</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The PropertyOption model has just one field: 'title'.</p>
+
+<p>In my real project, property options are grouped into predefined sets, like services, comfort levels, the closest infrastructure, and others.</p>
+
+<p>The Room model represents room type in a hotel. For example, if a hotel has 10 standards for 2 guests rooms and 5 rooms for 4 guests, we'll create two Room objects for this hotel. </p>
+
+<p>This model should display room types that are available in a specific hotel. </p>
+
+<p>If the property is a cottage that could be rented as a whole, we'll still create one Room object to describe that cottage. </p>
+
+<p>The room model is a kind of room type.<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>Room</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>belongs_to</span> <span>:property</span>
+  <span>has_and_belongs_to_many</span> <span>:room_options</span>
+  <span>has_many</span> <span>:booking_rooms</span><span>,</span> <span>dependent: :destroy</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>RoomOption model has fields: 'title' and 'guests' - representing the number of people this room can host.</p>
+
+<h2>
+  <a name="preparing-models-for-booking" href="#preparing-models-for-booking">
+  </a>
+  Preparing models for booking
+</h2>
+
+<p>Now we'll add more models to store actual rooms and their availabilities. It's quite important as based on the availability, users can book a room. Pretty straightforward!</p>
+
+<p>BookingRoom model represents a real room in a hotel. Let's create as many BookingRoom objects as real rooms of specific room types in the hotel. You can customize it as needed.<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>BookingRoom</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>belongs_to</span> <span>:room</span>
+  <span>has_many</span> <span>:booking_room_availabilities</span><span>,</span> <span>dependent: :destroy</span>
+
+  <span>enum</span> <span>status: </span><span>%i[published draft]</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>BookingRoom has property 'title', 'capacity,' and relations as described above.</p>
+
+<p>The status will allow us to enable or disable room for search and booking.</p>
+
+<p>Here is BookingRoomAvailability class:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>BookingRoomAvailability</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>belongs_to</span> <span>:booking_room</span>
+  <span>enum</span> <span>status: </span><span>%i[available closed booked]</span>
+
+  <span>validates_uniqueness_of</span> <span>:booking_room</span><span>,</span> <span>scope: </span><span>%i[day]</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>And here is the migration:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>CreateBookingRoomAvailabilities</span> <span>&lt;</span> <span>ActiveRecord</span><span>::</span><span>Migration</span><span>[</span><span>5.2</span><span>]</span>
+  <span>def</span> <span>change</span>
+    <span>create_table</span> <span>:booking_room_availabilities</span> <span>do</span> <span>|</span><span>t</span><span>|</span>
+      <span>t</span><span>.</span><span>references</span> <span>:booking_room</span>
+      <span>t</span><span>.</span><span>date</span> <span>:day</span>
+      <span>t</span><span>.</span><span>integer</span> <span>:price</span>
+      <span>t</span><span>.</span><span>integer</span> <span>:status</span>
+
+      <span>t</span><span>.</span><span>timestamps</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Important properties of this class are 'day' and 'price'. So that particular instance of this class will store price for a specific date and for a specific BookingRoom instance. </p>
+
+<h2>
+  <a name="integrating-elasticsearch" href="#integrating-elasticsearch">
+  </a>
+  Integrating Elasticsearch
+</h2>
+
+<p>At this point, we have everything to start building the Elasticsearch index. For integrating, we'll use two gems:<br>
+</p>
+
+<div>
+<pre><code><span>gem</span> <span>'elasticsearch-model'</span><span>,</span> <span>'7.1.1'</span>
+<span>gem</span> <span>'elasticsearch-rails'</span><span>,</span> <span>'7.1.1'</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>All the Elasticsearch logic, we'll be putting into a concern called property_elastic.rb</p>
+
+<p>It contains index configuration and method to export the property as a JSON document.<br>
+</p>
+
+<div>
+<pre><code><span>require</span> <span>'elasticsearch/model'</span>
+
+<span>module</span> <span>PropertyElastic</span>
+  <span>extend</span> <span>ActiveSupport</span><span>::</span><span>Concern</span>
+
+  <span>included</span> <span>do</span>
+    <span>include</span> <span>Elasticsearch</span><span>::</span><span>Model</span>
+    <span>include</span> <span>Elasticsearch</span><span>::</span><span>Model</span><span>::</span><span>Callbacks</span>
+
+    <span>settings</span> <span>index: </span><span>{</span> <span>number_of_shards: </span><span>1</span> <span>}</span> <span>do</span>
+      <span>mappings</span> <span>dynamic: </span><span>'false'</span> <span>do</span>
+        <span>indexes</span> <span>:id</span>
+        <span>indexes</span> <span>:search_body</span><span>,</span> <span>analyzer: </span><span>'snowball'</span>
+        <span>indexes</span> <span>:property_options</span>
+        <span>indexes</span> <span>:rooms</span><span>,</span> <span>type: </span><span>'nested'</span><span>,</span> <span>properties: </span><span>{</span>
+          <span>'name'</span> <span>=&gt;</span> <span>{</span><span>'type'</span> <span>=&gt;</span> <span>'text'</span><span>},</span>
+          <span>'id'</span> <span>=&gt;</span> <span>{</span><span>'type'</span> <span>=&gt;</span> <span>'long'</span><span>},</span>
+          <span>'room_options'</span> <span>=&gt;</span> <span>{</span><span>'type'</span> <span>=&gt;</span> <span>'keyword'</span><span>},</span>
+          <span>'guests'</span> <span>=&gt;</span> <span>{</span> <span>'type'</span> <span>=&gt;</span> <span>'long'</span><span>},</span>
+          <span>'availability'</span> <span>=&gt;</span> <span>{</span> <span>'type'</span> <span>=&gt;</span> <span>'nested'</span><span>,</span> <span>properties: </span><span>{</span>
+            <span>'day'</span> <span>=&gt;</span> <span>{</span> <span>'type'</span> <span>=&gt;</span> <span>'date'</span> <span>},</span>
+            <span>'id'</span> <span>=&gt;</span> <span>{</span> <span>'type'</span> <span>=&gt;</span> <span>'long'</span> <span>},</span>
+            <span>'price'</span> <span>=&gt;</span> <span>{</span><span>'type'</span> <span>=&gt;</span> <span>'long'</span><span>},</span>
+            <span>'status'</span> <span>=&gt;</span> <span>{</span> <span>'type'</span> <span>=&gt;</span> <span>'keyword'</span> <span>},</span>
+            <span>'booking_room_id'</span> <span>=&gt;</span> <span>{</span> <span>'type'</span> <span>=&gt;</span> <span>'long'</span><span>}</span>
+          <span>}</span> <span>}</span>
+        <span>}</span>
+      <span>end</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>def</span> <span>as_indexed_json</span><span>(</span><span>_options</span> <span>=</span> <span>{})</span>
+    <span>as_json</span><span>(</span>
+      <span>only: </span><span>%i[id updated_at]</span>
+    <span>).</span><span>merge</span><span>({</span>
+      <span>property_options: </span><span>property_options</span><span>.</span><span>pluck</span><span>(</span><span>:id</span><span>),</span>
+      <span>search_body: </span><span>title</span><span>,</span>
+      <span>rooms: </span><span>availabilities</span><span>,</span>
+      <span>})</span>
+  <span>end</span>
+
+  <span>def</span> <span>availabilities</span>
+    <span>if</span> <span>booking_rooms</span><span>.</span><span>any?</span>
+      <span>booking_rooms</span><span>.</span><span>map</span> <span>do</span> <span>|</span><span>br</span><span>|</span>
+        <span>{</span>
+          <span>name: </span><span>br</span><span>.</span><span>title</span><span>,</span>
+          <span>id: </span><span>br</span><span>.</span><span>id</span><span>,</span>
+          <span>room_options: </span><span>br</span><span>.</span><span>room</span><span>.</span><span>room_options</span><span>.</span><span>pluck</span><span>(</span><span>:id</span><span>).</span><span>uniq</span><span>,</span>
+          <span>guests: </span><span>br</span><span>.</span><span>guests</span><span>,</span>
+          <span>availability: </span><span>br</span><span>.</span><span>booking_room_availabilities</span><span>.</span><span>where</span><span>(</span><span>"day &gt;= ? AND day &lt; ?"</span><span>,</span> <span>Date</span><span>.</span><span>today</span><span>,</span> <span>Date</span><span>.</span><span>today</span> <span>+</span> <span>6</span><span>.</span><span>months</span><span>).</span><span>map</span> <span>do</span> <span>|</span><span>s</span><span>|</span>
+            <span>{</span><span>day: </span><span>s</span><span>.</span><span>day</span><span>.</span><span>to_s</span><span>,</span> <span>price: </span><span>s</span><span>.</span><span>price</span><span>,</span> <span>status: </span><span>s</span><span>.</span><span>status</span><span>,</span> <span>room_id: </span><span>br</span><span>.</span><span>id</span><span>,</span> <span>id: </span><span>s</span><span>.</span><span>id</span><span>}</span>
+          <span>end</span>
+        <span>}</span>
+      <span>end</span>
+    <span>else</span>
+      <span>rooms</span><span>.</span><span>map</span> <span>do</span> <span>|</span><span>r</span><span>|</span>
+        <span>{</span>
+          <span>name: </span><span>r</span><span>.</span><span>title</span><span>,</span>
+          <span>id: </span><span>r</span><span>.</span><span>id</span><span>,</span>
+          <span>room_options: </span><span>r</span><span>.</span><span>room_options</span><span>.</span><span>pluck</span><span>(</span><span>:id</span><span>).</span><span>uniq</span><span>,</span>
+        <span>}</span>
+      <span>end</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Here are a few things to note about this file:</p>
+
+<p>The index mapping for Property contains two levels of nesting documents. This is where we store all room prices and availabilities. </p>
+
+<p>For each property, we create a document that includes nested documents for each BookingRoom that also contains an array of documents for each date that includes price, date, and availability.</p>
+
+<p>First I thought it is not very optimal or would not work fast but somehow Elasticsearch does all the magic, and it works very fast. At least on a relatively small amount of data. </p>
+
+<p>Method 'as_indexed_json' is a method to export documents for indexing.</p>
+
+<p>As index mapping is more or less self-explanatory, it is worth mentioning how the 'availabilities' method works.</p>
+
+<p>Not every property could have defined RoomAvailabilities with prices and as per my requirements, the booking engine should be able to find both available properties and those without prices but still counting RoomOptions.</p>
+
+<p>This is why the 'availabilities' method returns different data for both scenarios. This allows searching either for counting Room or BookingRoom.</p>
+
+<p>Now it's time to build the heart of our booking engine. </p>
+
+<p>A search!</p>
+
+<h2>
+  <a name="search-for-properties-with-available-rooms" href="#search-for-properties-with-available-rooms">
+  </a>
+  Search for properties with available rooms
+</h2>
+
+<p>To be able to search for Properties as per our requirements, we'll create a BookingSearch service:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>BookingSearch</span>
+  <span>def</span> <span>self</span><span>.</span><span>perform</span><span>(</span><span>params</span><span>,</span> <span>page</span> <span>=</span> <span>1</span><span>)</span>
+    <span>@page</span> <span>=</span> <span>page</span> <span>||</span> <span>1</span>
+    <span>@per_page</span> <span>=</span> <span>params</span><span>[</span><span>:per_page</span><span>]</span>
+    <span>@query</span> <span>=</span> <span>params</span><span>[</span><span>:q</span><span>]</span><span>&amp;</span><span>.</span><span>strip</span>
+    <span>@params</span> <span>=</span> <span>params</span>
+    <span>search</span>
+  <span>end</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>search</span>
+
+    <span>salt</span> <span>=</span> <span>@params</span><span>[</span><span>:salt</span><span>]</span> <span>||</span> <span>"salt"</span>
+
+    <span>terms</span> <span>=</span> <span>{</span>
+      <span>sort: </span><span>{</span>
+        <span>_script: </span><span>{</span>
+          <span>script: </span><span>"(doc['_id'] + '</span><span>#{</span><span>salt</span><span>}</span><span>').hashCode()"</span><span>,</span>
+          <span>type: </span><span>"number"</span><span>,</span>
+          <span>order: </span><span>"asc"</span>
+        <span>}</span>
+      <span>},</span>
+      <span>query: </span><span>{</span>
+        <span>bool: </span><span>{</span>
+          <span>must: </span><span>search_terms</span><span>,</span>
+          <span>filter:  </span><span>{</span>
+            <span>bool: </span><span>{</span>
+              <span>must: </span><span>generate_term</span> <span>+</span> <span>generate_nested_term</span>
+            <span>}</span>
+          <span>}</span>
+        <span>}</span>
+      <span>},</span>
+      <span>size: </span><span>@per_page</span><span>,</span>
+      <span>from: </span><span>(</span><span>@page</span><span>.</span><span>to_i</span> <span>-</span> <span>1</span><span>)</span> <span>*</span> <span>@per_page</span>
+    <span>}</span>
+    <span>Property</span><span>.</span><span>__elasticsearch__</span><span>.</span><span>search</span><span>(</span><span>terms</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>generate_nested_term</span>
+    <span>terms_all</span> <span>=</span> <span>[]</span>
+
+    <span>terms</span> <span>=</span> <span>[]</span>
+    <span>if</span> <span>@params</span><span>[</span><span>:room_options</span><span>]</span>
+      <span>@params</span><span>[</span><span>:room_options</span><span>].</span><span>split</span><span>(</span><span>","</span><span>)</span><span>&amp;</span><span>.</span><span>map</span><span>(</span><span>&amp;</span><span>:to_i</span><span>)</span><span>&amp;</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>ro</span><span>|</span>
+        <span>terms</span><span>.</span><span>push</span><span>({</span><span>terms: </span><span>{</span> <span>"rooms.room_options"</span> <span>=&gt;</span> <span>[</span><span>ro</span><span>]</span> <span>}})</span>
+      <span>end</span>
+    <span>end</span>
+    <span>terms</span><span>.</span><span>push</span><span>({</span><span>range: </span><span>{</span> <span>"rooms.guests"</span> <span>=&gt;</span> <span>{</span><span>'gte'</span> <span>=&gt;</span> <span>@params</span><span>[</span><span>:guests</span><span>].</span><span>to_i</span><span>}}})</span>
+    <span>n</span> <span>=</span> <span>{</span><span>nested: </span><span>{</span>
+      <span>path: </span><span>"rooms"</span><span>,</span>
+      <span>query: </span><span>{</span>
+        <span>bool: </span><span>{</span>
+          <span>must: </span><span>terms</span>
+        <span>}</span>
+      <span>},</span>
+      <span>inner_hits: </span><span>{</span> <span>name: </span><span>'room'</span> <span>}</span>
+    <span>}}</span>
+    <span>terms_all</span><span>.</span><span>push</span><span>(</span><span>n</span><span>)</span>
+
+    <span>Date</span><span>.</span><span>parse</span><span>(</span><span>@params</span><span>[</span><span>:from</span><span>]).</span><span>upto</span><span>(</span><span>Date</span><span>.</span><span>parse</span><span>(</span><span>@params</span><span>[</span><span>:to</span><span>])</span> <span>-</span> <span>1</span><span>.</span><span>day</span><span>)</span> <span>do</span> <span>|</span><span>d</span><span>|</span>
+      <span>terms</span> <span>=</span> <span>[]</span>
+      <span>terms</span><span>.</span><span>push</span><span>(</span><span>match: </span><span>{</span> <span>"rooms.availability.status"</span> <span>=&gt;</span> <span>'available'</span> <span>})</span>
+      <span>terms</span><span>.</span><span>push</span><span>(</span><span>match: </span><span>{</span> <span>"rooms.availability.day"</span> <span>=&gt;</span> <span>d</span><span>.</span><span>to_s</span> <span>})</span>
+      <span>n</span> <span>=</span> <span>{</span><span>nested: </span><span>{</span>
+        <span>path: </span><span>"rooms.availability"</span><span>,</span>
+        <span>query: </span><span>{</span>
+          <span>bool: </span><span>{</span>
+            <span>must: </span><span>terms</span>
+          <span>}</span>
+        <span>},</span>
+        <span>inner_hits: </span><span>{</span> <span>name: </span><span>d</span><span>.</span><span>to_s</span> <span>}</span>
+      <span>}</span>
+      <span>}</span>
+      <span>terms_all</span><span>.</span><span>push</span><span>(</span><span>n</span><span>)</span>
+    <span>end</span>
+
+    <span>terms_all</span>
+  <span>end</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>generate_term</span>
+    <span>terms</span> <span>=</span> <span>[]</span>
+
+    <span>if</span> <span>@params</span><span>[</span><span>:property_options</span><span>].</span><span>present?</span>
+      <span>@params</span><span>[</span><span>:property_options</span><span>].</span><span>split</span><span>(</span><span>','</span><span>).</span><span>each</span> <span>do</span> <span>|</span><span>lo</span><span>|</span>
+        <span>terms</span><span>.</span><span>push</span><span>(</span><span>term: </span><span>{</span> <span>property_options: </span><span>lo</span> <span>})</span>
+      <span>end</span>
+    <span>end</span>
+
+    <span>terms</span>
+  <span>end</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>search_terms</span>
+    <span>match</span> <span>=</span> <span>[</span><span>@query</span><span>.</span><span>blank?</span> <span>?</span> <span>{</span> <span>match_all: </span><span>{}</span> <span>}</span> <span>:</span> <span>{</span> <span>multi_match: </span><span>{</span> <span>query: </span><span>@query</span><span>,</span> <span>fields: </span><span>%w[search_body]</span><span>,</span> <span>operator: </span><span>'and'</span> <span>}</span> <span>}]</span>
+    <span>match</span><span>.</span><span>push</span><span>(</span> <span>{</span> <span>ids: </span><span>{</span> <span>values: </span><span>@params</span><span>[</span><span>:ids</span><span>]</span> <span>}</span> <span>})</span> <span>if</span> <span>@params</span><span>[</span><span>:ids</span><span>]</span>
+    <span>match</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Here are some of the key points in this file:</p>
+
+<p>Order is done with a random salt string that comes from outside this service. In my project, I store this random string in the user's session to have a different order for different users but keep the order the same for one user. </p>
+
+<p>We use a property title as a search_body so that we can search by title. </p>
+
+<h3>
+  <a name="generatenestedterm" href="#generatenestedterm">
+  </a>
+  generate_nested_term
+</h3>
+
+<p>The search query looks pretty clear, except maybe the 'generate_nested_term' part.</p>
+
+<p>In this method, we extend a query for search in nested documents for available rooms. </p>
+
+<p>As you can notice, we can pass {skip_availability: true} into this service to skip availability search, in this case, it would be a regular search with filtering. </p>
+
+<p>To find a property with available rooms, we add conditions for each date, so that for example, when users search for a date range from 21st till 27th, we'll add 5 conditions for 21st, 22nd, 23rd, 24th, 25th, and 26th dates where we expect BookingRoomAvailability is available and has status 'available'.</p>
+
+<h3>
+  <a name="innerhits" href="#innerhits">
+  </a>
+  inner_hits
+</h3>
+
+<p>This is an important option in our search query as later we'll take data from inner hits to show search not only as property but also to show cost for entire booking per each BookingRoom. This will also allow us to know how many rooms are available and per which cost.</p>
+
+
+<hr>
+
+<p>Simple as that! Well, I spent a lot of time building both index and search queries but still have few issues. One of the issues is that I can't skip all BookingRoomAvailabilities from the "room" inner_hits. So that in results I have documents that include prices not only for the given date range but all available dates for every room found.</p>
+
+<p>Now it's time to tinker with the code! I promise you, it's going to be a lot of fun ;)</p>
+
+<h2>
+  <a name="testing" href="#testing">
+  </a>
+  Testing
+</h2>
+
+<p>Let's create some data for testing. We can do this in a file app/services/data_demo.rb</p>
+
+<p>And a logic to retrieve rich search results with Elasticsearch inner hits:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>DataDemo</span>
+  <span>PROPERTIES</span> <span>=</span> <span>[</span><span>'White'</span><span>,</span> <span>'Blue'</span><span>,</span> <span>'Yellow'</span><span>,</span> <span>'Red'</span><span>,</span> <span>'Green'</span><span>]</span>
+  <span>PROPERTY_OPTIONS</span> <span>=</span> <span>[</span><span>'WiFi'</span><span>,</span> <span>'Parking'</span><span>,</span> <span>'Swimming Pool'</span><span>,</span> <span>'Playground'</span><span>]</span>
+  <span>ROOM_OPTIONS</span> <span>=</span> <span>[</span><span>'Kitchen'</span><span>,</span> <span>'Kettle'</span><span>,</span> <span>'Work table'</span><span>,</span> <span>'TV'</span><span>]</span>
+  <span>ROOM_TYPES</span> <span>=</span> <span>[</span><span>'Standard'</span><span>,</span> <span>'Comfort'</span><span>]</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>search</span>
+    <span>params</span> <span>=</span> <span>{}</span>
+    <span>from_search</span> <span>=</span> <span>Date</span><span>.</span><span>today</span> <span>+</span> <span>rand</span><span>(</span><span>20</span><span>).</span><span>days</span>
+    <span>params</span><span>[</span><span>:from</span><span>]</span> <span>=</span> <span>from_search</span><span>.</span><span>to_s</span>
+    <span>params</span><span>[</span><span>:to</span><span>]</span> <span>=</span> <span>(</span><span>from_search</span> <span>+</span> <span>3</span><span>.</span><span>days</span><span>).</span><span>to_s</span>
+    <span>params</span><span>[</span><span>:per_page</span><span>]</span> <span>=</span> <span>10</span>
+    <span>property_options</span> <span>=</span> <span>PROPERTY_OPTIONS</span><span>.</span><span>sample</span><span>(</span><span>1</span><span>).</span><span>map</span><span>{</span><span>|</span><span>po</span><span>|</span> <span>PropertyOption</span><span>.</span><span>find_by</span> <span>title: </span><span>"po}"</span>
+    <span>room_options</span> <span>=</span> <span>ROOM_OPTIONS</span><span>.</span><span>sample</span><span>(</span><span>1</span><span>).</span><span>map</span><span>{</span><span>|</span><span>ro</span><span>|</span> <span>RoomOption</span><span>.</span><span>find_by</span> <span>title: </span><span>"ro}"</span>
+    <span>params</span><span>[</span><span>:property_options</span><span>]</span> <span>=</span> <span>property_options</span><span>.</span><span>map</span><span>(</span><span>&amp;</span><span>:id</span><span>).</span><span>join</span><span>(</span><span>','</span><span>)</span>
+    <span>params</span><span>[</span><span>:room_options</span><span>]</span> <span>=</span> <span>room_options</span><span>.</span><span>map</span><span>(</span><span>&amp;</span><span>:id</span><span>).</span><span>join</span><span>(</span><span>','</span><span>)</span>
+    <span>params</span><span>[</span><span>:guests</span><span>]</span> <span>=</span> <span>2</span>
+
+    <span>res</span> <span>=</span> <span>BookingSearch</span><span>.</span><span>perform</span><span>(</span><span>params</span><span>)</span>
+
+    <span>puts</span> <span>"Search for dates: </span><span>#{</span><span>params</span><span>[</span><span>:from</span><span>]</span><span>}</span><span>..</span><span>#{</span><span>params</span><span>[</span><span>:to</span><span>]</span><span>}</span><span>"</span>
+    <span>puts</span> <span>"Property options: </span><span>#{</span><span>property_options</span><span>.</span><span>map</span><span>(</span><span>&amp;</span><span>:title</span><span>).</span><span>to_sentence</span><span>}</span><span>"</span>
+    <span>puts</span> <span>"Room options: </span><span>#{</span><span>room_options</span><span>.</span><span>map</span><span>(</span><span>&amp;</span><span>:title</span><span>).</span><span>to_sentence</span><span>}</span><span>"</span>
+
+    <span>res</span><span>.</span><span>response</span><span>.</span><span>hits</span><span>.</span><span>hits</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>hit</span><span>|</span>
+
+      <span>puts</span> <span>"Property: </span><span>#{</span><span>hit</span><span>.</span><span>_source</span><span>.</span><span>search_body</span><span>}</span><span>"</span>
+      <span>available_rooms</span> <span>=</span> <span>{}</span>
+
+      <span># dive into inner hits to get detailed search data</span>
+      <span># here we transform search result into more structured way   </span>
+      <span>hit</span><span>.</span><span>inner_hits</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>key</span><span>,</span> <span>inner_hit</span><span>|</span>
+        <span>if</span> <span>key</span> <span>!=</span> <span>'room'</span>
+          <span>inner_hit</span><span>.</span><span>hits</span><span>.</span><span>hits</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>v</span><span>|</span>
+            <span>available_rooms</span><span>[</span><span>v</span><span>.</span><span>_source</span><span>.</span><span>room_id</span><span>.</span><span>to_s</span><span>]</span> <span>||=</span> <span>[]</span>
+            <span>available_rooms</span><span>[</span><span>v</span><span>.</span><span>_source</span><span>.</span><span>room_id</span><span>.</span><span>to_s</span><span>]</span> <span>&lt;&lt;</span> <span>{</span> <span>day: </span><span>v</span><span>.</span><span>_source</span><span>.</span><span>day</span><span>,</span> <span>price: </span><span>v</span><span>.</span><span>_source</span><span>.</span><span>price</span> <span>}</span>
+          <span>end</span>
+        <span>else</span>
+          <span>puts</span> <span>"Rooms: </span><span>#{</span><span>inner_hit</span><span>.</span><span>hits</span><span>.</span><span>hits</span><span>.</span><span>count</span><span>}</span><span>"</span>
+        <span>end</span>
+      <span>end</span>
+
+      <span># printing results</span>
+      <span>available_rooms</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>key</span><span>,</span> <span>ar</span><span>|</span>
+        <span>booking_room</span> <span>=</span> <span>BookingRoom</span><span>.</span><span>find</span> <span>key</span>
+        <span>puts</span> <span>"Room: </span><span>#{</span><span>booking_room</span><span>.</span><span>room</span><span>.</span><span>title</span><span>}</span><span> / </span><span>#{</span><span>booking_room</span><span>.</span><span>title</span><span>}</span><span>"</span>
+        <span>total_price</span> <span>=</span> <span>0</span>
+
+        <span>ar</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>day</span><span>|</span>
+          <span>puts</span> <span>"</span><span>#{</span><span>day</span><span>[</span><span>:day</span><span>]</span><span>}</span><span>: $</span><span>#{</span><span>day</span><span>[</span><span>:price</span><span>]</span><span>}</span><span>/night"</span>
+          <span>total_price</span> <span>+=</span> <span>day</span><span>[</span><span>:price</span><span>]</span>
+        <span>end</span>
+
+        <span>puts</span> <span>"Total price for </span><span>#{</span><span>ar</span><span>.</span><span>count</span><span>}</span><span> </span><span>#{</span><span>'night'</span><span>.</span><span>pluralize</span><span>(</span><span>ar</span><span>.</span><span>count</span><span>)</span><span>}</span><span>: $</span><span>#{</span><span>total_price</span><span>}</span><span>"</span>
+        <span>puts</span> <span>"----------------------------</span><span>\n</span><span>"</span>
+      <span>end</span>
+    <span>end</span>
+
+    <span>res</span><span>.</span><span>response</span><span>.</span><span>hits</span><span>[</span><span>"total"</span><span>].</span><span>value</span>
+  <span>end</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>delete</span>
+    <span>Property</span><span>.</span><span>destroy_all</span>
+    <span>PropertyOption</span><span>.</span><span>destroy_all</span>
+    <span>RoomOption</span><span>.</span><span>destroy_all</span>
+  <span>end</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>run</span>
+
+    <span>delete</span>
+
+    <span>PROPERTY_OPTIONS</span><span>.</span><span>each</span> <span>{</span> <span>|</span><span>po</span><span>|</span> <span>PropertyOption</span><span>.</span><span>create</span><span>(</span><span>title: </span><span>po</span><span>)</span> <span>}</span>
+    <span>ROOM_OPTIONS</span><span>.</span><span>each</span> <span>{</span> <span>|</span><span>ro</span><span>|</span> <span>RoomOption</span><span>.</span><span>create</span><span>(</span><span>title: </span><span>ro</span><span>)</span> <span>}</span>
+
+    <span>5</span><span>.</span><span>times</span> <span>do</span> <span>|</span><span>i</span><span>|</span>
+      <span>p</span> <span>=</span> <span>Property</span><span>.</span><span>create</span><span>(</span><span>title: </span><span>PROPERTIES</span><span>[</span><span>i</span><span>])</span>
+      <span>rooms</span> <span>=</span> <span>rand</span><span>(</span><span>2</span><span>)</span> <span>+</span> <span>1</span>
+
+      <span>p</span><span>.</span><span>property_options</span> <span>=</span> <span>PROPERTY_OPTIONS</span><span>.</span><span>sample</span><span>(</span><span>2</span><span>).</span><span>map</span><span>{</span> <span>|</span><span>po</span><span>|</span> <span>PropertyOption</span><span>.</span><span>find_by</span> <span>title: </span><span>po</span> <span>}</span>
+
+      <span>rooms</span><span>.</span><span>times</span> <span>do</span> <span>|</span><span>j</span><span>|</span>
+        <span>room</span> <span>=</span> <span>p</span><span>.</span><span>rooms</span><span>.</span><span>create</span><span>({</span><span>title: </span><span>"</span><span>#{</span><span>ROOM_TYPES</span><span>[</span><span>rand</span><span>(</span><span>2</span><span>)]</span><span>}</span><span> </span><span>#{</span><span>j</span><span>}</span><span>"</span> <span>})</span>
+        <span>room</span><span>.</span><span>room_options</span> <span>=</span> <span>ROOM_OPTIONS</span><span>.</span><span>sample</span><span>(</span><span>2</span><span>).</span><span>map</span><span>{</span> <span>|</span><span>po</span><span>|</span> <span>RoomOption</span><span>.</span><span>find_by</span> <span>title: </span><span>po</span> <span>}</span>
+
+        <span>(</span><span>rand</span><span>(</span><span>2</span><span>)</span> <span>+</span> <span>1</span><span>).</span><span>times</span> <span>do</span> <span>|</span><span>k</span><span>|</span>
+          <span>booking_room</span> <span>=</span> <span>room</span><span>.</span><span>booking_rooms</span><span>.</span><span>create</span> <span>title: </span><span>"Room </span><span>#{</span><span>k</span><span>+</span><span>1</span><span>}</span><span>"</span><span>,</span> <span>status: :published</span><span>,</span> <span>guests: </span><span>rand</span><span>(</span><span>4</span><span>)</span> <span>+</span> <span>1</span>
+
+          <span>30</span><span>.</span><span>times</span> <span>do</span> <span>|</span><span>d</span><span>|</span>
+            <span>booking_room</span><span>.</span><span>booking_room_availabilities</span><span>.</span><span>create</span> <span>day: </span><span>Date</span><span>.</span><span>today</span> <span>+</span> <span>d</span><span>.</span><span>days</span><span>,</span> <span>status: :available</span><span>,</span> <span>price: </span><span>[</span><span>100</span><span>,</span> <span>200</span><span>,</span> <span>300</span><span>][</span><span>rand</span><span>(</span><span>3</span><span>)]</span>
+          <span>end</span>
+        <span>end</span>
+      <span>end</span>
+    <span>end</span>
+    <span>Property</span><span>.</span><span>__elasticsearch__</span><span>.</span><span>delete_index!</span>
+    <span>Property</span><span>.</span><span>__elasticsearch__</span><span>.</span><span>create_index!</span>
+    <span>Property</span><span>.</span><span>__elasticsearch__</span><span>.</span><span>import</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>I encourage you to play more with data in response to ElasticSearch. </p>
+
+<p>To run this code, open Rails console with "rails c" and run:<br>
+</p>
+
+<div>
+<pre><code><span>DataDemo</span><span>.</span><span>run</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This will generate an example data and will index it into ElasticSearch.</p>
+
+<p>Then play with data by running:<br>
+</p>
+
+<div>
+<pre><code><span>DataDemo</span><span>.</span><span>search</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fcx7wk0iwcdrzt4s1jh4z.jpg"><img src="data:application/octet-stream;base64," alt="Booking test results 1" loading="lazy"></a><br>
+<a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F8hdlehh2gtpfspggw7fy.jpg"><img src="data:application/octet-stream;base64," alt="Booking test results 2" loading="lazy"></a></p>
+
+<h2>
+  <a name="final-thoughts" href="#final-thoughts">
+  </a>
+  Final thoughts
+</h2>
+
+<p>I enjoyed it a lot while building a booking engine for my pet project. There are tons of additional features out there, but I hope you get the main idea of how to build a booking search engine here.</p>
+
+<p>Ruby on Rails and Elasticsearch are great tools to craft software. </p>
+
+<p>If you're looking to hire great Ruby on Rails developers, consider contacting <a href="https://reintech.io/" target="_blank" rel="noopener noreferrer">Reintech</a>.</p>
+
+<p>The code and an example app is available at GitHub: <a href="https://github.com/kiosan/elastic_booking" target="_blank" rel="noopener noreferrer">https://github.com/kiosan/elastic_booking</a> </p>
+
+<p>Let me know in the comments if this tutorial was helpful.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ruby: a great language for shell scripts! - Lucas Seiki Oshiro</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Ruby: a great language for shell scripts! - Lucas Seiki Oshiro</h1>
+    <p><strong>URL:</strong> <a href="https://lucasoshiro.github.io/posts-en/2024-06-17-ruby-shellscript">https://lucasoshiro.github.io/posts-en/2024-06-17-ruby-shellscript</a></p>
+    <p><strong>Tags:</strong> bash, ruby</p>
+    <p><strong>Bookmark ID:</strong> 876797832</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main" role="main">
+  
+  
+
+
+
+  <article class="page" itemscope="" itemtype="https://schema.org/CreativeWork">
+    
+    
+    
+    
+
+    <div>
+      
+        <header>
+          
+          
+            <p> 
+
+
+
+
+
+  
+    4 minute read
+  
+
+
+</p>
+          
+        </header>
+      
+
+      <section itemprop="text">
+        
+        <h2 id="intro">Intro</h2>
+
+<p>Ruby is so associated with its most famous framework, Rails, that many people
+forget how amazing this language is. I mean, I know a lot of people who says “I
+don’t like Ruby” and when I ask why, they say something about Rails. Personally,
+I consider Ruby one of my favorite programming languages, and the last time I
+touched any Rails code was 7 years ago…</p>
+
+<p>So, if I don’t use Rails anymore, what I do with Ruby? Well, Ruby is a very rich
+and complete language, perhaps even more than its more famous relative, Python
+(sadly, I can’t say the same about its ecosystem…). And one of the things that
+I think that Ruby is better than Python is using it for writing shell
+scripts.</p>
+
+<p>That is, most of the cases Bash for me is enough, but if the script starts to
+become complex, I switch to Ruby. Here I show the main features that might be
+interesting for this case of use.</p>
+
+<h3 id="goals">Goals</h3>
+
+<ul>
+  <li>
+    <p>Show features of Ruby that are useful for writing shell scripts;</p>
+  </li>
+  <li>
+    <p>Compare Ruby to Bash and Python;</p>
+  </li>
+</ul>
+
+<h3 id="non-goals">Non-goals</h3>
+
+<ul>
+  <li>Replace <em>entirely</em> Bash scripts by Ruby scripts.</li>
+</ul>
+
+<h2 id="feature-1-calling-external-commands">Feature 1: calling external commands</h2>
+
+<p>The first thing that you expect of language for writing shell scripts is to
+call external commands. In Ruby, you do that using backticks (<code>`</code>):</p>
+
+<div><pre><code><span>`ls`</span>
+</code></pre></div>
+
+<p>That’s it! You don’t need <code>system</code>, <code>popen</code> or something like that, or import
+a library. And if you set that to a variable, you’ll have the output of the
+command:</p>
+
+<div><pre><code><span>my_date</span><span>=</span><span>`date`</span>
+</code></pre></div>
+
+<blockquote>
+  <p>Note: if you want to use <code>system</code> (e.g. if you want the output to be
+redirected to stdout instead of a string) or <code>popen</code> (if you want to read or
+write data from or to a subprocess), those are also available in Ruby!</p>
+</blockquote>
+
+<h2 id="feature-2-status-code">Feature 2: status code</h2>
+
+<p>This is real quick: in Ruby, the variable <code>$?</code> contains the status code of the
+last executed command. So, it’s really close to Bash:</p>
+
+<div><pre><code><span>`true`</span>
+<span>puts</span> <span>$?</span> <span># 0</span>
+
+<span>`false`</span>
+<span>puts</span> <span>$?</span> <span># 1</span>
+</code></pre></div>
+
+<h2 id="feature-3-its-a-typed-language">Feature 3: it’s a typed language</h2>
+
+<p>Ruby is not a <em>statically</em> typed language, but it has types. In fact, it is a
+object-oriented language, and it follow strictly the OOP paradigm (more than
+Python, in some aspects even more than Java!). Bash, on the other hand,
+everything is a string, and that leads to several safety issues…</p>
+
+<div><pre><code><span>total_lines</span> <span>=</span> <span>`wc -l my_file`</span><span>.</span><span>to_i</span> <span># an int containing the number of lines of a file</span>
+<span>half</span> <span>=</span> <span>total_lines</span><span>.</span><span>div</span> <span>2</span>           <span># integer division</span>
+<span>puts</span> <span>`head -n </span><span>#{</span><span>half</span><span>}</span><span> my_file`</span>     <span># print half of the file</span>
+</code></pre></div>
+
+<h2 id="feature-4-functional-constructions">Feature 4: functional constructions</h2>
+
+<p>Ruby implements <code>map</code>, <code>select</code> (filter), <code>reduce</code>, <code>flat_map</code> and other
+functional operations as methods. So, you can, for example, apply a <code>map</code> over a
+command output:</p>
+
+<div><pre><code><span>puts</span> <span>`ls`</span><span>.</span><span>lines</span><span>.</span><span>map</span> <span>{</span> <span>|</span><span>name</span><span>|</span> <span>name</span><span>.</span><span>strip</span><span>.</span><span>length</span> <span>}</span> <span># prints the lengths of the filenames</span>
+</code></pre></div>
+
+<h2 id="feature-5-regex-matching">Feature 5: regex matching</h2>
+
+<p>Regex is a type in Ruby, and operations using regex are built-in in the
+language. Look at this example, where we get the current git branch name calling
+<code>git branch</code>:</p>
+
+<div><pre><code><span>current_branch_regex</span> <span>=</span> <span>/^\* (\S+)/</span>
+<span>output_lines</span> <span>=</span> <span>`git branch`</span><span>.</span><span>lines</span>
+<span>output_lines</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>line</span><span>|</span>
+  <span>if</span> <span>line</span> <span>=~</span> <span>current_branch_regex</span> <span># match the string with the regex</span>
+    <span>puts</span> <span>$1</span>                       <span># prints the match of the first group  </span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+<blockquote>
+  <p>Note for Git lovers: I know that I could do that only using <code>git branch
+--show-current</code>, but that was the first example that came in my mind to
+demonstrate the use of regex…</p>
+</blockquote>
+
+<h2 id="feature-6-easy-threads">Feature 6: easy threads</h2>
+
+<p>If want to work with multiple threads, Ruby is perhaps the one of the easiest
+language to do it. Look:</p>
+
+<div><pre><code><span>thread</span> <span>=</span> <span>Thread</span><span>.</span><span>new</span> <span>do</span>
+  <span>puts</span> <span>"I'm in a thread!"</span>
+<span>end</span>
+
+<span>puts</span> <span>"I'm outside a thread!"</span>
+
+<span>thread</span><span>.</span><span>join</span>
+</code></pre></div>
+
+<p>So, it can be useful for, for example, downloading several files at the same time:</p>
+
+<div><pre><code><span>(</span><span>1</span><span>..</span><span>10</span><span>).</span><span>map</span> <span>do</span> <span>|</span><span>i</span><span>|</span>                       <span># iterates from i=1 to i=10, inclusive</span>
+  <span>Thread</span><span>.</span><span>new</span> <span>do</span>
+    <span>`wget http://my_site.com/file_</span><span>#{</span><span>i</span><span>}</span><span>`</span>  <span># you can use variables inside commands!  </span>
+  <span>end</span>
+<span>end</span><span>.</span><span>each</span> <span>{</span> <span>|</span><span>thread</span><span>|</span> <span>thread</span><span>.</span><span>join</span> <span>}</span>        <span># do/end and curly braces have the same purpose!</span>
+</code></pre></div>
+
+<h2 id="feature-7-builtin-file-and-dir-operations">Feature 7: builtin file and dir operations</h2>
+
+<p>In Ruby, all the file operations are methods of the <code>File</code> class and all the
+directory operations are methods of the <code>Dir</code> class, as it should be. In Python,
+for example, if you want to read a file you use <code>open</code>, but if you want to
+delete it you need to use <code>os.remove</code>, and <code>os</code> does a lot of other things that are
+not related to files.</p>
+
+<p>So, in Ruby:</p>
+
+<div><pre><code><span>exists</span> <span>=</span> <span>File</span><span>.</span><span>exist?</span> <span>'My File'</span>           <span># methods that return booleans end in ?</span>
+<span>file_content</span> <span>=</span> <span>File</span><span>.</span><span>open</span><span>(</span><span>'My File'</span><span>).</span><span>read</span>
+<span>File</span><span>.</span><span>delete</span> <span>'My File'</span>                     <span># parentheses are optional if it's not ambiguous</span>
+</code></pre></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I hope that after reading this short text you consider using Ruby as a
+replacement for complex shell scripts. I mean, I don’t expect that you drop
+Bash entirely, but consider using Ruby when things get complex. Of course, you
+can do that in Python, Perl, even JS, but, as my personal choice I think that
+Ruby is the most complete and easier Bash replacement for that!</p>
+
+<p>If you find something wrong, or if you have any suggestion, please let me know
+<a href="https://github.com/lucasoshiro/lucasoshiro.github.io/issues">here</a>.</p>
+
+<h2 id="update">Update</h2>
+
+<p>This reached #1 on <a href="https://news.ycombinator.com/item?id=40763640">Hacker News</a>!
+Not only that, but it started some interesting discussions in the comments.
+Thanks everyone!</p>
+
+<div>
+  <figure>
+    <img src="data:application/octet-stream;base64,">
+    <figcaption>#1 on HN!</figcaption>
+  </figure>
+</div>
+
+<h2 id="update-2">Update #2</h2>
+
+<p>Somehow this reached Matz, the creator of Ruby! And this was tweeted by him!
+I… can’t believe it!</p>
+
+<blockquote><p lang="en" dir="ltr">Link: Ruby: a great language for shell scripts! - Lucas Seiki Oshiro : <a href="https://t.co/lestntomSR">https://t.co/lestntomSR</a><br> <a href="https://t.co/lestntomSR">https://t.co/lestntomSR</a></p>— Yukihiro Matz (@yukihiro_matz) <a href="https://twitter.com/yukihiro_matz/status/1805475764013252815?ref_src=twsrc%5Etfw">June 25, 2024</a></blockquote>
+
+
+
+        
+      </section>
+
+      
+
+      
+
+      <!-- 
+  <nav class="pagination">
+    
+      <a href="/posts-en/2024-05-11-splat-operator/" class="pagination--pager" title="Python: 10 cool tricks with the * operator
+">Anterior</a>
+    
+    
+      <a href="/posts-en/2024-06-27-squash-submodule/" class="pagination--pager" title="Git: the danger of squash merging submodules
+">Próxima</a>
+    
+  </nav>
+ -->
+    </div>
+
+    
+  </article>
+
+  
+  
+</div></div>
+  </div>
+</body>
+</html>

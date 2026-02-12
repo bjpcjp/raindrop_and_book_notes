@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using Enumerated Types in Python</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using Enumerated Types in Python</h1>
+    <p><strong>URL:</strong> <a href="https://johnlekberg.com/blog/2020-06-06-enum.html">https://johnlekberg.com/blog/2020-06-06-enum.html</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876775575</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><a href="https://johnlekberg.com/blog.html">Return to Blog
+</a></p><p>By John Lekberg on June 06, 2020.
+</p><hr>
+<p><a href="https://news.ycombinator.com/item?id=23440541">Hacker News discussion</a></p>
+<hr>
+<p>This week's post is about using <a href="https://en.wikipedia.org/wiki/Enumerated_type">enumerated
+types</a> (enums) in Python.
+You will learn:</p>
+<ul>
+<li>How to use enums to manage data that takes on a finite set of states.</li>
+<li>How to impose a custom ordering on data.</li>
+<li>How to represent a combination of states using <code>Flag</code> and <code>IntFlag</code>.</li>
+</ul>
+<h2>What are enums?</h2>
+<p><a href="https://en.wikipedia.org/wiki/Enumerated_type">Enumerated types</a> (enums) are
+sets of unique values. E.g. A <a href="https://en.wikipedia.org/wiki/Tier_list">tier
+list</a>, with S-tier being the best,
+followed by A, B, C, D, and F:</p>
+<blockquote>
+<pre><code>import enum
+
+Tier = enum.IntEnum("Tier", ["S", "A", "B", "C", "D", "F"])
+list(Tier)
+</code></pre>
+</blockquote>
+<pre><code>[&lt;Tier.S: 1&gt;, &lt;Tier.A: 2&gt;, &lt;Tier.B: 3&gt;, &lt;Tier.C: 4&gt;, &lt;Tier.D: 5&gt;,
+ &lt;Tier.F: 6&gt;]
+</code></pre>
+<blockquote>
+<pre><code>Tier.S &lt; Tier.C
+</code></pre>
+</blockquote>
+<pre><code>True
+</code></pre>
+<blockquote>
+<pre><code>sorted([Tier.B, Tier.D, Tier.S, Tier.A, Tier.F, Tier.C])
+</code></pre>
+</blockquote>
+<pre><code>[&lt;Tier.S: 1&gt;, &lt;Tier.A: 2&gt;, &lt;Tier.B: 3&gt;, &lt;Tier.C: 4&gt;, &lt;Tier.D: 5&gt;,
+ &lt;Tier.F: 6&gt;]
+</code></pre>
+<p>In this case, using an
+<a href="https://docs.python.org/3/library/enum.html#enum.IntEnum">IntEnum</a> object is
+easier than using a
+<a href="https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str">string</a>
+because the tiers compare correctly:</p>
+<blockquote>
+<pre><code>Tier.S &lt; Tier.C
+</code></pre>
+</blockquote>
+<pre><code>True
+</code></pre>
+<blockquote>
+<pre><code>"S" &lt; "C"
+</code></pre>
+</blockquote>
+<pre><code>False
+</code></pre>
+<blockquote>
+<pre><code>sorted([Tier.B, Tier.D, Tier.S, Tier.A, Tier.F, Tier.C])
+</code></pre>
+</blockquote>
+<pre><code>[&lt;Tier.S: 1&gt;, &lt;Tier.A: 2&gt;, &lt;Tier.B: 3&gt;, &lt;Tier.C: 4&gt;, &lt;Tier.D: 5&gt;,
+ &lt;Tier.F: 6&gt;]
+</code></pre>
+<blockquote>
+<pre><code>sorted(["B", "D", "S", "A", "F", "C"])
+</code></pre>
+</blockquote>
+<pre><code>['A', 'B', 'C', 'D', 'F', 'S']
+</code></pre>
+<p>And spelling mistakes are caught:</p>
+<blockquote>
+<pre><code>Tier.Z &lt; Tier.Q
+</code></pre>
+</blockquote>
+<pre><code>AttributeError: Z
+</code></pre>
+<blockquote>
+<pre><code>"Z" &lt; "Q"
+</code></pre>
+</blockquote>
+<pre><code>False
+</code></pre>
+<p>Using an <code>IntEnum</code> object is easier than using an
+<a href="https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex">int</a>
+because the <code>IntEnum</code> allows you to write
+<a href="https://en.wikipedia.org/wiki/Mnemonic">mnemonics</a> for the values:</p>
+<blockquote>
+<pre><code>Tier.S &lt; Tier.C
+</code></pre>
+</blockquote>
+<pre><code>True
+</code></pre>
+<blockquote>
+<pre><code>1 &lt; 4
+</code></pre>
+</blockquote>
+<pre><code>True
+</code></pre>
+<blockquote>
+<pre><code>sorted([Tier.B, Tier.D, Tier.S, Tier.A, Tier.F, Tier.C])
+</code></pre>
+</blockquote>
+<pre><code>[&lt;Tier.S: 1&gt;, &lt;Tier.A: 2&gt;, &lt;Tier.B: 3&gt;, &lt;Tier.C: 4&gt;, &lt;Tier.D: 5&gt;,
+ &lt;Tier.F: 6&gt;]
+</code></pre>
+<blockquote>
+<pre><code>sorted([3, 5, 1, 2, 6, 4])
+</code></pre>
+</blockquote>
+<pre><code>[1, 2, 3, 4, 5, 6]
+</code></pre>
+<h2>When should I use enums?</h2>
+<p>I use enums when:</p>
+<ul>
+<li>The data that I'm working with has a small number of states (e.g. "pass" or
+"fail").</li>
+<li>The data has an ordering that doesn't work with strings (e.g. "S" before "A"
+in a tier list).</li>
+<li>The data can be represented as a set of <a href="https://en.wikipedia.org/wiki/Boolean_flag">boolean
+flags</a> (e.g. the <a href="https://en.wikipedia.org/wiki/Status_register">flag
+register</a> of a <a href="https://en.wikipedia.org/wiki/Zilog_Z80#Registers">Zilog Z80
+microprocessor</a>).</li>
+</ul>
+<p>Here's code for each of these examples:</p>
+<hr>
+<blockquote>
+<pre><code>import random
+import collections
+
+Test = enum.Enum("Test", ["Pass", "Fail"])
+
+row = lambda: [
+    random.choice(list(Test)),
+    random.choice(["Bobby", "Linda", "John"])
+]
+data = [ row() for _ in range(10) ]
+data
+</code></pre>
+</blockquote>
+<pre><code>[[&lt;Test.Pass: 1&gt;, 'John'],
+ [&lt;Test.Pass: 1&gt;, 'Bobby'],
+ [&lt;Test.Fail: 2&gt;, 'Linda'],
+ [&lt;Test.Fail: 2&gt;, 'Bobby'],
+ [&lt;Test.Pass: 1&gt;, 'Linda'],
+ [&lt;Test.Pass: 1&gt;, 'Bobby'],
+ [&lt;Test.Pass: 1&gt;, 'Linda'],
+ [&lt;Test.Pass: 1&gt;, 'Bobby'],
+ [&lt;Test.Pass: 1&gt;, 'Bobby'],
+ [&lt;Test.Pass: 1&gt;, 'Bobby']]
+</code></pre>
+<blockquote>
+<pre><code>[
+    student
+    for test, student in data
+    if test == Test.Fail
+]
+</code></pre>
+</blockquote>
+<pre><code>['Linda', 'Bobby']
+</code></pre>
+<hr>
+<blockquote>
+<pre><code>import random
+import collections
+
+Tier = enum.IntEnum("Tier", ["S", "A", "B", "C", "D", "F"])
+
+data_tiers = random.choices(list(Tier), k=9)
+data_names = ["Mario", "Link", "Samus", "Yoshi", "Kirby",
+              "Fox", "Pikachu", "Ness", "Luigi"]
+data = list(zip(data_tiers, data_names))
+data
+</code></pre>
+</blockquote>
+<pre><code>[(&lt;Tier.B: 3&gt;, 'Mario'),
+ (&lt;Tier.A: 2&gt;, 'Link'),
+ (&lt;Tier.F: 6&gt;, 'Samus'),
+ (&lt;Tier.B: 3&gt;, 'Yoshi'),
+ (&lt;Tier.C: 4&gt;, 'Kirby'),
+ (&lt;Tier.D: 5&gt;, 'Fox'),
+ (&lt;Tier.A: 2&gt;, 'Pikachu'),
+ (&lt;Tier.S: 1&gt;, 'Ness'),
+ (&lt;Tier.A: 2&gt;, 'Luigi')]
+</code></pre>
+<blockquote>
+<pre><code>rankings = collections.defaultdict(set)
+
+for tier, name in data:
+    rankings[tier].add(name)
+
+for tier in Tier:
+    names = sorted(rankings[tier])
+    print(f"{tier.name}-tier: {', '.join(names)}")
+</code></pre>
+</blockquote>
+<pre><code>S-tier: Ness
+A-tier: Link, Luigi, Pikachu
+B-tier: Mario, Yoshi
+C-tier: Kirby
+D-tier: Fox
+F-tier: Samus
+</code></pre>
+<hr>
+<blockquote>
+<pre><code>import random
+
+state = 0
+for flag in Z80_Flag:
+    # 50% chance that p is True.
+    p = random.random() &lt; 0.5
+    if p:
+        state |= flag
+
+state
+</code></pre>
+</blockquote>
+<pre><code>&lt;Z80_Flag.Sign|Parity_Overflow|Subtract: 134&gt;
+</code></pre>
+<blockquote>
+<pre><code>for flag in Z80_Flag:
+    if state &amp; flag:
+        status = "#"
+    else:
+        status = "."
+    print(f"{flag.name:16} {status}")
+</code></pre>
+</blockquote>
+<pre><code>Carry            .
+Subtract         #
+Parity_Overflow  #
+Half_Carry       .
+Zero             .
+Sign             #
+</code></pre>
+<h2>Python's support for enums</h2>
+<p>Python supports four different types of enums via the
+<a href="https://docs.python.org/3/library/enum.html">enum</a> module:</p>
+<ul>
+<li><code>Enum</code></li>
+<li><code>IntEnum</code></li>
+<li><code>IntFlag</code></li>
+<li><code>Flag</code></li>
+</ul>
+<p>What are the differences between these four?</p>
+<p><code>Enum</code> and <code>Flag</code> do not mix with integers.
+<code>IntEnum</code> and <code>IntFlag</code> do mix with integers.</p>
+<blockquote>
+<pre><code>import enum
+
+Test = enum.Enum("Test", ["Pass", "Fail"])
+IntTest = enum.IntEnum("IntTest", ["Pass", "Fail"])
+
+Test.Pass + 0
+</code></pre>
+</blockquote>
+<pre><code>TypeError: unsupported operand type(s) for +: 'Test' and 'int'
+</code></pre>
+<blockquote>
+<pre><code>IntTest.Pass + 0
+</code></pre>
+</blockquote>
+<pre><code>1
+</code></pre>
+<blockquote>
+<pre><code>Z80 = enum.Flag("Z80", ["Carry", "Subtract", "Parity", "Zero"])
+IntZ80 = enum.IntFlag("IntZ80", ["Carry", "Subtract", "Parity",
+                                 "Zero"])
+
+Z80.Carry | 2
+</code></pre>
+</blockquote>
+<pre><code>TypeError: unsupported operand type(s) for |: 'Z80' and 'int'
+</code></pre>
+<blockquote>
+<pre><code>IntZ80.Carry | 2
+</code></pre>
+</blockquote>
+<pre><code>&lt;IntZ80.Subtract|Carry: 3&gt;
+</code></pre>
+<p><code>Enum</code> and <code>IntEnum</code> represent states that can't be combined.
+<code>Flag</code> and <code>IntFlag</code> represent states that can be combined.</p>
+<blockquote>
+<pre><code>Test = enum.Enum("Test", ["Pass", "Fail"])
+Z80 = enum.Flag("Z80", ["Carry", "Subtract", "Parity", "Zero"])
+
+Test.Pass | Test.Fail
+</code></pre>
+</blockquote>
+<pre><code>TypeError: unsupported operand type(s) for |: 'Test' and 'Test'
+</code></pre>
+<blockquote>
+<pre><code>Z80.Carry | Z80.Zero
+</code></pre>
+</blockquote>
+<pre><code>&lt;Z80.Zero|Carry: 9&gt;
+</code></pre>
+<h2>In conclusion...</h2>
+<p>In this week's post you learned how to use enums to manage data that takes on a
+finite set of states.
+Enums allow you to impose a custom ordering on data and represent a combination
+of states using <code>Flag</code> and <code>IntFlag</code>.</p>
+<p>My challenge to you:</p>
+<blockquote>
+<p>Create an <code>IntFlag</code> that represents the input status of a <a href="https://wiki.nesdev.com/w/index.php/Standard_controller">standard NES
+controller</a>.</p>
+</blockquote>
+<p>If you enjoyed this week's post, share it with your friends and stay tuned for
+next week's post.
+See you then!</p>
+
+<hr>
+<p>(If you spot any errors or typos on this post, contact me via my
+<a href="https://johnlekberg.com/contact.html">contact page</a>.)
+</p></div></div>
+  </div>
+</body>
+</html>

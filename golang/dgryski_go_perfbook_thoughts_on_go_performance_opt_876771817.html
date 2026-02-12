@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>dgryski/go-perfbook: Thoughts on Go performance optimization</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>dgryski/go-perfbook: Thoughts on Go performance optimization</h1>
+    <p><strong>URL:</strong> <a href="https://github.com/dgryski/go-perfbook">https://github.com/dgryski/go-perfbook</a></p>
+    <p><strong>Tags:</strong> golang</p>
+    <p><strong>Bookmark ID:</strong> 876771817</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-hpc="true"><article itemprop="text"><p dir="auto"><h2 tabindex="-1" dir="auto">go-perfbook</h2><a id="user-content-go-perfbook" aria-label="Permalink: go-perfbook" href="#go-perfbook"></a></p>
+<p dir="auto"><a href="https://www.buymeacoffee.com/dgryski" rel="nofollow"><img alt="Buy Me A Coffee" data-canonical-src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png"></a></p>
+<p dir="auto">This document outlines best practices for writing high-performance Go code.</p>
+<p dir="auto">The first sections cover writing optimized code in any language.
+The later sections cover Go-specific techniques.</p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Multiple Language Versions</h3><a id="user-content-multiple-language-versions" aria-label="Permalink: Multiple Language Versions" href="#multiple-language-versions"></a></p>
+<ul dir="auto">
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md">English</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance-zh.md">中文</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/README-es.md">Español</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance-ptbr.md">Português Brasileiro</a></li>
+</ul>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Table of Contents</h3><a id="user-content-table-of-contents" aria-label="Permalink: Table of Contents" href="#table-of-contents"></a></p>
+<ol dir="auto">
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#writing-and-optimizing-go-code">Writing and Optimizing Go code</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#how-to-optimize">How to Optimize</a>
+<ol dir="auto">
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#optimization-workflow">Optimization Workflow</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#concrete-optimization-tips">Concrete Optimization Tips</a></li>
+</ol>
+</li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#data-changes">Data Changes</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#algorithmic-changes">Algorithmic Changes</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#benchmark-inputs">Benchmark Inputs</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#program-tuning">Program Tuning</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#optimization-workflow-summary">Optimization Workflow Summary</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#garbage-collection">Garbage Collection</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#runtime-and-compiler">Runtime and Compiler</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#unsafe">Unsafe</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#common-gotchas-with-the-standard-library">Common gotchas with the standard library</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#alternate-implementations">Alternate Implementations</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#cgo">CGO</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#advanced-techniques">Advanced Techniques</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#assembly">Assembly</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#optimizing-an-entire-service">Optimizing an Entire Service</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#tooling">Tooling</a>
+<ol dir="auto">
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#introductory-profiling">Profiling</a></li>
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#tracer">Tracer</a></li>
+</ol>
+</li>
+<li>Appendix
+<ol dir="auto">
+<li><a href="https://github.com/dgryski/go-perfbook/blob/master/performance.md#appendix-implementing-research-papers">Implementing Research Papers</a></li>
+</ol>
+</li>
+</ol>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Contributing</h3><a id="user-content-contributing" aria-label="Permalink: Contributing" href="#contributing"></a></p>
+<p dir="auto">This is a work-in-progress book in Go performance.</p>
+<p dir="auto">There are different ways to contribute:</p>
+<ol dir="auto">
+<li>add to or summarizes the resources in TODO</li>
+<li>add bullet points or new topics to be covered</li>
+<li>write prose and flesh  out the sections in the book</li>
+</ol>
+<p dir="auto">Eventually sample programs to optimize and exercises will be needed (maybe).</p>
+<p dir="auto">Coordination will be done in the #performance channel on the Gophers slack.</p>
+</article></div></div>
+  </div>
+</body>
+</html>

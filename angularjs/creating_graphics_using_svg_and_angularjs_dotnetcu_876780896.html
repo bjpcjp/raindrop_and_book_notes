@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Creating Graphics Using SVG and AngularJS | DotNetCurry</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Creating Graphics Using SVG and AngularJS | DotNetCurry</h1>
+    <p><strong>URL:</strong> <a href="http://www.dotnetcurry.com/angularjs/1213/create-graphics-using-svg-angularjs">http://www.dotnetcurry.com/angularjs/1213/create-graphics-using-svg-angularjs</a></p>
+    <p><strong>Tags:</strong> angularjs, javascript, svg</p>
+    <p><strong>Bookmark ID:</strong> 876780896</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="articleBody">
+        <p>A couple of months ago I started working with a startup called <a href="http://www.genomecompiler.com/">Genome Compiler</a> that specializes in software platform to accelerate Genome and DNA design. Their main product was created using Flash and they wanted me to help them to create a new Genome viewer using plain web technologies. They wanted to visualize plasmids, which are small DNA molecules represented as a circle with annotations. They also wanted to visualize sequences, which are the primary structure of a biological molecule written in A, T, G and C characters. To create such visualization we needed the ability to create graphics inside the browser.</p>
+
+<p>For more than four months I’ve been helping <i>Genome Compiler </i>to create their viewer using both Scalable Vector Graphics (SVG) and AngularJS. During the time, I learned how to combine SVG and AngularJS together to create biological models and other graphics. In this article I’ll explore what SVG is. Then, I’ll explain how SVG can be used in AngularJS applications. Towards the end of the article, you will see a simple application that combines both SVG and AngularJS.</p>
+<p><b>Note:</b> The article won’t cover the project that I’m doing for Genome Compiler due to the fact that it’s too huge to be covered in an article (or even in a book).</p>
+<p><i>Disclaimer: This article assumes that you have basic knowledge of AngularJS. If you are not familiar with AngularJS, I encourage you to stop reading and start learning about this framework today.</i></p>
+<p><i>Editorial Note:<strong> You can learn more about AngularJS</strong> using our tutorials at <a href="https://www.dotnetcurry.com/tutorials/angularjs">https://www.dotnetcurry.com/tutorials/angularjs</a> </i></p>
+<p>This article is published from the <strong>DNC Magazine for .NET Developers and Architects</strong>. <a title="DNC Magazine" href="https://www.dotnetcurry.net/s/dnc-mag-21ed-zip" rel="nofollow" target="_blank"><strong>Download this magazine from here</strong></a> [Zip PDF] or <a href="https://www.dotnetcurry.com/magazine/" target="_blank">Subscribe to this magazine for FREE</a> and download all previous and current editions</p>
+<h3><span>SVG in a Nutshell</span></h3>
+<p>SVG is an XML-based graphics model that you can use in your front-end. As opposed to other new HTML5 graphics models (such as canvas and WebGL), SVG version 1.0 was made a W3C recommendation in 2001. The SVG developers’ adoption was very small due to the popularity of plugins such as Flash, Java and Silverlight, and the lack of browser support. In 2011, W3C introduced the second edition of SVG, version 1.1, and SVG gained a lot of attention as an alternative graphics model, besides the Canvas pixel graphics model.</p>
+<p>SVG is all about vector graphics. With SVG you can create and draw two-dimensional vector graphics using HTML elements. These HTML elements are specific to SVG, but they are part of the Document Object Model (DOM) and can be hosted in web pages. The vector graphics can be scaled without loss of image quality. This means that the graphics will look the same in different screens and resolutions. This makes SVG a very good candidate to develop graphics for applications that can be run on different screens (mobile, tablets, desktop or even wide screens). Some prominent areas where Vector graphics are used are in CAD programs, designing animations and presentations, designing graphics that are printed on high-res printers and so on.</p>
+<p>The fact that SVG elements are HTML elements makes SVG a very interesting graphics model. You can get full support for DOM access on SVG elements. You can use scripts, CSS style and other web tools to shape your graphics and manipulate it. As opposed to Canvas, which doesn’t include state, SVG is part of the DOM and therefore you have the elements and their state for your own usage. This makes SVG a very powerful model. There is one notable caveat though – drawing a lot of shapes can result in performance decrease.</p>
+<p>When you use SVG, you define the graphics within your HTML using the <b>SVG</b> tag. For example, the following code snippet declares an SVG element:</p>
+<pre>&lt;svg version="1.1" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;/svg&gt;
+</pre>
+<p>It is an HTML element and can be embedded inside your web page as any other HTML element. If not stated, the width of the SVG element will be 300 pixels and its height 150 pixels.</p>
+<p><i>Note: Pay attention to the SVG XML namespace which is different from regular HTML. We will use this information later on when we will use SVG with AngularJS.</i></p>
+<p><b>Using Shapes </b></p>
+<p>SVG includes a lot of built-in shape elements that can be embedded inside the <b>SVG</b> tag. Each shape has its own set of attributes that helps to create the shapes appearance. For example, the following code snippet shows how to create two rectangles with different colors using the <b>RECT</b> element:</p>
+<pre>&lt;svg width="400" height="200" version="1.1" xmlns="http://www.w3.org/2000/svg"&gt;
+    &lt;rect fill="red" x="20" y="20" width="100" height="75" /&gt;
+    &lt;rect fill="blue" x="50" y="50" width="100" height="75" /&gt;
+&lt;/svg&gt;
+</pre>
+<p>The output of running this piece of SVG will be as shown here:</p>
+<p><img title="two-rectangles" alt="two-rectangles" src="data:application/octet-stream;base64," width="168" height="138"></p>
+<p><span size="2">Figure 1: Two rectangles drawn by SVG</span></p>
+<p>Here are a couple of points to note in the snippet:</p>
+<p>1. The last rectangle will appear on top of the first rectangle. SVG behavior is to put the last declared elements on top of previously declared elements, if there are shapes that overlap.</p>
+<p>2. In order to create a rectangle, you have to indicate its left-top point using the <b>x</b> and <b>y</b> attributes and its <b>width</b> and <b>height</b>. The default values for these attributes are all set to 0 and if you don’t set them, the rectangle will not be drawn on the SVG surface.</p>
+<p>There are other shapes that you can use such as circles, ellipsis, polygons, polylines, lines, paths, text and more. It is up to you to learn to draw these shapes and a good reference for the same can be found in the Mozilla Developer Network (MDN) - <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes">https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes</a>.</p>
+<p>Other than attributes, shapes can also include styling using style attributes such as <b>stroke</b> or <b>fill.</b> Stroke accepts a color to create the shape border and Fill accepts a color to fill the entire shape. You can also set styles using regular CSS but not all CSS styles can be applied on SVG elements. For example, styles such as <b>display</b> or <b>visibility</b> can be used with SVG elements but margin or padding has no meaning in SVG. The following example shows a rectangle with some inline styles:</p>
+<pre>&lt;rect x="200" y="100" width="600" height="300" style="fill: yellow; stroke: blue; stroke-width: 2"/&gt;
+</pre>
+<p>As you can see in the code snippet, the rectangle will be filled with yellow color, will have a blue border, with a border width of 2 pixels.</p>
+<p>You can group shapes using the <b>g</b> element. The <b>g</b> element is a container for other shapes. If you apply style to a <b>g</b> element, that style will be applied to all its child elements. When you create SVG, it is very common to group some elements inside a <b>g</b> container. For example the following snippet shows you the same two rectangles from Figure 1 but grouped inside a <b>g</b> element:</p>
+<pre>&lt;svg width="400" height="200" version="1.1" xmlns="http://www.w3.org/2000/svg"&gt;
+    &lt;g&gt;
+        &lt;rect fill="red" x="20" y="20" width="100" height="75" /&gt;
+        &lt;rect fill="blue" x="50" y="50" width="100" height="75" /&gt;
+    &lt;/g&gt;
+&lt;/svg&gt;
+
+</pre>
+<p><b>Using SVG Definitions</b></p>
+<p>SVG includes a <b>defs </b>element which can be used to define special graphical SVG elements such as gradients, filters or patterns. When you want to use a special SVG element, you first define it inside the <b>defs</b> element and later on, you can use it in your SVG. Make sure you specify an id for your special element, so that you can use it later.</p>
+<p>The next snippet shows how to define a linear gradient:</p>
+<pre>&lt;svg version="1.1" xmlns="http://www.w3.org/2000/svg"&gt;
+   &lt;defs&gt;
+      &lt;linearGradient id="lg1"&gt;
+         &lt;stop offset="40%" stop-color="yellow" /&gt;
+         &lt;stop offset="60%" stop-color="green" /&gt;
+         &lt;stop offset="80%" stop-color="blue" /&gt;
+      &lt;/linearGradient&gt;
+   &lt;/defs&gt;
+   &lt;rect fill="url(#lg1)" x="50" y="50" width="100" height="100"/&gt;
+&lt;/svg&gt;
+
+</pre>
+<p>And the output of running this SVG will be:</p>
+<p><img title="gradient" alt="gradient" src="data:application/octet-stream;base64," width="144" height="148"></p>
+<p><span size="2">Figure 2: Gradient inside a rectangle</span></p>
+<p>A couple of things to notice about the snippet:</p>
+<p>1. I defined the gradient using the <b>linearGradient</b> element. There are other elements that you can use to define other graphical aspects. Each element has its own attributes and sub elements, so it’s up to you to learn them.</p>
+<p>2. The gradient has an <b>id</b> which is later on used in the rectangle using the url(#nameOfSVGElement) syntax.</p>
+<p><i>Note: The article doesn’t cover all the possible SVG element definitions.</i></p>
+<p>Now that we are familiar with SVG it is time to move on and see how SVG and AngularJS work together.</p>
+<h3><span>SVG + AngularJS = </span><img alt="Red heart" src="data:application/octet-stream;base64,"></h3>
+<p>You can combine SVG and AngularJS and it is very straight forward. Since SVG elements are part of the DOM, you can add them into view templates both as static graphics, and also as dynamic graphics. The first option is very simple and you just embed static SVG inside the HTML. The second option has a few caveats that you need to know in order to be on the safer side.</p>
+<p>The first caveat is dynamic attributes and data binding. Since SVG has its own XML definition, it doesn’t understand AngularJS expressions. That means that if you will try to use SVG attributes with data binding expressions (curly brackets), you will get an error. The work around is to prefix all the dynamic attributes with <b>ng-attr</b> <b>- </b>and then set the binding expression. You can find a reference about <b>ng-attr-</b> prefix in the AngularJS website under the topic “ngAttr attribute bindings” using the following link: <i><a href="https://docs.angularjs.org/guide/directive">https://docs.angularjs.org/guide/directive</a> </i>.The following example shows you how to use the ng-attr and define databinding expressions:</p>
+<pre>&lt;rect ng-attr-x="{{xAxis}}" ng-attr-y="{{yAxis}}" ng-attr-height="{{rectHeight}}" ng-attr-width="{{rectWidth}}"&gt;&lt;/rect&gt;
+</pre>
+<p>In the example, you can see that all the rectangle attributes are set to some scope properties.</p>
+<p>The second caveat is related to directives. Since the SVG XML definitions are different from HTML, directives that generate SVG elements need to declare that they generate SVG. That means that in the Directive Definition Object (DDO) that you return to define the directive, you will need to set the <b>templateNamespace</b> property to <b>'svg'</b>. For example, the following snippet shows a simple directive DDO that declares that it generates SVG:</p>
+<pre>(function () {
+    'use strict';
+    angular.
+        module("svgDemo").
+        directive("ngRect", ngRect);
+    ngRect.$inject = [];
+    function ngRect() {
+        return {
+            restrict: 'E',
+            templateUrl: &lt;rect x="50" y="50" width="100" height="100"&gt;&lt;/rect&gt;',
+            templateNamespace: 'svg'
+        };
+    }
+}());
+
+</pre>
+<p>Now that we know how to combine SVG and AngularJS, it is time to see some code in action.</p>
+
+<h3><span>Building a Simple App with SVG and AngularJS</span></h3>
+<p>The application that we are going to build will generate a rectangle and you will be able to change its width and height, using data binding:</p>
+<p><img title="angular-svg-app" alt="angular-svg-app" src="data:application/octet-stream;base64," width="343" height="385"></p>
+<p><span size="2">Figure 3: Application using SVG and Angular</span></p>
+<p>We will first start by defining a rectangle directive that will resemble some of the code snippets that you saw earlier:</p>
+<pre>(function () {
+    'use strict';
+    angular.
+        module("svgDemo").
+        directive("ngRect", ngRect);
+    ngRect.$inject = [];
+    function ngRect() {
+        return {
+            restrict: 'E',
+            replace: true,
+            scope: {
+                xAxis: '=',
+                yAxis: '=',
+                rectHeight: '=',
+                rectWidth: '='
+            },
+            templateUrl: 'app/common/templates/rectTemplate.html',
+            templateNamespace: 'svg'
+        };
+    }
+}());
+
+</pre>
+<p>The directive will include an isolated scope that can accept the x, y, width and height of the rectangle. It also declares that it generates SVG and that it loads a template. Here is the template code:</p>
+<pre>&lt;rect ng-attr-x="{{xAxis}}" ng-attr-y="{{yAxis}}" ng-attr-height="{{rectHeight}}" ng-attr-width="{{rectWidth}}"&gt;&lt;/rect&gt;
+</pre>
+<p>Now that we have our rectangle directive, we will define a directive that will hold our entire demo:</p>
+<pre>(function () {
+    'use strict';
+    angular.
+        module("svgDemo").
+        directive("ngDemo", ngSvgDemo);
+    ngSvgDemo.$inject = [];
+    function ngSvgDemo() {
+        return {
+            restrict: 'E',
+            templateUrl: 'app/common/templates/demoTemplate.html',
+            controller: 'demoController',
+            controllerAs: 'demo'
+        };
+    }
+}());
+
+</pre>
+<p>The main thing in the directive is the <i>controller</i> that it will use, and the <i>template</i> that it will load. So let’s see both of them. We will start with the controller:</p>
+<pre>(function () {
+    'use strict';
+    angular.
+        module("svgDemo").
+        controller("demoController", demoController);
+    demoController.$inject = [];
+    function demoController() {
+        var demo = this;
+        function init() {
+            demo.xAxis = 0;
+            demo.yAxis = 0;
+            demo.rectHeight = 50;
+            demo.rectWidth = 50;
+        }
+
+        init();
+    }
+}());
+
+</pre>
+<p>In the controller, we define the properties that will be used later for data binding. Now we can look at the template itself:</p>
+<pre>&lt;div&gt;
+    &lt;div&gt;
+        &lt;svg height="300" width="300"&gt;
+            &lt;ng-rect x-axis="demo.xAxis" y-axis="demo.yAxis" rect-height="demo.rectHeight" rect-width="demo.rectWidth"&gt;&lt;/ng-rect&gt;
+        &lt;/svg&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label&gt;Set Rectangle Width: &lt;/label&gt;&lt;input type="text" ng-model="demo.rectHeight" /&gt;&lt;/br&gt;&lt;/br&gt;
+        &lt;label&gt;Set Rectangle Height: &lt;/label&gt;&lt;input type="text" ng-model="demo.rectWidth" /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+</pre>
+<p>Please observe the usage of <b>ng-rect</b> directive that we have created, and the binding of its attributes to the controller attributes. Also, we have bound the textboxes to the relevant properties using ng-model directive. That is all.</p>
+<p>Now we can create the main web page and the svgDemo module. Here is how the main web page will look like:</p>
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;SVG &amp; Angular&lt;/title&gt;
+    &lt;link href="styles/main.css" rel="stylesheet"/&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div ng-app="svgDemo"&gt;
+        &lt;section class="body-content"&gt;
+            &lt;ng-demo&gt;&lt;/ng-demo&gt;
+        &lt;/section&gt;
+    &lt;/div&gt;
+    &lt;script src="app/vendor/angular/angular.min.js"&gt;&lt;/script&gt;
+    &lt;script src="app/app.js"&gt;&lt;/script&gt;
+    &lt;script src="app/common/controllers/demoController.js"&gt;&lt;/script&gt;
+    &lt;script src="app/common/directives/ngDemoDirective.js"&gt;&lt;/script&gt;
+    &lt;script src="app/common/directives/ngRectDirective.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+<p>And here is how the svgDemo module will be defined:</p>
+<pre>(function () {
+    var app = angular.module('svgDemo', []);
+}());
+
+</pre>
+<p>This is a very simple application but it shows you how to combine both SVG and AngularJS and to create dynamic graphics in your applications. You can also use common SVG generator libraries such as Raphael or d3.js inside your directives but the idea was to show you how to do raw SVG graphics before you jump into a library.</p>
+<h3><span>Summary</span></h3>
+<p>SVG is a very powerful graphics model that can be used in the browser. It generates graphics that looks good and scales well across different screens and resolutions. It also includes variety of elements that can help you shape your graphics easier. As you saw in the article, combining SVG and AngularJS to generate some sophisticated graphics is not so hard. As I wrote in the introduction, I was able to generate very interesting biological models using SVG and AngularJS and this should encourage you to try and create your own models.</p>
+<p><a title="Angular SVG demo" href="http://bit.ly/dncm21-svg-angular"><strong>Download the entire source code of this article</strong></a> (Github)</p>
+<p><em>This article has been editorially reviewed by </em><a href="https://www.dotnetcurry.com/author/suprotim-agarwal"><em>Suprotim Agarwal.</em></a></p>
+<div id="csharpbook">
+
+                    
+<!--<a href="http://www.dotnetcurry.org/r/dnc-csharpbk-web-imgbtm" target="_blank" style="color:#cd282f"><img alt="Absolutely Awesome Book on C# and .NET" src="/csharpbook/images/csharpbook-hori.jpg" /></a>-->
+         <p><a href="https://www.dotnetcurry.com/csharpbook" target="_blank"><img alt="Absolutely Awesome Book on C# and .NET" src="data:application/octet-stream;base64,"></a>
+	</p>
+	<div>
+			<p>C# and .NET have been around for a very long time, but their constant growth means there’s always more to learn.</p>
+            <p>We at DotNetCurry are very excited to announce <strong><a href="https://www.dotnetcurry.com/csharpbook" target="_blank">The Absolutely Awesome Book on C# and .NET</a></strong>. This is a 500 pages concise technical eBook available in PDF, ePub (iPad), and Mobi (Kindle). </p><p>Organized around concepts, this Book aims to provide a concise, yet solid foundation in C# and .NET, covering <b>C# 6.0, C# 7.0 and .NET Core, with chapters on the latest .NET Core 3.0, .NET Standard and C# 8.0 (final release) too</b>. Use these concepts to deepen your existing knowledge of C# and .NET, to have a solid grasp of the latest in C# and .NET OR to crack your next .NET Interview.</p>
+            <p><strong><a href="https://www.dotnetcurry.com/csharpbook" target="_blank">Click here to Explore the Table of Contents or Download Sample Chapters!</a><a></a></strong></p></div></div><a>
+          
+          </a>  
+		<!-- DNC_BottomText -->
+          
+          
+		    <br>
+          <div>
+    <p><img id="ctl00_MainContent_authorInfo_imgAuthor" onerror="this.onload = null; this.src='/images/authors/NoImage.jpg';" src="data:image/jpeg;base64,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">
+         
+    </p>
+    <p>
+            Gil Fink is a web development expert, ASP.Net/IIS Micrsoft MVP and the founder of sparXys. He conducts lectures and workshops for individuals and enterprises who want to specialize in infrastructure and web development. He is also co-author of several Microsoft Official Courses (MOCs) and training kits, co-author of “Pro Single Page Application Development” book (Apress) and the founder of Front-End.IL Meetup. You can get more information about Gil in his website <a href="http://www.gilfink.net/">gilfink.net</a>
+    </p>
+   
+</div>
+      </div></div>
+  </div>
+</body>
+</html>

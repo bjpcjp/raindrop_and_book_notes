@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Ultimate Angular CLI Reference Guide — SitePoint</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The Ultimate Angular CLI Reference Guide — SitePoint</h1>
+    <p><strong>URL:</strong> <a href="https://www.sitepoint.com/ultimate-angular-cli-reference">https://www.sitepoint.com/ultimate-angular-cli-reference</a></p>
+    <p><strong>Tags:</strong> angularjs</p>
+    <p><strong>Bookmark ID:</strong> 876769642</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><strong>In this article, we’ll have a look at what Angular CLI is, what it can do for you, and how it performs some of its magic behind the scenes. Even if you already use Angular CLI, this article can serve as a reference to better understand its inner workings.</strong></p>
+
+<p>Technically, you’re not required to use Angular CLI to develop an Angular application, but its many features can highly improve the quality of your code and save you a lot of time along the way.</p>
+<p><em>Prefer to learn Angular using a step-by-step video course? Check out </em><a href="https://www.sitepoint.com/premium/courses/learn-angular-5-3000/?ref_source=sitepoint&amp;ref_medium=article-copy&amp;ref_campaign=angular-5-course">Learn Angular 5</a><em> on SitePoint Premium.</em></p><p><img decoding="async" alt="A large, bible-like Angular CLI reference book on a stand" src="data:application/octet-stream;base64," loading="lazy"></p>
+<p>This is the preliminary article in a 4-part series on how to write a Todo application in Angular.</p>
+<ol>
+<li><strong>Part 0 — The Ultimate Angular CLI Reference Guide</strong></li>
+<li><a href="https://www.sitepoint.com/angular-2-tutorial/">Part 1 — Getting our first version of the Todo application up and running</a></li>
+<li><a href="https://www.sitepoint.com/understanding-component-architecture-angular/">Part 2 — Creating separate components to display a list of todos and a single todo</a></li>
+<li><a href="https://www.sitepoint.com/angular-rxjs-create-api-service-rest-backend/">Part 3 — Update the Todo service to communicate with a REST API</a></li>
+<li><a href="https://www.sitepoint.com/component-routing-angular-router/">Part 4 — Use Angular router to resolve data</a>.</li>
+</ol>
+<h3>Some History</h3>
+<p>On September 15, 2016, <a href="http://angularjs.blogspot.be/2016/09/angular2-final.html">Angular Final was released</a>.</p>
+<p>Where <a href="https://angularjs.org/">AngularJS 1.x</a> was limited to a framework, <a href="https://angular.io/">Angular</a> has grown into an ambitious platform that allows you to develop fast and scalable applications across all platforms such as web, mobile web, native mobile and even native desktop.</p>
+<p>With this transition to a platform, tooling has become more important than ever. However, setting up and configuring tooling is not always easy. To make sure Angular developers can focus on building applications with as little friction as possible, the Angular team is putting a lot of effort into providing developers with a high-quality development toolset.</p>
+<p>Part of that toolset are close integrations with a wide array of IDEs and editors. Another part of that toolset is <a href="https://angular.io/cli">Angular CLI</a>.</p>
+<p>So let’s get started!</p>
+<hr>
+<p><strong>2017.04.25:</strong> As of March 24, Angular CLI v1.0 was released. This article has been updated to reflect the latest changes. If you want to add the latest features of Angular CLI v1.0 to your existing Angular project that was generated with an earlier version of Angular CLI, check out the <a href="https://github.com/angular/angular-cli">Angular CLI v1.0 migration guide</a>.</p>
+<p><strong>2017.02.17:</strong> As of February 9, 2017, the <code>ng deploy</code> command has been removed from the core of Angular CLI. Read more <a href="https://github.com/angular/angular-cli/pull/4385">here</a>.</p>
+<p><strong>2017.01.27:</strong> As of January 27, 2017, the official recommendation is to use the name <em>AngularJS</em> for any 1.x release and the name <em>Angular</em> for any 2+ release. This article has been updated to reflect the <a href="http://angularjs.blogspot.be/2017/01/branding-guidelines-for-angular-and.html">official branding guidelines</a>.</p>
+<hr>
+<h2 id="whatisangularcli">What Is Angular CLI?</h2>
+<p>Angular CLI is a command-line interface (CLI) to automate your development workflow. It allows you to:</p>
+<ul>
+<li>create a new Angular application</li>
+<li>run a development server with LiveReload support to preview your application during development</li>
+<li>add features to your existing Angular application</li>
+<li>run your application’s unit tests</li>
+<li>run your application’s end-to-end (E2E) tests</li>
+<li>build your application for deployment to production.</li>
+</ul>
+<p>Before we have a look at each of the above in detail, let’s first see how you can install Angular CLI.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Before you can use Angular CLI, you must have Node.js 6.9.0 and npm 3.0.0 or higher installed on your system.</p>
+<p>You can download the latest version of Node.js for your operating system and consult the latest installation instructions on the <a href="https://nodejs.org/en">official Node.js website</a>.</p>
+<p>If you already have Node.js and npm installed, you can verify their version by running:</p>
+<pre><code>$ node -v <span># =&gt; displays your Node.js version</span>
+$ <span>npm</span> -v <span># =&gt; displays your npm version</span>
+</code></pre>
+<p>Once you have Node.js installed, you can use the <code>npm</code> command to install <a href="https://www.typescriptlang.org/">TypeScript</a>:</p>
+<pre><code>$ <span>npm</span> <span>install</span> -g typescript@2.2.0
+</code></pre>
+<p>Although TypeScript is technically not an absolute requirement, it’s highly recommended by the Angular team, so I recommend you install it to make working with Angular as comfortable as possible.</p>
+<p>Now that you have Node.js and TypeScript installed, you can install Angular CLI.</p>
+<h2 id="installingangularcli">Installing Angular CLI</h2>
+<p>To install Angular CLI, run:</p>
+<pre><code>$ <span>npm</span> <span>install</span> -g @angular/cli
+</code></pre>
+<p>This will install the <code>ng</code> command globally on your system.</p>
+<p>To verify whether your installation completed successfully, you can run this:</p>
+<pre><code>$ ng version
+</code></pre>
+<p>This displays the version you have installed:</p>
+<pre><code>@angular/cli: <span>1.0</span>.0
+node: <span>6.10</span>.0
+os: darwin x64
+</code></pre>
+<p>Now that you have Angular CLI installed, let’s use it to create a new application.</p>
+<h2 id="creatinganewangularapplication">Creating a New Angular Application</h2>
+<p>There are two ways to create a new application using Angular CLI:</p>
+<ul>
+<li><code>ng init</code>: create a new application in the current directory</li>
+<li><code>ng new</code>: create a new directory and run <code>ng init</code> inside the new directory.</li>
+</ul>
+<p>So <code>ng new</code> is similar to <code>ng init</code>, except that it also creates a directory for you.</p>
+<p>Assuming you haven’t created a directory yet, let’s use <code>ng new</code> to create a new project:</p>
+<pre><code>$ ng new my-app
+</code></pre>
+<p>Behind the scenes, the following happens:</p>
+<ul>
+<li>a new directory <code>my-app</code> is created</li>
+<li>all source files and directories for your new Angular application are created based on the name you specified (<code>my-app</code>) and best-practices from the <a href="https://angular.io/guide/styleguide">official Angular Style Guide</a></li>
+<li>npm dependencies are installed</li>
+<li>TypeScript is configured for you</li>
+<li>the <a href="https://karma-runner.github.io/">Karma</a> unit test runner is configured for you</li>
+<li>the <a href="https://www.protractortest.org/">Protractor</a> end-to-end test framework is configured for you</li>
+<li>environment files with default settings are created.</li>
+</ul>
+<p>You’ll learn more about each of these aspects in the following sections.</p>
+<p>At this point you have a working Angular application and your new directory <code>my-app</code> looks like this:</p>
+<pre><code><span>.</span>
+├── README.md
+├── e2e
+│   ├── app.e2e-spec.ts
+│   ├── app.po.ts
+│   └── tsconfig.e2e.json
+├── karma.conf.js
+├── package.json
+├── protractor.conf.js
+├── src
+│   ├── app
+│   │   ├── app.component.css
+│   │   ├── app.component.html
+│   │   ├── app.component.spec.ts
+│   │   ├── app.component.ts
+│   │   └── app.module.ts
+│   ├── assets
+│   ├── environments
+│   │   ├── environment.prod.ts
+│   │   └── environment.ts
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── main.ts
+│   ├── polyfills.ts
+│   ├── styles.css
+│   ├── test.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.spec.json
+│   └── typings.d.ts
+├── tsconfig.json
+└── tslint.json
+</code></pre>
+<h3 id="availableoptions">Available Options</h3>
+<ul>
+<li><code>--dry-run</code>: boolean, default <code>false</code>, perform dry-run so no changes are written to filesystem</li>
+<li><code>--verbose</code>: boolean, default <code>false</code></li>
+<li><code>--link-cli</code>: boolean, default <code>false</code>, automatically link the <code>@angular/cli</code> package (<a href="https://github.com/angular/angular-cli#development-hints-for-hacking-on-angular-cli">more info</a>)</li>
+<li><code>--skip-install</code>: boolean, default <code>false</code>, skip <code>npm install</code></li>
+<li><code>--skip-git</code>: boolean, default <code>false</code>, don’t initialize git repository</li>
+<li><code>--skip-tests</code>: boolean, default <code>false</code>, skip creating tests</li>
+<li><code>--skip-commit</code>: boolean, default <code>false</code>, skip committing the first git commit</li>
+<li><code>--directory</code>: string, name of directory to create, by default this is the same as the application name</li>
+<li><code>--source-dir</code>: string, default <code>'src'</code>, name of source directory</li>
+<li><code>--style</code>: string, default <code>'css'</code>, the style language to use (<code>'css'</code>, <code>'less'</code> or <code>'scss'</code>)</li>
+<li><code>--prefix</code>: string, default <code>'app'</code>, the prefix to use when generating new components</li>
+<li><code>--mobile</code>: boolean, default <code>false</code>, generate a Progressive Web App application (see section on <a href="#aglimpseintothefuture">upcoming features</a>)</li>
+<li><code>--routing</code>: boolean, default <code>false</code>, add module with routing information and import it in main app module</li>
+<li><code>--inline-style</code>: boolean, default <code>false</code>, use inline styles when generating the new application</li>
+<li><code>--inline-template</code>: boolean, default <code>false</code>, use inline templates when generating the new application.</li>
+</ul>
+<p>Run <code>$ ng generate --help</code> to see all available options of your locally installed Angular CLI.</p>
+<p>Let’s see how you can start your application so you can see it in action.</p>
+<h2 id="runningyourapplication">Running Your Application</h2>
+<p>To preview your new application in your browser, navigate to its directory:</p>
+<pre><code>$ <span>cd</span> my-app
+</code></pre>
+<p>and run:</p>
+<pre><code>$ ng serve
+</code></pre>
+<p>to start the built-in development server on port 4200:</p>
+<pre><code>** NG Live Development Server is running on http://localhost:4200 **
+Hash: 09fb2ad840c1472e5885
+Time: 6230ms
+chunk    <span>{</span><span>0</span><span>}</span> polyfills.bundle.js, polyfills.bundle.js.map <span>(</span>polyfills<span>)</span> <span>158</span> kB <span>{</span><span>4</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>1</span><span>}</span> main.bundle.js, main.bundle.js.map <span>(</span>main<span>)</span> <span>3.62</span> kB <span>{</span><span>3</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>2</span><span>}</span> styles.bundle.js, styles.bundle.js.map <span>(</span>styles<span>)</span> <span>9.77</span> kB <span>{</span><span>4</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>3</span><span>}</span> vendor.bundle.js, vendor.bundle.js.map <span>(</span>vendor<span>)</span> <span>2.37</span> MB <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>4</span><span>}</span> inline.bundle.js, inline.bundle.js.map <span>(</span>inline<span>)</span> <span>0</span> bytes <span>[</span>entry<span>]</span> <span>[</span>rendered<span>]</span>
+webpack: Compiled successfully.
+</code></pre>
+<p>You can now navigate your favorite browser to http://localhost:4200/ to see your application in action:</p>
+
+<p><img decoding="async" alt="Angular CLI: Screenshot of the app running in the browser, displaying the text 'app works!'" src="data:application/octet-stream;base64," loading="lazy"></p>
+<p>Behind the scenes, the following happens:</p>
+<ol>
+<li>Angular CLI loads its configuration from <code>.angular-cli.json</code></li>
+<li>Angular CLI runs Webpack to build and bundle all JavaScript and CSS code</li>
+<li>Angular CLI starts <a href="https://webpack.github.io/docs/webpack-dev-server.html">Webpack dev server</a> to preview the result on <code>localhost:4200</code>.</li>
+</ol>
+<p>Notice that the <code>ng serve</code> command doesn’t exit and return to your terminal prompt after step 3.</p>
+<p>Instead, because it includes LiveReload support, the process actively watches your <code>src</code> directory for file changes. When a file change is detected, step 2 is repeated and a notification is sent to your browser so it can refresh automatically.</p>
+<p>To stop the process and return to your prompt, press <code>ctrl-c</code>.</p>
+<h2 id="addingfeaturestoyourangularapplication">Adding Features to Your Angular Application</h2>
+<p>You can use the <code>ng generate</code> command to add features to your existing application:</p>
+<ul>
+<li><code>ng generate class my-new-class</code>: add a class to your application</li>
+<li><code>ng generate component my-new-component</code>: add a component to your application</li>
+<li><code>ng generate directive my-new-directive</code>: add a directive to your application</li>
+<li><code>ng generate enum my-new-enum</code>: add an enum to your application</li>
+<li><code>ng generate module my-new-module</code>: add a module to your application</li>
+<li><code>ng generate pipe my-new-pipe</code>: add a pipe to your application</li>
+<li><code>ng generate service my-new-service</code>: add a service to your application</li>
+</ul>
+<p>The <code>generate</code> command and the different sub-commands also have shortcut notations, so the following commands are similar:</p>
+<ul>
+<li><code>ng g cl my-new-class</code>: add a class to your application</li>
+<li><code>ng g c my-new-component</code>: add a component to your application</li>
+<li><code>ng g d my-new-directive</code>: add a directive to your application</li>
+<li><code>ng g e my-new-enum</code>: add an enum to your application</li>
+<li><code>ng g m my-new-module</code>: add a module to your application</li>
+<li><code>ng g p my-new-pipe</code>: add a pipe to your application</li>
+<li><code>ng g s my-new-service</code>: add a service to your application.</li>
+</ul>
+<p>Each of the different sub-commands performs a different task and offers different options and parameters.</p>
+<p>Let’s have a look at each of them.</p>
+<h3 id="addinganewclass">Adding a new class</h3>
+<p>To add a class called <code>UserProfile</code>, run:</p>
+<pre><code>$ ng generate class user-profile
+installing component
+  create src/app/user-profile.ts
+</code></pre>
+<p>Angular CLI will automatically adjust the letter case of the file name and class name for you, so the following commands have the same effect:</p>
+<pre><code><span># All three commands are equivalent</span>
+$ ng generate class user-profile
+$ ng generate class userProfile
+$ ng generate class UserProfile
+</code></pre>
+<p>Behind the scenes, the following happens:</p>
+<ul>
+<li>a file <code>src/app/user-profile.ts</code> is created that exports an empty class named <code>UserProfile</code></li>
+</ul>
+<h4 id="availableoptions-1">Available options</h4>
+<ul>
+<li><code>--spec</code>: boolean, default <code>false</code>, generate spec file with unit test</li>
+</ul>
+<p>Run <code>$ ng generate --help</code> to see all available options of your locally installed Angular CLI.</p>
+<h4 id="examples">Examples:</h4>
+<pre><code><span># Generate class 'UserProfile'</span>
+$ ng generate class user-profile
+
+<span># Generate class 'UserProfile' with unit test</span>
+$ ng generate class user-profile --spec
+</code></pre>
+<h3 id="addinganewcomponent">Adding a new component</h3>
+<p>To add a component with a selector <code>app-site-header</code>, run:</p>
+<pre><code>$ ng generate component site-header
+installing component
+  create src/app/site-header/site-header.component.css
+  create src/app/site-header/site-header.component.html
+  create src/app/site-header/site-header.component.spec.ts
+  create src/app/site-header/site-header.component.ts
+  update src/app/app.module.ts
+</code></pre>
+<p>Angular CLI will automatically adjust the letter case of the file name and component name for you and apply the prefix to the component selector, so the following commands have the same effect:</p>
+<pre><code><span># All three commands are equivalent</span>
+$ ng generate component site-header
+$ ng generate component siteHeader
+$ ng generate component SiteHeader
+</code></pre>
+<p>Behind the scenes, the following happens:</p>
+<ul>
+<li>a directory <code>src/app/site-header</code> is created</li>
+<li>inside that directory four files are generated:
+
+
+<ul>
+<li>a CSS file for the component styles</li>
+<li>an HTML file for the component template</li>
+<li>a TypeScript file with a component class named <code>SiteHeaderComponent</code> and selector <code>app-site-header</code></li>
+<li>a spec file with a sample unit test for your new component</li></ul>
+</li>
+<li><code>SiteHeaderComponent</code> is added as a declaration in the <code>@NgModule</code> decorator of the nearest module, in this case the <code>AppModule</code> in <code>src/app/app.module.ts</code>.</li>
+</ul>
+<h4 id="availableoptions-2">Available options</h4>
+<ul>
+<li><code>--flat</code>: boolean, default <code>false</code>, generate component files in <code>src/app</code> instead of <code>src/app/site-header</code></li>
+<li><code>--inline-template</code>: boolean, default <code>false</code>, use an inline template instead of a separate HTML file</li>
+<li><code>--inline-style</code>: boolean, default <code>false</code>, use inline styles instead of a separate CSS file</li>
+<li><code>--prefix</code>: boolean, default <code>true</code>, use prefix specified in <code>.angular-cli.json</code> in component selector</li>
+<li><code>--spec</code>: boolean, default <code>true</code>, generate spec file with unit test</li>
+<li><code>--view-encapsulation</code>: string, specifies the view encapsulation strategy</li>
+<li><code>--change-detection</code>: string, specifies the change detection strategy.</li>
+</ul>
+<p>Run <code>$ ng generate --help</code> to see all available options of your locally installed Angular CLI.</p>
+<h4 id="examples-1">Examples:</h4>
+<pre><code><span># Generate component 'site-header'</span>
+$ ng generate component site-header
+
+<span># Generate component 'site-header' with inline template and inline styles</span>
+$ ng generate component site-header --inline-template --inline-style
+</code></pre>
+<h3 id="addinganewdirective">Adding a new directive</h3>
+<p>To add a directive with a selector <code>appAdminLink</code>, run:</p>
+<pre><code>$ ng generate directive admin-link
+installing directive
+  create src/app/admin-link.directive.spec.ts
+  create src/app/admin-link.directive.ts
+  update src/app/app.module.ts
+</code></pre>
+<p>Angular CLI will automatically adjust the letter case of the file name and directive name for you and apply the prefix to the directive selector, so the following commands have the same effect:</p>
+<pre><code><span># All three commands are equivalent</span>
+$ ng generate directive admin-link
+$ ng generate directive adminLink
+$ ng generate directive AdminLink
+</code></pre>
+<p>Behind the scenes, the following happens:</p>
+<ul>
+<li>a file <code>src/app/admin-link.directive.ts</code> is created that exports a directive named <code>AdminLinkDirective</code> with a selector <code>appAdminLink</code></li>
+<li>a file <code>src/app/admin-link.directive.spec.ts</code> is created with a unit test for the directive</li>
+<li><code>AdminLinkDirective</code> is added as a declaration in the <code>@NgModule</code> decorator of the nearest module, in this case the <code>AppModule</code> in <code>src/app/app.module.ts</code>.</li>
+</ul>
+<h4 id="availableoptions-3">Available options</h4>
+<ul>
+<li><code>--flat</code>: boolean, default <code>true</code>, generate directive files in <code>src/app</code> instead of <code>src/app/admin-link</code></li>
+<li><code>--prefix</code>: boolean, default <code>true</code>, use prefix specified in <code>.angular-cli.json</code> in directive selector</li>
+<li><code>--spec</code>: boolean, default <code>true</code>, generate spec file with unit test</li>
+</ul>
+<p>Run <code>$ ng generate --help</code> to see all available options of your locally installed Angular CLI.</p>
+<h4 id="examples-2">Examples:</h4>
+<pre><code><span># Generate directive 'adminLink'</span>
+$ ng generate directive admin-link
+
+<span># Generate directive 'adminLink' without unit test</span>
+$ ng generate directive admin-link --spec<span>=</span>false
+</code></pre>
+<h3 id="addinganewenum">Adding a new enum</h3>
+<p>To add an <a href="https://www.typescriptlang.org/docs/handbook/enums.html">enum</a> called <code>Direction</code>, run:</p>
+<pre><code>$ ng generate enum direction
+installing enum
+  create src/app/direction.enum.ts
+</code></pre>
+<p>Angular CLI will automatically adjust the letter case of the file name and enum name for you, so the following commands have the same effect:</p>
+<pre><code><span># Both commands are equivalent</span>
+$ ng generate enum direction
+$ ng generate enum Direction
+</code></pre>
+<p>Behind the scenes, the following happens:</p>
+<ul>
+<li>a file <code>src/app/direction.enum.ts</code> is created that exports an enum named <code>Direction</code></li>
+</ul>
+<h4 id="availableoptions-4">Available options</h4>
+<p>There are no command line options available for this command.</p>
+<h3 id="addinganewmodule">Adding a new module</h3>
+<p>To add a new module to your application, run:</p>
+<pre><code>$ ng generate module admin
+installing module
+  create src/app/admin/admin.module.ts
+</code></pre>
+<p>Behind the scenes, the following happens:</p>
+<ul>
+<li>a directory <code>src/app/admin</code> is created</li>
+<li>an <code>AdminModule</code> module is created inside <code>src/app/admin/admin.module.ts</code>.</li>
+</ul>
+
+<p>Notice that the <code>AdminModule</code> module is not added automatically to your main module <code>AppModule</code> in <code>src/app/app.module.ts</code>. It’s up to you to import the module where you need it.</p>
+<p>To import your new module in another module, you can specify is as an import in an <code>@NgModule</code> definition. For example:</p>
+<pre><code><span>import</span> <span><span>{</span> <span>AdminModule</span> <span>}</span></span> <span>from</span> <span>'./admin/admin.module'</span><span>;</span>
+
+@<span><span>NgModule</span></span><span>(</span><span>{</span>
+  <span>// ...</span>
+  imports<span>:</span> <span>[</span>
+    <span>AdminModule</span>
+  <span>]</span>
+<span>}</span><span>)</span>
+<span>export</span> <span>class</span> <span>AppModule</span> <span>{</span> <span>}</span>
+</code></pre>
+<h4 id="availableoptions-5">Available options</h4>
+<ul>
+<li><code>--routing</code>: boolean, default <code>false</code>, generate an additional module <code>AdminRoutingModule</code> with just the routing information and add it as an import to your new module</li>
+<li><code>--spec</code>: boolean, default <code>false</code>, add <code>src/app/admin/admin.module.spec.ts</code> with a unit test that checks whether the module exists.</li>
+</ul>
+<p>Run <code>$ ng generate --help</code> to see all available options of your locally installed Angular CLI.</p>
+<h4 id="examples-3">Examples:</h4>
+<pre><code><span># Add module 'admin'</span>
+$ ng generate module admin
+
+<span># Add module 'admin' with additional module containing routing information</span>
+$ ng generate module admin --routing
+</code></pre>
+<h3 id="addinganewpipe">Adding a new pipe</h3>
+<p>A <a href="https://angular.io/guide/pipes">pipe</a> is the Angular equivalent of a filter in AngularJS 1.x and allows you to transform a displayed value within a template.</p>
+<p>To add a pipe with a name <code>convertToEuro</code>, run:</p>
+<pre><code>$ ng generate pipe convert-to-euro
+installing pipe
+  create src/app/convert-to-euro.pipe.spec.ts
+  create src/app/convert-to-euro.pipe.ts
+  update src/app/app.module.ts
+</code></pre>
+<p>Angular CLI will automatically adjust the letter case of the file name and pipe name for you, so the following commands have the same effect:</p>
+<pre><code><span># All three commands are equivalent</span>
+$ ng generate pipe convert-to-euro
+$ ng generate pipe convertToEuro
+$ ng generate pipe ConvertToEuro
+</code></pre>
+<p>Behind the scenes, the following happens:</p>
+<ul>
+<li>a file <code>src/app/convert-to-euro.pipe.ts</code> is created that exports a pipe class named <code>ConvertToEuroPipe</code></li>
+<li>a file <code>src/app/convert-to-euro.pipe.spec.ts</code> is created with a unit test for the pipe</li>
+<li><code>ConvertToEuroPipe</code> is added as a declaration in the <code>@NgModule</code> decorator of the nearest module, in this case the <code>AppModule</code> in <code>src/app/app.module.ts</code>.</li>
+</ul>
+<h4 id="availableoptions-6">Available options</h4>
+<ul>
+<li><code>--flat</code>: boolean, default <code>true</code>, generate component files in <code>src/app</code> instead of <code>src/app/site-header</code></li>
+<li><code>--spec</code>: boolean, default <code>true</code>, generate spec file with unit test.</li>
+</ul>
+<p>Run <code>$ ng generate --help</code> to see all available options of your locally installed Angular CLI.</p>
+<h4 id="examples-4">Examples:</h4>
+<pre><code><span># Generate pipe 'convertToEuro' with spec and in /src/app directory</span>
+$ ng generate pipe convert-to-euro
+
+<span># Generate pipe 'convertToEuro' without spec and in /src/app/convert-to-euro directory</span>
+$ ng generate pipe convert-to-euro --spec<span>=</span>false --flat<span>=</span>false
+</code></pre>
+<h3 id="addinganewservice">Adding a new service</h3>
+<p>To add a service with a dependency injection token <code>BackendApiService</code>, run:</p>
+<pre><code>$ ng generate <span>service</span> backend-api
+installing <span>service</span>
+  create src/app/backend-api.service.spec.ts
+  create src/app/backend-api.service.ts
+  WARNING Service is generated but not provided, it must be provided to be used
+</code></pre>
+<p>Angular CLI will automatically adjust the letter case of the file name and pipe name for you, so the following commands have the same effect:</p>
+<pre><code><span># All three commands are equivalent</span>
+$ ng generate <span>service</span> backend-api
+$ ng generate <span>service</span> backendApi
+$ ng generate <span>service</span> BackendApi
+</code></pre>
+<p>Behind the scenes, the following happens:</p>
+<ul>
+<li>a file <code>src/app/backend-api.service.ts</code> is created that exports a service class named <code>BackendApiService</code></li>
+<li>a file <code>src/app/backend-api.service.spec.ts</code> is created with a unit test for your new service.</li>
+</ul>
+<p>Notice how Angular CLI warns that the service is generated but not provided anywhere yet. It’s up to you to register the service as a provider by adding it to the <code>providers: []</code> array where you need it (e.g. in a module or component). For example:</p>
+<pre><code><span>import</span> <span><span>{</span> <span>BackendApiService</span> <span>}</span></span> <span>from</span> <span>'./backend-api.service'</span><span>;</span>
+
+@<span><span>NgModule</span></span><span>(</span><span>{</span>
+  <span>// ...</span>
+  providers<span>:</span> <span>[</span><span>BackendApiService</span><span>]</span><span>,</span>
+  bootstrap<span>:</span> <span>[</span><span>AppComponent</span><span>]</span>
+<span>}</span><span>)</span>
+</code></pre>
+<h4 id="availableoptions-7">Available options</h4>
+<ul>
+<li><code>--flat</code>: boolean, default <code>true</code>, generate service file in <code>src/app</code> instead of <code>src/app/backend-api</code></li>
+<li><code>--spec</code>: boolean, default <code>true</code>, generate spec file with unit test</li>
+</ul>
+<p>Run <code>$ ng generate --help</code> to see all available options of your locally installed Angular CLI.</p>
+<h4 id="examples-5">Examples:</h4>
+<pre><code><span># Generate service with DI token 'BackendApiService' in /src/app directory</span>
+$ ng generate <span>service</span> backend-api
+
+<span># Generate service with DI token 'BackendApiService' in /src/app/backend-api directory</span>
+$ ng generate <span>service</span> backend-api --flat<span>=</span>false
+</code></pre>
+<h3 id="specialnote">Special note</h3>
+<p>Angular CLI does not just blindly generate code for you. It uses static analysis to better understand the semantics of your application.</p>
+<p>For example, when adding a new component using <code>ng generate component</code>, Angular CLI finds the closest module in the module tree of your application and integrates the new feature in that module.</p>
+<p>So if you have an application with multiple modules, Angular CLI will automatically integrate the new feature in the correct module, depending on the directory where you run the command from.</p>
+<h2 id="runningyourunittests">Running Your Unit Tests</h2>
+<p>Angular CLI automatically configures the <a href="https://karma-runner.github.io/">Karma test runner</a> for you when your application is initially created.</p>
+<p>When adding a feature to your application, you can use the <code>--spec</code> option to specify whether you want Angular CLI to also create a corresponding <code>.spec.ts</code> file with a sample unit test for your new feature.</p>
+<p>Spec files are created in the same directory of their corresponding feature in the <code>src</code> directory. This allows you to easily locate them when working on a feature.</p>
+<p>Running all unit tests of your application thus implies running all unit tests specified in all files ending in <code>.spec.ts</code> in all directories inside your <code>src</code> directory.</p>
+<p>To run all unit tests, run:</p>
+<pre><code>$ ng <span>test</span>
+</code></pre>
+<p>The following output will appear in your console:</p>
+<pre><code>$ ng <span>test</span>
+<span>[</span>karma<span>]</span>: No captured browser, <span>open</span> http://localhost:9876/
+<span>[</span>karma<span>]</span>: Karma v1.4.1 server started at http://0.0.0.0:9876/
+<span>[</span>launcher<span>]</span>: Launching browser Chrome with unlimited concurrency
+<span>[</span>launcher<span>]</span>: Starting browser Chrome
+<span>[</span>Chrome <span>57.0</span>.2987 <span>(</span>Mac OS X <span>10.12</span>.0<span>)</span><span>]</span>: Connected on socket 4OBzlsVyIPZyE1AYAAAA with <span>id</span> <span>41455596</span>
+Chrome <span>57.0</span>.2987 <span>(</span>Mac OS X <span>10.12</span>.0<span>)</span>: Executed <span>3</span> of <span>3</span> SUCCESS <span>(</span><span>0.132</span> secs / <span>0.121</span> secs<span>)</span>
+</code></pre>
+<p>A special browser instance will also be launched:</p>
+<p><img decoding="async" alt="Angular CLI: Browser window showing the Karma test runner screen" src="data:application/octet-stream;base64," loading="lazy"></p>
+<p>Here’s what happens behind the scenes:</p>
+<ol>
+<li>Angular CLI loads <code>.angular-cli.json</code>.</li>
+<li>Angular CLI runs Karma with the configuration specified in <code>.angular-cli.json</code>. By default this is <code>karma.conf.js</code> located in the root directory of your application.</li>
+<li>Karma opens the browser specified in the Karma configuration. By default the browser is set to <a href="https://www.google.com/chrome/">Google Chrome</a>.</li>
+<li>Karma then instructs the browser (Chrome) to run <code>src/test.ts</code> using the testing framework specified in the Karma config. By default this is the <a href="https://jasmine.github.io/">Jasmine framework</a>. The file <code>src/test.ts</code> is automatically created when your application is created. It’s pre-configured to load and configure the code that’s needed to test your Angular application and run all spec files ending in <code>.spec.ts</code> in your <code>src</code> directory.</li>
+<li>Karma reports the result of the test run to the console.</li>
+<li>Karma watches the <code>src</code> file for changes and repeats step 4 and 5 when a file change is detected.</li>
+</ol>
+<p>To end the process, you can press <code>ctrl-c</code>.</p>
+<p>If you want to learn more about testing your Angular code, you can check out the <a href="https://angular.io/guide/testing">Official Angular Testing Guide</a>.</p>
+<h2 id="runningyourendtoende2etests">Running Your End-to-end (E2E) Tests</h2>
+<p>Angular CLI automatically configures <a href="https://www.protractortest.org/">Protractor</a> for you when your application is initially created.</p>
+<p>To run your E2E tests, run:</p>
+<pre><code>$ ng e2e
+</code></pre>
+<p>The following output will appear in your console:</p>
+<pre><code>** NG Live Development Server is running on http://localhost:49152 **
+Hash: e570d23ac26086496e1d
+Time: 6087ms
+chunk    <span>{</span><span>0</span><span>}</span> polyfills.bundle.js, polyfills.bundle.js.map <span>(</span>polyfills<span>)</span> <span>158</span> kB <span>{</span><span>4</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>1</span><span>}</span> main.bundle.js, main.bundle.js.map <span>(</span>main<span>)</span> <span>3.62</span> kB <span>{</span><span>3</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>2</span><span>}</span> styles.bundle.js, styles.bundle.js.map <span>(</span>styles<span>)</span> <span>9.77</span> kB <span>{</span><span>4</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>3</span><span>}</span> vendor.bundle.js, vendor.bundle.js.map <span>(</span>vendor<span>)</span> <span>2.37</span> MB <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>4</span><span>}</span> inline.bundle.js, inline.bundle.js.map <span>(</span>inline<span>)</span> <span>0</span> bytes <span>[</span>entry<span>]</span> <span>[</span>rendered<span>]</span>
+webpack: Compiled successfully.
+I/file_manager - creating folder /Users/jvandemo/Projects/test/my-app/node_modules/protractor/node_modules/webdriver-manager/selenium
+I/downloader - <span>curl</span> -o /Users/jvandemo/Projects/test/my-app/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.29.zip https://chromedriver.storage.googleapis.com/2.29/chromedriver_mac64.zip
+I/update - chromedriver: unzipping chromedriver_2.29.zip
+I/update - chromedriver: setting permissions to 0755 <span>for</span> /Users/jvandemo/Projects/test/my-app/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.29
+I/launcher - Running <span>1</span> instances of WebDriver
+I/direct - Using ChromeDriver directly<span>..</span>.
+Spec started
+
+  my-app App
+    ✓ should display message saying app works
+
+Executed <span>1</span> of <span>1</span> spec SUCCESS <span>in</span> <span>0.523</span> sec.
+I/launcher - <span>0</span> instance<span>(</span>s<span>)</span> of WebDriver still running
+I/launcher - chrome <span>#01 passed</span>
+</code></pre>
+<p>A special browser instance will also be launched:</p>
+<p><img decoding="async" alt="Angular CLI: Browser window showing 'app works!' text" src="data:application/octet-stream;base64," loading="lazy"></p>
+<p>Here’s what happens behind the scenes:</p>
+
+<ol>
+<li>Angular CLI loads <code>.angular-cli.json</code>.</li>
+<li>Angular CLI runs Protractor with the configuration specified in <code>.angular-cli.json</code>. By default this is the <code>protractor.conf.js</code> file located in the root directory of your application.</li>
+<li>Protractor opens the browser specified in the Protractor configuration. By default the browser is set to <a href="https://www.google.com/chrome/">Google Chrome</a>.</li>
+<li>Protractor then instructs the browser (Chrome) to run all spec files ending in <code>.e2e-spec.ts</code> in your <code>e2e</code> directory.</li>
+<li>Protractor reports the result of the test run to the console.</li>
+</ol>
+<p>The process then exits automatically after step 5.</p>
+<p>If you want to learn more about E2E testing your Angular code, you can check out the <a href="https://angular.io/guide/testing">Official Angular Testing Guide</a> and the <a href="https://www.protractortest.org/">Protractor</a> documentation.</p>
+<h2 id="buildingyourapplicationforproduction">Building Your Application for Production</h2>
+<p>Running <code>ng serve</code> builds and bundles your Angular application automatically to a virtual filesystem during development.</p>
+<p>However, when your application is ready for production, you’ll need real files that you can deploy to your server or to the cloud.</p>
+<p>To build and bundle your application for deployment, run:</p>
+<pre><code>$ ng build
+</code></pre>
+<p>The output of the command is sent to your console:</p>
+<pre><code>Hash: 59aaa9ef8eac5d46cdf8
+Time: 5433ms
+chunk    <span>{</span><span>0</span><span>}</span> polyfills.bundle.js, polyfills.bundle.js.map <span>(</span>polyfills<span>)</span> <span>158</span> kB <span>{</span><span>4</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>1</span><span>}</span> main.bundle.js, main.bundle.js.map <span>(</span>main<span>)</span> <span>3.61</span> kB <span>{</span><span>3</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>2</span><span>}</span> styles.bundle.js, styles.bundle.js.map <span>(</span>styles<span>)</span> <span>9.77</span> kB <span>{</span><span>4</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>3</span><span>}</span> vendor.bundle.js, vendor.bundle.js.map <span>(</span>vendor<span>)</span> <span>2.07</span> MB <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>4</span><span>}</span> inline.bundle.js, inline.bundle.js.map <span>(</span>inline<span>)</span> <span>0</span> bytes <span>[</span>entry<span>]</span> <span>[</span>rendered<span>]</span>
+</code></pre>
+<p>This is what happens behind the scenes:</p>
+<ol>
+<li>Angular CLI loads its configuration from <code>.angular-cli.json</code>.</li>
+<li>Angular CLI runs Webpack to build and bundle all JavaScript and CSS code.</li>
+<li>The result is written to the <code>outDir</code> directory specified in your Angular CLI configuration. By default, this is the <code>dist</code> directory.</li>
+</ol>
+<h3 id="availableoptions-8">Available options</h3>
+<ul>
+<li><code>--aot</code>: enable ahead-of-time compilation</li>
+<li><code>--base-href</code>: string, the base href to use in the index file</li>
+<li><code>--environment</code>: string, default <code>dev</code>, environment to use</li>
+<li><code>--output-path</code>: string, directory to write the output to</li>
+<li><code>--target</code>: string, default <code>development</code>, environment to use</li>
+<li><code>--watch</code>: boolean, default <code>false</code>, watch files for changes and rebuild when a change is detected.</li>
+</ul>
+<h3 id="targets">Targets</h3>
+<p>Specifying a target impacts the way the build process operates. Its value can be one of the following:</p>
+<ul>
+<li><code>development</code>: default mode, do not minify or uglify code</li>
+<li><code>production</code>: minify and uglify code.</li>
+</ul>
+<p>Building your application in production mode:</p>
+<pre><code>$ ng build --target<span>=</span>production
+</code></pre>
+<p>This results in bundles that are minified, uglified and have hashes in their names:</p>
+<pre><code>Hash: 4dea6adc9ac01de3c11b
+Time: 5588ms
+chunk    <span>{</span><span>0</span><span>}</span> polyfills.2d45a4c73c85e24fe474.bundle.js <span>(</span>polyfills<span>)</span> <span>158</span> kB <span>{</span><span>4</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>1</span><span>}</span> main.a64b48e56248eb808195.bundle.js <span>(</span>main<span>)</span> <span>20.8</span> kB <span>{</span><span>3</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>2</span><span>}</span> styles.d41d8cd98f00b204e980.bundle.css <span>(</span>styles<span>)</span> <span>69</span> bytes <span>{</span><span>4</span><span>}</span> <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>3</span><span>}</span> vendor.205c7417e47c580a2c34.bundle.js <span>(</span>vendor<span>)</span> <span>1.1</span> MB <span>[</span>initial<span>]</span> <span>[</span>rendered<span>]</span>
+chunk    <span>{</span><span>4</span><span>}</span> inline.310ccba0fff49a724c8f.bundle.js <span>(</span>inline<span>)</span> <span>0</span> bytes <span>[</span>entry<span>]</span> <span>[</span>rendered<span>]</span>
+</code></pre>
+<h3 id="environments">Environments</h3>
+<p>Environments let you specify settings to customize your application behavior.</p>
+<p>You can define your own environments in the <code>.angular-cli.json</code> file. The default ones are:</p>
+<ul>
+<li><code>source</code>: use settings defined in <code>environments/environment.ts</code></li>
+<li><code>dev</code>: use settings defined in <code>environments/environment.ts</code></li>
+<li><code>prod</code>: use settings defined in <code>environments/environment.prod.ts</code>.</li>
+</ul>
+<p>Here, <code>environments/environment.ts</code> equals:</p>
+<pre><code><span>export</span> <span>const</span> environment <span>=</span> <span>{</span>
+  production<span>:</span> <span>false</span>
+<span>}</span><span>;</span>
+</code></pre>
+<p>And <code>environments/environment.prod.ts</code> equals:</p>
+<pre><code><span>export</span> <span>const</span> environment <span>=</span> <span>{</span>
+  production<span>:</span> <span>true</span>
+<span>}</span><span>;</span>
+</code></pre>
+<p>The build process will use the <code>dev</code> environment by default.</p>
+<p>If you specify a different environment, the build process will use the corresponding environment:</p>
+<pre><code># Uses environments/environment.ts
+$ ng build
+
+# Also uses environments/environment.ts
+$ ng build --environment=dev
+
+# Uses environments/environment.prod.ts
+$ ng build --environment=prod
+</code></pre>
+<p>As you can see in <code>src/main.ts</code>, you can access the environment settings from your code by importing <code>environments/environment</code>:</p>
+<pre><code>import { enableProdMode } from '@angular/core';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+
+import { AppModule } from './app/app.module';
+import { environment } from './environments/environment';
+
+if (environment.production) {
+  enableProdMode();
+}
+
+platformBrowserDynamic().bootstrapModule(AppModule);
+</code></pre>
+<p>The build process will make sure the right environment is provided when you import it.</p>
+<h2 id="deployingyourapplication">Deploying Your Application</h2>
+<p>As of February 9, 2017, the <code>ng deploy</code> command has been removed from the core of Angular CLI. Read more <a href="https://github.com/angular/angular-cli/pull/4385">here</a>.</p>
+<h2 id="ejectingyourapplication">Ejecting your application</h2>
+<p>As of v1.0, Angular CLI provides a command to decouple your application from Angular CLI.</p>
+<p>By default, Angular CLI manages the underlying webpack configuration for you so you don’t have to deal with its complexity.</p>
+<p>If, at any given time, you wish to manually configure Webpack and you no longer want to use Angular CLI with your Angular application, you can run:</p>
+<pre><code>$ ng <span>eject</span>
+</code></pre>
+<p>This will generate the following output in your console:</p>
+<pre><code>==========================================================================================
+Ejection was successful.
+
+To run your builds, you now need to do the following commands:
+   - "npm run build" to build.
+   - "npm run test" to run unit tests.
+   - "npm start" to serve the app using webpack-dev-server.
+   - "npm run e2e" to run protractor.
+
+Running the equivalent CLI commands will result in an error.
+
+==========================================================================================
+Some packages were added. Please run "npm install".
+</code></pre>
+<p>This is what happens behind the scenes:</p>
+<ol>
+<li>A property <code>ejected: true</code> is added to the <code>.angular-cli.json</code> file</li>
+<li>A <code>webpack.config.js</code> file is generated in the root of your application with a standalone Webpack configuration so you can build your project without Angular CLI</li>
+<li>The <code>build</code> script in your <code>package.json</code> is updated so you can run <code>npm run build</code> to build your project</li>
+<li>The <code>test</code> script in your <code>package.json</code> is updated so you can run <code>npm run test</code> or <code>npm test</code> to run your unit tests</li>
+<li>The <code>start</code> script in your <code>package.json</code> is updated so you can run <code>npm run start</code> or <code>npm start</code> to start a development server</li>
+<li>The <code>e2e</code> script in your <code>package.json</code> is updated so you can run <code>npm run e2e</code> to run your end-to-end tests.</li>
+</ol>
+<p>After ejecting your application, you can manually update the Webpack configuration to your liking and the Angular CLI commands will no longer work.</p>
+<p>So if, for some reason, you want to move away from Angular CLI, the eject command has you covered.</p>
+<h2 id="aglimpseintothefuture">A Glimpse into the Future</h2>
+<p>Angular CLI’s roadmap contains many exciting upcoming features:</p>
+<ul>
+<li><strong>progressive web app (PWA) support</strong>
+Angular CLI will be able to create a Web Application Manifest for you, generate an App Shell and provide Service Worker scripts to cache your application data.
+<a href="https://github.com/angular/mobile-toolkit/blob/master/guides/cli-setup.md">Learn more about mobile support here</a>.</li>
+<li><strong>Refactoring Support</strong>
+In addition to adding features to your application, Angular CLI will also let you refactor existing features — for example, moving a component or renaming a service.</li>
+<li><strong>Upgrade Support</strong>
+Angular CLI will be able to help you with Angular upgrades. Because Angular CLI has a semantic understanding of your application, it will be able to help you with code changes that are required when upgrading to a newer version of Angular.</li>
+<li><strong>Extensibility</strong>
+Improved extensibility support so you can create your own custom add-ons and deployment scripts.</li>
+<li><strong>Increased Performance</strong>
+Improved performance so Angular CLI becomes faster.</li>
+<li><strong>Library Developer Mode</strong>
+In addition to creating a new application, Angular CLI will also let you create a new library that can be consumed by others.</li>
+</ul>
+<p>Some of these features are already partially available. Check out the <a href="https://github.com/angular/angular-cli">GitHub repository</a> if you want to play around with them.</p>
+<h2 id="summary">Summary</h2>
+<p>Angular CLI is a command-line interface (CLI) to automate your development workflow.</p>
+<p>Today, you can already use Angular CLI to:</p>
+<ul>
+<li>create a new Angular application</li>
+<li>run a development server with LiveReload support to preview your application during development</li>
+<li>add features to your existing Angular application</li>
+<li>run your application’s unit tests</li>
+<li>run your application’s end-to-end (E2E) tests</li>
+<li>build your application for deployment to production</li>
+<li>deploy your application to a server.</li>
+</ul>
+<p>Although it’s technically not required to use Angular CLI to develop an Angular application, it can definitely improve the quality of your code and save you a lot of time and effort.</p>
+<p>Because of the many exciting features that will be added over time, Angular CLI will probably become an indispensable tool for developing Angular applications.</p>
+<p>To learn more about Angular CLI, check out the <a href="https://angular.io/cli">official website</a> and the <a href="https://github.com/angular/angular-cli">GitHub repository</a>.</p>
+<p><em>The Ultimate Angular CLI Reference Guide was peer reviewed by <a href="https://www.sitepoint.com/author/tseverien/">Tim Severien</a>, <a href="https://www.sitepoint.com/author/vildansoftic/">Vildan Softic</a> and <a href="https://github.com/newjs">Joan Yin</a>. Thanks to all of SitePoint’s peer reviewers for making SitePoint content the best it can be!</em></p>
+
+
+
+
+<h2 id="h-frequently-asked-questions-faqs-about-angular-cli">Frequently Asked Questions (FAQs) about Angular CLI</h2>
+
+
+
+<div><div id="faq-question-1428580000000"><h3>What is the difference between Angular CLI and AngularJS CLI?</h3> <p>Angular CLI and AngularJS CLI are both command-line interfaces used for automating the development workflow. However, Angular CLI is used for Angular applications (Angular 2 and above), while AngularJS CLI is used for AngularJS applications (Angular 1.x). Angular CLI provides a more robust set of commands for creating, testing, and deploying Angular applications. It also supports TypeScript, a statically typed superset of JavaScript, which AngularJS CLI does not.</p> </div> <div id="faq-question-1428580000001"><h3>How do I update my Angular CLI to the latest version?</h3> <p>To update your Angular CLI to the latest version, you can use the following commands in your terminal or command prompt. First, uninstall the current version of Angular CLI using the command <code>npm uninstall -g @angular/cli</code>. Then, clear the cache using <code>npm cache verify</code>. Finally, install the latest version of Angular CLI using <code>npm install -g @angular/cli@latest</code>.</p> </div> <div id="faq-question-1428580000002"><h3>How do I create a new Angular project using Angular CLI?</h3> <p>To create a new Angular project using Angular CLI, use the command <code>ng new project-name</code>. Replace <code>project-name</code> with the name you want to give to your project. This command creates a new directory with the same name as your project, sets up the necessary Angular files and directories, and installs the necessary npm packages.</p> </div> <div id="faq-question-1428580000003"><h3>How do I serve my Angular application locally using Angular CLI?</h3> <p>To serve your Angular application locally, navigate to the root directory of your project in the terminal or command prompt and use the command <code>ng serve</code>. This command compiles your application and starts a web server. By default, your application will be served at <code>http://localhost:4200/</code>.</p> </div> <div id="faq-question-1428580000004"><h3>How do I build my Angular application for production using Angular CLI?</h3> <p>To build your Angular application for production, use the command <code>ng build --prod</code>. This command compiles your application into an output directory named <code>dist/</code> at the root of your project. The <code>--prod</code> flag enables production mode, which optimizes the build for production.</p> </div> <div id="faq-question-1428580000005"><h3>How do I generate a new component using Angular CLI?</h3> <p>To generate a new component using Angular CLI, use the command <code>ng generate component component-name</code>. Replace <code>component-name</code> with the name you want to give to your component. This command creates a new directory with the same name as your component, and sets up the necessary files for the component.</p> </div> <div id="faq-question-1428580000006"><h3>How do I add a new module to my Angular application using Angular CLI?</h3> <p>To add a new module to your Angular application, use the command <code>ng generate module module-name</code>. Replace <code>module-name</code> with the name you want to give to your module. This command creates a new directory with the same name as your module, and sets up the necessary files for the module.</p> </div> <div id="faq-question-1428580000007"><h3>How do I run unit tests in my Angular application using Angular CLI?</h3> <p>To run unit tests in your Angular application, use the command <code>ng test</code>. This command runs the unit tests in your application using Karma and Jasmine.</p> </div> <div id="faq-question-1428580000008"><h3>How do I run end-to-end tests in my Angular application using Angular CLI?</h3> <p>To run end-to-end tests in your Angular application, use the command <code>ng e2e</code>. This command runs the end-to-end tests in your application using Protractor.</p> </div> <div id="faq-question-1428580000009"><h3>How do I lint my Angular application using Angular CLI?</h3> <p>To lint your Angular application, use the command <code>ng lint</code>. This command checks your application for linting errors according to the rules specified in the <code>tslint.json</code> file.</p> </div> </div>
+</div></div>
+  </div>
+</body>
+</html>

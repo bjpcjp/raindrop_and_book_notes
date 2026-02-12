@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>https://stephenmann.io/post/whats-in-a-production-web-application/</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>https://stephenmann.io/post/whats-in-a-production-web-application/</h1>
+    <p><strong>URL:</strong> <a href="https://stephenmann.io/post/whats-in-a-production-web-application">https://stephenmann.io/post/whats-in-a-production-web-application</a></p>
+    <p><strong>Tags:</strong> devops, goodreads</p>
+    <p><strong>Bookmark ID:</strong> 876769627</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section id="post-body">
+                    
+
+<blockquote>
+<p>This is the second post in a series. If you want to start from the beginning: <a href="https://stephenmann.io/web/20210516211248/http://stephenmann.io/post/dont-do-this-in-production/">Don’t Do This in Production</a>.</p>
+</blockquote>
+
+<p>Early in my career, I worked at a company that built web content management systems. Their product helped marketing departments self-manage their own websites, instead of relying on developers to make every change. This product helped their customers reduce operational expenses, and it helped me learn how to build web applications.</p>
+
+<p>While the product itself had a very general purpose, its customers tended to use it to solve very specific problems. These problems pushed the product to its limits in every imaginable way, and engineering ultimately had to provide solutions. Working in this environment for over ten years gave me a thorough appreciation for the wide variety of ways a production web application can break, some of which we’ll discuss in this post.</p>
+
+<p>One of the lessons I learned during these years was that individual engineers tend to learn very deeply what interests them, and learn just enough of the supporting pieces to be dangerous. This works out well for a team of engineers with good communication, since that combined knowledge will overlap to fill in any individual’s gaps. For teams with little experience in the industry or for individual engineers, this isn’t possible.</p>
+
+<p>If you started in an environment like this and then set out to build and deploy an entire web application from scratch, you might find out very quickly what I mean by “dangerous.”</p>
+
+<p>The industry has provided a number of solutions aimed at addressing this problem: managed web applications (Beanstalk, AppEngine, etc…), hosted container management (Kubernetes, ECS, etc…), and many others. These work well once you get them up and running, and I think they do an excellent job at solving the problem. They hide a lot of the complexity required to get a web application up and running, and they tend to “just work”.</p>
+
+<p>Unfortunately, when it doesn’t “just work,” or when it comes time to make a nuanced decision around a specific production issue, you may find yourself wishing you understood a bit more about that ominous black box.</p>
+
+<p>In this post, I’m going to take an unreliable system and evolve it into one with a reasonable level of reliability. Each step along the way will use a real world problem as motivation to move onto the next step. Rather than discussing each piece of the final design, I find that this incremental approach helps provide better context for when and in which order to make certain decisions. At the end, we’ll have built from scratch the basic structure of what a managed web application hosting service provides, and hopefully will have provided ample context around why each piece exists.</p>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>Let’s pretend that you have a $500 hosting budget for the year, so you’ve decided to rent a single t2.medium server from Amazon AWS. At the time of writing, this costs just about $400 per year.</p>
+
+<p>You know up front that you’ll have login sessions and that you’ll need to store user information, so you’ll need a database. Due to a constrained budget, let’s host this on our only server. You end up with infrastructure that looks like this:</p>
+
+
+<figure>
+    
+        <img src="https://stephenmann.io/web/20210516211248im_/http://stephenmann.io/images/the-life-and-times-of-a-production-web-application/fig1.png">
+    
+    
+    <figcaption>
+        <h4>Figure 1</h4>
+        
+    </figcaption>
+    
+</figure>
+
+
+<p>This should suffice for now. In fact, it will probably work for quite a while. You’re small. At this point, you probably only have to handle up to 10 visits per day. A small instance may have sufficed, but since you’re optimistic about your company’s growth, you made a good choice with the t2.medium instance.</p>
+
+<p>The value of your business is stored in that database, so it’s pretty important. You should make sure if the server goes down, you don’t lose the data. It’s probably a good time to make sure you haven’t stored the database contents on an ephemeral disk. If the instance gets deleted, you’re going to lose all of your data. That’s a scary thought.</p>
+
+<p>You should also make sure you have backups going to external storage. S3 seems like a good place to put these, and it’s relatively cheap, so let’s set that up as well. And you should definitely test that it’s working by restoring a backup every once in a while.</p>
+
+<p>Your setup should now look something like this:</p>
+
+
+<figure>
+    
+        <img src="https://stephenmann.io/web/20210516211248im_/http://stephenmann.io/images/the-life-and-times-of-a-production-web-application/fig2.png">
+    
+    
+    <figcaption>
+        <h4>Figure 2</h4>
+        
+    </figcaption>
+    
+</figure>
+
+
+<p>Now that you’ve increased the reliability of your database, you decide to prepare for your massive Hacker News traffic spike by running a load test against your server. Everything seems to be going well until the 500 errors start showing up, followed by a stream of 404s, so you investigate to figure out what happened.</p>
+
+<p>It turns out you have no clue what failed because you were writing your logs to the console, and you weren’t piping the console output into a log file. You also see that the process isn’t running, so you safely assume that’s why you got 404s. A mild wave of relief washes over you that you had the forsight to run a local load test instead of using Hacker News as a load test.</p>
+
+<p>You fix the autorestart issue by creating a <code>systemd</code> service that runs your web server, which ends up solving your logging problem as well. Then you run another load test to make sure you’ve solved everything.</p>
+
+<p>Once again, you see 500 errors (thankfully with no 404s), and you check the logs to see what went wrong. You discover that you’ve saturated your database connection pool, which was set to the unfortunately low limit of 10 connections. You update the limit, restart the database, and then run your load test again. Everything goes well, so you decide to promote your site on Hacker News.</p>
+
+<h2 id="launch-day">Launch Day</h2>
+
+<p>Great Scott! Your service is an instant hit. You hit the front page of Hacker News. You get 5,000 hits in the first 30 minutes, and you see comments pouring in. What do they say?</p>
+
+<blockquote>
+<p>I’m getting a 404, so I had to check the archived version of the page. Here’s the link if anyone needs it: …</p>
+</blockquote>
+
+<p>…</p>
+
+<blockquote>
+<p>Nothing shows up for me. Also, I have Javascript disabled. Why do people assume I want your 2 MB Javascript …</p>
+</blockquote>
+
+<p>…</p>
+
+<blockquote>
+<p>Your homepage takes 4 seconds to load. Traceroute from where I live in Australia shows the server’s hosted somewhere in Texas. Also, why does your landing page require 2 MB of Javascript?</p>
+</blockquote>
+
+<p>In a mad scramble, you set up Nginx on your server as a reverse proxy to your application, and you configure it to server a static 404 page. You also update your deployment process to push static files to S3, which is necessary for the CloudFront CDN to help reduce the load time in Australia.</p>
+
+
+<figure>
+    
+        <img src="https://stephenmann.io/web/20210516211248im_/http://stephenmann.io/images/the-life-and-times-of-a-production-web-application/fig3.png">
+    
+    
+    <figcaption>
+        <h4>Figure 3</h4>
+        
+    </figcaption>
+    
+</figure>
+
+
+<p>Now that you’ve addressed your immediate problem, you go onto your server and check the logs. Your SSH connection is curiously laggy. After some inspection, you discover that your log files have completely used up your disk space, which crashed your process and prevented it from starting again. You create a much larger disk and mount your logs on it. You also setup <code>logrotate</code> to prevent your log files from getting so huge again.</p>
+
+<h2 id="performance-problems">Performance Problems</h2>
+
+<p>Months pass. Your userbase grow. Your site begins to slow down. You notice in your CloudWatch monitoring that this seems to happen only between the hours of midnight and noon UTC. Due to the consistent start and end times of the slowdown, you guess that it’s due to a scheduled task on your server. You check your crontab and realize that you have one job scheduled at midnight: backups. Sure enough, your backups take twelve hours, and they overload the database causing a significant site slowdown.</p>
+
+<p>Having read about this before, you decide that you should run backups on your slave database. Then you remember: you don’t have a slave database, so you need to create one. It doesn’t make much sense to run your slave database on the same server, so you decide it’s time to expand. You create two new servers: one for the master database,and one for the slave database. You change your backups to run against the slave database.</p>
+
+
+<figure>
+    
+        <img src="https://stephenmann.io/web/20210516211248im_/http://stephenmann.io/images/the-life-and-times-of-a-production-web-application/fig4.png">
+    
+    
+    <figcaption>
+        <h4>Figure 4</h4>
+        
+    </figcaption>
+    
+</figure>
+
+
+<h2 id="growing-the-team">Growing the Team</h2>
+
+<p>Everything runs smoothly for quite some time. Months pass. You hire a larger development team. One of the new developers checks in a bug. It takes down your production server. The developer blames it on his environment differing from production. There’s some truth in what he said. Since you’re an understanding person with a good temperament, you treat this occasion as a learning opportunity.</p>
+
+<p>It’s time to build more environments: staging, QA, and development. Fortunately, you’ve automated the creation of your infrastructure from day one, so this is easy. You’ve also used good continuous delivery practices from day one, so you easily build pipelines from your new branches.</p>
+
+<p>Marketing wants to launch v2.0. You’re not sure what v2.0 is, but you go with it anyway. Time to prepare for another traffic spike. You’ve been running close to peak utilization on your web server, so you decide it’s time to start load balancing the traffic. Amazon ELB makes this easy for you. Around this time, you also discover that layered diagrams in blog posts should show layers top to bottom instead of left to right.</p>
+
+
+<figure>
+    
+        <img src="https://stephenmann.io/web/20210516211248im_/http://stephenmann.io/images/the-life-and-times-of-a-production-web-application/fig5.png">
+    
+    
+    <figcaption>
+        <h4>Figure 5</h4>
+        
+    </figcaption>
+    
+</figure>
+
+
+<p>Confident that you’ll be able to handle the load, you post your site to Hacker News again. Lo and behold, it holds up to the traffic. Great success!</p>
+
+<p>All seems to be well, until you go to check your logs. This takes you an hour due to having twelve servers to check (four in each environment). That’s a hassle. Fortunately you’re making enough money at this point to implement an ELK stack (ElasticSearch, LogStash, Kibana). You build one and point all environments at it.</p>
+
+
+<figure>
+    
+        <img src="https://stephenmann.io/web/20210516211248im_/http://stephenmann.io/images/the-life-and-times-of-a-production-web-application/fig6.png">
+    
+    
+    <figcaption>
+        <h4>Figure 6</h4>
+        
+    </figcaption>
+    
+</figure>
+
+
+<p>Now that you can read your logs again, you take a look at them and notice something odd. They’re full of this:</p>
+
+<pre><code>GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+GET /wp-login.php HTTP/1.1" 404 169 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1
+</code></pre>
+
+<p>You aren’t running PHP, or WordPress for that matter, so this is pretty concerning. You notice similar suspect logs on your database servers, and wonder why you ever had them exposed to the internet. It’s time for public and private subnets.</p>
+
+
+<figure>
+    
+        <img src="https://stephenmann.io/web/20210516211248im_/http://stephenmann.io/images/the-life-and-times-of-a-production-web-application/fig7.png">
+    
+    
+    <figcaption>
+        <h4>Figure 7</h4>
+        
+    </figcaption>
+    
+</figure>
+
+
+<p>Once again, you check your logs. You still have the hacking attempts, but they’re now limited to port 80 on your load balancer, which eases your mind a bit, since your application servers, database servers, and ELK stack are no longer exposed to the internet.</p>
+
+<p>Despite having centralized logging, you tire of having to discover outages by manually checking logs. You use Amazon CloudWatch to setup disk, CPU, and network alarms that send you an email when they hit 80% capacity. Wonderful!</p>
+
+<h2 id="smooth-sailing">Smooth Sailing</h2>
+
+<p>Just kidding! There’s no such thing as smooth sailing in software. Something will go wrong. Fortunately, you have a lot of tooling in place to make handling these problems easier.</p>
+
+<p>We’ve built a scalable web application with backups, rollbacks (using blue/green deployments between production and staging), centralized logging, monitoring, and alerting. This is a good point to stop, since growth from here tends to depend on application-specific needs.</p>
+
+<p>The industry has provided a number of hosted options that handle most of this for you. Instead of building all of this yourself, you can rely on Beanstalk, AppEngine, GKE, ECS, etc. Most of these services setup sensible permissions, load balancers, subnets, etc… automatically. They take a lot of the hassle out of getting an application up and running quickly that has the reliability your site needs to run for a long time.</p>
+
+<p>Regardless, I think it’s useful to understand what functionality each of these platforms provides and why they provide it. It makes it easier to select a platform based on your own needs. Once you have everything running in the platform, you’ve already figured out how these important aspects of the tool work. When something goes wrong, it helps to know you have the necessary tools to solve the problem.</p>
+
+<h2 id="outro">Outro</h2>
+
+<p>This post omits a lot of details. It doesn’t cover how to automate the creation of infrastructure, or how to provision servers, or how to configure servers. It doesn’t cover how to create development environments, or how to setup continuous delivery pipelines, or how to execute deployments or rollbacks. It doesn’t cover network security, or secret sharing, or the principle of least privilege. It doesn’t cover the importance of immutable infrastructure, or stateless servers, or migrations. Each of these topics requires posts of their own.</p>
+
+<p>This article’s purpose is mostly to provide a high level overview of what a reasonable production web application ought to look like. Future posts may reference this one and expand on it.</p>
+
+<p>That’s all for now.</p>
+
+<p>Thanks for reading, and happy coding!</p>
+
+<p>This is the second post in a series. Next up: <a href="https://stephenmann.io/web/20210516211248/http://stephenmann.io/post/a-brief-introduction-to-infrastructure-automation/">A Brief Introduction to Infrastructure Automation</a>.</p>
+
+<blockquote>
+<p>Edit: Don’t take the exact numbers used in this illustrative story literally. Individually, these events have all happened to me at different times, but they were in completely different environments under different types of load.</p>
+</blockquote>
+
+                </section></div>
+  </div>
+</body>
+</html>

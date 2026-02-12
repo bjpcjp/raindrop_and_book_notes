@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Visualizing shapefiles in R with sf and ggplot2!</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Visualizing shapefiles in R with sf and ggplot2!</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/chrisgreening/visualizing-shapefiles-in-r-with-sf-and-ggplot2-58aj">https://dev.to/chrisgreening/visualizing-shapefiles-in-r-with-sf-and-ggplot2-58aj</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876792924</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main-title">
+            <a href="https://media.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fe4zpcj0vzillewfwf27z.PNG">
+              <img src="data:application/octet-stream;base64," width="1000" height="420" alt="Cover image for Visualizing shapefiles in R with sf and ggplot2!">
+            </a>
+
+          
+        </div><div data-article-id="1563323" id="article-body">
+            <h2>
+  <a name="introduction" href="#introduction">
+  </a>
+  Introduction
+</h2>
+
+<p>As data scientists, being able to <strong>investigate</strong> and <strong>visualize</strong> the geographic world around us is often a critical tool in our toolkit</p>
+
+<p>Whether we're</p>
+
+<ul>
+<li>tracking the spread of a global pandemic</li>
+<li>investigating the effects of climate change</li>
+<li>or helping a city develop its public transportation system</li>
+</ul>
+
+<p>there are <strong>limitless insights</strong> to be gleaned and communicated from geographic data</p>
+
+<p>With geographic data being as complex as it is, it's <strong>essential</strong> to have the right tools to simplify our lives (and code) as much as possible</p>
+
+<p>By leveraging R and its <strong>rich package ecosystem</strong>, we're able to take advantage of powerful tools such as <code>sf</code> and <code>ggplot2</code> to bring our geographic data to life and quickly spin up meaningful analyses and graphics</p>
+
+<p>So let's jump in and learn how to synthesize these packages together and create quick visualizations from shapefiles!</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fjub148e3vfcb43fe7p2q.PNG"><img src="data:application/octet-stream;base64," alt="Screenshot of Italy regions from the geom_sf plot" loading="lazy"></a></p>
+
+<p><em>NOTE: The complete code and dataset for this blog post can be found on GitHub <a href="https://github.com/chris-greening/chris-greening-blog/blob/main/posts/Visualizing%20shapefiles%20in%20R%20with%20sf%20and%20ggplot2/sample_code.R" target="_blank" rel="noopener noreferrer">here</a></em></p>
+
+<h2>
+  <a name="table-of-contents" href="#table-of-contents">
+  </a>
+  Table of contents
+</h2>
+
+<ul>
+<li><a href="#prerequisites">Prerequisites and installation</a></li>
+<li><a href="#what-is-sf">What is sf?</a></li>
+<li><a href="#what-are-shapefiles">What are shapefiles and why do they matter?</a></li>
+<li><a href="#loading-shapefiles-with-sf">Loading shapefiles with sf</a></li>
+<li><a href="#visualizing-the-shape-data-with-ggplot2">Visualizing the geographic data with ggplot2</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#additional-resources">Additional resources</a></li>
+</ul>
+
+
+<div>
+      <h2>
+        <a href="https://www.christophergreening.com/" target="_blank" rel="noopener noreferrer">
+          Chris Greening - Software Developer
+        </a>
+      </h2>
+        <p>
+          Hey! My name's Chris Greening and I'm a software developer from the New York metro area with a diverse range of engineering experience - beam me a message and let's build something great!
+        </p>
+      <p><img alt="favicon" src="data:application/octet-stream;base64," loading="lazy">
+        christophergreening.com
+      </p>
+    </div>
+
+
+<h2>
+  <a name="prerequisites-and-installation" href="#prerequisites-and-installation">
+  </a>
+  Prerequisites and installation <a src="#prerequisites"></a>
+</h2>
+
+<p>The following packages are prerequisite installations for following along with this blog post!</p>
+
+<ul>
+<li><a href="https://r-spatial.github.io/sf/" target="_blank" rel="noopener noreferrer">sf</a></li>
+<li><a href="https://ggplot2.tidyverse.org/" target="_blank" rel="noopener noreferrer">ggplot2</a></li>
+<li>
+<a href="https://www.tidyverse.org/" target="_blank" rel="noopener noreferrer">tidyverse</a> (optional but recommended)</li>
+</ul>
+
+<p>To install them open <a href="https://posit.co/products/open-source/rstudio/" target="_blank" rel="noopener noreferrer">RStudio</a> (or wherever your R is installed) and run:</p>
+
+<div>
+<pre><code><span>
+
+</span><span>install.packages</span><span>(</span><span>c</span><span>(</span><span>"sf"</span><span>,</span><span> </span><span>"ggplot2"</span><span>,</span><span> </span><span>"tidyverse"</span><span>))</span><span>
+
+
+</span></code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+<h2>
+  <a name="what-is-sf" href="#what-is-sf">
+  </a>
+  What is sf? <a src="#what-is-sf"></a>
+</h2>
+
+<p>If you've worked on geographic data before you may have come across a wide range of <strong>file formats, tools, and jargon</strong></p>
+
+<p>It can get overwhelming especially when we just need to perform a quick spatial analyses or generate some visually appealing maps. That's where the <code>sf</code> package in R comes in handy</p>
+
+<p>Short for "Simple Features", <code>sf</code> is a package designed to simplify spatial data handling within R via the <a href="https://en.wikipedia.org/wiki/Simple_Features" target="_blank" rel="noopener noreferrer">Simple Features</a> standard that specifies a common <strong>storage</strong> and <strong>access model</strong> for geographic data</p>
+
+<p>By using <code>sf</code>, we're able to leverage its:</p>
+
+<ul>
+<li>
+<strong>Ease of use</strong>: <code>sf</code> enables us to work with spatial data as if it were a regular <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame" target="_blank" rel="noopener noreferrer">data.frame</a>, <a href="https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html" target="_blank" rel="noopener noreferrer">data.table</a>, or <a href="https://tibble.tidyverse.org/" target="_blank" rel="noopener noreferrer">tibble</a> (pick your poison). This intuitive handling makes life <em>much</em> easier as it opens up the robust and familiar support R has for <strong>tabular</strong> data</li>
+<li>
+<strong>Integration with other tools</strong>: <code>sf</code> seamlessly integrates with popular R packages like <code>tidyverse</code> and <code>ggplot2</code>, allowing us to <strong>wrangle</strong> and <strong>visualize</strong> spatial data with some of our favorite tools</li>
+<li>
+<strong>Versatility</strong>: From reading and writing various spatial file formats to spatial operations like <strong>joining and aggregating</strong> data, <code>sf</code> is wonderfully versatile. It supports a wide array of geometric operations, coordinate reference systems, etc.</li>
+</ul>
+
+<p>Now that we're situated with what <code>sf</code> is, let's jump into shapefiles and learn what they are and how we can leverage them for quick visualizations!</p>
+<h2>
+  <a name="what-are-shapefiles-and-why-do-they-matter" href="#what-are-shapefiles-and-why-do-they-matter">
+  </a>
+  What are shapefiles and why do they matter? <a src="#what-are-shapefiles"></a>
+</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/Shapefile" target="_blank" rel="noopener noreferrer">Shapefiles</a> are a crucial part of geographic data handling and if you're working with spatial data you'll undoubtedly encounter them. But what exactly are they and why are they so important?</p>
+
+<p>Let's break it down:</p>
+
+<ul>
+<li>
+<strong>Definition</strong>: A shapefile is a common <strong>geospatial vector data format</strong> used in <strong>Geographic Information System</strong> (GIS) software. It stores the geometric location and attribute information of geographic features</li>
+<li>
+<strong>Components</strong>: A shapefile is not just a single file but consists of at least <strong>three mandatory files</strong>:
+
+<ul>
+<li>
+<em>.shp</em>: Holds the <strong>feature geometry</strong> stored as a set of vector coordinates</li>
+<li>
+<em>.shx</em>: Stores the <strong>shape index</strong> format of the geometry</li>
+<li>
+<em>.dbf</em>: Contains attributes or <strong>metadata</strong> associated with the shapes</li>
+</ul>
+</li>
+</ul>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Frkiu2alvv6dyp7stdi1n.PNG"><img src="data:application/octet-stream;base64," alt="Screenshot of file explorer showing the shapefiles" loading="lazy"></a></p>
+
+<ul>
+<li>
+<strong>Use cases</strong>: Shapefiles can be applied to a wide variety of fields and use cases:
+
+<ul>
+<li>
+<strong>Mapping</strong>: Shapefiles enable the creation of maps, displaying roads, rivers, landforms, etc.</li>
+<li>
+<strong>Analysis</strong>: They facilitate spatial analyses such as distance calculations, area measurements, and overlays</li>
+<li>
+<strong>Data integration</strong>: Shapefiles are versatile and can be integrated with other data types, aiding comprehensive analyses</li>
+</ul>
+</li>
+<li>
+<strong>Widespread use</strong>: Shapefiles are one of the most commonly used formats in GIS</li>
+<li>
+<strong>Accessibility</strong>: Many governmental and environmental organizations provide data in shapefile format, making it widely accessible</li>
+<li>
+<strong>Compatibility</strong>: They are supported by various GIS software, enhancing their usability</li>
+</ul>
+
+<p>In short, shapefiles act as a bridge between <strong>raw geographic data</strong> and the <strong>insights</strong> we can synthesize and draw from them</p>
+
+<p>Their <strong>accessibility</strong> and <strong>flexibility</strong> make them indispensable in the world of geographic data analysis and by leveraging the <code>sf</code> package in R, we can effortlessly load and manipulate these complex files into <strong>informative visual insights</strong></p>
+<h2>
+  <a name="loading-shapefiles-with-sf" href="#loading-shapefiles-with-sf">
+  </a>
+  Loading shapefiles with sf <a src="#loading-shapefiles-with-sf"></a>
+</h2>
+
+<p>Reading a shapefile with <code>sf</code> is incredibly straightforward and requires only a single line of code using <a href="https://r-spatial.github.io/sf/reference/st_read.html" target="_blank" rel="noopener noreferrer">sf::st_read</a></p>
+
+<p>For this example, we're going to load geographic regions of Europe from a shapefile sourced directly from an official <a href="https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts" target="_blank" rel="noopener noreferrer">European Union data source</a> and filter it to only show Italian geographic regions using <a href="https://dplyr.tidyverse.org/reference/filter.html" target="_blank" rel="noopener noreferrer"><code>dplyr::filter</code></a></p>
+<div>
+<pre><code><span>
+
+</span><span>library</span><span>(</span><span>sf</span><span>)</span><span>
+</span><span>library</span><span>(</span><span>dplyr</span><span>)</span><span>
+
+</span><span>shape.data</span><span> </span><span>&lt;-</span><span> </span><span>sf</span><span>::</span><span>st_read</span><span>(</span><span>"NUTS_RG_01M_2021_3035.shp"</span><span>)</span><span> </span><span>%&gt;%</span><span>
+    </span><span>dplyr</span><span>::</span><span>filter</span><span>(</span><span>CNTR_NAME</span><span> </span><span>==</span><span> </span><span>"IT"</span><span>)</span><span>
+
+
+</span></code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fdu10rj59bdieuu15lkrs.PNG"><img src="data:application/octet-stream;base64," alt="Output of shape.data printed to RStudio's console" loading="lazy"></a></p>
+
+<p>And that's it! Our geographic data is now ready for analyzing and visualizing</p>
+<h2>
+  <a name="visualizing-the-geographic-data-with-ggplot2" href="#visualizing-the-geographic-data-with-ggplot2">
+  </a>
+  Visualizing the geographic data with ggplot2 <a src="#visualizing-the-shape-data-with-ggplot2"></a>
+</h2>
+
+<p>To visualize our shape data we can now leverage <code>ggplot2</code> like we would with any other analysis using <a href="https://ggplot2.tidyverse.org/reference/ggsf.html" target="_blank" rel="noopener noreferrer"><code>ggplot2::geom_sf</code></a>!</p>
+<div>
+<pre><code><span>
+
+</span><span>ggplot2</span><span>::</span><span>ggplot</span><span>(</span><span>data</span><span> </span><span>=</span><span> </span><span>shape.data</span><span>)</span><span> </span><span>+</span><span>
+    </span><span>ggplot2</span><span>::</span><span>geom_sf</span><span>()</span><span> </span><span>+</span><span>
+    </span><span>ggplot2</span><span>::</span><span>labs</span><span>(</span><span>title</span><span> </span><span>=</span><span> </span><span>"Italian NUTS-3 regions"</span><span>)</span><span> </span><span>+</span><span>
+    </span><span>ggplot2</span><span>::</span><span>theme</span><span>(</span><span>
+        </span><span>panel.background</span><span> </span><span>=</span><span> </span><span>ggplot2</span><span>::</span><span>element_blank</span><span>(),</span><span>
+        </span><span>axis.text</span><span> </span><span>=</span><span> </span><span>ggplot2</span><span>::</span><span>element_blank</span><span>(),</span><span>
+        </span><span>axis.title</span><span> </span><span>=</span><span> </span><span>ggplot2</span><span>::</span><span>element_blank</span><span>(),</span><span>
+        </span><span>axis.ticks</span><span> </span><span>=</span><span> </span><span>ggplot2</span><span>::</span><span>element_blank</span><span>(),</span><span>
+        </span><span>legend.position</span><span> </span><span>=</span><span> </span><span>"none"</span><span>
+    </span><span>)</span><span>
+
+
+</span></code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fjub148e3vfcb43fe7p2q.PNG"><img src="data:application/octet-stream;base64," alt="Screenshot of Italy regions from the geom_sf plot" loading="lazy"></a></p>
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion <a src="#conclusion"></a>
+</h2>
+
+<p>And thus, in this post we've explored how R makes working with and visualizing geographic data accessible and efficient through the use of the <code>sf</code> and <code>ggplot2</code> packages</p>
+
+<p><strong>Thanks so much for reading</strong> and if you liked my content, be sure to check out some of my other work or <strong>connect</strong> with me on social media or my <a href="https://www.christophergreening.com/" target="_blank" rel="noopener noreferrer"><strong>personal website</strong></a> 😄</p>
+
+
+<div>
+      <h2>
+        <a href="https://www.christophergreening.com/" target="_blank" rel="noopener noreferrer">
+          Chris Greening - Software Developer
+        </a>
+      </h2>
+        <p>
+          Hey! My name's Chris Greening and I'm a software developer from the New York metro area with a diverse range of engineering experience - beam me a message and let's build something great!
+        </p>
+      <p><img alt="favicon" src="data:application/octet-stream;base64," loading="lazy">
+        christophergreening.com
+      </p>
+    </div>
+
+
+
+<p>Cheers!</p>
+
+
+
+<br>
+
+
+
+<h2>
+  <a name="additional-resources" href="#additional-resources">
+  </a>
+  Additional resources <a src="#additional-resources"></a>
+</h2>
+
+<ul>
+<li><a href="https://r-spatial.github.io/sf/articles/sf1.html" target="_blank" rel="noopener noreferrer">Simple Features for R</a></li>
+<li><a href="https://r-graph-gallery.com/ggplot2-package.html" target="_blank" rel="noopener noreferrer">R graph gallery - ggplot2</a></li>
+<li><a href="https://tmieno2.github.io/R-as-GIS-for-Economists/geom-sf.html" target="_blank" rel="noopener noreferrer">Creating maps from sf objects</a></li>
+</ul>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

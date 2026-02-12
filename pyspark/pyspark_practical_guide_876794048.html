@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PySpark Practical Guide</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>PySpark Practical Guide</h1>
+    <p><strong>URL:</strong> <a href="https://thecleverprogrammer.com/2024/02/20/pyspark-practical-guide">https://thecleverprogrammer.com/2024/02/20/pyspark-practical-guide</a></p>
+    <p><strong>Tags:</strong> pyspark</p>
+    <p><strong>Bookmark ID:</strong> 876794048</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+			
+<p>PySpark is the Python API for <strong><a href="https://www.instagram.com/p/C3Po6Fdr40T/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==">Apache Spark</a></strong>, an open-source, distributed computing system that offers an interface for programming entire clusters with implicit data parallelism and fault tolerance. PySpark brings the power of Spark to Python developers, allowing them to leverage Spark’s distributed data processing capabilities using <strong><a href="https://thecleverprogrammer.com/2022/07/15/python-practice-questions-for-coding-interviews/">Python</a></strong>. So, if you want to learn how to use PySpark to work with data, this article is for you. In this article, I’ll take you through a practical guide to PySpark that will help you get started with PySpark.</p>
+
+
+
+
+<h2>Getting Started with PySpark</h2>
+
+
+
+<p>To take you through a complete practical guide to PySpark, I’ll use a dataset based on Delhi Metro that contains the following columns:</p>
+
+
+
+<ul>
+<li><strong>Station ID</strong>: A unique identifier for each station.</li>
+
+
+
+<li><strong>Station Name</strong>: The name of the metro station.</li>
+
+
+
+<li><strong>Distance from Start (km)</strong>: The distance of the station from the start of the line, in kilometres.</li>
+
+
+
+<li><strong>Line</strong>: The metro line the station belongs to.</li>
+
+
+
+<li><strong>Opening Date</strong>: The date when the station was opened.</li>
+
+
+
+<li><strong>Station Layout</strong>: Indicates whether the station is elevated, underground, or at grade.</li>
+
+
+
+<li><strong>Latitude</strong>: The latitude coordinate of the station.</li>
+
+
+
+<li><strong>Longitude</strong>: The longitude coordinate of the station.</li>
+</ul>
+
+
+
+<p>You can download this dataset from <a href="https://statso.io/metro-network-analysis-case-study/" target="_blank" rel="noreferrer noopener"><strong>here</strong></a>.</p>
+
+
+
+<p>Now, let’s get started with a practical guide to PySpark. Before moving forward, install it on your Python virtual environment by executing the command mentioned below:</p>
+
+
+
+
+<ul>
+<li><strong>pip install pyspark</strong></li>
+</ul>
+
+
+
+
+
+
+
+<p>To use PySpark, we typically start by creating a SparkSession, an entry point to programming Spark with the Dataset and DataFrame API. Here’s how to create a SparkSession:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">from pyspark.sql import SparkSession
+
+spark = SparkSession.builder \
+    .appName("Delhi Metro Analysis") \
+    .getOrCreate()</pre></div>
+
+
+
+<p>Using PySpark, we can load data from various sources, including local filesystems, HDFS, and cloud storage. As we are using a CSV file here, below is how to load our <a href="https://statso.io/metro-network-analysis-case-study/" target="_blank" rel="noreferrer noopener"><strong>data</strong></a>:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">df = spark.read.csv("Delhi-Metro-Network.csv", header=True, inferSchema=True)
+print(df.show())</pre></div>
+
+
+
+<pre><strong>+----------+--------------------+------------------------+------------+------------+--------------+-----------+-----------+<br>|Station ID|        Station Name|Distance from Start (km)|        Line|Opening Date|Station Layout|   Latitude|  Longitude|<br>+----------+--------------------+------------------------+------------+------------+--------------+-----------+-----------+<br>|         1|            Jhil Mil|                    10.3|    Red line|  2008-04-06|      Elevated|   28.67579|   77.31239|<br>|         2| Welcome [Conn: Red]|                    46.8|   Pink line|  2018-10-31|      Elevated|    28.6718|   77.27756|<br>|         3|         DLF Phase 3|                    10.0| Rapid Metro|  2013-11-14|      Elevated|    28.4936|    77.0935|<br>|         4|          Okhla NSIC|                    23.8|Magenta line|  2017-12-25|      Elevated| 28.5544828| 77.2648487|<br>|         5|          Dwarka Mor|                    10.2|   Blue line|  2005-12-30|      Elevated|   28.61932|   77.03326|<br>|         6|Dilli Haat INA [C...|                    24.9|   Pink line|  2018-06-08|   Underground|28.57440755|77.21024148|<br>|         7|    Noida Sector 143|                    11.5|   Aqua line|  2019-01-25|      Elevated|28.50266325|77.42625566|<br>|         8|           Moolchand|                    15.1| Voilet line|  2010-03-10|      Elevated|   28.56417|   77.23423|<br>|         9|        Chawri Bazar|                    15.3| Yellow line|  2005-03-07|   Underground|   28.64931|   77.22637|<br>|        10|           Maya Puri|                    12.8|   Pink line|  2018-03-14|      Elevated| 28.6371795| 77.1297333|<br>|        11|Central Secretari...|                    19.4| Yellow line|  2005-03-07|   Underground|   28.61474|   77.21191|<br>|        12|    Noida Sector 146|                    15.8|   Aqua line|  2019-01-25|      Elevated| 28.4082289|  76.963024|<br>|        13|        Tikri Border|                    20.2|  Green line|  2018-06-24|      Elevated| 28.6880254| 76.9640828|<br>|        14|            Jangpura|                    12.9| Voilet line|  2010-03-10|   Underground|    28.5843|   77.23766|<br>|        15|  Major Mohit Sharma|                     5.7|    Red line|  2019-08-03|      Elevated| 28.6776112| 77.3581426|<br>|        16|         Majlis Park|                     0.0|   Pink line|  2018-03-14|      Elevated| 28.7244312|  77.181964|<br>|        17|  Bhikaji Cama Place|                    22.6|   Pink line|  2018-06-08|   Underground|28.56790025|77.18701648|<br>|        18|Mundka Industrial...|                    15.0|  Green line|  2018-06-24|      Elevated| 28.6834491| 77.0171333|<br>|        19|    Belvedere Towers|                     8.0| Rapid Metro|  2013-11-14|      Elevated|    28.4936|    77.0935|<br>|        20|        Adarsh Nagar|                     4.7| Yellow line|  2009-04-02|      Elevated|   28.71642|   77.17046|<br>+----------+--------------------+------------------------+------------+------------+--------------+-----------+-----------+<br>only showing top 20 rows<p>None</p></strong></pre>
+
+
+
+<h4>Data Exploration Functions</h4>
+
+
+
+<p>Once the data is loaded, you can perform operations to explore and understand it better. Below are some functions we can use to explore our data using PySpark.</p>
+
+
+
+<p>To understand the data types and structure:</p>
+
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">print(df.printSchema())</pre></div>
+
+
+
+<pre><strong>root<br> |-- Station ID: integer (nullable = true)<br> |-- Station Name: string (nullable = true)<br> |-- Distance from Start (km): double (nullable = true)<br> |-- Line: string (nullable = true)<br> |-- Opening Date: date (nullable = true)<br> |-- Station Layout: string (nullable = true)<br> |-- Latitude: double (nullable = true)<br> |-- Longitude: double (nullable = true)<p>None</p></strong></pre>
+
+
+
+<p>To focus on specific columns by selecting:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">print(df.select("Station Name", "Line").show())</pre></div>
+
+
+
+<pre><strong>+--------------------+------------+<br>|        Station Name|        Line|<br>+--------------------+------------+<br>|            Jhil Mil|    Red line|<br>| Welcome [Conn: Red]|   Pink line|<br>|         DLF Phase 3| Rapid Metro|<br>|          Okhla NSIC|Magenta line|<br>|          Dwarka Mor|   Blue line|<br>|Dilli Haat INA [C...|   Pink line|<br>|    Noida Sector 143|   Aqua line|<br>|           Moolchand| Voilet line|<br>|        Chawri Bazar| Yellow line|<br>|           Maya Puri|   Pink line|<br>|Central Secretari...| Yellow line|<br>|    Noida Sector 146|   Aqua line|<br>|        Tikri Border|  Green line|<br>|            Jangpura| Voilet line|<br>|  Major Mohit Sharma|    Red line|<br>|         Majlis Park|   Pink line|<br>|  Bhikaji Cama Place|   Pink line|<br>|Mundka Industrial...|  Green line|<br>|    Belvedere Towers| Rapid Metro|<br>|        Adarsh Nagar| Yellow line|<br>+--------------------+------------+<br>only showing top 20 rows<p>None</p></strong></pre>
+
+
+
+<p>To analyze specific portions of data by filtering:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">print(df.filter(df["Line"] == "Blue line").show())</pre></div>
+
+
+
+<pre><strong>+----------+--------------------+------------------------+---------+------------+--------------+----------+----------+<br>|Station ID|        Station Name|Distance from Start (km)|     Line|Opening Date|Station Layout|  Latitude| Longitude|<br>+----------+--------------------+------------------------+---------+------------+--------------+----------+----------+<br>|         5|          Dwarka Mor|                    10.2|Blue line|  2005-12-30|      Elevated|  28.61932|  77.03326|<br>|        21|   Noida City Center|                    47.2|Blue line|  2009-12-11|      Elevated|  28.57466|  77.35608|<br>|        23|     Dwarka Sector 9|                     2.7|Blue line|  2006-01-04|      Elevated|  28.57487|  77.06454|<br>|        26|     R K Ashram Marg|                    28.9|Blue line|  2005-12-30|      Elevated|  28.63923|   77.2084|<br>|        27|    Uttam Nagar West|                    12.4|Blue line|  2005-12-30|      Elevated|  28.62481|   77.0653|<br>|        30|         Golf Course|                    45.9|Blue line|  2009-12-11|      Elevated|  28.56714|  77.34598|<br>|        35|Janak Puri West [...|                    14.7|Blue line|  2005-12-30|      Elevated|  28.62943|  77.07767|<br>|        37|Dwarka Sector 21(...|                     0.0|Blue line|  2010-10-30|   Underground|  28.55226|  77.05828|<br>|        38|       Subhash Nagar|                    17.6|Blue line|  2005-12-30|      Elevated|  28.64039|  77.10495|<br>|        45|    Dwarka Sector 14|                     7.6|Blue line|  2006-01-04|      Elevated|  28.60223|  77.02588|<br>|        49|      Rajendra Place|                    25.7|Blue line|  2005-12-30|      Elevated|   28.6425|  77.17815|<br>|        53|         Jhandewalan|                    27.9|Blue line|  2005-12-30|      Elevated|  28.64427|  77.19988|<br>|        60|          Moti Nagar|                    21.8|Blue line|  2005-12-30|      Elevated|  28.65784|  77.14248|<br>|        69|Mayur Vihar Phase...|                    38.3|Blue line|  2009-12-11|      Elevated|  28.60442|  77.29455|<br>|        72|     Noida Sector 59|                    51.5|Blue line|  2019-09-03|      Elevated|28.4808629|77.0848883|<br>|        74|     Dwarka Sector 8|                     1.7|Blue line|  2010-10-30|      Elevated|  28.56583|  77.06706|<br>|        75|     Noida Sector 62|                    52.7|Blue line|  2019-09-03|      Elevated|28.4808629|77.0848883|<br>|        78|Noida Sector 52 [...|                    49.3|Blue line|  2019-09-03|      Elevated|28.4808629|77.0848883|<br>|        84|Rajouri Garden [C...|                    19.6|Blue line|  2005-12-30|      Elevated|  28.64902|   77.1227|<br>|        89|     Noida Sector 61|                    50.5|Blue line|  2019-09-03|      Elevated|28.4808629|77.0848883|<br>+----------+--------------------+------------------------+---------+------------+--------------+----------+----------+<br>only showing top 20 rows<p>None</p></strong></pre>
+
+
+
+<h4>Data Manipulation</h4>
+
+
+
+<p>PySpark offers numerous functions for data manipulation including adding columns, renaming columns, and aggregating data. Below are some functions we can use for data manipulation using PySpark.</p>
+
+
+
+<p>Adding a new column (for example, converting distance from km to miles):</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">from pyspark.sql.functions import col
+df = df.withColumn("Distance from Start (miles)", col("Distance from Start (km)") * 0.621371)</pre></div>
+
+
+
+<p>Renaming a column:</p>
+
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">df = df.withColumnRenamed("Distance from Start (km)", "DistanceKM")</pre></div>
+
+
+
+<p>Now let’s see an example of data aggregation as well:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">from pyspark.sql import functions as F
+df.groupBy("Line").agg(
+    F.avg("DistanceKM").alias("Average Distance"),
+    F.max("DistanceKM").alias("Max Distance")
+).show()</pre></div>
+
+
+
+<pre><strong>+-----------------+------------------+------------+<br>|             Line|  Average Distance|Max Distance|<br>+-----------------+------------------+------------+<br>|      Rapid Metro|  5.70909090909091|        10.0|<br>|        Blue line|26.144897959183673|        52.7|<br>|Green line branch|1.0666666666666667|         2.1|<br>|       Green line|11.380952380952383|        24.8|<br>| Blue line branch|               4.0|         8.1|<br>|      Voilet line|20.617647058823525|        43.5|<br>|      Yellow line|21.462162162162162|        45.7|<br>|        Gray line|               1.8|         3.9|<br>|         Red line| 16.55862068965517|        32.7|<br>|        Pink line|28.773684210526323|        52.6|<br>|     Magenta line|            17.656|        33.1|<br>|      Orange line|10.566666666666665|        20.8|<br>|        Aqua line|13.352380952380955|        27.1|<br>+-----------------+------------------+------------+</strong></pre>
+
+
+
+<p>PySpark allows you to run SQL queries on DataFrames after registering them as temporary views. Below is an example:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">df.createOrReplaceTempView("metro")
+spark.sql("SELECT Line, COUNT(*) as StationCount FROM metro GROUP BY Line").show()</pre></div>
+
+
+
+<pre><strong>+-----------------+------------+<br>|             Line|StationCount|<br>+-----------------+------------+<br>|      Rapid Metro|          11|<br>|        Blue line|          49|<br>|Green line branch|           3|<br>|       Green line|          21|<br>| Blue line branch|           8|<br>|      Voilet line|          34|<br>|      Yellow line|          37|<br>|        Gray line|           3|<br>|         Red line|          29|<br>|        Pink line|          38|<br>|     Magenta line|          25|<br>|      Orange line|           6|<br>|        Aqua line|          21|<br>+-----------------+------------+</strong></pre>
+
+
+
+<h4>Plotting Graphs</h4>
+
+
+
+<p>Plotting and visualization are essential for data exploration and analysis, providing a graphical representation of your data to uncover patterns, trends, and outliers. While PySpark itself does not offer built-in plotting capabilities, you can use PySpark to preprocess and aggregate your data, then convert it to a Pandas DataFrame for visualization with libraries like Matplotlib, Seaborn, or Plotly.</p>
+
+
+
+<p>Before plotting, we often need to aggregate, filter, or otherwise prepare data using PySpark. For example, if we wanted to visualize the number of stations per line in the Delhi Metro dataset, we might start with:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">stations_per_line = df.groupBy("Line").count()</pre></div>
+
+
+
+<p>Once the data is aggregated or filtered as needed, we can convert the PySpark DataFrame to a Pandas DataFrame. This conversion brings the data onto a single node, so it’s best done with aggregated data or subsets to avoid memory issues. Here’s how to convert it into a pandas dataframe:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">stations_per_line_pd = stations_per_line.toPandas()</pre></div>
+
+
+
+<p>Now, below is an example graph using <strong><a href="https://thecleverprogrammer.com/2022/03/24/important-matplotlib-functions-for-data-science/">Matplotlib</a></strong>:</p>
+
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.plot(stations_per_line_pd['Line'], stations_per_line_pd['count'], marker='o')
+plt.title('Number of Stations per Line')
+plt.xlabel('Line')
+plt.ylabel('Number of Stations')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.show()</pre></div>
+
+
+
+<figure><img data-recalc-dims="1" decoding="async" width="841" height="631" data-attachment-id="22692" data-permalink="https://thecleverprogrammer.com/2024/02/20/pyspark-practical-guide/pyspark-practical-guide/" data-orig-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/02/pyspark-practical-guide.png?fit=841%2C631&amp;ssl=1" data-orig-size="841,631" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="pyspark-practical-guide" data-image-description="" data-image-caption="" data-medium-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/02/pyspark-practical-guide.png?fit=300%2C225&amp;ssl=1" data-large-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/02/pyspark-practical-guide.png?fit=841%2C631&amp;ssl=1" tabindex="0" role="button" alt="PySpark Practical Guide: plotting graphs" srcset="data:application/octet-stream;base64, 841w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 768w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 400w, data:application/octet-stream;base64, 200w" sizes="(max-width: 841px) 100vw, 841px"></figure>
+
+
+
+<h3>Summary</h3>
+
+
+
+<p>So, these were some essential fundamentals of PySpark. You can find many more examples of PySpark functions from the official documentation <a href="https://spark.apache.org/docs/latest/api/python/getting_started/quickstart_df.html" target="_blank" rel="noreferrer noopener"><strong>here</strong></a>. As a data professional, you need to use PySpark when your dataset is too large to be processed efficiently with Pandas. It is particularly relevant for big data analytics, where datasets can range from gigabytes to petabytes.</p>
+
+
+
+<p>I hope you liked this article on a practical guide to PySpark to work with data. Feel free to ask valuable questions in the comments section below. You can follow me on <a href="https://www.instagram.com/amankharwal.official/" target="_blank" rel="noreferrer noopener"><strong>Instagram</strong></a> for many more resources.</p>
+<!-- CONTENT END 1 -->
+		</div></div>
+  </div>
+</body>
+</html>

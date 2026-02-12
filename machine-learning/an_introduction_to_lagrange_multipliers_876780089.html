@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>An Introduction to Lagrange Multipliers</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>An Introduction to Lagrange Multipliers</h1>
+    <p><strong>URL:</strong> <a href="http://www.slimy.com/~steuard/teaching/tutorials/Lagrange.html">http://www.slimy.com/~steuard/teaching/tutorials/Lagrange.html</a></p>
+    <p><strong>Tags:</strong> algorithms-math, lagrange, machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876780089</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+    <p>Lagrange multipliers are used in multivariable calculus to find
+    maxima and minima of a function subject to constraints (like "find
+    the highest elevation along the given path" or "minimize the cost
+    of materials for a box enclosing a given volume"). It's a useful
+    technique, but all too often it is poorly taught and poorly
+    understood. With luck, this overview will help to make the concept
+    and its applications a bit clearer.</p>
+
+    <p>Be warned: this page may not be what you're looking for! If
+    you're looking for detailed proofs, I recommend consulting your
+    favorite textbook on multivariable calculus: my focus here is on
+    concepts, not mechanics. (Comes of being a physicist rather than a
+    mathematician, I guess.) If you want to know about Lagrange
+    multipliers in the calculus of variations, as often used in
+    Lagrangian mechanics in physics, this page <a href="#CalcVari">only discusses them briefly</a>.</p>
+
+    <p>Here's a basic outline of this discussion:</p>
+
+    <ul>
+      <li><a href="#Basics">When are Lagrange multipliers
+      useful?</a></li>
+
+      <li><a href="#Milkmaid">A classic example: the "milkmaid
+      problem"</a></li>
+
+      <li><a href="#Graphical">Graphical inspiration for the
+      method</a></li>
+
+      <li><a href="#Method">The mathematics of Lagrange
+      multipliers</a></li>
+
+      <li><a href="#Mathematical">A formal mathematical
+      inspiration</a></li>
+
+      <li><a href="#SeveralConstraints">Several constraints at
+      once</a></li>
+
+      <li><a href="#Meaning">The meaning of the multiplier</a>
+      (inspired by physics and economics)</li>
+
+      <li><a href="#Examples">Examples of Lagrange multipliers in
+      action</a></li>
+
+      <li><a href="#CalcVari">Lagrange multipliers in the calculus of
+      variations (often in physics)</a></li>
+
+      <li><a href="#NoSlip">An example: rolling without
+      slipping</a></li>
+    </ul>
+    <hr>
+
+    <h2><a name="Basics" id="Basics">When are Lagrange multipliers
+      useful?</a></h2>
+
+    <p>One of the most common
+    problems in calculus is that of finding maxima or minima (in
+    general, "extrema") of a function, but it is often difficult to
+    find a closed form for the function being extremized. Such
+    difficulties often arise when one wishes to maximize or minimize a
+    function subject to fixed outside conditions or constraints. The
+    method of Lagrange multipliers is a powerful tool for solving this
+    class of problems without the need to explicitly solve the
+    conditions and use them to eliminate extra variables.</p>
+
+    <p>Put more simply, it's usually not enough to ask, "How do I
+    minimize the aluminum needed to make this can?"  (The answer to
+    that is clearly "Make a really, really small can!")  You need to
+    ask, "How do I minimize the aluminum <em>while making sure the can
+    will hold 10 ounces of soup</em>?"  Or similarly, "How do I
+    maximize my factory's profit <em>given that I only have $15,000 to
+    invest</em>?"  Or to take a more sophisticated example, "How
+    quickly will the roller coaster reach the ground <em>assuming it
+    stays on the track</em>?"  In general, Lagrange multipliers are
+    useful when some of the variables in the simplest description of a
+    problem are made redundant by the constraints.</p>
+
+    <h2><a name="Milkmaid" id="Milkmaid">A classic example: the
+      "milkmaid problem"</a></h2>
+
+    <p>To give a specific, intuitive illustration of this kind of
+    problem, we will consider a classic example which I believe is
+    known as the "Milkmaid problem". It can be phrased as follows:</p>
+
+    <p><img src="data:image/gif;base64,R0lGODdhEgFRAYAAAAAAAP///ywAAAAAEgFRAQAC/oyPqcvtD6OctNqLs968+w+G4kiW5omm6sq27gvH8kzX9o3n+s73/g8MCofEovGITCqXzKbzCY1Kp9Sq9YrNarfcrvcLDovH5LL5jE6r1+y2+w2PawEruvz+sKf0+H6CfwLo5ydYUjh4dziiiAjHKPLY2Bb5QSmpZtmReXm2ueHJSQaaMRoaVnqBauqlWtG6uvVKIQt7RStxW0uVC8GrK+XbEPz7NLxgTMyE/JfMtozw3HwUfUAtPWQdkH0NlL3N/WP9Dd4jTm5mfi7KMq6O4+0uBh8PNk//lX7PWqePz97fxR7ALAIH2vpnkCDChFgKMpzi8GGUiBKLLawIrEU7/oyBNHLMePGjE4oik2zbWBKSx5RNTrJsufLlEpcyldCsieQmTiPfUO4k5cLnTww9hxYpahTbC6FJcS1tKmQcU6h5nlL10W7qVQZZt/LYqNUrNBhhxRooazYGALBot/pse/Vt2hpC4UKta9fo1LxD9/LdqXXtXKs3BA8OSfcvy7aGD6OAu1YxR76NHasMV9myB8WRNYOQrC2zZ6JHQQM0fRb1PdWhWatzHXp0KpuwudWOLXuC6NK5dSu7nQw47t4OdvMk3qul8HfGsQlv3icy9Kgjl8uQ/ny5dbXTef9GXjw7eGHixx/r3s08V/RYt9diX849pM5/6AODvwM/PkH2/qvoz/FfLJVJN0eANhhoy4DDFWgSJtqMhSBtrPU3Bh2G2RHhb6plaNGDHnKoHE/yWYBhYyBWh9qIs6Smx4lQuLiHihG0SKMzMHbEyoXV3Hgfdeq5wtmPJPIYApGaGVmJkKnkJSM4SHLQpJPlKEkUZFRWmd+VpOkQJTlPzqblloWFieWYZIJ54Jlo0tClO1/6puaa18Upp1o/YtcKU23GQV+GbyY3Xn+y1EWcYJnRIldvhvJBIVBzHondWTu6mOhhJtLYZ5KPDjYgo+c1CidZll16CJ6piUnYXJ0qEKmmqarKaKxEgjVqi9CAupmdji066WOiFsrILV3lNl0uw44W/gmMUhHbi7Kv7ppHMMse2ayknwXlmaf1lVgktoriaWq3iH0LiC86AasCSdlScy6yuC4Sk2zvkqCupUili9y9e+QL6LX85GuctP8CW8i8ju5L8KfmDrwugdsawrB5Bn8ScaDlXoawxIeyCiW+6nW6McUxylvuogFr4vG6t048aMqQtjrjoOzS6SHKGZ9JacVU3jgzmRO7orPGs7p858910qskzPDeTDK4vjJN8yc9R23z02oaS3SYOWd9pdEzcv1xjblCXfStruLYdaxjW70zqVWznbTab5uw5yCrdjyylvZ5LUzQYZuNN9xtY4y21rzko/fSglONauFUO/012DjD/mzJ1DQ7PFbkZBu+G3qIT64Ie5b73Bx8n+sduul+l72e6aOn3bonr+8cO4mrf7xtgKcPHu7RSF+tdON0Mx744sSvKPnxmhuvvFPJN1/c7dBzJf30HD9v/THVZ1/N9tzXzPz3zGAvPviOl089+eLvjn7mm7dv7fvwsw+/+cPXr73639NfP//t+48+AJZPgOvzHvcIuD8DZg+BB1Sg9Ri4QAdOD4IPlCD0KKgczNnGgiaRm5T0F6LxfVB+PRLhBkE4k7pNCYW0OQ0HReRCFnYwhiSciAqzJMMOevCENbyPBnkYvv+98HgYvOAQiVfE5iVReUsk4hFTeMNNBTFBfJNEkxOh+KcyXFFCWVxHDovRRS/2sIBfZOITH3fGqG0RjWV0YhuRmMbLxZFOa1TjHONURzm+kXF5pOMdr/ZHnAXSZ4PUWiETt0c7JlKRY0zgIvXYyAY+0o+TxOMhu3ZJ2lUSkJsUZCcJ+UlDhhKRkYzgKDF5Sk2WsoKpTFom8QfLWMpylrSspS1victc6nKXvOylL69QAAA7" width="274" height="337" alt="A picture of a milkmaid and a cow near a river."></p><p>It's milking time at the farm, and the milkmaid has been
+    sent to the field to get the day's milk. She's in a hurry to
+    get back for a date with a handsome young goatherd, so she
+    wants to finish her job as quickly as possible. However, before
+    she can gather the milk, she has to rinse out her bucket in the
+    nearby river.</p>
+
+    <p>Just when she reaches point <b>M</b>, our heroine spots the
+    cow, way down at point <b>C</b>. Because she is in a hurry, she
+    wants to take the shortest possible path from where she is to the
+    river and then to the cow. So what is the best point <b>P</b> on
+    the riverbank for her to rinse the bucket? (To keep things simple,
+    we assume that the field is flat and uniform and that all points
+    on the river bank are equally good.)</p>
+
+    <p>To put this into more mathematical terms, the milkmaid wants to
+    find the point <b>P</b> for which the total distance f(<b>P</b>)
+    is a minimum, where f(<b>P</b>) is the sum of the distance
+    d(<b>M</b>,<b>P</b>) from <b>M</b> to <b>P</b> and the distance
+    d(<b>P</b>,<b>C</b>) from <b>P</b> to <b>C</b> (a straight line is
+    the shortest distance between two points across a flat field).
+    It's not quite this simple, however: if that were the whole
+    problem, then we could just choose <b>P</b> anywhere on the line
+    between <b>M</b> and <b>C</b> and the milkmaid would walk straight
+    to the cow. But we have to impose the <em>constraint</em> that
+    <b>P</b> is a point on the riverbank.
+
+    </p><p>To express that constraint in equations, we can describe the
+    shape of the near bank of the river as a curve satisfying some
+    function g(x,y)&nbsp;=&nbsp;0. (For example, if the river were a
+    parabola we might choose
+    g(x,y)&nbsp;=&nbsp;y&nbsp;-&nbsp;x<sup>2</sup>. If it were instead
+    a circular lake of radius r, we might choose
+    g(x,y)&nbsp;=&nbsp;x<sup>2</sup>&nbsp;+&nbsp;y<sup>2</sup>&nbsp;-&nbsp;r<sup>2</sup>.)
+    So formally, we must minimize the function
+    f(<b>P</b>)&nbsp;=&nbsp;d(<b>M</b>,<b>P</b>)&nbsp;+&nbsp;d(<b>P</b>,<b>
+    C</b>), subject to the constraint that
+    g(<b>P</b>)&nbsp;=&nbsp;0.</p>
+
+
+    <h2><a name="Graphical" id="Graphical">Graphical inspiration for
+      the method</a></h2>
+
+    <p>Our first way of thinking about this problem can be obtained
+    directly from the picture itself. We want to visualize how far the
+    milkmaid could get for any fixed total distance f(<b>P</b>), and
+    use that visualization to locate the optimal point <b>P</b>. If we
+    only cared about the distance of <b>P</b> from <b>M</b>, we might
+    picture this as a set of concentric circles (curves of constant
+    distance d(<b>M</b>,<b>P</b>): 5 meters, 10 meters, 15 meters,
+    etc.). As soon as one of those circles was big enough to touch the
+    river, we'd recognize the point where it touched as the closest
+    riverbank point to <b>M</b> (and its radius as the minimum
+    distance).</p><p>Of course, for most problems the curves of constant f(<b>P</b>)
+    are more complicated than a bunch of concentric circles! (Often
+    <em>much</em> more complicated.) But our particular example is
+    made simpler by an obscure fact from geometry: for every point
+    <b>P</b> on a given ellipse, the total distance from one focus of
+    the ellipse to <b>P</b> and then to the other focus is exactly the
+    same. (You don't need to know where this fact comes from to
+    understand the example! But you can see it work for yourself by
+    drawing a near-perfect ellipse with the help of two nails, a
+    pencil, and a loop of string.)</p>
+
+    <p>In our problem, that means that the milkmaid could get to the
+    cow by way of any point on a given ellipse in the same amount of
+    time: the ellipses are curves of constant f(<b>P</b>). Therefore,
+    to find the desired point <b>P</b> on the riverbank, we must
+    simply find the smallest ellipse with <b>M</b> and <b>C</b> as
+    foci that intersects the curve of the river. Just to be clear,
+    only the "constant f(<b>P</b>)" property of the curves is really
+    important; the fact that these curves are ellipses is just a lucky
+    convenience (ellipses are easy to draw). The same idea will work
+    no matter what shape the curves of constant f(<b>P</b>) happen to
+    be.</p><p><img src="data:," width="330" height="337" alt="The same picture, but with ellipses around the
+    milkmaid and cow."></p><p>The image at right shows a sequence of ellipses of larger
+    and larger size whose foci are <b>M</b> and <b>C</b>, ending
+    with the one that is just <em>tangent</em> to the riverbank.
+    This is a very significant word! It is obvious from the picture
+    that the "perfect" ellipse and the river are truly tangential
+    to each other at the ideal point <b>P</b>. More mathematically,
+    this means that the normal vector to the ellipse is in the same
+    direction as the normal vector to the riverbank. A few minutes'
+    thought about pictures like this will convince you that this
+    fact is not specific to this problem: it is a general property
+    whenever you have constraints. And that is the insight that
+    leads us to the method of Lagrange multipliers.</p>
+
+    <h2><a name="Method" id="Method">The mathematics of Lagrange
+    multipliers</a></h2>
+
+    <p>In multivariable calculus, the gradient of a function h
+    (written ∇h) is a normal vector to a curve (in two
+    dimensions) or a surface (in higher dimensions) on which h is
+    constant:
+    <b>n</b>&nbsp;=&nbsp;∇h(<b>P</b>).  The length of the normal
+    vector doesn't matter: any constant multiple of ∇h(<b>P</b>)
+    is also a normal vector. In our case, we have two functions whose
+    normal vectors are parallel, so</p>
+
+    <p>
+      ∇f(<b>P</b>)&nbsp;=&nbsp;λ&nbsp;∇g(<b>P</b>).
+    </p>
+
+    <p>The unknown constant multiplier λ is
+    necessary because the magnitudes of the two gradients may be
+    different.  (Remember, all we know is that their directions are
+    the same.)</p>
+
+    <p>In D dimensions, we now have D+1 equations in D+1 unknowns.  D
+    of the unknowns are the coordinates of <b>P</b> (e.g.  x,&nbsp;y,
+    and&nbsp;z for D&nbsp;=&nbsp;3), and the other is the new unknown
+    constant λ. The equation for the gradients derived above is
+    a vector equation, so it provides D equations of constraint. I
+    once got stuck on an exam at this point: don't let it happen to
+    you! The original constraint equation g(<b>P</b>)&nbsp;=&nbsp;0 is
+    the final equation in the system. Thus, in general, a unique
+    solution exists.</p>
+
+    <p>As in many maximum/minimum problems, cases do exist with
+    multiple solutions.  There can even be an infinite number of
+    solutions if the constraints are particularly degenerate: imagine
+    if the milkmaid and the cow were both already standing right at
+    the bank of a straight river, for example.  In many cases, the
+    actual value of the Lagrange multiplier isn't interesting, but
+    there are some situations in which it can give useful information
+    (as discussed <a href="#Meaning">below</a>).</p>
+
+    <p>That's it: that's all there is to Lagrange multipliers. Just
+    set the gradient of the function you want to extremize equal to
+    the gradient of the constraint function.  You'll get a vector's
+    worth of (algebraic) equations, and together with the original
+    constraint equation they determine the solution.</p>
+
+
+    <h2><a name="Mathematical" id="Mathematical">A formal mathematical
+      inspiration</a></h2>
+
+    <p>There is another way to think of Lagrange multipliers that may
+    be more helpful in some situations and that can provide a better
+    way to remember the details of the technique (particularly with
+    multiple constraints as described below). Once again, we start
+    with a function f(<b>P</b>) that we wish to extremize, subject to
+    the condition that g(<b>P</b>)&nbsp;=&nbsp;0. Now, the usual way
+    in which we extremize a function in multivariable calculus is to
+    set ∇f(<b>P</b>)&nbsp;=&nbsp;0. How can we put this
+    condition together with the constraint that we have?</p>
+
+    <p>One answer is to add a new variable λ to the problem,
+    and to define a new function to extremize:</p>
+
+    <p>
+      F(<b>P</b>,&nbsp;λ)&nbsp;=&nbsp;f(<b>P</b>)&nbsp;-&nbsp;λ&nbsp;g(<b>P</b>).
+    </p>
+
+    <p>(Some references call this F "the Lagrangian
+    function". I am not familiar with that usage, although it must be
+    related to the somewhat similar "Lagrangian" used in advanced
+    physics.)</p>
+
+    <p>We next set ∇F(<b>P</b>,&nbsp;λ)&nbsp;=&nbsp;0,
+    but keep in mind that the gradient is now D&nbsp;+&nbsp;1
+    dimensional: one of its components is a partial derivative with
+    respect to λ. If you set this new component of the gradient
+    equal to zero, you get the constraint equation
+    g(<b>P</b>)&nbsp;=&nbsp;0. Meanwhile, the old components of the
+    gradient treat λ as a constant, so it just pulls through.
+    Thus, the other D equations are precisely the D equations found in
+    the graphical approach above.</p>
+
+    <p>As presented here, this is just a trick to help you reconstruct
+    the equations you need. However, for those who go on to
+    use <a href="#CalcVari">Lagrange multipliers in the calculus of
+    variations</a>, this is generally the most useful approach. I
+    suspect that it is in fact very fundamental; my comments
+    about <a href="#Meaning">the meaning of the multiplier</a> below
+    are a step toward exploring it in more depth, but I have never
+    spent the time to work out the details.</p>
+
+
+    <p><img src="data:image/jpeg;base64,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" width="300" height="300" alt="A plane intersecting an ellipsoid (giving an
+    ellipse)."></p><h2><a name="SeveralConstraints" id="SeveralConstraints"></a>Several constraints at once</h2>
+
+    <p>If you have more than one constraint, all you need to do is to
+    replace the right hand side of the equation with the sum of the
+    gradients of each constraint function, each with its own
+    (different!) Lagrange multiplier.  This is usually only relevant
+    in at least three dimensions (since two constraints in two
+    dimensions generally intersect at isolated points).</p>
+
+    <p>Again, it is easy to understand this graphically.  [My thanks
+    to Eric Ojard for suggesting this approach].  Consider the example
+    shown at right: the solution is constrained to lie on the brown
+    plane (as an equation, "g(<b>P</b>)&nbsp;=&nbsp;0") and also to
+    lie on the purple ellipsoid ("h(<b>P</b>)&nbsp;=&nbsp;0").  For
+    both to be true, the solution must lie on the black ellipse where
+    the two intersect.  I have drawn several normal vectors to each
+    constraint surface along the intersection.  The important
+    observation is that both normal vectors are perpendicular to the
+    intersection curve at each point.  In fact, any vector
+    perpendicular to it can be written as a linear combination of the
+    two normal vectors.  (Assuming the two are linearly independent!
+    If not, the two constraints may already give a specific solution:
+    in our example, this would happen if the plane constraint was
+    exactly tangent to the ellipsoid constraint at a single
+    point.)</p>
+
+    <p><img src="data:," width="300" height="300" alt="A set of ellipsoids around the same foci, one of
+    which is just tangent to the intersection of the constraints."></p><p>The significance of this becomes clear when we consider a three
+    dimensional analogue of the milkmaid problem.  The pink ellipsoids
+    at right all have the same two foci (which are faintly visible as
+    black dots in the middle), and represent surfaces of constant total
+    distance for travel from one focus to the surface and back to the
+    other.  As in two dimensions, the optimal ellipsoid
+    is <em>tangent</em> to the constraint curve, and consequently its
+    normal vector is perpendicular to the combined constraint (as
+    shown).  Thus, the normal vector can be written as a linear
+    combination of the normal vectors of the two constraint surfaces.
+    In equations, this statement reads</p>
+
+    <p>
+      ∇f(<b>P</b>)&nbsp;=&nbsp;λ&nbsp;∇g(<b>P</b>)&nbsp;+&nbsp;μ&nbsp;∇h(<b>P</b>).
+    </p>
+
+    <p>just as described above.  The generalization
+    to more constraints and higher dimensions is exactly the same.</p>
+
+
+    <h2><a name="Meaning" id="Meaning">The meaning of the
+    multiplier</a></h2>
+
+    <p>As a final note, I'll say a few words about what the Lagrange
+    multiplier "means", in ways inspired by both physics and
+    economics.  In our mostly geometrical discussion so far, λ
+    was just an artificial variable that lets us compare the
+    directions of the gradients without worrying about their
+    magnitudes.  But in cases where the function f(<b>P</b>) and the
+    constraint g(<b>P</b>) have specific meanings, the Lagrange
+    multiplier often has an identifiable significance as well.</p>
+
+    <p>One example of this is inspired by the physics of forces and
+    potential energy.  In the formal approach based on the combined
+    "Lagrangian function" F(<b>P</b>,&nbsp;λ) described <a href="#Mathematical">two sections above</a>, the constraint
+    function g(<b>P</b>) can be thought of as "competing" with the
+    desired function f(<b>P</b>) to "pull" the point <b>P</b> to its
+    minimum or maximum. The Lagrange multiplier λ can be
+    thought of as a measure of how hard g(<b>P</b>) has to pull in
+    order to make those "forces" balance out on the constraint
+    surface.  (This generalizes naturally to multiple constraints,
+    which typically "pull" in different directions.)  And in fact,
+    that word "forces" is very significant: in physics based on
+    Lagrange multipliers in the calculus of variations (<a href="#CalcVari">as described below</a>) this analogy turns out to
+    be literally true: there, λ <em>is</em> the force of
+    constraint.</p>
+
+    <p>The Lagrange multiplier λ has meaning in economics as
+    well.  If you're maximizing profit subject to a limited resource,
+    λ is that resource's marginal value (sometimes called the
+    "shadow price" of the resource).  Specifically, the value of the
+    Lagrange multiplier is the rate at which the optimal value of the
+    function f(<b>P</b>) changes if you change the constraint.</p>
+
+    <p>I don't have an immediate intuitive explanation for why this is
+    true, but the steps of the formal proof are at least reasonably
+    illuminating. To demonstrate this result mathematically (following
+    the approach of <a href="http://www.economics.utoronto.ca/osborne/MathTutorial/ILMF.HTM">this
+    economics-inspired tutorial</a> by Martin Osborne), write the
+    constraint in the form
+    "g(<b>P</b>)&nbsp;=&nbsp;g(x,y)&nbsp;=&nbsp;c" for some constant
+    c. (This is mathematically equivalent to our usual g(<b>P</b>)=0,
+    but allows us to easily describe a whole family of constraints.
+    Also, I am writing this in terms of just two coordinates x and y
+    for clarity, but the generalization to more is straightforward.)
+    For any given value of c, we can use Lagrange multipliers to find
+    the optimal value of f(<b>P</b>) and the point where it occurs.
+    Call that optimal value f<sub>0</sub>, occurring at coordinates
+    (x<sub>0</sub>,&nbsp;y<sub>0</sub>) and with Lagrange multiplier
+    λ<sub>0</sub>. The answers we get will all depend on what
+    value we used for c in the constraint, so we can think of these as
+    functions of c: f<sub>0</sub>(c), x<sub>0</sub>(c), and
+    y<sub>0</sub>(c).</p>
+
+    <p>To find how the optimal value changes when you change the
+    constraint, just take the derivative: df<sub>0</sub>/dc.  Of course,
+    f(<b>P</b>) only depends on c because the optimal coordinates
+    (x<sub>0</sub>,&nbsp;y<sub>0</sub>) depend on c: we could write it as f<sub>0</sub>(x<sub>0</sub>(c),y<sub>0</sub>(c)).
+    So we have to use the (multivariable) chain rule:</p>
+
+    <p>
+      df<sub>0</sub>/dc&nbsp;=&nbsp;∂f<sub>0</sub>/∂x<sub>0</sub>&nbsp;dx<sub>0</sub>/dc&nbsp;+&nbsp;∂f<sub>0</sub>/∂y<sub>0</sub>&nbsp;dy<sub>0</sub>/dc&nbsp;=&nbsp;∇f<sub>0</sub>&nbsp;∙&nbsp;d<b>x</b><sub>0</sub>/dc
+    </p>
+
+    <p>In the final step, I've suggestively written
+    this as a dot product between the gradient of f<sub>0</sub> and the
+    derivative of the coordinate vector.  So here's the clever trick:
+    use the Lagrange multiplier equation to substitute
+    ∇f&nbsp;=&nbsp;λ∇g:</p>
+
+    <p>
+      df<sub>0</sub>/dc&nbsp;=&nbsp;λ<sub>0</sub>&nbsp;∇g<sub>0</sub>&nbsp;∙&nbsp;d<b>x</b><sub>0</sub>/dc
+      =&nbsp;λ<sub>0</sub>&nbsp;dg<sub>0</sub>/dc
+    </p>
+
+    <p>But the constraint function
+    is <em>always</em> equal to c, so dg<sub>0</sub>/dc&nbsp;=&nbsp;1.  Thus,
+    df<sub>0</sub>/dc&nbsp;=&nbsp;λ<sub>0</sub>.  That is, the Lagrange multiplier
+    is the rate of change of the optimal value with respect to
+    changes in the constraint.</p>
+
+    <p>This is a powerful result, but be careful when using it!  In
+    particular, you have to make sure that your constraint function is
+    written in just the right way.  You would get the exact same
+    optimal value f<sub>0</sub> whether you wrote
+    "g(x,y)&nbsp;=&nbsp;x+y&nbsp;=&nbsp;0" or
+    "g(x,y)&nbsp;=&nbsp;-2x-2y&nbsp;=&nbsp;0", but the resulting
+    Lagrange multipliers would be quite different.</p>
+
+    <p>I haven't studied economic applications Lagrange multipliers
+    myself, so if that is your interest you may want to look for other
+    discussions from that perspective once you understand the basic
+    idea.
+    (The <a href="http://www.economics.utoronto.ca/osborne/MathTutorial/">tutorial</a>
+    that inspired my discussion here seems reasonable.)  The best way
+    to understand is to try working examples yourself; you might
+    appreciate
+    this <a href="http://www.swarthmore.edu/NatSci/smaurer1/Math18H/Lagrange_econ.pdf">problem
+    set introducing Lagrange multipliers in economics</a> both for
+    practice and to develop intuition.</p>
+
+    <hr>
+
+    <h2><a name="Examples" id="Examples">Examples of Lagrange
+    multipliers in action</a></h2>
+
+    <h3>A box of minimal surface area</h3>
+
+    <p>What shape should a rectangular box with a specific volume
+    (in three dimensions) be in order to minimize its surface area?
+    (Questions like this are very important for businesses that
+    want to save money on packing materials.) Some people may be
+    able to guess the answer intuitively, but we can prove it using
+    Lagrange multipliers.</p>
+
+    <p>Let the lengths of the box's edges be x, y, and z. Then the
+    constraint of constant volume is simply
+    g(x,y,z)&nbsp;=&nbsp;xyz&nbsp;-&nbsp;V&nbsp;=&nbsp;0, and the
+    function to minimize is f(x,y,z)&nbsp;=&nbsp;2(xy+xz+yz). The
+    method is straightforward to apply:</p>
+
+    <p>
+      2&lt;y+z,&nbsp;x+z,&nbsp;x+y&gt;&nbsp;=&nbsp;∇f(x,y,z)
+      =&nbsp;λ&nbsp;∇g(x,y,z)
+      =&nbsp;λ&nbsp;&lt;yz,&nbsp;xz,&nbsp;xy&gt;.
+    </p>
+
+    <p>(The angle bracket notation &lt;a,b,c&gt; is
+    one conventional way to denote a vector.) Now just solve those
+    three equations; the solution is
+    x&nbsp;=&nbsp;y&nbsp;=&nbsp;z&nbsp;=&nbsp;4/λ. We could
+    eliminate λ from the problem by using xyz&nbsp;=&nbsp;V,
+    but we don't need to: it is already clear that the optimal shape
+    is a cube.</p> <hr>
+
+    <h3>The closest approach of a line to a point</h3>
+
+    <p>This example isn't the perfect illustration of where Lagrange
+    multiples are useful, since it is fairly easy to solve without
+    them and not all that convenient to solve with them. But it's a
+    very simple idea, and because of a careless mistake on my part it
+    was the first example that I applied the technique to. Here's the
+    story...</p>
+
+    <p>When I first took multivariable calculus (and before we
+    learned about Lagrange multipliers), my teacher showed the
+    example of finding the point <b>P</b>&nbsp;=&nbsp;&lt;x,y&gt;
+    on a line (y&nbsp;=&nbsp;m&nbsp;x&nbsp;+&nbsp;b) that was
+    closest to a given point
+    <b>Q</b>&nbsp;=&nbsp;&lt;x<sub>0</sub>,y<sub>0</sub>&gt;. The
+    function to minimize is of course</p>
+
+    <p>
+      d(<b>P</b>,<b>Q</b>)&nbsp;=&nbsp;sqrt[(x-x<sub>0</sub>)²
+      +&nbsp;(y-y<sub>0</sub>)²].
+    </p>
+
+    <p>(Here, "sqrt" means "square root", of
+    course; that's hard to draw in plain text.)</p>
+
+    <p>The teacher went through the problem on the board in the
+    most direct way (I'll explain it later), but it was taking him
+    a while and I was a little bored, so I idly started working the
+    problem myself while he talked. I just leapt right in and set
+    ∇d(x,y)&nbsp;=&nbsp;0, so</p>
+
+    <p>
+      &lt;x-x<sub>0</sub>,&nbsp;y-y<sub>0</sub>&gt;
+      /&nbsp;sqrt[(x-x<sub>0</sub>)²&nbsp;+&nbsp;(y-y<sub>0</sub>)²]
+      =&nbsp;&lt;0,0&gt;,
+    </p>
+
+    <p>and thus x&nbsp;=&nbsp;x<sub>0</sub> and
+    y&nbsp;=&nbsp;y<sub>0</sub>. My mistake here is obvious, so I
+    won't blame you for having a laugh at my expense: I forgot to
+    impose the constraint that &lt;x,y&gt; be on the line! (In my
+    defense, I wasn't really focusing on what I was doing, since I
+    was listening to lecture at the same time.) I felt a little
+    silly, but I didn't think much more about it.</p>
+
+    <p>Happily, we learned about Lagrange multipliers the very next
+    week, and I immediately saw that my mistake had been a perfect
+    introduction to the technique. We write the equation of the line
+    as
+    g(x,y)&nbsp;=&nbsp;y&nbsp;-&nbsp;m&nbsp;x&nbsp;-&nbsp;b&nbsp;=&nbsp;0,
+    so ∇g(x,y)&nbsp;=&nbsp;&lt;-m,1&gt;. So we just set the two
+    gradients equal (up to the usual factor of λ), giving</p>
+
+    <p>
+      &lt;x-x<sub>0</sub>,&nbsp;y-y<sub>0</sub>&gt;
+      /&nbsp;sqrt[(x-x<sub>0</sub>)²&nbsp;+&nbsp;(y-y<sub>0</sub>)²]
+      =&nbsp;λ&lt;-m,1&gt;.
+    </p>
+
+    <p>The second component of this equation is just
+    an equation for λ, so we can substitute that value for
+    λ into the first component equation. The denominators are
+    the same and cancel, leaving just
+    (x-x<sub>0</sub>)&nbsp;=&nbsp;-m(y-y<sub>0</sub>).  Finally, we
+    substitute y&nbsp;=&nbsp;m&nbsp;x+b, giving
+    x-x<sub>0</sub>&nbsp;=&nbsp;-m²&nbsp;x&nbsp;-&nbsp;m&nbsp;b&nbsp;+&nbsp;m&nbsp;y<sub>0</sub>,
+    so we come to the final answer:
+    x&nbsp;=&nbsp;(x<sub>0</sub>&nbsp;+&nbsp;m&nbsp;y<sub>0</sub>&nbsp;-&nbsp;m&nbsp;b)&nbsp;/&nbsp;(m²&nbsp;+&nbsp;1).
+    (And thus
+    y&nbsp;=&nbsp;(m&nbsp;x<sub>0</sub>&nbsp;+&nbsp;m²&nbsp;y<sub>0</sub>&nbsp;+&nbsp;b)/(m²&nbsp;+&nbsp;1).)</p>
+
+    <p>So what did my teacher actually do? He used the equation of
+    the line to substitute y for x in d(<b>P</b>,<b>Q</b>), which
+    left us with an "easy" single-variable function to deal with...
+    but a rather complicated one:</p>
+
+    <p>
+      d(<b>P</b>,<b>Q</b>)&nbsp;=&nbsp;sqrt[(x&nbsp;-&nbsp;x<sub>0</sub>)²
+      +&nbsp;(m&nbsp;x&nbsp;+&nbsp;b&nbsp;-&nbsp;y<sub>0</sub>)²] 
+      </p>
+
+    <p>To solve the problem from this point, you
+    take the derivative and set it equal to zero as usual. It's a
+    bit of a pain, since the function is a mess, but the answer is
+    x&nbsp;=&nbsp;(x<sub>0</sub>&nbsp;+&nbsp;m&nbsp;y<sub>0</sub>&nbsp;-&nbsp;m&nbsp;b)/(m²&nbsp;+&nbsp;1).
+    That's exactly what we got earlier, so both methods seem to
+    work. In this case, the second method may be a little faster
+    (though I didn't show all of the work), but in more complicated
+    problems Lagrange multipliers are often much easier than the
+    direct approach.</p>
+    <hr>
+
+    <p>Finally, I've recorded a couple of video examples of solving
+    problems using Lagrange multipliers. They're far from perfect, and
+    they're aimed more at problem solving than explaining the
+    concepts, but some folks may be interested. The first does try to
+    explain the concepts a little in the context of <a href="http://www.youtube.com/watch?v=tigM1acQ2Co">finding the
+    closest point to the origin on a parabola</a>. Another is purely
+    problem solving, ostensibly about <a href="http://www.youtube.com/watch?v=t7fUPsM9YsM">finding the
+    nearest water to a house</a>:</p>
+
+    
+
+    <p>I've also recorded a video example involving a
+    (somewhat artificial) <a href="http://www.youtube.com/watch?v=lj148TCnyCE">commodities
+    trading firm with five parameters and two constraints</a>:</p>
+
+    
+    <hr>
+
+    <!-- In principle, I'd like to include a little section here about
+    pitfalls like linearly dependent constraint gradients, and special
+    cases like inequality constraints (Kuhn-Tucker, I suppose). -->
+
+    <h2><a name="CalcVari" id="CalcVari">Lagrange multipliers in
+    the calculus of variations (often in physics)</a></h2>
+
+    <p>This section will be brief, in part because most readers
+    have probably never heard of the calculus of variations. Many
+    people first see this idea in advanced physics classes that
+    cover Lagrangian mechanics, and that will be the perspective
+    taken here (in particular, I will use variable names inspired
+    by physics). If you don't already know the basics of this
+    subject (specifically, the Euler-Lagrange equations), you'll
+    probably want to just skip this section.</p>
+
+    <p>The calculus of variations is essentially an extension of
+    calculus to the case where the basic variables are not simple
+    numbers <b>x</b><sub>i</sub> (which can be thought of as a
+    position) but functions <b>x</b><sub>i</sub>(t) (which in
+    physics corresponds to a position that changes in time). Rather
+    than seeking the numbers <b>x</b><sub>i</sub> that extremize a
+    function f(<b>x</b><sub>i</sub>), we seek the
+    <em>functions</em> <b>x</b><sub>i</sub>(t) that extremize the
+    integral (dt) of a function
+    L[<b>x</b><sub>i</sub>(t),&nbsp;<b>x</b><sub>i</sub>'(t),&nbsp;t],
+    where <b>x</b><sub>i</sub>'(t) are the time derivatives of
+    <b>x</b><sub>i</sub>(t). (The reason we have to integrate first
+    is to get an ordinary number out: we know what "maximum" and
+    "minimum" mean for numbers, but there could be any number of
+    definitions of those concepts for functions.) In most cases, we
+    integrate between fixed values t<sub>0</sub> and t<sub>1</sub>,
+    and we hold the values <b>x</b><sub>i</sub>(t<sub>0</sub>) and
+    <b>x</b><sub>i</sub>(t<sub>1</sub>) fixed. (In physics, that
+    means that the initial and final positions are held constant,
+    and we're interested finding the "best" path to get between
+    them; L defines what we mean by "best".)</p>
+
+    <p>The solutions to this problem can be shown to satisfy the
+    Euler-Lagrange equations (I have suppressed the "(t)" in the
+    functions <b>x</b><sub>i</sub>(t):</p>
+
+    <p>
+      ∂L/∂<b>x</b><sub>i</sub> - d/dt ( ∂L/∂<b>x</b><sub>i</sub>' )
+      = 0.
+    </p>
+
+    <p>(Note that the derivative d/dt is a total
+    derivative, while the derivatives with respect
+    to <b>x</b><sub>i</sub> and
+    <b>x</b><sub>i</sub>' are "partials", at least formally.)</p>
+
+    <p>Imposing constraints on this process is often essential. In
+    physics, it is common for an object to be constrained on some
+    track or surface, or for various coordinates to be related (like
+    position and angle when a wheel rolls without slipping, as
+    discussed below).  To do this, we follow a simple generalization
+    of the procedure we used in ordinary calculus. First, we write the
+    constraint as a function set equal to zero:
+    g(<b>x</b><sub>i</sub>,&nbsp;t)&nbsp;=&nbsp;0. (Constraints that
+    necessarily involve the derivatives of
+    <b>x</b><sub>i</sub> often cannot be solved.) And second, we
+    add a term to the function L that is multiplied by a new
+    function λ(t):
+    L<sub>λ</sub>[<b>x</b><sub>i</sub>,&nbsp;<b>x</b><sub>i</sub>',&nbsp;λ,&nbsp;t]&nbsp;=&nbsp;L[<b>x</b><sub>i</sub>,&nbsp;<b>x</b><sub>i</sub>',&nbsp;t]&nbsp;+&nbsp;λ(t)&nbsp;g(<b>x</b><sub>i</sub>,&nbsp;t).</p>
+
+    <p>From here, we proceed exactly as you would expect:
+    λ(t) is treated as another coordinate function, just as
+    λ was treated as an additional coordinate in ordinary
+    calculus. The Euler-Lagrange equations are then written as</p>
+
+    <p>
+      ∂L/∂<b>x</b><sub>i</sub> -
+      d/dt&nbsp;(∂L/∂<b>x</b><sub>i</sub>') +
+      λ(t)&nbsp;(∂g/∂<b>x</b><sub>i</sub>)&nbsp;=&nbsp;0.
+    </p>
+
+    <p>This can be generalized to the case of
+    multiple constraints precisely as before, by introducing
+    additional Lagrange multiplier functions like λ.  There are
+    further generalizations possible to cases where the constraint(s)
+    are linear combinations of derivatives of the coordinates (rather
+    than the coordinates themselves), but I won't go into that much
+    detail here.</p>
+
+    <p>As mentioned in the calculus section, the meaning of the
+    Lagrange multiplier function in this case is surprisingly
+    well-defined and can be quite useful. It turns out that
+    <b>Q</b><sub>i</sub>&nbsp;=&nbsp;λ(t)&nbsp;(∂g/∂<b>x</b><sub>
+    i</sub>) is precisely the force required to impose the constraint
+    g(<b>x</b><sub>i</sub>,&nbsp;t) (in the "direction"
+    of <b>x</b><sub>i</sub>). This is fairly natural: the constraint
+    term (λ&nbsp;g) added to the Lagrangian plays the same role
+    as a (negative) potential energy -V<sub>constraint</sub>, so we
+    can compute the resulting force as
+    ∇(-V<sub>constr</sub>)&nbsp;=&nbsp;λ&nbsp;∇g in
+    something reminiscent of the usual way. Thus, for example,
+    Lagrange multipliers can be used to calculate the force you would
+    feel while riding a roller coaster. If you want this information,
+    Lagrange multipliers are one of the best ways to get it.</p>
+
+    <hr>
+
+    <h2><a name="NoSlip" id="NoSlip">An example: rolling without
+    slipping</a></h2>
+
+    <p><img src="data:," width="242" height="178" alt="A round object rolling down a slope."></p><p>One of the simplest applications of Lagrange multipliers in the
+    calculus of variations is a ball (or other round object) rolling
+    down a slope without slipping in one dimension.  (As usual, a
+    problem this simple can probably be solved just as easier by other
+    means, but it still illustrates the idea.)  Let the ball have mass
+    M, moment of inertia I, and radius R, and let the angle of the
+    slope be α.  We choose the coordinate x to point up the
+    slope and the coordinate θ to show rotation in the direction
+    that would naturally go in that same direction, so that the
+    "rolling without slipping" condition is
+    x&nbsp;=&nbsp;R&nbsp;θ.  Both x and θ are functions of
+    time, x(t) and θ(t), but for clarity I will not write that
+    dependence explicitly.</p>
+
+    <p>In general, the kinetic energy T of an object undergoing both
+    translational and rotational motion is
+    T&nbsp;=&nbsp;½&nbsp;M&nbsp;(x')<sup>2</sup>&nbsp;+&nbsp;½&nbsp;I&nbsp;(θ')<sup>2</sup>.
+    (As before, the prime (') denotes a time derivative, so this is a
+    function of velocity and angular velocity.)  Meanwhile, the
+    potential energy V of the ball can be written as
+    V&nbsp;=&nbsp;M&nbsp;g&nbsp;h&nbsp;=
+    M&nbsp;g&nbsp;x&nbsp;sin&nbsp;α.  Thus, the Lagrangian for
+    the system is</p>
+    <p>
+      L = T - V =
+      ½&nbsp;M&nbsp;(x')<sup>2</sup>&nbsp;+&nbsp;½&nbsp;I&nbsp;(θ')<sup>2</sup>
+      - M&nbsp;g&nbsp;x&nbsp;sin&nbsp;α.
+    </p>
+
+    <p>If we solved the Euler-Lagrange equations for this Lagrangian
+    as it stands, we would find that x(t) described the ball sliding
+    down the slope with constant acceleration in the absence of
+    friction while θ(t) described the ball rotating with
+    constant angular velocity: the rotational motion and translational
+    motion are completely independent (and no torques act on the
+    system).  To impose the condition of rolling without slipping, we
+    use a Lagrange multiplier function λ(t) to force the
+    constraint function
+    G(x,θ,t)&nbsp;=&nbsp;x&nbsp;-&nbsp;R&nbsp;θ to
+    vanish:</p>
+
+    <p>
+      L =
+      ½&nbsp;M&nbsp;(x')<sup>2</sup>&nbsp;+&nbsp;½&nbsp;I&nbsp;(θ')<sup>2</sup>
+      -
+      M&nbsp;g&nbsp;x&nbsp;sin&nbsp;α +
+      λ&nbsp;(x&nbsp;-&nbsp;R&nbsp;θ).
+    </p>
+
+    <p>(That is, λ is multiplying the
+    constraint function, as usual.)  We now find the Euler-Lagrange
+    equations for each of the <em>three</em> functions of time: x,
+    θ, and λ.  Respectively, the results are:</p>
+
+    <p>
+      M&nbsp;x''&nbsp;+&nbsp;M&nbsp;g&nbsp;sin&nbsp;α&nbsp;-&nbsp;λ&nbsp;=&nbsp;0<br>
+      I&nbsp;θ''&nbsp;+&nbsp;R&nbsp;λ&nbsp;=&nbsp;0, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and<br>
+      x&nbsp;-&nbsp;R&nbsp;θ&nbsp;=&nbsp;0.
+    </p>
+
+    <p>It is then straightforward to solve for the
+    three "unknowns" in these equations:</p>
+
+    <p>
+      x''&nbsp;=&nbsp;-g&nbsp;sin&nbsp;α&nbsp;&nbsp;M&nbsp;R<sup>2</sup>&nbsp;/&nbsp;(M&nbsp;R<sup>2</sup>&nbsp;+&nbsp;I)<br>
+      θ''&nbsp;=&nbsp;-g&nbsp;sin&nbsp;α&nbsp;&nbsp;M&nbsp;R&nbsp;/&nbsp;(M&nbsp;R<sup>2</sup>&nbsp;+&nbsp;I)<br>
+      λ&nbsp;=&nbsp;M&nbsp;g&nbsp;sin&nbsp;α&nbsp;&nbsp;I&nbsp;/&nbsp;(M&nbsp;R<sup>2</sup>&nbsp;+&nbsp;I).<br>
+    </p>
+
+    <p>The first two equations give the constant
+    acceleration and angular acceleration experienced as the ball
+    rolls down the slope. And the equation for λ is used in
+    finding the forces that implement the constraint in the problem.
+    Specifically, these are the force and torque due to friction felt
+    by the ball:</p>
+
+    <p>
+      F<sub>x</sub>&nbsp;=&nbsp;λ&nbsp;∂G/∂x&nbsp;=&nbsp;M&nbsp;g&nbsp;sin&nbsp;α&nbsp;&nbsp;I&nbsp;/&nbsp;(M&nbsp;R<sup>2</sup>&nbsp;+&nbsp;I)<br>
+      τ&nbsp;=&nbsp;λ&nbsp;∂G/∂θ =&nbsp;-R&nbsp;M&nbsp;g&nbsp;sin&nbsp;α&nbsp;&nbsp;I&nbsp;/&nbsp;(M&nbsp;R<sup>2</sup>&nbsp;+&nbsp;I).<br>
+    </p>
+
+    <p>Looking at these results, we can see that the
+    force of friction is positive: it points in the +x direction (up
+    the hill) which means that it is slowing down the translational
+    motion.  But the torque is negative: it acts in the direction
+    corresponding to rolling down the hill, which means that the speed
+    of rotation increases as the ball rolls down.  That is exactly
+    what we would expect!</p>
+
+    <p>As a final note, you may be worried that we would get different
+    answers for the forces of constraint if we just normalized the
+    constraint function G(x,θ,t) differently (for example, if we
+    set G&nbsp;=&nbsp;2&nbsp;x&nbsp;-&nbsp;2&nbsp;R&nbsp;θ).
+    Happily, that will not end up affecting the final answers at all.
+    A change in normalization for G will lead to a different answer
+    for λ (e.g. exactly half of what we found above), but the
+    products of λ and the derivatives of G will remain the
+    same.</p>
+
+    <hr>
+
+    <h2>Final thoughts</h2>
+
+    <p>This page certainly isn't a <em>complete</em> explanation of
+    Lagrange multipliers, but I hope that it has at least clarified
+    the basic idea a little bit. I'm always glad to hear constructive
+    criticism and positive feedback, so feel free to <a href="mailto:jensens@alma.edu">write to me with your
+    comments</a>. (My thanks to the many people whose comments have
+    already helped me to improve this presentation.) I hope that I
+    have helped to make this extremely useful technique make more
+    sense. Best wishes using Lagrange multipliers in the future!</p>
+    <hr>
+    <div><p>Up to <a href="http://www.slimy.com/~steuard/teaching/tutorials/">my tutorial page</a>.
+    <br>
+    Up to <a href="http://www.slimy.com/~steuard/teaching/">my teaching page</a>.
+    <br>
+    Up to <a href="http://www.slimy.com/~steuard/professional.html">my professional page</a>.
+    <br>
+    <a href="http://www.slimy.com/~steuard/">My personal site</a> is also available.
+    </p><p>
+    
+    Any questions or comments? Write to me: <a href="mailto:jensens@alma.edu">jensens@alma.edu</a>
+    <br>
+    <a href="http://www.slimy.com/~steuard/copyright.html">Copyright</a> © 2004-15 by
+    Steuard Jensen.
+    <br>Thanks to Adam Marshall, Stan Brown, Eric
+    Ojard, and many others for helpful suggestions!
+    <span><p>This page is designed to be
+    printer friendly as it stands (to the extent that web pages ever
+    are: every browser has its own printing bugs), so with luck no
+    separate print version should be required.  Try it!</p></span></p></div>
+  </div></div>
+  </div>
+</body>
+</html>

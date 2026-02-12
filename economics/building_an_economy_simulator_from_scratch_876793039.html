@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Building an economy simulator from scratch</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Building an economy simulator from scratch</h1>
+    <p><strong>URL:</strong> <a href="https://thomassimon.dev/ps/4">https://thomassimon.dev/ps/4</a></p>
+    <p><strong>Tags:</strong> economics, public-policy</p>
+    <p><strong>Bookmark ID:</strong> 876793039</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><a href="https://github.com/Ruddle/EconomySimulator" target="_blank">update 1, code available here. </a></p><p><span>Let's build an economy from zero.
+Starting with 1 person: </span></p><p>Simulation 1</p><p><span>Nothing happens! That is because we did not make any assumptions yet. We should introduce at least one hypothesis:
+- A person consumes 1 🍎 (food) every day. 
+Do not worry about the technical aspects, each time we add an hypothesis, imagine I am writing a dozen lines of code or so. 
+Let's give our simulated person some 🍎 to see how he does. </span></p><p>Simulation 2</p><p><span>Oh no, after 3 days, his stock ran out. I sneaked in a death by starvation clause.
+New hypothesis: 
+- A farmer produces 10 🍎 per day (self consumption included)</span></p><p>Simulation 3</p><p><span>That seems too easy, he probably needs some other resources to produce this food.
+- A person consumes 1 💧 (water) every day. </span></p><div><p>What are those units ?</p><p>They represent the normalized minimum average consumption for one person for one day. For example, you could say that:
+1🍎 = 2500 calories. 
+1💧 = 3L of water (or 100L for a farmer with 1 cow).
+For the purpose of this simulation, the exact number does not matter, pick one that suits you.</p></div><p>Simulation 4</p><p><span>This farmer died due to lack of 💧. We could make him a producer of this new resource too, but let's take a more realistic approach.  
+We add another worker, specialized in water production.
+- A water worker produces 10 💧 per day (self consumption included).
+</span></p><p>Simulation 5</p><p><span>The necessary resources for everyone's survival exist. They just have to be shared somehow.
+- Introducing 💰 (money). A tool to account for shared resources.
+- Every resource (🍎 or 💧) cost 10 💰.
+- People starved of a resource (stock &lt; 3), with enough 💰, are potential buyers of that resource.
+- People producing a resource, and not starved of it, are potential sellers of that resource.
+- Every day, potential sellers advertise their resources (in a random order if multiple sellers exist). A potential buyer is randomly selected and a transaction is made. This sale process is repeated until no match is found. 
+- A transaction is done 1 unit at a time.
+
+</span></p><p>Simulation 6</p><p><span>That works, the workers even seem to build up stocks.
+- Introducing 🪵(wood) consumption and production
+</span></p><p>Simulation 7</p><p><span>Let's tackle the least realistic part of this simulation. Each workers produce more resources than the community buys and consumes. That is 2 problems. In reality people tend to over consume if they can to increase their quality of life. That means buying more, and consuming more.
+
+We define QoL(quality of life) as the least owned resource stock level. 
+Example: Bob has 2🍎, 50💧. His QoL is only 2.
+
+We remove the hypothesis
+"- People starved of a resource (stock &lt; 3), with enough 💰, are potential buyers of that resource."
+and replace it with
+- People are potential buyers of the resources that increase their quality of life, unless they can't afford it in 💰.
+
+We remove the hypothesis
+"- People producing a resource, and not starved of it, are potential sellers of that resource."
+and replace it with
+- People are potential sellers of what they produce, unless their QoL is negatively impacted by a potential sale.
+
+Example: 
+Bob has 10🍎, 5💧. He is a 🍎 producer. He will try to sell up to 5🍎 during the day. He will stop after that because his QoL would decrease from 5 to 4 otherwise.
+
+The "buy more" part is done. Now we add the "consume more" part:
+
+- Consumption increases gradually when stock is above 6.
+
+Examples: 
+if a person has 5🍎 or less, he consumes 1🍎 every day.
+if a person has 6🍎 or more, he consumes 2🍎 every day. 
+if a person has 9🍎 or more, he consumes 3🍎 every day. 
+etc
+</span></p><p>Simulation 8</p><p><span>Note that we now display the average QoL on the upper left of the simulation box. This will come in handy when we will try to compare different policy strategies later.
+
+That is all nice, but we do not account for any policing, firefighting, conflict resolution etc. 
+- Introducing 🏛️(state) production
+Nobody in particular buys 🏛️. We assume some level of global 🏛️ is necessary for the rest of the system to work. We will play with how much in bit.
+
+Let's add a public servant, dedicated to provide 🏛️.</span></p><p>Simulation 9</p><p><span>Oops, the public servant died on day 5. Since nobody specifically buys anything from him, he has no way of making any money to buy 🍎,💧 and 🪵.
+
+- Introducing 🏛️ tax
+🏛️ tax works by pooling a percent of sellers revenue. Every day 🏛️ refill every public servant's pocket to 150💰. The "work" of the state is done by public servants themselves.
+The tax auto-adjust everyday to take the minimum amount necessary to function at equilibrium.
+
+</span></p><p>Simulation 10</p><p><span>Our community is now fairly functional. After a month of simulation, the tax is about 30%. What if we need 2 public servants to handle our little country ?
+</span></p><p>Simulation 11</p><p><span>Now tax rate is about 50% and the average QoL decreased a bit.
+Let's try with more people, half of them being public servants. </span></p><p>Simulation 12</p><p><span>Tax rate is about 65% on average. A bit less than France total corporate tax rate.</span></p><p><a href="https://www.reddit.com/r/europe/comments/1pxvf4/total_tax_rates_in_the_eu_efta/" target="_blank">Total corporate tax rates in the EU &amp; EFTA.</a></p><p><span>We have a nice basis for experimentation. Let's study inflation, and more specifically money printing. In the previous simulation, tax auto-adjusted to the minimal viable amount. In real life, tax do not change quickly without heavy pushback from people. We add the following hypotheses:
+- Tax starts at 10%.
+- Tax does not adjust.</span></p><p>Simulation 13</p><p><span>The state is bankrupt at day 8, and cannot pay public servants their full wage. Most public servants are starved by day 20.
+Let's simulate legal money printing to circumvent bankruptcy:
+- The state prints enough money every day to have 1000💰 in cash.</span></p><p>Simulation 14</p><p><span>At first approximation, it kind of works. The state can always pay its public servant, and independent workers cannot complain since tax is low and static. 
+
+The simulation is however broken at this point. Independent workers accumulate huge amounts of 💰 that they can't use with the current hypotheses. They could (in theory) stop working for months, causing everyone to die from lack of their produced resource, including themselves in the end.
+
+We know that 💰 should lose its relative value somehow if it is abundant. The simulation is not ready for money printing. What are we missing ? What is the minimum set of hypotheses that would allow 💰 purchasing power to self-adjust ? Sure we fixed any resource cost at 10 💰 right now. But let's say that it is not fixed anymore. How should people decide how much to pay to make a deal ?
+
+The answer is supply and demand. Right now supply amount is fixed, unless some worker dies. Demand is not fixed since we introduced QoL. It should be enough to sort out which transaction is the most efficient in the market.
+
+We just do not have any mechanism for 💰 purchasing power to change. A market does not find the most optimal price instantly. Buyers and sellers iterate and adjust their expectations every iteration. 
+
+Let's try that: 
+- At the end of a day, for each resource, if any sellers did not sell up to their QoL limit, the price of the resource decreases by 5% (floored to the nearest integer) 
+- At the end of a day, for each resource, if all sellers did sell up to their QoL limit, the price of the resource increases by 5% (ceiled to the nearest integer) </span></p><p>Simulation 15</p><p><span>As expected, prices increase every day. As the weeks go by, the purchasing power of public servants decreases because their wage is fixed. By day 45-50, they starve. Let's make it so public servants are paid relatively to current prices.
+
+- public servants are now paid enough every day to buy 4 of each resource kind. The amount is computed every morning before distribution.
+
+We should also adjust the money printing
+
+- The state now prints enough money every day to have enough 💰 to buy 33 of each resource kind.</span></p><p>Simulation 16</p><p><span>We successfully replaced the 60%+ tax with a 10% tax + unbounded inflation. 
+Let's see what happens with a 65% tax, no money printing. </span></p><p>Simulation 17</p><p><span>Interestingly, the average QoL is the same between the last 2 simulations.
+Some public servants are not paid their full wage from time to time when the state approaches bankruptcy. Showing that their wage is too high, despite the 65% tax. The simulation assumes that they still work when unpaid. This create a feedback loop that auto-corrects the over expenditure of the state.
+
+Let's try to push the system to its limit. In theory, with 1 worker of each physical resources. there is enough resource creation for 11 people to live with the lowest stable QoL possible (3).</span></p><p>Simulation 18</p><p><span>8-9 people survive. The tax does not auto adjust. Maybe it should be higher. We do not have a nice auto adjust strategy anymore, so we will just enable money printing back. Let's take this opportunity to prevent huge 💰 numbers.
+
+- When the average wallet is above 100 000💰, 10💰 is renamed to 1💰. Decimals are truncated.</span></p><p>Simulation 19</p><p><span>Try to restart the simulation a few times. It doesn't seem to be a 💰 problem. Some people overbuy and deplete producers store before other people in need can buy. It is because each time a seller advertise a product, the buyer is randomly chosen among interested people. A person unlucky a few times is starved, even though he has enough 💰.
+
+Ideally, the most destitute people should have a priority. We know however that it would not be a realistic rule. Just for fun let's try it.
+
+- Starved buyer are given a priority for every sales.</span></p><p>Simulation 20</p><p><span>This works as expected, everybody survives with a very low average QoL of 3. This one last constraint counteract nearly all capitalist constraints we added since the beginning. It prevents people from over consuming, even though we made public servants numerous and quite rich in the process. This is a communist dream. 
+
+In reality, the workers would not be happy. Their effective tax rate is around 80% and they have a very low QoL, even though they produce 5x what they need. The simulation seems to be bound by new factors. This ends the money printing arc. 
+</span></p><p><span>Let's try out different supply hypotheses. Until now, the supply of all resources was the same. What if there was more for one, than another.
+</span></p><p>Simulation 21</p><p><span>2 🍎 producers are in competition. They can never sell as much as they produce, so the price of 🍎 decreases every day. At Some point they can't afford to buy anything and are starved of other resources.
+Sometimes a 🍎producer survives a few day alone, but can't increase his price since he always has too much stock. Let's make it so a seller refuses to sell for a price below his survival needs.
+
+- the minimum price of a resource is set so that anyone selling 10 units can afford 1 unit of all the other necessary resources.
+</span></p><p>Simulation 22</p><p><span>Now 1 farmer survives. At least 1 dies because the rest of the community do not overconsume one resource without overconsuming another resource to the same level.
+
+Both farmer should survive. We should try to improve our QoL metric so that people over-consume asymmetrically when prices are so low that it would not really prevent them from buying other resources. 
+
+This was our definition until now: 
+QoL = least owned resource stock level
+
+This was remarkably effective for its simplicity. 
+
+We want people to prioritize acquiring the least owned resource, but we also want them to take benefits from higher relative supply amount (measured by relative lower prices) of any resource.
+Here is a proposal:
+
+QoL = Sum of all SQoL
+
+SQoL (specific quality of life) : represent the quality of life brought by a specific resource. We make it non-linear (slowly growing) so that people still partly prioritize the least owned resource. 
+With x being a resource quantity: 
+SQoL(x) = log(x)
+
+The log (logarithm function) transforms any doubling sequence into a linear sequence. It is a nice approximation of human psychology. If you get 2nd car after only owning 1, you are happy. If you already have 5 cars, you need 5 more to be as happy. It is far from perfect, but it should be good enough for our economy simulation to be limited by something else.
+
+Also, log(0)= -infinity. People will do anything to not starve. In other words, there are no amount of new cars that is more valuable than not starving, i.e., log(1,000,000) &lt; -log(0).
+
+Example:
+Bob has 10🍎 and 3💧. 
+SQoL(🍎) = 1
+SQoL(💧) = 0.48
+QoL = 1.48
+
+if Bob buys a 🍎, his QoL increases to 1.51
+if Bob buys a 💧, his QoL increases to 1.60
+
+So Bob should prioritize 💧 if the prices are the same. Just as before. But if the cost of 🍎 is 5% lower, he is better off buying one more 🍎. 
+
+Now we slightly adjust how the QoL is used by people for their decision making.
+We replace</span></p><p>- People are potential buyers of the resources that increase their quality of life, unless they can't afford it in 💰.</p><p><span>by
+
+- People are potential buyers of the resources that increase their quality of life the most compared to their relative price, if they can afford it.
+
+That is it for the buyer side. But we also broke one hypothesis on the seller side. 
+
+This one:</span></p><p>- People are potential sellers of what they produce, unless their QoL is negatively impacted by a potential sale.</p><p><span>Now QoL is always negatively impacted by a a sale. We replace it with its relative equivalent:
+
+- People are potential sellers of what they produce, if that happens to be the resource that decreases their quality of life the least compared to their relative price.
+
+In other words, a seller ask himself : "can I increase my QoL by selling one more unit, in order to buy something else with the money ?"</span></p><p>Simulation 23</p><p><span>After a few days, the price of 🍎 is half the other resources. The QoL of 🍎 worker is lower, but they can still afford a life far from bare survival. Everyone is taking benefits from the oversupply of 🍎. 
+
+Note: after 200 days the simulation breaks because the truncations are a bit too aggressive. Especially now that we use non linear functions like log. We managed to go this far without decimal numbers, we won't stop here. It is solved by starting the simulation with bigger numbers. From now on, people starts with 1000 💰. Prices starts at 100💰. Minimum resource price is 10💰.</span></p><p>Simulation 24</p><p><span>Now the simulation last for centuries. Let's add another 🍎 worker, and add back the 🏛️ matter to see how this whole simulation works. We enable tax and inflation.</span></p><p>Simulation 25</p><p><span>The producers of rare resources (monopolies💧 and 🪵) can afford the best life. This ends the competition arc. We did not learn a lot, this part was more about making the simulation more robust to asymmetric supply.  We did get a slightly better model of consumer psychology though. The fact that it was the missing piece for producers' survival is intriguing, Especially in our time of omnipresent and powerful marketing.   
+
+There are a lot of ways to further improve the simulation:
+- Skill differences
+- Economies of scale
+- Shareholding, investment
+- Fractional reserve loan
+- Marketing
+- Non essential products
+- Chain of production
+- Life cycle, education, retirement, unemployment
+- Black swan event, resiliency
+etc etc
+
+Each one would deserve its own post. Do let me know if you are interested.</span></p><p><span>Thank you for reading, please find below a simulator builder. It allows you to customize and try out different hypotheses.
+</span></p><p>                                                  
+                 Taxation                            
+                                                  
+                ,(((((,                     Seller 
+Buyer           (((M((M                           
+               (M((*//M                          (
+MMMMM%MM       ((M//*//**                M((/****/
+M(MM(MMMM%      ((M/*****            ((////////***
+((MMMMMM%M%      /(M*//**         M(//////////***/
+(((MMM(((%MM.     (%//**M/    %((MMM(///*//////***
+(MMM(MMM%(%%%%%  %***//*MM((M%(((((/((//**/*///***
+((MM(M%(M%%%%M****/////*(((M(((///////*****/******
+(((((/(MMM%M/***/(//**,(/((((/(///((((/** */******
+((/***/(((,,,*****/**,*///(((((////**      /******
+(//***(  ,,,,,*****,,,  (/////             /******
+//*,*,/    ,,,,,,,,,,                      /******
+****,,*        ,,,,,                       *******
+</p></div></div>
+  </div>
+</body>
+</html>

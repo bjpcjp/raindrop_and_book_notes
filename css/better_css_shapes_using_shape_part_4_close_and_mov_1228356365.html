@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Better CSS Shapes Using shape() — Part 4: Close and Move | CSS-Tricks</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Better CSS Shapes Using shape() — Part 4: Close and Move | CSS-Tricks</h1>
+    <p><strong>URL:</strong> <a href="https://css-tricks.com/better-css-shapes-using-shape-part-4-close-and-move/">https://css-tricks.com/better-css-shapes-using-shape-part-4-close-and-move/</a></p>
+    <p><strong>Tags:</strong> css</p>
+    <p><strong>Bookmark ID:</strong> 1228356365</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+          
+          
+<p>This is the fourth post in a series about the new CSS <a href="https://css-tricks.com/almanac/functions/s/shape/"><code>shape()</code></a> function. So far, we’ve covered the most common commands you will use to draw various shapes, including lines, arcs, and curves. This time, I want to introduce you to two more commands: <code>close</code> and <code>move</code>. They’re fairly simple in practice, and I think you will rarely use them, but they are incredibly useful when you need them.</p>
+
+
+
+
+
+
+<h3 id="the-close-command">The <code>close</code> command</h3>
+
+
+<p>In <a href="https://css-tricks.com/better-css-shapes-using-shape-part-1-lines-and-arcs/">the first part</a>, we said that <code>shape()</code> always starts with a <code>from</code> command to define the first starting point but what about the end? It should end with a <code>close</code> command.</p>
+
+
+
+<blockquote>
+<p>But you never used any <code>close</code> command in the previous articles!?</p>
+</blockquote>
+
+
+
+<p>That’s true. I never did because I either “close” the shape myself or rely on the browser to “close” it for me. Said like that, it’s a bit confusing, but let’s take a simple example to better understand:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span>from <span>0</span> <span>0</span><span>,</span> line to <span>100</span><span>%</span> <span>0</span><span>,</span> line to <span>100</span><span>%</span> <span>100</span><span>%</span><span>)</span> </code></pre>
+
+
+
+<p>If you try this code, you will get a triangle shape, but if you look closely, you will notice that we have only two line commands whereas, to draw a triangle, we need a total of three lines. The last line between <code>100% 100%</code> and <code>0 0</code> is implicit, and that’s the part where the browser is closing the shape for me without having to explicitly use a <code>close</code> command.</p>
+
+
+
+<p>I could have written the following:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span>from <span>0</span> <span>0</span><span>,</span> line to <span>100</span><span>%</span> <span>0</span><span>,</span> line to <span>100</span><span>%</span> <span>100</span><span>%</span><span>,</span> close<span>)</span></code></pre>
+
+
+
+<p>Or instead, define the last line by myself:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span>from <span>0</span> <span>0</span><span>,</span> line to <span>100</span><span>%</span> <span>0</span><span>,</span> line to <span>100</span><span>%</span> <span>100</span><span>%</span><span>,</span> line to <span>0</span> <span>0</span><span>)</span></code></pre>
+
+
+
+<p>But since the browser is able to close the shape alone, there is no need to add that last <code>line</code> command nor do we need to explicitly add the <code>close</code> command.</p>
+
+
+
+<p>This might lead you to think that the <code>close</code> command is useless, right? It’s true in most cases (after all, I have written three articles about <code>shape()</code> without using it), but it’s important to know about it and what it does. In some particular cases, it can be useful, especially if used in the middle of a shape.</p>
+
+
+
+
+
+
+
+<p>In this example, my starting point is the center and the logic of the shape is to draw four triangles. In the process, I need to get back to the center each time. So, instead of writing <code>line to center</code>, I simply write <code>close</code> and the browser will automatically get back to the initial point!</p>
+
+
+
+<p>Intuitively, we should write the following:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span> 
+  from center<span>,</span> 
+  line to <span>20</span><span>%</span>  <span>0</span><span>,</span>   hline by <span>60</span><span>%</span><span>,</span> line to center<span>,</span> <span>/* triangle 1 */</span>
+  line to <span>100</span><span>%</span> <span>20</span><span>%</span><span>,</span> vline by <span>60</span><span>%</span><span>,</span> line to center<span>,</span> <span>/* triangle 2 */</span>
+  line to <span>20</span><span>%</span> <span>100</span><span>%</span><span>,</span> hline by <span>60</span><span>%</span><span>,</span> line to center<span>,</span> <span>/* triangle 3 */</span>
+  line to <span>0</span>   <span>20</span><span>%</span><span>,</span>  vline by <span>60</span><span>%</span> <span>/* triangle 4 */</span>
+<span>)</span></code></pre>
+
+
+
+<p>But we can optimize it a little and simply do this instead:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span> 
+  from center<span>,</span> 
+  line to <span>20</span><span>%</span>  <span>0</span><span>,</span>   hline by <span>60</span><span>%</span><span>,</span> close<span>,</span>
+  line to <span>100</span><span>%</span> <span>20</span><span>%</span><span>,</span> vline by <span>60</span><span>%</span><span>,</span> close<span>,</span>
+  line to <span>20</span><span>%</span> <span>100</span><span>%</span><span>,</span> hline by <span>60</span><span>%</span><span>,</span> close<span>,</span>
+  line to <span>0</span>    <span>20</span><span>%</span><span>,</span> vline by <span>60</span><span>%</span>
+<span>)</span></code></pre>
+
+
+
+<p>We write less code, sure, but another important thing is that if I update the <code>center</code> value with another position, <strong>the</strong> <code>close</code> <strong>command will follow that position</strong>.</p>
+
+
+
+
+
+
+
+<p>Don’t forget about this trick. It can help you optimize a lot of shapes by writing less code.</p>
+
+
+<h3 id="the-move-command">The <code>move</code> command</h3>
+
+
+<p>Let’s turn our attention to another <code>shape()</code> command you may rarely use, but can be incredibly useful in certain situations: the <code>move</code> command.</p>
+
+
+
+<p>Most times when we need to draw a shape, it’s actually <em>one continuous shape</em>. But it may happen that our shape is composed of different parts not linked together. In these situations, the <code>move</code> command is what you will need.</p>
+
+
+
+<p>Let’s take an example, similar to the previous one, but this time the triangles don’t touch each other:</p>
+
+
+
+
+
+
+
+<p>Intuitively, we may think we need four separate elements, with its own <code>shape()</code> definition. But the that example is a single shape!</p>
+
+
+
+<p>The trick is to draw the first triangle, then “move” somewhere else to draw the next one, and so on. The <code>move</code> command is similar to the <code>from</code> command but we use it in the middle of <code>shape()</code>.</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span>
+  from    <span>50</span><span>%</span> <span>40</span><span>%</span><span>,</span> line to <span>20</span><span>%</span>  <span>0</span><span>,</span>   hline by <span>60</span><span>%</span><span>,</span> close<span>,</span> <span>/* triangle 1 */</span>
+  move to <span>60</span><span>%</span> <span>50</span><span>%</span><span>,</span> line to <span>100</span><span>%</span> <span>20</span><span>%</span><span>,</span> vline by <span>60</span><span>%</span><span>,</span> close<span>,</span> <span>/* triangle 2 */</span>
+  move to <span>50</span><span>%</span> <span>60</span><span>%</span><span>,</span> line to <span>20</span><span>%</span> <span>100</span><span>%</span><span>,</span> hline by <span>60</span><span>%</span><span>,</span> close<span>,</span> <span>/* triangle 3 */</span>
+  move to <span>40</span><span>%</span> <span>50</span><span>%</span><span>,</span> line to <span>0</span>   <span>20</span><span>%</span><span>,</span>  vline by <span>60</span><span>%</span> <span>/* triangle 4 */</span>
+<span>)</span></code></pre>
+
+
+
+<p>After drawing the first triangle, we “close” it and “move” to a new point to draw the next triangle. We can have multiple shapes using a single <code>shape()</code> definition. A more generic code will look like the below:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span>
+  from    X<span>1</span> Y<span>1</span><span>,</span> <span>...</span><span>,</span> close<span>,</span> <span>/* shape 1 */</span>
+  move to X<span>2</span> Y<span>2</span><span>,</span> <span>...</span><span>,</span> close<span>,</span> <span>/* shape 2 */</span>
+  <span>...</span>
+  move to Xn Yn<span>,</span> <span>...</span> <span>/* shape N */</span>
+<span>)</span></code></pre>
+
+
+
+<p>The <code>close</code> commands before the <code>move</code> commands aren’t mandatory, so the code can be simplified to this:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span>
+  from    X<span>1</span> Y<span>1</span><span>,</span> <span>...</span><span>,</span> <span>/* shape 1 */</span>
+  move to X<span>2</span> Y<span>2</span><span>,</span> <span>...</span><span>,</span> <span>/* shape 2 */</span>
+  <span>...</span>
+  move to Xn Yn<span>,</span> <span>...</span> <span>/* shape N */</span>
+<span>)</span></code></pre>
+
+
+
+
+
+
+
+<p>Let’s look at a few interesting use cases where this technique can be helpful.</p>
+
+
+<h4 id="cut-out-shapes">Cut-out shapes</h4>
+
+
+<p>Previously, I shared a trick on <a href="https://css-tip.com/cut-out-shapes/" rel="noopener">how to create cut-out shapes</a> using <code>clip-path: polygon()</code>. Starting from any kind of polygon, we can easily invert it to get its cut-out version:</p>
+
+
+
+
+
+
+
+<p>We can do the same using <code>shape()</code>. The idea is to have an intersection between the main shape and the rectangle shape that fits the element boundaries. We need two shapes, hence the need for the <code>move</code> command.</p>
+
+
+
+<p>The code is as follows:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span><span>.shape</span></span> <span>{</span>
+  <span>clip-path</span><span>:</span> <span>shape</span><span>(</span>from <span>....</span><span>,</span> move to <span>0</span> <span>0</span><span>,</span> hline to <span>100</span><span>%</span><span>,</span> vline to <span>100</span><span>%</span><span>,</span> hline to <span>0</span><span>)</span><span>;</span>
+<span>}</span></code></pre>
+
+
+
+<p>You start by creating your main shape and then you “move” to <code>0 0</code> and you create the rectangle shape (Remember, It’s the first shape we create in <a href="https://css-tricks.com/better-css-shapes-using-shape-part-1-lines-and-arcs/#aa-rectangle">the first part of this series</a>). We can even go further and introduce a CSS variable to easily switch between the normal shape and the inverted one.</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span><span>.shape</span></span> <span>{</span>
+  <span>clip-path</span><span>:</span> <span>shape</span><span>(</span>from <span>....</span> <span>var</span><span>(</span><span>--i</span><span>,</span><span>)</span><span>)</span><span>;</span>
+<span>}</span>
+<span><span>.invert</span></span> <span>{</span>
+  <span>--i</span><span>:</span><span>,</span>move to <span>0</span> <span>0</span><span>,</span> hline to <span>100</span><span>%</span><span>,</span> vline to <span>100</span><span>%</span><span>,</span> hline to <span>0</span><span>;</span>
+<span>}</span></code></pre>
+
+
+
+<p>By default, <code>--i</code> is not defined so <code>var(--i,)</code>will be empty and we get the main shape. If we define the variable with the rectangle shape, we get the inverted version.</p>
+
+
+
+<p>Here is an example using a rounded hexagon shape:</p>
+
+
+
+
+
+
+
+<p>In reality, the code should be as follows:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span><span>.shape</span></span> <span>{</span>
+  <span>clip-path</span><span>:</span> <span>shape</span><span>(</span>evenodd from <span>....</span> <span>var</span><span>(</span><span>--i</span><span>,</span><span>)</span><span>)</span><span>;</span>
+<span>}</span>
+<span><span>.invert</span></span> <span>{</span>
+  <span>--i</span><span>:</span><span>,</span>move to <span>0</span> <span>0</span><span>,</span> hline to <span>100</span><span>%</span><span>,</span> vline to <span>100</span><span>%</span><span>,</span> hline to <span>0</span><span>;</span>
+<span>}</span></code></pre>
+
+
+
+<p>Notice the <code>evenodd</code> I am adding at the beginning of <code>shape()</code>. I won’t bother you with a detailed explanation on what it does but in some cases, the inverted shape is not visible and the fix is to add <code>evenodd</code> at the beginning. You can check <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/fill-rule" rel="noopener">the MDN page for more details</a>.</p>
+
+
+
+<p>Another improvement we can do is to add a variable to control the space around the shape. Let’s suppose you want to make the hexagon shape of the previous example smaller. It‘s tedious to update the code of the hexagon but it’s easier to update the code of the rectangle shape.</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span><span>.shape</span></span> <span>{</span>
+  <span>clip-path</span><span>:</span> <span>shape</span><span>(</span>evenodd from <span>...</span> <span>var</span><span>(</span><span>--i</span><span>,</span><span>)</span><span>)</span> content-box<span>;</span>
+<span>}</span>
+<span><span>.invert</span></span> <span>{</span>
+  <span>--d</span><span>:</span> <span>20</span><span>px</span><span>;</span>
+  <span>padding</span><span>:</span> <span>var</span><span>(</span><span>--d</span><span>)</span><span>;</span>
+  <span>--i</span><span>:</span> <span>,</span>move to <span>calc</span><span>(</span><span>-1</span>*<span>var</span><span>(</span><span>--d</span><span>)</span><span>)</span> <span>calc</span><span>(</span><span>-1</span>*<span>var</span><span>(</span><span>--d</span><span>)</span><span>)</span><span>,</span>
+        hline to <span>calc</span><span>(</span><span>100</span><span>%</span> <span>+</span> <span>var</span><span>(</span><span>--d</span><span>)</span><span>)</span><span>,</span>
+        vline to <span>calc</span><span>(</span><span>100</span><span>%</span> <span>+</span> <span>var</span><span>(</span><span>--d</span><span>)</span><span>)</span><span>,</span>
+        hline to <span>calc</span><span>(</span><span>-1</span>*<span>var</span><span>(</span><span>--d</span><span>)</span><span>)</span><span>;</span>
+<span>}</span></code></pre>
+
+
+
+<p>We first update the reference box of the shape to be <code>content-box</code>. Then we add some padding which will logically reduce the area of the shape since it will no longer include the padding (nor the border). The padding is excluded (invisible) by default and here comes the trick where we update the rectangle shape to re-include the padding.</p>
+
+
+
+<p>That is why the <code>--i</code> variable is so verbose. It uses the value of the padding to extend the rectangle area and cover the whole element as if we didn’t have <code>content-box</code>.</p>
+
+
+
+
+
+
+
+<p>Not only you can easily invert any kind of shape, but you can also control the space around it! Here is another demo using the CSS-Tricks logo to illustrate how easy the method is:</p>
+
+
+
+
+
+
+
+<p>This exact same example is available in my <a href="https://css-generators.com/svg-to-css/" rel="noopener">SVG-to-CSS converter</a>, providing you with the <code>shape()</code> code without having to do all of the math.</p>
+
+
+<h4 id="repetitive-shapes">Repetitive shapes</h4>
+
+
+<p>Another interesting use case of the <code>move</code> command is when we need to repeat the same shape multiple times. Do you remember the difference between the <code>by</code> and the <code>to</code> directives? The <code>by</code> directive allows us to define relative coordinates considering the previous point. So, if we create our shape using only <code>by</code>, we can easily reuse the same code as many times as we want.</p>
+
+
+
+<p>Let’s start with a simple example of a circle shape:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span>from X Y<span>,</span> arc by <span>0</span> <span>-50</span><span>px</span> of <span>1</span><span>%</span><span>,</span> arc by <span>0</span> <span>50</span><span>px</span> of <span>1</span><span>%</span><span>)</span></code></pre>
+
+
+
+<p>Starting from <code>X Y</code>, I draw a first arc moving upward by <code>50px</code>, then I get back to <code>X Y</code> with another arc using the same offset, but downward. If you are a bit lost with the syntax, try reviewing <a href="https://css-tricks.com/better-css-shapes-using-shape-part-1-lines-and-arcs/">Part 1</a> to refresh your memory about the <code>arc</code> command.</p>
+
+
+
+<p>How I drew the shape is not important. What is important is that whatever the value of <code>X Y</code> is, I will always get the same circle but in a different position. Do you see where I am going with this idea? If I want to add another circle, I simply repeat the same code with a different <code>X Y</code>.</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span>clip-path</span><span>:</span> <span>shape</span><span>(</span>
+  from    X<span>1</span> Y<span>1</span><span>,</span> arc by <span>0</span> <span>-50</span><span>px</span> of <span>1</span><span>%</span><span>,</span> arc by <span>0</span> <span>50</span><span>px</span> of <span>1</span><span>%</span><span>,</span>
+  move to X<span>2</span> Y<span>2</span><span>,</span> arc by <span>0</span> <span>-50</span><span>px</span> of <span>1</span><span>%</span><span>,</span> arc by <span>0</span> <span>50</span><span>px</span> of <span>1</span><span>%</span>
+<span>)</span></code></pre>
+
+
+
+<p>And since the code is the same, I can store the circle shape into a CSS variable and draw as many circles as I want:</p>
+
+
+
+<pre rel="CSS" data-line=""><code markup="tt"><span><span>.shape</span></span> <span>{</span>
+  <span>--sh</span><span>:</span><span>,</span> arc by <span>0</span> <span>-50</span><span>px</span> of <span>1</span><span>%</span><span>,</span> arc by <span>0</span> <span>50</span><span>px</span> of <span>1</span><span>%</span><span>;</span>
+  
+  <span>clip-path</span><span>:</span> <span>shape</span><span>(</span>
+    from    X<span>1</span> Y<span>1</span> <span>var</span><span>(</span><span>--sh</span><span>)</span><span>,</span>
+    move to X<span>2</span> Y<span>2</span> <span>var</span><span>(</span><span>--sh</span><span>)</span><span>,</span>
+    <span>...</span> 
+    move to Xn Yn <span>var</span><span>(</span><span>--sh</span><span>)</span>
+  <span>)</span> 
+<span>}</span></code></pre>
+
+
+
+<p>You don’t want a circle? Easy, you can update the <code>--sh</code> variable with any shape you want. Here is an example with three different shapes:</p>
+
+
+
+
+
+
+
+<p>And guess what? You can invert the whole thing using the cut-out technique by adding the rectangle shape at the end:</p>
+
+
+
+
+
+
+
+<p>This code is a perfect example of the <code>shape()</code> function’s power. We don’t have any code duplication and we can simply adjust the shape with CSS variables. This is something we are unable to achieve with the <code>path()</code> function because it doesn’t support variables.</p>
+
+
+<h3 id="conclusion">Conclusion</h3>
+
+
+<p>That’s all for this fourth installment of our series on the CSS <code>shape()</code> function! We didn’t make any super complex shapes, but we learned how two simple commands can open a lot of possibilities of what can be done using <code>shape()</code>.</p>
+
+
+
+<p>Just for fun, here is one more demo recreating a classic <a href="https://css-tip.com/dots-loader/" rel="noopener">three-dot loader</a> using the last technique we covered. Notice how much further we could go, adding things like animation to the mix:</p>
+
+
+
+
+
+
+
+
+
+          
+        </div></div>
+  </div>
+</body>
+</html>

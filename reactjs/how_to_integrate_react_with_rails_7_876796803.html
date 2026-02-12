@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to integrate React with Rails 7</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to integrate React with Rails 7</h1>
+    <p><strong>URL:</strong> <a href="https://thoughtbot.com/blog/how-to-integrate-react-rails">https://thoughtbot.com/blog/how-to-integrate-react-rails</a></p>
+    <p><strong>Tags:</strong> reactjs, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876796803</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>We love Ruby on Rails at thoughtbot. And we love JavaScript too. Even with the growing popularity of <a href="https://hotwired.dev/">Hotwire</a> and <a href="https://stimulus.hotwired.dev/">Stimulus</a>, React is still a popular choice. But it’s not always simple to integrate React with Rails.</p>
+<h2 id="what-are-the-options-for-building-a-react--ruby-on-rails-app">
+  <a href="#what-are-the-options-for-building-a-react--ruby-on-rails-app">
+    What are the options for building a React + Ruby on Rails app?
+  </a>
+</h2>
+<h3 id="1-one-react-app--one-rails-app">
+  <a href="#1-one-react-app--one-rails-app">
+    1. One React app + one Rails app
+  </a>
+</h3>
+
+<p>You can spin up a React app and a separate Rails app and maintain them independently. Two Git repos and two hosting providers. The frontend app talks to Rails using an API layer.</p>
+
+<p>This is nice if you’ve got two separate teams working on them. It’s also nice to host React as static files in something like S3.</p>
+
+<p>We used to spin up a React app using <a href="https://github.com/facebook/create-react-app">create-react-app</a> but now that it’s deprecated we use <a href="https://nextjs.org/">Next.js</a>.</p>
+<h4 id="benefits">
+  <a href="#benefits">
+    Benefits
+  </a>
+</h4>
+
+<ul>
+<li>No fighting with the Rails asset pipeline</li>
+<li>Hosting frontend code on a CDN can really speed up your site</li>
+<li>React hosting platforms like <a href="https://vercel.com/">Vercel</a> or <a href="https://www.netlify.com/">Netlify</a> are lovely to work with</li>
+<li>Separate frontend and backend teams can work independently</li>
+<li>A clear separation of the code’s responsibilities</li>
+</ul>
+<h4 id="downsides">
+  <a href="#downsides">
+    Downsides
+  </a>
+</h4>
+
+<ul>
+<li>Double the hosting and infrastructure complexity + costs</li>
+<li>Building an API layer adds significant work</li>
+<li>You have to build auth on the frontend and backend and make them work together</li>
+<li>CORS and cookie sharing limitations when working across domains</li>
+<li>Code for new features is spread across multiple Git repos</li>
+</ul>
+<h3 id="2-serve-react-as-rails-assets">
+  <a href="#2-serve-react-as-rails-assets">
+    2. Serve React as Rails assets
+  </a>
+</h3>
+
+<p>You can host your React app’s generated JavaScript files inside Rails’s asset pipeline. The Ruby on Rails asset pipeline is in a confusing place right now - there’s been a lot of changes over the past few years. </p>
+
+<p>Here are a couple posts that describe your options for bundling JS assets in Rails 7:</p>
+
+<ul>
+<li><a href="https://thoughtbot.com/blog/upgrading-to-rails7-moving-away-from-webpacker">Upgrading to Rails 7: Moving away from Webpacker (thoughtbot blog)</a></li>
+<li><a href="https://discuss.rubyonrails.org/t/guide-to-rails-7-and-the-asset-pipeline/80851/1">Guide to Rails 7 and the Asset Pipeline (Rails community discussion)</a></li>
+</ul>
+
+<p>The tl;dr is that in a new Rails 7 app you should use <a href="https://github.com/shakacode/shakapacker">Shakapacker</a> or <a href="https://github.com/rails/jsbundling-rails">jsbundling</a> for preprocessing and bundling your JavaScript code.</p>
+<h4 id="benefits">
+  <a href="#benefits">
+    Benefits
+  </a>
+</h4>
+
+<ul>
+<li>There’s just one codebase</li>
+<li>You only need one build pipeline, hosting provider, and related infrastructure</li>
+<li>You can choose which pages are rendered with React vs ERB</li>
+<li>No fighting with CORS and cross-domain cookie limitations</li>
+</ul>
+<h4 id="downsides">
+  <a href="#downsides">
+    Downsides
+  </a>
+</h4>
+
+<ul>
+<li>You still have to build an API layer for communicating between React and Rails</li>
+<li>You have to figure out how to set up bundling</li>
+<li>The Rails asset pipeline is constantly evolving</li>
+<li>It takes extra work to integrate a React dev server for hot module reloading (HMR)</li>
+</ul>
+<h3 id="3-react-on-rails">
+  <a href="#3-react-on-rails">
+    3. React on Rails
+  </a>
+</h3>
+
+<p><a href="https://github.com/shakacode/react_on_rails">React on Rails</a> is a nice pre-built integration of React and Rails. You can avoid doing the plumbing work yourself. It also lets you pass in Ruby variables as props so you don’t need to build a JSON API. And it supports Server-side rendering (SSR) of React screens.</p>
+
+<p>React on Rails has superseded the older <a href="https://github.com/reactjs/react-rails/blob/master/docs/migrating-from-react-rails-to-react_on_rails.md">React Rails</a> tool.</p>
+
+<p><a href="https://thoughtbot.com/blog/getting-started-with-react-on-rails">thoughtbotter Sarah Lima wrote about using React on Rails recently in this post.</a></p>
+<h4 id="benefits">
+  <a href="#benefits">
+    Benefits
+  </a>
+</h4>
+
+<ul>
+<li>It supports advanced rendering features like server-side rendering and code splitting</li>
+<li>You can pass variables from Rails into React as Props</li>
+<li>You don’t have to build an API layer</li>
+<li>You can use Rails localization features in React</li>
+<li>It mostly sorts out the asset pipeline problems for you</li>
+<li>You can use React on some pages, all pages, or even parts of pages</li>
+</ul>
+<h4 id="downsides">
+  <a href="#downsides">
+    Downsides
+  </a>
+</h4>
+
+<ul>
+<li>You need to register your components before you can use them</li>
+<li>Your React code is tightly coupled with Rails</li>
+</ul>
+<h3 id="4-superglue">
+  <a href="#4-superglue">
+    4. Superglue
+  </a>
+</h3>
+
+<p>At thoughtbot, we created <a href="https://github.com/thoughtbot/superglue">Superglue</a> to make working with React as easy as Hotwire. It sets up your project to use React (no need for APIs) without giving up any of the Rails goodness. The flash, cookie auth and url helpers all work like you expect. We even forked <a href="https://github.com/thoughtbot/form_props">form_with</a> so you can use Rails form helpers with React.</p>
+
+<p>It’s like replacing the view (ERB) with React as a view, while giving you an escape hatch for more interactive things that React is well suited for.</p>
+
+<p><a href="https://thoughtbot.com/blog/introducing-superglue">You can find more details in Johny’s blog post.</a></p>
+<h4 id="benefits">
+  <a href="#benefits">
+    Benefits
+  </a>
+</h4>
+
+<ul>
+<li>It feels very familiar to experienced Rails users</li>
+<li>It’s easy to build React forms in a Rails-like way (I’m a big fan of the Rails form builder)</li>
+<li>You don’t have to build an API layer</li>
+<li>It’s easy to pass even complicated objects and arrays from Rails to React</li>
+<li>Support for SSR</li>
+<li>You get SPA-style navigation and partial component updates</li>
+</ul>
+<h4 id="downsides">
+  <a href="#downsides">
+    Downsides
+  </a>
+</h4>
+
+<ul>
+<li>Your React code is tightly coupled with Rails - even more so than React on Rails</li>
+<li>There’s a learning curve for figuring out the data flow into and out of React</li>
+<li>It’s not out of beta yet</li>
+</ul>
+<h2 id="where-to-start">
+  <a href="#where-to-start">
+    Where to start?
+  </a>
+</h2>
+
+<p>As you review these options, which pros and cons resonate with you? Your level of experience with React and Rails, and your team size, will probably influence your choice. Don’t be afraid to experiment.</p>
+<h2 id="so-what-did-we-choose">
+  <a href="#so-what-did-we-choose">
+    So what did we choose?
+  </a>
+</h2>
+
+<ul>
+<li>I recently worked on a Rails 7 app that had some ERB pages and some React pages. We used a beta version of Superglue.</li>
+<li>Last year I worked on a Rails 7 app where almost all pages were built with React. We hosted React in the asset pipeline with jsbundling, with a custom esbuild script to support esbuild plugins.</li>
+<li>Another thoughtbotter just started a project that has a lot of forms. They’re using Superglue to take advantage of the new <a href="https://thoughtbot.com/blog/introducing-form-props">form_props</a> features.</li>
+<li>A different thoughtbotter used the Rails asset pipeline along with Vite, although there were plans to move from Vite to jsbundling.</li>
+</ul>
+
+    </div></div>
+  </div>
+</body>
+</html>

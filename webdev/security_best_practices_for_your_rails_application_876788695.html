@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Security Best Practices for Your Rails Application</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Security Best Practices for Your Rails Application</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2022/10/05/security-best-practices-for-your-rails-application.html">https://blog.appsignal.com/2022/10/05/security-best-practices-for-your-rails-application.html</a></p>
+    <p><strong>Tags:</strong> rubyonrails, security, webdev</p>
+    <p><strong>Bookmark ID:</strong> 876788695</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Alongside performance and usability, you should always focus on security when creating any web application. Keep in mind that hacking techniques are constantly evolving, just as fast as technology is. So you must know how to secure your users and their data.</p>
+<p>This article will show you how to create a secure Rails application. The framework is known to be secure by default, but the default configuration is not enough to let you sleep well at night.</p>
+<p>We will share some best coding practices and a few habits in the development process that can help you create secure code.</p>
+<p>Let's dive in!</p>
+<h2 id="security-in-your-app-best-coding-practices">Security in Your App: Best Coding Practices</h2>
+<p>Modern web applications are often complex. They utilize multiple data sources and handle custom authorization rules as well as different methods of authentication. Knowing how to avoid SQL injections or ensuring that users can only read their data is not enough.</p>
+<p>When you build a Rails application, you have to configure it properly, design the application securely, and write code that makes it bulletproof.</p>
+<p>We'll look at:</p>
+<ul>
+<li><strong>Application configuration</strong> - The default configuration is exemplary, but we can make things even better with a few extra steps.</li>
+<li><strong>Business logic</strong> - Applications should be secure by design, not only by code. This principle is essential but is often ignored when an MVP has to be delivered quickly.</li>
+<li><strong>Code in controllers</strong> - These classes are the entry point to our application, so an extra dose of attention is always needed to design a reliable application.</li>
+<li><strong>Code in models</strong> - Many issues are related to a database, so it is essential to design and perform secure communication with the primary source of the data.</li>
+<li><strong>Code in views</strong> - The point where we expose data to the browser is also a popular target for hackers, so we have to ensure that we don't render anything that risks our users' data or privacy.</li>
+</ul>
+<h3 id="application-configuration">Application Configuration</h3>
+<p>It all starts here, in the configuration files. In most cases, unless you restart the application, the rules will remain the same. Rails' creators made an effort to create secure defaults, but we can still improve them with some extra steps.</p>
+<h3 id="force-ssl">Force SSL</h3>
+<p>You can force your Rails application to always use a secure connection with the HTTPS protocol. To do this, open the <code>config/environments/production.rb</code> file and set the following line:</p>
+
+<p>This setting does a few things to the application:</p>
+<ul>
+<li>Every time there is a request to the HTTP version of the application, Rails will redirect the request to the HTTPS protocol.</li>
+<li>It sets a secure flag on cookies. Thanks to this, browsers won't send cookies with HTTP requests.</li>
+<li>It tells the browser to remember your application as TLS-only (TLS is Transport Layer Security, an extension of the HTTPS protocol).</li>
+</ul>
+<h3 id="cors">CORS</h3>
+<p>Cross-Origin Resource Sharing (CORS) is a security mechanism that defines which website can interact with your application's API. Of course, if you build a monolith app, you don't need to care about this protection.</p>
+<p>If you build an API application, you can configure CORS by installing an additional gem called <code>rack-cors</code>.</p>
+<p>Once you have done that, create a file called <code>cors.rb</code> in the initializers directory <code>config/initializers</code>. Define what endpoints a website can access (including request methods):</p>
+
+<p>In the above example, we allow the your-frontend.com website to call the <code>/users</code> endpoint (using only the POST method) and the <code>/articles</code> endpoint (using only the GET method).</p>
+<h3 id="secure-environment-variables">Secure Environment Variables</h3>
+<p>You should never hardcode your API keys, passwords, or other sensitive credentials in the source code. You might accidentally make them public or give someone who's not authorized access to some sensitive application resources.</p>
+<p>The Rails framework itself provides a way to store credentials securely. However, the implementation varies depending on the framework version:</p>
+<ul>
+<li><strong>Rails 4</strong> - The feature is called 'secrets'. You store your sensitive information in a <code>config/secrets.yml</code> file that is not tracked in the git repository.</li>
+<li><strong>Rails 5</strong> - The feature is called 'credentials'. Your sensitive information is stored encrypted in <code>config/credentials.yml.enc</code> — you can edit it with the <code>config/master.key</code> file. So while the YAML configuration file can be stored in the repository because it’s encrypted, you don’t track the <code>master.key</code> file.</li>
+<li><strong>Rails 6</strong> - Also called 'credentials', you can store credentials per environment. Because of that, for every environment, you have the encrypted YAML file and key to decrypt it.</li>
+</ul>
+<p>Alternatively, you can always set the values on the server level, so that they only load in the server environment. Locally, each developer sets them individually.</p>
+<h3 id="business-logic">Business Logic</h3>
+<p>You should think about security not only when you write code, but also when you design the processes in your application.</p>
+<p>Business logic is a set of rules that apply in the real world, and your goal is to map them in your code. Unfortunately, mapping them can cause weak points in your application and lead to security issues.</p>
+<h3 id="strong-authentication-and-authorization-rules">Strong Authentication and Authorization Rules</h3>
+<p>Let's first explain the difference between authentication and authorization, as these terms are sometimes misinterpreted:</p>
+<ul>
+<li><strong>Authentication</strong> - You validate a user's login and password against an application's database.</li>
+<li><strong>Authorization</strong> - You validate the role of a signed-in user and, based on that, render different information for different users. For example, a user with an admin role can access a list of users in an application, while in most cases, the typical user can't.</li>
+</ul>
+<p>To improve the security level of your authentication, you can set high standards for your end-users:</p>
+<ul>
+<li><strong>Strong passwords</strong> - Set a strict password policy that doesn't allow for passwords that are too simple or weak. Of course, you can't control if your users share their passwords, but you can make their passwords hard to guess.</li>
+<li><strong>Two-factor authentication</strong> - Another layer of protection that will secure an account even if someone else knows the password.</li>
+<li><strong>Encrypted passwords</strong> - Never store passwords in your database as plain text. Then, even if your database is exposed, a hacker won't be able to get your users' passwords.</li>
+</ul>
+<h3 id="authorization-best-practices">Authorization Best Practices</h3>
+<p>If your application is complex, you probably need different roles for users to manage their data. As business logic grows, it may be hard to control everything without making a mistake that leads to an information leak.</p>
+<p>You can avoid issues by following some well-known good practices:</p>
+<ul>
+<li><strong>Keep authorization logic in one place</strong> - It's hard to modify business logic correctly if you have to change multiple areas in the code. Storing the rules in one file makes it easy.</li>
+<li><strong>Set clear rules</strong> - You won't be able to tell whether your application is secure if you can't validate the business logic against well-defined rules.</li>
+<li><strong>Set roles based on the group, not a single user</strong> - It is easier to control the authorization process if you have groups of permissions instead of defining rules per user.</li>
+</ul>
+
+<p>Of course, good code reviews and well-written tests are also a must here to avoid introducing bugs to existing business logic.</p>
+<h3 id="code-in-controllers">Code in Controllers</h3>
+<p>Controllers are the first layer of MVC architecture and handle requests coming from users. Therefore, it is essential to filter incoming information correctly as it will be propagated on other application layers.</p>
+<h3 id="filter-incoming-parameters">Filter Incoming Parameters</h3>
+<p>You should never pass a raw <code>params</code> value to your application. Thanks to the strong parameters feature, it is easy to control the data that we'd like to pass along.</p>
+<p>Imagine that we have a <code>User</code> model we want to update:</p>
+
+<p>Someone can manipulate the params, and it would be possible to update other <code>User</code> model attributes (for example, the <code>admin</code> flag if you have one). To avoid such a situation, filter params that you pass to your model:</p>
+
+<h3 id="use-scopes-to-avoid-data-leaking">Use Scopes to Avoid Data Leaking</h3>
+<p>Usually, we don't want to show the user data that does not belong to them. We may inadvertently expose some records for URL address manipulation due to the wrong code design. Let's consider the following case:</p>
+
+<p>Everything seems fine; the controller is protected from guests, and we assign the message object. However, a user just needs to change the id in the URL address to get a message that does not belong to them. This is a very dangerous situation.</p>
+<p>We can avoid it by using scopes within the given context. In the mentioned example, the current user is the scope:</p>
+
+<h3 id="avoid-insecure-url-redirects">Avoid Insecure URL Redirects</h3>
+<p>Let's consider a straightforward example of a redirect based on the user input:</p>
+
+<p>We should never do that, as we expose our user to a redirect that can take them everywhere. The simplest solution to prevent this security issue is to avoid using redirects with user input. If you can't, you can always redirect to a path without the host:</p>
+
+<h3 id="code-in-models">Code in Models</h3>
+<p>Once Rails parses code in a controller, you will probably call models to receive the information from the database. Since models are responsible for communicating with your database as well as performing important computations, they are also often targeted by hackers.</p>
+<h3 id="avoid-sql-injection">Avoid SQL Injection</h3>
+<p>SQL injection is one of the most popular techniques used to access database information from the outside. The Rails framework tries to protect us from that threat, but we also need to write code that won't let this happen.</p>
+<p>In general, we should avoid passing user input directly as a part of a query:</p>
+
+<p>If you need to, always validate the user input and assign a default value when the input is invalid:</p>
+
+<p><a href="https://rails-sqli.org/">Check out this extensive set of examples of what <em>not</em> to do when it comes to SQL injection</a>.</p>
+<h3 id="prevent-command-injection">Prevent Command Injection</h3>
+<p>Avoid using methods that allow a program to execute any code. Such methods include <code>exec</code>, <code>system</code>, <code>`</code>, and <code>eval</code>. You should never pass user input to those functions.</p>
+<p>If your application allows users to execute code, you should run their code in separate Docker containers. In addition, you can remove dangerous methods before executing user input:</p>
+
+<h3 id="avoid-unsafe-data-serialization">Avoid Unsafe Data Serialization</h3>
+<p>Insecure deserialization can lead to the execution of arbitrary code in your application. If you plan to serialize JSON:</p>
+
+<p>Instead of using <code>load</code> or <code>restore</code> methods, use <code>parse</code>:</p>
+
+<p>If you plan to serialize YAML:</p>
+
+<p>Instead of using <code>load</code> or <code>restore</code> methods from the <code>Marshal</code> module, use the <code>safe_load</code> method from <code>Psych</code>:</p>
+
+<h3 id="code-in-views">Code in Views</h3>
+<p>Whatever you render in views is visible to the end-user. When malicious code is rendered, it will affect your users directly by exposing them to untrusted websites and data sources.</p>
+<h3 id="avoid-css-injection">Avoid CSS Injection</h3>
+<p>It would appear that CSS code is always secure; it only modifies the styles of a website. However, if you allow for user-defined styles in your application, there is always a risk of CSS code injection.</p>
+<p>One of the most popular cases of user-defined CSS is a custom page background:</p>
+
+<p>A user with bad intentions can input a URL that an application will automatically load, and do damage to the current user viewing the content. To prevent such situations, provide a predefined set of values instead of allowing users to type any value.</p>
+<h3 id="sanitize-rendered-output">Sanitize Rendered Output</h3>
+<p>In the modern versions of Rails, output is sanitized by default. Even if a user inputs HTML or JS code and the application renders it, the HTML or JS code will escape.</p>
+<p>If you want to render HTML defined by users, always predefine which tags should render and which should escape:</p>
+
+<p>In the above code, we allow users to render <code>strong</code>, <code>em</code>, and <code>a</code> HTML elements in their comments.</p>
+
+<p>This is primarily a reminder for junior developers unfamiliar with how web applications work on the front end. Don't ever put sensitive information in comments (especially in views, as it will be exposed to end-users):</p>
+
+<h2 id="habits-to-keep-your-rails-application-secure">Habits to Keep Your Rails Application Secure</h2>
+<p>To make your Rails app secure and reduce technical debt, establish some valuable development habits. Taking small preventative actions frequently is much less painful than refactoring more significant portions of your codebase.</p>
+<h3 id="upgrade-rails-and-other-libraries-often">Upgrade Rails and Other Libraries Often</h3>
+<p>An upgrade is often painful and time-consuming, unless you upgrade to minor versions of a library. Develop a habit of upgrading a library each time a new, stable version is published. Your application will then be in good shape (not only regarding security, but also performance).</p>
+<p>If you use GitHub for day-to-day development, an extension like <a href="https://github.com/marketplace/depfu">Depfu</a> is useful as it performs frequent updates for you.</p>
+<h3 id="perform-security-audits">Perform Security Audits</h3>
+<p>I don't mean expensive audits by external companies. Often, it is enough to install a tool like <a href="https://brakemanscanner.org/">Brakeman</a> and scan code with every commit or pull request.</p>
+<p>Also, it is a good idea to scan your Gemfile and find gems that need updating due to security issues discovered by the community. You can use <a href="https://github.com/rubysec/bundler-audit">bundler-audit</a> to automate this process.</p>
+<h3 id="have-a-proper-logging-strategy">Have A Proper Logging Strategy</h3>
+<p>Logs, in many cases, are usually just thousands of lines of information you will never view. However, there might be a case where one of your users is attacked or experiences a suspicious action.</p>
+<p>In such a situation, if you have detailed and easily searchable logs, you can collect information that will help you prevent similar problems in the future.</p>
+<h2 id="wrapping-up-keep-your-rails-app-secure">Wrapping Up: Keep Your Rails App Secure</h2>
+<p>In this post, we ran through some security best practices for your Rails app that reduce the risk of a data breach.</p>
+<p>Making sure that your Rails application is secure might be challenging. Sticking to the framework's defaults is not enough; you have to know how to avoid creating security issues. For example, various injections and remote code executions have been well-known issues for the past few years, but still, you can't be 100% sure that your application won't be affected.</p>
+<p>Don't forget the importance of frequent upgrades, security audits, and a culture of good logging. When combined, all of these things will help to make your Rails application more secure.</p>
+<p>Happy coding!</p>
+<p><strong>P.S. If you'd like to read Ruby Magic posts as soon as they get off the press, <a href="https://blog.appsignal.com/ruby-magic">subscribe to our Ruby Magic newsletter and never miss a single post</a>!</strong></p></div></div>
+  </div>
+</body>
+</html>

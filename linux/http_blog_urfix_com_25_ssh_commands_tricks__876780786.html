@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>http://blog.urfix.com/25-ssh-commands-tricks/</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>http://blog.urfix.com/25-ssh-commands-tricks/</h1>
+    <p><strong>URL:</strong> <a href="http://blog.urfix.com/25-ssh-commands-tricks">http://blog.urfix.com/25-ssh-commands-tricks</a></p>
+    <p><strong>Tags:</strong> devops, linux, ssh</p>
+    <p><strong>Bookmark ID:</strong> 876780786</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="text">
+	<p><a title="openSSH" href="http://www.openssh.com/" target="_blank">OpenSSH </a>is a <strong>FREE</strong> version of the SSH connectivity tools that technical users of the Internet rely on. Users of telnet, rlogin, and ftp may not realize that their password is transmitted across the Internet unencrypted, but it is. OpenSSH encrypts all traffic (including passwords) to effectively eliminate eavesdropping, connection hijacking, and other attacks.&nbsp; The encryption that OpenSSH provides has been strong enough to earn the trust of <a href="http://cloudsecurity.trendmicro.com/" target="_blank">Trend Micro</a> and other providers of cloud computing.Additionally, OpenSSH provides secure tunneling capabilities and several authentication methods, and supports all SSH protocol versions.<br>
+<img decoding="async" src="https://blog.urfix.com/wp-content/uploads/2010/11/ssh.jpg" alt="" data-pagespeed-url-hash="3433943104" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"><br>
+SSH is an awesome powerful tool, there are unlimited possibility when it comes to SSH, heres the top <a title="Top SSH Commands" href="http://www.commandlinefu.com/commands/matching/ssh/c3No/sort-by-votes" target="_blank">Voted SSH commands</a></p>
+<h3>1) Copy ssh keys to user@host to enable password-less ssh logins.</h3>
+<p><strong>ssh-copy-id user@host</strong></p>
+<p>To generate the keys use the command ssh-keygen<br>
+<strong> </strong></p>
+<h3>2) Start a tunnel from some machine’s port 80 to your local post 2001</h3>
+<p><strong>ssh -N -L2001:localhost:80 somemachine</strong></p>
+<p>Now you can acces the website by going to http://localhost:2001/<br>
+<strong> </strong></p>
+<h3>3) Output your microphone to a remote computer’s speaker</h3>
+<p><strong>dd if=/dev/dsp | ssh -c arcfour -C username@host dd of=/dev/dsp</strong></p>
+<p>This will output the sound from your microphone port to the ssh target computer’s speaker port. The sound quality is very bad, so you will hear a lot of hissing.<br>
+<strong> </strong></p>
+<h3>4) Compare a remote file with a local file</h3>
+<p><strong>ssh user@host cat /path/to/remotefile | diff /path/to/localfile –</strong></p>
+<p>Useful for checking if there are differences between local and remote files.<br>
+<strong> </strong></p>
+<h3>5) Mount folder/filesystem through SSH</h3>
+<p><strong>sshfs name@server:/path/to/folder /path/to/mount/point</strong></p>
+<p>Install SSHFS from http://fuse.sourceforge.net/sshfs.html<br>
+Will allow you to mount a folder security over a network.<br>
+<strong> </strong></p>
+<h3>6) SSH connection through host in the middle</h3>
+<p><strong>ssh -t reachable_host ssh unreachable_host</strong></p>
+<p>Unreachable_host is unavailable from local network, but it’s available from reachable_host’s network. This command creates a connection to unreachable_host through “hidden” connection to reachable_host.</p>
+<h3>7) Copy from host1 to host2, through your host</h3>
+<div title="Click to select this command">
+<p><strong>ssh root@host1 “cd /somedir/tocopy/ &amp;&amp; tar -cf – .” | ssh root@host2 “cd /samedir/tocopyto/ &amp;&amp; tar -xf -“</strong></p>
+<p>Good if only you have access to host1 and host2, but they have no access to your host (so ncat won’t work) and they have no direct access to each other.</p>
+</div>
+
+<h3>8) Run any GUI program remotely</h3>
+
+<div title="Click to select this command">
+<p><strong>ssh -fX &lt;user&gt;@&lt;host&gt; &lt;program&gt;</strong></p>
+</div>
+<p>The SSH server configuration requires:</p>
+<p>X11Forwarding yes # this is default in Debian</p>
+<p>And it’s convenient too:</p>
+<p>Compression delayed</p>
+<h3>9) Create a persistent connection to a machine</h3>
+<p><strong>ssh -MNf &lt;user&gt;@&lt;host&gt;</strong></p>
+<p>Create a persistent SSH connection to the host in the background. Combine this with settings in your ~/.ssh/config:<br>
+Host host<br>
+ControlPath ~/.ssh/master-%r@%h:%p<br>
+ControlMaster no<br>
+All the SSH connections to the machine will then go through the persisten SSH socket. This is very useful if you are using SSH to synchronize files (using rsync/sftp/cvs/svn) on a regular basis because it won’t create a new socket each time to open an ssh connection.<br>
+<strong> </strong></p>
+<h3>10) Attach screen over ssh</h3>
+<p><strong>ssh -t remote_host screen -r</strong></p>
+<p>Directly attach a remote screen session (saves a useless parent bash process)<br>
+<strong></strong></p>
+<h3>11) Port Knocking!</h3>
+<p><strong>knock &lt;host&gt; 3000 4000 5000 &amp;&amp; ssh -p &lt;port&gt; user@host &amp;&amp; knock &lt;host&gt; 5000 4000 3000</strong></p>
+<p>Knock on ports to open a port to a service (ssh for example) and knock again to close the port. You have to install knockd.<br>
+See example config file below.<br>
+[options]<br>
+logfile = /var/log/knockd.log<br>
+[openSSH]<br>
+sequence = 3000,4000,5000<br>
+seq_timeout = 5<br>
+command = /sbin/iptables -A INPUT -i eth0 -s %IP% -p tcp –dport 22 -j ACCEPT<br>
+tcpflags = syn<br>
+[closeSSH]<br>
+sequence = 5000,4000,3000<br>
+seq_timeout = 5<br>
+command = /sbin/iptables -D INPUT -i eth0 -s %IP% -p tcp –dport 22 -j ACCEPT<br>
+tcpflags = syn<br>
+<strong></strong></p>
+<h3>12) Remove a line in a text file. Useful to fix</h3>
+<p><strong>ssh-keygen -R &lt;the_offending_host&gt;</strong></p>
+<p>In this case it’s better do to use the dedicated tool<br>
+<strong></strong></p>
+<h3>13) Run complex remote shell cmds over ssh, without escaping quotes</h3>
+<p><strong>ssh host -l user $(&lt;cmd.txt)</strong></p>
+<p>Much simpler method. More portable version: ssh host -l user “`cat cmd.txt`”</p>
+<h3>14) Copy a MySQL Database to a new Server via SSH with one command</h3>
+<p><strong>mysqldump –add-drop-table –extended-insert –force –log-error=error.log -uUSER -pPASS OLD_DB_NAME | ssh -C user@newhost “mysql -uUSER -pPASS NEW_DB_NAME”</strong></p>
+<p>Dumps a MySQL database over a compressed SSH tunnel and uses it as input to mysql – i think that is the fastest and best way to migrate a DB to a new server!</p>
+<h3>15) Remove a line in a text file. Useful to fix “ssh host key change” warnings</h3>
+<p><strong> sed -i 8d ~/.ssh/known_hosts</strong></p>
+<h3>16) Copy your ssh public key to a server from a machine that doesn’t have ssh-copy-id</h3>
+<p><strong> cat ~/.ssh/id_rsa.pub | ssh user@machine “mkdir ~/.ssh; cat &gt;&gt; ~/.ssh/authorized_keys”</strong></p>
+<p>If you use Mac OS X or some other *nix variant that doesn’t come with ssh-copy-id, this one-liner will allow you to add your public key to a remote machine so you can subsequently ssh to that machine without a password.<br>
+<strong></strong></p>
+<h3>17) Live ssh network throughput test</h3>
+<p><strong> yes | pv | ssh $host “cat &gt; /dev/null”</strong></p>
+<p>connects to host via ssh and displays the live transfer speed, directing all transferred data to /dev/null<br>
+needs pv installed<br>
+Debian: ‘apt-get install pv’<br>
+Fedora: ‘yum install pv’ (may need the ‘extras’ repository enabled)<br>
+<strong></strong></p>
+<h3>18) How to establish a remote Gnu screen session that you can re-connect to</h3>
+<p><strong>ssh -t user@some.domain.com /usr/bin/screen -xRR</strong></p>
+<p>Long before tabbed terminals existed, people have been using Gnu screen to open many shells in a single text terminal. Combined with ssh, it gives you the ability to have many open shells with a single remote connection using the above options. If you detach with “Ctrl-a d” or if the ssh session is accidentally terminated, all processes running in your remote shells remain undisturbed, ready for you to reconnect. Other useful screen commands are “Ctrl-a c” (open new shell) and “Ctrl-a a” (alternate between shells). Read this quick reference for more screen commands: http://aperiodic.net/screen/quick_reference<br>
+<strong></strong></p>
+<h3>19) Resume scp of a big file</h3>
+<p><strong> rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_file</strong></p>
+<p>It can resume a failed secure copy ( usefull when you transfer big files like db dumps through vpn ) using rsync.<br>
+It requires rsync installed in both hosts.<br>
+rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_file local -&gt; remote<br>
+or<br>
+rsync –partial –progress –rsh=ssh $user@$host:$remote_file $destination_file remote -&gt; local<br>
+<strong></strong></p>
+<h3>20) Analyze traffic remotely over ssh w/ wireshark</h3>
+<p><strong>ssh root@server.com ‘tshark -f “port !22” -w -‘ | wireshark -k -i –</strong></p>
+<p>This captures traffic on a remote machine with tshark, sends the raw pcap data over the ssh link, and displays it in wireshark. Hitting ctrl+C will stop the capture and unfortunately close your wireshark window. This can be worked-around by passing -c # to tshark to only capture a certain # of packets, or redirecting the data through a named pipe rather than piping directly from ssh to wireshark. I recommend filtering as much as you can in the tshark command to conserve bandwidth. tshark can be replaced with tcpdump thusly:<br>
+ssh root@example.com tcpdump -w – ‘port !22’ | wireshark -k -i –<br>
+<strong></strong></p>
+<h3>21) Have an ssh session open forever</h3>
+<p><strong>autossh -M50000 -t server.example.com ‘screen -raAd mysession’</strong></p>
+<p>Open a ssh session opened forever, great on laptops losing Internet connectivity when switching WIFI spots.<br>
+<strong></strong></p>
+<h3>22) Harder, Faster, Stronger SSH clients</h3>
+<p><strong> ssh -4 -C -c blowfish-cbc</strong></p>
+<p>We force IPv4, compress the stream, specify the cypher stream to be Blowfish. I suppose you could use aes256-ctr as well for cypher spec. I’m of course leaving out things like master control sessions and such as that may not be available on your shell although that would speed things up as well.<br>
+<strong></strong></p>
+<h3>23) Throttle bandwidth with cstream</h3>
+<p><strong>tar -cj /backup | cstream -t 777k | ssh host ‘tar -xj -C /backup’</strong></p>
+<p>this bzips a folder and transfers it over the network to “host” at 777k bit/s.<br>
+cstream can do a lot more, have a look http://www.cons.org/cracauer/cstream.html#usage<br>
+for example:<br>
+echo w00t, i’m 733+ | cstream -b1 -t2<br>
+<strong></strong></p>
+<h3>24) Transfer SSH public key to another machine in one step</h3>
+<p><strong> ssh-keygen; ssh-copy-id user@host; ssh user@host</strong></p>
+<p>This command sequence allows simple setup of (gasp!) password-less SSH logins. Be careful, as if you already have an SSH keypair in your ~/.ssh directory on the local machine, there is a possibility ssh-keygen may overwrite them. ssh-copy-id copies the public key to the remote host and appends it to the remote account’s ~/.ssh/authorized_keys file. When trying ssh, if you used no passphrase for your key, the remote shell appears soon after invoking ssh user@host.<br>
+<strong></strong></p>
+<h3>25) Copy stdin to your X11 buffer</h3>
+<p><strong> ssh user@host cat /path/to/some/file | xclip</strong></p>
+<p>Have you ever had to scp a file to your work machine in order to copy its contents to a mail? xclip can help you with that. It copies its stdin to the X11 buffer, so all you have to do is middle-click to paste the content of that looong file :)</p>
+<p><strong>Have Fun</strong></p>
+<p><strong>Please comment if you have any other good SSH Commands OR Tricks.</strong></p>
+<p><strong>&lt;user&gt;@&lt;host&gt;</strong></p>
+</div></div>
+  </div>
+</body>
+</html>

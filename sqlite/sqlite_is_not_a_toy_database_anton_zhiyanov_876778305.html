@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SQLite is not a toy database | Anton Zhiyanov</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>SQLite is not a toy database | Anton Zhiyanov</h1>
+    <p><strong>URL:</strong> <a href="https://antonz.org/sqlite-is-not-a-toy-database">https://antonz.org/sqlite-is-not-a-toy-database</a></p>
+    <p><strong>Tags:</strong> sql, sqlite</p>
+    <p><strong>Bookmark ID:</strong> 876778305</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><article><div><header></header><p><em>English • <a href="https://habr.com/ru/post/547448/">Russian</a> • <a href="https://sysarmy.com/blog/posts/sqlite-no-es-una-base-de-datos-de-juguete/">Spanish</a></em></p><p>Whether you are a developer, data analyst, QA engineer, DevOps person, or product manager - SQLite is a perfect tool for you. Here is why.</p><p>A few well-known facts to get started:</p><ul><li>SQLite is the most common DBMS in the world, shipped with all popular operating systems.</li><li>SQLite is serverless.</li><li>For developers, SQLite is embedded directly into the app.</li><li>For everyone else, there is a convenient database console (REPL), provided as a single file (sqlite3.exe on Windows, sqlite3 on Linux / macOS).</li></ul><p><a href="#console-import-and-export">Console, import, and export</a> •
+<a href="#native-json">Native JSON</a> •
+<a href="#ctes-and-set-operations">CTEs and set operations</a> •
+<a href="#math-statistics">Math statistics</a> •
+<a href="#performance">Performance</a> •
+<a href="#documents-graphs-and-search">Documents, graphs, and search</a> •
+<a href="#and-so-much-more">And so much more</a></p><h2 id="console-import-and-export">Console, import, and export</h2><p>The console is a killer SQLite feature for data analysis: more powerful than Excel and more simple than <code>pandas</code>. One can import CSV data with a single command, the table is created automatically:</p><div><pre tabindex="0"><code data-lang="sql"><span><span>.<span>import</span> <span>--csv city.csv city
+</span></span></span><span><span><span></span><span>select</span> <span>count</span>(<span>*</span>) <span>from</span> <span>city</span>;
+</span></span><span><span><span>-- 1117
+</span></span></span></code></pre></div><p>The console supports basic SQL features and shows query results in a nice ASCII-drawn table. Advanced SQL features are also supported, but more on that later.</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>select</span>
+</span></span><span><span>  <span>century</span> <span>||</span> <span>' century'</span> <span>as</span> <span>dates</span>,
+</span></span><span><span>  <span>count</span>(<span>*</span>) <span>as</span> <span>city_count</span>
+</span></span><span><span><span>from</span> <span>history</span>
+</span></span><span><span><span>group</span> <span>by</span> <span>century</span>
+</span></span><span><span><span>order</span> <span>by</span> <span>century</span> <span>desc</span>;
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="text"><span><span>┌────────────┬────────────┐
+</span></span><span><span>│   dates    │ city_count │
+</span></span><span><span>├────────────┼────────────┤
+</span></span><span><span>│ 21 century │ 1          │
+</span></span><span><span>│ 20 century │ 263        │
+</span></span><span><span>│ 19 century │ 189        │
+</span></span><span><span>│ 18 century │ 191        │
+</span></span><span><span>│ 17 century │ 137        │
+</span></span><span><span>│ ...        │ ...        │
+</span></span><span><span>└────────────┴────────────┘
+</span></span></code></pre></div><p>Data could be exported as SQL, CSV, JSON, even Markdown and HTML. Takes just a couple of commands:</p><div><pre tabindex="0"><code data-lang="sql"><span><span>.<span>mode</span> <span>json</span>
+</span></span><span><span>.<span>output</span> <span>city</span>.<span>json</span>
+</span></span><span><span><span>select</span> <span>city</span>, <span>foundation_year</span>, <span>timezone</span> <span>from</span> <span>city</span> <span>limit</span> <span>10</span>;
+</span></span><span><span>.<span>shell</span> <span>cat</span> <span>city</span>.<span>json</span>
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="json"><span><span>[
+</span></span><span><span>    { <span>"city"</span>: <span>"Amsterdam"</span>, <span>"foundation_year"</span>: <span>1300</span>, <span>"timezone"</span>: <span>"UTC+1"</span> },
+</span></span><span><span>    { <span>"city"</span>: <span>"Berlin"</span>, <span>"foundation_year"</span>: <span>1237</span>, <span>"timezone"</span>: <span>"UTC+1"</span> },
+</span></span><span><span>    { <span>"city"</span>: <span>"Helsinki"</span>, <span>"foundation_year"</span>: <span>1548</span>, <span>"timezone"</span>: <span>"UTC+2"</span> },
+</span></span><span><span>    { <span>"city"</span>: <span>"Monaco"</span>, <span>"foundation_year"</span>: <span>1215</span>, <span>"timezone"</span>: <span>"UTC+1"</span> },
+</span></span><span><span>    { <span>"city"</span>: <span>"Moscow"</span>, <span>"foundation_year"</span>: <span>1147</span>, <span>"timezone"</span>: <span>"UTC+3"</span> },
+</span></span><span><span>    { <span>"city"</span>: <span>"Reykjavik"</span>, <span>"foundation_year"</span>: <span>874</span>, <span>"timezone"</span>: <span>"UTC"</span> },
+</span></span><span><span>    { <span>"city"</span>: <span>"Sarajevo"</span>, <span>"foundation_year"</span>: <span>1461</span>, <span>"timezone"</span>: <span>"UTC+1"</span> },
+</span></span><span><span>    { <span>"city"</span>: <span>"Stockholm"</span>, <span>"foundation_year"</span>: <span>1252</span>, <span>"timezone"</span>: <span>"UTC+1"</span> },
+</span></span><span><span>    { <span>"city"</span>: <span>"Tallinn"</span>, <span>"foundation_year"</span>: <span>1219</span>, <span>"timezone"</span>: <span>"UTC+2"</span> },
+</span></span><span><span>    { <span>"city"</span>: <span>"Zagreb"</span>, <span>"foundation_year"</span>: <span>1094</span>, <span>"timezone"</span>: <span>"UTC+1"</span> }
+</span></span><span><span>]
+</span></span></code></pre></div><p>If you are more of a BI than a console person - popular data exploration tools like <a href="https://www.metabase.com/">Metabase</a> or <a href="https://superset.apache.org/">Superset</a> support SQLite.</p><h2 id="native-json">Native JSON</h2><p>There is nothing more convenient than SQLite for analyzing and transforming JSON. You can select data directly from a file as if it were a regular table. Or import data into the table and select from there.</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>select</span>
+</span></span><span><span>  <span>json_extract</span>(<span>value</span>, <span>'$.iso.code'</span>) <span>as</span> <span>code</span>,
+</span></span><span><span>  <span>json_extract</span>(<span>value</span>, <span>'$.iso.number'</span>) <span>as</span> <span>num</span>,
+</span></span><span><span>  <span>json_extract</span>(<span>value</span>, <span>'$.name'</span>) <span>as</span> <span>name</span>,
+</span></span><span><span>  <span>json_extract</span>(<span>value</span>, <span>'$.units.major.name'</span>) <span>as</span> <span>unit</span>
+</span></span><span><span><span>from</span>
+</span></span><span><span>  <span>json_each</span>(<span>readfile</span>(<span>'currency.sample.json'</span>));
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="text"><span><span>┌──────┬─────┬─────────────────┬──────────┐
+</span></span><span><span>│ code │ num │      name       │   unit   │
+</span></span><span><span>├──────┼─────┼─────────────────┼──────────┤
+</span></span><span><span>│ ARS  │ 032 │ Argentine peso  | peso     │
+</span></span><span><span>│ CHF  │ 756 │ Swiss Franc     │ franc    │
+</span></span><span><span>│ EUR  │ 978 │ Euro            │ euro     │
+</span></span><span><span>│ GBP  │ 826 │ British Pound   │ pound    │
+</span></span><span><span>│ INR  │ 356 │ Indian Rupee    │ rupee    │
+</span></span><span><span>│ JPY  │ 392 │ Japanese yen    │ yen      │
+</span></span><span><span>│ MAD  │ 504 │ Moroccan Dirham │ dirham   │
+</span></span><span><span>│ RUR  │ 643 │ Russian Rouble  │ rouble   │
+</span></span><span><span>│ SOS  │ 706 │ Somali Shilling │ shilling │
+</span></span><span><span>│ USD  │ 840 │ US Dollar       │ dollar   │
+</span></span><span><span>└──────┴─────┴─────────────────┴──────────┘
+</span></span></code></pre></div><p>Doesn't matter how deep the JSON is - you can extract any nested object:</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>select</span>
+</span></span><span><span>  <span>json_extract</span>(<span>value</span>, <span>'$.id'</span>) <span>as</span> <span>id</span>,
+</span></span><span><span>  <span>json_extract</span>(<span>value</span>, <span>'$.name'</span>) <span>as</span> <span>name</span>
+</span></span><span><span><span>from</span>
+</span></span><span><span>  <span>json_tree</span>(<span>readfile</span>(<span>'industry.sample.json'</span>))
+</span></span><span><span><span>where</span>
+</span></span><span><span>  <span>path</span> <span>like</span> <span>'$[%].industries'</span>;
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="text"><span><span>┌────────┬──────────────────────┐
+</span></span><span><span>│   id   │         name         │
+</span></span><span><span>├────────┼──────────────────────┤
+</span></span><span><span>│ 7.538  │ Internet provider    │
+</span></span><span><span>│ 7.539  │ IT consulting        │
+</span></span><span><span>│ 7.540  │ Software development │
+</span></span><span><span>│ 9.399  │ Mobile communication │
+</span></span><span><span>│ 9.400  │ Fixed communication  │
+</span></span><span><span>│ 9.401  │ Fiber-optics         │
+</span></span><span><span>│ 43.641 │ Audit                │
+</span></span><span><span>│ 43.646 │ Insurance            │
+</span></span><span><span>│ 43.647 │ Bank                 │
+</span></span><span><span>└────────┴──────────────────────┘
+</span></span></code></pre></div><h2 id="ctes-and-set-operations">CTEs and set operations</h2><p>Of course, SQLite supports <a href="https://antonz.org/cte/">Common Table Expressions</a> (<code>WITH</code> clause) and <a href="https://antonz.org/sql-join/">joins</a>, I won't even give examples here. If the data is hierarchical (the table refers to itself through a column like <code>parent_id</code>) - <code>WITH RECURSIVE</code> will come in handy. Any hierarchy, no matter how deep, can be 'unrolled' with a single query.</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>with</span> <span>recursive</span> <span>tmp</span>(<span>id</span>, <span>name</span>, <span>level</span>) <span>as</span> (
+</span></span><span><span>  <span>select</span> <span>id</span>, <span>name</span>, <span>1</span> <span>as</span> <span>level</span>
+</span></span><span><span>  <span>from</span> <span>area</span>
+</span></span><span><span>  <span>where</span> <span>parent_id</span> <span>is</span> <span>null</span>
+</span></span><span><span>
+</span></span><span><span>  <span>union</span> <span>all</span>
+</span></span><span><span>
+</span></span><span><span>  <span>select</span>
+</span></span><span><span>    <span>area</span>.<span>id</span>,
+</span></span><span><span>    <span>tmp</span>.<span>name</span> <span>||</span> <span>', '</span> <span>||</span> <span>area</span>.<span>name</span> <span>as</span> <span>name</span>,
+</span></span><span><span>    <span>tmp</span>.<span>level</span> <span>+</span> <span>1</span> <span>as</span> <span>level</span>
+</span></span><span><span>  <span>from</span> <span>area</span>
+</span></span><span><span>    <span>join</span> <span>tmp</span> <span>on</span> <span>area</span>.<span>parent_id</span> <span>=</span> <span>tmp</span>.<span>id</span>
+</span></span><span><span>)
+</span></span><span><span>
+</span></span><span><span><span>select</span> <span>*</span> <span>from</span> <span>tmp</span>;
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="text"><span><span>┌──────┬──────────────────────────┬───────┐
+</span></span><span><span>│  id  │           name           │ level │
+</span></span><span><span>├──────┼──────────────────────────┼───────┤
+</span></span><span><span>│ 93   │ US                       │ 1     │
+</span></span><span><span>│ 768  │ US, Washington DC        │ 2     │
+</span></span><span><span>│ 1833 │ US, Washington           │ 2     │
+</span></span><span><span>│ 2987 │ US, Washington, Bellevue │ 3     │
+</span></span><span><span>│ 3021 │ US, Washington, Everett  │ 3     │
+</span></span><span><span>│ 3039 │ US, Washington, Kent     │ 3     │
+</span></span><span><span>│ ...  │ ...                      │ ...   │
+</span></span><span><span>└──────┴──────────────────────────┴───────┘
+</span></span></code></pre></div><p>Sets? No problem: <code>UNION</code>, <code>INTERSECT</code>, <code>EXCEPT</code> are at your service.</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>select</span> <span>employer_id</span>
+</span></span><span><span><span>from</span> <span>employer_area</span>
+</span></span><span><span><span>where</span> <span>area_id</span> <span>=</span> <span>1</span>
+</span></span><span><span>
+</span></span><span><span><span>except</span>
+</span></span><span><span>
+</span></span><span><span><span>select</span> <span>employer_id</span>
+</span></span><span><span><span>from</span> <span>employer_area</span>
+</span></span><span><span><span>where</span> <span>area_id</span> <span>=</span> <span>2</span>;
+</span></span></code></pre></div><p>Calculate one column based on several others? Enter <a href="https://antonz.org/generated-columns/">generated columns</a>:</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>alter</span> <span>table</span> <span>vacancy</span>
+</span></span><span><span><span>add</span> <span>column</span> <span>salary_net</span> <span>integer</span> <span>as</span> (
+</span></span><span><span>  <span>case</span> <span>when</span> <span>salary_gross</span> <span>=</span> <span>true</span> <span>then</span>
+</span></span><span><span>    <span>round</span>(<span>salary_from</span><span>/</span><span>1</span>.<span>04</span>)
+</span></span><span><span>  <span>else</span>
+</span></span><span><span>    <span>salary_from</span>
+</span></span><span><span>  <span>end</span>
+</span></span><span><span>);
+</span></span></code></pre></div><p>Generated columns can be queried in the same way as 'normal' ones:</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>select</span>
+</span></span><span><span>  <span>substr</span>(<span>name</span>, <span>1</span>, <span>40</span>) <span>as</span> <span>name</span>,
+</span></span><span><span>  <span>salary_net</span>
+</span></span><span><span><span>from</span> <span>vacancy</span>
+</span></span><span><span><span>where</span>
+</span></span><span><span>  <span>salary_currency</span> <span>=</span> <span>'JPY'</span>
+</span></span><span><span>  <span>and</span> <span>salary_net</span> <span>is</span> <span>not</span> <span>null</span>
+</span></span><span><span><span>limit</span> <span>10</span>;
+</span></span></code></pre></div><h2 id="math-statistics">Math statistics</h2><p>Descriptive statistics? Easy: mean, median, percentiles, standard deviation, you name it. You'll have to load an extension, but it's also a single command (and a single file).</p><div><pre tabindex="0"><code data-lang="sql"><span><span>.<span>load</span> <span>sqlean</span><span>/</span><span>stats</span>
+</span></span><span><span>
+</span></span><span><span><span>select</span>
+</span></span><span><span>  <span>count</span>(<span>*</span>) <span>as</span> <span>book_count</span>,
+</span></span><span><span>  <span>cast</span>(<span>avg</span>(<span>num_pages</span>) <span>as</span> <span>integer</span>) <span>as</span> <span>mean</span>,
+</span></span><span><span>  <span>cast</span>(<span>median</span>(<span>num_pages</span>) <span>as</span> <span>integer</span>) <span>as</span> <span>median</span>,
+</span></span><span><span>  <span>mode</span>(<span>num_pages</span>) <span>as</span> <span>mode</span>,
+</span></span><span><span>  <span>percentile_90</span>(<span>num_pages</span>) <span>as</span> <span>p90</span>,
+</span></span><span><span>  <span>percentile_95</span>(<span>num_pages</span>) <span>as</span> <span>p95</span>,
+</span></span><span><span>  <span>percentile_99</span>(<span>num_pages</span>) <span>as</span> <span>p99</span>
+</span></span><span><span><span>from</span> <span>books</span>;
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="text"><span><span>┌────────────┬──────┬────────┬──────┬─────┬─────┬──────┐
+</span></span><span><span>│ book_count │ mean │ median │ mode │ p90 │ p95 │ p99  │
+</span></span><span><span>├────────────┼──────┼────────┼──────┼─────┼─────┼──────┤
+</span></span><span><span>│ 1483       │ 349  │ 295    │ 256  │ 640 │ 817 │ 1199 │
+</span></span><span><span>└────────────┴──────┴────────┴──────┴─────┴─────┴──────┘
+</span></span></code></pre></div><blockquote><p><strong>Note on extensions</strong>. SQLite is missing a lot of functions compared to other DBMSs like PostgreSQL. But they are easy to add, which is what people do - so it turns out quite a mess.</p><p>Therefore, I decided to make a consistent set of extensions, divided by domain area and compiled for major operating systems. Check it out:</p><p><a href="https://antonz.org/sqlean/">sqlean</a></p></blockquote><p>More fun with statistics. You can plot the data distribution right in the console. Look how cute it is:</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>with</span> <span>slots</span> <span>as</span> (
+</span></span><span><span>  <span>select</span>
+</span></span><span><span>    <span>num_pages</span><span>/</span><span>100</span> <span>as</span> <span>slot</span>,
+</span></span><span><span>    <span>count</span>(<span>*</span>) <span>as</span> <span>book_count</span>
+</span></span><span><span>  <span>from</span> <span>books</span>
+</span></span><span><span>  <span>group</span> <span>by</span> <span>slot</span>
+</span></span><span><span>),
+</span></span><span><span><span>max</span> <span>as</span> (
+</span></span><span><span>  <span>select</span> <span>max</span>(<span>book_count</span>) <span>as</span> <span>value</span>
+</span></span><span><span>  <span>from</span> <span>slots</span>
+</span></span><span><span>)
+</span></span><span><span><span>select</span>
+</span></span><span><span>  <span>slot</span>,
+</span></span><span><span>  <span>book_count</span>,
+</span></span><span><span>  <span>printf</span>(<span>'%.'</span> <span>||</span> (<span>book_count</span> <span>*</span> <span>30</span> <span>/</span> <span>max</span>.<span>value</span>) <span>||</span> <span>'c'</span>, <span>'*'</span>) <span>as</span> <span>bar</span>
+</span></span><span><span><span>from</span> <span>slots</span>, <span>max</span>
+</span></span><span><span><span>order</span> <span>by</span> <span>slot</span>;
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="text"><span><span>┌──────┬────────────┬────────────────────────────────┐
+</span></span><span><span>│ slot │ book_count │              bar               │
+</span></span><span><span>├──────┼────────────┼────────────────────────────────┤
+</span></span><span><span>│ 0    │ 116        │ *********                      │
+</span></span><span><span>│ 1    │ 254        │ ********************           │
+</span></span><span><span>│ 2    │ 376        │ ****************************** │
+</span></span><span><span>│ 3    │ 285        │ **********************         │
+</span></span><span><span>│ 4    │ 184        │ **************                 │
+</span></span><span><span>│ 5    │ 90         │ *******                        │
+</span></span><span><span>│ 6    │ 54         │ ****                           │
+</span></span><span><span>│ 7    │ 41         │ ***                            │
+</span></span><span><span>│ 8    │ 31         │ **                             │
+</span></span><span><span>│ 9    │ 15         │ *                              │
+</span></span><span><span>│ 10   │ 11         │ *                              │
+</span></span><span><span>│ 11   │ 12         │ *                              │
+</span></span><span><span>│ 12   │ 2          │ *                              │
+</span></span><span><span>└──────┴────────────┴────────────────────────────────┘
+</span></span></code></pre></div><h2 id="performance">Performance</h2><p>SQLite works with hundreds of millions of records just fine. Regular <code>INSERT</code>s show about 240K records per second on my laptop. And if you connect the CSV file as a virtual table (there is an extension for that) - inserts become 2 times faster.</p><div><pre tabindex="0"><code data-lang="sql"><span><span>.<span>load</span> <span>sqlean</span><span>/</span><span>vsv</span>
+</span></span><span><span>
+</span></span><span><span><span>create</span> <span>virtual</span> <span>table</span> <span>temp</span>.<span>blocks_csv</span> <span>using</span> <span>vsv</span>(
+</span></span><span><span>    <span>filename</span><span>=</span><span>"ipblocks.csv"</span>,
+</span></span><span><span>    <span>schema</span><span>=</span><span>"create table x(network text, geoname_id integer, registered_country_geoname_id integer, represented_country_geoname_id integer, is_anonymous_proxy integer, is_satellite_provider integer, postal_code text, latitude real, longitude real, accuracy_radius integer)"</span>,
+</span></span><span><span>    <span>columns</span><span>=</span><span>10</span>,
+</span></span><span><span>    <span>header</span><span>=</span><span>on</span>,
+</span></span><span><span>    <span>nulls</span><span>=</span><span>on</span>
+</span></span><span><span>);
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="sql"><span><span>.<span>timer</span> <span>on</span>
+</span></span><span><span><span>insert</span> <span>into</span> <span>blocks</span> <span>select</span> <span>*</span> <span>from</span> <span>blocks_csv</span>;
+</span></span><span><span><span>-- Run Time: real 5.176 user 4.716420 sys 0.403866
+</span></span></span></code></pre></div><div><pre tabindex="0"><code data-lang="sql"><span><span><span>select</span> <span>count</span>(<span>*</span>) <span>from</span> <span>blocks</span>;
+</span></span><span><span><span>-- 3386629
+</span></span></span><span><span><span>-- Run Time: real 0.095 user 0.021972 sys 0.063716
+</span></span></span></code></pre></div><p>There is a popular opinion among developers that SQLite is not suitable for the web, because it doesn't support concurrent access. This is a myth. In the write-ahead log mode (available since long ago), there can be as many concurrent readers as you want. There can be only one concurrent writer, but often one is enough.</p><p>SQLite is a perfect fit for small websites and applications. <a href="https://sqlite.org/">sqlite.org</a> uses SQLite as a database, not bothering with optimization (≈200 requests per page). It handles 700K visits per month and serves pages faster than 95% of websites I've seen.</p><h2 id="documents-graphs-and-search">Documents, graphs, and search</h2><p>SQLite supports partial indexes and indexes on expressions, as 'big' DBMSs do. You can build indexes on generated columns and even turn SQLite into a <a href="https://antonz.org/json-virtual-columns/">document database</a>. Just store raw JSON and build indexes on <code>json_extract()</code>-ed columns:</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>create</span> <span>table</span> <span>currency</span>(
+</span></span><span><span>  <span>body</span> <span>text</span>,
+</span></span><span><span>  <span>code</span> <span>text</span> <span>as</span> (<span>json_extract</span>(<span>body</span>, <span>'$.code'</span>)),
+</span></span><span><span>  <span>name</span> <span>text</span> <span>as</span> (<span>json_extract</span>(<span>body</span>, <span>'$.name'</span>))
+</span></span><span><span>);
+</span></span><span><span>
+</span></span><span><span><span>create</span> <span>index</span> <span>currency_code_idx</span> <span>on</span> <span>currency</span>(<span>code</span>);
+</span></span><span><span>
+</span></span><span><span><span>insert</span> <span>into</span> <span>currency</span>
+</span></span><span><span><span>select</span> <span>value</span>
+</span></span><span><span><span>from</span> <span>json_each</span>(<span>readfile</span>(<span>'currency.sample.json'</span>));
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="sql"><span><span><span>explain</span> <span>query</span> <span>plan</span>
+</span></span><span><span><span>select</span> <span>name</span> <span>from</span> <span>currency</span> <span>where</span> <span>code</span> <span>=</span> <span>'EUR'</span>;
+</span></span><span><span>
+</span></span><span><span><span>QUERY</span> <span>PLAN</span>
+</span></span><span><span><span>`</span><span>--SEARCH TABLE currency USING INDEX currency_code_idx (code=?)
+</span></span></span></code></pre></div><blockquote><p><strong>Note</strong>. You can also use SQLite as a graph database. A bunch of complex <code>WITH RECURSIVE</code> will do the trick, or maybe you'll prefer to add a bit of Python:</p><p><a href="https://github.com/dpapathanasiou/simple-graph">simple-graph</a></p></blockquote><p>Full-text search works out of the box:</p><div><pre tabindex="0"><code data-lang="sql"><span><span><span>create</span> <span>virtual</span> <span>table</span> <span>books_fts</span>
+</span></span><span><span><span>using</span> <span>fts5</span>(<span>title</span>, <span>author</span>, <span>publisher</span>);
+</span></span><span><span>
+</span></span><span><span><span>insert</span> <span>into</span> <span>books_fts</span>
+</span></span><span><span><span>select</span> <span>title</span>, <span>author</span>, <span>publisher</span> <span>from</span> <span>books</span>;
+</span></span><span><span>
+</span></span><span><span><span>select</span>
+</span></span><span><span>  <span>author</span>,
+</span></span><span><span>  <span>substr</span>(<span>title</span>, <span>1</span>, <span>30</span>) <span>as</span> <span>title</span>,
+</span></span><span><span>  <span>substr</span>(<span>publisher</span>, <span>1</span>, <span>10</span>) <span>as</span> <span>publisher</span>
+</span></span><span><span><span>from</span> <span>books_fts</span>
+</span></span><span><span><span>where</span> <span>books_fts</span> <span>match</span> <span>'ann'</span>
+</span></span><span><span><span>limit</span> <span>5</span>;
+</span></span></code></pre></div><div><pre tabindex="0"><code data-lang="text"><span><span>┌─────────────────────┬────────────────────────────────┬────────────┐
+</span></span><span><span>│       author        │             title              │ publisher  │
+</span></span><span><span>├─────────────────────┼────────────────────────────────┼────────────┤
+</span></span><span><span>│ Ruby Ann Boxcar     │ Ruby Ann's Down Home Trailer P │ Citadel    │
+</span></span><span><span>│ Ruby Ann Boxcar     │ Ruby Ann's Down Home Trailer P │ Citadel    │
+</span></span><span><span>│ Lynne Ann DeSpelder │ The Last Dance: Encountering D │ McGraw-Hil │
+</span></span><span><span>│ Daniel Defoe        │ Robinson Crusoe                │ Ann Arbor  │
+</span></span><span><span>│ Ann Thwaite         │ Waiting for the Party: The Lif │ David R. G │
+</span></span><span><span>└─────────────────────┴────────────────────────────────┴────────────┘
+</span></span></code></pre></div><p>Maybe you need an in-memory database for intermediate computations? Single line of python code:</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>db</span> <span>=</span> <span>sqlite3</span><span>.</span><span>connect</span>(<span>":memory:"</span>)
+</span></span></code></pre></div><p>You can even access it from multiple connections:</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>db</span> <span>=</span> <span>sqlite3</span><span>.</span><span>connect</span>(<span>"file::memory:?cache=shared"</span>)
+</span></span></code></pre></div><h2 id="and-so-much-more">And so much more</h2><p>There are fancy <a href="https://antonz.org/sql-window-functions-book">window functions</a>. <a href="https://antonz.org/sql-upsert/">Upsert</a>, <a href="https://sqlite.org/lang_update.html#update_from">update from</a> and <a href="https://sqlite.org/rtree.html">R-tree indexes</a>. <a href="https://antonz.org/sqlean-regexp/">Regular expressions</a>, <a href="https://github.com/nalgeon/sqlean/blob/main/docs/fuzzy.md">fuzzy search</a> and <a href="https://antonz.org/sqlean-define/">dynamic SQL</a>. In terms of features, SQLite can compete with any 'big' DBMS.</p><p>I hope this article will inspire you to try SQLite. Thanks for reading!</p><p>──</p><p>P.S. <mark>Interested in learning advanced SQLite features?</mark> Check out my book — <a href="https://antonz.org/sql-window-functions-book">SQL&nbsp;Window&nbsp;Functions&nbsp;Explained</a></p><p><a href="https://antonz.org/subscribe/">★&nbsp;Subscribe</a> to keep up with new posts.</p></div></article></div></div>
+  </div>
+</body>
+</html>

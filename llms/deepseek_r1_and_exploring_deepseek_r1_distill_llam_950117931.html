@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DeepSeek-R1 and exploring DeepSeek-R1-Distill-Llama-8B</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>DeepSeek-R1 and exploring DeepSeek-R1-Distill-Llama-8B</h1>
+    <p><strong>URL:</strong> <a href="https://simonwillison.net/2025/Jan/20/deepseek-r1/#atom-everything">https://simonwillison.net/2025/Jan/20/deepseek-r1/#atom-everything</a></p>
+    <p><strong>Tags:</strong> llms, llm-willison</p>
+    <p><strong>Bookmark ID:</strong> 950117931</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-permalink-context="/2025/Jan/20/deepseek-r1/">
+
+<p>20th January 2025</p>
+
+
+
+<p>DeepSeek are the Chinese AI lab who dropped the best currently available open weights LLM <a href="https://simonwillison.net/2024/Dec/26/deepseek-v3/">on Christmas day</a>, DeepSeek v3. That model was trained in part using their unreleased R1 “reasoning” model. Today <a href="https://github.com/deepseek-ai/DeepSeek-R1">they’ve released R1 itself</a>, along with a whole family of new models derived from that base.</p>
+<p>There’s a whole lot of stuff in the new release.</p>
+<p><strong>DeepSeek-R1-Zero</strong> appears to be the base model. It’s <a href="https://huggingface.co/deepseek-ai/DeepSeek-R1-Zero/tree/main">over 650GB</a> in size and, like most of their other releases, is <a href="https://huggingface.co/deepseek-ai/DeepSeek-R1-Zero/blob/main/LICENSE">under a clean MIT license</a>. DeepSeek warn that “DeepSeek-R1-Zero encounters challenges such as endless repetition, poor readability, and language mixing.” ... so they also released:</p>
+<p><strong>DeepSeek-R1</strong>—which “incorporates cold-start data before RL” and “achieves performance comparable to OpenAI-o1 across math, code, and reasoning tasks”. That one is also MIT licensed, and is a similar size.</p>
+<p>I don’t have the ability to run models larger than about 50GB (I have an M2 with 64GB of RAM), so neither of these two models are something I can easily play with myself. That’s where the new <strong>distilled models</strong> come in.</p>
+<blockquote>
+<p>To support the research community, we have open-sourced DeepSeek-R1-Zero, DeepSeek-R1, and six dense models distilled from DeepSeek-R1 based on Llama and Qwen.</p>
+</blockquote>
+<p>This is a fascinating flex! They have models based on Qwen 2.5 (14B, 32B, Math 1.5B and Math 7B) and Llama 3 (Llama-3.1 8B and Llama 3.3 70B Instruct).</p>
+<p>Weirdly those Llama models have an MIT license attached, which I’m not sure is compatible with the underlying Llama license. Qwen models are Apache licensed so maybe MIT is OK?</p>
+<p>(I also <a href="https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B/commit/c79f47acaf303faabb7133b4b7b76f24231f2c8d#d2h-740129">just noticed</a> the MIT license files say “Copyright (c) 2023 DeepSeek” so they may need to pay a little bit more attention to how they copied those in.)</p>
+<p>Licensing aside, these distilled models are fascinating beasts.</p>
+<h4 id="running-deepseek-r1-distill-llama-8b-gguf">Running DeepSeek-R1-Distill-Llama-8B-GGUF <a href="#running-deepseek-r1-distill-llama-8b-gguf">#</a></h4>
+<p>Quantized versions are already starting to show up. So far I’ve tried just one of those— <code>unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF</code> released by <a href="https://unsloth.ai/">Unsloth AI</a>—and it’s really fun to play with.</p>
+<p>I’m running it using the combination of <a href="https://ollama.com/">Ollama</a>, <a href="https://llm.datasette.io/">LLM</a> and the <a href="https://github.com/taketwo/llm-ollama">llm-ollama plugin</a>.</p>
+<p>First I fetched and ran the model using Ollama itself:</p>
+<pre><code>ollama run hf.co/unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF:Q8_0
+</code></pre>
+<p>This downloads around 8.5GB of model data and starts an interactive chat interface.</p>
+<p>Once the model has been fetched, LLM can talk to it as well. I prefer using LLM for experiments because it <a href="https://llm.datasette.io/en/stable/logging.html">logs everything to SQLite</a> for later exploration.</p>
+<p>I installed the plugin and ran it like this:</p>
+<pre><code>llm install llm-ollama
+llm -m 'hf.co/unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF:Q8_0' \
+  'a joke about a pelican and a walrus who run a tea room together'
+</code></pre>
+<p>Each response starts with a <code>&lt;think&gt;...&lt;/think&gt;</code> pseudo-XML tag containing the chain of thought used to help generate the response. For “a joke about a pelican and a walrus who run a tea room together” that started like this:</p>
+<blockquote>
+<p><code>&lt;think&gt;</code><br>
+Okay, so I need to come up with a joke about a pelican and a walrus running a tea room together. Hmm, that’s an interesting combination. Let me think about how these two characters might interact in a humorous situation.</p>
+<p>First, let’s consider their characteristics. Pelicans are known for their long beaks and Webbed feet, often seen near the beach or water. Walruses have big teeth, thick fur, and they’re generally found in colder climates, like icebergs or snowy areas. So, combining these two into a tea room setting is already a funny image.</p>
+<p>[...]</p>
+</blockquote>
+<p>It then thought for <em>20 paragraphs</em> before outputting the joke! Here’s <a href="https://gist.github.com/simonw/f505ce733a435c8fc8fdf3448e3816b0">the full transcript</a> and here’s the output at the end, after the <code>&lt;/think&gt;</code> tag:</p>
+<blockquote>
+<p><strong>The Joke:</strong></p>
+<p>A pelican and a walrus decide to open a quaint little tea room together. The walrus, with its big size, struggles to find comfortable chairs, so it sits on the table by accident, knocking over the teapot. Meanwhile, the pelican, trying to help, uses its beak to place saucers on the table, causing a few spills.</p>
+<p>After a series of comical mishaps, the walrus looks up and says with a grin, “This isn’t so fishy anymore.” The pelican smirks and remarks, “Maybe not, but we do have a lot of krill in our tea!”</p>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li>
+<strong>Setup:</strong> Pelican and Walrus run an unlikely tea room. Their sizes lead to comedic chaos.</li>
+<li>
+<strong>Punchline:</strong> “This isn’t so fishy anymore” is a pun on the situation becoming less absurd. The follow-up joke introduces “krill,” a play on words that ties into both marine life (“fish”) and tea, making it humorous while fitting the theme.</li>
+</ul>
+</blockquote>
+<p>So yeah, the joke is <em>awful</em>. But the process of getting there was such an interesting insight into how these new models work.</p>
+<p>This was a relatively small 8B model. I’m looking forward to trying out the <a href="https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Llama-70B">Llama 70B version</a>, which isn’t yet available in a GGUF I can run with Ollama. Given <a href="https://simonwillison.net/2024/Dec/9/llama-33-70b/">the strength of Llama 3.3 70B</a>—currently my favourite GPT-4 class model that I’ve run on my own machine—I have high expectations.</p>
+<h4 id="can-it-draw-a-pelican-">Can it draw a pelican? <a href="#can-it-draw-a-pelican-">#</a></h4>
+<p>I tried <a href="https://github.com/simonw/pelican-bicycle">my classic</a> <code>Generate an SVG of a pelican riding a bicycle</code> prompt too. It <a href="https://gist.github.com/simonw/ddd21a016cd7be74fd3e18407e1e313e">did not do very well</a>:</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICA8IS0tIEJpY3ljbGUgLS0+CiAgPGcgaWQ9ImJpY3ljbGUiPgogICAgPCEtLSBGcmFtZSAtLT4KICAgIDxwYXRoIGQ9Ik0gMjAsMzAgTCAxMDAsMzAgUSAyNjAsMzAgMjkwLDcwIEwgMjkwLDE1MCBRIDI1MCwxOTAgMjEwLDE5MCBMIDE0MCwxOTAgUSA1MCwxOTAgMTAsMjMwIEwgMTAsMzAgWiIgZmlsbD0id2hpdGUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPgogICAgCiAgICA8IS0tIEZyb250IFdoZWVsIC0tPgogICAgPGNpcmNsZSBjeD0iNjAiIGN5PSI0MCIgcj0iMTUiIGZpbGw9IndoaXRlIi8+CiAgICAKICAgIDwhLS0gQmFjayBXaGVlbHMgLS0+CiAgICA8ZWxsaXBzZSBjeD0iMTgwIiBjeT0iNDAiIHJ4PSI4IiByeT0iOCIgZmlsbD0id2hpdGUiLz4KICAgIDxlbGxpcHNlIGN4PSIyODAiIGN5PSI0MCIgcng9IjgiIHJ5PSI4IiBmaWxsPSJ3aGl0ZSIvPgogICAgCiAgICA8IS0tIFNlYXQgLS0+CiAgICA8cGF0aCBkPSJNIDEyMCwxNTAgTCAxNDAsMTUwIFEgMTYwLDE3MCAxODAsMTcwIEwgMjAwLDE3MCBRIDIyMCwxOTAgMjEwLDE5MCBMIDE4MCwxOTAgUSAxNjAsMjEwIDE0MCwyMTAgTCAxMjAsMjEwIFoiIGZpbGw9IndoaXRlIi8+CiAgICAKICAgIDwhLS0gSGFuZGxlYmFycyAtLT4KICAgIDxwYXRoIGQ9Ik0gMTMwLDMwIEMgMTEwLDIwIDkwLDEwIDcwLDEwIFMgNTAsMCA0MCwwIEwgNDAsNSBaIiBmaWxsPSJ3aGl0ZSIvPgogICAgPGxpbmUgeDE9IjE0MCIgeTE9IjE1IiB4Mj0iMTgwIiB5Mj0iMTUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMyIvPgogICAgCiAgICA8IS0tIFBlZGFscyAtLT4KICAgIDxjaXJjbGUgY3g9IjE1MCIgY3k9IjIwIiByPSIxMCIgZmlsbD0id2hpdGUiLz4KICAgIDxjaXJjbGUgY3g9IjE5MCIgY3k9IjIwIiByPSIxMCIgZmlsbD0id2hpdGUiLz4KICA8L2c+CgogIDwhLS0gUGVsaWNhbiAtLT4KICA8ZyBpZD0icGVsaWNhbiI+CiAgICA8IS0tIEJvZHkgLS0+CiAgICA8ZWxsaXBzZSBjeD0iMTgwIiBjeT0iMTAwIiByeD0iNDAiIHJ5PSIzMCIgZmlsbD0id2hpdGUiLz4KICAgIAogICAgPCEtLSBOZWNrIC0tPgogICAgPHBhdGggZD0iTSAxNjAsMTEwIEwgMTkwLDEzMCBaIi8+CiAgICAKICAgIDwhLS0gSGVhZCAtLT4KICAgIDxjaXJjbGUgY3g9IjE4NSIgY3k9IjEyMCIgcj0iMTUiIGZpbGw9InllbGxvdyIvPgogICAgPHBvbHlnb24gcG9pbnRzPSIxODUsMTIzIDE4OCwxMjcgMTg1LDEyNSIgZmlsbD0iYmxhY2siLz4KICAgIAogICAgPCEtLSBCZWFrIC0tPgogICAgPHBvbHlnb24gcG9pbnRzPSIxODUsMTIyIDE5MCwxMTggMTk1LDEyMiIgZmlsbD0ib3JhbmdlIi8+CiAgICAKICAgIDwhLS0gV2luZ3MgLS0+CiAgICA8cGF0aCBkPSJNIDE0MCw5MCBRIDEzMCwxMDAgMTIwLDk1IEwgMTIwLDg1IEwgMTE1LDg1IFEgMTI1LDgwIDEzNSw4MCBaCiAgICAgICAgICBNIDIwMCw5NSBRIDIxMCwxMDAgMjE1LDk1IEwgMjE1LDg1IEwgMjIwLDg1IFEgMjI1LDgwIDIxNSw4MCBaIiBmaWxsPSJ3aGl0ZSIvPgogICAgCiAgICA8IS0tIEZlZXQgLS0+CiAgICA8Y2lyY2xlIGN4PSIxNzUiIGN5PSIxNTAiIHI9IjgiIGZpbGw9Im9yYW5nZSIvPgogICAgPGNpcmNsZSBjeD0iMTg1IiBjeT0iMTUwIiByPSI4IiBmaWxsPSJvcmFuZ2UiLz4KICA8L2c+CgogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0ic2t5Ymx1ZSIvPgogIAogIDwhLS0gR3JvdW5kIC0tPgogIDxwYXRoIGQ9Ik0gMCwyNzAgTCA0MDAsMjcwIiBmaWxsPSIjODg4Ii8+CiAgCiAgPCEtLSBDbG91ZHMgLS0+CiAgPGcgaWQ9ImNsb3VkcyI+CiAgICA8cGF0aCBkPSJNIDUwLDIwMCBMIDEwMCwyMjAgUSAxMjUsMjM1IDE1MCwyMzAgTCAyNTAsMjMwIFEgMjgwLDIzNSAzMTAsMjIwIEwgMzYwLDIyMCBaIgogICAgICAgICAgZmlsbD0id2hpdGUiLz4KICAgIDxwYXRoIGQ9Ik0gMTgwLDIxMCBMIDI0MCwxOTAgUSAyNzAsMTc1IDMwMCwxOTAgTCAzODAsMTkwIFEgMzUwLDIwNSAzMjAsMjEwIFoiCiAgICAgICAgICBmaWxsPSJ3aGl0ZSIvPgogIDwvZz4KPC9zdmc+" alt="Blue square, abstract white shape on it"></p>
+<p>It looked to me like it got the order of the elements wrong, so I followed up with:</p>
+<blockquote>
+<p><code>the background ended up covering the rest of the image</code></p>
+</blockquote>
+<p>It <a href="https://gist.github.com/simonw/ddd21a016cd7be74fd3e18407e1e313e#response-1">thought some more</a> and gave me this:</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICA8IS0tIEJpY3ljbGUgLS0+CiAgPGcgaWQ9ImJpY3ljbGUiPgogICAgPCEtLSBGcmFtZSAtLT4KICAgIDxyZWN0IHg9IjUwIiB5PSIxNTAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI2MCIgZmlsbD0iIzMzMyIvPgogICAgPCEtLSBTZWF0IC0tPgogICAgPHBhdGggZD0iTSAxNjAsMjAwIEwgMjIwLDIwMCBRIDI0MCwyMTAgMjYwLDIwMCBMIDM0MCwyMDAgUSAzNjAsMTkwIDMyMCwxOTAgTCAxNDAsMTkwIiAKICAgICAgICAgIHN0cm9rZT0iIzY2NiIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxMCIvPgogICAgPCEtLSBIYW5kbGViYXJzIC0tPgogICAgPHJlY3QgeD0iMTcwIiB5PSIxMDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSI2MCIgZmlsbD0iIzMzMyIvPgogICAgPHJlY3QgeD0iMjcwIiB5PSIxMDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSI2MCIgZmlsbD0iIzMzMyIvPgogICAgPCEtLSBQZWRhbHMgLS0+CiAgICA8Y2lyY2xlIGN4PSIxOTAiIGN5PSIxNTAiIHI9IjEwIiBmaWxsPSIjNjY2Ii8+CiAgICA8Y2lyY2xlIGN4PSIyOTAiIGN5PSIxNTAiIHI9IjEwIiBmaWxsPSIjNjY2Ii8+CiAgICA8IS0tIFdoZWVsIC0tPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTEwIiByPSIxNSIgZmlsbD0iIzMzMyIvPgogIDwvZz4KCiAgPCEtLSBQZWxpY2FuIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1MCwxMDApIiBpZD0icGVsaWNhbiI+CiAgICA8IS0tIEJvZHkgLS0+CiAgICA8ZWxsaXBzZSBjeD0iMCIgY3k9IjUwIiByeD0iMjAiIHJ5PSIzMCIgZmlsbD0iI0Y0QTQ2MCIvPgogICAgPCEtLSBOZWNrIC0tPgogICAgPGxpbmUgeDE9IjQwIiB5MT0iNjAiIHgyPSI3MCIgeTI9IjYwIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iOCIvPgogICAgPCEtLSBCZWFrIC0tPgogICAgPHBvbHlnb24gcG9pbnRzPSI4MCw1MCA4NSw0NSA5MCw1MCIgZmlsbD0iI0ZERDcwMCIvPgogICAgPCEtLSBFeWUgLS0+CiAgICA8Y2lyY2xlIGN4PSI3NSIgY3k9IjU1IiByPSIzIiBmaWxsPSJ3aGl0ZSIvPgogICAgPCEtLSBXaW5nIC0tPgogICAgPHBhdGggZD0iTSAwLDYwIFEgLTIwLDcwIDAsODAgTCAxMCw4MCBDIDE1LDg1IDMwLDkwIDQwLDg1IFoiIGZpbGw9IiNGNEE0NjAiLz4KICAgIAogICAgPCEtLSBMZWZ0IFdpbmcgLS0+CiAgICA8cGF0aCBkPSJNIDE0MCw2MCBRIDEyMCw1NSAxMTAsNjAgTCAxMDAsNjAgQyA5NSw2NSA5MCw3MCAxMTAsODAgWiIgZmlsbD0iI0Y0QTQ2MCIvPgogICAgCiAgICA8IS0tIExlZ3MgLS0+CiAgICA8Y2lyY2xlIGN4PSIxNTAiIGN5PSIxODAiIHI9IjEwIiBmaWxsPSIjNjY2Ii8+CiAgICA8Y2lyY2xlIGN4PSIyNDAiIGN5PSIxODAiIHI9IjEwIiBmaWxsPSIjNjY2Ii8+CiAgPC9nPgoKICA8IS0tIEJhY2tncm91bmQgRWxlbWVudHMgLS0+CiAgPCEtLSBTa3kgLS0+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiM4N0NFRUIiLz4KICAKICA8IS0tIEdyb3VuZCAtLT4KICA8cmVjdCB4PSIwIiB5PSIyNzAiIHdpZHRoPSI0MDAiIGhlaWdodD0iMzAiIGZpbGw9IiM4QjQ1MTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMjUwKSIvPgo8L3N2Zz4=" alt="Blue square, abstract white shape on it"></p>
+<p>As with the earlier joke, the chain of thought in the transcript was far more interesting than the end result.</p>
+
+
+</div></div>
+  </div>
+</body>
+</html>

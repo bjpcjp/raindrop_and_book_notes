@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Fingerprinting - MozillaWiki</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Fingerprinting - MozillaWiki</h1>
+    <p><strong>URL:</strong> <a href="https://wiki.mozilla.org/Fingerprinting">https://wiki.mozilla.org/Fingerprinting</a></p>
+    <p><strong>Tags:</strong> browsers</p>
+    <p><strong>Bookmark ID:</strong> 876776548</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="mw-content-text" lang="en" dir="ltr"><div id="toc"><p id="toctitle"><h2>Contents</h2></p>
+<ul>
+<li><a href="#Overview"><span>1</span> <span>Overview</span></a></li>
+<li><a href="#Data"><span>2</span> <span>Data</span></a>
+<ul>
+<li><a href="#Plugins"><span>2.1</span> <span>Plugins</span></a></li>
+<li><a href="#Fonts"><span>2.2</span> <span>Fonts</span></a></li>
+<li><a href="#User_Agent"><span>2.3</span> <span>User Agent</span></a></li>
+<li><a href="#HTTP_ACCEPT"><span>2.4</span> <span>HTTP ACCEPT</span></a></li>
+<li><a href="#Screen_resolution"><span>2.5</span> <span>Screen resolution</span></a></li>
+<li><a href="#Timezone"><span>2.6</span> <span>Timezone</span></a></li>
+<li><a href="#Supercookies"><span>2.7</span> <span>Supercookies</span></a></li>
+<li><a href="#Cookies_enabled"><span>2.8</span> <span>Cookies enabled</span></a></li>
+</ul>
+</li>
+<li><a href="#Extra_credit"><span>3</span> <span>Extra credit</span></a>
+<ul>
+<li><a href="#Other_data_acquired_via_plugins"><span>3.1</span> <span>Other data acquired via plugins</span></a></li>
+<li><a href="#Clock_skew_measurements"><span>3.2</span> <span>Clock skew measurements</span></a></li>
+<li><a href="#TCP_stack"><span>3.3</span> <span>TCP stack</span></a></li>
+<li><a href="#JS_behavioral_tests"><span>3.4</span> <span>JS behavioral tests</span></a></li>
+<li><a href="#Recommend_privacy-related_addons_and_services"><span>3.5</span> <span>Recommend privacy-related addons and services</span></a></li>
+<li><a href="#User_interface"><span>3.6</span> <span>User interface</span></a></li>
+<li><a href="#HTML5_Canvas"><span>3.7</span> <span>HTML5 Canvas</span></a></li>
+</ul>
+</li>
+<li><a href="#See_Also"><span>4</span> <span>See Also</span></a></li>
+</ul>
+</div>
+
+<h2><span id="Overview">Overview</span></h2>
+<p>The EFF published an excellent study in May, detailing some of the various methods of fingerprinting a browser. See <a rel="nofollow" href="http://www.eff.org/deeplinks/2010/05/every-browser-unique-results-fom-panopticlick">http://www.eff.org/deeplinks/2010/05/every-browser-unique-results-fom-panopticlick</a>. They found that, over their study of around 1 million visits to their study website, <b>83.6% of the browsers seen had a unique fingerprint; among those with Flash or Java enabled, 94.2%</b>. This does <b>not</b> include cookies! They ranked the various bits of information in order of importance (i.e. how useful they are in uniquely identifying a browser): things like UA string, what addons are installed, and the font list of the system. We need to go through these, one by one, and do what we can to reduce the number of bits of information (entropy) it provides. In their study, they placed a lower bound on the fingerprint distribution of 18.1 bits of entropy. (This means that, choosing a browser at random, at best one in 286,777 other browsers will share its fingerprint.)
+</p>
+<h2><span id="Data">Data</span></h2>
+<p>The following data is taken from the published paper, <a rel="nofollow" href="https://panopticlick.eff.org/browser-uniqueness.pdf">https://panopticlick.eff.org/browser-uniqueness.pdf</a>:
+</p>
+<center>
+<table>
+<caption> <b>Entropy of various pieces of browser information</b>
+</caption>
+<tbody><tr>
+<td> <b>Variable</b> </td>
+<td> <b>Entropy (bits)</b>
+</td></tr>
+<tr>
+<td> plugins </td>
+<td> 15.4
+</td></tr>
+<tr>
+<td> fonts </td>
+<td> 13.9
+</td></tr>
+<tr>
+<td> user agent </td>
+<td> 10.0
+</td></tr>
+<tr>
+<td> http accept </td>
+<td> 6.09
+</td></tr>
+<tr>
+<td> screen resolution </td>
+<td> 4.83
+</td></tr>
+<tr>
+<td> timezone </td>
+<td> 3.04
+</td></tr>
+<tr>
+<td> supercookies </td>
+<td> 2.12
+</td></tr>
+<tr>
+<td> cookies enabled </td>
+<td> 0.353
+</td></tr></tbody></table>
+</center>
+<p>In all cases, data was either collected or inferred via HTTP, or collected by JS code and posted back to the server via AJAX.
+</p>
+<h2><span id="Plugins">Plugins</span></h2>
+<p>The PluginDetect JS library was used to check for 8 common plugins on that platform, plus extra code to estimate the Acrobat Reader version. Data sent by AJAX post.
+</p><p>IE does not allow enumeration via <code>navigator.plugins[]</code>. Starting in Firefox 28 (<a rel="nofollow" href="https://bugzilla.mozilla.org/show_bug.cgi?id=757726">bug 757726</a>), Firefox restricts which plugins are visible to content enumerating <code>navigator.plugins[]</code>. This change does not disable any plugins; it just hides some plugin names from enumeration. Websites can still check whether a particular hidden plugin is installed by directly querying <code>navigator.plugins[]</code> like <code>navigator.plugins["Silverlight Plug-In"]</code>.
+</p><p>This code change will reduce browser uniqueness by "cloaking" uncommon plugin names from <code>navigator.plugins[]</code> enumeration. If a website does not use the "Adobe Acrobat NPAPI Plug-in, Version 11.0.02" plugin, why does it need to know that the "Adobe Acrobat NPAPI Plug-in, Version 11.0.02" plugin is installed? If a website does need to know whether the plugin is installed or meets minimum version requirements, it can still check <code>navigator.plugins["Adobe Acrobat NPAPI Plug-in, Version 11.0.02"]</code> or <code>navigator.mimeTypes["application/vnd.fdf"].enabledPlugin</code> (to workaround problem plugins that short-sightedly include version numbers in their names, thus allow only individual plugin versions to be queried).
+</p><p>For example, the following JavaScript reveals my installed plugins:
+</p>
+<pre>for (plugin of navigator.plugins) { console.log(plugin.name); }
+
+"Shockwave Flash"
+"QuickTime Plug-in 7.7.3"
+"Default Browser Helper"
+"Unity Player"
+"Google Earth Plug-in"
+"Silverlight Plug-In"
+"Java Applet Plug-in"
+"Adobe Acrobat NPAPI Plug-in, Version 11.0.02"
+"WacomTabletPlugin"
+
+navigator.plugins["Unity Player"].name // get cloaked plugin by name
+"Unity Player"
+</pre>
+<p>But with plugin cloaking, the same JavaScript will not reveal as much personally-identifying information about my browser because all plugin names except Flash, Shockwave (Director), Java, and QuickTime are hidden from <code>navigator.plugins[]</code> enumeration:
+</p>
+<pre>for (plugin of navigator.plugins) { console.log(plugin.name); }
+
+"Shockwave Flash"
+"QuickTime Plug-in 7.7.3"
+"Java Applet Plug-in"
+</pre>
+<p>In theory, all plugin names could be cloaked because web content can query navigator.plugins[] by plugin name. Unfortunately, we could not cloak all plugin names because many popular websites check for Flash or QuickTime by enumerating navigator.plugins[] and comparing plugin names one by one, instead of just asking for navigator.plugins["Shockwave Flash"] by name. These websites should be fixed.
+</p><p>The policy of which plugin names are uncloaked can be changed in the about:config pref <code>plugins.enumerable_names</code>. The pref’s value is a comma-separated list of plugin name prefixes (so the prefix "QuickTime" will match both "QuickTime Plug-in 6.4" and "QuickTime Plug-in 7.7.3"). The default pref cloaks all plugin names except Flash, Shockwave (Director), Java, and QuickTime. To cloak all plugin names, set the pref to the empty string "" (without quotes). To cloak no plugin names, set the pref to magic value "*" (without quotes).
+</p>
+<h2><span id="Fonts">Fonts</span></h2>
+<p>System fonts collected by Flash or Java applet, if installed, and sent via AJAX post. Font list was not sorted, which provides a bit or two of additional entropy. We can ask Adobe to either limit this list by default; or ask them to implement an API such that we can provide the list to them; or (made possible by OOPP) replace the OS API calls they use to get the font list, and give them our own. None of these things are easy, but given that this is #1, we should definitely do something here. The fastest option is probably to hack the OS API calls ourselves.
+</p><p>Font lists can also be determined by CSS introspection. We could perhaps reduce the available set to a smaller number of common fonts; and back off (exponentially?) if script attempts to brute-force the list. Could require that sites provide unusual fonts via WOFF?
+</p>
+<h2><span id="User_Agent">User Agent</span></h2>
+<p>Detected from HTTP header. Pretty simple fix, but has the potential for breakage (as with any UA change!). For instance: <code>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1.7) Gecko/20100106 
+Ubuntu/9.10 (karmic) Firefox/3.5.7</code>. Remedies: remove the last point digit in the Firefox and Gecko versions, and the Gecko build date; for Linux, remove distribution and version; possibly remove CPU. Windows is actually the least unique since the OS version string only identifies the major version (e.g. XP), and by far the majority of users are on it.
+</p><p>Remove language and "Firefox" as well?
+</p><p>Boris Zbarsky points out that most parts of the UA lead to bad sniffing.  Irish "ga-IE" and "Minef<b>ie</b>ld" get detected as IE.  Sites incorrectly sniff based on OS.  Sites sniff for Gecko years rather than Gecko versions.  Going from 3.0.9 to 3.0.10 probably breaks things.  And quite a few sites sniff for "Firefox", which is a threat to the continued freedom of the web.  So removing things from the UA string has a long-term positive effect on compatibility as well as privacy.
+</p>
+<dl><dd>There is another issue with UA spoofing. For some reason, Components.classes and Components.interfaces exist in the content-window javascript namespace. Gregory Fleischer used this to test for the existence of ephemeral interfaces to <a rel="nofollow" href="http://pseudo-flaw.net/tor/torbutton/fingerprint-firefox.html">fingerprint both OS and Firefox version</a>, down to the minor revision (FF3.5.3 was the latest release at the time). He has a <a rel="nofollow" href="http://pseudo-flaw.net/content/defcon/dc-17-demos/">number of other fingerprinting demos</a> you should investigate as well. -- <a href="https://wiki.mozilla.org/index.php?title=User:Mikeperry&amp;action=edit&amp;redlink=1" title="User:Mikeperry (page does not exist)">mikeperry</a></dd></dl>
+
+<dl><dd>Filed <a rel="nofollow" href="https://bugzilla.mozilla.org/show_bug.cgi?id=http-fingerprint">bugs</a>. <a href="https://wiki.mozilla.org/index.php?title=User:Hsivonen&amp;action=edit&amp;redlink=1" title="User:Hsivonen (page does not exist)">Hsivonen</a> 09:33, 18 June 2010 (UTC)</dd></dl>
+<h2><span id="HTTP_ACCEPT">HTTP ACCEPT</span></h2>
+<p>Example: <code>text/html, */* ISO-8859-1,utf-8;q=0.7,*;q=0.7 gzip,deﬂate en- 
+us,en;q=0.5</code>. Not sure we can do much here?
+</p>
+<h2><span id="Screen_resolution">Screen resolution</span></h2>
+<p>Example: <code>1280x800x24</code>. Can't mess with this, except perhaps to always report "24" for the color depth -- of dubious value.
+</p>
+<dl><dd>Mapping "32" to "24" or vice versa in the color depth would reduce entropy by ~0.9 bits.  May be worthwhile.</dd></dl>
+<dl><dd>Torbutton takes two countermeasures with respect to screen resolution: quantising AvailWidth and AvailHeight, and setting Width and Height to the values of AvailWidth and AvailHeight.   Torbutton currently errs in not doing this if the window is maximised.  These measures might be appropriate in private browsing mode. -- <a href="https://wiki.mozilla.org/index.php?title=User:Pde&amp;action=edit&amp;redlink=1" title="User:Pde (page does not exist)">Pde</a> 03:12, 15 June 2010 (UTC)</dd></dl>
+<h2><span id="Timezone">Timezone</span></h2>
+<p>Too useful to break.
+</p>
+<h2><span id="Supercookies">Supercookies</span></h2>
+<p>The reported entropy includes <b>only</b> whether the following were enabled: DOM localStorage, DOM sessionStorage, and (for IE) userData. It did <b>not</b> test Flash LSOs, Silverlight cookies, HTML5 databases, or DOM globalStorage. We can't do anything to prevent testing whether these are enabled, but we can lock them down for third parties, as we will with cookies.
+</p><p>For Flash and Silverlight we need to pressure them to implement better APIs for controlling and clearing stored data. This is undoubtedly <b>more important</b> than anything else on this list, though it was ignored in this study since it does not fit within their definition of fingerprinting. We could be aggressive here by using the new Flash API for private browsing mode very liberally; or do something with the OS APIs as mentioned above.
+</p>
+<h2><span id="Cookies_enabled">Cookies enabled</span></h2>
+<p>Irrelevant due to low amount of entropy.
+</p>
+<h2></h2>
+<p>Other fingerprinting methods were mentioned, but not included, in the study. A Gartner report on fingerprinting services was referenced in the study, which will undoubtedly be interesting to read.
+</p><p>Examples:
+</p>
+<h2><span id="Other_data_acquired_via_plugins">Other data acquired via plugins</span></h2>
+<p>Undoubtedly Flash and Java provide other interesting tidbits. ActiveX and Silverlight, for example, allow querying the "CPU type and many other details". More study needed here.
+</p>
+<h2><span id="Clock_skew_measurements">Clock skew measurements</span></h2>
+<p>"41st Parameter looks at more than 100 parameters, and at the core of its algorithm is a time differential parameter that measures the time difference between a user’s PC (down to the millisecond) and a server’s PC." We can't break the millisecond resolution of Date.now, but we could try adding a small (&lt; 100ms) offset to it. This would be generated per-origin, and would last for some relatively short time: life of session, life of tab, etc. Would have to be careful that it can't be reversed.
+</p>
+<dl><dd>Clock skew measurement isn't really a browser issue; it tends to be exposed by the operating system at the TCP level.  It would be appropriate to assume that an attacker can obtain 4-6 bits of information about the identity of a host by this method.  -- <a href="https://wiki.mozilla.org/index.php?title=User:Pde&amp;action=edit&amp;redlink=1" title="User:Pde (page does not exist)">Pde</a> 02:55, 15 June 2010 (UTC)</dd></dl>
+<dl><dd><dl><dd>This is not 100% correct. According to <a rel="nofollow" href="http://www.faqs.org/rfcs/rfc1323.html">RFC 1323</a> sections 3.2 and 4.2.2, timestamps may only be used if the initial syn packet (not syn+ack) contains a timestamp field. This is a property of the client OS, and may be controllable on some platforms. The timestamp value is also not absolute, but is typically some arbitrary number of milliseconds with no specific reference point. TLS also has a timestamp, but this value is fully controlled by Firefox. -- <a href="https://wiki.mozilla.org/index.php?title=User:Mikeperry&amp;action=edit&amp;redlink=1" title="User:Mikeperry (page does not exist)">mikeperry</a></dd></dl></dd></dl>
+<dl><dd><dl><dd><dl><dd>Agree that one could turn off the TCP RTTM option at the OS layer.  My naive intuition is that all modern OSes have this turned on, and turning it off would be a radical intervention bad for congestion avoidance and  possibly fingerprintable itself.  Note that clock skew is a function of how fast a clock ticks, not of what time the clock has.  An arbitrary reference point is sufficient for measuring clock skew.  -- <a href="https://wiki.mozilla.org/index.php?title=User:Pde&amp;action=edit&amp;redlink=1" title="User:Pde (page does not exist)">Pde</a> 08:23, 9 December 2010 (PST)</dd></dl></dd></dl></dd></dl>
+<dl><dd>Note also that it's not just clock skew, but also clock precision that can allow for fingerprinting - both in terms of how long certain operations take on a system and in terms of user action. For example, <a rel="nofollow" href="http://www.scoutanalytics.com/">Scout Analytics</a> provides software to fingerprint users based on <a rel="nofollow" href="http://arstechnica.com/tech-policy/news/2010/02/firm-uses-typing-cadence-to-finger-unauthorized-users.ars">typing cadence</a>. One can also imagine tight loops of timed javascript that fingerprint users based on certain resource-intensive calls. One possibility might be to quantize Date values to the second, and then add random, monotonically increasing amounts of milliseconds to subsequent calls during private browsing mode. -- <a href="https://wiki.mozilla.org/index.php?title=User:Mikeperry&amp;action=edit&amp;redlink=1" title="User:Mikeperry (page does not exist)">mikeperry</a></dd></dl>
+<h2><span id="TCP_stack">TCP stack</span></h2>
+<p>"ThreatMetrix claims that it can detect irregularities in the TCP/IP stack and can pierce through proxy servers". Not sure what this means yet.
+</p>
+<dl><dd>nmap's host fingerprinting options (and source code) are the first place to start for understanding the TCP/IP stack issues.  Again, there's not much the browser can do about that.  </dd></dl>
+<dl><dd>As for "pierce through proxy servers", my best guess is that they use the raw socket infrastructure provided by Flash, which does not respect the browser's proxy settings, in order to learn the client's IP.  Not sure if Java and Silverlight have similar problems. -- <a href="https://wiki.mozilla.org/index.php?title=User:Pde&amp;action=edit&amp;redlink=1" title="User:Pde (page does not exist)">Pde</a> 02:58, 15 June 2010 (UTC)</dd></dl>
+<h2><span id="JS_behavioral_tests">JS behavioral tests</span></h2>
+<p>Can be used to gather information about whether certain addons are installed, exact browser version, etc. Probably nothing we can do here.
+</p>
+<h2><span id="Recommend_privacy-related_addons_and_services">Recommend privacy-related addons and services</span></h2>
+<p>"TorButton has evolved to give considerable thought to fingerprint resistance [19] and may be receiving the levels of scrutiny necessary to succeed in that project [15]. NoScript is a useful privacy enhancing technology that seems to reduce fingerprintability."
+</p><p>"We identified only three groups of browser with comparatively good resistance to fingerprinting: those that block JavaScript, those that use TorButton, and certain types of smartphone."
+</p><p>We should study what TorButton does, and see if we can integrate some of its features. We can also recommend it, NoScript, and Flashblock to users. We could suggest improvements to relevant addons, such as providing options for blocking third party but not first party content. (This doesn't strictly solve anything, but makes gathering the data more difficult, since the third party now relies on the first party to collect it.)
+</p>
+<dl><dd>Unfortunately Flashblock does not appear to prevent Flash from reading and writing LSOs, so it's doubtful it can be relied upon to protect against fingerprinting.  -- <a href="https://wiki.mozilla.org/index.php?title=User:Pde&amp;action=edit&amp;redlink=1" title="User:Pde (page does not exist)">Pde</a> 03:00, 15 June 2010 (UTC)</dd></dl>
+<h2><span id="User_interface">User interface</span></h2>
+<p>Things like geolocation, database access and such require the user to grant permission for a given site. For geolocation, this is done with an infobar. We should do everything we can to make it clear to users what they're providing, and give them centralized control of those permissions in the privacy panel. This is what the UX privacy proposals seek to do.
+</p>
+<h2><span id="HTML5_Canvas">HTML5 Canvas</span></h2>
+<p>"After plugins and plugin-provided information, we believe that the HTML5 Canvas is the single largest fingerprinting threat browsers face today." - Tor Project. 
+Original research: <a rel="nofollow" href="http://cseweb.ucsd.edu/~hovav/dist/canvas.pdf">Pixel Perfect: Fingerprinting Canvas in HTML5</a>, demo: <a rel="nofollow" href="https://www.browserleaks.com/canvas">HTML5 Canvas Fingerprinting</a>.
+</p>
+<h2><span id="See_Also">See Also</span></h2>
+<ul><li> <a rel="nofollow" href="http://www.chromium.org/Home/chromium-security/client-identification-mechanisms">Chromium's list of client identification mechanisms</a></li></ul>
+
+<!-- 
+NewPP limit report
+Cached time: 20241015012833
+Cache expiry: 86400
+Dynamic content: false
+[SMW] In‐text annotation parser time: 0.122 seconds
+CPU time usage: 0.016 seconds
+Real time usage: 1.050 seconds
+Preprocessor visited node count: 92/1000000
+Preprocessor generated node count: 120/1000000
+Post‐expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Highest expansion depth: 2/40
+Expensive parser function count: 0/100
+-->
+
+<!-- 
+Transclusion expansion time report (%,ms,calls,template)
+100.00%    0.000      1 - -total
+-->
+
+<!-- Saved in parser cache with key wiki:pcache:idhash:35655-0!*!0!!en!*!* and timestamp 20241015012832 and revision id 1118088
+ -->
+</div></div>
+  </div>
+</body>
+</html>

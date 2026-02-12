@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to set up world-class continuous deployment using free hosted tools</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to set up world-class continuous deployment using free hosted tools</h1>
+    <p><strong>URL:</strong> <a href="https://simonwillison.net/2017/Oct/17/free-continuous-deployment">https://simonwillison.net/2017/Oct/17/free-continuous-deployment</a></p>
+    <p><strong>Tags:</strong> devops, llm-willison</p>
+    <p><strong>Bookmark ID:</strong> 876769479</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-permalink-context="/2017/Oct/17/free-continuous-deployment/">
+
+<p>17th October 2017</p>
+
+
+
+<p>I’m going to describe a way to put together a world-class continuous deployment infrastructure for your side-project without spending any money.</p>
+<p>With <a href="https://puppet.com/blog/continuous-delivery-vs-continuous-deployment-what-s-diff">continuous deployment</a> every code commit is tested against an automated test suite. If the tests pass it gets deployed directly to the production environment! How’s that for an incentive to write comprehensive tests?</p>
+<p>Each of the tools I’m using offers a free tier which is easily enough to handle most side-projects. And once you outgrow those free plans, you can solve those limitations in exchange for money!</p>
+<p>Here’s the magic combination:</p>
+<ul>
+<li><a href="https://github.com/">GitHub</a></li>
+<li><a href="https://travis-ci.org/">Travis CI</a></li>
+<li><a href="https://heroku.com/">Heroku</a></li>
+<li><a href="https://sentry.io/">Sentry</a></li>
+<li><a href="https://slack.com/">Slack</a></li>
+</ul>
+<h2><a id="Step_one_Publish_some_code_to_GitHub_with_some_tests_16">Step one: Publish some code to GitHub with some tests</a></h2><p><a id="Step_one_Publish_some_code_to_GitHub_with_some_tests_16">I’ll be using the </a><a href="https://github.com/simonw/simonwillisonblog">code for my blog</a> as an example. It’s a classic Django application, with a small (OK, tiny) suite of unit tests. The tests are run using the standard Django <code>./manage.py test</code> command.</p>
+<p>Writing a Django application with tests is outside the scope of this article. Thankfully the official Django tutorial <a href="https://docs.djangoproject.com/en/1.11/intro/tutorial05/">covers testing in some detail</a>.</p>
+<h2><a id="Step_two_Hook_up_Travis_CI_22">Step two: Hook up Travis CI</a></h2><p><a id="Step_two_Hook_up_Travis_CI_22"></a><a href="https://travis-ci.org/">Travis CI</a> is an outstanding hosted platform for continuous integration. Given a small configuration file it can check out code from GitHub, set up an isolated test environment (including hefty dependencies like a PostgreSQL database server, Elasticsearch, Redis etc), run your test suite and report the resulting pass/fail grade back to GitHub.</p>
+<p>It’s free for publicly hosted GitHub projects. If you want to test code in a private repository you’ll have to pay them some money.</p>
+<p>Here’s <a href="https://github.com/simonw/simonwillisonblog/blob/a5c2d2549f26dd2d75cbf863c8b36d617092c2a1/.travis.yml">my .travis.yml configuration file</a>:</p>
+<pre><code>language: python
+
+python:
+  - 2.7
+
+services: postgresql
+
+addons:
+  postgresql: "9.6"
+
+install:
+  - pip install -r requirements.txt
+
+before_script:
+  - psql -c "CREATE DATABASE travisci;" -U postgres
+  - python manage.py migrate --noinput
+  - python manage.py collectstatic
+
+script:
+  - python manage.py test
+</code></pre>
+<p>And here’s the resulting <a href="https://travis-ci.org/simonw/simonwillisonblog">Travis CI dashboard</a>.</p>
+<p>The integration of Travis with GitHub runs <em>deep</em>. Once you’ve set up Travis, it will automatically test every push to every branch—driven by GitHub webhooks, so test runs are set off almost instantly. Travis will then report the test results back to GitHub, where they’ll show up in a bunch of different places— including these pleasing green ticks on <a href="https://github.com/simonw/simonwillisonblog/branches">the branches page</a>:</p>
+<p><img src="data:application/octet-stream;base64," alt="GitHub branches page showing CI results"></p>
+<p>Travis will also run tests against any <a href="https://github.com/simonw/simonwillisonblog/pull/3">open pull requests</a>. This is a great incentive to build new features in a pull request even if you aren’t using them for code review:</p>
+<p><img src="data:application/octet-stream;base64," alt="GitHub pull request showing CI results"></p>
+
+<p><a href="https://circleci.com/">Circle CI</a> deserves a mention as an alternative to Travis. The two are close competitors and offer very similar feature sets, and Circle CI’s free plan allows up to 1,500 build minutes of private repositories per month.</p>
+
+<p><strong>Update 25th July 2020</strong>: I’ve started using GitHub Actions for most of my projects now—see my <a href="https://simonwillison.net/tags/githubactions/">githubactions</a> tag.</p>
+
+<h2><a id="Step_3_Deploy_to_Heroku_and_turn_on_continuous_deployment_61">Step 3: Deploy to Heroku and turn on continuous deployment</a></h2><p><a id="Step_3_Deploy_to_Heroku_and_turn_on_continuous_deployment_61">I’m a big fan of </a><a href="https://heroku.com/">Heroku</a> for side projects, because it means not having to worry about ongoing server-maintenance. I’ve lost several side-projects to <a href="https://blog.heroku.com/archives/2011/6/28/the_new_heroku_4_erosion_resistance_explicit_contracts/">entropy and software erosion</a>—getting an initial VPS set up may be pretty simple, but a year later security patches need applying and the OS needs upgrading and the log files have filled up the disk and you’ve forgotten how you set everything up in the first place…</p>
+<p>It turns out Heroku has basic support for continuous deployment baked in, and it’s trivially easy to set up. You can tell Heroku to deploy on every commit to GitHub, and then if you’ve attached a CI service like Travis that reports build health back you can check the box for “Wait for CI to pass before deploy”:</p>
+<p><img src="data:application/octet-stream;base64," alt="Heroku deployment settings for continuous deployment"></p>
+<p>Since small dynos on Heroku are free, you can even set up a separate Heroku app as a staging environment. I started my continuous integration adventure just deploying automatically to my staging instance, then switched over to deploying to production once I gained some confidence in how it all fitted together.</p>
+<p>If you’re using continuous deployment with Heroku and Django, it’s a good idea to set up Heroku to automatically run your migrations for every deploy—otherwise you might merge a pull request with a model change and forget to run the migrations before the deploy goes out. You can do that using Heroku’s <a href="https://devcenter.heroku.com/articles/release-phase">release phase</a> feature, by adding the line <code>release: python manage.py migrate --noinput</code> to your Heroku <code>Procfile</code> (<a href="https://github.com/simonw/simonwillisonblog/blob/81f7e2ba19b84f572e8a546bcc28bbfb1e211eb6/Procfile">here’s mine</a>).</p>
+<p>Once you go beyond Heroku’s free tier things get much more powerful: <a href="https://www.heroku.com/flow">Heroku Flow</a> combines pipelines, review apps and their own CI solution to provide a comprehensive solution for much larger teams.</p>
+<h2><a id="Step_4_Monitor_errors_with_Sentry_75">Step 4: Monitor errors with Sentry</a></h2><p><a id="Step_4_Monitor_errors_with_Sentry_75">If you’re going to move fast and break things, you need to know when things have broken. </a><a href="https://sentry.io/">Sentry</a> is a fantastic tool for collecting exceptions, aggregating them and spotting when something new crops up. It’s open source so you can host it yourself, but they also offer a robust hosted version with a free plan that can track up to 10,000 errors a month.</p>
+<p>My favourite feature of Sentry is that it gives each exception it sees a “signature” based on a MD5 hash of its traceback. This means it can tell if errors are the same underlying issue or something different, and can hence de-dupe them and only alert you the first time it spots an error it has not seen before.</p>
+<p><img src="data:application/octet-stream;base64," alt="Notifications from Travis CI and GitHub in Slack"></p>
+<p>Sentry has integrations for most modern languages, but it’s particularly easy to use with Django. Just install <a href="https://pypi.python.org/pypi/raven">raven</a> and add few extra lines to your <a href="http://settings.py/">settings.py</a>:</p>
+<pre><code>SENTRY_DSN = os.environ.get('SENTRY_DSN')
+if SENTRY_DSN:
+    INSTALLED_APPS += (
+        'raven.contrib.django.raven_compat',
+    )
+    RAVEN_CONFIG = {
+        'dsn': SENTRY_DSN,
+        'release': os.environ.get('HEROKU_SLUG_COMMIT', ''),
+    }
+</code></pre>
+<p>Here I’m using the Heroku pattern of <a href="https://devcenter.heroku.com/articles/config-vars">keeping configuration in environment variables</a>. <code>SENTRY_DSN</code> is provided by Sentry when you create your project there—you just have to add it as a Heroku config variable.</p>
+
+<p>The <code>HEROKU_SLUG_COMMIT</code> line causes the currently deployed git commit hash to be fed to Sentry so that it knows what version of your code was running when it reports an error. To enable that variable, you’ll need to <a href="https://devcenter.heroku.com/articles/dyno-metadata">enable Dyno Metadata</a> by running <code>heroku labs:enable runtime-dyno-metadata</code> against your application.</p>
+<h2><a id="Step_5_Hook_it_all_together_with_Slack_97">Step 5: Hook it all together with Slack</a></h2><p><a id="Step_5_Hook_it_all_together_with_Slack_97">Would you like a push notification to your phone every time your site gets code committed / the tests pass or fail / a deploy goes out / a new error is detected? All of the above tools can report such things to </a><a href="https://slack.com/">Slack</a>, and Slack’s free plan is easily enough to collect all of these notifications and push them to your phone via the free Slack <a href="https://slack.com/downloads/ios">iOS</a> or <a href="https://slack.com/downloads/android">Android</a> apps.</p>
+<p><img src="data:application/octet-stream;base64," alt="Notifications from Travis CI and GitHub in Slack"></p>
+<p>Here are instructions for setting up Slack with <a href="https://get.slack.help/hc/en-us/articles/232289568-Use-GitHub-with-Slack">GitHub</a>, <a href="https://docs.travis-ci.com/user/notifications/#Configuring-slack-notifications">Travis CI</a>, <a href="https://slack.com/apps/A0F7VRF7E-heroku">Heroku</a> and <a href="https://slack.com/apps/A0F814BEV-sentry">Sentry</a>.</p>
+<h2><a id="Need_more_Pay_for_it_105">Need more? Pay for it!</a></h2><a id="Need_more_Pay_for_it_105">
+<p>Having run much of this kind of infrastructure myself in the past I for one am delighted by the idea of outsourcing it, especially when the hosted options are of such high quality.</p>
+<p>Each of these tools offers a free tier which is generous enough to work great for small side projects. As you start scaling up, you can start paying for them—that’s why they gave you a free tier in the first place.</p>
+
+</a><p><a id="Need_more_Pay_for_it_105">Comments or suggestions? Join </a><a href="https://news.ycombinator.com/item?id=15490935">this thread on Hacker News</a>.</p>
+
+
+</div></div>
+  </div>
+</body>
+</html>

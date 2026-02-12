@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Real Artists Ship | Learn Enough News & Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Real Artists Ship | Learn Enough News & Blog</h1>
+    <p><strong>URL:</strong> <a href="https://news.learnenough.com/shipping-real-artists-ship">https://news.learnenough.com/shipping-real-artists-ship</a></p>
+    <p><strong>Tags:</strong> devops, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876778161</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p>As legendary Apple cofounder Steve Jobs once said: <em>Real artists ship.</em><span></span> What he meant was that, as tempting as it is to privately polish in perpetuity, makers must <em>ship</em> their work—that is, actually finish it and get it out into the world.<span></span> This can be scary, because shipping means exposing your work not only to fans but also to critics.<span></span> “What if people don’t like what I’ve made?”<span></span> <em>Real artists ship.</em></p><p>It’s important to understand that shipping is a separate skill from making.<span></span> Many makers get good at making things but never learn to ship.<span></span> To prevent this sad situation, the <a href="https://www.learnenough.com/" target="_blank" rel="noopener">Learn Enough tutorials</a> emphasize shipping along with making.</p><div id="shipping_with_a_deploy_script"><h2><a href="#shipping_with_a_deploy_script">Shipping with a <code>deploy</code> script</a></h2>
+<p><em>Shipping</em> is the real motivation for the <code>deploy</code> script mentioned in my previous post, “<a href="https://news.learnenough.com/power-of-scripting-deploy-script" target="_blank" rel="noopener">The Power of Scripting: A Deploy Script</a>”.<span></span> In particular, <code>deploy</code> is designed to lower as much as possible the friction associated with shipping.<sup id="cha-0_footnote-ref-1"><a href="#cha-0_footnote-1">1</a></sup></p>
+<div><p><img src="data:application/octet-stream;base64," alt="images/figures/container_ship"></p>
+</div><p>In this spirit, this post will add a couple of the extensions proposed in “<a href="https://news.learnenough.com/power-of-scripting-deploy-script" target="_blank" rel="noopener">The Power of Scripting</a>”, namely, pulling and pushing any Git changes associated with the project being deployed.<span></span> The method I use in my own private version of the <code>deploy</code> script has always been called <code>ship</code> in honor of the philosophy discussed above.</p>
+<p><a href="#code-final_deploy">Listing&nbsp;<span>1</span></a> shows <a href="https://news.learnenough.com/power-of-scripting-deploy-script#code-final_deploy" target="_blank" rel="noopener">where we left off</a> (with the vertical ellipsis indicating omitted boolean method definitions).<span></span> The structure of the main script is simple: we have a bunch of <code>if</code>-<code>else</code> statements that test for the project type and then issue the corresponding system command (using the <a href="https://www.learnenough.com/ruby" target="_blank" rel="noopener">Ruby</a> <code>system</code> method).<span></span> Our strategy in this post is to replace <code>system</code> with <code>ship</code>, and then have <code>ship</code> push and pull the Git repo before running the given command.</p>
+<div id="code-final_deploy" data-tralics-id="uid2" data-number="1"><pre><span></span><span>#!/usr/bin/env ruby</span>
+<span>require</span> <span>"fileutils"</span>
+
+<span># Deploys a project.</span>
+<span>.</span>
+<span>.</span>
+<span>.</span>
+<span># Returns true for a Git repository.</span>
+<span>def</span> <span>git_repo?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>".git"</span><span>)</span>
+<span>end</span>
+
+<span># The main script.</span>
+<span>if</span> <span>softcover_book?</span>
+<span>  <span>system</span> <span>"softcover deploy"</span>
+</span><span>elsif</span> <span>ruby_gem?</span>
+<span>  <span>system</span> <span>"rake release"</span>
+</span><span>elsif</span> <span>ruby_web_app?</span>
+<span>  <span>system</span> <span>"git push heroku"</span>
+</span><span>elsif</span> <span>jekyll?</span> <span>||</span> <span>git_repo?</span>
+<span>  <span>system</span> <span>"git push"</span>
+</span><span>end</span>
+</pre></div><p>As it happens, <em>all</em> the project types supported by the <code>deploy</code> script in <a href="#code-final_deploy">Listing&nbsp;<span>1</span></a> are typically Git repos as well.<span></span> For the purposes of this post, then, we’ll assume that we can run <code>git pull</code> and <code>git push</code> with no ill effect.<span></span> Handling exceptions to this case is left as an exercise to the reader.<sup id="cha-0_footnote-ref-2"><a href="#cha-0_footnote-2">2</a></sup></p>
+<div><p><img src="data:application/octet-stream;base64," alt="images/figures/ship"></p>
+</div><p>So, what should <code>ship</code> do?<span></span> Since we don’t want to deploy a project without pulling in remote changes, we should run <code>git pull</code> first:</p>
+<div><pre><span></span><span>$ </span>git pull
+</pre></div>
+<p>If that command succeeds, then we can run <code>git push</code> as well.<span></span> The way to do this at the <a href="https://www.learnenough.com/command-line" target="_blank" rel="noopener">command line</a> is using “and”, written with two ampersands:</p>
+<div><pre><span></span><span>$ </span>git pull <span>&amp;&amp;</span> git push    <span># Runs git push only if git pull succeeds</span>
+</pre></div>
+<p>Finally, we can run the specific command needed by the project type in question:</p>
+<div><pre><span></span><span>$ </span>git pull <span>&amp;&amp;</span> git push <span>&amp;&amp;</span> &lt;specific command&gt;
+</pre></div>
+<p>For example, for a Rails app, we would run this:</p>
+<div><pre><span></span><span>$ </span>git pull <span>&amp;&amp;</span> git push <span>&amp;&amp;</span> git push heroku
+</pre></div>
+<p>The preceding discussion suggests defining a <code>ship</code> command as follows:</p>
+<div><pre><span></span><span>def</span> <span>ship</span><span>(</span><span>command</span><span>)</span>
+  <span>system</span> <span>"git pull &amp;&amp; git push &amp;&amp; </span><span>#{</span><span>command</span><span>}</span><span>"</span>
+<span>end</span>
+</pre></div>
+<p>This accomplishes exactly the task required: first we pull in any remote changes, then we push up any local changes, and finally we run the project-specific deployment command.</p>
+<p>Replacing <code>system</code> with <code>ship</code> in <a href="#code-final_deploy">Listing&nbsp;<span>1</span></a> then gives us the “shipping” version of our <code>deploy</code> script, as shown in <a href="#code-deploy_with_ship">Listing&nbsp;<span>2</span></a>.</p>
+<div id="code-deploy_with_ship" data-tralics-id="uid4" data-number="2"><p><span>Listing 2:</span> 
+
+<span>Deploying with <code>ship</code>.<span></span> <span></span> <code>~/bin/deploy</code></span>
+</p>
+
+<div><pre><span></span><span>#!/usr/bin/env ruby</span>
+<span>require</span> <span>"fileutils"</span>
+
+<span># Deploys a project.</span>
+<span>.</span>
+<span>.</span>
+<span>.</span>
+<span># Returns true for a Git repository.</span>
+<span>def</span> <span>git_repo?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>".git"</span><span>)</span>
+<span>end</span>
+
+<span><span># Ships a product.</span>
+</span><span><span>def</span> <span>ship</span><span>(</span><span>command</span><span>)</span>
+</span><span>  <span>system</span> <span>"git pull &amp;&amp; git push &amp;&amp; </span><span>#{</span><span>command</span><span>}</span><span>"</span>
+</span><span><span>end</span>
+</span>
+<span># The main script.</span>
+<span>if</span> <span>softcover_book?</span>
+<span>  <span>ship</span> <span>"softcover deploy"</span>
+</span><span>elsif</span> <span>ruby_gem?</span>
+<span>  <span>ship</span> <span>"rake release"</span>
+</span><span>elsif</span> <span>ruby_web_app?</span>
+<span>  <span>ship</span> <span>"git push heroku"</span>
+</span><span>elsif</span> <span>jekyll?</span> <span>||</span> <span>git_repo?</span>
+<span>  <span>ship</span> <span>"git push"</span>
+</span><span>end</span>
+</pre></div></div><p>At this point, running</p>
+<div><pre><span></span><span>$ </span>deploy
+</pre></div>
+<p>will automatically sync up all relevant Git repos and then deploy the project to production.</p>
+<p>By the way, you may have noticed that <a href="#code-deploy_with_ship">Listing&nbsp;<span>2</span></a> contains a minor redundancy: <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> sites and Git repos <em>already</em> have a <code>git push</code> as their deployment command.<span></span> In that case, <code>ship</code> will run <code>git push</code> twice:</p>
+<div><pre><span></span><span>$ </span>git pull <span>&amp;&amp;</span> git push <span>&amp;&amp;</span> git push
+</pre></div>
+<p>Luckily, this does no harm—running <code>git push</code> on an already-pushed repo just outputs “Everything up-to-date”:</p>
+<div><pre><span></span><span>$ </span>git push <span>&amp;&amp;</span> git push
+<span>Enumerating objects: 18, done.</span>
+<span>Counting objects: 100% (18/18), done.</span>
+<span>Delta compression using up to 4 threads</span>
+<span>Compressing objects: 100% (11/11), done.</span>
+<span>Writing objects: 100% (11/11), 263.30 KiB | 26.33 MiB/s, done.</span>
+<span>Total 11 (delta 7), reused 0 (delta 0), pack-reused 0</span>
+<span>remote: Resolving deltas: 100% (7/7), completed with 7 local objects.</span>
+<span>To https://github.com/softcover/learnenough-news.git</span>
+<span>   3e7a7ff..53705ec  master -&gt; master</span>
+<span><span>Everything up-to-date</span>
+</span></pre></div>
+<p>Here the first <code>git push</code> pushes up some changes (to GitHub, in this case), while the second <code>git push</code> gives the highlighted output shown.</p>
+</div><div id="time_to_ship"><h2><a href="#time_to_ship">Time to ship</a></h2>
+<p>That’s it!<span></span> Time to make Steve Jobs proud and ship.<sup id="cha-0_footnote-ref-3"><a href="#cha-0_footnote-3">3</a></sup></p>
+<div><p><img src="data:application/octet-stream;base64," alt="images/figures/steve_jobs_macbook"></p>
+</div><p>To learn more about how to ship a wide variety of products, including Git repos, static Jekyll sites, dynamic JavaScript sites, and Sinatra and Rails web apps, check out the <a href="https://www.learnenough.com/all-access" target="_blank" rel="noopener">Learn Enough All Access subscription</a>.<span></span> 7-day free trial, 60-day money-back guarantee.
+</p></div></div>
+  </div>
+</body>
+</html>

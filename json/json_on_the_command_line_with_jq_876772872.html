@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>JSON on the Command Line with Jq</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>JSON on the Command Line with Jq</h1>
+    <p><strong>URL:</strong> <a href="https://shapeshed.com/jq-json">https://shapeshed.com/jq-json</a></p>
+    <p><strong>Tags:</strong> json</p>
+    <p><strong>Bookmark ID:</strong> 876772872</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+        
+    
+    
+    
+    
+    
+    
+    
+      <p>A series of how to examples on using jq, a command-line JSON processor</p>
+    
+    
+      
+
+    
+
+<figure>
+  <picture><source srcset="data:application/octet-stream;base64," type="image/avif" media="(prefers-color-scheme: light)"><source srcset="data:application/octet-stream;base64," type="image/webp" media="(prefers-color-scheme: light)"><img src="data:application/octet-stream;base64," alt="jq - JSON formatting tool" width="400" height="220" loading="lazy" decoding="async"></picture>
+  <figcaption>jq - JSON formatting tool</figcaption>
+</figure>
+
+<p><code>jq</code> is a fantastic command-line JSON processor. It plays nice with UNIX pipes
+and offers extensive functionality for interrogating, manipulating and working
+with JSON file.</p>
+<h2 id="how-to-pretty-print-json">How to pretty print JSON <a href="#how-to-pretty-print-json">¶</a></h2>
+<p><code>jq</code> can do a lot but probably the highest frequency use for most users is to
+pretty print JSON either from a file or after a network call. Suppose that we
+have a file <code>names.json</code> containing the following json.</p>
+<!-- prettier-ignore-start -->
+<div><pre tabindex="0"><code data-lang="json"><span><span><span>[{</span> <span>"id"</span><span>:</span> <span>1</span><span>,</span> <span>"name"</span><span>:</span> <span>"Arthur"</span><span>,</span> <span>"age"</span><span>:</span> <span>"21"</span> <span>},{</span> <span>"id"</span><span>:</span> <span>2</span><span>,</span> <span>"name"</span><span>:</span> <span>"Richard"</span><span>,</span> <span>"age"</span><span>:</span> <span>"32"</span> <span>}]</span>
+</span></span></code></pre></div><!-- prettier-ignore-end -->
+<p><code>jq</code> can pretty print this file using the <code>.</code> filter. This takes the entire
+input and sends it to standard output. Unless told not to <code>jq</code> will pretty print
+making JSON readable.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span>jq <span>'.'</span> names.json
+</span></span><span><span><span>[</span>
+</span></span><span><span>  <span>{</span>
+</span></span><span><span>    <span>"id"</span>: 1,
+</span></span><span><span>    <span>"name"</span>: <span>"Arthur"</span>,
+</span></span><span><span>    <span>"age"</span>: <span>"21"</span>
+</span></span><span><span>  <span>}</span>,
+</span></span><span><span>  <span>{</span>
+</span></span><span><span>    <span>"id"</span>: 2,
+</span></span><span><span>    <span>"name"</span>: <span>"Richard"</span>,
+</span></span><span><span>    <span>"age"</span>: <span>"32"</span>
+</span></span><span><span>  <span>}</span>
+</span></span><span><span><span>]</span>
+</span></span></code></pre></div><h2 id="how-to-use-pipes-with-jq">How to use pipes with jq <a href="#how-to-use-pipes-with-jq">¶</a></h2>
+<p>Because <code>jq</code> is UNIX friendly it is possible to pipe data in and out of it. This
+can be useful for using jq as a filter or interacting with other tools. In the
+following pipeline <code>cat</code> pipes the file into <code>jq</code> and this is piped onto <code>less</code>.
+This can be very useful for viewing large JSON files.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span>cat names.json <span>|</span> jq <span>'.'</span> <span>|</span> less
+</span></span></code></pre></div><h2 id="how-to-find-a-key-and-value">How to find a key and value <a href="#how-to-find-a-key-and-value">¶</a></h2>
+<p>To find a key and value <code>jq</code> can filter based on keys and return the value.
+Suppose we have the following simple JSON document saved as <code>dog.json</code>.</p>
+<div><pre tabindex="0"><code data-lang="json"><span><span><span>{</span>
+</span></span><span><span>  <span>"name"</span><span>:</span> <span>"Buster"</span><span>,</span>
+</span></span><span><span>  <span>"breed"</span><span>:</span> <span>"Golden Retriever"</span><span>,</span>
+</span></span><span><span>  <span>"age"</span><span>:</span> <span>"4"</span><span>,</span>
+</span></span><span><span>  <span>"owner"</span><span>:</span> <span>{</span>
+</span></span><span><span>    <span>"name"</span><span>:</span> <span>"Sally"</span>
+</span></span><span><span>  <span>},</span>
+</span></span><span><span>  <span>"likes"</span><span>:</span> <span>[</span><span>"bones"</span><span>,</span> <span>"balls"</span><span>,</span> <span>"dog biscuits"</span><span>]</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p><code>jq</code> can retrieve values from this document by passing key names.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span>jq <span>'.name'</span>
+</span></span><span><span><span>"Buster"</span>
+</span></span></code></pre></div><p>Multiple keys can by passed separated by commas.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span>jq <span>'.breed,.age'</span>
+</span></span><span><span><span>"Golden Retriever"</span>
+</span></span><span><span><span>"4"</span>
+</span></span></code></pre></div><p>To search for nested objects chain values using the dot operator just as you
+would in JavaScript.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span>jq <span>'.owner.name'</span>
+</span></span><span><span><span>"Sally"</span>
+</span></span></code></pre></div><h2 id="how-to-find-items-in-an-array">How to find items in an array <a href="#how-to-find-items-in-an-array">¶</a></h2>
+<p>To search for items in arrays use bracket syntax with the index starting at 0.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span>jq <span>'.likes[0]'</span>
+</span></span><span><span><span>"bones"</span>
+</span></span></code></pre></div><p>Multiple elements of an array may also be returned.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span><span>echo</span> <span>'["a","b","c","d","e"]'</span> <span>|</span> jq <span>'.[2:4]'</span>
+</span></span><span><span><span>[</span>
+</span></span><span><span>  <span>"c"</span>,
+</span></span><span><span>  <span>"d"</span>
+</span></span><span><span><span>]</span>
+</span></span></code></pre></div><h2 id="how-to-combine-filters">How to combine filters <a href="#how-to-combine-filters">¶</a></h2>
+<p><code>jq</code> can combine filters to search within a selection. For the following JSON
+document suppose that the names need to be filtered.</p>
+<div><pre tabindex="0"><code data-lang="json"><span><span><span>[</span>
+</span></span><span><span>  <span>{</span>
+</span></span><span><span>    <span>"id"</span><span>:</span> <span>1</span><span>,</span>
+</span></span><span><span>    <span>"name"</span><span>:</span> <span>"Arthur"</span><span>,</span>
+</span></span><span><span>    <span>"age"</span><span>:</span> <span>"21"</span>
+</span></span><span><span>  <span>},</span>
+</span></span><span><span>  <span>{</span>
+</span></span><span><span>    <span>"id"</span><span>:</span> <span>2</span><span>,</span>
+</span></span><span><span>    <span>"name"</span><span>:</span> <span>"Richard"</span><span>,</span>
+</span></span><span><span>    <span>"age"</span><span>:</span> <span>"32"</span>
+</span></span><span><span>  <span>}</span>
+</span></span><span><span><span>]</span>
+</span></span></code></pre></div><p>This can be achieved with a pipe with the <code>jq</code> filter.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span>jq <span>'.[] | .name'</span> names.json
+</span></span><span><span><span>"Arthur"</span>
+</span></span><span><span><span>"Richard"</span>
+</span></span></code></pre></div><h2 id="how-to-transform-json">How to transform JSON <a href="#how-to-transform-json">¶</a></h2>
+<p><code>jq</code> can be used for more than just reading values from a JSON object. It can
+also transform JSON into new data structures. Returning to the <code>dog.json</code>
+example earlier a new array can be created containing the name and likes as
+follows.</p>
+<div><pre tabindex="0"><code data-lang="sh"><span><span>jq <span>'[.name, .likes[]]'</span> dog.json
+</span></span><span><span><span>[</span>
+</span></span><span><span>  <span>"Buster"</span>,
+</span></span><span><span>  <span>"Bones"</span>,
+</span></span><span><span>  <span>"balls"</span>,
+</span></span><span><span>  <span>"dog biscuits"</span>
+</span></span><span><span><span>]</span>
+</span></span></code></pre></div><p>This can be very useful in data transform pipelines to shift JSON data from one
+structure to another.</p>
+<h2 id="how-to-transform-data-values-within-json">How to transform data values within JSON <a href="#how-to-transform-data-values-within-json">¶</a></h2>
+<p><code>jq</code> can also operate on data within JSON objects. Suppose the following JSON
+file exists and is saved as <code>inventory.json</code>.</p>
+<div><pre tabindex="0"><code data-lang="json"><span><span><span>{</span> <span>"eggs"</span><span>:</span> <span>2</span><span>,</span> <span>"cheese"</span><span>:</span> <span>1</span><span>,</span> <span>"milk"</span><span>:</span> <span>1</span> <span>}</span>
+</span></span></code></pre></div><p><code>jq</code> can be used to perform basic arithmetic on number values.</p>
+<div><pre tabindex="0"><code data-lang="json"><span><span><span>jq</span> <span>'.eggs</span> <span>+</span> <span>1</span><span>'</span> <span>inventory.json</span>
+</span></span><span><span><span>3</span>
+</span></span></code></pre></div><h2 id="how-to-remove-keys-from-json">How to remove keys from JSON <a href="#how-to-remove-keys-from-json">¶</a></h2>
+<p><code>jq</code> can remove keys from JSON objects. This outputs the JSON object without the
+deleted key. Suppose the following JSON is saved as <code>cheeses.json</code>.</p>
+<div><pre tabindex="0"><code data-lang="json"><span><span><span>{</span> <span>"maroilles"</span><span>:</span> <span>"stinky"</span><span>,</span> <span>"goat"</span><span>:</span> <span>"mild"</span> <span>}</span>
+</span></span></code></pre></div><p><code>jq</code> can remove keys as follows leaving just wonderful stinky cheese.</p>
+<div><pre tabindex="0"><code data-lang="json"><span><span><span>jq</span> <span>'del(.goat)'</span> <span>cheeses.json</span>
+</span></span><span><span><span>{</span> <span>"maroilles"</span><span>:</span> <span>"stinky"</span> <span>}</span>
+</span></span></code></pre></div><h2 id="how-to-map-values">How to map values <a href="#how-to-map-values">¶</a></h2>
+<p><code>jq</code> can map values and perform an operation on each one. In the following
+example each item in an array is mapped and has two subtracted.</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span><span>echo</span> <span>'[12,14,15]'</span> <span>|</span> jq <span>'map(.-2)'</span>
+</span></span><span><span><span>[</span>
+</span></span><span><span>  10,
+</span></span><span><span>  12,
+</span></span><span><span>  <span>13</span>
+</span></span><span><span><span>]</span>
+</span></span></code></pre></div><h2 id="how-to-wrangle-json-how-you-want">How to wrangle JSON how you want <a href="#how-to-wrangle-json-how-you-want">¶</a></h2>
+<p><code>jq</code> has many more advanced features to help manipulating and wrangling JSON
+however you want to. For more run <code>man jq</code>.</p>
+<h2 id="further-reading">Further reading <a href="#further-reading">¶</a></h2>
+<ul>
+<li><a href="https://stedolan.github.io/jq/">jq project page</a></li>
+<li><a href="https://stedolan.github.io/jq/manual/">jq manual</a></li>
+<li><a href="https://robots.thoughtbot.com/jq-is-sed-for-json">jq is sed for JSON</a></li>
+<li><a href="http://blog.librato.com/posts/jq-json">bash that JSON (jq)</a></li>
+<li><a href="http://www.compciv.org/recipes/cli/jq-for-parsing-json/">Parsing JSON with jq</a></li>
+</ul>
+
+    
+      <h3>Tags</h3>
+<ul>
+  
+    <li><a href="https://shapeshed.com/tags/unix/">UNIX</a></li>
+  
+</ul>
+
+      <p>
+        Can you help make this article better?
+        <a href="https://github.com/shapeshed/shapeshed.com/edit/main/content/posts/jq-json.md">You can edit it here and send me a pull request.</a>
+      </p>
+
+      
+         
+<h3>See Also</h3>
+<ul>
+  
+  <li>
+      <p><a href="https://shapeshed.com/unix-cat/">Linux and Unix cat command tutorial with examples</a><br>
+      <time datetime="2016-08-04T00:00:00" data-updated="true">Aug 4, 2016</time><br>
+    Tutorial on using cat, a UNIX and Linux command for concatenating files and printing to standard output. Examples of showing the contents of a file, appending one file to another, and combining multiple files into one.</p>
+  </li>
+  
+  <li>
+      <p><a href="https://shapeshed.com/unix-grep/">Linux and Unix grep command tutorial with examples</a><br>
+      <time datetime="2016-08-03T00:00:00" data-updated="true">Aug 3, 2016</time><br>
+    Tutorial using grep, a UNIX and Linux command to print lines matching a pattern. Examples of finding text in a file, printing line numbers, counting the number of matches, searching recursively and ignoring case sensitivity.</p>
+  </li>
+  
+  <li>
+      <p><a href="https://shapeshed.com/unix-tee/">Linux and Unix tee command tutorial with examples</a><br>
+      <time datetime="2016-07-28T00:00:00" data-updated="true">Jul 28, 2016</time><br>
+    Tutorial on using tee, a UNIX and Linux command for copying standard input to standard output and making a copy to one or more files. Examples of writing to a file, appending to a file and writing to a privileged file.</p>
+  </li>
+  
+</ul>
+
+
+      
+    
+  </article></div>
+  </div>
+</body>
+</html>

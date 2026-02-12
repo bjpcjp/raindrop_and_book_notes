@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Safe Navigation Operator (&.) in Ruby – Georgi Mitrev</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The Safe Navigation Operator (&.) in Ruby – Georgi Mitrev</h1>
+    <p><strong>URL:</strong> <a href="http://mitrev.net/ruby/2015/11/13/the-operator-in-ruby">http://mitrev.net/ruby/2015/11/13/the-operator-in-ruby</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876777214</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+  <p>The most interesting addition to Ruby 2.3.0 is the Safe Navigation Operator(<code>&amp;.</code>). A similar
+operator has been present in C# and Groovy for a long time with a slightly different syntax - <code>?.</code>.
+So what does it do?</p>
+
+<h4 id="tldr">TLDR</h4>
+
+<p>It is used for avoiding <code>NoMethodError</code> exceptions when calling methods on objects that <em>may</em> be
+<code>nil</code>.</p>
+
+<div><pre><code><span>account</span> <span>=</span> <span>nil</span>
+
+<span>account</span><span>.</span><span>number</span>
+<span># =&gt; NoMethodError (undefined method `number' for nil:NilClass)`)</span>
+
+<span>account</span><span>&amp;</span><span>.</span><span>number</span>
+<span># =&gt; nil</span>
+</code></pre></div>
+
+<h2 id="example">Example</h2>
+
+<p>Imagine you have an <code>account</code> that has an <code>owner</code> and you want to get the <code>owner</code>’s <code>address</code>. If
+you want to be safe and not risk a <code>nil</code> error, you would write something like the following:</p>
+
+<div><pre><code><span>if</span> <span>account</span> <span>&amp;&amp;</span> <span>account</span><span>.</span><span>owner</span> <span>&amp;&amp;</span> <span>account</span><span>.</span><span>owner</span><span>.</span><span>address</span>
+<span>...</span>
+<span>end</span>
+</code></pre></div>
+
+<p>This is really verbose and annoying to type. ActiveSupport includes the <code>try</code> method which has a
+similar behaviour (but with few key differences that will be discussed later):</p>
+
+<div><pre><code><span>if</span> <span>account</span><span>.</span><span>try</span><span>(</span><span>:owner</span><span>).</span><span>try</span><span>(</span><span>:address</span><span>)</span>
+<span>...</span>
+<span>end</span>
+</code></pre></div>
+
+<p>It accomplishes the same thing - it either returns the address or <code>nil</code> if some value along the
+chain is <code>nil</code>. The first example may also return <code>false</code> if, for example, the <code>owner</code> is set to
+<code>false</code>.</p>
+
+<h2 id="using-the-safe-navigation-operator-">Using the safe navigation operator (&amp;.)</h2>
+
+<p>We can rewrite the previous example using the safe navigation operator:</p>
+
+<div><pre><code><span>account</span><span>&amp;</span><span>.</span><span>owner</span><span>&amp;</span><span>.</span><span>address</span>
+</code></pre></div>
+
+<p>The syntax is a bit awkward but I guess we will have to deal with it because it does make the code
+more compact.</p>
+
+<h3 id="more-examples">More examples</h3>
+
+<p>Let’s compare all three approaches in more detail.</p>
+
+<div><pre><code><span>account</span> <span>=</span> <span>Account</span><span>.</span><span>new</span><span>(</span><span>owner: </span><span>nil</span><span>)</span> <span># account without an owner</span>
+
+<span>account</span><span>.</span><span>owner</span><span>.</span><span>address</span>
+<span># =&gt; NoMethodError: undefined method `address' for nil:NilClass</span>
+
+<span>account</span> <span>&amp;&amp;</span> <span>account</span><span>.</span><span>owner</span> <span>&amp;&amp;</span> <span>account</span><span>.</span><span>owner</span><span>.</span><span>address</span>
+<span># =&gt; nil</span>
+
+<span>account</span><span>.</span><span>try</span><span>(</span><span>:owner</span><span>).</span><span>try</span><span>(</span><span>:address</span><span>)</span>
+<span># =&gt; nil</span>
+
+<span>account</span><span>&amp;</span><span>.</span><span>owner</span><span>&amp;</span><span>.</span><span>address</span>
+<span># =&gt; nil</span>
+</code></pre></div>
+
+<p>No surprises so far. What if <code>owner</code> is <code>false</code> (unlikely but not impossible in the exciting world
+of shitty code)?</p>
+
+<div><pre><code><span>account</span> <span>=</span> <span>Account</span><span>.</span><span>new</span><span>(</span><span>owner: </span><span>false</span><span>)</span>
+
+<span>account</span><span>.</span><span>owner</span><span>.</span><span>address</span>
+<span># =&gt; NoMethodError: undefined method `address' for false:FalseClass j</span>
+
+<span>account</span> <span>&amp;&amp;</span> <span>account</span><span>.</span><span>owner</span> <span>&amp;&amp;</span> <span>account</span><span>.</span><span>owner</span><span>.</span><span>address</span>
+<span># =&gt; false</span>
+
+<span>account</span><span>.</span><span>try</span><span>(</span><span>:owner</span><span>).</span><span>try</span><span>(</span><span>:address</span><span>)</span>
+<span># =&gt; nil</span>
+
+<span>account</span><span>&amp;</span><span>.</span><span>owner</span><span>&amp;</span><span>.</span><span>address</span>
+<span># =&gt; undefined method `address' for false:FalseClass`</span>
+</code></pre></div>
+
+<p>Here comes the first surprise - the <code>&amp;.</code> syntax only skips <code>nil</code> but recognizes <code>false</code>! It is not
+exactly equivalent to the <code>s1 &amp;&amp; s1.s2 &amp;&amp; s1.s2.s3</code> syntax.</p>
+
+<p>What if the owner is present but doesn’t respond to <code>address</code>?</p>
+
+<div><pre><code><span>account</span> <span>=</span> <span>Account</span><span>.</span><span>new</span><span>(</span><span>owner: </span><span>Object</span><span>.</span><span>new</span><span>)</span>
+
+<span>account</span><span>.</span><span>owner</span><span>.</span><span>address</span>
+<span># =&gt; NoMethodError: undefined method `address' for #&lt;Object:0x00559996b5bde8&gt;</span>
+
+<span>account</span> <span>&amp;&amp;</span> <span>account</span><span>.</span><span>owner</span> <span>&amp;&amp;</span> <span>account</span><span>.</span><span>owner</span><span>.</span><span>address</span>
+<span># =&gt; NoMethodError: undefined method `address' for #&lt;Object:0x00559996b5bde8&gt;`</span>
+
+<span>account</span><span>.</span><span>try</span><span>(</span><span>:owner</span><span>).</span><span>try</span><span>(</span><span>:address</span><span>)</span>
+<span># =&gt; nil</span>
+
+<span>account</span><span>&amp;</span><span>.</span><span>owner</span><span>&amp;</span><span>.</span><span>address</span>
+<span># =&gt; NoMethodError: undefined method `address' for #&lt;Object:0x00559996b5bde8&gt;`</span>
+</code></pre></div>
+
+<p>Oops, the <code>try</code> method doesn’t check if the receiver responds to the given method. This is why
+it’s always better to use the stricter version of <code>try</code> - <code>try!</code>:</p>
+
+<div><pre><code><span>account</span><span>.</span><span>try!</span><span>(</span><span>:owner</span><span>).</span><span>try!</span><span>(</span><span>:address</span><span>)</span>
+<span># =&gt; NoMethodError: undefined method `address' for #&lt;Object:0x00559996b5bde8&gt;`</span>
+</code></pre></div>
+
+<h2 id="bonus-23-features---arraydig-and-hashdig">Bonus 2.3 features - Array#dig and Hash#dig</h2>
+
+<p>The <code>#dig</code> method is probably the most useful feature in this version. No longer do we have to
+write abominations like the following:</p>
+
+<div><pre><code><span>address</span> <span>=</span> <span>params</span><span>[</span><span>:account</span><span>].</span><span>try</span><span>(</span><span>:[]</span><span>,</span> <span>:owner</span><span>).</span><span>try</span><span>(</span><span>:[]</span><span>,</span> <span>:address</span><span>)</span>
+
+<span># or</span>
+
+<span>address</span> <span>=</span> <span>params</span><span>[</span><span>:account</span><span>].</span><span>fetch</span><span>(</span><span>:owner</span><span>)</span> <span>{</span> <span>{}</span> <span>}.</span><span>fetch</span><span>(</span><span>:address</span><span>)</span>
+</code></pre></div>
+
+<p>We can now simply use <code>Hash#dig</code> and accomplish the same thing:</p>
+
+<div><pre><code><span>address</span> <span>=</span> <span>params</span><span>.</span><span>dig</span><span>(</span><span>:account</span><span>,</span> <span>:owner</span><span>,</span> <span>:address</span><span>)</span>
+</code></pre></div>
+
+<div>
+  <p><span>[</span>
+    shameless plug
+    <span>]</span>
+  </p><p>
+  Psst. Check out my latest project, <a href="https://stonksfolio.com/" target="_blank">Stonksfolio</a>, if you need an awesome portfolio tracker!
+</p></div>
+
+</article></div>
+  </div>
+</body>
+</html>

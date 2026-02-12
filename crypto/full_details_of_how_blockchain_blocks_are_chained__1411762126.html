@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Full details of how blockchain blocks are chained together</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Full details of how blockchain blocks are chained together</h1>
+    <p><strong>URL:</strong> <a href="https://www.johndcook.com/blog/2025/10/27/blockchain/">https://www.johndcook.com/blog/2025/10/27/blockchain/</a></p>
+    <p><strong>Tags:</strong> blockchain, crypto, bitcoin</p>
+    <p><strong>Bookmark ID:</strong> 1411762126</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+		<p>The high-level explanation of a blockchain says that each block contains a cryptographic hash of the previous block. That’s how the blocks are chained together.</p>
+<p>That’s not exactly true, and it leaves out a lot of detail. This post will look in <strong>full detail</strong> at how Bitcoin blocks are chained together by inspecting the bits of two consecutive blocks. Looking at the low-level details reveals that some statements, like the paragraph above, are simplifications and half-truths.</p>
+<p>For the purpose of this post, I downloaded two blocks that were added to the blockchain overnight, blocks 920993 and 920994, and saved the blocks in the binary files <code>920993.dat</code> and <code>920994.dat</code>.</p>
+<h2>Hashing headers</h2>
+<p>According to the simplistic description, the hash of block 920993 should be contained in block 920994. That’s not correct. We will see that the hash of the <strong>header</strong> of block 920993 is contained in block 920994 [1].</p>
+<h2>What exactly is the header?</h2>
+<p>You may hear that the header of a Bitcoin block is the first 80 bytes. That’s also not quite true. The first 8 bytes of a (production) Bitcoin block are the magic number 0xf9beb4d9. This is number chosen by Satoshi with no apparent significance, a random number unlikely to conflict with anything else. Blocks used in test versions of the blockchain begin with different magic numbers.</p>
+<p>The API that I used to download the blocks does not include the magic number, so the header&nbsp;<em>is</em> the first 80 bytes of the files I downloaded, though strictly speaking headers are bytes 9 through 88 of the full block.</p>
+<p>We can see a hex dump of the header of block 920993 by running</p>
+<pre>xxd -l 80 920993.dat</pre>
+<p>which shows us the following.</p>
+<pre>00e0 ff3f e31d 6937 0e1c dba2 5321 5546
+0ecc 00bf 678c a2e1 255e 0100 0000 0000
+0000 0000 996f 2b91 fefc dc17 e530 6c70
+9672 af27 4361 7608 1ded fde3 1157 10a5
+200f 0f83 7022 ff68 21eb 0117 96f2 fbb6
+</pre>
+<h2>How to hash?</h2>
+<p>OK, so we’re supposed to hash the header. What hash function should we apply? Bitcoin uses double SHA256,</p>
+<p>SHA256²(<em>header</em>) = SHA256( (SHA256(<em>header</em>) )</p>
+<p>We can compute this with <code>openssl</code> by running</p>
+<pre>head -c 80 920993.dat | openssl dgst -sha256 -binary | openssl dgst -sha256</pre>
+<p>Note that the first invocation of <code>openssl dgst</code> uses the option <code>-binary</code>, instructing the software to pass the raw bytes to the rest of the pipeline rather than display a text representation. The last part of the pipeline does not have that option because we want a human-readable representation at the end. The output is</p>
+<pre>c2dfb57ef58275c27a6433c5edfddfc1af6ab9ae708c00000000000000000000</pre>
+<p>Note that there are a lot of zeros on the end of the hash. That’s not a coincidence. More on that later.</p>
+<h2>Header of the next block</h2>
+<p>In the previous section we found the hash of block 920993, and we expect to see it inside the header of block 920994.</p>
+<pre>xxd -l 80 920994.dat</pre>
+<p>we can see that the header of block 920994 contains the following.</p>
+<pre>0000 002e <span>c2df b57e f582 75c2 7a64 33c5
+edfd dfc1 af6a b9ae 708c 0000 0000 0000
+0000 0000</span> bb15 accc 8940 3811 0b9b e1cf
+b125 c0fa a65e fb1b 2fa4 61ed 989f 8d6f
+e41e 04cf 5522 ff68 21eb 0117 f2bc ab1a
+</pre>
+<p>The first 4 bytes (8 hex characters) are a version number, and following the version number we see the hash we were looking for.</p>
+<h2>Byte order</h2>
+<p>Why all the zeros in the hash of the block header? That’s a result of the <a href="https://www.johndcook.com/blog/2025/06/20/bitcoin-proof-of-work/">proof of work problem</a> that had to be solved in order to add block 920993 to the blockchain. Bitcoin miners tweak the details of the block [2] until they create a block whose hash begins with the required number of 0 bits [3].</p>
+<p>But the hash value above doesn’t&nbsp;<em>begin</em> with zeros; it&nbsp;<em>ends</em> with zeros. What’s up with that?</p>
+<p>The Bitcoin header and&nbsp;<code>openssl dgst</code> both display hashes in little endian order, i.e. the reverse of what you’d expect from a positional number system.</p>
+<h2>Related posts</h2>
+<ul>
+<li><a href="https://www.johndcook.com/blog/2025/08/16/whats-in-your-wallet/">What’s in your wallet?</a></li>
+<li><a href="https://www.johndcook.com/blog/2025/08/30/el-salvador-bitcoin/">El Salvador prepares for quantum computers</a></li>
+<li><a href="https://www.johndcook.com/blog/2025/08/02/pallas-vesta-zcash/">Pallas, Vesta, and Zcash</a></li>
+</ul>
+<p>[1] But if you only hash the header, couldn’t someone change the rest of the block? No, because the header contains the Merkle tree root. If someone changed a bit in the body of the block, that would change the Merkle tree root, which would change the header, which would change its hash.</p>
+<p>[2] They don’t change the substance of the transactions, but they can change the order in which the transactions are included. And there’s a nonce value that they can change too. The only known way to produce a given number of zeros is by trial and error, and so this takes a lot of work. Having a block with the right leading zeros in its hash proves that you’ve put in the work, hence proof of work.</p>
+<p>[3] This is another simplified half-truth. You don’t need to produce a certain number of leading zeros per se; you need to find a hash value less than a target value, and the target value is not in general an exact power of 2.</p>
+			</div></div>
+  </div>
+</body>
+</html>

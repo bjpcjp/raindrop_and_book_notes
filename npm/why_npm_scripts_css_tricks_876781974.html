@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Why Npm Scripts? | CSS-Tricks</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Why Npm Scripts? | CSS-Tricks</h1>
+    <p><strong>URL:</strong> <a href="https://css-tricks.com/why-npm-scripts">https://css-tricks.com/why-npm-scripts</a></p>
+    <p><strong>Tags:</strong> npm</p>
+    <p><strong>Bookmark ID:</strong> 876781974</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p>
+	DigitalOcean provides cloud products for every stage of your journey. Get started with <a href="https://try.digitalocean.com/css-tricks/?utm_medium=content_acq&amp;utm_source=css-tricks&amp;utm_campaign=global_brand_ad_en&amp;utm_content=conversion_prearticle_everystage">$200 in free credit!</a>
+</p><div>
+
+          
+          
+<p>There has been a growing sentiment (<a href="https://medium.freecodecamp.com/why-i-left-gulp-and-grunt-for-npm-scripts-3d6853dd22b8" rel="noopener">for instance</a>) that using node packages directly, with the command line interfaces they provide, is a good route to take. As opposed to abstracting the functionality away behind a task runner. Partly: you use npm anyway, npm provides scripting functionality, why not just use that? But there is more to it than that. Let’s walk through the thinking, but also exactly how to accomplish many of the most important tasks in a front end development build process.</p>
+
+
+
+<p>I’ve started using <a href="https://docs.npmjs.com/misc/scripts" rel="noopener">npm scripts</a> in my projects for about the last six months. Before that, I used <a href="http://gulpjs.com/" rel="noopener">Gulp</a> and before that, <a href="http://gruntjs.com/" rel="noopener">Grunt</a>. They’ve served me well and helped me perform my work faster and more efficiently by automating many of the things I used to do by hand. However, I started to feel that I was fighting the tools rather than focusing on my own code.</p>
+
+
+
+<p>Grunt, Gulp, Broccoli, Brunch and the like all require you to fit your tasks into their paradigms and configurations. Each has it’s own syntaxes, quirks and gotchas that you need to learn. This adds code complexity, build complexity and makes you focus on fixing tooling rather than writing code.</p>
+
+
+
+<p>These build tools rely on plugins that wrap a core command line tool. This creates another layer of abstraction away from the core tool, which means more potential for bad things to happen.</p>
+
+
+<h3 id="here-are-three-problems-ive-seen-multiple-times">Here are three problems I’ve seen multiple times:</h3>
+
+
+<ul><li>If a plugin doesn’t exist for the command line tool you want to use, you’re out of luck (unless you write it).</li><li>A plugin you’re trying to use wraps an older version of the tool you want to use. Features and documentation don’t always match between the plugin you’re using and the current version of the core tool.</li><li>Errors aren’t always handled well. If a plugin fails, it might not pass along the error from the core tool, resulting in frustration and not really knowing how to debug the problem.</li></ul>
+
+
+<h3 id="but-bear-in-mind">But, bear in mind…</h3>
+
+
+<p>Let me say this: <strong>if you are happy with your current build system and it accomplishes all that you need it to do, you can keep using it!</strong> Just because npm scripts are becoming more popular doesn’t mean you should jump ship. Keep focusing on writing your code instead of learning more tooling. If you start to get the feeling that you’re fighting with your tools, that’s when I’d suggest considering npm scripts.</p>
+
+
+
+<p>If you’ve decided you want to investigate or start using npm scripts, keep reading! You’ll find plenty of example tasks in the rest of this post. Also, I’ve created <a href="https://github.com/damonbauer/npm-build-boilerplate" rel="noopener">npm-build-boilerplate</a> with all of these tasks that you can use as a starting point. Let’s get to it!</p>
+
+
+<h3 id="writing-npm-scripts">Writing npm scripts</h3>
+
+
+<p>We’ll be spending a majority of our time in a `package.json` file. This is where all of our dependencies and scripts will live. Here’s a stripped down version from my boilerplate project:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">{
+  "name": "npm-build-boilerplate",
+  "version": "1.0.0",
+  "scripts": {
+    ...
+  },
+  "devDependencies": {
+    ...
+  }
+}</code></pre>
+
+
+
+<p>We’ll build up our `package.json` file as we go along. Our scripts will go into the <code>scripts</code> object, and any tools we want to use will be installed and put into the <code>devDependencies</code> object.</p>
+
+
+
+<p>Before we begin, here’s a sample structure of the project I’ll be referring to throughout this post:</p>
+
+
+
+<figure><img data-recalc-dims="1" decoding="async" src="data:application/octet-stream;base64," alt=""></figure>
+
+
+<h3 id="compile-scss-to-css">Compile SCSS to CSS</h3>
+
+
+<p>I’m a heavy user of SCSS, so that’s what I’ll be working with. To compile SCSS to CSS, I turn to <a href="https://github.com/sass/node-sass" rel="noopener">node-sass</a>. First, we need to install <code>node-sass</code>; do this by running the following in your command line:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">npm install --save-dev node-sass</code></pre>
+
+
+
+<p>This will install <code>node-sass</code> in your current directory and add it to the <code>devDependencies</code> object in your `package.json`. This is especially useful when someone else runs your project because they will have everything they need to get the project running. Once installed, we can use it on the command line:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">node-sass --output-style compressed -o dist/css src/scss</code></pre>
+
+
+
+<p>Let’s break down what this command does. Starting at the end, it says: look in the `src/scss` folder for any SCSS files; output (<code>-o</code> flag) the compiled CSS to `dist/css`; compress the output (using the <code>--output-style</code> flag with “compressed” as the option).</p>
+
+
+
+<p>Now that we’ve got that working the the command line, let’s move it to an npm script. In your `package.json` <code>scripts</code> object, add it like so:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  "scss": "node-sass --output-style compressed -o dist/css src/scss"
+}</code></pre>
+
+
+
+<p>Now, head back to the command line and run:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">npm run scss</code></pre>
+
+
+
+<p>You will see the same output as running the <code>node-sass</code> command directly in the command line.</p>
+
+
+<h3 id="any-time-we-create-an-npm-script-in-the-remainder-of-this-post-you-can-run-it-by-using-a-command-like-the-above">Any time we create an npm script in the remainder of this post, you can run it by using a command like the above.</h3>
+
+
+<p>Just replace <code>scss</code> with the name of the task you want to run.</p>
+
+
+
+<p>As you will see, many of the command line tools we’ll use have numerous options you can use to configure it exactly you see fit. For instance, here’s the list of (<a href="https://github.com/sass/node-sass#command-line-interface" rel="noopener">node-sass options</a>). Here’s a different setup show how to pass multiple options:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  "scss": "node-sass --output-style nested --indent-type tab --indent-width 4 -o dist/css src/scss"
+}</code></pre>
+
+
+<h3 id="autoprefix-css-with-postcss">Autoprefix CSS with PostCSS</h3>
+
+
+<p>Now that we’re compiling Scss to CSS, we can automatically add vendor prefixes using Autoprefixer &amp; PostCSS. We can install multiple modules at the same time, separating them with spaces:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">npm install --save-dev postcss-cli autoprefixer</code></pre>
+
+
+
+<p>We’re installing two modules because PostCSS doesn’t do anything by default. It relies on other plugins like Autoprefixer to manipulate the CSS you give it.</p>
+
+
+
+<p>With the necessary tools installed and saved to <code>devDependencies</code>, add a new task in your <code>scripts</code> object:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "autoprefixer": "postcss -u autoprefixer -r dist/css/*"
+}</code></pre>
+
+
+
+<p>This task says: Hey <code>postcss</code>, use (<code>-u</code> flag) <code>autoprefixer</code> to replace (<code>-r</code> flag) any `.css` files in `dist/css` with vendor prefixed code. That’s it! Need to change the default browser support for autoprefixer? It’s easy to add to the script:</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">"autoprefixer": "postcss -u autoprefixer --autoprefixer.browsers '&gt; 5%, ie 9' -r dist/css/*"</code></pre>
+
+
+
+<p>Again, there’s lot of options you can use to configure your own build: <a href="https://github.com/code42day/postcss-cli" rel="noopener">postcss-cli</a> and <a href="https://github.com/postcss/autoprefixer#options" rel="noopener">autoprefixer</a>.</p>
+
+
+<h3 id="linting-javascript">Linting JavaScript</h3>
+
+
+<p>Keeping a standard format and style when authoring code is important to keep errors to a minimum and increase developer efficiency. “Linting” helps us do that automatically, so let’s add JavaScript linting by using <a href="https://github.com/eslint/eslint" rel="noopener">eslint</a>.</p>
+
+
+
+<p>Once again, install the package; this time, let’s use a shortcut:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">npm i -D eslint</code></pre>
+
+
+
+<p>This is the same as:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">npm install --save-dev eslint</code></pre>
+
+
+
+<p>Once installed, we’ll set up some basic rules to run our code against using <code>eslint</code>. Run the following to start a wizard:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">eslint --init</code></pre>
+
+
+
+<p>I’d suggest choosing “Answer questions about your style” and answering the questions it asks. This will generate a new file in the root of your project that <code>eslint</code> will check your code against.</p>
+
+
+
+<p>Now, let’s add a lint task to our `package.json` <code>scripts</code> object:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "lint": "eslint src/js"
+}</code></pre>
+
+
+
+<p>Our lint task is 13 characters long! It looks for any JavaScript files in the <code>src/js</code> folder and runs them against the configuration it generated earlier. Of course, you can <a href="http://eslint.org/docs/user-guide/command-line-interface#options" rel="noopener">get crazy with the options</a>.</p>
+
+
+<h3 id="uglifying-javascript-files">Uglifying JavaScript files</h3>
+
+
+<p>Let’s work on combining and minifying our JavaScript files, which we can use <a href="https://github.com/mishoo/UglifyJS2" rel="noopener">uglify-js</a> to do. We’ll need to install <code>uglify-js</code> first:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">npm i -D uglify-js</code></pre>
+
+
+
+<p>Then, we can set up our uglify task in `package.json`:</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">"scripts": {
+  ...
+  "uglify": "mkdir -p dist/js &amp;&amp; uglifyjs src/js/*.js -m -o dist/js/app.js"
+}</code></pre>
+
+
+
+<p>One of the great things about npm scripts is that they are essentially an alias for a command line task that you want to run over and over. This means that you can use standard command line code right in your script! This task uses two standard command line features, <code>mkdir</code> and <code>&amp;&amp;</code>.</p>
+
+
+
+<p>The first half of this task, <code>mkdir -p dist/js</code> says: Create a folder structure (<code>mkdir</code>), but only if it doesn’t exist already (<code>-p</code> flag). Once that completes successfully, run the <code>uglifyjs</code> command. The <code>&amp;&amp;</code> lets you chain multiple commands together, running each one sequentially <em>if</em> the previous command completes successfully.</p>
+
+
+
+<p>The second half of this task tells <code>uglifyjs</code> to start with all of the JS files (`*.js`) in `src/js/`, apply the “mangle” command (<code>-m</code> flag), and output the result to `dist/js/app.js`. Once again, check the documentation for the tool in question for a full <a href="https://github.com/mishoo/UglifyJS2#usage" rel="noopener">list of options</a>.</p>
+
+
+
+<p>Let’s update our <code>uglify</code> task to create a compressed version of `dist/js/app.js`. Chain another <code>uglifyjs</code> command and passing the “compress” (<code>-c</code>) flag:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "uglify": "mkdir -p dist/js &amp;&amp; uglifyjs src/js/*.js -m -o dist/js/app.js &amp;&amp; uglifyjs src/js/*.js -m -c -o dist/js/app.min.js"
+}</code></pre>
+
+
+<h3 id="compressing-images">Compressing Images</h3>
+
+
+<p>Let’s now turn our attention to compressing images. According to <a href="http://httparchive.org/" rel="noopener">httparchive.org</a>, the average page weight of the top 1000 URLs on the internet is 1.9mb, <a href="http://httparchive.org/interesting.php?a=All&amp;l=Jan%2015%202016&amp;s=Top1000#bytesperpage" rel="noopener">with images accounting for 1.1mb of that total</a>. One of the best things you can do to increase page speed is reduce the size of your images.</p>
+
+
+
+<p>Install <a href="https://github.com/imagemin/imagemin-cli" rel="noopener">imagemin-cli</a>:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">npm i -D imagemin-cli</code></pre>
+
+
+
+<p>Imagemin is great because it will compress most types of images, including GIF, JPG, PNG and SVG. You can pass it a folder of images and it will crunch all of them, like so:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "imagemin": "imagemin src/images dist/images -p",
+}</code></pre>
+
+
+
+<p>This task tells <code>imagemin</code> to find and compress all images in `src/images` and put them in `dist/images`. The <code>-p</code> flag is passed to create “progressive” images when possible. Check the documentation for <a href="https://github.com/imagemin/imagemin-cli#usage" rel="noopener">all available options</a>.</p>
+
+
+<h3 id="svg-sprites">SVG Sprites</h3>
+
+
+<p>The buzz surrounding SVG has increased in the last few years, and for good reason. They are crisp on all devices, editable with CSS, and screen reader friendly. However, SVG editing software usually leaves extraneous and unnecessary code. Luckily, <a href="https://github.com/svg/svgo" rel="noopener">svgo</a> can help by removing all of that (we’ll install it below).</p>
+
+
+
+<p>You can also automate the process of combining and spriting your SVGs to make a single SVG file (<a href="https://css-tricks.com/svg-sprites-use-better-icon-fonts/">more on that technique here</a>). To automate this process, we can install <a href="https://github.com/frexy/svg-sprite-generator" rel="noopener">svg-sprite-generator</a>.</p>
+
+
+
+<pre rel="terminal" data-line=""><code markup="tt">npm i -D svgo svg-sprite-generator</code></pre>
+
+
+
+<p>The pattern is probably familiar to you now: once installed, add a task in your `package.json` <code>scripts</code> object:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "icons": "svgo -f src/images/icons &amp;&amp; mkdir -p dist/images &amp;&amp; svg-sprite-generate -d src/images/icons -o dist/images/icons.svg"
+}</code></pre>
+
+
+
+<p>Notice the <code>icons</code> task does three things, based on the presence of two <code>&amp;&amp;</code> directives. First, we use <code>svgo</code>, passing a folder (<code>-f</code> flag) of SVGs; this will compress all SVGs inside the folder. Second, we’ll make the <code>dist/images</code> folder if it doesn’t already exist (using the <code>mkdir -p</code> command). Finally, we use <code>svg-sprite-generator</code>, passing it a folder of SVGs (<code>-d</code> flag) and a path where we want the SVG sprite to output (<code>-o</code> flag).</p>
+
+
+<h3 id="serve-and-automatically-inject-changes-with-browsersync">Serve and Automatically Inject Changes with BrowserSync</h3>
+
+
+<p>One of the last pieces to the puzzle is <a href="https://github.com/Browsersync/browser-sync" rel="noopener">BrowserSync</a>. A few of the things it can do: start a local server, automatically inject updated files into any connected browser, and sync clicks &amp; scrolls between browsers. Install it and add a task:</p>
+
+
+
+<pre rel="terminal" data-line=""><code markup="tt">npm i -D browser-sync</code></pre>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "serve": "browser-sync start --server --files 'dist/css/*.css, dist/js/*.js'"
+}</code></pre>
+
+
+
+<p>Our BrowserSync task starts a server (<code>--server</code> flag) using the current path as the root by default. The <code>--files</code> flag tells BrowserSync to watch any CSS or JS file in the `dist` folder; whenever something in there changes, automatically inject the changed file(s) into the page.</p>
+
+
+
+<p>You can open multiple browsers (even on different devices) and they will all get updated file changes in real time!</p>
+
+
+<h3 id="grouping-tasks">Grouping tasks</h3>
+
+
+<p>With all of the tasks from above, we’re able to:</p>
+
+
+
+<ul><li>Compile SCSS to CSS and automatically add vendor prefixes</li><li>Lint and uglify JavaScript</li><li>Compress images</li><li>Convert a folder of SVGs to a single SVG sprite</li><li>Start a local server and automatically inject changes into any browser connected to the server</li></ul>
+
+
+
+<p>Let’s not stop there!</p>
+
+
+<h4 id="combining-css-tasks">Combining CSS tasks</h4>
+
+
+<p>Let’s add a task that combines the two CSS related tasks (preprocessing Sass and running Autoprefixer), so we don’t have to run each one separately:</p>
+
+
+
+<pre rel="HTML" data-line=""><code markup="tt">"scripts": {
+  ...
+  "build:css": "npm run scss &amp;&amp; npm run autoprefixer"
+}</code></pre>
+
+
+
+<p>When you run <code>npm run build:css</code>, it will tell the command line to run <code>npm run scss</code>; when it completes successfully, it will then (<code>&amp;&amp;</code>) run <code>npm run autoprefixer</code>.</p>
+
+
+
+<p>Just like with our <code>build:css</code> task, we can chain our JavaScript tasks together to make it easier to run:</p>
+
+
+<h4 id="combining-javascript-tasks">Combining JavaScript tasks</h4>
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "build:js": "npm run lint &amp;&amp; npm run uglify"
+}</code></pre>
+
+
+
+<p>Now, we can call <code>npm run build:js</code> to lint, concatenate and uglify our JavaScript in one step!</p>
+
+
+<h4 id="combine-remaining-tasks">Combine remaining tasks</h4>
+
+
+<p>We can do the same thing for our image tasks, as well as a task that combines all build tasks into one:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "build:images": "npm run imagemin &amp;&amp; npm run icons",
+  "build:all": "npm run build:css &amp;&amp; npm run build:js &amp;&amp; npm run build:images",
+}</code></pre>
+
+
+<h3 id="watching-for-changes">Watching for changes</h3>
+
+
+<p>Up until this point, our tasks require to make changes to a file, switch back to the command line and run the corresponding task(s). One of the most useful things we can do is add tasks that watch for changes that run tasks automatically when files change. To do this, I recommend using <a href="https://github.com/Qard/onchange" rel="noopener">onchange</a>. Install as usual:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">npm i -D onchange</code></pre>
+
+
+
+<p>Let’s set up watch tasks for CSS and JavaScript:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "watch:css": "onchange 'src/scss/*.scss' -- npm run build:css",
+  "watch:js": "onchange 'src/js/*.js' -- npm run build:js",
+}</code></pre>
+
+
+
+<p>Here’s the breakdown on these tasks: <code>onchange</code> expects you to pass a path as a string to the files you want to watch. We’ll pass our source SCSS and JS files to watch. The command we want to run comes after the <code>--</code>, and it will run any time a file in the path given is added, changed or deleted.</p>
+
+
+<h3 id="lets-add-one-more-watch-command-to-finish-off-our-npm-scripts-build-process">Let’s add one more watch command to finish off our npm scripts build process.</h3>
+
+
+<p>Install one more package, <a href="https://github.com/keithamus/parallelshell" rel="noopener">parallelshell</a>:</p>
+
+
+
+<pre rel="Terminal" data-line=""><code markup="tt">npm i -D parallelshell</code></pre>
+
+
+
+<p>Once again, add a new task to the <code>scripts</code> object:</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "watch:all": "parallelshell 'npm run serve' 'npm run watch:css' 'npm run watch:js'"
+}</code></pre>
+
+
+
+<p><code>parallelshell</code> takes multiple strings, which we’ll pass multiple <code>npm run</code> tasks to run.</p>
+
+
+
+<p>Why use <code>parallelshell</code> to combine multiple tasks instead of using <code>&amp;&amp;</code> like in previous tasks? At first, I tried this. The problem is that <code>&amp;&amp;</code> chains commands together and waits for each command to <em>finish successfully</em> before starting the next. However, since we are running <code>watch</code> commands, they never finish! We’d be stuck in an endless loop.</p>
+
+
+
+<p>Therefore, using <code>parallelshell</code> enables us to run multiple <code>watch</code> commands simultaneously.</p>
+
+
+
+<p>This task fires up a server with BrowserSync using the <code>npm run serve</code> task. Then, it starts our watch commands for both CSS and JavaScript files. Any time a CSS or JavaScript file changes, the watch task performs a respective build task; since BrowserSync is set up to watch for changes in the `dist` folder, it automatically injects new files into any browser connected to it’s URL. Sweet!</p>
+
+
+<h3 id="other-useful-tasks">Other useful tasks</h3>
+
+
+<p><code>npm</code> comes with <a href="https://docs.npmjs.com/misc/scripts#description" rel="noopener">lots of baked in tasks</a> that you can hook into. Let’s write one more task leveraging one of these built scripts.</p>
+
+
+
+<pre rel="package.json" data-line=""><code markup="tt">"scripts": {
+  ...
+  "postinstall": "npm run watch:all"
+}</code></pre>
+
+
+
+<p><code>postinstall</code> runs immediately after you run <code>npm install</code> in your command line. This is a nice-to-have especially when working on teams; when someone clones your project and runs <code>npm install</code>, our <code>watch:all</code> tasks starts immediately. They’ll automatically have a server started, a browser window opened and files being watched for changes.</p>
+
+
+<h3 id="wrap-up">Wrap Up</h3>
+
+
+<p>Whew! We made it! I hope you’ve been able to learn a few things about using npm scripts as a build process and the command line in general.</p>
+
+
+
+<p>Just in case you missed it, I’ve created an <a href="https://github.com/damonbauer/npm-build-boilerplate" rel="noopener">npm-build-boilerplate</a> project with all of these tasks that you can use as a starting point. If you have questions or comments, please <a href="http://twitter.com/damon_bauer" rel="noopener">tweet at me</a> or leave a comment below. I’d be glad to help where I can!</p>
+
+          
+        </div></div>
+  </div>
+</body>
+</html>

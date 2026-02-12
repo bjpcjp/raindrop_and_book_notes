@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Performance Benefits of Using Huge Pages for Code. | Easyperf</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Performance Benefits of Using Huge Pages for Code. | Easyperf</h1>
+    <p><strong>URL:</strong> <a href="https://easyperf.net/blog/2022/09/01/Utilizing-Huge-Pages-For-Code">https://easyperf.net/blog/2022/09/01/Utilizing-Huge-Pages-For-Code</a></p>
+    <p><strong>Tags:</strong> chip-design, cpus, semiconductors</p>
+    <p><strong>Bookmark ID:</strong> 876788446</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+				<p><img src="https://easyperf.net/img/posts/HugePagesForCode/front.png" alt=""></p>
+
+<p><strong>Contents:</strong></p>
+<ul id="markdown-toc">
+  <li><a href="#recap-on-memory-pages" id="markdown-toc-recap-on-memory-pages">Recap on Memory Pages</a></li>
+  <li><a href="#huge-pages-for-data-and-code" id="markdown-toc-huge-pages-for-data-and-code">Huge Pages for data AND code</a></li>
+  <li><a href="#example-speedup-clang-compilation" id="markdown-toc-example-speedup-clang-compilation">Example: speedup Clang compilation</a>    <ul>
+      <li><a href="#baseline" id="markdown-toc-baseline">Baseline</a></li>
+      <li><a href="#option1-align-code-section-at-2mb-boundary" id="markdown-toc-option1-align-code-section-at-2mb-boundary">Option1: align code section at 2MB boundary</a></li>
+      <li><a href="#configuring-the-target-machine" id="markdown-toc-configuring-the-target-machine">Configuring the target machine</a></li>
+      <li><a href="#running-the-relinked-binary" id="markdown-toc-running-the-relinked-binary">Running the relinked binary</a></li>
+      <li><a href="#option2-remap-the-code-section-at-runtime" id="markdown-toc-option2-remap-the-code-section-at-runtime">Option2: remap the code section at runtime</a></li>
+      <li><a href="#benchmarks" id="markdown-toc-benchmarks">Benchmarks</a></li>
+    </ul>
+  </li>
+  <li><a href="#closing-thoughts" id="markdown-toc-closing-thoughts">Closing thoughts</a></li>
+</ul>
+
+<hr>
+
+<p><strong>Subscribe to my <a href="https://products.easyperf.net/newsletter">newsletter</a>, support me on <a href="https://www.patreon.com/dendibakh">Patreon</a> or by PayPal <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TBM3NW8TKTT34&amp;currency_code=USD&amp;source=url">donation</a>.</strong></p>
+
+<hr>
+
+<p>Many people know about performance benefits of using Huge Pages for data, but not many of them know that Huge Pages can be used for code as well. In this article, I show how to speed up source code compilation for the clang compiler by 5% if you allocate its code section on Huge Pages. If it seems small to you to justify the effort, I can say that all major cloud service providers care about every 1% they could optimize since it translates into immense cost savings. And hey, why leave performance on the table?</p>
+
+<p>But before we jump into the topic, I feel that I need to give a brief recap for readers to refresh their knowledge about Memory Pages. Feel free to skip this introduction if you are familiar with all of this or just skim through it if it’s too boring for you. I’ll try to make it brief, I promise.</p>
+
+<h2 id="recap-on-memory-pages">Recap on Memory Pages</h2>
+
+<p><img src="https://easyperf.net/img/posts/HugePagesForCode/VirtualMem.png"></p>
+
+<p><strong>Virtual Addresses</strong>. Applications operate on virtual addresses, which serve 2 purposes: 1) protection and 2) effective physical memory management. Memory is split into pages, the default page size on x86 is 4KB, and on ARM it’s 16KB. So, every address can be split into the address of the page + the offset on that page. In the case of a 4KB page, this will be 52 rightmost bits for page address and 12 leftmost bits for offset within that page. You only need to translate the page address (first 52 bits) since the page offset doesn’t change.</p>
+
+<p><strong>Translations</strong>. Since user-space applications don’t know the physical addresses, HW needs to translate virtual to physical addresses to access the data in memory. The kernel maintains a page table, which holds address mappings from virtual pages into physical pages. Without HW support for such translations, every time you need to do a load or store, you would 1) interrupt the process, 2) kernel handles that interrupt, and 3) interrupt service routine “walks” the page table and retrieves the translation. At that point, we are looking at 10000+ cycles, which would be unbearable, of course.</p>
+
+<p><strong>TLBs</strong>. The good thing is that changes to that table are relatively not frequent, so it’s a good idea to cache some of the most frequent ones in HW. Such a cache exists in probably every modern CPU and is called TLB (Translation Lookaside Buffer), which keeps the most recent translations. There is a hierarchy of L1 ITLB (Instructions), L1 DTLB (Data), followed by L2 STLB (Shared - instructions and data). On modern laptop processors, L1 can hold up to a few hundred recent translations<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" rel="footnote">1</a></sup>, and L2 can hold a few thousand. Now, with the default page size on x86 of 4KB, every such entry in the TLB is a mapping for a 4KB page. Given that, L1 TLB can cover up to 1MB of memory, and L2 cover up to 10 MB.</p>
+
+<p><strong>Page Walks</strong>. 10MB of memory space covered by L2 STLB sounds like should be enough for many applications, right? But consider what happens when you miss in TLB. Ok, you don’t have to interrupt the process, that would be terrible for performance. You see, it’s such an important issue, that HW gets your back covered in this case again.  The thing is that the format of the page table is dictated by the HW, to which OS’es have to comply. Because HW knows the format of the page table, it can search for translations by itself, without waking up the kernel. This mechanism is called “HW page walker”, which, in the event of TLB cache miss, will do the entire page table traversal internally. I.e. it will issue all the necessary instructions to find the required address translation. It is much faster, but still, a page walk is very expensive.</p>
+
+<h2 id="huge-pages-for-data-and-code">Huge Pages for data AND code</h2>
+
+<p>As I said in the introduction paragraph, people typically use large pages for data. Any algorithm that does random accesses into a large memory region will likely suffer from TLB misses. Examples are plenty: binary search in a big array, large hash tables, histogram-like algorithms, etc. The reason is simple: because the size of a page is relatively small (4KB), there is a high chance that the page you will access next is not in the TLB cache.</p>
+
+<p>How do you solve it? Using Huge Pages, of course, what else you would expect? On x86, besides the default 4KB pages, you also have an option of allocating 2MB and 1GB pages. Let me do the math for you: with just one 2MB page you can cover the same amount of memory as with 512 default 4KB pages. And guess what, you need fewer translation entries in the TLB caches. It does not eliminate TLB misses completely, but greatly increases the chance of a TLB hit. I know you’re probably interested in how to start using Huge Pages, but I do not want to repeat others. And especially since there are so many good articles out there. <a href="https://rigtorp.se/hugepages/">This</a> and <a href="https://mazzo.li/posts/check-huge-page.html">that</a> are among my favorites. You can find an example in one of our recent Performance Tuning Challenges (<a href="https://youtu.be/R_yX0XjdSBY?t=4571">Youtube</a>) (<a href="https://docs.google.com/presentation/d/16M90It8nOK-Oiy7j9Kw27o9boLFwr6GFy55XFVzaAVA/edit#slide=id.gf46e3bea08_0_131">Slides</a> - slide 19).</p>
+
+<p>If you’re still with me, today I wanted to talk about using Large Pages for mapping the code section of your application onto Huge Pages. I see many people talk about Huge Pages for use with <code>malloc</code>, <code>mmap</code>, and so on. But the same problem exists not just for data but for instructions as well. And yet it doesn’t get much attention. Let’s fix that!</p>
+
+<h2 id="example-speedup-clang-compilation">Example: speedup Clang compilation</h2>
+
+<p>The example I use for demonstration purposes is a well-known Clang compiler which has a very flat performance profile, i.e. there are no clear hotspots in it. Instead, many functions take 1-2% of the total execution time. The complete section of statically built clang binary on Linux has a code section of ~60MB, which does not fit into L2 STLB. What likely happens in this case, is that multiple hot functions are scattered all around that 60MB memory space, and very rarely do they share the same memory page of 4KB. When they begin frequently calling each other, they start competing for translation entries in the ITLB. Since the space in L2 STLB is limited, this may become a serious bottleneck, as I will show next.</p>
+
+<h3 id="baseline">Baseline</h3>
+
+<p>To show the benefits of using Huge Pages for the code section, I have built the latest Clang compiler from sources using instructions from <a href="https://www.llvm.org/docs/GettingStarted.html">here</a>. I limited it only to building the compiler itself for the x86 target:</p>
+<div><pre><code><span>$ </span>cmake <span>-G</span> Ninja <span>-DCMAKE_BUILD_TYPE</span><span>=</span>Release <span>-DLLVM_ENABLE_PROJECTS</span><span>=</span><span>"clang"</span> <span>-DLLVM_TARGETS_TO_BUILD</span><span>=</span>X86 ../llvm
+</code></pre></div>
+
+<p>To demonstrate the performance problem, I compiled one of the LLVM sources with my newly built compiler and collect ITLB misses:</p>
+<div><pre><code><span>$ </span>perf <span>stat</span> <span>-e</span> iTLB-loads,iTLB-load-misses ../llvm-project/build/bin/clang++ <span>-c</span> <span>-O3</span> &lt;other options&gt; ../llvm-project/llvm/lib/Transforms/Vectorize/LoopVectorize.cpp
+  180,759,568      iTLB-loads
+   12,068,728      iTLB-load-misses          <span>#    6.68% of all iTLB cache accesses</span>
+
+ 15.416281961 seconds <span>time </span>elapsed
+</code></pre></div>
+
+<p>Also, there is a nice little <a href="https://github.com/intel/iodlr/tree/master/tools">script</a> built on top of Linux perf to estimate the fraction of cycles the CPU was stalled due to instruction TLB misses. It can give you an intuition of how much potential speedup you can achieve by tackling this issue.</p>
+
+<div><pre><code><span>$ </span>git clone https://github.com/intel/iodlr.git
+<span>$ </span><span>export </span><span>PATH</span><span>=</span><span>`</span><span>pwd</span><span>`</span>/iodlr/tools/:<span>$PATH</span>
+<span>$ </span>measure-perf-metric.sh <span>-m</span> itlb_stalls <span>-e</span> ../llvm-project/build/bin/clang++ <span>-c</span> <span>-O3</span> &lt;other options&gt; ../llvm-project/llvm/lib/Transforms/Vectorize/LoopVectorize.cpp
+<span>=================================================</span>
+Final itlb_stalls metric
+<span>--------------------------------------------------</span>
+FORMULA: metric_ITLB_Misses<span>(</span>%<span>)</span> <span>=</span> 100<span>*</span><span>(</span>a/b<span>)</span>
+         where, <span>a</span><span>=</span>icache_64b.iftag_stall
+                <span>b</span><span>=</span>cycles
+<span>=================================================</span>
+metric_ITLB_Misses<span>(</span>%<span>)=</span>7.0113070100
+</code></pre></div>
+
+<p><img src="https://easyperf.net/img/posts/HugePagesForCode/TLB_stalls.png"></p>
+
+<p>The previous output tells us that 7% of cycles that Clang spent compiling <code>LoopVectorize.cpp</code> was wasted doing demanding page walks and populating TLB entries. 7% is a significant number, so there is something to improve. You can also continue the analysis by adding the <code>-r</code> option to <code>measure-perf-metric.sh</code>. This will sample on <code>icache_64b.iftag_stall</code> event to locate the place where the TLB stalls are coming from. Now let’s consider what we can do about that ITLB misses.</p>
+
+<h3 id="option1-align-code-section-at-2mb-boundary">Option1: align code section at 2MB boundary</h3>
+
+<p>Our first option is to tell the loader/kernel to place the code section of an application onto preallocated (explicit) Huge Pages. The key requirement here is that the code section must be aligned at the Huge Page boundary, in this case, 2MB. As you may have guessed, it requires that you relink your binary.</p>
+
+<p>Here is the full command line to rebuild the clang compiler with the code section aligned at the 2MB boundary, notice I only added two <code>-z</code> linker options:</p>
+<div><pre><code><span>$ </span>cmake <span>-G</span> Ninja <span>-DCMAKE_BUILD_TYPE</span><span>=</span>Release <span>-DLLVM_ENABLE_PROJECTS</span><span>=</span><span>"clang"</span> <span>-DLLVM_TARGETS_TO_BUILD</span><span>=</span>X86 ../llvm <span>-DCMAKE_CXX_LINK_FLAGS</span><span>=</span><span>"-Wl,-zcommon-page-size=2097152 -Wl,-zmax-page-size=2097152"</span> 
+<span>$ </span>ninja <span>-j</span> <span>`</span><span>nproc</span><span>`</span> clang
+</code></pre></div>
+
+<p>Now that I’ve done that I can see the difference in the generated ELF binary:</p>
+
+<p><strong>Baseline:</strong>
+<img src="https://easyperf.net/img/posts/HugePagesForCode/Base_ELF.png" alt=""></p>
+
+<p><strong>Aligned at 2MB boundary:</strong>
+<img src="https://easyperf.net/img/posts/HugePagesForCode/Huge_ELF.png" alt=""></p>
+
+<p>In the modified case, the <code>PROGBITS</code> section starts from the offset <code>0xe00000</code>, which equals 14MB, so it is a multiple of 2MB. While in the baseline case, the <code>.init</code> section starts right after the <code>.rela.plt</code> section with not so many padding bytes added. Notice that the size of the <code>.text</code> section didn’t change – it’s the same functional code, just the offset has changed.</p>
+
+<p>The obvious downside is that the binary size gets larger. In my case, the size of the <code>clang-16</code> executable increased from 111MB to 114MB. Since the problem with ITLB misses usually arises for large applications, an additional 2-4MB of padded bytes might not make a huge difference, but something to keep in mind.</p>
+
+<h3 id="configuring-the-target-machine">Configuring the target machine</h3>
+
+<p>Now that we’ve relinked our binary, we need to reconfigure the machine which will use our “improved” clang compiler. Here are the steps that you should do:</p>
+
+<div><pre><code><span>$ </span><span>sudo </span>apt <span>install </span>libhugetlbfs-bin
+<span>$ </span><span>sudo </span>hugeadm <span>--create-global-mounts</span>
+<span>$ </span><span>sudo </span>hugeadm <span>--pool-pages-min</span> 2M:128
+</code></pre></div>
+
+<p>Notice, I use <a href="https://github.com/libhugetlbfs/libhugetlbfs">libhugetlbfs</a>, which is unfortunately no longer actively maintained. The good thing is that most of the things you can do manually, e.g. the <code>sudo hugeadm --pool-pages-min 2M:128</code> command likely does <code>echo 128 | sudo tee /proc/sys/vm/nr_hugepages</code> under the hood. The same goes for <code>--create-global-mounts</code> command. Check out this Linux kernel <a href="https://www.kernel.org/doc/Documentation/vm/hugetlbpage.txt">documentation page</a> for more details.</p>
+
+<p>“Why 128 huge pages?” you would ask. Well, the size of the code section of the clang executable is <code>0x3b6b7a4</code> (see above), which is roughly 60MB. I could have allocated less, I agree, but since I have 16GB of RAM on my system… Once I reserved 128 <strong>explicit</strong> huge pages memory usage jumped from 0.9Gb to 1.15G. That space became unavailable for other applications not utilizing huge pages. You can also check the effect of allocating explicit huge pages if you run:</p>
+
+<div><pre><code><span>$ </span>watch <span>-n1</span> <span>"cat /proc/meminfo  | grep huge -i"</span>
+AnonHugePages:      2048 kB
+ShmemHugePages:        0 kB
+FileHugePages:         0 kB
+HugePages_Total:     128    &lt;<span>==</span> 128 huge pages allocated
+HugePages_Free:      128
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:          262144 kB &lt;<span>==</span> 256MB of space occupied
+</code></pre></div>
+
+<h3 id="running-the-relinked-binary">Running the relinked binary</h3>
+
+<p>OK, so we allocated huge pages, let’s run the binary:</p>
+
+<div><pre><code><span>$ </span>hugectl <span>--text</span> ../llvm-project/build_huge/bin/clang++ <span>-c</span> <span>-O3</span> &lt;other options&gt; ../llvm-project/llvm/lib/Transforms/Vectorize/LoopVectorize.cpp
+</code></pre></div>
+
+<p>Notice, that I prepended my command with <code>hugectl --text</code>, which according to the description, “requests remapping of the program text”. I do not claim that I fully understand all the mechanics associated with it. Again, I would be happy if someone helps explain all the interactions between the binary, loader, and kernel.</p>
+
+<p>The need to use <code>hugectl</code> can be eliminated if we set the special bit in the ELF header. Such a bit determines if the text segment is backed by default with huge pages. The same bit for the data segment exists as well. Here is how you can flip that switch:</p>
+
+<div><pre><code><span>$ </span>hugeedit <span>--text</span> ../llvm-project/build_huge/bin/clang-16
+Segment 2 0x0 - 0xc55758 <span>()</span> default is BASE pages
+Segment 3 0xe00000 - 0x496cae1 <span>(</span>TEXT<span>)</span> default is HUGE pages   &lt;<span>==</span>
+Segment 4 0x4a00000 - 0x59502b0 <span>()</span> default is BASE pages
+Segment 5 0x5c04960 - 0x6095ef8 <span>(</span>DATA<span>)</span> default is BASE pages
+</code></pre></div>
+
+<p>Now I can run <code>../llvm-project/build_huge/bin/clang-16</code> without controlling it at runtime with <code>hugectl --text</code>. This step can also be done at the time of building the compiler.</p>
+
+<p>I know you were waiting to see the results. Here we go…</p>
+
+<div><pre><code><span>$ </span>perf <span>stat</span> <span>-e</span> iTLB-loads,iTLB-load-misses ../llvm-project/build_huge/bin/clang++ <span>-c</span> <span>-O3</span> &lt;other options&gt; ../llvm-project/llvm/lib/Transforms/Vectorize/LoopVectorize.cpp
+   46,838,084      iTLB-loads
+    1,627,038      iTLB-load-misses          <span>#    3.47% of all iTLB cache accesses</span>
+
+ 14.701666694 seconds <span>time </span>elapsed
+</code></pre></div>
+
+<p>Comparing to the baseline, we have 7 times less iTLB misses (12M -&gt; 1.6M), which resulted in a 5% faster compiler time (15.4s -&gt; 14.7s). You can see that we didn’t fully get rid of iTLB misses, as there are still 1.6M of those, which account for 4.1% of all cycles stalled (down from 7% in the baseline).</p>
+
+<p>A good indicator that the code of your application was backed by Huge Pages is to watch <code>/proc/meminfo</code>. In my case, I observed 30 huge pages used by the process, which is enough to back the entire code section of the clang compiler.</p>
+
+<div><pre><code><span># while clang compilation is running...</span>
+<span>$ </span>watch <span>-n1</span> <span>"cat /proc/meminfo  | grep huge -i"</span> 
+HugePages_Total:     128
+HugePages_Free:       98 &lt;<span>==</span> 30 huge pages are <span>in </span>use
+</code></pre></div>
+
+<h3 id="option2-remap-the-code-section-at-runtime">Option2: remap the code section at runtime</h3>
+
+<p>I recently discovered another way of doing the same thing but without the need to recompile your application. Sounds interesting? I was very surprised when I experimented with it.</p>
+
+<p>There is an <a href="https://github.com/intel/iodlr.git">iodlr</a> library, which can automatically <em>remap</em> the code from the default pages onto huge pages. The easiest way to use it is to build the <code>liblppreload.so</code> library and preload it when running your application. For example:</p>
+
+<div><pre><code><span>$ </span><span>cd </span>iodlr/large_page-c
+<span>$ </span>make <span>-f</span> Makefile.preload
+<span>$ </span><span>sudo cp </span>liblppreload.so /usr/lib64/
+<span>$ LD_PRELOAD</span><span>=</span>/usr/lib64/liblppreload.so ../llvm-project/build/bin/clang++ <span>-c</span> <span>-O3</span> &lt;other options&gt; ../llvm-project/llvm/lib/Transforms/Vectorize/LoopVectorize.cpp
+</code></pre></div>
+
+<p>This gives the results indistinguishable from the previous method: roughly the same number of iTLB misses and the same running time. Pretty cool! The good thing about it is that you can speed up existing applications even when you don’t have access to the source code. I haven’t measured the overhead of remapping<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" rel="footnote">2</a></sup>, but I tend to think it’s not big. I haven’t dug too deep into the <code>liblppreload.so</code> implementation, but if you’re interested, you can take a look at the <a href="https://github.com/intel/iodlr/tree/master/large_page-c">code</a>, it’s not that big.</p>
+
+<p>The <code>liblppreload.so</code> library works both with explicit (EHP) and transparent huge pages (THP). By default it will use THP, so they must be enabled (<code>/sys/kernel/mm/transparent_hugepage/enabled</code> should be <code>always</code> or <code>madvise</code>). You can check that THP are being used by again, watching the <code>/proc/meminfo</code>:</p>
+
+<div><pre><code><span># while clang compilation is running...</span>
+<span>$ </span>watch <span>-n1</span> <span>"cat /proc/meminfo  | grep huge -i"</span> 
+AnonHugePages:     61440 kB     &lt;<span>==</span> 30 transparent huge pages are <span>in </span>use
+HugePages_Total:     128
+HugePages_Free:      128        &lt;<span>==</span> explicit huge pages are not used
+</code></pre></div>
+
+<p>If you want to use EHP instead, then you need to prepend the command line with <code>IODLR_USE_EXPLICIT_HP=1</code>:</p>
+
+<div><pre><code><span>$ IODLR_USE_EXPLICIT_HP</span><span>=</span>1 <span>LD_PRELOAD</span><span>=</span>/usr/lib64/liblppreload.so clang++ &lt;...&gt;
+</code></pre></div>
+
+<p>Regardless of whether you use explicit or transparent Huge Pages, this method <strong>doesn’t require you to recompile the application</strong>. This is especially useful when you don’t have access to the source code.</p>
+
+<p>Finally, if you want to get rid of the need for users of your application to preload the <code>liblppreload.so</code>, you can also integrate it into the code of your application to automatically remap the code section right at the startup of your application (<a href="https://github.com/intel/iodlr/tree/master/large_page-c/example">full example</a>):</p>
+
+<div><pre><code><span>#include</span> <span>"large_page.h"</span><span>
+</span>
+<span>int</span> <span>main</span><span>()</span> <span>{</span>
+  <span>map_status</span> <span>status</span><span>;</span>
+  <span>bool</span> <span>is_enabled</span><span>;</span>
+  <span>status</span> <span>=</span> <span>IsLargePagesEnabled</span><span>(</span><span>&amp;</span><span>is_enabled</span><span>);</span>
+  <span>if</span> <span>(</span><span>status</span> <span>==</span> <span>map_ok</span> <span>&amp;&amp;</span> <span>is_enabled</span><span>)</span> <span>{</span>
+    <span>status</span> <span>=</span> <span>MapStaticCodeToLargePages</span><span>();</span>
+    <span>if</span> <span>(</span><span>status</span> <span>==</span> <span>map_ok</span><span>)</span> <span>{</span>
+      <span>// code section remapped</span>
+    <span>}</span>
+  <span>}</span>
+  <span>// ...</span>
+<span>}</span>
+</code></pre></div>
+
+<h3 id="benchmarks">Benchmarks</h3>
+
+<p>For peace of mind, I did some benchmarking of both options (aligning the code at 2MB and the iodlr library) against the baseline. As a benchmark, I build three different clang compilers and used them to build clang from sources (aka self-build). I measured the total time it takes to compile the entire codebase as well as measuring iTLB misses. Here is my benchmarking command line<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" rel="footnote">3</a></sup>:</p>
+
+<div><pre><code><span>$ </span>perf <span>stat</span> <span>-e</span> iTLB-loads,iTLB-load-misses <span>--</span> ninja <span>-j</span> <span>`</span><span>nproc</span><span>`</span> clang
+</code></pre></div>
+
+<p><img src="https://easyperf.net/img/posts/HugePagesForCode/BenchTime.png" alt=""> 
+<img src="https://easyperf.net/img/posts/HugePagesForCode/BenchITLB.png" alt=""></p>
+
+<p>So yeah, as you can see, using Huge pages gives roughly 5% faster compile times for the recent Clang compiler. Option 2 (iodlr version) is faster than option 1, and I should say that I don’t have a good explanation to that, it could be just a measurement error.</p>
+
+<h2 id="closing-thoughts">Closing thoughts</h2>
+
+<p>Hey, sorry for the long article, but there was a lot to cover. I hope that it sparked your interest in using Huge Pages for code especially if you’re maintaining a large codebase. For further reading, I would recommend the <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/runtime-performance-optimization-blueprint-intel-architecture-optimization-with-large-code.html">paper</a> “Runtime Performance Optimization Blueprint: Intel® Architecture Optimization with Large Code Pages”, which was instrumental to me.</p>
+
+<p>Speaking of downsides, I should point out that remapping <code>.text</code> onto Huge Pages is not free and takes additional execution time. This may hurt rather than help short-running programs. Remember the mantra? <em>Always Measure</em>. Another consideration is about Transparent Huge Pages, which suffer from non-deterministic allocation latency and memory fragmentation. The reason is that to satisfy a Huge Page allocation request at runtime, the Linux kernel needs to find a contiguous chunk of 2MB. If unable to find, it needs to reorganize the pages, resulting in significantly longer allocation latency. In contrast, Explicit Huge Pages are allocated in advance and are not prone to such problems.</p>
+
+<p>BTW, another way to attack iTLB misses is to <a href="https://github.com/llvm/llvm-project/tree/main/bolt#readme">BOLT</a> your application. Among all other things, it will likely group all the hot functions, which should also drastically reduce the iTLB bottleneck. However, I think Huge Pages is a more fundamental solution to the problem since it doesn’t adapt to the particular behavior of the program. As a double proof, you can try using Huge Pages after bolting your application to see if there are any gains to be made.</p>
+
+<p>I did all the experiments on Linux, but what about Windows<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" rel="footnote">4</a></sup> or Mac? The answer is I don’t know if the same is possible and I haven’t tried. I was able to find a few articles about using it for data but not for code. I would appreciate it if someone could provide more insights.</p>
+
+<p>Last words before you close the huge page of this article… If you’ve been reading it and thinking that the default 4KB is unreasonably small page size in the year 2022, hey, let’s not open a whole can of worms. Let me just refer you to this <a href="https://www.sigarch.org/larger-pages/">article</a> by one of the industry experts where he explores the topic in more detail.</p>
+
+<hr>
+
+<p><strong>Footnotes:</strong></p>
+
+<div role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>This is just to give you intuition, not to provide exact numbers – you can google them relatively easily. One thing I need to mention is that usually L1 ITLB and L1 DTLB have a different number of entries. For example, the latest Intel Golden Cove core has 256 entries in ITLB and 96 entries in DTLB.&nbsp;<a href="#fnref:1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>I’m not sure it’s visible when running with <code>LD_DEBUG=statistics</code>. Let me know in the comments if you know how to measure the overhead.&nbsp;<a href="#fnref:2" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>Ideally I would like to run it at least 3 times, but man… on my machine compilation of the entire clang codebase takes about an hour, so, maybe next time.&nbsp;<a href="#fnref:3" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:4" role="doc-endnote">
+      <p>To utilize huge pages on Windows, one needs to enable <code>SeLockMemoryPrivilege</code> security <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/lock-pages-in-memory">policy</a> and use <code>VirtualAlloc</code> API.&nbsp;<a href="#fnref:4" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</div>
+
+			</div></div>
+  </div>
+</body>
+</html>

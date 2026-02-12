@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Parallel processing with Unix tools</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Parallel processing with Unix tools</h1>
+    <p><strong>URL:</strong> <a href="http://www.pixelbeat.org/docs/unix-parallel-tools.html">http://www.pixelbeat.org/docs/unix-parallel-tools.html</a></p>
+    <p><strong>Tags:</strong> linux</p>
+    <p><strong>Bookmark ID:</strong> 876769083</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="content"><p>
+There are various ways to use parallel processing in UNIX:
+
+</p><ul>
+<li><b>piping</b><br>
+  An often under appreciated idea in the unix pipe model
+  is that the components of the pipe run in parallel.
+  This is a key advantage leveraged when combining
+  simple commands that do "one thing well"</li>
+<li><b>split -n</b>, <b>xargs -P</b>, <b>parallel</b><br>
+  Note programs that are invoked in parallel by these,
+  need to output atomically for each item processed,
+  which the GNU coreutils are careful to do for factor and sha*sum, etc.
+  Generally commands that use stdio for output can be wrapped
+  with the `stdbuf -oL` command to avoid intermixing lines from parallel invocations</li>
+<li><b>make -j</b><br>
+  Most implementations of make(1) now support the -j option to process targets in parallel.
+  make(1) is generally a higher level tool designed to process disparate tasks and
+  avoid reprocessing already generated targets. For example it is used very effictively
+  when <a href="http://www.pixelbeat.org/docs/coreutils-testing.html">testing coreutils</a> where about 700 tests can be
+  processed in 13 seconds on a 40 core machine.
+</li><li><b>implicit threading</b><br>
+  This goes against the unix model somewhat and definitely
+  adds internal complexity to those tools.  The advantages can
+  be less data copying overhead, and simpler usage, though
+  its use needs to be carefully considered.  A disadvantage
+  is that one loses the ability to easily distribute commands
+  to separate systems. Examples are
+  GNU sort(1) and <a href="https://github.com/crioux/turbo-linecount">turbo-linecount</a></li>
+</ul>
+
+<h2>Counting lines in parallel</h2><p>
+The examples below will compare the above methods for implementing multi-processing,
+for the function of <b>counting lines</b> in a file.
+
+</p><p>
+First of all let's generate some test data.
+We use both long and short lines to compare the
+overhead of the various methods compared to the
+core cost of the function being performed:</p>
+
+<pre>$ seq 100000000 &gt; lines.txt  <b># 100M lines</b>
+$ yes $(yes longline | head -n9) | head -n10000000 &gt; long-lines.txt  <b># 10M lines</b>
+</pre>
+
+<p>We'll also define the <span>add() { paste -d+ -s | bc; }</span> helper function to add a list of numbers.</p><p>
+
+Note the following runs were done against cached files, and thus not I/O bound.
+Therefore we limit the number of processes in parallel to $(nproc), though
+you would generally benefit to raising that
+if your jobs are waiting on network or disk etc.
+
+</p><h3>wc -l</h3><p>
+We'll use this command to count lines for most methods,
+so here is the base non multi-processing performance for comparison:
+
+</p><pre>$ time wc -l lines.txt
+real	0m0.559s
+user	0m0.399s
+sys	0m0.157s
+
+$ time wc -l long-lines.txt
+real	0m0.263s
+user	0m0.102s
+sys	0m0.158s
+</pre><p>
+
+Note the distro version (v8.25) not being compiled with --march
+makes a significant difference, but only for the short line case.
+We'll not use the distro version in the following tests.
+</p><pre>$ time fedora-25-wc -l lines.txt
+real	0m1.039s
+user	0m0.900s
+sys	0m0.134s
+</pre>
+
+<h3>turbo-linecount</h3>
+<p><a href="https://github.com/crioux/turbo-linecount">turbo-linecount</a>
+is an example of multi-threaded processing of a file.
+
+</p><pre>time tlc lines.txt
+real	0m0.536s  <b># third fastest</b>
+user	0m1.906s  <b># but a lot less efficient</b>
+sys	0m0.100s
+
+time tlc long-lines.txt
+real	0m0.146s  <b># second fastest</b>
+user	0m0.336s  <b># though less efficient</b>
+sys	0m0.110s
+</pre>
+
+<h3>split -n</h3><p>
+Note using -n alone is not enough to parallelize.
+For example this will run serially with each chunk,
+because since --filter may write files, the -n pertains to
+the number of files to split into rather than the number to process in parallel.
+
+</p><pre>$ time split -n$(nproc) --filter='wc -l' lines.txt | add
+real	0m0.743s
+user	0m0.495s
+sys	0m0.702s
+
+$ time split -n$(nproc) --filter='wc -l' long-lines.txt | add
+real	0m0.540s
+user	0m0.155s
+sys	0m0.693s
+</pre><p>
+
+You can either run multiple invocations of split in parallel
+on separate portions of the file like:
+
+</p><pre>$ time for i in $(seq $(nproc)); do
+    split -n$i/$(nproc) lines.txt | wc -l&amp;
+  done | add
+real	0m0.432s  <b># second fastest</b>
+
+$ time for i in $(seq $(nproc)); do
+    split -n$i/$(nproc) long-lines.txt | wc -l&amp;
+  done | add
+real	0m0.266s  <b># third fastest</b>
+</pre><p>
+
+Or split can do parallel mode using round robin on <i>each line</i>,
+but that's huge overhead in this case.
+(Note also the -u option significant with -nr):
+
+</p><pre>$ time split -nr/$(nproc) --filter='wc -l' lines.txt | add
+real	0m4.773s
+user	0m5.678s
+sys	0m1.464s
+
+$ time split -nr/$(nproc) --filter='wc -l' long-lines.txt | add
+real	0m1.121s  <b># significantly less overhead for longer lines</b>
+user	0m0.927s
+sys	0m1.339s
+</pre><p>
+
+Round robin would only be useful when the processing per item is significant.
+
+</p><h3>parallel</h3><p>
+Parallel isn't well suited to processing a large single file,
+rather focusing on distributing multiple files to commands.
+It can't efficiently split to lightweight processing
+if reading sequentially from pipe:
+
+</p><pre>$ time parallel --will-cite --block=200M --pipe 'wc -l' &lt; lines.txt | add
+real	0m1.863s
+user	0m1.192s
+sys	0m2.542s
+</pre><p>
+
+Though has support for processing parts of a seekable file in parallel
+with the --pipepart option (added in version 20161222):
+
+</p><pre>$ time parallel --will-cite --block=200M --pipepart -a lines.txt 'wc -l' | add
+real	0m0.693s
+user	0m0.941s
+sys	0m1.142s
+</pre><p>
+
+We can use parallel(1) to drive split similarly to the for loop construct above
+but it's a little awkward and slower, but does demonstrate the flexibility
+of the parallel(1) tool.
+
+</p><pre>$ time parallel --will-cite --plus 'split -n{%}/{##} {1} | wc -l' \
+       ::: $(yes lines.txt | head -n$(nproc)) | add
+real	0m0.656s
+user	0m0.949s
+sys	0m0.944s
+</pre>
+
+<h3>xargs -P</h3><p>
+Like parallel, xargs is designed to distribute separate files to commands,
+and with the -P option can do so in parallel.
+
+If you have a large file then it may be beneficial to presplit it,
+which could also help with I/O bottlenecks if the pieces were
+placed on separate devices:
+
+</p><pre>split -d -n l/$(nproc) lines.txt l.
+</pre><p>
+
+Those pieces can then be processed in parallel like:
+
+</p><pre>$ time find -maxdepth 1 -name 'l.*' |
+  xargs -P$(nproc) -n1 wc -l | cut -f1 -d' ' | add
+real	0m0.267s  <b># joint fastest</b>
+user	0m0.760s
+sys	0m0.262s
+
+$ time find -maxdepth 1 -name 'll.*' |
+  xargs -P$(nproc) -n1 wc -l | cut -f1 -d' ' | add
+real	0m0.131s  <b># joint fastest</b>
+user	0m0.251s
+sys	0m0.233s
+</pre><p>
+
+If your file sizes are unrelated to the number of processors
+then you will probably want to adjust -n1 to batch together
+more files to reduce the number of processes run in total.
+Note you should always specify -n with -P to avoid xargs
+accumulating too many input items, thus impacting the parallelism
+of the processes it runs.
+
+</p><h3>make -j</h3><p>
+make(1) is generally used to process disparate tasks, though can
+be leveraged to provide low level parallel processing on a bunch of files.
+Note also the make -O option which avoids the need for commands to
+output their data atomically, letting make do the synchronization.
+We'll process the presplit files as generated for the xargs example above,
+and to support that we'll use the following Makefile:
+
+</p><pre>%: FORCE     <b># Always run the command</b>
+	@wc -l &lt; $@
+FORCE: ;
+Makefile: ;  <b># Don't include Makefile itself</b>
+</pre><p>
+
+One could generate this and pass to make(1) with the -f option,
+though we'll keep it as a separate Makefile here for simplicity.
+
+This performs very well and matches the performance of xargs.
+
+</p><pre>$ time find -name 'l.*' -exec make -j$(nproc) {} + | add
+real	0m0.269s  <b># joint fastest</b>
+user	0m0.737s
+sys	0m0.292s
+
+$ time find -name 'll.*' -exec make -j$(nproc) {} + | add
+real	0m0.132s  <b># joint fastest</b>
+user	0m0.233s
+sys	0m0.256s
+</pre><p>
+
+Note we use the POSIX specified "find ... -exec ... {} +" construct,
+rather than conflating the example with xargs.  This construct like
+xargs will pass as many files to make as possible, which make(1) will
+then process in parallel.
+        </p><!-- google_ad_section_start(weight=ignore) -->
+        
+
+        
+        
+<!-- google_ad_section_end -->
+
+                </div></div>
+  </div>
+</body>
+</html>

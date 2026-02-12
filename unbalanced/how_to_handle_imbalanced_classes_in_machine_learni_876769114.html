@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Handle Imbalanced Classes in Machine Learning</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Handle Imbalanced Classes in Machine Learning</h1>
+    <p><strong>URL:</strong> <a href="https://elitedatascience.com/imbalanced-classes">https://elitedatascience.com/imbalanced-classes</a></p>
+    <p><strong>Tags:</strong> machine-learning, unbalanced</p>
+    <p><strong>Bookmark ID:</strong> 876769114</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="text">
+<p>Imbalanced classes put “accuracy” out of business. This is a surprisingly common problem in machine learning (specifically in&nbsp;classification), occurring&nbsp;in&nbsp;datasets with a disproportionate ratio&nbsp;of&nbsp;observations in each&nbsp;class.</p>
+<p>Standard accuracy no longer reliably measures&nbsp;performance, which makes model training&nbsp;much trickier.</p>
+<p>Imbalanced classes appear in many domains, including:</p>
+<ul><li>Fraud detection</li><li>Spam filtering</li><li>Disease&nbsp;screening</li><li>SaaS subscription churn</li><li>Advertising click-throughs</li></ul>
+<p>In this guide, we’ll explore 5 effective ways&nbsp;to&nbsp;handle imbalanced classes.</p>
+
+
+
+
+<h4>Intuition: Disease&nbsp;Screening Example</h4>
+<p>Let’s say your client is a&nbsp;leading research hospital, and they’ve asked you to train a model for&nbsp;detecting a disease based on biological inputs collected from patients.</p>
+<p>But here’s the catch… the disease&nbsp;is relatively rare; it occurs in only 8% of patients who are screened.</p>
+<p>Now, before&nbsp;you even start, do you see how the problem might break? Imagine if you didn’t bother training a model at all. Instead, what&nbsp;if you just wrote a single line of code that always predicts ‘No Disease?’</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169e5465690759" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p></div>
+</td>
+<td><div><p><span>def</span><span> </span><span>disease_screen</span><span>(</span><span>patient_data</span><span>)</span><span>:</span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span># Ignore patient_data</span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>return</span><span> </span><span>'No Disease.'</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Well, guess what? Your “solution” would have 92% accuracy!</p>
+<p>Unfortunately, that accuracy is misleading.</p>
+<ul><li>For patients who <em>do not</em> have the disease, you’d have 100% accuracy.</li><li>For patients who&nbsp;<em>do</em> have the disease, you’d have 0% accuracy.</li><li>Your overall accuracy would be&nbsp;high simply because most patients do not have the disease (not because your model is any good).</li></ul>
+<p>This is clearly a problem because many machine learning algorithms are designed&nbsp;to maximize overall accuracy. The rest of this guide will illustrate&nbsp;different tactics for handling&nbsp;imbalanced classes.</p>
+<h4>Important notes before we begin:</h4>
+<p>First, please note that we’re not going to split out a separate test set, tune hyperparameters, or implement cross-validation. In other words, we’re not necessarily going to follow best practices.</p>
+<p>Instead, this tutorial is focused purely on addressing&nbsp;imbalanced classes.</p>
+<p>In addition, not every technique below will work for every problem. However,&nbsp;9 times out of 10, at least one of these techniques should&nbsp;do the trick.</p>
+<h2>Balance Scale Dataset</h2>
+<p>For&nbsp;this guide, we’ll use a synthetic dataset called Balance Scale Data, which you can download from the <a href="https://archive.ics.uci.edu/ml/datasets/balance+scale" target="_blank" rel="noopener">UCI Machine Learning Repository</a>.</p>
+<p>This dataset was originally generated to model psychological experiment results, but it’s useful for us because it’s a manageable size and has imbalanced classes.</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169eb415490074" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p><p>9</p></div>
+</td>
+<td><div><p><span>import</span><span> </span><span>pandas </span><span>as</span><span> </span><span>pd</span></p><p><span>import</span><span> </span><span>numpy </span><span>as</span><span> </span><span>np</span></p><p><span># Read dataset</span></p><p><span>df</span><span> </span><span>=</span><span> </span><span>pd</span><span>.</span><span>read_csv</span><span>(</span><span>'balance-scale.data'</span><span>,</span><span> </span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span>names</span><span>=</span><span>[</span><span>'balance'</span><span>,</span><span> </span><span>'var1'</span><span>,</span><span> </span><span>'var2'</span><span>,</span><span> </span><span>'var3'</span><span>,</span><span> </span><span>'var4'</span><span>]</span><span>)</span></p><p><span># Display example observations</span></p><p><span>df</span><span>.</span><span>head</span><span>(</span><span>)</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<div><figure><img fetchpriority="high" decoding="async" src="https://elitedatascience.com/wp-content/uploads/2017/07/balance-scale-data-new-head.png" alt="balance scale data head" width="336" height="240" srcset="https://elitedatascience.com/wp-content/uploads/2017/07/balance-scale-data-new-head.png 448w, https://elitedatascience.com/wp-content/uploads/2017/07/balance-scale-data-new-head-300x214.png 300w" sizes="(max-width: 336px) 100vw, 336px" data-old-srcset="data:application/octet-stream;base64, 448w, data:application/octet-stream;base64, 300w" data-cfsrc="https://elitedatascience.com/wp-content/uploads/2017/07/balance-scale-data-new-head.png" data-old-src="data:application/octet-stream;base64,"></figure></div>
+<p>The dataset contains information&nbsp;about whether a scale is balanced or not, based on weights and distances&nbsp;of the two arms.</p>
+<ul><li>It has 1 target variable, which we’ve labeled
+<span id="urvanov-syntax-highlighter-670ed7fb169ed142555782"><span><span>balance</span></span></span>&nbsp;.</li><li>It has&nbsp;4 input features, which we’ve labeled
+<span id="urvanov-syntax-highlighter-670ed7fb169ee148449492"><span><span>var1</span></span></span>&nbsp; through
+<span id="urvanov-syntax-highlighter-670ed7fb169ef760450073"><span><span>var4</span></span></span>&nbsp;.</li></ul>
+<div><figure><img decoding="async" width="480" height="320" src="https://elitedatascience.com/wp-content/uploads/2017/06/balance-scale-data.png" alt="balance scale data variables" srcset="https://elitedatascience.com/wp-content/uploads/2017/06/balance-scale-data.png 480w, https://elitedatascience.com/wp-content/uploads/2017/06/balance-scale-data-300x200.png 300w" sizes="(max-width: 480px) 100vw, 480px" data-old-srcset="data:application/octet-stream;base64, 480w, data:application/octet-stream;base64, 300w" data-cfsrc="https://elitedatascience.com/wp-content/uploads/2017/06/balance-scale-data.png" data-old-src="data:application/octet-stream;base64,"></figure></div>
+<p>The&nbsp;target variable has 3 classes.</p>
+<ul><li><strong>R</strong> for right-heavy, i.e.&nbsp;when
+<span id="urvanov-syntax-highlighter-670ed7fb169f0462615661"><span><span>var3</span><span> </span><span>*</span><span> </span><span>var4</span><span> </span><span>&gt;</span><span> </span><span>var1</span><span> </span><span>*</span><span> </span><span>var2</span></span></span></li><li><strong>L</strong> for left-heavy, i.e. when
+<span id="urvanov-syntax-highlighter-670ed7fb169f1764124743"><span><span>var3</span><span> </span><span>*</span><span> </span><span>var4</span><span> </span><span>&lt;</span><span> </span><span>var1</span><span> </span><span>*</span><span> </span><span>var2</span></span></span></li><li><strong>B</strong> for balanced, i.e.&nbsp;when
+<span id="urvanov-syntax-highlighter-670ed7fb169f2629858325"><span><span>var3</span><span> </span><span>*</span><span> </span><span>var4</span><span> </span><span>=</span><span> </span><span>var1</span><span> </span><span>*</span><span> </span><span>var2</span></span></span></li></ul>
+<div id="urvanov-syntax-highlighter-670ed7fb169f3479438161" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p></div>
+</td>
+<td><div><p><span>df</span><span>[</span><span>'balance'</span><span>]</span><span>.</span><span>value_counts</span><span>(</span><span>)</span></p><p><span># R&nbsp;&nbsp;&nbsp;&nbsp;288</span></p><p><span># L&nbsp;&nbsp;&nbsp;&nbsp;288</span></p><p><span># B&nbsp;&nbsp;&nbsp;&nbsp; 49</span></p><p><span># Name: balance, dtype: int64</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>However, for this tutorial, we’re going to turn this into a <strong>binary classification</strong> problem.</p>
+<p>We’re going to label each observation as&nbsp;<strong>1</strong> (positive class) if the scale is balanced or&nbsp;<strong>0</strong> (negative class) if the scale is not balanced:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169f4580154336" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p></div>
+</td>
+<td><div><p><span># Transform into binary classification</span></p><p><span>df</span><span>[</span><span>'balance'</span><span>]</span><span> </span><span>=</span><span> </span><span>[</span><span>1</span><span> </span><span>if</span><span> </span><span>b</span><span>==</span><span>'B'</span><span> </span><span>else</span><span> </span><span>0</span><span> </span><span>for</span><span> </span><span>b</span><span> </span><span>in</span><span> </span><span>df</span><span>.</span><span>balance</span><span>]</span></p><p><span>df</span><span>[</span><span>'balance'</span><span>]</span><span>.</span><span>value_counts</span><span>(</span><span>)</span></p><p><span># 0&nbsp;&nbsp;&nbsp;&nbsp;576</span></p><p><span># 1&nbsp;&nbsp;&nbsp;&nbsp; 49</span></p><p><span># Name: balance, dtype: int64</span></p><p><span># About 8% were balanced</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>As you can see, only about 8% of the observations were balanced. Therefore, if we were to always predict&nbsp;<strong>0</strong>, we’d achieve an accuracy of 92%.</p>
+<h2>The Danger of Imbalanced Classes</h2>
+<p>Now that we have a dataset, we can really show the dangers of imbalanced classes.</p>
+<p>First, let’s import the Logistic Regression algorithm and the accuracy metric from <a href="https://scikit-learn.org/stable/" target="_blank" rel="noopener noreferrer">Scikit-Learn</a>.</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169f5604459881" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p></div>
+</td>
+<td><div><p><span>from</span><span> </span><span>sklearn</span><span>.</span><span>linear_model </span><span>import</span><span> </span><span>LogisticRegression</span></p><p><span>from</span><span> </span><span>sklearn</span><span>.</span><span>metrics </span><span>import</span><span> </span><span>accuracy_score</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Next,&nbsp;we’ll fit a very simple model using default settings for everything.</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169f6863613124" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p><p>9</p></div>
+</td>
+<td><div><p><span># Separate input features (X) and target variable (y)</span></p><p><span>y</span><span> </span><span>=</span><span> </span><span>df</span><span>.</span><span>balance</span></p><p><span>X</span><span> </span><span>=</span><span> </span><span>df</span><span>.</span><span>drop</span><span>(</span><span>'balance'</span><span>,</span><span> </span><span>axis</span><span>=</span><span>1</span><span>)</span></p><p><span># Train model</span></p><p><span>clf_0</span><span> </span><span>=</span><span> </span><span>LogisticRegression</span><span>(</span><span>)</span><span>.</span><span>fit</span><span>(</span><span>X</span><span>,</span><span> </span><span>y</span><span>)</span></p><p><span># Predict on training set</span></p><p><span>pred_y_0</span><span> </span><span>=</span><span> </span><span>clf_0</span><span>.</span><span>predict</span><span>(</span><span>X</span><span>)</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>As mentioned above, many machine learning algorithms are designed&nbsp;to maximize overall accuracy by default.</p>
+<p>We can confirm this:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169f7418897510" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p></div>
+</td>
+<td><div><p><span># How's the accuracy?</span></p><p><span>print</span><span>(</span><span> </span><span>accuracy_score</span><span>(</span><span>pred_y_0</span><span>,</span><span> </span><span>y</span><span>)</span><span> </span><span>)</span></p><p><span># 0.9216</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>So our model has 92% overall accuracy, but is it because it’s predicting only 1 class?</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169f8010967457" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p></div>
+</td>
+<td><div><p><span># Should we be excited?</span></p><p><span>print</span><span>(</span><span> </span><span>np</span><span>.</span><span>unique</span><span>(</span><span> </span><span>pred_y</span><span>_</span>0<span> </span><span>)</span><span> </span><span>)</span></p><p><span># [0]</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>As you can see, this&nbsp;model is only predicting&nbsp;<strong>0</strong>, which means it’s completely ignoring the minority class in favor of the majority class.</p>
+<p>Next, we’ll look at the first technique for&nbsp;handling imbalanced classes: up-sampling the minority class.</p>
+<h2>1. Up-sample Minority Class</h2>
+<p>Up-sampling is&nbsp;the process of randomly duplicating observations from the minority class in order to reinforce its&nbsp;signal.</p>
+<p>There are several heuristics for doing so, but the most common way is to simply resample with replacement.</p>
+<p>First, we’ll import the resampling module from Scikit-Learn:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169f9212441230" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p></div>
+</td>
+<td><div><p><span>from</span><span> </span><span>sklearn</span><span>.</span><span>utils </span><span>import</span><span> </span><span>resample</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Next, we’ll create a new DataFrame with an up-sampled minority class. Here are the steps:</p>
+<ol><li>First, we’ll separate observations from each&nbsp;class into different DataFrames.</li><li>Next, we’ll resample the minority class <strong>with replacement</strong>, setting the number of samples to match that of&nbsp;the majority class.</li><li>Finally, we’ll combine the up-sampled minority class DataFrame with the original majority class DataFrame.</li></ol>
+<p>Here’s the code:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169fa554535830" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p><p>9</p><p>10</p><p>11</p><p>12</p><p>13</p><p>14</p><p>15</p><p>16</p><p>17</p><p>18</p></div>
+</td>
+<td><div><p><span># Separate majority and minority classes</span></p><p><span>df_majority</span><span> </span><span>=</span><span> </span><span>df</span><span>[</span><span>df</span><span>.</span><span>balance</span><span>==</span><span>0</span><span>]</span></p><p><span>df_minority</span><span> </span><span>=</span><span> </span><span>df</span><span>[</span><span>df</span><span>.</span><span>balance</span><span>==</span><span>1</span><span>]</span></p><p><span># Upsample minority class</span></p><p><span>df_minority_upsampled</span><span> </span><span>=</span><span> </span><span>resample</span><span>(</span><span>df_minority</span><span>,</span><span> </span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span>replace</span><span>=</span><span>True</span><span>,</span><span>&nbsp;&nbsp;&nbsp;&nbsp; </span><span># sample with replacement</span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span>n_samples</span><span>=</span><span>576</span><span>,</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span># to match majority class</span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span>random_state</span><span>=</span><span>123</span><span>)</span><span> </span><span># reproducible results</span></p><p><span># Combine majority class with upsampled minority class</span></p><p><span>df_upsampled</span><span> </span><span>=</span><span> </span><span>pd</span><span>.</span><span>concat</span><span>(</span><span>[</span><span>df_majority</span><span>,</span><span> </span><span>df_minority_upsampled</span><span>]</span><span>)</span></p><p><span># Display new class counts</span></p><p><span>df_upsampled</span><span>.</span><span>balance</span><span>.</span><span>value_counts</span><span>(</span><span>)</span></p><p><span># 1&nbsp;&nbsp;&nbsp;&nbsp;576</span></p><p><span># 0&nbsp;&nbsp;&nbsp;&nbsp;576</span></p><p><span># Name: balance, dtype: int64</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>As you can see, the new DataFrame has more observations than the original, and the ratio of the two classes is now 1:1.</p>
+<p>Let’s train another model using Logistic Regression, this time on the balanced dataset:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169fb825910307" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p><p>9</p><p>10</p><p>11</p><p>12</p><p>13</p><p>14</p><p>15</p><p>16</p><p>17</p></div>
+</td>
+<td><div><p><span># Separate input features (X) and target variable (y)</span></p><p><span>y</span><span> </span><span>=</span><span> </span><span>df_upsampled</span><span>.</span><span>balance</span></p><p><span>X</span><span> </span><span>=</span><span> </span><span>df_upsampled</span><span>.</span><span>drop</span><span>(</span><span>'balance'</span><span>,</span><span> </span><span>axis</span><span>=</span><span>1</span><span>)</span></p><p><span># Train model</span></p><p><span>clf_1</span><span> </span><span>=</span><span> </span><span>LogisticRegression</span><span>(</span><span>)</span><span>.</span><span>fit</span><span>(</span><span>X</span><span>,</span><span> </span><span>y</span><span>)</span></p><p><span># Predict on training set</span></p><p><span>pred_y_1</span><span> </span><span>=</span><span> </span><span>clf_1</span><span>.</span><span>predict</span><span>(</span><span>X</span><span>)</span></p><p><span># Is our model still predicting just one class?</span></p><p><span>print</span><span>(</span><span> </span><span>np</span><span>.</span><span>unique</span><span>(</span><span> </span><span>pred_y</span><span>_</span>1<span> </span><span>)</span><span> </span><span>)</span></p><p><span># [0 1]</span></p><p><span># How's our accuracy?</span></p><p><span>print</span><span>(</span><span> </span><span>accuracy_score</span><span>(</span><span>y</span><span>,</span><span> </span><span>pred_y_1</span><span>)</span><span> </span><span>)</span></p><p><span># 0.5147569444444444</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Great, now the model is no longer predicting just one class. While&nbsp;the accuracy also took a nosedive, it’s now more meaningful as a performance metric.</p>
+<h2>2. Down-sample Majority Class</h2>
+<p>Down-sampling involves randomly removing observations from the majority class to prevent&nbsp;its signal from dominating the learning algorithm.</p>
+<p>The most common heuristic for doing so is resampling without replacement.</p>
+<p>The process is similar to that of up-sampling. Here are the steps:</p>
+<ol><li>First, we’ll separate observations from each class into different DataFrames.</li><li>Next, we’ll resample the majority&nbsp;class <strong>without replacement</strong>, setting the number of samples to match that&nbsp;of the minority&nbsp;class.</li><li>Finally, we’ll combine the down-sampled majority&nbsp;class DataFrame with the original minority&nbsp;class DataFrame.</li></ol>
+<p>Here’s the code:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169fd224969971" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p><p>9</p><p>10</p><p>11</p><p>12</p><p>13</p><p>14</p><p>15</p><p>16</p><p>17</p><p>18</p></div>
+</td>
+<td><div><p><span># Separate majority and minority classes</span></p><p><span>df_majority</span><span> </span><span>=</span><span> </span><span>df</span><span>[</span><span>df</span><span>.</span><span>balance</span><span>==</span><span>0</span><span>]</span></p><p><span>df_minority</span><span> </span><span>=</span><span> </span><span>df</span><span>[</span><span>df</span><span>.</span><span>balance</span><span>==</span><span>1</span><span>]</span></p><p><span># Downsample majority class</span></p><p><span>df_majority_downsampled</span><span> </span><span>=</span><span> </span><span>resample</span><span>(</span><span>df_majority</span><span>,</span><span> </span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span>replace</span><span>=</span><span>False</span><span>,</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span># sample without replacement</span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span>n_samples</span><span>=</span><span>49</span><span>,</span><span>&nbsp;&nbsp;&nbsp;&nbsp; </span><span># to match minority class</span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span>random_state</span><span>=</span><span>123</span><span>)</span><span> </span><span># reproducible results</span></p><p><span># Combine minority class with downsampled majority class</span></p><p><span>df_downsampled</span><span> </span><span>=</span><span> </span><span>pd</span><span>.</span><span>concat</span><span>(</span><span>[</span><span>df_majority_downsampled</span><span>,</span><span> </span><span>df_minority</span><span>]</span><span>)</span></p><p><span># Display new class counts</span></p><p><span>df_downsampled</span><span>.</span><span>balance</span><span>.</span><span>value_counts</span><span>(</span><span>)</span></p><p><span># 1&nbsp;&nbsp;&nbsp;&nbsp;49</span></p><p><span># 0&nbsp;&nbsp;&nbsp;&nbsp;49</span></p><p><span># Name: balance, dtype: int64</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>This time, the new DataFrame has fewer&nbsp;observations than the original, and the ratio of the two classes is now 1:1.</p>
+<p>Again, let’s train a model using Logistic Regression:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169fe771055066" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p><p>9</p><p>10</p><p>11</p><p>12</p><p>13</p><p>14</p><p>15</p><p>16</p><p>17</p></div>
+</td>
+<td><div><p><span># Separate input features (X) and target variable (y)</span></p><p><span>y</span><span> </span><span>=</span><span> </span><span>df_downsampled</span><span>.</span><span>balance</span></p><p><span>X</span><span> </span><span>=</span><span> </span><span>df_downsampled</span><span>.</span><span>drop</span><span>(</span><span>'balance'</span><span>,</span><span> </span><span>axis</span><span>=</span><span>1</span><span>)</span></p><p><span># Train model</span></p><p><span>clf_2</span><span> </span><span>=</span><span> </span><span>LogisticRegression</span><span>(</span><span>)</span><span>.</span><span>fit</span><span>(</span><span>X</span><span>,</span><span> </span><span>y</span><span>)</span></p><p><span># Predict on training set</span></p><p><span>pred_y_2</span><span> </span><span>=</span><span> </span><span>clf_2</span><span>.</span><span>predict</span><span>(</span><span>X</span><span>)</span></p><p><span># Is our model still predicting just one class?</span></p><p><span>print</span><span>(</span><span> </span><span>np</span><span>.</span><span>unique</span><span>(</span><span> </span><span>pred_y</span><span>_</span>2<span> </span><span>)</span><span> </span><span>)</span></p><p><span># [0 1]</span></p><p><span># How's our accuracy?</span></p><p><span>print</span><span>(</span><span> </span><span>accuracy_score</span><span>(</span><span>y</span><span>,</span><span> </span><span>pred_y_2</span><span>)</span><span> </span><span>)</span></p><p><span># 0.5612244897959183</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>The model isn’t&nbsp;predicting just one class, and the accuracy seems higher.</p>
+<p>We’d still want to validate the model on an unseen test dataset, but the results are more encouraging.</p>
+<h2>3. Change Your Performance Metric</h2>
+<p>So far, we’ve looked at two ways&nbsp;of addressing imbalanced classes by resampling the dataset. Next, we’ll look at using other performance metrics for evaluating the models.</p>
+<p>Albert Einstein once said, “if you judge a fish on its ability to climb a tree, it will live its whole life believing that it is stupid.” This quote really highlights the importance of&nbsp;choosing the right evaluation metric.</p>
+<p>For a general-purpose metric for classification, we recommend&nbsp;<strong>Area Under ROC Curve</strong> (AUROC).</p>
+<ul><li>We won’t dive into its details in this guide, but you can <a href="https://stats.stackexchange.com/questions/132777/what-does-auc-stand-for-and-what-is-it" target="_blank" rel="noopener">read more about AUROC here</a>.</li><li>Intuitively, AUROC represents the likelihood of your model distinguishing observations from two classes.</li><li>In other words, if you randomly select one observation from each class, what’s the probability that your model will&nbsp;be able to “rank” them correctly?</li></ul>
+<p>We can import this metric from Scikit-Learn:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb169ff610344374" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p></div>
+</td>
+<td><div><p><span>from</span><span> </span><span>sklearn</span><span>.</span><span>metrics </span><span>import</span><span> </span><span>roc_auc_score</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>To calculate AUROC, you’ll need predicted class probabilities instead of just the predicted classes. You can get them using the
+<span id="urvanov-syntax-highlighter-670ed7fb16a04438237284"><span><span>.</span><span>predict_proba</span><span>(</span><span>)</span></span></span>&nbsp;<strong>&nbsp;</strong>function like so:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb16a05092955115" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p><p>9</p><p>10</p><p>11</p><p>12</p></div>
+</td>
+<td><div><p><span># Predict class probabilities</span></p><p><span>prob_y_2</span><span> </span><span>=</span><span> </span><span>clf_2</span><span>.</span><span>predict_proba</span><span>(</span><span>X</span><span>)</span></p><p><span># Keep only the positive class</span></p><p><span>prob_y_2</span><span> </span><span>=</span><span> </span><span>[</span><span>p</span><span>[</span><span>1</span><span>]</span><span> </span><span>for</span><span> </span><span>p</span><span> </span><span>in</span><span> </span><span>prob_y_2</span><span>]</span></p><p><span>prob_y_2</span><span>[</span><span>:</span><span>5</span><span>]</span><span> </span><span># Example</span></p><p><span># [0.4515319725758555,</span></p><p><span>#&nbsp;&nbsp;0.48726124480997834,</span></p><p><span>#&nbsp;&nbsp;0.47238960854127,</span></p><p><span>#&nbsp;&nbsp;0.4701461062264753,</span></p><p><span>#&nbsp;&nbsp;0.5876602955884178]</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>So how did this&nbsp;model (trained on the down-sampled dataset) do in terms of AUROC?</p>
+<div id="urvanov-syntax-highlighter-670ed7fb16a06481233452" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p></div>
+</td>
+<td><div><p><span>print</span><span>(</span><span> </span><span>roc_auc_score</span><span>(</span><span>y</span><span>,</span><span> </span><span>prob_y_2</span><span>)</span><span> </span><span>)</span></p><p><span># 0.5651811745106206</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Ok… and how does this compare to the original model trained on the imbalanced dataset?</p>
+<div id="urvanov-syntax-highlighter-670ed7fb16a07887881649" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p></div>
+</td>
+<td><div><p><span>prob_y_0</span><span> </span><span>=</span><span> </span><span>clf_0</span><span>.</span><span>predict_proba</span><span>(</span><span>X</span><span>)</span></p><p><span>prob_y_0</span><span> </span><span>=</span><span> </span><span>[</span><span>p</span><span>[</span><span>1</span><span>]</span><span> </span><span>for</span><span> </span><span>p</span><span> </span><span>in</span><span> </span><span>prob_y_0</span><span>]</span></p><p><span>print</span><span>(</span><span> </span><span>roc_auc_score</span><span>(</span><span>y</span><span>,</span><span> </span><span>prob_y_0</span><span>)</span><span> </span><span>)</span></p><p><span># 0.5239483548521449</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Remember, our original&nbsp;model trained on the imbalanced dataset had an accuracy of 92%, which is much higher than the 58% accuracy of the model trained on the down-sampled dataset.</p>
+<p>However, the latter model has an AUROC of 56.5%, which is higher than the 52.4% of the original model (but not by much).</p>
+<p><strong>Note:</strong> if you got an AUROC of 0.476 instead, it just means you need to invert the predictions because Scikit-Learn is misinterpreting the positive class. AUROC should always be &gt;= 0.5, so the actual AUROC is simply 1 – 0.476 = 0.524.</p>
+<h2>4. Penalize Algorithms (Cost-Sensitive Training)</h2>
+<p>The next tactic is to use penalized learning algorithms that increase the cost of classification mistakes on the minority class.</p>
+<p>A&nbsp;popular algorithm for this technique is Penalized-SVM:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb16a08563728713" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p></div>
+</td>
+<td><div><p><span>from</span><span> </span><span>sklearn</span><span>.</span><span>svm </span><span>import</span><span> </span><span>SVC</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>During training, we can use the argument
+<span id="urvanov-syntax-highlighter-670ed7fb16a09562918440"><span><span>class_weight</span><span>=</span><span>'balanced'</span></span></span>&nbsp; to penalize mistakes on the minority class by an amount proportional to how under-represented it is.</p>
+<p>We also want to include the argument
+<span id="urvanov-syntax-highlighter-670ed7fb16a0a002681572"><span><span>probability</span><span>=</span><span>True</span></span></span>&nbsp; if we want to enable probability estimates for SVM algorithms.</p>
+<p>Let’s train a model using Penalized-SVM on the original imbalanced dataset:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb16a0b490262386" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p><p>9</p><p>10</p><p>11</p><p>12</p><p>13</p><p>14</p><p>15</p><p>16</p><p>17</p><p>18</p><p>19</p><p>20</p><p>21</p><p>22</p><p>23</p><p>24</p><p>25</p><p>26</p><p>27</p></div>
+</td>
+<td><div><p><span># Separate input features (X) and target variable (y)</span></p><p><span>y</span><span> </span><span>=</span><span> </span><span>df</span><span>.</span><span>balance</span></p><p><span>X</span><span> </span><span>=</span><span> </span><span>df</span><span>.</span><span>drop</span><span>(</span><span>'balance'</span><span>,</span><span> </span><span>axis</span><span>=</span><span>1</span><span>)</span></p><p><span># Train model</span></p><p><span>clf_3</span><span> </span><span>=</span><span> </span><span>SVC</span><span>(</span><span>kernel</span><span>=</span><span>'linear'</span><span>,</span><span> </span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>class_weight</span><span>=</span><span>'balanced'</span><span>,</span><span> </span><span># penalize</span></p><p><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>probability</span><span>=</span><span>True</span><span>)</span></p><p><span>clf_3</span><span>.</span><span>fit</span><span>(</span><span>X</span><span>,</span><span> </span><span>y</span><span>)</span></p><p><span># Predict on training set</span></p><p><span>pred_y_3</span><span> </span><span>=</span><span> </span><span>clf_3</span><span>.</span><span>predict</span><span>(</span><span>X</span><span>)</span></p><p><span># Is our model still predicting just one class?</span></p><p><span>print</span><span>(</span><span> </span><span>np</span><span>.</span><span>unique</span><span>(</span><span> </span><span>pred_y</span><span>_</span>3<span> </span><span>)</span><span> </span><span>)</span></p><p><span># [0 1]</span></p><p><span># How's our accuracy?</span></p><p><span>print</span><span>(</span><span> </span><span>accuracy_score</span><span>(</span><span>y</span><span>,</span><span> </span><span>pred_y_3</span><span>)</span><span> </span><span>)</span></p><p><span># 0.688</span></p><p><span># What about AUROC?</span></p><p><span>prob_y_3</span><span> </span><span>=</span><span> </span><span>clf_3</span><span>.</span><span>predict_proba</span><span>(</span><span>X</span><span>)</span></p><p><span>prob_y_3</span><span> </span><span>=</span><span> </span><span>[</span><span>p</span><span>[</span><span>1</span><span>]</span><span> </span><span>for</span><span> </span><span>p</span><span> </span><span>in</span><span> </span><span>prob_y_3</span><span>]</span></p><p><span>print</span><span>(</span><span> </span><span>roc_auc_score</span><span>(</span><span>y</span><span>,</span><span> </span><span>prob_y_3</span><span>)</span><span> </span><span>)</span></p><p><span># 0.5305236678004537</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Again, our purpose here is only to illustrate this technique. To really determine which of these tactics works best <em>for this problem</em>, you’d want to evaluate the models on a hold-out test set.</p>
+<h2>5. Use Tree-Based Algorithms</h2>
+<p>The final tactic we’ll consider is using tree-based algorithms. Decision trees often perform well on imbalanced datasets because their hierarchical structure allows them to learn signals&nbsp;from both classes.</p>
+<p>In modern applied machine learning, tree ensembles (Random Forests, Gradient Boosted Trees, etc.)&nbsp;almost always outperform singular decision trees, so we’ll jump right into those:</p>
+<div id="urvanov-syntax-highlighter-670ed7fb16a0c560650980" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p></div>
+</td>
+<td><div><p><span>from</span><span> </span><span>sklearn</span><span>.</span><span>ensemble </span><span>import</span><span> </span><span>RandomForestClassifier</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Now, let’s train a model using a Random Forest on the original imbalanced dataset.</p>
+<div id="urvanov-syntax-highlighter-670ed7fb16a0d722503420" data-settings=" touchscreen no-popup minimize scroll-mouseover disable-anim">
+<div data-settings=" show"><p><span>Python</span></p></div>
+
+
+<div>
+<table>
+<tbody><tr>
+<td data-settings="hide">
+<div><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p><p>7</p><p>8</p><p>9</p><p>10</p><p>11</p><p>12</p><p>13</p><p>14</p><p>15</p><p>16</p><p>17</p><p>18</p><p>19</p><p>20</p><p>21</p><p>22</p><p>23</p><p>24</p></div>
+</td>
+<td><div><p><span># Separate input features (X) and target variable (y)</span></p><p><span>y</span><span> </span><span>=</span><span> </span><span>df</span><span>.</span><span>balance</span></p><p><span>X</span><span> </span><span>=</span><span> </span><span>df</span><span>.</span><span>drop</span><span>(</span><span>'balance'</span><span>,</span><span> </span><span>axis</span><span>=</span><span>1</span><span>)</span></p><p><span># Train model</span></p><p><span>clf_4</span><span> </span><span>=</span><span> </span><span>RandomForestClassifier</span><span>(</span><span>random_state</span><span>=</span><span>123</span><span>)</span></p><p><span>clf_4</span><span>.</span><span>fit</span><span>(</span><span>X</span><span>,</span><span> </span><span>y</span><span>)</span></p><p><span># Predict on training set</span></p><p><span>pred_y_4</span><span> </span><span>=</span><span> </span><span>clf_4</span><span>.</span><span>predict</span><span>(</span><span>X</span><span>)</span></p><p><span># Is our model still predicting just one class?</span></p><p><span>print</span><span>(</span><span> </span><span>np</span><span>.</span><span>unique</span><span>(</span><span> </span><span>pred_y</span><span>_</span>4<span> </span><span>)</span><span> </span><span>)</span></p><p><span># [0 1]</span></p><p><span># How's our accuracy?</span></p><p><span>print</span><span>(</span><span> </span><span>accuracy_score</span><span>(</span><span>y</span><span>,</span><span> </span><span>pred_y_4</span><span>)</span><span> </span><span>)</span></p><p><span># 1.0</span></p><p><span># What about AUROC?</span></p><p><span>prob_y_4</span><span> </span><span>=</span><span> </span><span>clf_4</span><span>.</span><span>predict_proba</span><span>(</span><span>X</span><span>)</span></p><p><span>prob_y_4</span><span> </span><span>=</span><span> </span><span>[</span><span>p</span><span>[</span><span>1</span><span>]</span><span> </span><span>for</span><span> </span><span>p</span><span> </span><span>in</span><span> </span><span>prob_y_4</span><span>]</span></p><p><span>print</span><span>(</span><span> </span><span>roc_auc_score</span><span>(</span><span>y</span><span>,</span><span> </span><span>prob_y_4</span><span>)</span><span> </span><span>)</span></p><p><span># 1.0</span></p></div></td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Wow! 100% accuracy and 100% AUROC? Is this magic? A sleight of hand? Cheating? Too good to be true?</p>
+<p>Well, tree ensembles have become very popular because they perform extremely well on many real-world problems. We certainly recommend them wholeheartedly.</p>
+<p><strong>However:</strong></p>
+<p>While these results&nbsp;are encouraging, the model&nbsp;<em>could</em> be overfit, so you should still&nbsp;evaluate your model on an unseen test set before making the final decision.</p>
+<p><em>Note: If your numbers differ slightly, it is due to the randomness in the algorithm. Remember to use</em>
+<span id="urvanov-syntax-highlighter-670ed7fb16a0e271263787"><span><span>random_state</span><span>=</span><span>123</span></span></span> (or any number you desire) set<em> a random seed for reproducible results.</em></p>
+<h2>Honorable Mentions</h2>
+<p>There were a few tactics that didn’t make it into this tutorial:</p>
+<h4>Create Synthetic Samples (Data Augmentation)</h4>
+<p>Creating synthetic samples is a close cousin of up-sampling, and some people might categorize them together. For example, the <a href="https://arxiv.org/pdf/1106.1813.pdf" target="_blank" rel="noopener noreferrer">SMOTE algorithm</a> is a method of resampling from the minority class while slightly perturbing feature&nbsp;values, thereby creating “new” samples.</p>
+<p>You can find an implementation of SMOTE in the <a href="https://imbalanced-learn.org/stable/references/generated/imblearn.over_sampling.SMOTE.html" target="_blank" rel="noopener noreferrer">imblearn library</a>.</p>
+<h4>Combine Minority&nbsp;Classes</h4>
+<p>Combining minority&nbsp;classes of&nbsp;your target variable may be appropriate for some multi-class problems.</p>
+<p>For example, let’s say you wished to predict credit card fraud. In your dataset, each method&nbsp;of fraud may&nbsp;be labeled separately, but you might not care about distinguishing them. You could&nbsp;combine them all into a single ‘Fraud’ class and treat the problem as binary classification.</p>
+<h4>Reframe as Anomaly Detection</h4>
+<p>Anomaly detection, a.k.a.&nbsp;outlier detection, is for&nbsp;<a href="https://en.wikipedia.org/wiki/Anomaly_detection" target="_blank" rel="noopener noreferrer">detecting outliers and rare events</a>. Instead of building a classification model, you’d have a “profile” of a normal observation. If a new observation strays too far from that “normal profile,” it would be flagged&nbsp;as an anomaly.</p>
+<h2>Conclusion &amp; Next Steps</h2>
+<p>In this guide, we covered 5 tactics for handling imbalanced classes in&nbsp;machine learning:</p>
+<ol><li>Up-sample the minority class</li><li>Down-sample the majority class</li><li>Change your performance metric</li><li>Penalize algorithms (cost-sensitive training)</li><li>Use tree-based algorithms</li></ol>
+<p>These tactics are subject to the <a href="https://elitedatascience.com/machine-learning-algorithms" target="_blank" rel="noopener">No Free Lunch theorem</a>, and you should try several of them and use&nbsp;the results from the test set to decide on the best solution for your&nbsp;problem.</p>
+
+
+
+</div></div>
+  </div>
+</body>
+</html>

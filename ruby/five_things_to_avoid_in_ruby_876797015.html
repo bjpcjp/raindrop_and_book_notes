@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Five Things to Avoid in Ruby</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Five Things to Avoid in Ruby</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2024/05/22/five-things-to-avoid-in-ruby.html">https://blog.appsignal.com/2024/05/22/five-things-to-avoid-in-ruby.html</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876797015</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>As a contract software developer, I am exposed to oodles of Ruby code.
+Some code is readable, some obfuscated. Some code eschews whitespace, as if
+carriage returns were a scarce natural resource, while other code resembles a
+living room fashioned by Vincent Van Duysen. Code, like the people who author
+it, varies.</p>
+<p>Yet, it's ideal to minimize variation. Time and effort are best spent
+on novel problems.</p>
+<p>In this post, we'll explore five faux pas often seen in Ruby code and learn how to turn these idiosyncrasies into idioms.</p>
+<p>But first, how can we minimize variance in Ruby?</p>
+<h2 id="minimizing-variance-in-ruby-with-rubocop-and-idioms">Minimizing Variance in Ruby with Rubocop and Idioms</h2>
+<p>Ruby developers can gain efficiency with <a href="https://rubocop.org/">Rubocop</a>, which unifies style within a
+single project or across many projects. Rails is a boon to uniformity, too, as
+it favors convention over configuration. Indeed, disparate Rails codebases are
+identical in places and, overall, quite similar.</p>
+<p>Beyond tools and convention, variance is also minimized by idioms, or those
+<a href="https://www.merriam-webster.com/dictionary/idiom">"structural forms peculiar to a language"</a>. For example, Ruby syntax is
+a collection of explicit idioms enforced by the interpreter. Reopening a class
+is a Ruby idiom, too.</p>
+<p>But not all Ruby idioms are dicta. Most Ruby idioms are best practices,
+shorthand, and common usages Ruby developers share informally and in practice.</p>
+<p>Learning idioms in Ruby is like learning idioms in any second spoken (or
+programming) language. It takes time and practice. Yet the more adept you are at
+recognizing and proffering Ruby's idioms, the better your code will be.</p>
+<h2 id="what-to-avoid-in-ruby">What to Avoid in Ruby</h2>
+<p>Now, let's move on to looking at five things to avoid in Ruby:</p>
+<ul>
+<li>Verbosity</li>
+<li>Long expressions to detect <code>nil</code></li>
+<li>Overuse of <code>self</code></li>
+<li>Collecting results in temporary variables</li>
+<li>Sorting and filtering in memory</li>
+</ul>
+<h3 id="verbosity">Verbosity</h3>
+<p>If you've delved into Ruby, you can appreciate how expressive, compact, fun,
+and flexible it is. Any given problem can be solved in a number of ways. For
+example, <code>if</code>/<code>unless</code>, <code>case</code>, and the ternary operator <code>?:</code> all express
+decisions — which one you should apply depends on the problem.</p>
+<p>However, per Ruby idiom, some <code>if</code> statements are better than others. For
+instance, the following blocks of code achieve the same result, but one is
+idiomatic to Ruby:</p>
+
+
+<p>Almost every Ruby statement and expression yields a value, including <code>if</code>, which
+returns a final code statement value and a matching condition. The
+version of the <code>if</code> statement in the second code block above leverages this behavior. If <code>response</code>
+is <code>2</code>, <code>actor</code> is set to <code>Chico</code>. Assigning the result of an <code>if</code> statement is
+idiomatic to Ruby. (The same construct can be applied to <code>case</code>, <code>unless</code>,
+<code>begin/end</code>, and others.)</p>
+<p>Another Ruby idiom is present: you need not predefine a variable used
+within an <code>if</code> statement (or <code>while</code>, <code>for</code>, and others). So, the latter code
+removes the line <code>actor = nil</code>. In Ruby, unlike other languages, the body of an
+<code>if</code> statement is <em>not</em> considered a separate scope.</p>
+<h3 id="long-expressions-to-detect-nil">Long Expressions to Detect <code>nil</code></h3>
+<p><code>nil</code> represents "nothing" in Ruby. It's a legitimate value and is its own class
+(<code>NilClass</code>) with methods. Like other classes, if you call a method that's not defined
+on <code>nil</code>, Ruby throws an exception akin to <code>undefined method 'xxx' for nil:NilClass</code>.</p>
+<p>To avoid this exception, you must first test a variable to determine if it's <code>nil.</code>
+For example, code such as this is common in Rails applications:</p>
+
+<p>The trouble is that such a long chain of assertions is unwieldy. Imagine having to
+repeat the condition <code>user &amp;&amp; user.plan &amp;&amp; ...</code> every time you have to reference
+a user's plan name.</p>
+<p>Instead, use Ruby's safe navigation operator, <code>&amp;.</code> It is shorthand for
+the logic "If a method is called on <code>nil</code>, return <code>nil</code>; otherwise, call the method per normal."
+Using <code>&amp;.</code> reduces the code above to the much more readable:</p>
+
+<p>If <code>user</code> is <code>nil</code> and <code>plan</code> is <code>nil</code>, the expression <code>user&amp;.plan&amp;.name</code> is
+<code>nil</code>.</p>
+
+<p>The example above assumes <code>user</code> and <code>plan</code> represent a custom structure or
+Rails model of some kind. You can also use the safe navigation operator if a
+value represents an <code>Array</code> or <code>Hash</code>.</p>
+<p>For example, assume <code>a_list_of_values</code> is an <code>Array</code>:</p>
+
+<p>If the variable <code>a_list_of_values</code> is <code>nil</code>, an exception is thrown. If you expectantly try
+<code>a_list_of_values&amp;.[index]</code>, a syntax error occurs. Instead, use <code>&amp;.</code> with the
+<code>Array#at</code> method.</p>
+
+<p>Now, if <code>a_list_of_values</code> is <code>nil</code>, the result of the expression is <code>nil</code>.</p>
+<h3 id="overuse-of-self">Overuse of <code>self</code></h3>
+<p>Ruby uses <code>self</code> in three substantive ways:</p>
+<ol>
+<li>To define class methods</li>
+<li>To refer to the current object</li>
+<li>To differentiate between a local variable and a method if both have the same name</li>
+</ol>
+<p>Here's an example class demonstrating all three usages.</p>
+
+<p><code>def self.area</code> is an example of the first purpose for <code>self</code>, defining a class
+method. Given this class, the Ruby code <code>puts Rectangle.area(10, 5)</code> produces
+<code>50</code>.</p>
+<p>The code <code>self.length = length</code> demonstrates the second application of <code>self</code>:
+the instance variable <code>length</code> is set to the value of the argument <code>length</code>.
+(The <code>attr_reader</code> statement at the bottom defines the instance variable and
+provides a getter method.) Here, the statement <code>self.length = length</code> is
+functionally the same as <code>@length = length</code>.</p>
+<p>The third use of <code>self</code> is shown in the <code>volume</code> method. What does <code>puts Rectangle.volume(10, 5, 2)</code> emit? The answer is <code>100</code>. The line <code>area = 100</code>
+sets a method-scoped, local variable named <code>area</code>. However, the line <code>self.area</code>
+refers to the method <code>area</code>. Hence, the answer is <code>10 * 5 * 2 = 100</code>.</p>
+<p>Consider one more example. What is the output if the <code>volume</code> method is written
+like this?:</p>
+
+<p>The answer is <code>500</code> because both uses of <code>height</code> refer to the local variable,
+not the instance variable.</p>
+<p>Inexperienced Rails developers make unnecessary use of <code>self</code>, as in:</p>
+
+<p>Technically, this code is correct, yet using <code>self</code> to refer to model attributes is unnecessary. If you combine Rubocop with your
+development environment, Rubocop flags this issue for you to correct.</p>
+<h3 id="collecting-results-in-temporary-variables">Collecting Results in Temporary Variables</h3>
+<p>A common code chore is processing lists of records. You might eliminate records
+due to certain criteria, map one set of values to another, or separate one set of
+records into multiple categories. A typical solution is to iterate over the list
+and accumulate a result.</p>
+<p>For instance, consider this a solution to find all even
+numbers from a list of integers:</p>
+
+<p>The code creates an empty list to aggregate results and then iterates over the
+list, ignoring <code>nil</code> items, and accumulating the even values. Finally, it
+returns the list to the caller. This code serves its purpose, but it isn't
+idiomatic.</p>
+<p>A better approach is to use Ruby's Enumerable methods.</p>
+
+<p><code>select</code> is one of many Enumerable methods. Each Enumerable method iterates
+over a list and collects results based on a condition. Specifically, <code>select</code>
+iterates over a list and accumulates all items where a condition yields a <em>truthy</em> value.
+In the example above, <code>even?</code> returns <code>true</code> if the item is an even number.
+<code>select</code> returns a new list, leaving the original list unchanged. A variant named
+<code>select!</code> performs the same purpose, but alters (mutates) the original list.</p>
+<p>The Enumerable methods include <code>reject</code> and <code>map</code> (also known as <code>collect</code>).
+<code>reject</code> collects all items from a list where a condition yields a falsey value.
+<code>map</code> returns a new list where each item in the original list is transformed by
+an expression.</p>
+<p>Here's one more example Enumerable method in action. First, some non-idiomatic code:</p>
+
+<p>And now a more idiomatic approach:</p>
+
+<p><code>transform_values</code> is another Enumerable method available for <code>Hash</code>. It returns
+a new hash with the same keys, but each associated value is transformed.
+Remember, even integers are objects in Ruby and have methods. <code>value&amp;.*(2)</code>
+returns <code>nil</code> if <code>value</code> is <code>nil</code>, else <code>value * 2</code>.</p>
+<h3 id="sorting-and-filtering-in-memory">Sorting and Filtering in Memory</h3>
+<p>Here's one last faux pas — this one is specific to Rails and ActiveRecord. Let's examine this code:</p>
+
+<p>Calling <code>Student.top_students</code> returns all students with a GPA greater than or
+equal to <code>90.0</code> in ranked order, from highest to lowest. Technically, this code
+is correct, but it isn't very efficient in space or time because:</p>
+<ul>
+<li>It must load all records from the <code>students</code> table into memory.</li>
+<li>It first sorts all records and <em>then</em> filters based on GPA, performing unnecessary work.</li>
+<li>It reverses the order of the list in memory.</li>
+</ul>
+<p>Sorting and filtering are best performed in the database, if possible, using ActiveRecord's
+tools.</p>
+
+<p>The shorthand <code>90.0..</code> in the <code>where</code> clause is a Ruby <code>Range</code> expressing a value
+between <code>90.0</code> and <code>Float::INFINITY</code>. If <code>gpa</code> is indexed in the <code>students</code> table,
+this query is likely very fast and loads only the matching records. If the student
+records are being fetched for display, more efficiency (in memory) can be gained
+via pagination (albeit at the possible expense of more queries to fetch the batches).</p>
+<h2 id="wrapping-up-and-next-steps">Wrapping Up and Next Steps</h2>
+<p>In this post, we've covered five key things to avoid in Ruby and the idioms to use instead.</p>
+<p>I highly recommend reading the documentation for Ruby's core classes and
+modules, including <a href="https://ruby-doc.org/3.3.0/Array.html"><code>Array</code></a>,
+<a href="https://ruby-doc.org/3.3.0/Hash.html"><code>Hash</code></a>, and <a href="https://ruby-doc.org/3.3.0/Enumerable.html"><code>Enumerable</code></a>.
+The documents are a
+treasure trove of methods and techniques, and chances are a method exists to
+solve your problem at hand. Turn knowledge into practice by writing small code
+samples to learn how each method works.</p>
+<p>Add Rubocop into your workflow, even your text editor. Rubocop keeps your code
+looking nice but can also flag idiosyncratic code. Using Rubocop is one of the best ways to learn to code the Ruby way.</p>
+<p>Finally, read other developers' code, especially open-source Ruby projects. To
+peruse the code of any gem, run <code>bundle open &lt;gem&gt;</code>, where <code>&lt;gem&gt;</code> is the name
+of a library. If you've included a debugger in your <em>Gemfile</em>, you can even set
+breakpoints in any gem and step through the code.</p>
+<p>Go forth and code!</p>
+<p><strong>P.S. If you'd like to read Ruby Magic posts as soon as they get off the press, <a href="https://blog.appsignal.com/ruby-magic">subscribe to our Ruby Magic newsletter and never miss a single post</a>!</strong></p>
+<p><strong>P.P.S. <a href="https://www.appsignal.com/tour/errors">Use AppSignal for Ruby for deeper debugging insights</a>.</strong></p></div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A Gentle Introduction to K-Means Clustering in R (Feat. Tidyclust)</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A Gentle Introduction to K-Means Clustering in R (Feat. Tidyclust)</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/2023/07/a-gentle-introduction-to-k-means-clustering-in-r-feat-tidyclust">https://www.r-bloggers.com/2023/07/a-gentle-introduction-to-k-means-clustering-in-r-feat-tidyclust</a></p>
+    <p><strong>Tags:</strong> clustering, machine-learning, _r_</p>
+    <p><strong>Bookmark ID:</strong> 876792636</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					<!-- 
+<div style="min-height: 30px;">
+[social4i size="small" align="align-left"]
+</div>
+-->
+
+<div><p>
+[This article was first published on  <strong><a href="https://www.business-science.io/code-tools/2023/07/06/kmeans-clustering.html"> business-science.io</a></strong>, and kindly contributed to <a href="https://www.r-bloggers.com/" rel="nofollow">R-bloggers</a>].  (You can report issue about the content on this page <a href="https://www.r-bloggers.com/contact-us/">here</a>)
+</p><hr><p>Want to share your content on R-bloggers?<a href="https://www.r-bloggers.com/add-your-blog/" rel="nofollow"> click here</a> if you have a blog, or <a href="http://r-posts.com/" rel="nofollow"> here</a> if you don't.
+</p></div>
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.8-->
+
+	<p>To be successful as a Data Scientist, you’re often put in positions where you need to find groups within your data. One key business use-case is finding clusters of customers that behave similarly. And that’s a powerful skill that I’m going to help you with today: <strong>It’s called Customer Segmentation with K-Means Clustering.</strong></p>
+
+<h3 id="table-of-contents">Table of Contents</h3>
+
+<p>Today you’re going to become better at clustering customers. Here’s what you’re learning today:</p>
+
+<ul>
+  <li>What K-Means Clustering is (and why it’s absolutely essential to your data science career)</li>
+  <li>How to use an amazing R package to make K-means clustering a breeze (and <em>insantly</em> improve your modeling workflow)</li>
+  <li><strong>Bonus: Steal my brand NEW data visualization code (for the Customer Segmentation Plot we make today)</strong></li>
+</ul>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/063_tidyclust_thumb.jpg?w=584&amp;ssl=1" alt="Storytelling with R" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/063_tidyclust_thumb.jpg?w=584&amp;ssl=1"></p>
+
+<hr>
+
+<h2 id="special-announcement-how-to-become-a-6-figure-business-scientist-even-in-a-recession-on-july-6th">SPECIAL ANNOUNCEMENT: How To Become A <u>6-Figure Business Scientist</u> (Even In A Recession) on July 6th</h2>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/business-science-cube-2.jpg?w=584&amp;ssl=1" alt="Business Scientist" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/business-science-cube-2.jpg?w=584&amp;ssl=1"></p>
+
+<p><strong>What:</strong> How To Become A 6-Figure Business Scientist (Even In A Recession)</p>
+
+<p><strong>When:</strong> Wednesday July 6th, 2pm EST</p>
+
+<p><strong>How It Will Help You:</strong> Data science in 2023 has changed. <em>The 10+ person data science team is out.</em> And the one-person Business Scientist is in. I’ll show you how to become a 1-person data science team inside <a href="https://learn.business-science.io/registration-2-page?el=website" rel="nofollow" target="_blank">my LIVE 6-figure business scientist masterclass</a>.</p>
+
+<p><strong>Price:</strong> Does <strong>Free</strong> sound good?</p>
+
+<p><strong>How To Join:</strong> <a href="https://learn.business-science.io/registration-2-page?el=website" rel="nofollow" target="_blank"><strong>👉 Register Here</strong></a></p>
+
+<!--
+# SPECIAL ANNOUNCEMENT: ChatGPT for Data Scientists Workshop on June 7th
+
+[Inside the workshop](https://us02web.zoom.us/webinar/register/1716838099992/WN_ANCfXeRtRsGiiPzK8N_OTw) I'll share how I built a Machine Learning Powered Production Shiny App with `ChatGPT` (extends this data analysis to an *insane* production app):
+
+![ChatGPT for Data Scientists](/assets/lab_82_chatgpt_rcode.jpg)
+
+**What:** ChatGPT for Data Scientists
+
+**When:** Wednesday June 7th, 2pm EST
+
+**How It Will Help You:** Whether you are new to data science or are an expert, ChatGPT is changing the game. There's a ton of hype. But how can ChatGPT actually help you become a better data scientist and help you stand out in your career? I'll show you inside [my free chatgpt for data scientists workshop](https://us02web.zoom.us/webinar/register/1716838099992/WN_ANCfXeRtRsGiiPzK8N_OTw). 
+
+**Price:** Does **Free** sound good?
+
+**How To Join:** [**👉 Register Here**](https://us02web.zoom.us/webinar/register/1716838099992/WN_ANCfXeRtRsGiiPzK8N_OTw)
+-->
+
+<hr>
+
+<h2 id="r-tips-weekly">R-Tips Weekly</h2>
+
+<p>This article is part of R-Tips Weekly, a <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank">weekly video tutorial</a> that shows you step-by-step how to do common R coding tasks. Pretty cool, right?</p>
+
+<p>Here are the links to get set up. 👇</p>
+
+<ul> <li><a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank">Get the Code</a></li> <li><a href="https://youtu.be/QYcrjrwKswc" rel="nofollow" target="_blank">YouTube Tutorial</a></li> </ul>
+
+<h2 id="this-tutorial-is-available-in-video">This Tutorial is Available in Video</h2>
+
+<p>I have a companion video tutorial that walks you through how to do the full K-Means Clustering Analysis and create the Marketing Cluster Plot. And, I’m finding that a lot of my students prefer the dialogue that goes along with video-based coding. So check out this video to see me running the <code>R</code> code in this tutorial. 👇</p>
+
+
+
+<h2 id="k-means-clustering-what-it-is-and-why-its-important">K-Means Clustering: What it is AND why it’s important</h2>
+
+<p>I remember in my days of working as the Director of Sales for Bonney Forge, a company that did roughly $400,000,000 per year selling valves and fittings to Energy companies. Bonney Forge had tons and tons of customers AND tons and tons of product SKUs. Each customer had different purchasing patterns AND because of this…</p>
+
+<h2 id="there-was-a-big-problem-we-couldnt-easily-target-them-for-marketing-campaigns">There was a big problem: we couldn’t easily target them for marketing campaigns.</h2>
+
+<p>Some customers would buy specific products for “Upstream” applications (where they pulled oil out of the ground). Some would purchase products for “Midstream”, or transmission from an oil patch to a refinery. And some would buy products for “Downstream”, focusing on refining the oil into useful products.</p>
+
+<p>To make matters worse, some customers would have weird buying patterns where they’d buy only valves. And others would buy only fittings. And some would buy both. And, with over 1,000,000 SKUs, it became really tough to market to them. In fact, for the longest time we didn’t. And we lost out.</p>
+
+
+
+<p>I needed a way to group our customers based on what they were buying in real time. The algorithm that showed the most promise was <strong>K-Means Clustering</strong>.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/K-means_clustering" rel="nofollow" target="_blank">According to Wikipedia</a>…</p>
+
+<blockquote>
+  <p><strong>K-Means clustering</strong> is a method that aims to partition n observations into k clusters in which each observation belongs to the cluster with the nearest mean (cluster centers or cluster centroid), serving as a prototype of the cluster.</p>
+</blockquote>
+
+<p>When the K-means algorithm converged, it found centers that minimized the “within-cluster variances” of the groups.</p>
+
+<p><img src="https://i0.wp.com/upload.wikimedia.org/wikipedia/commons/thumb/e/ea/K-means_convergence.gif/220px-K-means_convergence.gif?w=584&amp;ssl=1" alt="K-Means Convergence" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>
+
+<p>Convergence of K-Means (Source: Wikipedia)</p>
+
+<h2 id="the-main-challenge-with-k-means-how-to-pick-k">The main challenge with K-means: how to pick K</h2>
+
+<p>Picking how many clusters (the value for “K”) is the toughest part. Nowadays there are more rigorous methods, but often in business data I had to test a few values (e.g. 4 to 8 clusters). Then I’d settle on the number of clusters that made the most business sense.</p>
+
+<p>Other methods include the <a href="https://en.wikipedia.org/wiki/Elbow_method_(clustering)" rel="nofollow" target="_blank">“Elblow Method”</a> and the <a href="https://en.wikipedia.org/wiki/Silhouette_(clustering)" rel="nofollow" target="_blank">“Silhouette Method”</a>. I won’t dive into those methods here. But you can find more detailed discussions on Wikipedia.</p>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/063_silhouette_plot.png?w=584&amp;ssl=1" alt="Silhouette Plot" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/063_silhouette_plot.png?w=584&amp;ssl=1"></p>
+
+<p>Example of a Silhoutte Plot for Picking Cluster Centers (Source: Business Science)</p>
+
+<h2 id="armed-with-k-means-heres-what-it-did-for-me">Armed with K-means, here’s what it did for me</h2>
+
+<p><strong>So what did K-means get me?</strong> Well, it turns out that I didn’t know a lot about our customers. And running K-means gave me a better understanding of which customers behaved similarly.</p>
+
+<p>This in and of itself wasn’t the end. But rather it helped me with a much larger project, which was customer lead scoring. Armed with K-means, I knew which products customers preferred. And combining with Lead Scoring, I could determine the probability of purchase.</p>
+
+<p>And I used this information to develop a Lead Scoring System that <strong>grew our team’s revenue from $3,000,000 per year to $15,000,000 per year in about 2 years.</strong></p>
+
+<p>Even more remarkable, this was during 2014-2016 Oil Recession which was the time when <a href="https://www.bls.gov/opub/btn/volume-4/pdf/the-2014-plunge-in-import-petroleum-prices-what-happened.pdf" rel="nofollow" target="_blank">Oil Prices dropped from $100 per barrel to $25 per barrel</a>. <strong>And our company went through 4 rounds of layoffs.</strong></p>
+
+<p>This was the worst economic period in our company’s history. And, somehow I was promoted twice, doubled my salary (went from $80,000 per year –&gt; $155,000 per year), and went from overseeing 5 people to 60+ people inside the organization.</p>
+
+<h2 id="so-what-did-k-means-really-do-for-me">So what did K-means really do for me?</h2>
+
+<p><strong>K-means gave me job security.</strong> A common theme in data science: there was always more to be done. And each problem more often than not had a positive outcome financially. And even with a 5X growth, <strong>I was just scratching the surface with Data Science.</strong></p>
+
+<p>Had we used a marketing strategy that integrated customer purchasing behaviour, I guarantee there’s more growth we could have achieved. But such is life. I’ll take a 5X ROI. And my CEO was happy. I’ll take that too.</p>
+
+<p>Ok, onto the K-means clustering tutorial…</p>
+
+<h2 id="free-gift-cheat-sheet-for-my-top-100-r-packages-special-data-analysis-topics-included">Free Gift: Cheat Sheet for my Top 100 R Packages (Special Data Analysis Topics Included)</h2>
+
+<p>Before we dive in…</p>
+
+<p><strong>You’re going to need R packages to complete the data analysis that helps your company.</strong> So why not speed up the process?</p>
+
+<p>To help, I’m going to share my secret weapon…</p>
+
+<p><strong>Even I forget which R packages to use from time to time.</strong> And this cheat sheet saves me so much time. Instead of googling to filter through 20,000 R packages to find a needle in a haystack. I keep my cheat sheet handy so I know which to use and when to use them. Seriously. <a href="https://www.business-science.io/r-cheatsheet.html" rel="nofollow" target="_blank">This cheat sheet is my bible.</a></p>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/free_cheatsheet.jpg?w=584&amp;ssl=1" alt="Ultimate R Cheat Sheet" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/free_cheatsheet.jpg?w=584&amp;ssl=1"></p>
+
+<p>Once you <a href="https://www.business-science.io/r-cheatsheet.html" rel="nofollow" target="_blank">download it</a>, head over to page 3 and you’ll see several R packages I use frequently just for Data Analysis.</p>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/cheatsheet_page_3_special_topics.jpg?w=584&amp;ssl=1" alt="Cheat Sheet Page 3 Special Topics" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/cheatsheet_page_3_special_topics.jpg?w=584&amp;ssl=1"></p>
+
+<p>Which is important when you want to work in these fields:</p>
+
+<ul>
+  <li>Machine Learning</li>
+  <li>Time Series</li>
+  <li>Financial Analysis</li>
+  <li>Geospatial Analysis</li>
+  <li>Text Analysis and NLP</li>
+  <li>Shiny Web App Development</li>
+</ul>
+
+<p><a href="https://www.business-science.io/r-cheatsheet.html" rel="nofollow" target="_blank">So steal my cheat sheet.</a> It will save you a ton of time.</p>
+
+<h2 id="tutorial-how-to-cluster-customers-with-k-means-clustering-and-tidyclust">Tutorial: How to Cluster Customers with K-Means Clustering and <code>tidyclust</code></h2>
+
+<p>I’m going to share exactly how to make the customer segmentation that is shown in this Customer Segmentation Plot. And as a BONUS, I’ll share how you can get the Customer Segmentation Plot (both static and interactive versions) for FREE.</p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/063_tidyclust_visualization.jpg?w=584&amp;ssl=1" alt="Customer Segmentation" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/063_tidyclust_visualization.jpg?w=584&amp;ssl=1"></p>
+
+<p>Customer Cluster Plot</p>
+
+<h2 id="step-1-get-the-libraries-and-data">Step 1: Get the Libraries and Data</h2>
+
+<p>First, load in the following libraries.</p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/063_01_libraries.jpg?w=584&amp;ssl=1" alt="Libraries" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/063_01_libraries.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Steal my code.</strong></a> </p>
+
+<p>The data is stored in a CSV file. We’ll read it in.</p>
+
+<p><img src="https://i2.wp.com/www.business-science.io/assets/063_02_data.jpg?w=584&amp;ssl=1" alt="Data" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/www.business-science.io/assets/063_02_data.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Steal my code.</strong></a> </p>
+
+<p>The raw marketing data is composed of 2,240 rows and 29 columns containing:</p>
+
+<ul>
+  <li>Personal Attributes</li>
+  <li>Customer History &amp; Marketing Campaign Data</li>
+  <li>Removed Columns</li>
+</ul>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/063_03_marketing_dataset.jpg?w=584&amp;ssl=1" alt="Marketing Dataset" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/063_03_marketing_dataset.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Get the Marketing Dataset.</strong></a> </p>
+
+<h2 id="step-2-prepare-the-data">Step 2: Prepare the Data</h2>
+
+<p>In this step, we need to get the dataset ready for modeling with K-means. To do so, we will:</p>
+
+<ol>
+  <li>Remove <code>NA</code> values (could also impute)</li>
+  <li>Add a feature, <code>Dt_Customer_Age</code> that identifies how long the customer has been with the company (and remove the <code>Dt_Customer</code> feature)</li>
+  <li>Add a feature, <code>Spent</code> that calculates the Customer’s total spend</li>
+  <li>Remove features we don’t want to influence the grouping</li>
+</ol>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/063_04_data_prep.jpg?w=584&amp;ssl=1" alt="Data Prep" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/063_04_data_prep.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Steal my code.</strong></a> </p>
+
+<p>The prepared dataset looks like this:</p>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/063_05_data_prep_glimpse.jpg?w=584&amp;ssl=1" alt="Data Prep" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/063_05_data_prep_glimpse.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Steal my code.</strong></a> </p>
+
+<h2 id="step-3-preprocess-the-data-with-recipes">Step 3: Preprocess the Data with <code>recipes</code></h2>
+
+<p>Next, we will use <code>recipes</code> to further preprocess the data:</p>
+
+<ol>
+  <li>One-hot encoding character and categorical data</li>
+  <li>Scaling &amp; center all numeric data to mean zero and standard deviation 1 (also called normalizing)</li>
+  <li>Removing the “ID” feature (not predictive)</li>
+</ol>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/063_06_recipes_1.jpg?w=584&amp;ssl=1" alt="Recipes" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/063_06_recipes_1.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Steal my code.</strong></a> </p>
+
+<p>The transformation when applied looks like this:</p>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/063_07_recipes_glimpse.jpg?w=584&amp;ssl=1" alt="Recipe Glimpse" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/063_07_recipes_glimpse.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Steal my code.</strong></a> </p>
+
+<h2 id="step-4-k-means-clustering-feat-tidyclust--tidymodels">Step 4: K-Means Clustering (feat. <code>tidyclust</code> + <code>tidymodels</code>)</h2>
+
+<p>Next, I’ll perform K-Means Clustering using <code>tidyclust</code> and <code>tidymodels</code>:</p>
+
+<ol>
+  <li>Make a K-Means Model. Be sure to identify the number of clusters.</li>
+  <li>Train the K-means Model (using a Tidymodels Workflow that combines the model, recipe, and fits to the prepared data.)</li>
+</ol>
+
+<p><img src="https://i2.wp.com/www.business-science.io/assets/063_08_tidymodels_kmeans.jpg?w=584&amp;ssl=1" alt="Tidymodels K-Means" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/www.business-science.io/assets/063_08_tidymodels_kmeans.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Steal my code.</strong></a> </p>
+
+<p>With a trained (fitted) model, we can get the clusters with <code>predict()</code>:</p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/063_09_clusters.jpg?w=584&amp;ssl=1" alt="Clusters" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/063_09_clusters.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Steal my code.</strong></a> </p>
+
+<h2 id="bonus-steal-my-customer-segmentation-library--visualization-code-for-this-r-tip">BONUS: Steal My Customer Segmentation Library + Visualization Code for this R-Tip</h2>
+
+<p>Want all the code I just showed you? <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank">Steal my R-tip library.</a></p>
+
+<p>The code for the K-means PLUS the visualization code are inside of R-Tip <code>063_tidyclust</code>.</p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/063_tidyclust_visualization.jpg?w=584&amp;ssl=1" alt="Shiny ChatGPT 6" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/063_tidyclust_visualization.jpg?w=584&amp;ssl=1"></p>
+
+<p> <a href="https://learn.business-science.io/r-tips-newsletter" rel="nofollow" target="_blank"><strong>Steal code library from this tutorial.</strong></a> </p>
+
+<h2 id="struggling-to-become-a-data-scientist">Struggling to become a data scientist?</h2>
+
+<p>You know the feeling. Being unhappy with your current job.</p>
+
+<p>Promotions aren’t happening. You’re stuck. Feeling Hopeless. Confused…</p>
+
+<p>And you’re praying that the next job interview will go better than the last 12…</p>
+
+<p>… But you know it won’t. Not unless you take control of your career.</p>
+
+<p>The good news is…</p>
+
+<h2 id="i-can-help-you-speed-it-up">I Can Help You Speed It Up.</h2>
+
+<p>I’ve helped 6,107+ students learn data science for business from an elite business consultant’s perspective.</p>
+
+<p>I’ve worked with Fortune 500 companies like S&amp;P Global, Apple, MRM McCann, and more.</p>
+
+<p>And I built a training program that gets my students life-changing data science careers (don’t believe me? <a href="https://university.business-science.io/p/5-course-bundle-machine-learning-web-apps-time-series/" rel="nofollow" target="_blank">see my testimonials here</a>):</p>
+
+<h4>
+6-Figure Data Science Job at CVS Health ($125K)<br>
+Senior VP Of Analytics At JP Morgan ($200K)<br>
+50%+ Raises &amp; Promotions ($150K)<br>
+Lead Data Scientist at Northwestern Mutual ($175K)<br>
+2X-ed Salary (From $60K to $120K)<br>
+2 Competing ML Job Offers ($150K)<br>
+Promotion to Lead Data Scientist ($175K)<br>
+Data Scientist Job at Verizon ($125K+)<br>
+Data Scientist Job at CitiBank ($100K + Bonus)<br>
+</h4>
+
+<h2 id="whenever-you-are-ready-heres-the-system-they-are-taking">Whenever you are ready, here’s the system they are taking:</h2>
+
+<p><a href="https://university.business-science.io/p/5-course-bundle-machine-learning-web-apps-time-series" rel="nofollow" target="_blank">Here’s the system</a> that has gotten aspiring data scientists, career transitioners, and life long learners data science jobs and promotions…</p>
+
+<p><img src="https://i2.wp.com/www.business-science.io/assets/rtrack_what_theyre_doing_2.jpg?w=584&amp;ssl=1" alt="What They're Doing - 5 Course R-Track" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/www.business-science.io/assets/rtrack_what_theyre_doing_2.jpg?w=584&amp;ssl=1"></p>
+
+<p>
+<a href="https://university.business-science.io/p/5-course-bundle-machine-learning-web-apps-time-series" rel="nofollow" target="_blank">
+<strong>Join My 5-Course R-Track Program</strong><br><small>(And Become The Data Scientist You Were Meant To Be…)</small>
+</a>
+</p>
+
+<p>P.S. – Samantha landed her NEW Data Science R Developer job at CVS Health (Fortune 500). <a href="https://university.business-science.io/p/5-course-bundle-machine-learning-web-apps-time-series" rel="nofollow" target="_blank">This could be you.</a></p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/img/success_samantha_got_job.jpg?w=584&amp;ssl=1" alt="Success Samantha Got The Job" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/img/success_samantha_got_job.jpg?w=584&amp;ssl=1"></p>
+
+
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.8-->
+							</div></div>
+  </div>
+</body>
+</html>

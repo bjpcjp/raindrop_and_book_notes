@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Coders' Colaboratory mini-hackathon on `llm` by simonw</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Coders' Colaboratory mini-hackathon on `llm` by simonw</h1>
+    <p><strong>URL:</strong> <a href="https://gist.github.com/chriscarrollsmith/4670b8466e19e77723327cb555f638e6">https://gist.github.com/chriscarrollsmith/4670b8466e19e77723327cb555f638e6</a></p>
+    <p><strong>Tags:</strong> llms, command-line</p>
+    <p><strong>Bookmark ID:</strong> 1232280170</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="file-llm-hackathon-md" tabindex="0" role="region" aria-label="llm-hackathon.md content, created by chriscarrollsmith on 01:56PM on July 05.">
+    <article itemprop="text"><p dir="auto"><h2 dir="auto">Let's hack on <code>llm</code>!</h2><a id="user-content-lets-hack-on-llm" aria-label="Permalink: Let's hack on llm!" href="https://gist.github.com/chriscarrollsmith/4670b8466e19e77723327cb555f638e6#lets-hack-on-llm"></a></p>
+<p dir="auto">If you have <a href="https://docs.astral.sh/uv/" rel="nofollow">uv</a> installed (and you should!), you can install <a href="https://llm.datasette.io/en/stable/" rel="nofollow">llm</a> globally in a <code>uv</code>-managed tool environment with:</p>
+<div dir="auto"><pre>uv tool install llm</pre></div>
+<p dir="auto">If you want to use models other than OpenAI models, you'll need some extensions:</p>
+<div dir="auto"><pre>llm install llm-deepseek llm-gemini llm-openrouter</pre></div>
+<p dir="auto">Additionally, you'll need to set API keys for the providers you want to use:</p>
+<div dir="auto"><pre>llm keys <span>set</span> openai
+<span><span>#</span> Enter your API key when prompted</span></pre></div>
+<p dir="auto">To avoid running up any bills during this hackathon, I recommend setting an openrouter key and then only using their <a href="https://openrouter.ai/models?max_price=0" rel="nofollow">free models, available here</a>. There are lots of great free models, including Deepseek R1 and a "cloaked" pre-release model with 1,000,000-token context window called "cypher-alpha".</p>
+<p dir="auto">Once you've set API keys, you can get the full list of available models with:</p>
+<div dir="auto"><pre>llm models</pre></div>
+<p dir="auto">Then you can use the <code>-m</code> flag to specify a model:</p>
+<div dir="auto"><pre>llm -m openrouter/openrouter/cypher-alpha:free <span><span>"</span>How many 'r's are in 'strawberrrrry'?<span>"</span></span></pre></div>
+<p dir="auto">You can also alias models to make them easier to use:</p>
+<div dir="auto"><pre>llm aliases <span>set</span> cypher-alpha openrouter/openrouter/cypher-alpha:free</pre></div>
+<p dir="auto"><h2 dir="auto">Ways I'm using LLM in my daily work</h2><a id="user-content-ways-im-using-llm-in-my-daily-work" aria-label="Permalink: Ways I'm using LLM in my daily work" href="https://gist.github.com/chriscarrollsmith/4670b8466e19e77723327cb555f638e6#ways-im-using-llm-in-my-daily-work"></a></p>
+<ol dir="auto">
+<li>
+<p dir="auto"><strong>Learning Linux</strong> with a prompt template</p>
+<p dir="auto">LLM lets you define a prompt template with input variables. I've created one with the details of my Linux distribution to speed up the process of asking for help with writing shell commands.</p>
+<div dir="auto"><pre>llm --system <span><span>"</span>You are a Linux command-line copilot running in WSL2 with the following Linux distribution:</span>
+<span><span><span>$(</span>cat /etc/<span>*</span>-release<span>)</span></span><span>"</span></span> --save linux</pre></div>
+<p dir="auto">Now I can use it with the <code>--template</code> option:</p>
+<div dir="auto"><pre>llm <span><span>"</span>How could I split a PDF by page range?<span>"</span></span> --template linux</pre></div>
+</li>
+<li>
+<p dir="auto"><strong>Whole-repository Q&amp;A</strong> in combination with <a href="https://github.com/yamadashy/repomix">repomix</a></p>
+<p dir="auto">For this one, you'll need <code>repomix</code>, which you can install globally with <a href="https://nodejs.org/en/download" rel="nofollow">Node</a>:</p>
+<div dir="auto"><pre>npm install -g repomix</pre></div>
+<p dir="auto">The <code>repomix</code> command will pack the entire current directory (excluding hidden and untracked files) into a <code>repomix-output.xml</code> file designed for LLM consumption.</p>
+<div dir="auto"><pre>repomix --include <span><span>"</span>*.sh,README.md<span>"</span></span>  <span><span>#</span> Optionally filter with --include and a glob</span>
+repomix --remote https://github.com/boxabirds/awesome-hooks  <span><span>#</span> Or pack a remote repository</span></pre></div>
+<p dir="auto">You can then pass the contents of the <code>repomix-output.xml</code> file to <code>llm</code> with the <code>-f</code> flag to ask questions about the repository:</p>
+<div dir="auto"><pre>llm -f repomix-output.xml <span><span>"</span>What awesome-hooks are currently available?<span>"</span></span></pre></div>
+<p dir="auto">I often request implementation plans from multiple models and append them to a file for comparison:</p>
+<div dir="auto"><pre>cat repomix-output.xml <span>|</span> llm -m deepseek-reasoner <span><span>"</span>Write a step-by-step implementation plan to add a user profile page.<span>"</span></span> <span>&gt;&gt;</span> plans.md</pre></div>
+<p dir="auto">I then review the plans and implement the best one.</p>
+</li>
+<li>
+<p dir="auto"><strong>Progress reporting</strong> in combination with <code>git log</code></p>
+<p dir="auto">Say the last time you updated a client was June 1st, and you need to report on your progress since then. You can use <a href="https://git-scm.com/downloads" rel="nofollow">git</a> to get the list of commits since then, and then pipe the output to <code>llm</code> and have it generate a progress report:</p>
+<div dir="auto"><pre>git log --since=<span><span>"</span>2025-06-01<span>"</span></span> <span>|</span> llm <span><span>"</span>In visual markdown, prepare a timeline of development during this period, including stages of work and milestones.<span>"</span></span></pre></div>
+<p dir="auto">You can then provide this timeline to your client in a progress report.</p>
+</li>
+<li>
+<p dir="auto"><strong>Data extraction</strong> with structured outputs</p>
+<p dir="auto">You can use the <code>--schema</code> option to specify a schema for JSON output. For instance, here's how we can extract structured information about a Github user from their profile page using <a href="https://curl.se/docs/gettingstarted.html" rel="nofollow">curl</a> and <a href="https://github.com/simonw/strip-tags">strip-tags</a>:</p>
+<div dir="auto"><pre>curl -o- https://github.com/chriscarrollsmith <span>|</span> strip-tags --minify <span>|</span> llm --schema <span><span>"</span>followers int, following int, tech_stack string<span>"</span></span></pre></div>
+</li>
+</ol>
+<p dir="auto"><h2 dir="auto">Hackathon ideas</h2><a id="user-content-hackathon-ideas" aria-label="Permalink: Hackathon ideas" href="https://gist.github.com/chriscarrollsmith/4670b8466e19e77723327cb555f638e6#hackathon-ideas"></a></p>
+<p dir="auto">It's possible to do some pretty ambitious stuff with <code>llm</code> if you use it in a Bash script. Here's <a href="https://github.com/chriscarrollsmith/github_repo_classifier">an example</a> of how I used <code>llm</code> in a Bash loop to find underrated Github repositories.</p>
+<p dir="auto"><strong>But!</strong> We've only got an hour, so I suggest you focus on coming up with a proof of concept and a pitch for how to scale the idea.</p>
+<p dir="auto">Here are some suggestions:</p>
+<ol dir="auto">
+<li>
+<p dir="auto"><strong>Give <code>llm</code> a Python tool</strong></p>
+<p dir="auto">One of the cool things you can do with <code>llm</code> is <a href="https://llm.datasette.io/en/stable/tools.html" rel="nofollow">give it Python functions</a> that it can call. I haven't experimented with this yet myself, but there's all kinds of potential here.</p>
+</li>
+<li>
+<p dir="auto"><strong>Embed some personal files for semantic search</strong></p>
+<p dir="auto">You could try using <code>llm</code>'s <a href="https://llm.datasette.io/en/stable/embeddings/index.html" rel="nofollow"><code>embed</code> and <code>similar</code> commands</a> to embed some personal files and make them fuzzy-searchable.</p>
+</li>
+<li>
+<p dir="auto"><strong>Chat with a local model</strong></p>
+<p dir="auto">The <code>llm</code> tool supports chatting with local models, such as those installed with llama.cpp or ollama. See more <a href="https://llm.datasette.io/en/stable/plugins/directory.html#local-models" rel="nofollow">in the documentation here</a>.</p>
+</li>
+<li>
+<p dir="auto"><strong>Add captions to your photos with a vision model</strong></p>
+<p dir="auto">If you select a vision model, you can pass a <a href="https://llm.datasette.io/en/stable/usage.html#attachments" rel="nofollow">file attachment</a> with the <code>-a</code> flag:</p>
+<div dir="auto"><pre>llm <span><span>"</span>Generate a caption for this image<span>"</span></span> -a image1.jpg</pre></div>
+<p dir="auto">Try chaining this with other commands to actually add the caption as file metadata.</p>
+</li>
+<li>
+<p dir="auto"><strong>Combine <code>llm</code> with your favorite command-line tool</strong></p>
+<p dir="auto">Generate <code>nix</code> build scripts. Manipulate structured JSON outputs with <code>jq</code>. Open pull requests with <code>gh</code>. Think about stuff you already do from the command line, and see if you can use <code>llm</code> to do it better!</p>
+</li>
+</ol>
+</article>
+  </div></div>
+  </div>
+</body>
+</html>

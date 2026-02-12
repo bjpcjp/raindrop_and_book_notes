@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How Good Are the Latest Open LLMs? And Is DPO Better Than PPO?</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How Good Are the Latest Open LLMs? And Is DPO Better Than PPO?</h1>
+    <p><strong>URL:</strong> <a href="https://sebastianraschka.com/blog/2024/how-good-open-llm.html">https://sebastianraschka.com/blog/2024/how-good-open-llm.html</a></p>
+    <p><strong>Tags:</strong> llms</p>
+    <p><strong>Bookmark ID:</strong> 876796922</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+   <p>April 2024, what a month! My birthday, a <a href="https://www.amazon.com/Machine-Learning-AI-Essential-Questions/dp/1718503768">new book release</a>, spring is finally here, and four major open LLM releases: Mixtral, Meta AI’s Llama 3, Microsoft’s Phi-3, and Apple’s OpenELM.</p>
+
+<p>This article reviews and discusses all four major transformer-based LLM model releases that have been happening in the last few weeks, followed by new research on reinforcement learning with human feedback methods for instruction finetuning using PPO and DPO algorithms.</p>
+
+<ol>
+  <li>How Good are Mixtral, Llama 3, and Phi-3?</li>
+  <li>OpenELM: An Efficient Language Model Family with Open-source Training and Inference Framework</li>
+  <li>Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study</li>
+  <li>Other Interesting Research Papers In April</li>
+</ol>
+
+
+      <h2 id="1-mixtral-llama-3-and-phi-3-whats-new">
+        
+        
+          1. Mixtral, Llama 3, and Phi-3: What’s New? <a href="#1-mixtral-llama-3-and-phi-3-whats-new"></a>
+        
+        
+      </h2>
+    
+
+<p>First, let’s start with the most prominent topic: the new major LLM releases this month. This section will briefly cover Mixtral, Llama 3, and Phi-3, which have been accompanied by short blog posts or short technical papers. The next section will cover Apple’s OpenELM in a bit more detail, which thankfully comes with a research paper that shares lots of interesting details.</p>
+
+
+      <h3 id="11-mixtral-8x22b-larger-models-are-better">
+        
+        
+          1.1 Mixtral 8x22B: Larger models are better! <a href="#11-mixtral-8x22b-larger-models-are-better"></a>
+        
+        
+      </h3>
+    
+
+<p><a href="https://mistral.ai/news/mixtral-8x22b/">Mixtral 8x22B</a> is the latest mixture-of-experts (MoE) model by Mistral AI, which has been released under a permissive Apache 2.0 open-source license.</p>
+
+<p>Similar to the Mixtral 8x7B released in January 2024, the key idea behind this model is to replace each feed-forward module in a transformer architecture with 8 expert layers. It’s going to be a relatively long article, so I am skipping the MoE explanations, but if you are interested, <a href="https://magazine.sebastianraschka.com/p/research-papers-in-january-2024">the Mixtral 8x7B section in an article I shared a few months ago is a bit more detailed</a>.</p>
+
+<p>The perhaps most interesting plot from the<a href="https://mistral.ai/news/mixtral-8x22b/"> Mixtral blog post</a>, which compares Mixtral 8x22B to several LLMs on two axes: modeling performance on the popular <a href="https://arxiv.org/abs/2009.03300">Measuring Massive Multitask Language Understanding</a> (MMLU) benchmark and active parameters (related to computational resource requirements).</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>A comparison between Mixtral 8x22B and other LLMs. Annotated figure based on a plot from https://mistral.ai/news/mixtral-8x22b.</figcaption>
+
+
+      <h3 id="12-llama-3-larger-data-is-better">
+        
+        
+          1.2 Llama 3: Larger data is better! <a href="#12-llama-3-larger-data-is-better"></a>
+        
+        
+      </h3>
+    
+
+<p><a href="https://arxiv.org/abs/2302.13971">Meta AI’s first Llama model release</a> in February 2023 was a big breakthrough for openly available LLM and was a pivotal moment for open(-source) LLMs. So, naturally, everyone was excited about the <a href="https://arxiv.org/abs/2307.09288">Llama 2 release</a> last year. Now, the Llama 3 models, which <a href="https://ai.meta.com/blog/meta-llama-3/">Meta AI has started to roll out</a>, are similarly exciting.</p>
+
+<p>While Meta is still training some of their largest models (e.g., the 400B variant), they released models in the familiar 8B and 70B size ranges. And they are good! Below, I added the MMLU scores from the official <a href="https://ai.meta.com/blog/meta-llama-3/">Llama 3 blog article</a> to the Mixtral plot I shared earlier.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>A comparison between Llama 3, Mixtral, and other LLMs. Annotated figure based on a plot from https://mistral.ai/news/mixtral-8x22b.</figcaption>
+
+<p>Overall, the Llama 3 architecture is almost identical to Llama 2. The main differences are the increased vocabulary size and the fact that Llama 3 also uses grouped-query attention for the smaller-sized model. <a href="https://magazine.sebastianraschka.com/p/ahead-of-ai-12-llm-businesses">If you are looking for a grouped-query attention explainer, I’ve written about it here</a>.</p>
+
+<p>Below are the configuration files used for implementing Llama 2 and Llama 3 in LitGPT, which help show the main differences at a glance.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>A comparison of Llama 2 and Llama 3 configurations via LitGPT, <a href="https://github.com/Lightning-AI/litgpt">https://github.com/Lightning-AI/litgpt</a></figcaption>
+
+<p>&nbsp;
+<strong>Training data size</strong></p>
+
+<p>The main contributor to the substantially better performance compared to Llama 2 is the much larger dataset. Llama 3 was trained on 15 trillion tokens, as opposed to “only” 2 trillion for Llama 2.</p>
+
+<p>This is a very interesting finding because, as the <a href="https://ai.meta.com/blog/meta-llama-3/">Llama 3 blog post</a> notes, according to the Chinchilla scaling laws, the optimal amount of training data for an 8 billion parameter model is much smaller, approximately 200 billion tokens. Moreover, the authors of Llama 3 observed that both the 8 billion and 70 billion parameter models demonstrated log-linear improvements even at the 15 trillion scale. This suggests that we (that is, researchers in general) could further enhance the model with more training data beyond 15 trillion tokens.</p>
+
+<p>&nbsp;
+<strong>Instruction finetuning and alignment</strong></p>
+
+<p>For instruction finetuning and alignment, researchers usually choose between using reinforcement learning with human feedback (RLHF) via proximal policy optimization (PPO) or the reward-model-free direct preference optimization (DPO). Interestingly, the Llama 3 researchers did not favor one over the other; they used both! (More on PPO and DPO in a later section.)</p>
+
+<p>The <a href="https://ai.meta.com/blog/meta-llama-3/">Llama 3 blog post</a> stated that a Llama 3 research paper would follow in the coming month, and I am looking forward to the additional details that will hopefully be shared in this article.</p>
+
+
+      <h3 id="13-phi-3-higher-quality-data-is-better">
+        
+        
+          1.3 Phi-3: Higher-quality data is better! <a href="#13-phi-3-higher-quality-data-is-better"></a>
+        
+        
+      </h3>
+    
+
+<p>Just one week after the big Llama 2 release, Microsoft shared their new Phi-3 LLM. According to the benchmarks in the <a href="https://arxiv.org/abs/2404.14219">technical report</a>, even the smallest Phi-3 model outperforms the Llama 3 8B model despite being less than half its size.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>A comparison between Phi-3, Llama 3, Mixtral, and other LLMs. Annotated figure based on a plot from https://mistral.ai/news/mixtral-8x22b.</figcaption>
+
+<p>Notably, Phi-3, which is based on the Llama architecture, has been trained on 5x fewer tokens than Llama 3 (3.3 trillion instead of 15 trillion). Phi-3 even uses the same tokenizer with a vocabulary size of 32,064 as Llama 2, which is much smaller than the Llama 3 vocabulary size.</p>
+
+<p>Also, Phi-3-mini has “only” 3.8 billion parameters, which is less than half the size of Llama 3 8B.</p>
+
+<p>So, What is the secret sauce? According to the technical report, it’s dataset quality over quantity: “heavily filtered web data and synthetic data”.</p>
+
+<p>The paper didn’t go into too much detail regarding the data curation, but it largely follows the recipe used for previous Phi models. <a href="https://magazine.sebastianraschka.com/p/ahead-of-ai-12-llm-businesses">I wrote more about Phi models a few months ago here</a>.</p>
+
+<p>As of this writing, people are still unsure whether Phi-3 is really as good as promised. For instance, many people I talked to noted that Phi-3 is much worse than Llama 3 for non-benchmark tasks.</p>
+
+
+      <h3 id="14-conclusion">
+        
+        
+          1.4 Conclusion <a href="#14-conclusion"></a>
+        
+        
+      </h3>
+    
+
+<p>Based on the three major releases described above, this has been an exceptional month for openly available LLMs. And I haven’t even talked about my favorite model, OpenELM, which is discussed in the next section.</p>
+
+<p>Which model should we use in practice? I think all three models above are attractive for different reasons. Mixtral has a lower active-parameter count than Llama 3 70B but still maintains a pretty good performance level. Phi-3 3.8B may be very appealing for mobile devices; according to the authors, a quantized version of it can run on an iPhone 14. And Llama 3 8B might be the most interesting all-rounder for fine-tuning since it can be comfortably fine-tuned on a single GPU when using LoRA.</p>
+
+
+      <h2 id="2-openelm-an-efficient-language-model-family-with-open-source-training-and-inference-framework">
+        
+        
+          2. OpenELM: An Efficient Language Model Family with Open-source Training and Inference Framework <a href="#2-openelm-an-efficient-language-model-family-with-open-source-training-and-inference-framework"></a>
+        
+        
+      </h2>
+    
+
+<p><a href="https://arxiv.org/abs/2404.14619">OpenELM: An Efficient Language Model Family with Open-source Training and Inference Framework</a> is the latest LLM model suite and paper shared by researchers at Apple, aiming to provide small LLMs for deployment on mobile devices.</p>
+
+<p>Similar to the <a href="https://magazine.sebastianraschka.com/p/research-papers-in-february-2024?utm_source=profile&amp;utm_medium=reader2">OLMo</a>, it’s refreshing to see an LLM paper that shares details discussing the architecture, training methods, and training data.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>Comparison between OpenELM and other open-source LLMs that share datasets, code, and weights (there are not many out there that are similarly open). Annotated table from OpenELM paper, https://arxiv.org/abs/2404.14619
+</figcaption>
+
+<p>Let’s start with the most interesting tidbits:</p>
+
+<ul>
+  <li>OpenELM comes in 4 relatively small and convenient sizes: 270M, 450M, 1.1B, and 3B</li>
+  <li>For each size, there’s also an instruct-version available trained with <a href="https://arxiv.org/abs/2309.06657">rejection sampling</a> and <a href="https://magazine.sebastianraschka.com/i/142924793/rlhf-vs-direct-preference-optimization-dpo">direct preference optimization</a></li>
+  <li>OpenELM performs slightly better than OLMo even though it’s trained on 2x fewer tokens</li>
+  <li>The main architecture tweak is a layer-wise scaling strategy</li>
+</ul>
+
+
+      <h3 id="21-architecture-details">
+        
+        
+          2.1 Architecture details <a href="#21-architecture-details"></a>
+        
+        
+      </h3>
+    
+
+<p>Besides the layer-wise scaling strategy (more details later), the overall architecture settings and hyperparameter configuration are relatively similar to other LLMs like OLMo and Llama, as summarized in the figure below.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>Architecture and hyperparameter comparison between OpenELM, the smallest OLMo model, and the smallest Llama 2 model. Annotated table from OpenELM paper, https://arxiv.org/abs/2404.14619.</figcaption>
+
+
+      <h3 id="22-training-dataset">
+        
+        
+          2.2 Training dataset <a href="#22-training-dataset"></a>
+        
+        
+      </h3>
+    
+
+<p>Sharing details is different from explaining them as research papers aimed to do when I was a student. For instance, they sampled a relatively small subset of 1.8T tokens from various public datasets (<a href="https://arxiv.org/abs/2306.01116">RefinedWeb</a>, <a href="https://github.com/togethercomputer/RedPajama-Data">RedPajama</a>, <a href="https://arxiv.org/abs/2101.00027">The PILE</a>, and <a href="https://arxiv.org/abs/2402.00159">Dolma</a>). This subset was 2x smaller than Dolma, which was used for training OLMo. But what was the rationale for this subsampling, and what were the sampling criteria?</p>
+
+<p>One of the authors kindly followed up with me on that saying “Regarding dataset: We did not have any rationale behind dataset sampling, except we wanted to use public datasets of about 2T tokens (following LLama2).”</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>Number of tokens used for training OpenELM vs the original number of tokens in the dataset (note that the precise token number depends on the tokenizer used). Annotated table from OpenELM paper, https://arxiv.org/abs/2404.14619.</figcaption>
+
+
+      <h3 id="23-layer-wise-scaling">
+        
+        
+          2.3 Layer-wise scaling <a href="#23-layer-wise-scaling"></a>
+        
+        
+      </h3>
+    
+
+<p>The layer-wise scaling strategy (adopted from the <a href="https://arxiv.org/abs/2008.00623">DeLighT: Deep and Light-weight Transformer</a> paper) is very interesting. Essentially, the researchers gradually widen the layers from the early to the later transformer blocks. In particular, keeping the head size constant, the researchers increase the number of heads in the attention module. They also scale the hidden dimension of the feed-forward module, as illustrated in the figure below.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>LLM architecture based on my <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch">Build a Large Language Model from Scratch</a> book.</figcaption>
+
+<p>I wish there was an ablation study training an LLM with and without the layer-wise scaling strategy on the same dataset. But those experiments are expensive, and I can understand why it wasn’t done.</p>
+
+<p>However, we can find ablation studies in the <a href="https://arxiv.org/abs/2008.00623">DeLighT: Deep and Light-weight Transformer</a> paper that first introduced the layer-wise scaling on a smaller dataset based on the original encoder-decoder architecture, as shown below.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>A comparison between standard transformer blocks and transformer-blocks with layer-wise (block-wise) scaling from the DeLighT paper, https://arxiv.org/abs/2008.00623.</figcaption>
+
+
+      <h3 id="24-lora-vs-dora">
+        
+        
+          2.4 LoRA vs DoRA <a href="#24-lora-vs-dora"></a>
+        
+        
+      </h3>
+    
+
+<p>An interesting bonus I didn’t expect was that the researchers compared LoRA and DoRA (<a href="https://magazine.sebastianraschka.com/p/lora-and-dora-from-scratch">which I discussed a few weeks ago</a>) for parameter-efficient finetuning! It turns out that there wasn’t a noticeable difference between the two methods, though.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>Modeling performance comparison between two parameter-efficient finetuning methods: LoRA and DoRA. Annotated table from OpenELM paper, https://arxiv.org/abs/2404.14619.</figcaption>
+
+
+      <h3 id="25-conclusion">
+        
+        
+          2.5 Conclusion <a href="#25-conclusion"></a>
+        
+        
+      </h3>
+    
+
+<p>While the paper doesn’t answer any research questions, it’s a great, transparent write-up of the LLM implementation details. The layer-wise scaling strategy might be something that we could see more often in LLMs from now on. Also, the paper is only one part of the release. For further details, Apple also shared the <a href="https://github.com/apple/corenet/tree/main/mlx_examples/open_elm">OpenELM code on GitHub</a>.</p>
+
+<p>Anyways, great work, and big kudos to the researchers (and Apple) for sharing!</p>
+
+
+      <h2 id="3-is-dpo-superior-to-ppo-for-llm-alignment-a-comprehensive-study">
+        
+        
+          3. Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study <a href="#3-is-dpo-superior-to-ppo-for-llm-alignment-a-comprehensive-study"></a>
+        
+        
+      </h2>
+    
+
+<p><a href="https://arxiv.org/abs/2404.10719"><em>Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study</em></a> finally answers one of the key questions I’ve been raising in previous months.</p>
+
+<p>Let’s start with a brief overview before diving into the results: Both PPO (proximal policy optimization) and DPO (direct preference optimization) are popular methods for aligning LLMs via reinforcement learning with human feedback (RLHF).</p>
+
+<p>RLHF is a key component of LLM development, and it’s used to align LLMs with human preferences, for example, to improve the safety and helpfulness of LLM-generated responses.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>The typical LLM training lifecycle</figcaption>
+
+<p>For a more detailed explanation and comparison, also see the <em>Evaluating Reward Modeling for Language Modeling section</em> in my <a href="https://magazine.sebastianraschka.com/p/tips-for-llm-pretraining-and-evaluating-rms">Tips for LLM Pretraining and Evaluating Reward Models</a> article that I shared last month.</p>
+
+
+      <h3 id="31-what-are-rlhf-ppo-and-dpo">
+        
+        
+          3.1 What are RLHF-PPO and DPO? <a href="#31-what-are-rlhf-ppo-and-dpo"></a>
+        
+        
+      </h3>
+    
+
+<p>RLHF-PPO, the original LLM alignment method, has been the backbone of OpenAI’s <a href="https://arxiv.org/abs/2203.02155">InstructGPT</a> and the LLMs deployed in ChatGPT. However, the landscape has shifted in recent months with the emergence of DPO-finetuned LLMs, which have made a significant impact on public leaderboards. This surge in popularity can be attributed to DPO’s reward-free alternative, which is notably easier to use: Unlike PPO, DPO doesn’t require training a separate reward model but uses a classification-like objective to update the LLM directly.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>Excerpt from <a href="https://magazine.sebastianraschka.com/p/tips-for-llm-pretraining-and-evaluating-rms">Tips for LLM Pretraining and Evaluating Reward Models</a>.</figcaption>
+
+<p>Today, most LLMs on top of public leaderboards have been trained with DPO rather than PPO. Unfortunately, though, there have not been any direct head-to-head comparisons where the same model was trained with either PPO or DPO using the same dataset until this new paper came along.</p>
+
+
+      <h3 id="32-ppo-is-generally-better-than-dpo">
+        
+        
+          3.2 PPO is generally better than DPO <a href="#32-ppo-is-generally-better-than-dpo"></a>
+        
+        
+      </h3>
+    
+
+<p><a href="https://arxiv.org/abs/2404.10719"><em>Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study</em></a> is a well-written paper with lots of experiments and results, but the main takeaways are that PPO is generally better than DPO, and DPO suffers more heavily from out-of-distribution data.</p>
+
+<p>Here, out-of-distribution data means that the LLM has been previously trained on instruction data (using supervised finetuning) that is different from the preference data for DPO. For example, an LLM has been trained on the general Alpaca dataset before being DPO-finetuned on a different dataset with preference labels. (One way to improve DPO on out-of-distribution data is to add a supervised instruction-finetuning round on the preference dataset before following up with DPO finetuning).</p>
+
+<p>The main findings are summarized in the figure below.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>Annotated table from the "Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study" (https://arxiv.org/abs/2404.10719) paper.</figcaption>
+
+<p>In addition to the main results above, the paper includes several additional experiments and ablation studies that I recommend checking out if you are interested in this topic.</p>
+
+
+      <h3 id="33-best-practices">
+        
+        
+          3.3 Best practices <a href="#33-best-practices"></a>
+        
+        
+      </h3>
+    
+
+<p>Furthermore, interesting takeaways from this paper include best-practice recommendations when using DPO and PPO.</p>
+
+<p>For instance, if you use DPO, make sure to perform supervised finetuning on the preference data first. Also, iterative DPO, which involves labeling additional data with an existing reward model, is better than DPO on the existing preference data.</p>
+
+<p>If you use PPO, the key success factors are large batch sizes, advantage normalization, and parameter updates via an exponential moving average.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption>An excerpt of a preference dataset (examples taken from the Orca dataset (https://huggingface.co/datasets/Intel/orca_dpo_pairs)</figcaption>
+
+
+      <h3 id="34-conclusion">
+        
+        
+          3.4 Conclusion <a href="#34-conclusion"></a>
+        
+        
+      </h3>
+    
+
+<p>Based on this paper’s results, PPO seems superior to DPO if used correctly. However, given that DPO is more straightforward to use and implement, I expect DPO to remain a popular go-to method.</p>
+
+<p>A good practical recommendation may be to use PPO if you have ground truth reward labels (so you don’t have to pretrain your own reward model) or if you can download an in-domain reward model. Otherwise, use DPO for simplicity.</p>
+
+<p>Also, based on what we know from the LLama 3 blog post, we don’t have to decide whether to use PPO or DPO, but we can use both! For instance, the recipe behind Llama 3 has been the following pipeline: Pretraining → supervised finetuning → rejection sampling → PPO → DPO. (I am hoping the Llama 3 developers will share a paper with more details soon!)</p>
+
+<hr>
+
+
+      <h3 id="understanding-llms-really-well">
+        
+        
+          Understanding LLMs (really well) <a href="#understanding-llms-really-well"></a>
+        
+        
+      </h3>
+    
+
+<p>One of the best ways to understand LLMs is to code one from scratch!</p>
+
+<p>If you are interested in learning more about LLMs, I am covering, implementing, and explaining the whole LLM lifecycle in my <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch">“Build a Large Language Model from Scratch” book</a>, which is currently available at a discounted price before it is published in Summer 2024.</p>
+
+<p>Chapter 5, which covers the pretraining, was just released 2 weeks ago. If this sounds interesting and useful to you, you can take a sneak peak at the code on GitHub <a href="https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/01_main-chapter-code/ch05.ipynb">here</a>.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption><a href="https://www.manning.com/books/build-a-large-language-model-from-scratch">Build a Large Language Model from Scratch</a> book.</figcaption>
+
+<hr>
+
+
+      <h2 id="4-other-interesting-research-papers-in-april">
+        
+        
+          4. Other Interesting Research Papers In April <a href="#4-other-interesting-research-papers-in-april"></a>
+        
+        
+      </h2>
+    
+
+<p>Below is a selection of other interesting papers I stumbled upon this month. Even compared to strong previous months, I think that LLM research in April has been really exceptional.</p>
+
+<p><strong>KAN: Kolmogorov–Arnold Networks</strong> by Liu, Wang, Vaidya, <em>et al.</em> (30 Apr), <a href="https://arxiv.org/abs/2404.19756">https://arxiv.org/abs/2404.19756</a></p>
+
+<ul>
+  <li>Kolmogorov-Arnold Networks (KANs), which replace linear weight parameters with learnable spline-based functions on edges and lack fixed activation functions, seem to offer an attractive new alternative to Multi-Layer Perceptrons, which they outperform in accuracy, neural scaling, and interpretability.</li>
+</ul>
+
+<p><strong>When to Retrieve: Teaching LLMs to Utilize Information Retrieval Effectively</strong> by Labruna, Ander Campos, and Azkune (30 Apr), <a href="https://arxiv.org/abs/2404.19705">https://arxiv.org/abs/2404.19705</a></p>
+
+<ul>
+  <li>This paper proposes a custom training approach for LLMs that teaches them to either utilize their parametric memory or an external information retrieval system via a special token <ret> when it doesn't know the answer.</ret></li>
+</ul>
+
+<p><strong>A Primer on the Inner Workings of Transformer-based Language Models</strong> by Ferrando, Sarti, Bisazza, and Costa-jussa (30 Apr), <a href="https://arxiv.org/abs/2405.00208">https://arxiv.org/abs/2405.00208</a></p>
+
+<ul>
+  <li>This primer offers a succinct technical overview of the techniques used to interpret Transformer-based, decoder-only language models</li>
+</ul>
+
+<p><strong>RAG and RAU: A Survey on Retrieval-Augmented Language Model in Natural Language Processing</strong> by Hu and Lu (30 Apr), <a href="https://arxiv.org/abs/2404.19543">https://arxiv.org/abs/2404.19543</a></p>
+
+<ul>
+  <li>This survey provides a comprehensive view of retrieval-augmented LLMs, detailing their components, structures, applications, and evaluation methods</li>
+</ul>
+
+<p><strong>Better &amp; Faster Large Language Models via Multi-token Prediction</strong> by Gloeckle, Idrissi, Rozière, <em>et al.</em> (30 Apr), <a href="https://arxiv.org/abs/2404.19737">https://arxiv.org/abs/2404.19737</a></p>
+
+<ul>
+  <li>This paper suggests that training LLMs to predict multiple future tokens simultaneously rather than just the next token not only improves sample efficiency but also improves performance on generative tasks.</li>
+</ul>
+
+<p><strong>LoRA Land: 310 Fine-tuned LLMs that Rival GPT-4, A Technical Report</strong> by Zhao, Wang, Abid, <em>et al.</em> (28 Apr), <a href="https://arxiv.org/abs/2405.00732">https://arxiv.org/abs/2405.00732</a></p>
+
+<ul>
+  <li>LoRA is one of the most wide parameter-efficient finetuning techniques, and this study finds that 4-bit LoRA finetuned models significantly outperform both their base models and GPT-4.</li>
+</ul>
+
+<p><strong>Make Your LLM Fully Utilize the Context</strong>, An, Ma, Lin <em>et al.</em> (25 Apr), <a href="https://arxiv.org/abs/2404.16811">https://arxiv.org/abs/2404.16811</a></p>
+
+<ul>
+  <li>The study introduces FILM-7B, a model trained using an information-intensive approach to address the “lost-in-the-middle” challenge, which describes the problem where LLMs are not able to retrieve information if it’s not at the beginning or end of the context window.</li>
+</ul>
+
+<p><strong>Layer Skip: Enabling Early Exit Inference and Self-Speculative Decoding</strong> by Elhoushi, Shrivastava, Liskovich, <em>et al.</em>(25 Apr), <a href="https://arxiv.org/abs/2404.16710">https://arxiv.org/abs/2404.16710</a></p>
+
+<ul>
+  <li>LayerSkip can accelerate the inference of LLMs by using layer dropout and early exit loss during training, and implementing self-speculative decoding during inference.</li>
+</ul>
+
+<p><strong>Retrieval Head Mechanistically Explains Long-Context Factuality</strong> by Wu, Wang, Xiao, <em>et al.</em> (24 Apr), <a href="https://arxiv.org/abs/2404.15574">https://arxiv.org/abs/2404.15574</a></p>
+
+<ul>
+  <li>This paper explores how transformer-based models with long-context capabilities use specific “retrieval heads” in their attention mechanisms to effectively retrieve information, revealing that these heads are universal, sparse, intrinsic, dynamically activated, and crucial for tasks requiring reference to prior context or reasoning.</li>
+</ul>
+
+<p><strong>Graph Machine Learning in the Era of Large Language Models (LLMs)</strong> by Fan, Wang, Huang, <em>et al.</em> (23 Apr), <a href="https://arxiv.org/abs/2404.14928">https://arxiv.org/abs/2404.14928</a></p>
+
+<ul>
+  <li>This survey paper describes, among others, how Graph Neural Networks and LLMs are increasingly integrated to improve graph machine learning and reasoning capabilities.</li>
+</ul>
+
+<p><strong>NExT: Teaching Large Language Models to Reason about Code Execution</strong> by Ni, Allamanis, Cohan, <em>et al.</em> (23 Apr), <a href="https://arxiv.org/abs/2404.14662">https://arxiv.org/abs/2404.14662</a></p>
+
+<ul>
+  <li>NExT is a method to improve how LLMs understand and fix code by teaching them to analyze program execution.</li>
+</ul>
+
+<p><strong>Multi-Head Mixture-of-Experts</strong> by Wu, Huang, Wang, and Wei (23 Apr), <a href="https://arxiv.org/abs/2404.15045">https://arxiv.org/abs/2404.15045</a></p>
+
+<ul>
+  <li>The proposed Multi-Head Mixture-of-Experts (MH-MoE) model addresses Sparse Mixtures of Experts’ issues of low expert activation and poor handling of multiple semantic concepts by introducing a multi-head mechanism that splits tokens into sub-tokens processed by diverse experts in parallel.</li>
+</ul>
+
+<p><strong>A Survey on Self-Evolution of Large Language Models</strong> by Tao, Lin, Chen, <em>et al.</em> (22 Apr), <a href="https://arxiv.org/abs/2404.14662">https://arxiv.org/abs/2404.14662</a></p>
+
+<ul>
+  <li>This work presents a comprehensive survey of self-evolution approaches in LLMs, proposing a conceptual framework for LLM self-evolution and identifying challenges and future directions to enhance these models’ capabilities.</li>
+</ul>
+
+<p><strong>OpenELM: An Efficient Language Model Family with Open-source Training and Inference Framework</strong> by Mehta, Sekhavat, Cao <em>et al.</em> (22 Apr), <a href="https://arxiv.org/abs/2404.14619">https://arxiv.org/abs/2404.14619</a></p>
+
+<ul>
+  <li>OpenELM by researchers from Apple is a LLM suite by Apple in the spirit of OLMo (a model family I covered previously), including full training and evaluation frameworks, logs, checkpoints, configurations, and other artifacts for reproducible research.</li>
+</ul>
+
+<p><strong>Phi-3 Technical Report: A Highly Capable Language Model Locally on Your Phone</strong> by Abdin, Jacobs, Awan, <em>et al.</em>(Apr 22), <a href="https://arxiv.org/abs/2404.14219">https://arxiv.org/abs/2404.14219</a></p>
+
+<ul>
+  <li>Phi-3-mini is a 3.8 billion parameter LLM trained on 3.3 trillion tokens that matches the performance of larger models like Mixtral 8x7B and GPT-3.5 according to benchmarks.</li>
+</ul>
+
+<p><strong>How Good Are Low-bit Quantized LLaMA3 Models? An Empirical Study</strong> by Huang, Ma, and Qin (22 Apr), <a href="https://arxiv.org/abs/2404.14047">https://arxiv.org/abs/2404.14047</a></p>
+
+<ul>
+  <li>This empirical study finds that Meta’s LLaMA3 model reveals significant performance degradation at ultra-low bit-widths.</li>
+</ul>
+
+<p><strong>The Instruction Hierarchy: Training LLMs to Prioritize Privileged Instructions</strong> by Wallace, Xiao, Leike, <em>et al.</em> (19 Apr), <a href="https://arxiv.org/abs/2404.13208">https://arxiv.org/abs/2404.13208</a></p>
+
+<ul>
+  <li>This study introduces an instruction hierarchy for LLMs to prioritize trusted prompts, enhancing their robustness against attacks without compromising their standard capabilities.</li>
+</ul>
+
+<p><strong>OpenBezoar: Small, Cost-Effective and Open Models Trained on Mixes of Instruction Data</strong> by Dissanayake, Lowe, Gunasekara, and Ratnayake (18 Apr), <a href="https://arxiv.org/abs/2404.12195">https://arxiv.org/abs/2404.12195</a></p>
+
+<ul>
+  <li>The research finetunes the OpenLLaMA 3Bv2 model using synthetic data from Falcon-40B and techniques like RLHF and DPO, achieving top performance in LLM tasks at a reduced model size by systematically filtering and finetuning data.</li>
+</ul>
+
+<p><strong>Toward Self-Improvement of LLMs via Imagination, Searching, and Criticizing</strong> by Tian, Peng, Song, <em>et al.</em> (18 Apr), <a href="https://arxiv.org/abs/2404.12253">https://arxiv.org/abs/2404.12253</a></p>
+
+<ul>
+  <li>Despite the impressive capabilities of LLMs in various tasks, they struggle with complex reasoning and planning; the proposed AlphaLLM integrates Monte Carlo Tree Search to create a self-improving loop, enhancing LLMs’ performance in reasoning tasks without additional data annotations.</li>
+</ul>
+
+<p><strong>When LLMs are Unfit Use FastFit: Fast and Effective Text Classification with Many Classes</strong> by Yehudai and Bendel (18 Apr), <a href="https://arxiv.org/abs/2404.12365">https://arxiv.org/abs/2404.12365</a></p>
+
+<ul>
+  <li>FastFit is a new Python package that rapidly and accurately handles few-shot classification for language tasks with many similar classes by integrating batch contrastive learning and token-level similarity scoring, showing a 3-20x increase in training speed and superior performance over other methods like SetFit and HF Transformers.</li>
+</ul>
+
+<p><strong>A Survey on Retrieval-Augmented Text Generation for Large Language Models</strong> by Huang and Huang (17 Apr), <a href="https://arxiv.org/abs/2404.10981">https://arxiv.org/abs/2404.10981</a></p>
+
+<ul>
+  <li>This survey article discusses how Retrieval-Augmented Generation (RAG) combines retrieval techniques and deep learning to improve LLMs by dynamically incorporating up-to-date information, categorizes the RAG process, reviews recent developments, and proposes future research directions</li>
+</ul>
+
+<p><strong>How Faithful Are RAG Models? Quantifying the Tug-of-War Between RAG and LLMs’ Internal Prior</strong> by Wu, Wu, and Zou (16 Apr), <a href="https://arxiv.org/abs/2404.10198">https://arxiv.org/abs/2404.10198</a></p>
+
+<ul>
+  <li>Providing correct retrieved information generally corrects errors in large language models like GPT-4, but incorrect information is often repeated unless countered by strong internal knowledge.</li>
+</ul>
+
+<p><strong>Scaling (Down) CLIP: A Comprehensive Analysis of Data, Architecture, and Training Strategies</strong> by Li, Xie, and Cubuk (16 Apr), <a href="https://arxiv.org/abs/2404.08197">https://arxiv.org/abs/2404.08197</a></p>
+
+<ul>
+  <li>This paper explores the scaling down of Contrastive Language-Image Pretraining (CLIP) to fit limited computational budgets, demonstrating that high-quality, smaller datasets often outperform larger, lower-quality ones, and that smaller ViT models are optimal for these datasets.</li>
+</ul>
+
+<p><strong>Is DPO Superior to PPO for LLM Alignment? A Comprehensive Study</strong> by Xu, Fu, Gao <em>et al.</em> (16 Apr), <a href="https://arxiv.org/abs/2404.10719">https://arxiv.org/abs/2404.10719</a></p>
+
+<ul>
+  <li>This research explores the effectiveness of Direct Preference Optimization (DPO) and Proximal Policy Optimization (PPO) in Reinforcement Learning from Human Feedback (RLHF), finding that PPO can to surpass all other alternative methods in all cases if applied properly.</li>
+</ul>
+
+<p><strong>Learn Your Reference Model for Real Good Alignment</strong> by Gorbatovski, Shaposhnikov, Malakhov, <em>et al.</em> (15 Apr), <a href="https://arxiv.org/abs/2404.09656">https://arxiv.org/abs/2404.09656</a></p>
+
+<ul>
+  <li>The research highlights that the new alignment method, Trust Region Direct Preference Optimization (TR-DPO), which updates the reference policy during training, outperforms existing techniques by improving model quality across multiple parameters, demonstrating up to a 19% improvement on specific datasets.</li>
+</ul>
+
+<p><strong>Chinchilla Scaling: A Replication Attempt</strong> by Besiroglu, Erdil, Barnett, and You (15 Apr), <a href="https://arxiv.org/abs/2404.10102">https://arxiv.org/abs/2404.10102</a></p>
+
+<ul>
+  <li>The authors attempt to replicate one of Hoffmann et al.’s methods for estimating compute-optimal scaling laws, finding inconsistencies and implausible results compared to the original estimates from other methods.</li>
+</ul>
+
+<p><strong>State Space Model for New-Generation Network Alternative to Transformers: A Survey</strong> by Wang, Wang, Ding, <em>et al.</em> (15 Apr), <a href="https://arxiv.org/abs/2404.09516">https://arxiv.org/abs/2404.09516</a></p>
+
+<ul>
+  <li>The paper provides a comprehensive review and experimental analysis of State Space Models (SSM) as an efficient alternative to the Transformer architecture, detailing the principles of SSM, its applications across diverse domains, and offering statistical comparisons to demonstrate its advantages and potential areas for future research.</li>
+</ul>
+
+<p><strong>LLM In-Context Recall is Prompt Dependent</strong> by Machlab and Battle (13 Apr), <a href="https://arxiv.org/abs/2404.08865">https://arxiv.org/abs/2404.08865</a></p>
+
+<ul>
+  <li>The research assesses the in-context recall ability of various LLMs by embedding a factoid within a block of text and evaluating the models’ performance in retrieving this information under different conditions, revealing that performance is influenced by both the prompt content and potential biases in training data.</li>
+</ul>
+
+<p><strong>Dataset Reset Policy Optimization for RLHF</strong> by Chang, Zhan, Oertell, et al. (12 Apr), <a href="https://arxiv.org/abs/2404.08495">https://arxiv.org/abs/2404.08495</a></p>
+
+<ul>
+  <li>This work introduces Dataset Reset Policy Optimization (DR-PO), a new Reinforcement Learning from Human Preference-based feedback (RLHF) algorithm that enhances training by integrating an offline preference dataset directly into the online policy training.</li>
+</ul>
+
+<p><strong>Pre-training Small Base LMs with Fewer Tokens</strong> by Sanyal, Sanghavi, and Dimakis (12 Apr), <a href="https://arxiv.org/abs/2404.08634">https://arxiv.org/abs/2404.08634</a></p>
+
+<ul>
+  <li>The study introduces “Inheritune,” a method for developing smaller base language models by inheriting a few transformer blocks from larger models and training on a tiny fraction of the larger model’s data, demonstrating that these smaller models perform comparably to larger models despite using significantly less training data and resources.</li>
+</ul>
+
+<p><strong>Rho-1: Not All Tokens Are What You Need</strong> by Lin, Gou, Gong <em>et al.</em>, (11 Apr), <a href="https://arxiv.org/abs/2404.07965">https://arxiv.org/abs/2404.07965</a></p>
+
+<ul>
+  <li>Rho-1 is a new language model that is trained selectively on tokens that demonstrate higher excess loss as opposed to traditional next-token prediction methods.</li>
+</ul>
+
+<p><strong>Best Practices and Lessons Learned on Synthetic Data for Language Models</strong> by Liu, Wei, Liu, <em>et al.</em> (11 Apr), <a href="https://arxiv.org/abs/2404.07503">https://arxiv.org/abs/2404.07503</a></p>
+
+<ul>
+  <li>This paper reviews synthetic data research in the context of LLMs.</li>
+</ul>
+
+<p><strong>JetMoE: Reaching Llama2 Performance with 0.1M Dollars</strong>, Shen, Guo, Cai, and Qin (11 Apr), <a href="https://arxiv.org/abs/2404.07413">https://arxiv.org/abs/2404.07413</a></p>
+
+<ul>
+  <li>JetMoE-8B, an 8-billion parameter, sparsely-gated Mixture-of-Experts model trained on 1.25 trillion tokens for under $100,000, outperforms more expensive models such as Llama2-7B by using only 2 billion parameters per input token and “only” 30,000 GPU hours.</li>
+</ul>
+
+<p><strong>LLoCO: Learning Long Contexts Offline</strong> by Tan, Li, Patil <em>et al.</em> (11 Apr), <a href="https://arxiv.org/abs/2404.07979">https://arxiv.org/abs/2404.07979</a></p>
+
+<ul>
+  <li>LLoCO is a method combining context compression, retrieval, and parameter-efficient finetuning with LoRA to effectively expand the context window of a LLaMA2-7B model to handle up to 128k tokens</li>
+</ul>
+
+<p><strong>Leave No Context Behind: Efficient Infinite Context Transformers with Infini-attention</strong> by Munkhdalai, Faruqui, and Gopal (10 Apr), <a href="https://arxiv.org/abs/2404.07143">https://arxiv.org/abs/2404.07143</a></p>
+
+<ul>
+  <li>This research introduces a method to scale transformer-based LLMs for processing infinitely long inputs efficiently by combining several attention strategies within a single transformer block for tasks with extensive contextual demands.</li>
+</ul>
+
+<p><strong>Adapting LLaMA Decoder to Vision Transformer</strong> by Wang, Shao, Chen, <em>et al.</em> (10 Apr), <a href="https://arxiv.org/abs/2404.06773">https://arxiv.org/abs/2404.06773</a></p>
+
+<ul>
+  <li>This research adapts decoder-only transformer-based LLMs like Llama for computer vision by modifying a standard vision transformer (ViT) with techniques like a post-sequence class token and a soft mask strategy.</li>
+</ul>
+
+<p><strong>LLM2Vec: Large Language Models Are Secretly Powerful Text Encoders</strong> by BehnamGhader, Adlakha, Mosbach, <em>et al.</em> (9 Apr), <a href="https://arxiv.org/abs/2404.05961">https://arxiv.org/abs/2404.05961</a></p>
+
+<ul>
+  <li>This research introduces a simple, unsupervised approach to transform decoder-style LLMs (like GPT and Llama) into strong text encoders via 1) disabling the causal attention mask, 2) masked next token prediction, and 3) unsupervised contrastive learning.</li>
+</ul>
+
+<p><strong>Elephants Never Forget: Memorization and Learning of Tabular Data in Large Language Models</strong> by Bordt, Nori, Rodrigues, <em>et al</em>. (9 Apr), <a href="https://arxiv.org/abs/2404.06209">https://arxiv.org/abs/2404.06209</a></p>
+
+<ul>
+  <li>This study highlights critical issues of data contamination and memorization in LLMs, showing that LLMs often memorize popular tabular datasets and perform better on datasets seen during training, which leads to overfitting</li>
+</ul>
+
+<p><strong>MiniCPM: Unveiling the Potential of Small Language Models with Scalable Training Strategies</strong> by Hu, Tu, Han, <em>et al.</em> (9 Apr), <a href="https://arxiv.org/abs/2404.06395">https://arxiv.org/abs/2404.06395</a></p>
+
+<ul>
+  <li>This research introduces new resource-efficient “small” language models in the 1.2-2.4 billion parameter range, along with techniques such as the warmup-stable-decay learning rate scheduler, which is helpful for continuous pretraining and domain adaptation.</li>
+</ul>
+
+<p><strong>CodecLM: Aligning Language Models with Tailored Synthetic Data</strong> by Wang, Li, Perot, <em>et al</em>. (8 Apr), <a href="https://arxiv.org/abs/2404.05875">https://arxiv.org/abs/2404.05875</a></p>
+
+<ul>
+  <li>CodecLM introduces a framework using encode-decode principles and LLMs as codecs to adaptively generate high-quality synthetic data for aligning LLMs with various instruction distributions to improve their ability to follow complex, diverse instructions.</li>
+</ul>
+
+<p><strong>Eagle and Finch: RWKV with Matrix-Valued States and Dynamic Recurrence</strong> by Peng, Goldstein, Anthony, <em>et al.</em> (8 Apr), <a href="https://arxiv.org/abs/2404.05892">https://arxiv.org/abs/2404.05892</a></p>
+
+<ul>
+  <li>Eagle and Finch are new sequence models based on the RWKV architecture, introducing features like multi-headed matrix states and dynamic recurrence.</li>
+</ul>
+
+<p><strong>AutoCodeRover: Autonomous Program Improvement</strong> by Zhang, Ruan, Fan, and Roychoudhury (8 Apr), <a href="https://arxiv.org/abs/2404.05427">https://arxiv.org/abs/2404.05427</a></p>
+
+<ul>
+  <li>AutoCodeRover is an automated approach utilizing LLMs and advanced code search to solve GitHub issues by modifying software programs.</li>
+</ul>
+
+<p><strong>Sigma: Siamese Mamba Network for Multi-Modal Semantic Segmentation</strong> by Wan, Wang, Yong, <em>et al.</em> (5 Apr), <a href="https://arxiv.org/abs/2404.04256">https://arxiv.org/abs/2404.04256</a></p>
+
+<ul>
+  <li>Sigma is an approach to multi-modal semantic segmentation using a Siamese Mamba (structure state space model) network, which combines different modalities like thermal and depth with RGB and presents an alternative to CNN- and vision transformer-based approaches.</li>
+</ul>
+
+<p><strong>Verifiable by Design: Aligning Language Models to Quote from Pre-Training Data</strong> by Zhang, Marone, Li, <em>et al.</em> (5 Apr 2024), <a href="https://arxiv.org/abs/2404.03862">https://arxiv.org/abs/2404.03862</a></p>
+
+<ul>
+  <li>Quote-Tuning improves the trustworthiness and accuracy of large language models by training them to increase verbatim quoting from reliable sources by 55% to 130% compared to standard models.</li>
+</ul>
+
+<p><strong>ReFT: Representation Finetuning for Language Models</strong> by Wu, Arora, Wang, et al. (5 Apr), <a href="https://arxiv.org/abs/2404.03592">https://arxiv.org/abs/2404.03592</a></p>
+
+<ul>
+  <li>This paper introduces Representation Finetuning (ReFT) methods, analogous to parameter-efficient finetuning (PEFT), for adapting large models efficiently by modifying only their hidden representations rather than the full set of parameters.</li>
+</ul>
+
+<p><strong>CantTalkAboutThis: Aligning Language Models to Stay on Topic in Dialogues</strong> by Sreedhar, Rebedea, Ghosh, and Parisien (4 Apr), <a href="https://arxiv.org/abs/2404.03820">https://arxiv.org/abs/2404.03820</a></p>
+
+<ul>
+  <li>This paper introduces the CantTalkAboutThis dataset, which is designed to help LLMs stay on topic during task-oriented conversations (it includes synthetic dialogues across various domains, featuring distractor turns to challenge and train models to resist topic diversion).</li>
+</ul>
+
+<p><strong>Training LLMs over Neurally Compressed Text</strong> by Lester, Lee, Alemi, <em>et al.</em> (4 Apr), <a href="https://arxiv.org/abs/2404.03626">https://arxiv.org/abs/2404.03626</a></p>
+
+<ul>
+  <li>This paper introduces a method for training LLMs on neurally compressed text (text compressed by a small language model) using Equal-Info Windows, a technique that segments text into blocks of equal bit length,</li>
+</ul>
+
+<p><strong>Direct Nash Optimization: Teaching Language Models to Self-Improve with General Preferences</strong> by Andriushchenko, Croce, and Flammarion (4 Apr), <a href="https://arxiv.org/abs/2404.02151">https://arxiv.org/abs/2404.02151</a></p>
+
+<ul>
+  <li>This paper introduces Direct Nash Optimization (DNO), a post-training method for LLMs that uses preference feedback from an oracle to iteratively improve model performance as alternative to other reinforcement learning with human feedback (RLHF) approaches.</li>
+</ul>
+
+<p><strong>Cross-Attention Makes Inference Cumbersome in Text-to-Image Diffusion Models</strong> by Zhang, Liu, Xie, <em>et al.</em> (3 Apr), <a href="https://arxiv.org/abs/2404.02747">https://arxiv.org/abs/2404.02747</a></p>
+
+<ul>
+  <li>The study looks into how cross-attention functions in text-conditional diffusion models during inference, discovers that it stabilizes at a certain point, and finds that bypassing text inputs after this convergence point simplifies the process without compromising on output quality.</li>
+</ul>
+
+<p><strong>BAdam: A Memory Efficient Full Parameter Training Method for Large Language Models</strong> by Luo, Hengzu, and Li (3 Apr), <a href="https://arxiv.org/abs/2404.02827">https://arxiv.org/abs/2404.02827</a></p>
+
+<ul>
+  <li>BAdam is a memory-efficient optimizer that improves the efficiency of finetuning LLMs, which is also easy to use and comes with only one additional hyperparameter.</li>
+</ul>
+
+<p><strong>On the Scalability of Diffusion-based Text-to-Image Generation</strong> by Li, Zou, Wang, <em>et al.</em> (3 Apr), <a href="https://arxiv.org/abs/2404.02883">https://arxiv.org/abs/2404.02883</a></p>
+
+<ul>
+  <li>This study empirically investigates the scaling properties of diffusion-based text-to-image models by analyzing the effects of scaling denoising backbones and training sets, uncovering that the efficiency of cross-attention and transformer blocks significantly influences performance, and identifying strategies for enhancing text-image alignment and learning efficiency at lower costs.</li>
+</ul>
+
+<p><strong>Jailbreaking Leading Safety-Aligned LLMs with Simple Adaptive Attacks</strong> by Andriushchenko, Croce, and Flammarion (2 Apr), <a href="https://arxiv.org/abs/2404.02151">https://arxiv.org/abs/2404.02151</a></p>
+
+<ul>
+  <li>This study reveals that even the latest safety-focused LLMs can be easily jailbroken using adaptive techniques, achieving nearly 100% success across various models through methods like adversarial prompting, exploiting API vulnerabilities, and token search space restriction.</li>
+</ul>
+
+<p><strong>Emergent Abilities in Reduced-Scale Generative Language Models</strong> by Muckatira, Deshpande, Lialin, and Rumshisky (2 Apr), <a href="https://arxiv.org/abs/2404.02204">https://arxiv.org/abs/2404.02204</a></p>
+
+<ul>
+  <li>This study finds that very “small” LLMs (from 1 to 165 million parameters) can also exhibit emergent properties if the dataset for pretraining is scaled down and simplified.</li>
+</ul>
+
+<p><strong>Long-context LLMs Struggle with Long In-context Learning</strong> by Li, Zheng, Do, <em>et al.</em> (2 Apr), <a href="https://arxiv.org/abs/2404.02060">https://arxiv.org/abs/2404.02060</a></p>
+
+<ul>
+  <li>LIConBench, a new benchmark focusing on long in-context learning and extreme-label classification, reveals that while LLMs excel up to 20K tokens, their performance drops in longer sequences, with GPT-4 being an exception, highlighting a gap in processing extensive context-rich information.</li>
+</ul>
+
+<p><strong>Mixture-of-Depths: Dynamically Allocating Compute in Transformer-Based Language Models</strong> by Raposo, Ritter, Richard <em>et al.</em> (2 Apr), <a href="https://arxiv.org/abs/2404.02258">https://arxiv.org/abs/2404.02258</a></p>
+
+<ul>
+  <li>This research introduces a method for transformer-based language models to dynamically allocate computational resources (FLOPs) across different parts of an input sequence, optimizing performance and efficiency by selecting specific tokens for processing at each layer.</li>
+</ul>
+
+<p><strong>Diffusion-RWKV: Scaling RWKV-Like Architectures for Diffusion Models</strong> by Fei, Fan, Yu, et al. (6 Apr), <a href="https://arxiv.org/abs/2404.04478">https://arxiv.org/abs/2404.04478</a></p>
+
+<ul>
+  <li>This paper introduces Diffusion-RWKV, an adaptation of the RWKV architecture from NLP for diffusion models in image generation.</li>
+</ul>
+
+<p><strong>The Fine Line: Navigating Large Language Model Pretraining with Down-streaming Capability Analysis</strong> by Yang, Li, Niu, <em>et al.</em> (1 Apr), <a href="https://arxiv.org/abs/2404.01204">https://arxiv.org/abs/2404.01204</a></p>
+
+<ul>
+  <li>This research identifies early-stage capable of predicting the eventual LLMs, which is helpful analyzing LLMs during pretraining and improving the pretraining setup.</li>
+</ul>
+
+<p><strong>Bigger is not Always Better: Scaling Properties of Latent Diffusion Models</strong> by Mei, Tu, Delbracio, <em>et al.</em> (1 Apr), <a href="https://arxiv.org/abs/2404.01367">https://arxiv.org/abs/2404.01367</a></p>
+
+<ul>
+  <li>This study explores how the size of latent diffusion models affects sampling efficiency across different steps and tasks, revealing that smaller models often produce higher quality results within a given inference budget.</li>
+</ul>
+
+<p><strong>Do Language Models Plan Ahead for Future Tokens?</strong> by Wu, Morris, and Levine (1 Apr), <a href="https://arxiv.org/abs/2404.00859">https://arxiv.org/abs/2404.00859</a></p>
+
+<ul>
+  <li>The research paper finds empirical evidence that transformers anticipate future information during inference through “pre-caching” and “breadcrumbs” mechanisms.</li>
+</ul>
+
+<hr>
+
+
+      <h2 id="machine-learning-q-and-ai">
+        
+        
+          Machine Learning Q and AI <a href="#machine-learning-q-and-ai"></a>
+        
+        
+      </h2>
+    
+
+<p>If you are looking for a book that explains intermediate to advanced topics in machine learning and AI in a focused manner, you might like my book, “Machine Learning Q and AI.” The print version was just released two weeks ago!</p>
+
+<p><img src="data:application/octet-stream;base64," alt="img"></p>
+<figcaption><a href="https://www.amazon.com/Machine-Learning-AI-Essential-Questions/dp/1718503768">Machine Learning Q and AI book</a></figcaption>
+
+<p>Ahead of AI is a personal passion project that does not offer direct compensation, and I’d appreciate your support.</p>
+
+<p>If you had a chance to read the book, a review on Amazon would be really appreciated, too!</p>
+
+    </article></div>
+  </div>
+</body>
+</html>

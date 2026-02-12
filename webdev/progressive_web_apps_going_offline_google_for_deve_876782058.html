@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Progressive Web Apps: Going Offline | Google for Developers</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Progressive Web Apps: Going Offline | Google for Developers</h1>
+    <p><strong>URL:</strong> <a href="https://developers.google.com/web/fundamentals/codelabs/your-first-pwapp">https://developers.google.com/web/fundamentals/codelabs/your-first-pwapp</a></p>
+    <p><strong>Tags:</strong> webdev</p>
+    <p><strong>Bookmark ID:</strong> 876782058</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div duration="0" step="1" label="Começar a configuração">
+          
+          <h2 data-text="               2. Começar a configuração           " id="1">
+              2. Começar a configuração
+          </h2>
+          <p>Comece clonando ou fazendo o download do código inicial necessário para concluir este codelab:</p>
+
+
+<p>Se você clonar o repositório, verifique se está na ramificação <code dir="ltr" translate="no">starter</code>. O arquivo ZIP também contém o código dessa ramificação.</p>
+<p><strong>Essa base de código requer o Node.js 14 ou versão mais recente.</strong> Depois que você tiver o código disponível, execute <code dir="ltr" translate="no">npm ci</code> na linha de comando na pasta do código para instalar todas as dependências necessárias. Em seguida, execute <code dir="ltr" translate="no">npm start</code> para iniciar o servidor de desenvolvimento para o codelab.</p>
+<p>O arquivo <code dir="ltr" translate="no">README.md</code> do código-fonte fornece uma explicação para todos os arquivos distribuídos. Além disso, veja a seguir os principais arquivos com que você trabalhará ao longo deste codelab:</p>
+<h3 data-text="Arquivos principais" id="key-files" is-upgraded="">Arquivos principais</h3>
+<ul>
+<li><code dir="ltr" translate="no">js/main.js</code>: arquivo JavaScript principal do aplicativo</li>
+<li><code dir="ltr" translate="no">service-worker.js</code>: arquivo do service worker do aplicativo</li>
+</ul>
+
+
+        </div><div duration="13" step="3" label="Acesse a Internet">
+          
+          <h2 data-text="               4. Acesse a Internet           " id="3">
+              4. Acesse a Internet
+          </h2>
+          <p>É hora de adicionar um service worker básico. Isso acontecerá em duas etapas: registro do service worker e recursos do armazenamento em cache.</p>
+<h2 data-text="Registrar um service worker" id="register-a-service-worker" is-upgraded="">Registrar um service worker</h2>
+<p>Já existe um arquivo de service worker vazio. Portanto, para garantir que as alterações sejam exibidas, vamos registrá-lo no nosso app. Para fazer isso, adicione o seguinte código à parte superior do <code dir="ltr" translate="no">js/main.js</code>:</p>
+<pre translate="no" dir="ltr"><code language="language-js" translate="no" dir="ltr">import swURL from 'sw:../service-worker.js';
+
+// Register the service worker
+if ('serviceWorker' in navigator) {
+  // Wait for the 'load' event to not block other work
+  window.addEventListener('load', async () =&gt; {
+    // Try to register the service worker.
+    try {
+      const reg = await navigator.serviceWorker.register(swURL);
+      console.log('Service worker registered! 😎', reg);
+    } catch (err) {
+      console.log('😥 Service worker registration failed: ', err);
+    }
+  });
+}
+</code></pre>
+
+<h3 data-text="Explicação" id="explanation" is-upgraded="">Explicação</h3>
+<p>O código registrará o arquivo de service worker <code dir="ltr" translate="no">service-worker.js</code> vazio depois que a página for carregada e somente se o site for compatível com service workers.</p>
+<h2 data-text="Pré-armazenar recursos em cache" id="precache-resources" is-upgraded="">Pré-armazenar recursos em cache</h2>
+<p>Para que o app da Web funcione off-line, o navegador precisa responder a solicitações de rede e escolher para onde encaminhá-las. Para fazer isso, adicione o código a seguir a <code dir="ltr" translate="no">service-worker.js</code></p>
+<pre translate="no" dir="ltr"><code language="language-js" translate="no" dir="ltr">// Choose a cache name
+const cacheName = 'cache-v1';
+// List the files to precache
+const precacheResources = ['/', '/index.html', '/css/style.css', '/js/main.js', '/js/app/editor.js', '/js/lib/actions.js'];
+
+// When the service worker is installing, open the cache and add the precache resources to it
+self.addEventListener('install', (event) =&gt; {
+  console.log('Service worker install event!');
+  event.waitUntil(caches.open(cacheName).then((cache) =&gt; cache.addAll(precacheResources)));
+});
+
+self.addEventListener('activate', (event) =&gt; {
+  console.log('Service worker activate event!');
+});
+
+// When there's an incoming fetch request, try and respond with a precached resource, otherwise fall back to the network
+self.addEventListener('fetch', (event) =&gt; {
+  console.log('Fetch intercepted for:', event.request.url);
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) =&gt; {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request);
+    }),
+  );
+});
+</code></pre>
+<p>Volte ao navegador, feche a guia de visualização e abra-o novamente. Você verá <code dir="ltr" translate="no">console.log</code>s correspondentes aos diferentes eventos no service worker.</p>
+
+<p>Em seguida, fique off-line novamente e atualize o site. Você verá que ele carrega mesmo que você esteja off-line.</p>
+<h3 data-text="Explicação" id="explanation_1" is-upgraded="">Explicação</h3>
+<p>Durante o evento de instalação do service worker, um cache nomeado é aberto usando a API Cache Storage. Os arquivos e trajetos especificados no <code dir="ltr" translate="no">precacheResources</code> são carregados no cache usando o método <code dir="ltr" translate="no">cache.addAll</code>. Isso é chamado de <em>pré-armazenamento em cache</em> porque armazena em cache antecipadamente o conjunto de arquivos durante o tempo de instalação, em vez de armazená-los em cache quando eles são necessários ou solicitados.</p>
+<p>Quando o service worker controla o site, os recursos solicitados passam pelo service worker como um proxy. Cada solicitação aciona um evento de busca que, neste service worker, pesquisa o cache em busca de uma correspondência, caso haja uma correspondência, que responde com o recurso armazenado em cache. Se não houver uma correspondência, o recurso será solicitado normalmente.</p>
+<p>O armazenamento em cache de recursos permite que o app funcione off-line, evitando solicitações de rede. Agora o app pode responder com um código de status 200 quando off-line.</p>
+
+
+        </div></div>
+  </div>
+</body>
+</html>

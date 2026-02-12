@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to validate the presence of a boolean field in a Rails model</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to validate the presence of a boolean field in a Rails model</h1>
+    <p><strong>URL:</strong> <a href="https://thoughtbot.com/blog/how-to-validate-the-presence-of-a-boolean-field-in-a-rails-model">https://thoughtbot.com/blog/how-to-validate-the-presence-of-a-boolean-field-in-a-rails-model</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876789791</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>There is a subtle bug that happens when validating the presence of boolean fields in Rails. Ensuring adequate test coverage helps us find those issues before they hit production.</p>
+<h2 id="broken-code">
+  <a href="#broken-code">
+    Broken code
+  </a>
+</h2>
+
+<p>Here is an example that looks right but hides a subtle problem:</p>
+<div><pre><code><span>class</span> <span>Question</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>validates</span> <span>:required</span><span>,</span> <span>presence: </span><span>true</span>
+<span>end</span>
+</code></pre></div>
+<p>Here is the spec that describes the behavior we want. We want <code>required</code> to be either <code>true</code> or <code>false</code> but not <code>nil</code>. This helps avoid the <a href="https://thoughtbot.com/blog/avoid-the-threestate-boolean-problem">Three-state boolean problem</a>.</p>
+<div><pre><code><span>describe</span> <span>"#required"</span> <span>do</span>
+  <span>it</span> <span>"only allows true or false"</span> <span>do</span>
+    <span>expect</span><span>(</span><span>Question</span><span>.</span><span>new</span><span>(</span><span>required: </span><span>false</span><span>)).</span><span>to</span> <span>be_valid</span>
+    <span>expect</span><span>(</span><span>Question</span><span>.</span><span>new</span><span>(</span><span>required: </span><span>true</span><span>)).</span><span>to</span> <span>be_valid</span>
+    <span>expect</span><span>(</span><span>Question</span><span>.</span><span>new</span><span>(</span><span>required: </span><span>nil</span><span>)).</span><span>to</span> <span>be_invalid</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>But when we run the test, we get an error message:</p>
+<div><pre><code>Failure/Error: expect(Question.new(required: false)).to be_valid
+  expected #&lt;Question id: nil, required: false, created_at: nil, updated_at: nil&gt; to be valid, but got errors: Required can't be blank
+</code></pre></div>
+<p>Aha! The error message highlights the subtle bug in our implementation. The spec fails because the Rails <code>presence</code> validator rejects any falsy values, not just <code>nil</code>.</p>
+<h2 id="how-to-validate-the-presence-of-a-boolean-column-in-rails">
+  <a href="#how-to-validate-the-presence-of-a-boolean-column-in-rails">
+    How to validate the presence of a boolean column in Rails
+  </a>
+</h2>
+
+<p>According to <a href="https://api.rubyonrails.org/classes/ActiveRecord/Validations/ClassMethods.html#method-i-validates_presence_of">Rails validations guides</a>, we should use the <code>inclusion</code> validator to ensure the <code>required</code> boolean field is either <code>true</code> or <code>false</code>, but not <code>nil</code>.</p>
+<div><pre><code><span>class</span> <span>Question</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>validates</span> <span>:required</span><span>,</span> <span>inclusion: </span><span>[</span><span>true</span><span>,</span> <span>false</span><span>]</span>
+<span>end</span>
+</code></pre></div>
+<p>Now, running the spec again, it passes and we avoided getting paged for an incident during the night 🎉</p>
+
+<p>(Thanks, Joël Quenneville, for the great review!).</p>
+<h2 id="validate-your-product">
+  <a href="#validate-your-product">
+    Validate your product
+  </a>
+</h2>
+
+<p>Partner with us and learn how we can validate your product together. <a href="https://thoughtbot.com/services/ruby-on-rails-development">Let’s talk</a>!</p>
+
+    </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Intel Processor Trace Part4. Better profiling experience. | Easyperf</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Intel Processor Trace Part4. Better profiling experience. | Easyperf</h1>
+    <p><strong>URL:</strong> <a href="https://easyperf.net/blog/2019/09/13/Intel-PT-part4">https://easyperf.net/blog/2019/09/13/Intel-PT-part4</a></p>
+    <p><strong>Tags:</strong> cpus</p>
+    <p><strong>Bookmark ID:</strong> 876780696</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+				<p><strong>Contents:</strong></p>
+
+<hr>
+<p><strong>Subscribe to my <a href="https://products.easyperf.net/newsletter">newsletter</a>, support me on <a href="https://www.patreon.com/dendibakh">Patreon</a> or by PayPal <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TBM3NW8TKTT34&amp;currency_code=USD&amp;source=url">donation</a>.</strong></p>
+
+<hr>
+
+<p>This is the 4th part of my series about Intel Processor Traces (PT). If you are reading this article and you are not familiar with what Intel PT is, I encourage you to take a few minutes and quickly grasp through the <a href="https://easyperf.net/blog/2019/08/23/Intel-Processor-Trace">part1</a> of this series.</p>
+
+<p>Here is the list of all parts in the series of posts about Intel PT:</p>
+<ol>
+  <li>Part1: <a href="https://easyperf.net/blog/2019/08/23/Intel-Processor-Trace">Introduction to Intel Processor Trace</a>.</li>
+  <li>Part2: <a href="https://easyperf.net/blog/2019/08/30/Intel-PT-part2">Better debugging experience with Intel PT</a>.</li>
+  <li>Part3: <a href="https://easyperf.net/blog/2019/09/06/Intel-PT-part3">Analyzing performance glitches with Intel PT</a>.</li>
+  <li>Part4: Better profiling experience with Intel PT (this article).</li>
+</ol>
+
+<p>Traditionally performance analysis is done through profiling which is the process of collecting statistics about the execution of an application. This process is implemented by periodically stopping the application and recording where we are in the program right now. Going one level below, each stop is made by triggering an interrupt (PMI - Performance Monitoring Interrupt). And if we collect enough samples, we can get a nice distribution of the time spent in different part of the program. This is how we can identify the hotspots in our program.</p>
+
+<p>However, taking an interrupt itself comes with a cost. Imagine bursty application which sleeps almost most of the time. Profiling such an application might not show anything interesting at all. Since it can happen that all our interrupts occur during the time when the app was sleeping. This is the case when we would want to increase the frequency of our interrupts. The more interrupts, the more runtime overhead. <strong>In this article I will show how Intel PT can give you better profiling accuracy with less runtime overhead</strong>.</p>
+
+<p>If you’ve read <a href="https://easyperf.net/blog/2019/09/06/Intel-PT-part3">part3</a> of this series, you would know how to collect the traces. If not, here is the command:</p>
+
+<div><pre><code><span>$ </span>perf record <span>-e</span> intel_pt//u ./a.out
+</code></pre></div>
+
+<p>This command essentially dumps the processor traces into a file on a disk. Those traces contain encoded history for the entire runtime. What’s interesting, is that you can view it as a collection of samples. And it is the exact collection, in a sense that we didn’t missed a sample. And now we can use those traces to do the same analysis we can do with interrupts, but much more precise.</p>
+
+<p>To demonstrate that I will use example from <a href="https://easyperf.net/blog/2019/09/06/Intel-PT-part3">part3</a>. Suppose we have an application <code>a.out</code> that runs for 1.78s:</p>
+
+<div><pre><code><span>$ </span><span>time</span> <span>-p</span> ./a.out
+real 1.78
+user 1.78
+sys 0.00
+</code></pre></div>
+
+<p>Collecting Processor Traces in our case involves ~11% runtime overhead:</p>
+
+<div><pre><code><span>$ </span><span>time</span> <span>-p</span> perf record <span>-e</span> intel_pt/cyc<span>=</span>1/u ./a.out
+<span>[</span> perf record: Woken up 199 <span>times </span>to write data <span>]</span>
+<span>[</span> perf record: Captured and wrote 397.617 MB perf.data <span>]</span>
+real 1.98
+user 1.90
+sys 0.26
+</code></pre></div>
+
+<p>Now let’s do the same with traditional sampling at the highest possible accuracy:</p>
+
+<div><pre><code><span>$ </span><span>echo </span>999999999 | <span>sudo tee</span> /proc/sys/kernel/perf_event_max_sample_rate
+<span>$ </span><span>time</span> <span>-p</span> perf record <span>-F</span> 999999999 <span>-e</span> cycles:u <span>-o</span> pmi.data ./a.out
+<span>[</span> perf record: Woken up 39 <span>times </span>to write data <span>]</span>
+<span>[</span> perf record: Captured and wrote 9.712 MB pmi.data <span>(</span>253272 samples<span>)</span> <span>]</span>
+real 2.22
+user 2.11
+sys 0.05
+<span>$ </span>perf report <span>-i</span> pmi.data <span>-n</span> <span>--stdio</span> <span>--no-call-graph</span> <span>--itrace</span><span>=</span>i100ns
+<span># Samples: 434K of event 'cycles:u'</span>
+<span># Overhead       Samples  Command  Shared Object  Symbol                                                                                                                         </span>
+<span># ........  ............  .......  .............  ..................................................</span>
+<span>#</span>
+    88.53%        384801  a.out    a.out          <span>[</span>.] std::uniform_int_distribution&lt;int&gt;::operator<span>()</span>
+     5.76%         25044  a.out    a.out          <span>[</span>.] goFastPath
+     3.64%         15807  a.out    a.out          <span>[</span>.] main
+     1.82%          7923  a.out    a.out          <span>[</span>.] goSlowPath
+     0.25%          1067  a.out    ld-2.27.so     <span>[</span>.] _start
+</code></pre></div>
+
+<p>The maximum sample rate I was able to collect with interrupt-based sampling on my machine is around 100Khz (100K samples/second). I.e. we have roughly 1 sample each 10 microseconds. Don’t get me wrong, it’s still pretty high precision and is suitable for most of the cases. However, the overhead goes from <code>1.87s</code><sup id="fnref:1" role="doc-noteref"><a href="#fn:1" rel="footnote">1</a></sup> to <code>2.22s</code> and now it is ~28%, which is much more than with Intel PT.</p>
+
+<p>With Intel PT, easily we get 100x more samples:</p>
+
+<div><pre><code><span>$ </span>perf record <span>-e</span> intel_pt/cyc<span>=</span>1/u <span>-o</span> pt.data ./a.out
+<span>$ </span>perf report <span>-i</span> pt.data <span>-n</span> <span>--stdio</span> <span>--no-call-graph</span> <span>--itrace</span><span>=</span>i100ns
+<span># Samples: 32M of event 'instructions:u'</span>
+<span># Overhead       Samples  Command  Shared Object        Symbol                                                                                                                         </span>
+<span># ........  ............  .......  ...................  ..................................................</span>
+<span>#</span>
+    76.10%      25030327  a.out    a.out                <span>[</span>.] std::uniform_int_distribution&lt;int&gt;::operator<span>()</span>
+    10.57%       3523065  a.out    a.out                <span>[</span>.] main
+     8.48%       2811222  a.out    a.out                <span>[</span>.] goFastPath
+     4.82%        677681  a.out    a.out                <span>[</span>.] goSlowPath
+</code></pre></div>
+
+<p>Let me first explain the mechanics of what we just did. After executing <code>perf record</code> we have the traces in <code>pt.data</code>. After that we asked perf to build report by synthesizing one instruction sample per 100ns (<code>--itrace=i100ns</code>). So, the process basically is very much the same as we do with interrupts: skip 100ns of traces<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" rel="footnote">2</a></sup>, see where we are in the program, skip 100ns of traces more and record the instruction again, and so on. After that we can identify the hotspots by looking at the samples distribution.</p>
+
+<p>I’m not 100% sure why there is such a big difference between reports based on interrupts and PT. I tend to think this is the skid effect, which might make significant impact on small applications like ours. You can read more about the skid <a href="https://easyperf.net/blog/2018/08/29/Understanding-performance-events-skid">here</a> and <a href="https://travisdowns.github.io/blog/2019/08/20/interrupts.html">here</a>.<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" rel="footnote">3</a></sup></p>
+
+<p>In general Intel PT allows you to get the precision you want. Just set <code>perf report --itrace=i1t</code> for the most accurate sample rate one would ever need. Or set <code>perf report --itrace=i100ms</code> for as low as 10 samples per second. What I like about this is that it essentially moves the overhead from the runtime into the analysis time. You just collect PT traces once and then can do all sort of complicated analysis you may need. With interrupt-based sampling you need to rerun the collection every time you need to modify the parameters.</p>
+
+<p>There is one interesting limitation to profiling with PT. With interrupt-based profiling you can sample on different events, say cache misses. With PT it’s only possible to synthesize instruction samples since information about cache misses is not encoded in the traces.</p>
+
+<p>A nice bonus for profiling with PT is that we have call stacks for free<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" rel="footnote">4</a></sup>:</p>
+
+<div><pre><code><span>$ </span>perf report <span>-i</span> pt.data <span>-n</span> <span>--stdio</span> <span>--no-children</span> <span>-G</span>
+<span># Samples: 31K of event 'instructions:u'</span>
+<span># Overhead       Samples  Command  Shared Object  Symbol                                                                                                                         </span>
+<span># ........  ............  .......  .............  ..................................................</span>
+<span>#</span>
+    75.16%         24045  a.out    a.out          <span>[</span>.] std::uniform_int_distribution&lt;int&gt;::operator<span>()</span>
+            |
+            <span>---_start</span>
+               __libc_start_main
+               main
+               std::uniform_int_distribution&lt;int&gt;::operator<span>()</span>
+
+    12.50%          4000  a.out    a.out          <span>[</span>.] main
+            |
+            <span>---_start</span>
+               __libc_start_main
+               main
+
+    10.12%          3191  a.out    a.out          <span>[</span>.] goFastPath
+            |
+            <span>---_start</span>
+               __libc_start_main
+               main
+               goFastPath
+
+     2.20%           695  a.out    a.out          <span>[</span>.] goSlowPath
+            |
+            <span>---_start</span>
+               __libc_start_main
+               main
+               goSlowPath
+</code></pre></div>
+
+<p>As I’ve shown, Intel PT can provide great level of details. There are many strategies how to drive your analysis using PT. For initial analysis one can start with profiling based on traditional sampling and then collect the traces for particular region of code or time period. This allows you to “zoom in” at particular execution timeframe.</p>
+
+<p>For example, to limit collecting traces for only <code>goSlowPath</code> function you can use:</p>
+<div><pre><code><span>$ </span>perf record <span>-e</span> intel_pt//u <span>--filter</span> <span>'filter goSlowPath @ a.out'</span> ./a.out
+<span>$ </span>perf script ...
+</code></pre></div>
+
+<p>To analyze traces only during particular time frame you can use:</p>
+<div><pre><code><span>$ </span>perf record <span>-e</span> intel_pt//u ./a.out
+<span>$ </span>perf script <span>--ns</span> <span>--itrace</span><span>=</span>i1t <span>-F</span> +srcline,+srccode <span>--time</span> 253.555413140,253.555413520 <span>&gt;</span> time_range.dump
+</code></pre></div>
+
+<p>See more examples of using PT with Linux perf in the <a href="https://easyperf.net/blog/2019/09/06/Intel-PT-part3">part3</a> of this series and in the <a href="http://halobates.de/blog/p/410">cheat sheet</a> for Intel Processor Trace.</p>
+
+<hr>
+
+<div role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>This is the timing for default 1000Hz sample rate (<code>perf record -F 1000</code>).&nbsp;<a href="#fnref:1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>See <a href="https://easyperf.net/blog/2019/09/06/Intel-PT-part3">part3</a> for better understanding of how decoded PT traces look like.&nbsp;<a href="#fnref:2" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>In the end, I tend to trust PT based report more, but even it is not 100% precise, since it doesn’t analyze all instructions and simply takes one instruction per specified time period. However, the most accurate distribution might be achieved with <code>perf report --itrace=i1t</code>, since it should treat every instruction in the trace as individual sample.&nbsp;<a href="#fnref:3" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:4" role="doc-endnote">
+      <p>LBR mechanism (<code>perf record --call-graph lbr</code>) also allows capturing call stacks with each sample. However, they are only few (usually 2-3) functions deep and incur additional overhead.&nbsp;<a href="#fnref:4" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</div>
+
+			</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Unusual Ways to Use Variables Inside Bash Scripts</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Unusual Ways to Use Variables Inside Bash Scripts</h1>
+    <p><strong>URL:</strong> <a href="https://linuxhandbook.com/variables-bash-script">https://linuxhandbook.com/variables-bash-script</a></p>
+    <p><strong>Tags:</strong> bash, command-line, linux</p>
+    <p><strong>Bookmark ID:</strong> 876779930</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><a href="https://www.warp.dev/?utm_source=linux_handbook&amp;utm_medium=display&amp;utm_campaign=linux_launch" target="_blank"><img src="data:application/octet-stream;base64," alt="Warp Terminal"></a></p><p>You probably are aware of <a href="https://linuxhandbook.com/bash-variables/">variables in Bash shell scripting</a>. </p><p>Like other programming and scripting languages, you use variables to store the data and then reference them later in future commands.</p><pre><code>name="Linux Handbook"
+echo "Hello $name!"</code></pre><p>And it will print "Hello Linux Handbook!".</p><p>Outside of the example above, there's also a surprisingly large amount of things you can do with variables, such as filling in a default value when the variable isn't set, and assigning multiple values to a single variable.</p><p>Let me show you these unusual and advanced usage of variables in bash scripting.</p><h2 id="using-arrays">Using arrays</h2><p>Excluding the above example, the most common type of variable you'll find in Bash is arrays:</p><pre><code>name=("Linux Handbook" "It's FOSS")
+</code></pre><p>The above example assigns both <code>Linux Handbook</code> and <code>It's FOSS</code> as the values for the <code>name</code> variable.</p><p>How do you go about accessing each value though?<span data-ez-ph-id="105"></span></p><p>If you run <code>echo $name</code>, you'll see that it prints the first value, <code>Linux Handbook</code>. To access the other values, you'll need to use a different syntax for variables.</p><p>To begin pulling the other values, let's start with getting familiar with the following:</p><pre><code>echo "Hello ${name}!"</code></pre><p>This is the basis for what will allow you to obtain all of the variable's values, and is also what's going to allow you to perform the rest of the methods for interacting with variables throughout the rest of this article.</p><p>Going back to the aforementioned example, you can use the <code>${variable[number]}</code> syntax to pull a certain item from a variable:</p><pre><code>echo "Hello ${name[1]}!"</code></pre><p>This one will print "Hello It's FOSS!"</p><p>If you couldn't already see from the above example, the first item in the array actually starts at 0 instead of 1.<span data-ez-ph-id="116"></span></p><p>So to pull the <code>Linux Handbook</code> value, you would pull the item at position 0:</p><pre><code>echo "Hello ${name[0]}!"</code></pre><p>Likewise, simply omitting the <code>[number]</code> part simply makes it default to the first item in the array (that being at index 0).<span data-ez-ph-id="109"></span></p><p>
+Index just means the position of the item in the array. Likewise, index 0 is item 0 inside of the array.
+</p><p>And those make up all the variable types you'll actually find inside of Bash. </p><p>Let's now get in to how you can actually work with and modify the output of those variables when we call them.</p><h2 id="setting-the-value-when-a-variable-isnt-set">Setting the value when a variable isn't set</h2><p>You can make a variable default back to a certain string when a variable isn't set like so:</p><pre><code>${variable:-string}</code></pre><p>Take this example:</p><pre><code>echo "Hello ${name:-nobody}!"</code></pre><p>Since the variable <code>name</code> is not set, it will be defaulted to <code>nobody</code> and the command above will print "Hello nobody!".</p><p>If the variable is set beforehand, its value will be used:</p><pre><code>name="Linux Handbook"
+echo "Hello ${name:-nobody}!"</code></pre><p>The above command prints "Hello Linux Handbook!"</p><h2 id="setting-the-value-when-a-variable-is-already-set">Setting the value when a variable <em>is</em> already set</h2><p>You can also set a variable to return a certain value when the variable <strong>is</strong> set. This would cause the variable to print a certain string whenever it is set, and print nothing when it is not.</p><p>The syntax for this method is similar to the previous one, but uses the <code>+</code> sign instead of <code>-</code>.</p><pre><code>${variable:+string}</code></pre><p>Take this example where variable name is not set. So it won't print anything for that variable part and the output for the command will be "Hello !"</p><pre><code>echo "Hello ${name:+person}!"</code></pre><p>Modify the above example and set the variable <code>name</code>. With this special method, it will not use the already set value and use the one you provided.</p><pre><code>name="Linux Handbook"
+echo "Hello ${name:+person}!"</code></pre><p>The above command will print "Hello person!".</p><p>You'll probably find more use cases with the <code>${variable:-string}</code> syntax, as some of the benefits of <code>${variable:+string}</code> can already be accomplished with other tools like the testing (<code>[]</code>) operator:</p><figure><a href="https://linuxhandbook.com/bash-string-comparison/#check-if-string-is-null-or-empty-in-bash"><div><p>Bash String Comparison: 3 Practical Examples</p><p>In this tutorial you’ll learn how to compare strings in bash shell scripts.You’ll also learn to check if a string is empty or null.</p><p><img src="https://linuxhandbook.com/favicon.png" alt="" data-cfsrc="https://linuxhandbook.com/favicon.png"><span>Abhishek Prakash</span></p></div><p><img src="https://linuxhandbook.com/content/images/2020/06/bash-shell-logo-1.jpg" alt="" data-cfsrc="https://linuxhandbook.com/content/images/2020/06/bash-shell-logo-1.jpg"></p></a></figure><h2 id="indirect-references-to-variables">Indirect references to variables</h2><p>The next example will use the following syntax:</p><pre><code>${!variable}</code></pre><p>This one is a bit more complex in how it functions, but makes sense after you see how it works:</p><pre><code>name="Linux Handbook"
+variable="name"
+
+echo "Hello ${!variable}!"</code></pre><p>It will print "Hello Linux Handbook".</p><p>That <code>!</code> character before the variable name causes the normal variable name to be substituted, but then uses the name of <em>that s</em>tring to find the relevant variable.</p><p>Likewise:</p><ul><li><code>variable</code> is substituted for the string <code>name</code>, followed by:</li><li><code>name</code> being substituted for its value of <code>Linux Handbook</code>.</li></ul><h2 id="finding-the-length-of-a-variable">Finding the length of a variable</h2><p>Let's use the previous method, but exchange the <code>!</code> character for <code>#</code>:</p><pre><code>${#variable}</code></pre><p>Using this method will print the length of the variable, but will act slightly different depending on if the variable is a string or an array.</p><p>Using that syntax on a <strong>string</strong> will cause the variable to be substituted for the amount of characters in the string.</p><pre><code>variable="name"
+echo "Length is ${#variable}."</code></pre><p>It will prnt 4. But on the otherhand, using it on an <strong>array</strong> will print the number of items inside the array, i.e. array size, which is 2 here.</p><pre><code>variable=("name" "word")
+echo "Length is ${#variable}."</code></pre><h2 id="lowercasing-and-capitalizing-strings">Lowercasing and capitalizing strings</h2><p>Lastly, you can capitalize and lowercase a string using the <code>^</code> and <code>,</code> operators respectively.</p><p>You provide these at the end of the variable name like this:</p><pre><code># Capitalizes
+${variable^}
+${variable^^}
+
+# Lowercases
+${variable,}
+${variable,,}</code></pre><p>What's the difference between providing one and two of the characters?</p><p>Providing just one (i.e. <code>${variable^}</code>) will cause only the first letter to be modified, while providing two (<code>${variable^^}</code>) will cause the entire string to be modified.</p><p>The example below prints <code>Name</code> instead of <code>name</code>:</p><pre><code>variable="name"
+echo "${variable^}"</code></pre><p>But this one prints <code>NAME</code>:</p><pre><code>variable="name"
+echo "${variable^^}"</code></pre><p>Similarly, you can print variables in lowercases as well.</p><p>The example below will print <code>wIDEname</code>:</p><pre><code>variable="WIDEname"
+echo "${variable,}"</code></pre><p>And this one will print <code>widename</code>:</p><pre><code>variable="WIDEname"
+echo "${variable,,}"</code></pre><h2 id="wrapping-up">Wrapping up</h2><p>These are only some of the ways you can use variables inside of Bash. You can find various more ways to interact with variables inside of <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">Bash's documentation on variable expansion</a>.</p><p>Got any questions with how the above examples worked, or something just not working right? Feel free to leave any of it in the comment section below.</p>
+</div></div>
+  </div>
+</body>
+</html>

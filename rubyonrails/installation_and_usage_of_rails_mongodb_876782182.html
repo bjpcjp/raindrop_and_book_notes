@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Installation and Usage of Rails MongoDB</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Installation and Usage of Rails MongoDB</h1>
+    <p><strong>URL:</strong> <a href="https://www.botreetechnologies.com/blog/how-to-install-and-use-mongodb-with-rails6">https://www.botreetechnologies.com/blog/how-to-install-and-use-mongodb-with-rails6</a></p>
+    <p><strong>Tags:</strong> mongodb, nosql, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876782182</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="text">
+				
+<h2>Rails MongoDB : Introduction</h2>
+
+
+
+<p><strong>MongoDB is a document database with the scalability, flexibility and the querying and indexing of the records.</strong></p>
+
+
+
+<p>In this blog, we will cover how to install it in Ubuntu 16.04, configure and use it with <a href="https://www.botreetechnologies.com/ruby-on-rails-development">Rails 6 application</a>.</p>
+
+
+
+<h2>1. Install MongoDB with Rails in Ubuntu 16.04 LTS</h2>
+
+
+
+<p>The steps are for Ubuntu 16.04 but you can install in other versions as well.</p>
+
+
+
+<p>Follow below steps in your terminal to install it from the source.</p>
+
+
+
+<p><code>sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927</code></p>
+
+
+
+<p><code>echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list</code></p>
+
+
+
+<p>After adding this repo update the packages</p>
+
+
+
+<p><code>sudo apt-get update</code></p>
+
+
+
+<p>Now, install mongo db using below command</p>
+
+
+
+<p><code>sudo apt-get install -y mongodb-org</code></p>
+
+
+
+<p>If you face any issue like below</p>
+
+
+
+<p><code>WARNING: The following packages cannot be authenticated!</code></p>
+
+
+
+<p><code>mongodb-org-shell mongodb-org-server mongodb-org-mongos mongodb-org-tools mongodb-org</code></p>
+
+
+
+<p><code>E:There were unauthenticated packages and -y was used without --allow-unauthenticated</code></p>
+
+
+
+<p>Then install it using the below command. Please note the risk of overriding the authentication warning here.</p>
+
+
+
+<p><code>sudo apt-get --allow-unauthenticated install -y mongodb-org</code></p>
+
+
+
+<h2>2. Configuration and Starting the Services</h2>
+
+
+
+<p>After you are done with the installation, configure and start the service using below commands in your terminal</p>
+
+
+
+<p><code>sudo systemctl start mongod</code></p>
+
+
+
+<p>Check if the service has properly started or not using below command</p>
+
+
+
+<p><code>sudo systemctl status mongod</code></p>
+
+
+
+<p>Using below command you can start it automatically when your system starts</p>
+
+
+
+<p><code>sudo systemctl enable mongod</code></p>
+
+
+
+<p>Now, MongoDB is set up and services are running. Let’s see how to use it with Rails 6</p>
+
+
+
+<blockquote><p>Read Also: <a href="https://www.botreetechnologies.com/blog/notable-activerecord-changes-in-rails-6-part-3" target="_blank" rel="noopener noreferrer">Notable ActiveRecord Changes in Rails 6</a></p></blockquote>
+
+
+
+<h2>3. <strong>MongoDB </strong>Setup<strong>&nbsp;</strong>with Rails 6</h2>
+
+
+
+<p>Create a new rails application using below command:</p>
+
+
+
+<p><code>rails new mongorails --skip-active-record --skip-bundle</code></p>
+
+
+
+<p>We have used <code>--skip-active-record</code> dependencies as we are not using it. We also used&nbsp; <code>--skip-bundle</code> to skip gem installations as we need to change the gemfile to add MongoDB dependency.</p>
+
+
+
+<p>If you are going to to use RSpec for testing then you can create your application using below command by skipping the default testing framework of rails</p>
+
+
+
+<p><code>rails new mongorails --skip-active-record --skip-bundle --skip-test --skip-system-test</code></p>
+
+
+
+<p>Now, go to your project directory and add <a href="https://github.com/mongodb/mongoid/" target="_blank" rel="noopener noreferrer">mongoid</a> gem in Gemfile. Mongoid is the officially supported ODM (Object-Document-Mapper) framework for MongoDB in Ruby.</p>
+
+
+
+<p><code>gem 'mongoid', '~&gt; 7.0.5'</code></p>
+
+
+
+<p>NOTE:&nbsp; Mongoid 7.0.5 or higher is required to use Rails 6.0.</p>
+
+
+
+<p>Run below command to install the gem</p>
+
+
+
+<p><code>bundle install</code></p>
+
+
+
+<p>Run below command to generate a default configuration</p>
+
+
+
+<p><code>bin/rails g mongoid:config</code></p>
+
+
+
+<p>This command would create a <code>mongoid.yml</code> file in <code>config</code> directory which is a replacement of <code>database.yml</code> which rails create by default for us.</p>
+
+
+
+<p>It is recommended to change <code>server_selection_timeout</code></p>
+
+
+
+<p>from 30 seconds to 1 second for the development environment. You can change it in <code>mongoid.yml</code></p>
+
+
+
+<p>Now, start rails server to check if everything is set up and configured correctly</p>
+
+
+
+<p><code>rails s</code></p>
+
+
+
+<p>If you see below screen after visiting <code>localhost:3000</code>&nbsp; in your browser then everything is good so far.</p>
+
+
+
+<h2><img decoding="async" src="https://www.botreetechnologies.com/blog/wp-content/uploads/2020/12/rails6-mongodb.png" alt="rails mongodb installation and usage" width="480" height="363"></h2>
+
+
+
+<h2>4. How to use <strong>MongoDB </strong>with Rails</h2>
+
+
+
+<p>Now, let’s create scaffolds using rails and check how the Model is working with MongoDB.</p>
+
+
+
+<p>We will create a small application where people can create posts and can comment on it.</p>
+
+
+
+<h3>Creating Posts</h3>
+
+
+
+<p>Create a post using scaffolding. Yes, you can use scaffolding with <strong>MongoDB</strong> as well, and it would create all necessary files as it does for other databases.</p>
+
+
+
+<p><code>rails generate scaffold Post title:string body:text</code></p>
+
+
+
+<p>The important point to note is that we do not have a db folder and there is no need to run migrations.</p>
+
+
+
+<p>Post model will look like this</p>
+
+
+
+<figure><img decoding="async" src="https://www.botreetechnologies.com/blog/wp-content/uploads/2020/12/post-model.png" alt="post model in mongodb ruby on rails"></figure>
+
+
+
+<p>Now, head to the browser and visit <code>localhost:3000/posts</code> and you will see a list of posts and you can create/update/delete the posts. Same old rails stuff 🙂</p>
+
+
+
+<p>Once you create the post it will fire insert query as below:</p>
+
+
+
+<figure><img decoding="async" src="https://www.botreetechnologies.com/blog/wp-content/uploads/2020/12/insert-query.png" alt="rails mongodb integration - insert query "></figure>
+
+
+
+<p>You can notice that it has first found the database name <code>mongorails_development.insert</code> and then used the below syntax to insert the record to the <code>posts</code> table.</p>
+
+
+
+<p><code>{"insert"=&gt;"posts", "documents"=&gt;[{"_id"=&gt;BSON::ObjectId('5e7d91f2d3527338a88a0751'), "title"=&gt;"Shiny Post", "body"=&gt;"Lorem ipsum"}], "ordered"=&gt;true}</code></p>
+
+
+
+<p>And when you visit show path of the app, it would fire below query</p>
+
+
+
+<p><code>mongorails_development.find | STARTED | {"find"=&gt;"posts", "filter"=&gt;{"_id"=&gt;BSON::ObjectId('5e7d91f2d3527338a88a0751')}}</code></p>
+
+
+
+<p>You can find the post from your rails console using below command</p>
+
+
+
+<p><code>Post.find('5e7d91f2d3527338a88a0751')</code></p>
+
+
+
+<h3>Creating a comment</h3>
+
+
+
+<p>Let’s create comments on the blogs</p>
+
+
+
+<p>Run below command to create comment and associate with posts using scaffold</p>
+
+
+
+<p><code>rails generate scaffold Comment name:string message:string post:belongs_to</code></p>
+
+
+
+<p>By default, it would generate comment model code as below.</p>
+
+
+
+<div><figure><img decoding="async" src="https://www.botreetechnologies.com/blog/wp-content/uploads/2020/12/generate-comment-model-code.png" alt="ruby on rails with mongodb"></figure></div>
+
+
+
+<p>Change <code>embedded_in :post</code> to <code>belongs_to :post</code></p>
+
+
+
+<p>Open <code>comments/_form</code> and change the type of field for <code>:message</code> from <code>text_field to text_area</code>, as well as the type of field for <code>:post_id</code> from text_field to hidden_field</p>
+
+
+
+<p>Add below code in <code>posts/show.html.erb</code> to create comments for the post. This will list all the comments for the post and also allow you to add new comments.</p>
+
+
+
+<figure><img decoding="async" src="https://www.botreetechnologies.com/blog/wp-content/uploads/2020/12/add-new-comments.png" alt="ruby on rails mongodb"></figure>
+
+
+
+<p>Now, create <code>_comment.html.erb partial</code> in <code>app/views/comments<code> folder with the code below:</code></code></p>
+
+
+
+<figure><img decoding="async" src="https://www.botreetechnologies.com/blog/wp-content/uploads/2020/12/folder-with-the-code-1.png" alt="mongodb rails"></figure>
+
+
+
+<p>If you want to add a new field to the table just add it using the below line. I have added a new field to posts table using below line</p>
+
+
+
+<p><code>field :slug, type: String</code></p>
+
+
+
+<p>It is that simple!!</p>
+
+
+
+<p>You don’t need to declare a foreign key field to comment on the model. It would implicitly create the <code>post_id</code> to comments table. The naming convention for a foreign key is the same as active records.</p>
+
+
+
+<p>That’s it, You have created a small application using MongoDB.</p>
+
+
+
+<h3><a href="https://www.botreetechnologies.com/ruby-on-rails-development"><b>Click here for more</b> details…</a></h3>
+
+
+
+<p>At <a href="https://www.botreetechnologies.com/">BoTree Technologies</a>, we build enterprise applications with our RoR team of 25+ engineers.</p>
+
+
+
+<p>We also specialize in Python, RPA, AI, Django, JavaScript and ReactJS.</p>
+
+
+
+<h3><a href="https://www.botreetechnologies.com/contact">Consulting is free</a> – let us help you grow!</h3>
+			</div></div>
+  </div>
+</body>
+</html>

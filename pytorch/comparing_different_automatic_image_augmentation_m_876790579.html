@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Comparing Different Automatic Image Augmentation Methods in PyTorch</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Comparing Different Automatic Image Augmentation Methods in PyTorch</h1>
+    <p><strong>URL:</strong> <a href="https://sebastianraschka.com/blog/2023/data-augmentation-pytorch.html">https://sebastianraschka.com/blog/2023/data-augmentation-pytorch.html</a></p>
+    <p><strong>Tags:</strong> data-augmentation, machine-learning, pytorch</p>
+    <p><strong>Bookmark ID:</strong> 876790579</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+   <p>One of the best ways to reduce overfitting is to collect more (good-quality) data. However, collecting more data is not always feasible or can be very expensive. A related technique is data augmentation.</p>
+
+<p>Data augmentation involves generating new data records or features from existing data, expanding the dataset without collecting more data. It helps improve model generalization by creating variations of original input data and making it harder to memorize irrelevant information from training examples or features. Data augmentation is common for image and text data, <a href="https://github.com/firmai/deltapy">but also exists for tabular data</a>.</p>
+
+<p>Data augmentation is a key tool in reducing overfitting, whether it’s for images or text. <strong>This article compares four automatic image augmentation techniques in PyTorch: AutoAugment, RandAugment, AugMix, and TrivialAugment</strong>.</p>
+
+<p>(Why AutoAugment, RandAugment, AugMix, and TrivialAugment? <a href="https://twitter.com/rasbt/status/1619354379295010816?s=20&amp;t=4oowlqeYaGjvz41zRMJKiw">I recently shared my good experiences with AutoAugment</a>. As a follow-up, suggestions led me down the rabbit hole of checking out the other related methods provided in the PyTorch/torchvision library.)</p>
+      <h2 id="comparing-autoaugment-randaugment-augmix-and-trivialaugment">
+        
+        
+          Comparing AutoAugment, RandAugment, AugMix, and TrivialAugment <a href="#comparing-autoaugment-randaugment-augmix-and-trivialaugment"></a>
+        
+        
+      </h2>
+    
+
+<p>As mentioned above, this article compares four related data augmentation techniques for image data. All four methods are implemented in the core PyTorch/torchvision library, so they are easy to adopt.</p>
+
+<p>Before we discuss how these methods work in detail, let’s cut to the chase and look at the performance of these methods side by side. I used a very simple ResNet-18 without bells and whistles for this performance comparison. Furthermore, I omitted other techniques to reduce overfitting to keep things simple. (If you are curious about different methods to reduce overfitting, I discuss more than a dozen approaches in my new book <a href="https://leanpub.com/machine-learning-q-and-ai/">Machine Learning Q and AI</a>.)</p>
+      <h3 id="code">
+        
+        
+          Code <a href="#code"></a>
+        
+        
+      </h3>
+    
+
+<p>The code for running the experiment is quite simple, and you can find it <a href="https://github.com/rasbt/comparing-automatic-augmentation-blog">here</a> on GitHub if you want to run, adapt, or modify these experiments.</p>
+
+<p>To avoid clutter, I am only showing and summarizing the main parts. You can find the fully self-contained, executable code <a href="https://github.com/rasbt/comparing-automatic-augmentation-blog">here on GitHub</a>:</p>
+
+<div><pre><code><span>import</span> <span>torch</span><span>,</span> <span>torchvision</span>
+<span>from</span> <span>torchvision</span> <span>import</span> <span>transforms</span>
+<span>import</span> <span>lightning</span> <span>as</span> <span>L</span>
+
+<span>## Dataset
+</span><span>train_transform</span> <span>=</span> <span>torchvision</span><span>.</span><span>transforms</span><span>.</span><span>Compose</span><span>(</span>
+    <span>[</span>
+        <span>transforms</span><span>.</span><span>Resize</span><span>(</span><span>32</span><span>),</span>
+        <span># One of the following:
+</span>        <span>#   1) Nothing
+</span>        <span>#   2) transforms.AutoAugment()
+</span>        <span>#   3) transforms.RandAugment()
+</span>        <span>#   4) transforms.AugMix()
+</span>        <span>#   5) transforms.TrivialAugmentWide()
+</span>        <span>transforms</span><span>.</span><span>ToTensor</span><span>(),</span>
+        
+    <span>]</span>
+<span>)</span>
+
+<span>valid_and_test_transform</span> <span>=</span> <span>transforms</span><span>.</span><span>Compose</span><span>(</span>
+    <span>[</span>
+        <span>transforms</span><span>.</span><span>Resize</span><span>(</span><span>32</span><span>),</span>
+        <span>transforms</span><span>.</span><span>ToTensor</span><span>(),</span>
+    <span>]</span>
+<span>)</span>
+
+<span>L</span><span>.</span><span>seed_everything</span><span>(</span><span>123</span><span>)</span>
+<span>dm</span> <span>=</span> <span>Cifar10DataModule</span><span>(</span>
+    <span>batch_size</span><span>=</span><span>256</span><span>,</span> 
+    <span>train_transform</span><span>=</span><span>train_transform</span><span>,</span> 
+    <span>valid_and_test_transform</span><span>=</span><span>valid_and_test_transform</span><span>,</span>
+    <span>num_workers</span><span>=</span><span>4</span>
+<span>)</span>
+
+<span>## Model
+</span><span>pytorch_model</span> <span>=</span> <span>torchvision</span><span>.</span><span>models</span><span>.</span><span>resnet18</span><span>(</span><span>weights</span><span>=</span><span>None</span><span>)</span>
+<span>pytorch_model</span><span>.</span><span>fc</span> <span>=</span> <span>torch</span><span>.</span><span>nn</span><span>.</span><span>Linear</span><span>(</span><span>512</span><span>,</span> <span>10</span><span>)</span>
+<span>lightning_model</span> <span>=</span> <span>LightningModel</span><span>(</span><span>model</span><span>=</span><span>pytorch_model</span><span>,</span> <span>learning_rate</span><span>=</span><span>0.05</span><span>)</span>
+
+<span>## Training
+</span><span>trainer</span> <span>=</span> <span>L</span><span>.</span><span>Trainer</span><span>(</span>
+    <span>max_epochs</span><span>=</span><span>1000</span><span>,</span>
+    <span>accelerator</span><span>=</span><span>"gpu"</span><span>,</span>
+    <span>devices</span><span>=</span><span>[</span><span>0</span><span>],</span>
+    <span>logger</span><span>=</span><span>CSVLogger</span><span>(</span><span>save_dir</span><span>=</span><span>"logs/"</span><span>),</span>
+    <span>deterministic</span><span>=</span><span>True</span><span>,</span>
+<span>)</span>
+<span>trainer</span><span>.</span><span>fit</span><span>(</span><span>model</span><span>=</span><span>lightning_model</span><span>,</span> <span>datamodule</span><span>=</span><span>dm</span><span>)</span>
+
+<span>## Model evaluation
+</span><span>trainer</span><span>.</span><span>test</span><span>(</span><span>model</span><span>=</span><span>lightning_model</span><span>,</span> <span>datamodule</span><span>=</span><span>dm</span><span>)</span>
+</code></pre></div>
+
+<p>As you can see above, I used the same hyperparameters (batch size and learning rate) for all four training scenarios. In addition, I replaced the last layer of the ResNet-18 model provided by PyTorch/torchvision with a layer with 10 output nodes (since CIFAR-10 only has 10 classes).</p>
+
+<p>To keep this blog article concise and focused, I will not explain the code in detail. However, as you know, I am more than happy to chat more about the code if there are any questions. Please feel free to reach out via the accompanying <a href="https://github.com/rasbt/comparing-automatic-augmentation-blog/discussions">GitHub Discussion forum</a> if you have any questions or comments.</p>
+      <h3 id="results">
+        
+        
+          Results <a href="#results"></a>
+        
+        
+      </h3>
+    
+
+<p>A picture is worth a thousand words, so let’s examine the results below.</p>
+
+<p><br>
+<img src="data:application/octet-stream;base64," alt="">
+<br></p>
+
+<p>It appears that Autoaugment improves the test set accuracy about 12% compared to no augmentation, which is a huge improvement. RandAugment, which is the successor of AutoAugment improves the performance by another 2 percentage points. And TrivialAugment, a newer and much simpler alternative performs yet another percent better than RandAugment.</p>
+
+<p>AugMix performs better than no augmentation, but it is not as good as AutoAugment, RandAugment, or TrivialAugment. This is expected since AugMix was developed with distributions shifts (rather than improving the validation accuracy) in mind.</p>
+
+<p>As shown in the figure above, I also included <a href="https://pytorch.org/vision/main/generated/torchvision.transforms.RandomAffine.html">RandomAffine</a> as a baseline. RandomAffine applies a random affine transformation of the image involving random translation, scaling, and shearing. It performs better than no augmentation, but it doesn’t come close to the other augmentation methods (AutoAugment, RandAugment, and TrivialAugment).</p>
+
+<p>Note that I also ran AutoAugment, RandAugment, AugMix, and TrivialAugment for 2000 epochs since the positive slope of the validation accuracy graphs suggested that more extended training could improve the predictive performance further (results not shown). However, the test set performance after 2000 epochs did not improve compared to the 1000-epoch experiments above.</p>
+      <h3 id="limitations">
+        
+        
+          Limitations <a href="#limitations"></a>
+        
+        
+      </h3>
+    
+
+<p>The apparent grain of salt here is that I only ran these experiments on a single neural network architecture (ResNet-18) and a single dataset (CIFAR-10). Your mileage may vary depending on your model architecture, dataset, and use of other techniques to reduce overfitting.</p>
+      <h3 id="references">
+        
+        
+          References <a href="#references"></a>
+        
+        
+      </h3>
+    
+
+<p>Here are the references and links for the three different data augmentation approaches. The following section will discuss and summarize them in more detail.</p>
+
+<p><strong>AutoAugment</strong></p>
+
+<ul>
+  <li>Paper: Cubuk, Zoph, Mane, Vasudevan, Le (Apr 2019) <em>AutoAugment: Learning Augmentation Policies from Data</em>, <a href="https://arxiv.org/abs/1805.09501">https://arxiv.org/abs/1805.09501</a>.</li>
+  <li>Implementation: <a href="https://pytorch.org/vision/main/generated/torchvision.transforms.AutoAugment.html">torchvision.transforms.AutoAugment</a></li>
+</ul>
+
+<p><strong>RandAugment</strong></p>
+
+<ul>
+  <li>Paper: Cubuk, Zoph, Shlens, Le (Nov 2019). <em>RandAugment: Practical Automated Data Augmentation With A Reduced Search Space</em>, <a href="https://arxiv.org/abs/1909.13719">https://arxiv.org/abs/1909.13719</a></li>
+  <li>Implementation: <a href="https://pytorch.org/vision/stable/generated/torchvision.transforms.RandAugment.html">torchvision.transforms.RandAugment</a></li>
+</ul>
+
+<p><strong>AugMix</strong></p>
+
+<ul>
+  <li>Paper: Hendrycks, Mu, Cubuk, Zoph, Gilmer, Lakshminarayanan (2020). <em>AugMix: A Simple Data Processing Method to Improve Robustness and Uncertainty</em>, <a href="https://arxiv.org/abs/1912.02781">https://arxiv.org/abs/1912.02781</a></li>
+  <li>Impleentation: <a href="https://pytorch.org/vision/main/generated/torchvision.transforms.AugMix.html">torchvision.transforms.AugMix</a></li>
+</ul>
+
+<p><strong>TrivialAugment</strong></p>
+
+<ul>
+  <li>Paper: Mueller, Hutter (Aug 2021). <em>TrivialAugment: Tuning-free Yet State-of-the-Art Data Augmentation</em>, <a href="https://arxiv.org/abs/2103.10158">https://arxiv.org/abs/2103.10158</a>.</li>
+  <li>Implementation: <a href="https://pytorch.org/vision/main/generated/torchvision.transforms.TrivialAugmentWide.html">torchvision.transforms.TrivialAugmentWide</a></li>
+</ul>
+      <h2 id="method-summaries-and-comparisons">
+        
+        
+          Method Summaries and Comparisons <a href="#method-summaries-and-comparisons"></a>
+        
+        
+      </h2>
+    
+
+<p>This section briefly outlines how the different automatic or learned image augmentations work and compare to each other based on the literature referenced above.</p>
+      <h3 id="autoaugment">
+        
+        
+          AutoAugment <a href="#autoaugment"></a>
+        
+        
+      </h3>
+    
+
+<p><a href="https://arxiv.org/abs/1805.09501">In this paper</a>, the authors learn combinations of image transformations that optimize the validation set accuracy on a given dataset. The candidates for the transformation cocktails are shearing, translation, rotation, contrast, pixel inversion, histogram equalization, solarization, posterization, color, brightness, sharpness, <a href="https://arxiv.org/abs/1708.04552">Cutout</a>, and <a href="https://arxiv.org/abs/1801.02929">Sample Pairing</a>.</p>
+
+<p>The search for effective image transformation techniques is a discrete optimization problem that can be approached with techniques such as grid search, random search, reinforcement learning (RL), or evolutionary algorithms.</p>
+
+<p>In AutoAugment, the researchers chose RL and a recurrent neural network as the controller algorithm. The controller was trained to improve validation set accuracy, but since accuracy is not differentiable, policy gradient methods were used to update the RNN.</p>
+
+<p><br>
+<img src="data:application/octet-stream;base64," alt="autoaugment"></p>
+
+
+<p>The controller was a 1-layer LSTM with 100 hidden units (details in <a href="https://arxiv.org/abs/1707.07012">here</a>). The training utilized PPO (<a href="https://arxiv.org/abs/1707.06347">proximal policy optimization</a>).</p>
+
+<p>And the policies themselves consist of two steps: (1) the probability of applying a given image augmentation technique and (2) the magnitude of applying the chosen technique. And policies were developed (learned) for CIFAR-10/100, SVHN, and ImageNet datasets, but according to the results in the paper, they are transferrable and work well on other new datasets, too.</p>
+
+<p>Note that when we apply AutoAugment from PyTorch/torchvision, this uses learned policies for the respective dataset (as opposed to training these policies). For instance, for CIFAR-10, we would use <code>torchvision.transforms.AutoAugment(torchvision.transforms.AutoAugmentPolicy.CIFAR10)</code>.</p>
+      <h3 id="randaugment">
+        
+        
+          RandAugment <a href="#randaugment"></a>
+        
+        
+      </h3>
+    
+
+<p><a href="https://arxiv.org/abs/1909.13719">AutoAugment</a> produces augmentations learned on a proxy task via policy optimization using RL.</p>
+
+<p>In RandAugment, developed by authors of the previous AutoAugment method, the authors propose a much simpler approach. Instead of learning the augmentation policy as in AutoAugment, RandAugment converts the choice of augmentation techniques into a hyperparameter search problem.</p>
+
+<p>In other words, unlike AutoAugment, RandAugment does not require a separate search. Instead, for each image in each minibatch, RandAugment chooses a policy of image transformations with uniform probability – each augmentation is equally likely.</p>
+
+<p>There are two hyperparameters for RandAugment: (1) the number of augmentations to be applied to a given image and the magnitude for these augmentations. According to the paper, the RandAugment method can be implemented in two lines of Python code:</p>
+
+<div><pre><code><span>transforms</span> <span>=</span> <span>[</span>
+    <span>'Identity'</span><span>,</span> <span>'AutoContrast'</span><span>,</span> <span>'Equalize'</span><span>,</span>
+    <span>'Rotate'</span><span>,</span> <span>'Solarize'</span><span>,</span> <span>'Color'</span><span>,</span> <span>'Posterize'</span><span>,</span>
+    <span>'Contrast'</span><span>,</span> <span>'Brightness'</span><span>,</span> <span>'Sharpness'</span><span>,</span>
+    <span>'ShearX'</span><span>,</span> <span>'ShearY'</span><span>,</span> <span>'TranslateX'</span><span>,</span> <span>'TranslateY'</span>
+<span>]</span>
+
+<span>def</span> <span>randaugment</span><span>(</span><span>N</span><span>,</span> <span>M</span><span>):</span>
+<span>"""Generate a set of distortions.
+   Args:
+     N: Number of augmentation transformations to
+        apply sequentially.
+     M: Magnitude for all the transformations.
+"""</span>
+<span>sampled_ops</span> <span>=</span> <span>np</span><span>.</span><span>random</span><span>.</span><span>choice</span><span>(</span><span>transforms</span><span>,</span> <span>N</span><span>)</span>
+<span>return</span> <span>[(</span><span>op</span><span>,</span> <span>M</span><span>)</span> <span>for</span> <span>op</span> <span>in</span> <span>sampled_ops</span><span>]</span>
+</code></pre></div>
+
+<p>(Note that the magnitude of each transformation is converted into 31 discrete bins. By default, the number of augmentations is 2, and the default number of the magnitude is 9.)</p>
+      <h3 id="augmix">
+        
+        
+          AugMix <a href="#augmix"></a>
+        
+        
+      </h3>
+    
+
+<p><a href="https://arxiv.org/abs/1912.02781">AugMix</a> is specifically geared towards improving the robustness to data shifts, for example, as commonly encountered during deployment. Here, the authors mix different image augmentation techniques to improve classifier performance while simultaneously optimizing a consistency loss.</p>
+
+<p>The image transformations chosen in AugMix are similar to those in AutoAugment, except that contrast, color, brightness, sharpness, and Cutout were removed. Also, instead of applying the transformations purely sequentially, AugMix combines the augmentations.</p>
+
+<p><br>
+<img src="data:application/octet-stream;base64," alt=""></p>
+
+
+
+<p>Note that in the figure above, the final image \(x_{\text{augmix}}\) is obtained by interpolating (mixing) the augmented image \(x_{\text{aug}}\) with the original image \(x_{\text{orig}}\), and  \(x_{\text{aug}}\) is obtained by applying different mixing weights (\(w_1, w_2, w_3\)) as well.</p>
+
+<p>To this end, the researchers optimize an overall loss that consists of two components:</p>
+
+\[\text{Loss}_{\text{overall}} = \text{Loss}_{\text{classification}} + \text{Loss}_{\text{consistency}}.\]
+
+<p>The classification loss is a standard cross-entropy loss, and the consistency loss is the <a href="https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence">Jensen-Shannon divergence</a> between the softmax output from applying the model to the original image and the softmax output from applying the model to the augmented images.</p>
+
+<p>(The Jensen-Shannon divergence is a symmetric version of the <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback-Leibler divergence</a> for measuring the difference between two probability distributions. The Kullback-Leibler divergence itself is the same as cross-entropy minus the self-entropy term.)</p>
+      <h3 id="trivialaugment">
+        
+        
+          TrivialAugment <a href="#trivialaugment"></a>
+        
+        
+      </h3>
+    
+
+<p><a href="https://arxiv.org/abs/2103.10158">TrivialAugment</a> is a minimalist approach that only applies one augmentation per image. In contrast to AutoAugment or AugMix, this is not a learned procedure.</p>
+
+<p><br>
+<img src="data:application/octet-stream;base64," alt="trivialaugment">
+<br></p>
+
+<p>On the surface, TrivialAugment appears to be a special case of RandAugment. However, RandAugment may apply more than one image transformation per image. In contrast, TrivialAugment strictly applies only a single augmentation. Also, RandAugment uses a fixed augmentation strength per image (the strength is a hyperparameter and is applied to each image in the dataset). In contrast, TrivialAugment samples the strength randomly for each individual image.</p>
+
+    </article><p>
+
+
+    
+
+    <em>This blog is a personal passion project that does not offer direct compensation.
+    However, for those who wish to support me, please consider purchasing a copy of <a href="https://sebastianraschka.com/books">one of my books</a>.
+    If you find them insightful and beneficial, please feel free to recommend them to your friends and colleagues.
+    (Sharing your feedback with others via a book review on Amazon helps a lot, too!)
+    </em></p></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Personal Infrastructure</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Personal Infrastructure</h1>
+    <p><strong>URL:</strong> <a href="https://blog.jessfraz.com/post/personal-infrastructure">https://blog.jessfraz.com/post/personal-infrastructure</a></p>
+    <p><strong>Tags:</strong> devops</p>
+    <p><strong>Bookmark ID:</strong> 876769052</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+
+<p>Saturday, December 16, 2017 · 5 min read</p>
+
+<p>This post is kind of like “part two” on my series on all the weird things I do
+for my personal infrastructure. If you missed “part one”, you should check out
+<a href="https://blog.jessfraz.com/post/home-lab-is-the-dopest-lab/">Home Lab is the Dopest Lab</a>.</p>
+<p>I run a lot of little things to make my life easier, like a CI, some bots, and
+a bunch of services just for the lolz. This post will go over all of those. These
+run scattered across my NUCs and the cloud.</p>
+<p>Let’s start with the most useful.</p>
+<h3 id="continuous-integration">Continuous Integration</h3>
+<p>I host my own continuous integration server. Yes, you guessed it… it’s Jenkins.
+I use the Jenkins DSL plugin to keep everything in sync. You can find all my
+DSLs in my repo <a href="https://github.com/jessfraz/jenkins-dsl">github.com/jessfraz/jenkins-dsl</a>.
+This has all the configurations for views, keeps forks up to date, mirrors all my
+repositories to private git (more on this in <a href="#git-server">git</a>),
+builds all Dockerfiles to push to Docker Hub and my private registry (more on
+this in <a href="#private-docker-registry">private docker registry</a>) and a bunch of
+maintenance scripts.</p>
+<p>The <a href="https://github.com/jessfraz/jenkins-dsl/blob/master/Makefile">Makefile</a> in
+this repo calls out to bash scripts which generate new DSLs for any new GitHub
+repos I create. Yep I even generate the automation…</p>
+<p>There’s a bunch of other fun things in there as well that you can discover by
+poking around yourself.</p>
+<p>I host my own postfix server alongside Jenkins. You
+can find the postfix docker image at <code>r.j3ss.co/postfix</code> or the <a href="https://github.com/jessfraz/dockerfiles/tree/master/postfix">Dockerfile</a>. It’s super minimal and less gross than literally every
+other postfix image in existence.</p>
+<p>You can run it with:</p>
+<pre><code>$ docker run --restart always -d \
+    --name postfix \
+    --net container:jenkins \
+    -e "<a href="https://blog.jessfraz.com/cdn-cgi/l/email-protection" data-cfemail="7c2e333328233d30353d2f410e1313083c1e101d14521f1311">[email&nbsp;protected]</a>" \
+    -e "RELAY=[smtp-relay.gmail.com]:587" \
+    -e "TLS=1" \
+    -e "MY_DESTINATION=...., localhost" \
+    -e "MAILNAME=blah.com" \
+    r.j3ss.co/postfix
+</code></pre>
+<h3 id="private-docker-registry">Private Docker Registry</h3>
+<p>I host my own private docker registry with my own notary server and authentication
+server. Why? Well because about 4 years ago when I started using docker, Docker
+Hub was super slow and I came to love having my own super fast one.</p>
+<p>I still push all the images to both Docker Hub and my registry and both are
+signed so it’s really like I am using Docker Hub as my backup. Yay, highly
+available… just kidding.</p>
+<p>I made a pretty shitty UI for it. You can play with it at <a href="https://r.j3ss.co/">r.j3ss.co</a>.
+The UI is from my <a href="https://github.com/jessfraz/reg">reg</a> project but the
+server component lives in the <a href="https://github.com/jessfraz/reg/tree/master/server">server subdirectory</a>.</p>
+<p>The really nice thing about both the <code>reg</code> command line and server is that you
+can get a list of CVEs on an image.</p>
+<p><img src="data:application/octet-stream;base64," alt="cves"></p>
+<p>I do this by hosting my own instance of <a href="https://github.com/coreos/clair">CoreOS’s Clair</a>.</p>
+<p>Most of my Dockerfiles live at
+<a href="https://github.com/jessfraz/dockerfiles">github.com/jessfraz/dockerfiles</a> if
+you are curious.</p>
+<p>I also went over all of this on my talk on <a href="https://docs.google.com/presentation/d/17Hml1iFqdXElxOcrh9caQSC5px5mDgaS015Vhaz42ZY/edit?usp=sharing">Over Engineering my
+Laptop / Container Linux on the Desktop</a>. This includes all the reasons why I have continuous integration as well.</p>
+<p>I have a script to cleanup the registry of old images <a href="https://github.com/jessfraz/dotfiles/blob/master/bin/clean-registry">clean-registry</a>. This deletes old registry blobs that are not used
+in the latest version of the tag. I don’t really care about old images and
+I don’t want to have a huge registry filled with old shit. There is a <a href="https://github.com/jessfraz/jenkins-dsl/blob/master/projects/maintenance/garbage_collect_registry.groovy">jenkins
+DSL</a> to run this.</p>
+<h3 id="git-server">Git Server</h3>
+<p>I host my own git server. You
+can find the gitserver docker image at <code>r.j3ss.co/gitserver</code> or the <a href="https://github.com/jessfraz/dockerfiles/tree/master/gitserver">Dockerfile</a>.</p>
+<p>You can run it with:</p>
+<pre><code>$ docker run --restart always -d \
+    --name gitserver \
+    -p 127.0.0.1:22:22 \
+    -e "PUBKEY=$(cat ~/.ssh/authorized_keys)" \
+    -v "/mnt/disks/gitserver:/home/git" \
+    r.j3ss.co/gitserver
+</code></pre>
+<p>It has it’s own UI that is run with Gitiles. You
+can find the Gitiles docker image at <code>r.j3ss.co/gitiles</code> or the <a href="https://github.com/jessfraz/dockerfiles/tree/master/gitiles">Dockerfile</a>.</p>
+<p>You can run it with:</p>
+<pre><code>$ docker run --restart always -d \
+    --name gitiles \
+    -p 127.0.0.1:8080:8080 \
+    -e BASE_GIT_URL="<a href="https://blog.jessfraz.com/cdn-cgi/l/email-protection" data-cfemail="99fef0edd9fef0edb7fbf5f8f1b7faf6f4">[email&nbsp;protected]</a>" \
+    -e SITE_TITLE="git.blah.com" \
+    -v "/mnt/disks/gitserver:/home/git" \
+    -w /home/git \
+    r.j3ss.co/gitiles
+</code></pre>
+<h3 id="ghb0t">ghb0t</h3>
+<p>This is one of my most useful things. It’s a GitHub Bot to automatically delete
+your fork’s branches after a pull request has been merged.</p>
+<p>I am <em>so</em> OCD about keeping git repos clean and this is my little helper.</p>
+<p>Check out the repo: <a href="https://github.com/jessfraz/ghb0t">github.com/jessfraz/ghb0t</a>.</p>
+<blockquote data-lang="en"><p lang="en" dir="ltr">I go to fork your thing and there is like 300 branches my face is like <a href="https://t.co/JpdpO447KS">pic.twitter.com/JpdpO447KS</a></p>— jessie frazelle (@jessfraz) <a href="https://twitter.com/jessfraz/status/823425160787021825?ref_src=twsrc%5Etfw">January 23, 2017</a></blockquote>
+
+<h3 id="irc-bouncer">IRC Bouncer</h3>
+<p>I host my own IRC Bouncer with ZNC.
+You can find the ZNC docker image at <code>r.j3ss.co/znc</code> or the <a href="https://github.com/jessfraz/dockerfiles/tree/master/znc">Dockerfile</a>.</p>
+<p>You can run it with:</p>
+<pre><code>$ docker run --restart always -d \
+    --name znc \
+    -p 6697:6697 \
+    -v "/mnt/disks/znc:/home/user/.znc" \
+    r.j3ss.co/znc
+</code></pre>
+<h3 id="upmail">upmail</h3>
+<p>This service provides email notifications for <a href="https://github.com/sourcegraph/checkup">sourcegraph/checkup</a>.
+If you are unfamiliar with checkup… it’s distributed, lock-free, self-hosted
+health checks and status pages, written in Go.</p>
+<p>I wrote a small little server to send email alerts for it and it lives
+at <a href="https://github.com/jessfraz/upmail">github.com/jessfraz/upmail</a>.</p>
+<h3 id="ipython">iPython</h3>
+<p>Not really all that novel but I also run an iPython server for doing little
+script things in. I just use the <code>jupyter/minimal-notebook</code> Docker image for that.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>I run a lot of little shitty services for a personal <a href="https://github.com/jessfraz/pastebinit">pastebin</a>
+and other things
+but those are all really less cool. My attention span for blog posts is about
+5 minutes and we have runneth over so I am going to call it a day with
+this… until next time. Peace out.</p>
+</article></div>
+  </div>
+</body>
+</html>

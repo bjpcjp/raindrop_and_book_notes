@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Measure Execution Time in R</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Measure Execution Time in R</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/2023/01/how-to-measure-execution-time-in-r">https://www.r-bloggers.com/2023/01/how-to-measure-execution-time-in-r</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876789954</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					<!-- 
+<div style="min-height: 30px;">
+[social4i size="small" align="align-left"]
+</div>
+-->
+
+
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.9-->
+
+	<p><img width="450" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/shiny_time_series.webp" alt="" decoding="async" loading="lazy" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/shiny_time_series.webp"></p><p>If there’s one type of data no company has a shortage of, it has to be time series data. Yet, many <a href="https://appsilon.com/how-to-start-a-career-as-an-r-shiny-developer/" rel="nofollow" target="_blank">beginner and intermediate R developers</a> struggle to grasp their heads around basic R time series concepts, such as manipulating datetime values, visualizing time data over time, and handling missing date values.</p>
+<p>Lucky for you, that will all be a thing of the past in a couple of minutes. This article brings you the <b>basic introduction to the world of R time series analysis</b>. We’ll cover many concepts, from key characteristics of time series datasets, loading such data in R, <a href="https://appsilon.com/effective-shiny-dashboards-best-practices/" rel="nofollow" target="_blank">visualizing</a> it, and even doing some basic operations such as smoothing the curve and visualizing a trendline.</p>
+<p>We have a lot of work to do, so let’s jump straight in!</p>
+<blockquote><p>Looking to start a career as an R/Shiny Developer? <a href="https://appsilon.com/how-to-start-a-career-as-an-r-shiny-developer/" rel="nofollow" target="_blank">We have an ultimate guide for landing your first job in the industry</a>.</p></blockquote>
+<h3>Table of contents:</h3>
+<ul>
+<li><strong><a href="https://appsilon.com/r-time-series-analysis/#key-characteristics" rel="nofollow" target="_blank">Key Characteristics of Time Series Datasets</a></strong></li>
+<li><strong><a href="https://appsilon.com/r-time-series-analysis/#load" rel="nofollow" target="_blank">Loading an R Time Series Dataset</a></strong></li>
+<li><strong><a href="https://appsilon.com/r-time-series-analysis/#datetime" rel="nofollow" target="_blank">Manipulating Datetime Values of a R Time Series Dataset</a></strong></li>
+<li><strong><a href="https://appsilon.com/r-time-series-analysis/#visualize" rel="nofollow" target="_blank">Visualizing R Time Series Datasets</a></strong></li>
+<li><strong><a href="https://appsilon.com/r-time-series-analysis/#missing-values" rel="nofollow" target="_blank">Handling Missing Dates and Values</a></strong></li>
+<li><strong><a href="https://appsilon.com/r-time-series-analysis/#basic-operations" rel="nofollow" target="_blank">Basic Time Series Operations: Data Smoothing and Trendlines</a></strong></li>
+<li><a href="https://appsilon.com/r-time-series-analysis/#summary" rel="nofollow" target="_blank"><strong>Summing up R Time Series Analysis</strong></a></li>
+</ul>
+<hr>
+<h2 id="key-characteristics">Key Characteristics of Time Series Datasets</h2>
+<p>Time series datasets are always characterized by at least two features – a time period and a floating point value. They both represent an event, such as Microsoft stock value at November 16th, 2023 at 3 PM.</p>
+<p>That’s essentially the basics, but this section will dive into the core characteristics of time series datasets, and provide you with a foundational understanding of their nature and behaviour. By recognizing these, you will be able to more effectively interpret, analyze, and make predictions based on time series data.</p>
+<p>Here’s the list of all key characteristics you need to know:</p>
+<ul>
+<li><b>Datetime information</b> – In all-time series datasets, one or more columns are dedicated to show datetime information. You could have the date and time stored in separate columns, or you can have them combined as a single feature. This column(s) serves as an index, marking the exact time at which each observation was recorded.</li>
+<li><b>Measurement of variable(s) over time</b> – Time series datasets usually measure one or more variables over time, e.g., the before-mentioned Microsoft stock price. The key aspect to remember is that these <b>measurements are taken at regular intervals</b>, be it hourly, daily, monthly, or yearly. It’s this regularity that allows you to spot patterns, fluctuations, and general changes over time.</li>
+<li><b>Seasonality</b> – Seasonality refers to the occurrence of regular and predictable patterns or cycles in a time series dataset over specific intervals. These patterns are often tied to time-related variables like days of the week, months, or quarters. For example, airplane tickets are always in demand, particularly in the summer months when people go on vacations.</li>
+<li><b>Trend</b> – A trend in time series data is observed when there’s a long-term increase or decrease in the data. It doesn’t have to be linear; trends can take various forms, such as exponential or logarithmic, so keep that in mind. For example, a company might see a gradual increase in sales over several years, indicating a positive trend. On the other hand, the exact opposite can happen, indicating a downward trend in sales.</li>
+</ul>
+<p>If you understand these key characteristics, you’ll be one step closer to gaining valuable insights from time series datasets. This will allow you and your business to understand your data and make accurate predictions and informed decisions.</p>
+<p>But, <b>how do you actually load a time series dataset in R?</b> Let’s explore that in the following section.</p>
+<h2 id="load">Loading an R Time Series Dataset</h2>
+<p>In a nutshell, time series datasets are not different from other types of datasets you’re used to. They’re also typically stored in CSV/Excel files or in databases, which means you can use your existing R knowledge to load these files into memory.</p>
+<p>The dataset of choice for today will be <a href="https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv" rel="nofollow" target="_blank">Airline passengers</a>, showing the number of passengers in thousands from 1949 to 1960, at monthly intervals.</p>
+<p>Assuming you have the dataset downloaded, here’s the R code you can use to load it:</p>
+<pre>data &lt;- read.csv("airline-passengers.csv")</pre>
+<p>The dataset is now in memory, which means you can use the convenient <code>head()</code> function to display the first couple of rows. Let’s go with 12 since the dataset shows monthly totals:</p>
+<pre>head(data, 12)</pre>
+<p>This is what you’ll see printed out:</p>
+<div id="attachment_21957"><p><img loading="lazy" aria-describedby="caption-attachment-21957" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_1471001930.webp" alt="Image 1 - Loading a time series dataset" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_1471001930.webp"></p><p id="caption-attachment-21957">Image 1 – Loading a time series dataset</p></div>
+<p>What makes Airline passengers a time series dataset is the fact that it has a <b>time-related column on regular intervals</b>, and also has a <b>numeric value attached to every time interval</b>. These are the basic two premises described in the previous section.</p>
+<p>As for trend and seasonality, we’ll explore these later in the visualization section.</p>
+<h2 id="datetime">Manipulating Datetime Values of a R Time Series Dataset</h2>
+<p>You’ve probably spotted that the date column isn’t formatted correctly in the previous section. The current values are in the form of “year-month”. Adding insult to injury, it also looks like the column has a character data type:</p>
+<div id="attachment_21960"><p><img loading="lazy" aria-describedby="caption-attachment-21960" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_4093796769.webp" alt="Image 2 - Column data types" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_4093796769.webp"></p><p id="caption-attachment-21960">Image 2 – Column data types</p></div>
+<p>This section will show you how to fix the data type, and also how to convert the date in the format of month end, just in case you don’t like the default month start format.</p>
+<p>We’ll use the <code>lubridate</code> package through this section, so make sure you have it installed.</p>
+<h3>Convert String to Datetime</h3>
+<p>The <code>lubridate</code> package ships with a <code>ym()</code> function which converts a string date representation in the format of “year-month” to a proper date object.</p>
+<p>You don’t have to apply this function to each row manually – you can <b>pass the entire column instead</b>:</p>
+<pre>library(lubridate)
+
+data$date &lt;- ym(data$Month)
+head(data)</pre>
+<p>This is what the dataset looks like now:</p>
+<div id="attachment_21963"><p><img loading="lazy" aria-describedby="caption-attachment-21963" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2525110729.webp" alt="Image 3 - Dataset after adding the datetime column" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2525110729.webp"></p><p id="caption-attachment-21963">Image 3 – Dataset after adding the datetime column</p></div>
+<p>If you check the data types with <code>str()</code> again, you’ll see the following:</p>
+<div id="attachment_21969"><p><img loading="lazy" aria-describedby="caption-attachment-21969" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_3862606251.webp" alt="Image 4 - Column data types" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_3862606251.webp"></p><p id="caption-attachment-21969">Image 4 – Column data types</p></div>
+<p>Which means we now have a proper date column at our disposal.</p>
+<h3>Change the Date Formatting</h3>
+<p>The next thing you might want to do is to change how the date column is formatted. Maybe you prefer to see the <b>last day of the month</b> instead of the first – the change is really easy to implement:</p>
+<pre>data$date_mth_end &lt;- ceiling_date(data$date, "month") - days(1)
+head(data)</pre>
+<p>This is what you will see:</p>
+<div id="attachment_21971"><p><img loading="lazy" aria-describedby="caption-attachment-21971" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_3964699981.webp" alt="Image 5 - Changing the date format" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_3964699981.webp"></p><p id="caption-attachment-21971">Image 5 – Changing the date format</p></div>
+<p>There are many ways you can format the date column. In the end, it’s just <b>personal preference</b> – R won’t treat it any differently behind the scenes.</p>
+<p>We now have some proper data to visualize. Let’s explore how in the following section.</p>
+<h2 id="visualize">Visualizing R Time Series Datasets</h2>
+<p>We humans aren’t the best at spotting patterns from tabular data. But it’s a whole different story when the same data is visualized. This section will show you how to make a basic time series data visualization with <code>ggplot2</code>, and also how to make it somewhat aesthetically pleasing.</p>
+<p>Before creating the chart, you should make sure your <b>datetime column is a Date object</b>, and not just a string representation of it. Also, make sure the <b>count column is numeric</b>, and not just a number wrapped by quotes.</p>
+<p>Lucky for you – both conditions are met if you’ve followed through the previous section!</p>
+<p>Time series data is often visualized as a line chart. It makes sense since data is continuous and sampled on identical intervals. Here’s the code you’ll need to make the most basic line chart with <code>ggplot2</code>:</p>
+<pre>library(ggplot2)
+
+ggplot(data, aes(x = date, y = Passengers)) +
+  geom_line()</pre>
+<p>This is what the chart looks like:</p>
+<div id="attachment_21973"><p><img loading="lazy" aria-describedby="caption-attachment-21973" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2033167642.webp" alt="Image 6 - Basic line chart" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2033167642.webp"></p><p id="caption-attachment-21973">Image 6 – Basic line chart</p></div>
+<p>It’s not the prettiest, but it gets the job done. You can see a clear <b>upward trend</b> and a <b>strong seasonality in the summer months</b>. That’s something we’ll explore later.</p>
+<p>The issue that requires immediate attention is the style of this chart. It’s nowhere near ready to show to your client or boss, since the title is missing, axis labels could do with some retouch, and the overall theme is awful.</p>
+<p>Here’s a code snippet that will fix all of the listed issues:</p>
+<pre>ggplot(data, aes(x = date, y = Passengers)) +
+  geom_line(color = "#0099f9", size = 1.4) + 
+  theme_classic() + 
+  theme(
+    axis.text = element_text(size = 14, face = "bold"),
+    axis.title = element_text(size = 15),
+    plot.title = element_text(size = 18, face = "bold")
+  ) + 
+  labs(
+    title = "Airline Passengers Dataset",
+    x = "Time period",
+    y = "Number of passengers in 000"
+  )</pre>
+<p>This is what the chart looks like now:</p>
+<div id="attachment_21975"><p><img loading="lazy" aria-describedby="caption-attachment-21975" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_610246812.webp" alt="Image 7 - Styled line chart" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_610246812.webp"></p><p id="caption-attachment-21975">Image 7 – Styled line chart</p></div>
+<p>Now we’re talking! We’ve gone from plain to stunning in just a couple of lines of code.</p>
+<blockquote><p>Are you new to data visualization wtih ggplot2? <a href="https://appsilon.com/ggplot2-line-charts/" rel="nofollow" target="_blank">This article will teach you how to make stunning line charts</a>.</p></blockquote>
+<p>Up next, let’s discuss an issue present in many time series datasets (but not in Airline passengers) – missing values.</p>
+<h2 id="missing-values">Handling Missing Dates and Values</h2>
+<p>When working with time series datasets, it’s crucial that you have a full picture in front of you, which is a term describing a dataset that has no missing dates or values. There are ways of dealing with missing values, but dates are a lot trickier.</p>
+<p>Let’s explore them first.</p>
+<h3>Time Series with Missing Dates</h3>
+<p>To demonstrate the point, we’ll create a dummy time series dataset containing monthly sampled data for all months in 2023. But here’s the thing – <b>there are no records for March, July, and August</b>:</p>
+<pre>ts &lt;- data.frame(
+  date = c("2023-01-01", "2023-02-01", "2023-04-01", "2023-05-01", "2023-06-01",
+           "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"),
+  value = c(145, 212, 265, 299, 345, 278, 256, 202, 176)
+)
+ts$date &lt;- ymd(ts$date)
+ts</pre>
+<p>You can clearly see the records are missing in the following image:</p>
+<div id="attachment_21977"><p><img loading="lazy" aria-describedby="caption-attachment-21977" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_107726200.webp" alt="Image 8 - Time series dataset with rows missing" width="438" height="524" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_107726200.webp"></p><p id="caption-attachment-21977">Image 8 – Time series dataset with rows missing</p></div>
+<p><b>So, what can you do?</b></p>
+<p>The usual operating procedure is the following:</p>
+<ol>
+<li>Create a new <code>data.frame</code> that has an entire sequence of dates. Use the <code>lubridate::seq()</code> for the task instead of implementing the logic manually</li>
+<li>Merge the new <code>data.frame</code> with the one that contains missing records – this will essentially add the missing records to the right place and set the value to <code>NA</code></li>
+<li>Replace <code>NA</code> values with something appropriate – zeros will do fine for now.</li>
+</ol>
+<p>If you prefer code over text, here’s a snippet for you:</p>
+<pre># 1. Create a new data.frame that has a full sequence of dates
+full_date_df &lt;- data.frame(
+  date = seq(min(ts$date), max(ts$date), by = "month")
+)
+
+# 2. Merge with the old one on the `date` column
+new_ts &lt;- merge(full_date_df, ts, by = "date", all.x = TRUE)
+
+# 3. Some values are now missing - replace them with 0
+new_ts$value[is.na(new_ts$value)] &lt;- 0
+
+new_ts</pre>
+<p>This is what the reformatted R time series dataset looks like:</p>
+<div id="attachment_21979"><p><img loading="lazy" aria-describedby="caption-attachment-21979" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2797547700.webp" alt="Image 9 - Time series dataset with added rows" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2797547700.webp"></p><p id="caption-attachment-21979">Image 9 – Time series dataset with added rows</p></div>
+<p>Great, that takes care of missing dates, <b>but what about values?</b> That’s what we’ll cover next.</p>
+<h3>Time Series with Missing Values</h3>
+<p>Code-wise, missing values are a lot easier to deal with. It’s best if you can find out why the values are missing in the first place, but if you can’t, <b>there are various statistical methods</b> available for imputing them.</p>
+<p>With missing values in time series datasets, you usually have the data column fully populated, and the value field is set to <code>NA</code>.</p>
+<p>Here’s an example of one such dataset:</p>
+<pre>ts &lt;- data.frame(
+  date = seq(ymd("20230101"), ymd("20231231"), by = "months"),
+  value = c(145, 212, NA, 265, 299, 345, NA, NA, 278, 256, 202, 176)
+)
+ts</pre>
+<p>This is what it looks like:</p>
+<div id="attachment_21981"><p><img loading="lazy" aria-describedby="caption-attachment-21981" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_66051650.webp" alt="Image 10 - Time series dataset with missing values" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_66051650.webp"></p><p id="caption-attachment-21981">Image 10 – Time series dataset with missing values</p></div>
+<p>This time, only the values for April, July, and August are missing. We’ll show you four techniques for imputing them:</p>
+<ul>
+<li><b>Mean value</b> – All missing values will be replaced with a simple average of the series.</li>
+<li><b>Forward fill</b> – The missing value at the point T is filled with a non-missing value at T-1.</li>
+<li><b>Backward fill</b> – The missing value at the point T is filled with a non-missing value at T+1.</li>
+<li><b>Linear interpolation</b> – The missing value at the point T is filled with an average of non-missing values at T-1 and T+1.</li>
+</ul>
+<p>This is how you can implement all of them in code:</p>
+<pre>library(zoo)
+
+# 1. Mean value imputation
+mean_value &lt;- mean(ts$value, na.rm = TRUE)
+ts$mean &lt;- ifelse(is.na(ts$value), mean_value, ts$value)
+
+# 2. Forward fill
+ts$ffill &lt;- na.locf(ts$value, na.rm = FALSE)
+
+# 3. Backward fill
+ts$bfill &lt;- na.locf(ts$value, fromLast = TRUE, na.rm = FALSE)
+
+# 4. Linear interpolation
+ts$interpolated &lt;- na.approx(ts$value)
+
+ts</pre>
+<p>And here’s what the dataset looks like afterward:</p>
+<div id="attachment_21983"><p><img loading="lazy" aria-describedby="caption-attachment-21983" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2825624235.webp" alt="Image 11 - Time series dataset after missing value imputation" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2825624235.webp"></p><p id="caption-attachment-21983">Image 11 – Time series dataset after missing value imputation</p></div>
+<p>That covers handling missing dates and values. Up next, you’ll learn how to add a couple of useful visualizations to your existing time series charts.</p>
+<h2 id="basic-operations">Basic Time Series Operations: Data Smoothing and Trendlines</h2>
+<p>In this final section, you’ll learn two basic but vital time series tasks – smoothing the data curve via moving averages and calculating trendlines.</p>
+<p>As for the dataset, <b>we’re back to Airline passengers</b>. We’ve loaded the whole thing from scratch, just to have a clean start.</p>
+<pre>library(lubridate)
+
+data &lt;- read.csv("airline-passengers.csv")
+data$Month &lt;- ym(data$Month)
+head(data)</pre>
+<p>Here’s what the data looks like:</p>
+<div id="attachment_21985"><p><img loading="lazy" aria-describedby="caption-attachment-21985" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2159841952.webp" alt="Image 12 - Airline passengers dataset" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2159841952.webp"></p><p id="caption-attachment-21985">Image 12 – Airline passengers dataset</p></div>
+<p>First, let’s see what smoothing the values curve brings us.</p>
+<h3>Smoothing the Data Curve</h3>
+<p>Okay, so, <b>moving averages</b> – what are they? Think of them as a technique that allows you to smooth out short-term fluctuations in a time series dataset. Doing so enables you to shift the focus from extremes to the overall shape of the data.</p>
+<p>Calculating moving averages involves taking an average of a subset of the total data points at different time intervals, which then “moves” along with the data. In a nutshell, each point on a moving average line <b>represents the average value of the dataset over a specific preceding period</b>.</p>
+<p>One important parameter worth discussing with moving averages is the <code>window size</code>. In plain English, it determines the number of consecutive data points used to calculate each point in the moving average. When you use a moving average with different factors, such as 3, 6, or 12, it impacts the smoothness of the resulting average and the sensitivity to changes in the data.</p>
+<p>Now onto the code. We’ll use the <code>zoo</code> package to calculate moving averages with window sizes of 3, 6, and 12:</p>
+<pre>library(zoo)
+
+data$Passengers_MA3 &lt;- rollmean(data$Passengers, 3, fill = NA)
+data$Passengers_MA6 &lt;- rollmean(data$Passengers, 6, fill = NA)
+data$Passengers_MA12 &lt;- rollmean(data$Passengers, 12, fill = NA)
+
+head(data, 12)</pre>
+<p>This is what the dataset looks like after the calculation:</p>
+<div id="attachment_21987"><p><img loading="lazy" aria-describedby="caption-attachment-21987" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2068330021.webp" alt="Image 13 - Airline passenger dataset with moving averages" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_2068330021.webp"></p><p id="caption-attachment-21987">Image 13 – Airline passenger dataset with moving averages</p></div>
+<p>Some values at each end of the dataset are missing, and that’s simply because there’s no way to calculate a moving average for data points before a certain point, depending on the window size.</p>
+<p>Further, missing values are irrelevant for the point we’re trying to prove.</p>
+<p>You’ll get the idea why moving averages are useful as soon as you visualize them:</p>
+<pre>ggplot(data, aes(x = Month)) +
+  geom_line(aes(y = Passengers), color = "black", size = 1) +
+  geom_line(aes(y = Passengers_MA3), color = "red", size = 1) +
+  geom_line(aes(y = Passengers_MA6), color = "green", size = 1) +
+  geom_line(aes(y = Passengers_MA12), color = "blue", size = 1) +
+  theme_classic() + 
+  theme(
+    axis.text = element_text(size = 14, face = "bold"),
+    axis.title = element_text(size = 15),
+    plot.title = element_text(size = 18, face = "bold"),
+    legend.position = "bottom"
+  ) + 
+  labs(
+    title = "Airline Passengers Dataset with Moving Averages",
+    x = "Time period",
+    y = "Number of passengers in 000"
+  )</pre>
+<p>This is the chart you’ll end up with:</p>
+<div id="attachment_21989"><p><img loading="lazy" aria-describedby="caption-attachment-21989" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_4077137759.webp" alt="Image 14 - Original Airline passengers dataset with moving averages" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_4077137759.webp"></p><p id="caption-attachment-21989">Image 14 – Original Airline passengers dataset with moving averages</p></div>
+<p>Overall, the larger the window size, the smoother the data curve.</p>
+<p>To conclude, <b>moving averages allow you to see a generalized pattern in your data, rather than focusing on short-term fluctuations</b>.</p>
+<p>Up next, let’s go over trendlines.</p>
+<h3>Plotting a Trendline</h3>
+<p>A trendline does just what the name suggests – <b>it shows a general trend of your data</b> – either neutral, positive, or negative.</p>
+<p>To calculate a trendline, you’ll want to fit a <a href="https://appsilon.com/r-linear-regression/" rel="nofollow" target="_blank">linear regression model</a> on a derived numeric feature, and then use the same feature to calculate predictions.</p>
+<p>This will return a <b>line of best fit</b> – or line that best describes the data – or <b>trendline</b>.</p>
+<p>Here’s the code needed to fit a linear regression model:</p>
+<pre># Create a numeric feature
+data$Month_num &lt;- as.numeric(data$Month)
+
+# Fit a linear regression model
+model &lt;- lm(Passengers ~ Month_num, data = data)
+# Get predictions
+data$Trend_Line &lt;- predict(model, newdata = data)
+
+head(data[c("Month", "Passengers", "Trend_Line")], 12)</pre>
+<p>The code also prints the first 12 rows of the dataset:</p>
+<div id="attachment_21991"><p><img loading="lazy" aria-describedby="caption-attachment-21991" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_830375096.webp" alt="Image 15 - Airline passengers dataset with a trendline" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_830375096.webp"></p><p id="caption-attachment-21991">Image 15 – Airline passengers dataset with a trendline</p></div>
+<p>It doesn’t make much sense numerically, so let’s visualize it. You know the drill by now:</p>
+<pre>ggplot(data, aes(x = Month)) +
+  geom_line(aes(y = Passengers), color = "#0099f9", size = 1) +
+  geom_line(aes(y = Trend_Line), color = "orange", size = 1.4) +
+  theme_classic() + 
+  theme(
+    axis.text = element_text(size = 14, face = "bold"),
+    axis.title = element_text(size = 15),
+    plot.title = element_text(size = 18, face = "bold"),
+    legend.position = "bottom"
+  ) + 
+  labs(
+    title = "Airline Passengers Dataset with a Trend Line",
+    x = "Time period",
+    y = "Number of passengers in 000"
+  )</pre>
+<p>This is the chart you’ll end up with:</p>
+<div id="attachment_21993"><p><img loading="lazy" aria-describedby="caption-attachment-21993" decoding="async" src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_508567742.webp" alt="Image 16 - Visualized Airline passengers dataset with a trendline" width="450" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://wordpress.appsilon.com/wp-content/uploads/2023/11/tg_image_508567742.webp"></p><p id="caption-attachment-21993">Image 16 – Visualized Airline passengers dataset with a trendline</p></div>
+<p>Long story short, a trendline is just a <b>straight line that best describes the general movement, or trend, of your data</b>. You could also try fitting a polynomial regression model to this dataset if you suspect the trend shouldn’t be linear, but that’s a topic for some other time.</p>
+<hr>
+<h2 id="summary">Summing up R Time Series Analysis</h2>
+<p>And there you have it – pretty much everything a newcomer to time series analysis and forecasting needs. We’ve covered a lot of analysis ground today, and you’ve learned how to load time series datasets, visualize them, work with missing values, and even something a bit more advanced – moving averages and trendlines.</p>
+<p>The next natural step to take is to take a closer look into <b>time series forecasting</b>. That’s the topic we’ll cover in a follow-up article, so make sure to stay tuned to the <a href="https://appsilon.com/blog/" rel="nofollow" target="_blank">Appsilon blog</a> so you don’t miss it.</p>
+<blockquote><p>What else can you do with R? <a href="https://appsilon.com/r-for-programmers/" rel="nofollow" target="_blank">Here are 7 essential and beginner-friendly packages you must know</a>.</p></blockquote>
+<p>The post appeared first on appsilon.com/blog/.</p>
+
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.9-->
+							</div></div>
+  </div>
+</body>
+</html>

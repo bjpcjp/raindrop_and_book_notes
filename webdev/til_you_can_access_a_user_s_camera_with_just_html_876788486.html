@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>TIL: You Can Access A User's Camera with Just HTML</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>TIL: You Can Access A User's Camera with Just HTML</h1>
+    <p><strong>URL:</strong> <a href="https://austingil.com/html-capture-attribute">https://austingil.com/html-capture-attribute</a></p>
+    <p><strong>Tags:</strong> cameras, html, webdev</p>
+    <p><strong>Bookmark ID:</strong> 876788486</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><a href="https://coliss.com/articles/build-websites/operation/work/html-capture-attribute.html" rel="noopener">日本語で読む</a></p><p>The other day I came across a cool <a href="https://austingil.com/category/html/">HTML</a> attribute I had never heard of before; <code><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/capture" rel="noopener">capture</a></code>. So I decided to make a video and blog post about it.</p><p>Here’s a video format if you prefer that:</p><figure><figcaption></figcaption></figure><p>You can put the <code>capture</code> attribute on inputs with the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file" rel="noopener">type of file</a>, and you can give it a value of “<code>user</code>” or “<code>environment</code>“.</p><p>The interesting thing about the capture attribute is for users coming to your website on a mobile device. If they interact with that input, instead of opening up the default file picker, it will actually open up one of their cameras. It could be the front facing camera or the back facing camera, depending on the value.</p><p>If you set the value to “<code>user</code>“, it will use the user facing or front facing camera and or microphone. And if you set it to “<code>environment</code>“, it will use the outer facing or back facing camera and or microphone.</p><p>To test is out myself, I created an index.html file that looked like this:</p><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+
+&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width,initial-scale=1" /&gt;
+  &lt;style&gt;
+    * {
+      font-size: 1.5rem;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;label for="environment"&gt;Capture environment:&lt;/label&gt;
+  &lt;br&gt;
+  &lt;input
+    type="file"
+    id="environment"
+    capture="environment"
+    accept="video/*"
+  &gt;
+  &lt;br&gt;&lt;br&gt;
+  &lt;label for="user"&gt;Capture user:&lt;/label&gt;
+  &lt;br&gt;
+  &lt;input
+    type="file"
+    id="user"
+    capture="user"
+    accept="image/*"
+  &gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre><div>
+<p><label for="environment">Capture environment:</label>
+<br>
+</p><p>
+<label for="user">Capture user:</label>
+<br>
+</p></div><p>The only relevant part of the HTML is the two inputs. They both have a capture attribute and they both have an accept attribute. One is set to capture the “<code>environment</code>” with any type of video. The other is set to capture the “<code>user</code>” with any type of image.</p><p>The capture attribute that doesn’t really do anything interesting on a desktop. When I click the inputs, I see that it opens up the file picker.</p><p>But here’s the interesting part…</p><p>If I bring up that page on my phone and click the first input, my camera opens in the video recording mode. When I click the second input, my phone opens up the camera in image capture mode (for some reason, my phone doesn’t differentiate between front or back facing cameras though).</p><p>When you actually snap a photo or video, that file is sent to the HTML input.</p><p>How cool is that!?!?</p><p>This is definitely worth adding to my “<a href="https://austingil.com/build-html-forms-right-user-experience/" data-type="post" data-id="5408">How to Build HTML Forms Right: User Experience</a>” blog post.</p><p>Now, anytime we talk about new web APIs or features, we have to discuss the compatibility and if we look at the <a href="https://caniuse.com/html-media-capture" rel="noopener">support on caniuse.com</a>, it doesn’t look great…</p><figure><img decoding="async" width="1080" height="442" src="data:application/octet-stream;base64," alt="Screenshot of caniuse.com/html-media-capture showing no support for desktop browsers." srcset="data:application/octet-stream;base64, 1080w, data:application/octet-stream;base64, 480w, data:application/octet-stream;base64, 200w, data:application/octet-stream;base64, 768w, data:application/octet-stream;base64, 1536w, data:application/octet-stream;base64, 1653w" sizes="(max-width: 1080px) 100vw, 1080px"></figure><p>But it actually makes sense because all of those unsupported browsers are actually desktop browsers where there isn’t a front facing or back facing camera. So it makes sense to only open up the file picker.</p><p>But all the supported browsers are mobile browsers. So that feature is good to go.</p><p>The other cool thing is even if a user comes to your application with an unsupported browser, it’s just going to fall back to the default file picker UI.</p><p>Progressive Enhancement FTW!!!</p><p><strong>UPDATE:</strong> Some folks pointed out that this feature does not prompt you for permissions to access the camera, and they think that should be a security concern. I don’t agree. This camera access feature does not actually make the camera stream available to the web application as it does when you use your webcam on a website and it prompts for permission. Instead, the camera only provides access to the captured file. Which is essentially the same as using a file input without the capture attribute. No extra security concerns to be had.</p><p>So that’s the HTML capture attribute. It’s a pretty cool way to add a nicer user experience if you know that your mobile users are going to be taking a picture or a video or a voice recording at the time of upload.</p><p>Thank you so much for reading. If you liked this article, and want to support me, the best ways to do so are to <a href="https://twitter.com/share?via=heyAustinGil" rel="noopener">share it</a>, <a href="https://austingil.com/newsletter/">sign up for my newsletter</a>, and <a href="https://twitter.com/heyAustinGil" rel="noopener">follow me on Twitter</a>.</p><hr><p><i>Originally published on <a href="https://austingil.com/html-capture-attribute/">austingil.com</a>.</i></p></div></div>
+  </div>
+</body>
+</html>

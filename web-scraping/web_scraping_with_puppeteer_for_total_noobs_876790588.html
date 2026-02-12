@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Web Scraping With Puppeteer for Total Noobs</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Web Scraping With Puppeteer for Total Noobs</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/juniordevforlife/web-scraping-with-puppeteer-for-total-noobs-38j4">https://dev.to/juniordevforlife/web-scraping-with-puppeteer-for-total-noobs-38j4</a></p>
+    <p><strong>Tags:</strong> web-scraping</p>
+    <p><strong>Bookmark ID:</strong> 876790588</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1347488" id="article-body">
+            <p>Web scraping is something I never thought I'd do. I'm primarily a UI developer, although my career started as a backend developer. I've never been asked at a job to perform any scraping tasks, and I'd never had a personal project that required me to scrape some data until recently. I'll share what I've learned, which is honestly probably just scratching the surface of what you can do with a technology like <a href="https://pptr.dev/" target="_blank" rel="noopener noreferrer">Puppeteer</a>. In this post I'll walk you through installing and writing a Node.js script that will scrape a weather forecast website. The weather forecast site isn't my personal project that I mentioned earlier, it's more of a contrived example of how to get started with web scraping using Node.js and Puppeteer. </p>
+
+<p>This post assumes that you have some knowledge of Node.js, NPM, async/await, and the command line.</p>
+
+<p>This is intended to be a multi-series post/tutorial. We'll start off slow, and eventually have a project that will net us a 10 day weather forecast in <code>json</code> format.</p>
+
+<p><em>Disclaimer: I'm no expert in Node.js and certainly not a Puppeteer expert, so, if you see anything that could be done in a more proficient manner, or that's just plain wrong, please let me know. Thanks.</em></p>
+
+<p><em>Note: I'll be using <code>npm</code> in this post. Feel free to use your preferred package manager if you're comfortable doing so.</em></p>
+
+<h2>
+  <a name="project-setup" href="#project-setup">
+  </a>
+  Project Setup
+</h2>
+
+<p>The website that we'll be scraping is <a href="https://weather.com/weather/tenday/l/Austin+TX" target="_blank" rel="noopener noreferrer">weather.com</a>. We'll work towards getting the 10-day forecast of Austin, Texas. You can most certainly swap out the city for your preferred city.</p>
+
+<p>Let's go ahead and create a new directory for our project:<br>
+<code>mkdir weather-scraper</code></p>
+
+<p>Now navigate in to the directory:<br>
+<code>cd weather-scraper</code></p>
+
+<p>Let's initialize the project (I'll use the <code>-y</code> flag to skip all the questions):<br>
+<code>npm init -y</code></p>
+
+<p>Next, I'm going to go ahead and open my favorite editor and create a JavaScript file. I'll name mine <code>scraper.js</code>.</p>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F1e49twnxojmux4sitysh.png"><img src="data:application/octet-stream;base64," alt="project directory image" loading="lazy"></a></p>
+
+<p>Before we get too far, let's add one line to the <code>package.json</code> file so that we can use the import declaration. Add this line:<br>
+<code>"type": "module",</code></p>
+
+<p>Your <code>package.json</code> should look something like this:<br>
+</p>
+
+<div>
+<pre><code><span>{</span><span>
+  </span><span>"name"</span><span>:</span><span> </span><span>"weather-scraper"</span><span>,</span><span>
+  </span><span>"type"</span><span>:</span><span> </span><span>"module"</span><span>,</span><span>
+  </span><span>"version"</span><span>:</span><span> </span><span>"1.0.0"</span><span>,</span><span>
+  </span><span>"description"</span><span>:</span><span> </span><span>""</span><span>,</span><span>
+  </span><span>"main"</span><span>:</span><span> </span><span>"index.js"</span><span>,</span><span>
+  </span><span>"scripts"</span><span>:</span><span> </span><span>{</span><span>
+    </span><span>"test"</span><span>:</span><span> </span><span>"echo </span><span>\"</span><span>Error: no test specified</span><span>\"</span><span> &amp;&amp; exit 1"</span><span>
+  </span><span>},</span><span>
+  </span><span>"keywords"</span><span>:</span><span> </span><span>[],</span><span>
+  </span><span>"author"</span><span>:</span><span> </span><span>""</span><span>,</span><span>
+  </span><span>"license"</span><span>:</span><span> </span><span>"ISC"</span><span>,</span><span>
+  </span><span>"dependencies"</span><span>:</span><span> </span><span>{</span><span>
+    </span><span>"puppeteer"</span><span>:</span><span> </span><span>"^19.6.2"</span><span>
+  </span><span>}</span><span>
+</span><span>}</span><span>
+</span></code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Let's now install <a href="https://pptr.dev/" target="_blank" rel="noopener noreferrer">Puppeteer</a>.</p>
+
+<p><code>npm i puppeteer</code></p>
+
+<h2>
+  <a name="first-few-lines-of-code" href="#first-few-lines-of-code">
+  </a>
+  First Few Lines of Code
+</h2>
+
+<p>First things first, let's import puppeteer on line 1:</p>
+
+<p><code>import puppeteer from 'puppeteer';</code></p>
+
+<p>We'll create an async function called <code>scrape</code> and write out the first bit of code. The reason that this function is an async function will become quite clear in just a bit (we basically have to await everything).<br>
+</p>
+
+<div>
+<pre><code><span>async</span> <span>function</span> <span>scrape</span><span>()</span> <span>{</span>
+  <span>const</span> <span>browser</span> <span>=</span> <span>await</span> <span>puppeteer</span><span>.</span><span>launch</span><span>({</span> <span>dumpio</span><span>:</span> <span>true</span> <span>});</span>
+  <span>const</span> <span>page</span> <span>=</span> <span>await</span> <span>browser</span><span>.</span><span>newPage</span><span>();</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>We've created two variables, <code>browser</code> and <code>page</code>. The <code>browser</code> variable is created using puppeteer's <code>launch</code> method, which has a return type of <code>Promise&lt;Browser&gt;</code> . See <a href="https://pptr.dev/api/puppeteer.browser" target="_blank" rel="noopener noreferrer">this page</a> for more info on the Browser type.</p>
+
+<p>The <code>page</code> variable is created using the <a href="https://pptr.dev/api/puppeteer.browsercontext" target="_blank" rel="noopener noreferrer">browser context's</a> <code>newPage</code> method, which returns a type of <code>Promise&lt;Page&gt;</code>. See <a href="https://pptr.dev/api/puppeteer.page" target="_blank" rel="noopener noreferrer">this page</a> for more info on the Page class.</p>
+
+<p>The Page class has a method that we'll use to navigate to the weather website we're trying to scrape, the <a href="https://pptr.dev/api/puppeteer.page.goto" target="_blank" rel="noopener noreferrer"><code>goto</code> method</a>. This method takes in one parameter, the url, along with an optional options parameter which we won't use at this time. This method returns a type of <code>Promise&lt;HttpResonse | null&gt;</code>. </p>
+
+<p>We'll add that next:<br>
+<code>await page.goto('https://weather.com/weather/tenday/l/Austin+TX')</code></p>
+
+<p>Our <code>scraper.js</code> file should look like this at this point:<br>
+</p>
+
+<div>
+<pre><code><span>import</span> <span>puppeteer</span> <span>from</span> <span>'</span><span>puppeteer</span><span>'</span><span>;</span>
+
+<span>async</span> <span>function</span> <span>scrape</span><span>()</span> <span>{</span>
+    <span>const</span> <span>browser</span> <span>=</span> <span>await</span> <span>puppeteer</span><span>.</span><span>launch</span><span>({</span> <span>dumpio</span><span>:</span> <span>true</span> <span>});</span>
+    <span>const</span> <span>page</span> <span>=</span> <span>await</span> <span>browser</span><span>.</span><span>newPage</span><span>();</span>
+
+    <span>await</span> <span>page</span><span>.</span><span>goto</span><span>(</span><span>'</span><span>https://weather.com/weather/tenday/l/Austin+TX</span><span>'</span><span>)</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="let-the-scraping-begin" href="#let-the-scraping-begin">
+  </a>
+  Let the Scraping Begin
+</h2>
+
+<p>After the <code>goto</code> method, we can use the <code>Page</code> class's <a href="https://pptr.dev/api/puppeteer.page.evaluate" target="_blank" rel="noopener noreferrer"><code>evaluate</code> method</a> to work some magic. Inside of the <code>evaluate</code> method is where we can write out function inside the page's context and have the result returned. Essentially, we'll write some code inside this method to get the data from the page that we want to get. I'm going to put the code below, then discuss:<br>
+</p>
+
+<div>
+<pre><code><span>async</span> <span>function</span> <span>scrape</span><span>()</span> <span>{</span>
+  <span>const</span> <span>browser</span> <span>=</span> <span>await</span> <span>puppeteer</span><span>.</span><span>launch</span><span>({</span> <span>dumpio</span><span>:</span> <span>true</span> <span>});</span>
+  <span>const</span> <span>page</span> <span>=</span> <span>await</span> <span>browser</span><span>.</span><span>newPage</span><span>();</span>
+
+  <span>await</span> <span>page</span><span>.</span><span>goto</span><span>(</span><span>"</span><span>https://weather.com/weather/tenday/l/Austin+TX</span><span>"</span><span>);</span>
+
+  <span>const</span> <span>weatherData</span> <span>=</span> <span>await</span> <span>page</span><span>.</span><span>evaluate</span><span>(()</span> <span>=&gt;</span>
+    <span>Array</span><span>.</span><span>from</span><span>(</span>
+      <span>document</span><span>.</span><span>querySelectorAll</span><span>(</span><span>"</span><span>.DaypartDetails--DayPartDetail--2XOOV</span><span>"</span><span>),</span>
+      <span>(</span><span>e</span><span>)</span> <span>=&gt;</span> <span>({</span>
+        <span>date</span><span>:</span> <span>e</span><span>.</span><span>querySelector</span><span>(</span><span>"</span><span>h3</span><span>"</span><span>).</span><span>innerText</span><span>,</span>
+      <span>})</span>
+    <span>)</span>
+  <span>);</span>
+
+  <span>await</span> <span>browser</span><span>.</span><span>close</span><span>();</span>
+  <span>return</span> <span>weatherData</span><span>;</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The <code>evaluate</code> method is a higher-order function, meaning we can pass in another function as a parameter, which is exactly what we're doing. Inside the anonymous function that we pass in, we have access to the <code>document</code> object. If you go inspect the weather.com url that I shared, you should be able to find the <code>DaypartDetails--DayPartDetail--2XOOV</code> class.</p>
+
+<p>We are using the <code>Array.from</code> method and passing in <code>document.querySelectorAll(".DaypartDetails--DayPartDetail--2XOOV")</code>, which will return a <code>NodeList</code> of all elements in the document with that class. The <code>Array.from</code> method has a second, optional parameter, which is a mapping function. We are using that mapping function to select all <code>h3</code> elements inside of each element in the <code>NodeList</code> and assigning the value of it's <code>innerText</code> to a property that we call <code>date</code>;</p>
+
+<h2>
+  <a name="viewing-our-data" href="#viewing-our-data">
+  </a>
+  Viewing Our Data
+</h2>
+
+<p>After the <code>scrape</code> function, add in these two lines and save:<br>
+</p>
+
+<div>
+<pre><code><span>const</span> <span>scrapedData</span> <span>=</span> <span>await</span> <span>scrape</span><span>();</span>
+<span>console</span><span>.</span><span>log</span><span>(</span><span>scrapedData</span><span>);</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Let's go to the terminal and run:<br>
+<code>node scraper.js</code></p>
+
+<p>We get results that look something like this:<br>
+</p>
+
+<div>
+<pre><code><span>[</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Tonight</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Tue 31</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Wed 01</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Thu 02</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Fri 03</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Sat 04</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Sun 05</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Mon 06</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Tue 07</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Wed 08</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Thu 09</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Fri 10</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Sat 11</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Sun 12</span><span>'</span> <span>},</span>
+  <span>{</span> <span>date</span><span>:</span> <span>'</span><span>Mon 13</span><span>'</span> <span>}</span>
+<span>]</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Very cool.</p>
+
+<p>The entire <code>scraper.js</code> file looks like this:<br>
+</p>
+
+<div>
+<pre><code><span>import</span> <span>puppeteer</span> <span>from</span> <span>"</span><span>puppeteer</span><span>"</span><span>;</span>
+
+<span>async</span> <span>function</span> <span>scrape</span><span>()</span> <span>{</span>
+  <span>const</span> <span>browser</span> <span>=</span> <span>await</span> <span>puppeteer</span><span>.</span><span>launch</span><span>({</span> <span>dumpio</span><span>:</span> <span>true</span> <span>});</span>
+  <span>const</span> <span>page</span> <span>=</span> <span>await</span> <span>browser</span><span>.</span><span>newPage</span><span>();</span>
+
+  <span>await</span> <span>page</span><span>.</span><span>goto</span><span>(</span><span>"</span><span>https://weather.com/weather/tenday/l/Austin+TX</span><span>"</span><span>);</span>
+
+  <span>const</span> <span>weatherData</span> <span>=</span> <span>await</span> <span>page</span><span>.</span><span>evaluate</span><span>(()</span> <span>=&gt;</span>
+    <span>Array</span><span>.</span><span>from</span><span>(</span>
+      <span>document</span><span>.</span><span>querySelectorAll</span><span>(</span><span>"</span><span>.DaypartDetails--DayPartDetail--2XOOV</span><span>"</span><span>),</span>
+      <span>(</span><span>e</span><span>)</span> <span>=&gt;</span> <span>({</span>
+        <span>date</span><span>:</span> <span>e</span><span>.</span><span>querySelector</span><span>(</span><span>"</span><span>h3</span><span>"</span><span>).</span><span>innerText</span><span>,</span>
+      <span>})</span>
+    <span>)</span>
+  <span>);</span>
+
+  <span>await</span> <span>browser</span><span>.</span><span>close</span><span>();</span>
+  <span>return</span> <span>weatherData</span><span>;</span>
+<span>}</span>
+
+<span>const</span> <span>scrapedData</span> <span>=</span> <span>await</span> <span>scrape</span><span>();</span>
+<span>console</span><span>.</span><span>log</span><span>(</span><span>scrapedData</span><span>);</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="wrapping-up" href="#wrapping-up">
+  </a>
+  Wrapping Up
+</h2>
+
+<p>I implore you to play around with this. See if you're able to scrape other bits of data. In my next post I'll continue where I left off here. By the end of my web scraping posts I'll have shown you how to scrape, create a GitHub Action to automatically scrape, and have the GitHub Action save the data in to a <code>.json</code> file in the same repo.</p>
+
+<p>I hope you found this post interesting. Thanks for sticking around. Until next time.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

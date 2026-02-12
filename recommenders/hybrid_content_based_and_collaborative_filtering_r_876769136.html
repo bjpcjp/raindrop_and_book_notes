@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hybrid content-based and collaborative filtering recommendations with {ordi</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Hybrid content-based and collaborative filtering recommendations with {ordi</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/hybrid-content-based-and-collaborative-filtering-recommendations-with-ordinal-logistic-regression-1-feature-engineering">https://www.r-bloggers.com/hybrid-content-based-and-collaborative-filtering-recommendations-with-ordinal-logistic-regression-1-feature-engineering</a></p>
+    <p><strong>Tags:</strong> recommenders</p>
+    <p><strong>Bookmark ID:</strong> 876769136</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					<div><p>
+[This article was first published on  <strong><a href="http://www.exactness.net/post/159576751640"> The Exactness of Mind</a></strong>, and kindly contributed to <a href="https://www.r-bloggers.com/" rel="nofollow">R-bloggers</a>].  (You can report issue about the content on this page <a href="https://www.r-bloggers.com/contact-us/">here</a>)
+</p><hr><p>Want to share your content on R-bloggers?<a href="https://www.r-bloggers.com/add-your-blog/" rel="nofollow"> click here</a> if you have a blog, or <a href="http://r-posts.com/" rel="nofollow"> here</a> if you don't.
+</p></div>
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+
+	<figure data-orig-width="450" data-orig-height="600"><img src="https://i1.wp.com/68.media.tumblr.com/f76912cd74e149c247bcc48f5bcec571/tumblr_inline_oof2kmYa0F1qa0hyw_540.jpg?resize=450%2C600" alt="image" data-orig-width="450" data-orig-height="600" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/68.media.tumblr.com/f76912cd74e149c247bcc48f5bcec571/tumblr_inline_oof2kmYa0F1qa0hyw_540.jpg?resize=450%2C600&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></figure><p>I will use <a href="https://cran.r-project.org/web/packages/ordinal/index.html" rel="nofollow" target="_blank">{ordinal}</a> clm() (and other cool R packages such as <a href="https://github.com/dselivanov/text2vec" rel="nofollow" target="_blank">{text2vec}</a>
+ as well) here to develop a hybrid content-based, collaborative 
+filtering, and (obivously) model-based approach to solve the 
+recommendation problem on the MovieLens 100K dataset in R. All R code 
+used in this project <a href="https://github.com/smartcat-labs/OrdinalRecommenders" rel="nofollow" target="_blank">can be obtained from the respective GitHub repository</a>; the chunks of code present in the body of the post illustrate the essential steps only. The MovieLens 100K dataset <a href="https://grouplens.org/datasets/movielens/100k/" rel="nofollow" target="_blank">can be obtained from the GroupLens research laboratory</a>
+ of the Department of Computer Science and Engineering at the University
+ of Minnesota. The first part of the study introduces the new approach 
+and refers to the feature engineering steps that are performed by the <a href="https://github.com/smartcat-labs/OrdinalRecommenders/blob/master/OrdinalRecommenders_1.R" rel="nofollow" target="_blank">OrdinalRecommenders_1.R</a> script (<a href="https://github.com/smartcat-labs/OrdinalRecommenders" rel="nofollow" target="_blank">found on GitHub</a>). The second part, to be published soon, relies on the R code in &nbsp;<a href="https://github.com/smartcat-labs/OrdinalRecommenders/blob/master/OrdinalRecommenders_3.R" rel="nofollow" target="_blank">OrdinalRecommenders_3.R</a> and presents the model training, cross-validation, and analyses steps. The &nbsp;<a href="https://github.com/smartcat-labs/OrdinalRecommenders/blob/master/OrdinalRecommenders_2.R" rel="nofollow" target="_blank">OrdinalRecommenders_2.R</a>
+ script encompasses some tireless for-looping in R (a bad habbit indeed)
+ across the dataset only in order to place the information from the 
+dataset in the format needed for the modeling phase. The study aims at 
+(a) the demonstration of the improvement in predicted ratings for 
+recommending on a well-known dataset, and (b) attempts to shedd light on
+ the importance of various types of information in the work of 
+recommendation engines. Consequently, the code is not suited for use in 
+production; additional optimizations are straightforward, simple, and 
+necessary as well.</p><p><b>Introduction</b></p><p>Avoiding the formal exposition of the problem 
+altogether, the recommendation problem in the context of contemporary 
+online markets can expressed in the following way: given (A) the 
+information on the user’s past ratings of various items (i.e. the &nbsp;user-item ratings;
+ for example, the ratings on a 5-point Likert type scale of the movies 
+or TV shows that she or he has watched in the past, the ratings on 
+similar scales of the items purchased, and similar), (B) the information
+ on the user-item ratings of other users, © the attributes of users 
+and/or items (c.f. the user’s gender, geographical location, age, 
+occupation, and similar; the genre of the movie, product type, and 
+similar for items), provide a prediction of the user’s rating of a novel, previously unassessed item.
+ The predictions are then used to select the novel items (or lists of 
+items) that a particular user would – by assumption – enjoy to assess, 
+and eventualy purchase, in the future. The cognitive systems used for 
+making such predictions are known as recommendation engines, or recommender systems, and are widely used nowadays across the Internet business.</p><p>It is generally recognized that recommendation engines can be grouped in two broad categories: (1) content-based systems, &nbsp;or (2) collaborative filtering systems, with the later additionally described as (1.1) neighborhood or (1.2) model-based methods [1]. Content based
+ systems (CF) rely on a typical description of items over feature 
+vectors, and then recommend novel items to users by computing some 
+similarity metric between them and the items that the user has already 
+rated. Collaborative filtering systems, on the
+ other hand, rely on the assumption that the covariations between the 
+ratings (a) from different users over the same set of items, or (b) to 
+different items from the same set of users, implicitly carry the 
+information on item and user attributes. The information about the true 
+user and item attributes are thus latent in CF. In the neighborhood (or memory) variant of CF, these approaches use the user-item ratings directly and proceed by aggregating the ratings of similar users (user-based CF) and/or similar items (item-based CF)
+ in order to provide an estimate of the user’s rating of a novel item, 
+typically weighting the known ratings of similar users/items by the 
+respective proximity/similarity measures. In the model-based
+ variant of CF, the systems tries to discover the structure of the 
+latent factors from the observed behavioral measures (ie. known 
+user-item ratings), and then a myriad of machine learning algortihms and
+ statistical approaches can be used to train a predictive model for the 
+novel user-item ratings of novel items.</p><p>I will here introduce a new hybrid approach to 
+recommender systems with the following characteristics. First, the 
+system is both content-based and CF. The content-based component of the 
+system encompasses two matrices: the user-user and the item-item 
+proximity matrices, both obtained from applying the relevant distance 
+metric over a set of features that characterize users and items, 
+respectively. The CF component of the system, relies on the typical 
+user-user and item-item similarity matrices computed from the known, 
+past user-item ratings, providing for a memory component of the 
+recommender. Second, the system is model-based in the sense that it 
+combines the information from these four matrices in an ordinal logistic
+ regression model to predict the ratings of novel items on a 5-point 
+Likert scale. The underlying logic of this approach is to try to express
+ the recommendation problem as a discrete choice problem, where the 
+alternatives are provided by ordinal information from a 5-point Likert 
+scale, while the decision makers and the choice context are described by
+ a set of content-based and memory-based features, all referring to some
+ degree of closeness between the unknown user/item combination with the 
+known user/item in two spaces: the attribute (feature) space and the 
+neighborhood (memory) space. Because the CF approaches rely on 
+users-user (or item-item) proximity, the question of how many users (or 
+items) that are similar to the context of the present, novel user-item 
+rating should be used in prediction arises naturally. By expressing the 
+recommender problem as a regression problem essentially, we become able 
+to judge the significance of additional user-user and/or item-item 
+similarity information from the change in regression coefficients 
+obtained by progressively adding more and more information to nested 
+ordinal logistic models and training them. Thus the new approach also 
+provides and excellent opportunity for a comparison between 
+content-based information and memory-based information (the later as 
+being typically used in CF): which one is more important? Given the 
+assumption that the former is implicitly present in the later, i.e. that
+ it presents latent information in the CF approach, does the usage of 
+manifest memory-based information on user-item ratings completelly 
+eliminates the need for a content-based description? If not, how the two
+ should be combined? I will demonstrate how the present approach 
+resolves this dilemma while resulting in highly improved recommendations
+ on a well-known and widely used MovieLens dataset, at the same time 
+reducing drastically the number of features that are needed to build the
+ relevant prediction model.</p><p><b>Motivation</b></p><p>Consider the following user-item ratings matrix, encompassing 10 items (columns) and three users (rows):</p><figure data-orig-width="450" data-orig-height="88"><img src="https://i0.wp.com/68.media.tumblr.com/7e304a138a7973a55756bea229b58339/tumblr_inline_oof2s6ju2X1qa0hyw_540.png?resize=450%2C88" alt="image" data-orig-width="450" data-orig-height="88" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/68.media.tumblr.com/7e304a138a7973a55756bea229b58339/tumblr_inline_oof2s6ju2X1qa0hyw_540.png?resize=450%2C88&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></figure><p>In this rating matrix, the ratings of user1 and user2
+ have a maximal Pearson correlation of 1; however, the ratings of user2 
+and user3 have a linear correlation of .085, sharing around .007 % of 
+variance only. Upon a closer look, user1 and user2 have only three 
+common ratings (for items i1, i4, and i5), while user2 and user3 have 
+rated exactly the same items (i1, i3, i4, i5, i8, i9, and i10). Imagine 
+that the items rated by user2 and user 3 are all Sci-Fi movies; we can 
+imagine these two users chating and challenging each other’s views on 
+the contemporary Sci-Fi production on online forums or fan conferences, 
+right? They do not have to have perfectly similar tastes, right, but in 
+fact &nbsp;they are similar: simply because they both enjoy Sci-Fi. The <a href="https://en.wikipedia.org/wiki/Jaccard_index" rel="nofollow" target="_blank">Jaccard distance</a>
+ measures the proximity of two vectors A and B, both given over binary 
+features (e.g. present vs. not present), by computing the ratio of (a) 
+the difference between the union of A and B and the intersection of A 
+and B to the (b) union of A and B; it ranges from zero to one and can be
+ viewed as a proportion of common features that the two vectors share in
+ the total number of features present in both. The Jaccard similarity 
+coefficient is given by one minus the Jaccard distance; we will use the 
+{proxy} dist() function to compute these from our ratings matrix:</p><pre>### --- Illustration
+user1 &lt;- c(5, NA, NA, 4, 3, NA, 1, NA, NA, NA)
+user2 &lt;- c(4, NA, 3, 3, 2, NA, NA, 1, 2, 4)
+# -- User1 and User2 have a high Pearson Correlation Coefficient:
+cor(user1, user2, use = "pairwise.complete.obs")
+user3 &lt;- c(3, NA, 1, 5, 4, NA, NA, 2, 5, 4)
+# -- User2 and User3 have a low Pearson Correlation Coefficient:
+cor(user2, user3, use = "pairwise.complete.obs")
+# -- User2 and User3 have a high Jaccard similarity
+# -- i.e. 1 minus the Jaccard distance between them:
+library(proxy)
+as.numeric(1 - dist(t(user2), t(user3), method = "jaccard"))
+as.numeric(1 - dist(t(user1), t(user2), method = "jaccard"))
+as.numeric(1 - dist(t(user1), t(user3), method = "jaccard"))
+
+</pre><p>User2 and User3 who have provided the ratings for the
+ same items exactly have a Jaccard similarity index of 1; they both have
+ the Jaccard similarity index of .375 with User1. Then who is the user 
+similar to User2 - the one whose ratings could be used to approximate 
+the experiences of User2 with previously unseen items: (a) User1, with 
+whom he has a memory-based Pearson correlation of 1 on three shared 
+items, or (b) User3, with whom he has a Pearson correlation of only 
+.085, but with whom he had shared the same experiences and thus achieved
+ a maximum level of Jaccard similarity?</p><p>The value of the linear correlation coefficient (or 
+cosine similarity, or any other similar metric) will not preserve the 
+information on the number of shared items; that information is imlicitly
+ present in the Type I Error test (for example), not in the extent of 
+covariance itself. The Jaccard distance, on the other hand, neglects the
+ covariances from the rating scales altogether, preserving only the 
+information about the extent of the shared ratings. If we think about 
+the items rated by a particular user, neglecting the particular rating 
+values, we understand that we can describe some aspects of the user’s 
+taste by binarizing his or her ratings; we can know, for example, the 
+frequency distribution of the item types that he or she has decided to 
+assess at all. If we additionally compute a distance or similarity 
+matrix over that information for all users, we express the content-based
+ approach in terms of the attributes that describe a particular use by 
+its distance or similarity from other users in terms of the very same 
+attributes - in a content-based description space. We can add the 
+avaialable demographic information to the binary vectors before 
+computing the similarities too and thus enrich the representation. And 
+we can do the same for items, of course. As we already have the 
+similarity matrices from linear correlations between the paired users’ 
+ratings at our disposal, we can combine the information from these two 
+approaches - the content-based and the memory, or neighborhood-based - 
+and try to predict the unobserved user-item ratings from a unified 
+model.</p><p>The details of feature engineering along these lines in R are provided in the respective section below.</p><p><b>Dataset</b></p><p>The MovieLens 100K dataset [2] comprises 100,000 
+ratings (Likert type 1 to 5 scale) from 943 users on 1682 movies; 
+additionally, there are at least 20 movies rated per user. Some 
+demographic information for the users is present - age, gender, 
+occupation, zip - as well as the genre and the release dates for movies.
+ The dataset <a href="https://grouplens.org/datasets/movielens/100k/" rel="nofollow" target="_blank">can be downloaded from the GroupLens research laboratory</a>
+ of the Department of Computer Science and Engineering at the University
+ of Minnesota. Historically, it is among the most popular datasets used 
+to test the new approaches to the development of recommendation engines.
+ MovieLens 100K can be also obtained from <a href="https://www.kaggle.com/prajitdatta/movielens-100k-dataset" rel="nofollow" target="_blank">Kaggle</a> and <a href="https://datahub.io/dataset/movielens/resource/e2117a93-4fd4-41c3-b0e8-6a8ff8b1ad09" rel="nofollow" target="_blank">Datahub</a>. Our &nbsp;<a href="https://github.com/smartcat-labs/OrdinalRecommenders/blob/master/OrdinalRecommenders_1.R" rel="nofollow" target="_blank">OrdinalRecommenders_1.R</a>
+ script reads in the components of this dataset and computes the desired
+ user-user and item-item distance and similarity matrices following some
+ data reshaping.</p><p><b>Feature engineering</b></p><p>Part 1.A of the &nbsp;<a href="https://github.com/smartcat-labs/OrdinalRecommenders/blob/master/OrdinalRecommenders_1.R" rel="nofollow" target="_blank">OrdinalRecommenders_1.R</a>
+ script is used merely to read the original MovieLens 100K dataset 
+files, rename the columns present there, and save as .csv files; you 
+will need to run it too in order to use the code from part 1.B and the 
+remaining scripts. In Part 1.B we begin to operate over the following 
+three data.frames: (1) the ratingsData, which comprises the ratings on 
+5-point scales for all user-item pairs from the dataset, (2) usersData, 
+which comprises demographic information on users (Gender, Age, 
+Occupation, Zip-code), and (3) moviesData, which comprises all item 
+information (Title, Release Date, and Genre). Part 1.B of this R script 
+performs the essentialy feature engineering operations in order to 
+produce the following four matrices:</p><p>Matrix P1 - the Item-Item Proximity Matrix:
+ the Jaccard distances between the items, computed from the binarized 
+features encompassing relase decade (derived from the original release 
+year information, provided in the movie Title column) and movie genre. 
+This matrix plays the role of the content-based representation of items. The dist2() function from {text2vec} is used on a sparse Matrix class to compute the Jaccard distances here:</p><pre>### --- Compute moviesDistance w. Jaccard {text2vec} from movie genres
+moviesData &lt;- moviesData %&gt;% separate(col = Date, 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;into = c('Day', 'Month','Year'), 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;sep = "-")
+moviesData$Day &lt;- NULL
+moviesData$Month &lt;- NULL
+moviesData$Year &lt;- as.numeric(moviesData$Year)
+range(moviesData$Year)
+# - that would be: [1] 1922 1998
+# - Introduce Movie Decade in place of Year:
+decadeBoundary &lt;- seq(1920, 2000, by = 10)
+moviesData$Year &lt;- sapply(moviesData$Year, function(x) {
+ &nbsp;wL &lt;- x &lt; decadeBoundary
+ &nbsp;wU &lt;- x &gt;= decadeBoundary
+ &nbsp;if (sum(wL) == length(decadeBoundary)) &nbsp;{
+ &nbsp; &nbsp;return(1)
+ &nbsp;} else if (sum(wU) == length(decadeBoundary)) {
+ &nbsp; &nbsp;decadeBoundary[length(decadeBoundary)] 
+ &nbsp;} else {
+ &nbsp; &nbsp;decadeBoundary[max(which(wL-wU == -1))]
+ &nbsp;}
+}) 
+# - Match moviesData$Year with ratingsData:
+mD &lt;- moviesData %&gt;% 
+ &nbsp;select(MovieID, Year)
+ratingsData &lt;- merge(ratingsData, mD,
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; by = 'MovieID')
+# - Movie Year (now Decade) as binary: 
+moviesData &lt;- moviesData %&gt;%
+ &nbsp;spread(key = Year,
+ &nbsp; &nbsp; &nbsp; &nbsp; value = Year,
+ &nbsp; &nbsp; &nbsp; &nbsp; fill = 0,
+ &nbsp; &nbsp; &nbsp; &nbsp; sep = "_")
+# - compute moviesDistance:
+moviesDistance &lt;- moviesData[, 3:ncol(moviesData)]
+w &lt;- which(moviesDistance &gt; 0, arr.ind = T)
+moviesDistance[w] &lt;- 1
+moviesDistance &lt;- dist2(Matrix(as.matrix(moviesData[, 4:ncol(moviesData)])), 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;method = "jaccard")
+moviesDistance &lt;- as.matrix(moviesDistance)
+rm(moviesData); gc()
+# - save objects and clear:
+numMovies &lt;- length(unique(ratingsData$MovieID))
+write_csv(as.data.frame(moviesDistance), 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;path = paste0(getwd(),'/moviesDistance.csv'), 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;append = F, col_names = T)
+rm(moviesDistance); gc()
+</pre><p>Matrix P2 - the User-User Proximity Matrix:
+ the Jaccard distances between the users, computed from the binarized 
+features representing whether a particular user has or has not rated a 
+particular item only. This matrix plays the role of the content-based representation of users:</p><pre>### --- produce binary User-Item Matrix (who rated what only):
+userItemMat &lt;- matrix(rep(0, dim(usersData)[1]*numMovies),
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;nrow = dim(usersData)[1],
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ncol = numMovies)
+userItemMat[as.matrix(ratingsData[c('UserID', 'MovieID')])] &lt;- 1
+rm('w', 'ratingsData', 'usersData'); gc()
+### --- Compute userDistance w. Jaccard {text2vec}
+userItemMat &lt;- Matrix(userItemMat)
+usersDistance &lt;- dist2(userItemMat, 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; method = "jaccard")
+rm(userItemMat); gc()
+usersDistance &lt;- as.matrix(usersDistance)
+write_csv(as.data.frame(usersDistance), 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;path = paste0(getwd(),'/usersDistance.csv'), 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;append = F, col_names = T)
+rm(usersDistance); gc()
+</pre><p>Note that I’ve missed to use the user demographics 
+available in MovieLens 100K. In this project, I will not use them at 
+all, but the general ratio is: because I am going after an ordinal 
+logistic regression model, I can use these information as regressors 
+there. Also, as I have computed the user-user distance by looking at 
+what movies ratings they have in common, presumeably capturing some 
+information on shared tastes, I could have done the some for the items, 
+by inspecting what movies have been rated by the same users. However, a 
+hunch told me that I might be end up using redundand feature 
+representations in the same model; I’ve decided to describe the movie 
+similarities from content-based features directly (genre and the decade 
+of production), and user similarities from content-based features that 
+encompass the similarity in tastes (the common movie ratings among 
+them).</p><p>The following two similarity matrices are those 
+typically used in user and item-based CF; they comprise Pearson 
+correlation coefficients computed directly from the ratings matrix for 
+1681 items (note: one movie was ‘unknown’, so I have removed it from the
+ dataset and cleaned up from the ratings matrix accordingly) and 943 
+users. Given the moderate size of the desired correlation matrices, I 
+have used the {base} cor() function on pairwise complete observations to
+ compute them. For digging out correlation or cosine matrices from 
+problems larger than the MovieLens 100K, you might want to take a look 
+at the functions provided by my colleague Stefan Nikolić in his “<a href="https://www.smartcat.io/blog/2016/recommender-systems-matrix-operations-for-fast-calculation-of-similarities/" rel="nofollow" target="_blank">Recommender Systems: Matrix operations for fast calculation of similarities</a>” (supporting the computations for CF in an order of magnitude lesser time than the popular <a href="https://cran.r-project.org/web/packages/recommenderlab/index.html" rel="nofollow" target="_blank">{recommenderlab}</a> R package). The code produces the remaining two matrices:</p><p>Matrix S1 - the User-User Similarity Matrix:
+ the pairwise complete Pearson correlation coefficients between the 
+users’ ratings from the ratings matrix directly. This matrix plays the 
+role of the memory-based representation of users:</p><pre>### --- Compute User-User and Item-Item Ratings Similarity Matrices
+ratingsData &lt;- read_csv("ratingsData_Model.csv",
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;col_names = T)
+ratingsData$X1 &lt;- NULL
+# - User-Item Ratings Matrix
+ratingsData$Timestamp &lt;- NULL
+ratingsData &lt;- ratingsData %&gt;% 
+ &nbsp;spread(key = MovieID,
+ &nbsp; &nbsp; &nbsp; &nbsp; value = Rating, 
+ &nbsp; &nbsp; &nbsp; &nbsp; sep = "_") %&gt;% 
+ &nbsp;arrange(UserID)
+# - Pearson Correlations: User-User Sim Matrix
+UserUserSim &lt;- ratingsData %&gt;% 
+ &nbsp;select(starts_with("Movie"))
+UserUserSim &lt;- t(UserUserSim)
+UserUserSim &lt;- cor(UserUserSim, 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; use = 'pairwise.complete.obs')
+UserUserSim &lt;- as.data.frame(UserUserSim)
+write_csv(UserUserSim, 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;path = paste0(getwd(),'/UserUserSim.csv'), 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;append = F, col_names = T)
+rm(UserUserSim); gc()
+</pre><p>Matrix S2 - the Item-Item Similarity Matrix:
+ the pairwise complete Pearson correlation coefficients between the 
+item’ ratings from the ratings matrix directly. This matrix plays the 
+role of the memory-based representation of items:</p><pre># - Pearson Correlations: Item-Item Sim Matrix
+ItemItemSim &lt;- ratingsData %&gt;% 
+ &nbsp;select(starts_with("Movie"))
+rm(ratingsData); gc()
+ItemItemSim &lt;- cor(ItemItemSim,
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; use = 'pairwise.complete.obs')
+ItemItemSim &lt;- as.data.frame(as.matrix(ItemItemSim))
+write_csv(ItemItemSim, 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;path = paste0(getwd(),'/ItemItemSim.csv'), 
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;append = F, col_names = T)
+rm(ItemItemSim); gc()
+</pre><p><b>Summary</b></p><p>The idea is to combine the content-based with 
+memory-based information in a unified model to solve the recommendation 
+problem for online recommender systems. I have used the Jaccard 
+distances to describe the content-based proximity between users, based 
+on what items they have rated or not; on the other hand, the Jaccard 
+distances were also used to described the proximity of items in a 
+content-based space derived from the “essentialistic” item features like
+ movie genres and the decade of their production. Additionally, the 
+typical Pearson correlation similarity matrices - computed directly from
+ the ratings matrix - were produced for both users and items. The two 
+user-user and item-item matrices share the same respective 
+dimensionality. In the next step, the idea is to use the neighborhoods 
+of different size from these matrices (say, take p similar users from the content-based proximity and the memory-based user-user similarity matrices, and q
+ similar items from the content-based proximity and the memory-based 
+item-item matrices) as regressors in an ordinal logistic model to 
+predict the ordinal 5-point ratings of novel user-item combinations. By 
+inspecting the regression coefficients from these predictive models 
+while varying the size of the neighborhood sets of users and items whose
+ ratings will be used as regressors, I hope to be able to provide some 
+conclusion on the relative importance of content-based and memory-based 
+information for building efficient recommendation engines. We’ll see. 
+But before skipping to &nbsp;<a href="https://github.com/smartcat-labs/OrdinalRecommenders/blob/master/OrdinalRecommenders_3.R" rel="nofollow" target="_blank">OrdinalRecommenders_3.R</a> to play with the beautiful {ordinal} models, you might wish to run &nbsp;<a href="https://github.com/smartcat-labs/OrdinalRecommenders/blob/master/OrdinalRecommenders_2.R" rel="nofollow" target="_blank">OrdinalRecommenders_2.R</a>
+ that will prepare the first 100 neighbours from the proximity and 
+similarity matrices for you. As I told you, there’s a for loop there - 
+and a bad one.</p><p><b>References</b></p><p>[1] Desrosiers, C. &amp; Karypis, G. (2010). A comprehensive survey of neighborhood-based recommendation methods. In Ricci, F., Rokach, L., Shapira, B. &amp; Kantor, P. B. (Eds), Recommender Systems Handbook. Springer: US. DOI:10.1007/978-0-387-85820-3.</p><p><br>[2] F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets: History and Context. ACM Transactions on Interactive Intelligent Systems (TiiS) 5, 4, Article 19 (December 2015), 19 pages. DOI=http://dx.doi.org/10.1145/2827872.</p><p>Goran S. Milovanović, PhD<br><a href="http://t.umblr.com/redirect?z=http%3A%2F%2FSmartCat&amp;t=ZDE1YzY0NTYzZDVjZjRmYjRhOTlkYWMxMzAxZGYxN2U1NmFmODE3ZixRcWhrR0dpQw%3D%3D&amp;b=t%3AfxfLHZZpYe9t9Oek1n3iNg&amp;p=http%3A%2F%2Fwww.exactness.net%2Fpost%2F157582845120%2Fasknasa-whats-the-optimal-time-for-aliens-to&amp;m=1" rel="nofollow" target="_blank">Data Science Consultant, SmartCat</a></p><figure data-orig-height="180" data-orig-width="180"><img src="https://i2.wp.com/68.media.tumblr.com/a5d2491db08ab66670efe27e60c1ee9c/tumblr_inline_oof3npzi1Q1qa0hyw_540.png?resize=180%2C180" data-orig-height="180" data-orig-width="180" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/68.media.tumblr.com/a5d2491db08ab66670efe27e60c1ee9c/tumblr_inline_oof3npzi1Q1qa0hyw_540.png?resize=180%2C180&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></figure>
+
+		
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+							</div></div>
+  </div>
+</body>
+</html>

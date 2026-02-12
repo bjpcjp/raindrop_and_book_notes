@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Getting Started with Ruby on Rails on Render | Render</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Getting Started with Ruby on Rails on Render | Render</h1>
+    <p><strong>URL:</strong> <a href="https://render.com/docs/deploy-rails">https://render.com/docs/deploy-rails</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876789926</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>This guide demonstrates how to set up a local <a href="https://rubyonrails.org/" target="_blank" rel="nofollow">Ruby on Rails 7</a> environment, create an app with a simple view, and deploy that app to Render. It also shows how to connect the app to a Render PostgreSQL <a href="https://docs.render.com/postgresql">database</a>.</p>
+<h2 id="1-create-a-rails-project"><a href="#1-create-a-rails-project" aria-label="1 create a rails project permalink"></a>1. Create a Rails project</h2>
+<p><span data-block="info"><span>
+<p>If you have an <em>existing</em> Rails project that you want to deploy to Render, you can skip to <a href="#3-update-your-app-for-render">Update your app for Render</a>.</p>
+</span></span></p><p>First, let’s set up a local development environment with a basic project structure.</p>
+<h3 id="install-rails"><a href="#install-rails" aria-label="install rails permalink"></a>Install Rails</h3>
+<p>Use the <code>gem install</code> command to install Rails if you haven’t yet. Make sure you have the <a href="https://guides.rubyonrails.org/getting_started.html#creating-a-new-rails-project-installing-rails" target="_blank" rel="nofollow">required dependencies</a> installed (Ruby, Node.js and Yarn 1.x).</p>
+<div data-language="shell"><pre><code><span><span data-user="root" data-host="localhost"></span></span>gem <span>install</span> rails</code></pre></div>
+<p>We’re using Rails 7.1 in this tutorial, so verify that you have the correct version installed:</p>
+<div data-language="shell"><pre><code><span><span data-user="root" data-host="localhost"></span><span></span></span><span>rails --version</span>Rails <span>7.1</span>.2</code></pre></div>
+<h3 id="create-a-new-project"><a href="#create-a-new-project" aria-label="create a new project permalink"></a>Create a new project</h3>
+<p><span data-block="info"><span>
+<p>This tutorial creates a Rails project with the name <code>mysite</code>. You can replace this name with another name of your choosing.</p>
+</span></span></p><ol>
+<li>
+<p>In your terminal, navigate to the directory where you’ll create your project. Then, run the following command to generate a new project that uses Bootstrap for styling:</p>
+<div data-language="shell"><pre><code><span><span data-user="root" data-host="localhost"></span></span>rails new mysite --database<span>=</span>postgresql -j esbuild --css bootstrap</code></pre></div>
+<span data-block="info"><span>
+<p>You can provide additional arguments to customize the generated project. Run <code>rails new -h</code> for details.</p>
+</span></span>
+</li>
+<li>
+<p>Create local PostgreSQL databases for your app:</p>
+<div data-language="shell"><pre><code><span><span data-user="root" data-host="localhost"></span><span></span><span></span></span><span>rails db:create</span>Created database <span>'mysite_development'</span>
+Created database <span>'mysite_test'</span></code></pre></div>
+<span data-block="info"><span>
+<p>If this command fails, make sure you’ve installed and started PostgreSQL locally, then check your project’s <code>config/database.yml</code> file. You might need to specify your PostgreSQL username and/or password.</p>
+</span></span>
+</li>
+</ol>
+<p>You should now have a functional foundation for your new Rails app! To verify, start your development server:</p>
+<div data-language="shell"><pre><code><span><span data-user="root" data-host="localhost"></span></span>bin/dev</code></pre></div>
+<p>To see your app in action, go to <code>localhost:3000</code> in your browser. You should see the Rails default landing page:</p>
+<p><span>
+      <span></span>
+  <picture>
+          <source srcset="data:application/octet-stream;base64, 245w, data:application/octet-stream;base64, 490w, data:application/octet-stream;base64, 980w, data:application/octet-stream;base64, 1392w" sizes="(max-width: 980px) 100vw, 980px" type="image/webp">
+          <source srcset="data:application/octet-stream;base64, 245w, data:application/octet-stream;base64, 490w, data:application/octet-stream;base64, 980w, data:application/octet-stream;base64, 1392w" sizes="(max-width: 980px) 100vw, 980px" type="image/png">
+          <img src="data:application/octet-stream;base64," alt="Rails Successful Installation" title="" loading="lazy" decoding="async">
+        </picture>
+    </span></p>
+<p>Commit all of your project changes and push them to a repository on GitHub/GitLab/Bitbucket. You can deploy your app to Render from any of these.</p>
+<h2 id="2-create-the-hello-world-landing-page"><a href="#2-create-the-hello-world-landing-page" aria-label="2 create the hello world landing page permalink"></a>2. Create the Hello World landing page</h2>
+<p>Next, let’s add a simple static view to your app.</p>
+<p><span data-block="info"><span>
+<p>See the official <a href="https://guides.rubyonrails.org/getting_started.html" target="_blank" rel="nofollow">Getting Started with Rails</a> guide for more on creating Rails apps.</p>
+</span></span></p><ol>
+<li>
+<p>To create a new Rails controller, you run the <em>controller generator</em>. Set the controller’s name to <code>Render</code> and set up an action named <code>index</code> by running the following command:</p>
+<div data-language="shell"><pre><code><span><span data-user="root" data-host="localhost"></span></span>rails g controller Render index</code></pre></div>
+<p>The generator creates several files in your project:</p>
+<div data-language="text"><pre><code>create  app/controllers/render_controller.rb
+ route  get 'render/index'
+invoke  erb
+create    app/views/render
+create    app/views/render/index.html.erb
+invoke  test_unit
+create    test/controllers/render_controller_test.rb
+invoke  helper
+create    app/helpers/render_helper.rb
+invoke    test_unit</code></pre></div>
+</li>
+<li>
+<p>Open the <code>config/routes.rb</code> file and add the following line:</p>
+<div data-language="ruby"><pre><code>Rails<span>.</span>application<span>.</span>routes<span>.</span>draw <span>do</span>
+   get <span><span>'render/index'</span></span>
+   <span># Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html</span>
+
+   <span># Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.</span>
+   <span># Can be used by load balancers and uptime monitors to verify that the app is live.</span>
+   get <span><span>"up"</span></span> <span>=&gt;</span> <span><span>"rails/health#show"</span></span><span>,</span> <span>as</span><span>:</span> <span>:rails_health_check</span>
+
+   <span># Defines the root path route ("/")</span>
+<span>   root <span><span>"render#index"</span></span></span><span>end</span></code></pre></div>
+</li>
+<li>
+<p>Open the <code>app/views/render/index.html.erb</code> file and replace its contents with the following:</p>
+<div data-language="erb"><pre><code><span><span><span>&lt;</span>main</span> <span>class</span><span><span>=</span><span>"</span>container<span>"</span></span><span>&gt;</span></span>
+  <span><span><span>&lt;</span>div</span> <span>class</span><span><span>=</span><span>"</span>row text-center justify-content-center<span>"</span></span><span>&gt;</span></span>
+    <span><span><span>&lt;</span>div</span> <span>class</span><span><span>=</span><span>"</span>col<span>"</span></span><span>&gt;</span></span>
+      <span><span><span>&lt;</span>h1</span> <span>class</span><span><span>=</span><span>"</span>display-4<span>"</span></span><span>&gt;</span></span>Hello World!<span><span><span>&lt;/</span>h1</span><span>&gt;</span></span>
+    <span><span><span>&lt;/</span>div</span><span>&gt;</span></span>
+  <span><span><span>&lt;/</span>div</span><span>&gt;</span></span>
+<span><span><span>&lt;/</span>main</span><span>&gt;</span></span></code></pre></div>
+</li>
+</ol>
+<p>Verify your changes by returning to <code>localhost:3000</code> in your browser. If you stopped your local server, restart it first:</p>
+<div data-language="shell"><pre><code><span><span data-user="root" data-host="localhost"></span></span>bin/dev</code></pre></div>
+<p><span>
+      <span></span>
+  <picture>
+          <source srcset="data:application/octet-stream;base64, 245w, data:application/octet-stream;base64, 490w, data:application/octet-stream;base64, 980w, data:application/octet-stream;base64, 1436w" sizes="(max-width: 980px) 100vw, 980px" type="image/webp">
+          <source srcset="data:application/octet-stream;base64, 245w, data:application/octet-stream;base64, 490w, data:application/octet-stream;base64, 980w, data:application/octet-stream;base64, 1436w" sizes="(max-width: 980px) 100vw, 980px" type="image/png">
+          <img src="data:application/octet-stream;base64," alt="Rails Hello World" title="" loading="lazy" decoding="async">
+        </picture>
+    </span></p>
+<h2 id="3-update-your-app-for-render"><a href="#3-update-your-app-for-render" aria-label="3 update your app for render permalink"></a>3. Update your app for Render</h2>
+<p>Let’s prepare your Rails project for production on Render. We’ll create a build script for Render to run with each deploy, and we’ll update your project to use a <a href="https://docs.render.com/postgresql">Render PostgreSQL database</a> instead of SQLite (if necessary).</p>
+<h3 id="create-a-build-script"><a href="#create-a-build-script" aria-label="create a build script permalink"></a>Create a build script</h3>
+<p>Render builds your project before each deploy by running a <strong>build command</strong> that you specify. Let’s create a script to use for this command.</p>
+<p>Create a file named <code>render-build.sh</code> in your repo’s <code>bin</code> directory. Paste the following into it and save:</p>
+<div data-language="bash"><pre><code><span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span><span data-user="root" data-host="localhost"></span></span><span>#!/usr/bin/env bash</span>
+<span># exit on error</span>
+<span>set</span> -o errexit
+
+bundle <span>install</span>
+bundle <span>exec</span> rails assets:precompile
+bundle <span>exec</span> rails assets:clean
+
+<span># If you're using a Free instance type, you need to</span>
+<span># perform database migrations in the build command.</span>
+<span># Uncomment the following line:</span>
+
+<span># bundle exec rails db:migrate</span></code></pre></div>
+<p>Make sure the script is executable before committing it to Git:</p>
+<div data-language="shell"><pre><code><span><span data-user="root" data-host="localhost"></span></span><span>chmod</span> a+x bin/render-build.sh</code></pre></div>
+<p>We’ll configure Render to call this script each time your app is deployed.</p>
+<h3 id="swap-sqlite-for-postgresql-if-necessary"><a href="#swap-sqlite-for-postgresql-if-necessary" aria-label="swap sqlite for postgresql if necessary permalink"></a>Swap SQLite for PostgreSQL (if necessary)</h3>
+<p><span data-block="info"><span>
+<p>Skip this step if you created your app with the option <code>--database=postgresql</code>.</p>
+</span></span></p><p>Update your project to use PostgreSQL with the following command:</p>
+<div data-language="shell"><pre><code><span><span data-user="root" data-host="localhost"></span></span>rails db:system:change --to<span>=</span>postgresql</code></pre></div>
+<p>Alternatively, in your your <code>Gemfile</code>, swap the gem for your database driver from <code>sqlite3</code> to <code>pg</code>.</p>
+<p><strong>Before:</strong></p>
+<div data-language="ruby"><pre><code>gem <span><span>'sqlite3'</span></span></code></pre></div>
+<p><strong>After:</strong></p>
+<div data-language="ruby"><pre><code>gem <span><span>'pg'</span></span></code></pre></div>
+<p>Run <code>bundle install</code> to update your <code>Gemfile.lock</code>, then commit your changes.</p>
+<p>We’ll connect to your Render database by setting the <code>DATABASE_URL</code> environment variable, so you don’t need to make any other changes to your <code>config/database.yml</code> file.</p>
+<p>Commit all changes and push them to your Git provider. Now your application is ready to be deployed on Render!</p>
+<h2 id="4-deploy-to-render"><a href="#4-deploy-to-render" aria-label="4 deploy to render permalink"></a>4. Deploy to Render</h2>
+<p>There are two ways to deploy your application on Render: by <a href="https://docs.render.com/infrastructure-as-code">declaring your services within your repository</a> in a <code>render.yaml</code> file, or by manually setting up each of your services in the <a href="https://dashboard.render.com/" target="_blank" rel="nofollow">Render Dashboard</a>. The following subsections cover each option.</p>
+<h3 id="use-renderyaml-to-deploy"><a href="#use-renderyaml-to-deploy" aria-label="use renderyaml to deploy permalink"></a>Use <code>render.yaml</code> to deploy</h3>
+<ol>
+<li>
+<p>Create a file named <code>render.yaml</code> at the root of your directory and paste in the YAML content below. This defines information about your Rails <strong>web service</strong>, along with the <a href="https://docs.render.com/postgresql"><strong>database</strong></a> that it connects to:</p>
+<div data-language="yaml"><pre><code><span>databases</span><span>:</span>
+  <span>-</span> <span>name</span><span>:</span> mysite
+    <span>databaseName</span><span>:</span> mysite
+    <span>user</span><span>:</span> mysite
+    <span>plan</span><span>:</span> free
+
+<span>services</span><span>:</span>
+  <span>-</span> <span>type</span><span>:</span> web
+    <span>name</span><span>:</span> mysite
+    <span>runtime</span><span>:</span> ruby
+    <span>plan</span><span>:</span> free
+    <span>buildCommand</span><span>:</span> <span>"./bin/render-build.sh"</span>
+    <span># preDeployCommand: "bundle exec rails db:migrate" # preDeployCommand only available on paid instance types</span>
+    <span>startCommand</span><span>:</span> <span>"bundle exec rails server"</span>
+    <span>envVars</span><span>:</span>
+      <span>-</span> <span>key</span><span>:</span> DATABASE_URL
+        <span>fromDatabase</span><span>:</span>
+          <span>name</span><span>:</span> mysite
+          <span>property</span><span>:</span> connectionString
+      <span>-</span> <span>key</span><span>:</span> RAILS_MASTER_KEY
+        <span>sync</span><span>:</span> <span>false</span>
+      <span>-</span> <span>key</span><span>:</span> WEB_CONCURRENCY
+        <span>value</span><span>:</span> <span>2</span> <span># sensible default</span></code></pre></div>
+<p>Don’t forget to commit and push this change to your remote repository.</p>
+<span data-block="info"><span>
+<p>If you don’t set <code>WEB_CONCURRENCY</code>, Rails determines a value based on the runtime’s physical CPU count. This might result in your application running out of memory immediately on boot. We recommend setting this value to <code>2</code> as a default, but also optimizing this value for your own application.</p>
+</span></span>
+</li>
+<li>
+<p>In the Render Dashboard, go to the <a href="https://dashboard.render.com/blueprints" target="_blank" rel="nofollow">Blueprint</a> page and click <strong>New Blueprint Instance</strong>. Select your repository (after giving Render the permission to access it, if you haven’t already).</p>
+</li>
+<li>
+<p>In the deploy window, set the value of the <code>RAILS_MASTER_KEY</code> to the contents of your <code>config/master.key</code> file. Then click <strong>Approve</strong>.</p>
+</li>
+</ol>
+<p>That’s it! Your app will be live on your <code>.onrender.com</code> URL as soon as the build finishes.</p>
+<h3 id="deploy-manually"><a href="#deploy-manually" aria-label="deploy manually permalink"></a>Deploy manually</h3>
+<p>If you don’t want to deploy your Rails app through a Blueprint, follow these steps from the <a href="https://dashboard.render.com/" target="_blank" rel="nofollow">Render Dashboard</a> for a manual deploy:</p>
+<ol>
+<li>
+<p>Create a new <a href="https://docs.render.com/postgresql">PostgreSQL database</a> on Render. Note your database <strong>internal database URL</strong>—you’ll need it later.</p>
+</li>
+<li>
+<p>Create a new <a href="https://docs.render.com/web-services">web service</a> and point it to your application repository (make sure Render has a permission to access it).</p>
+</li>
+<li>
+<p>Select Ruby for the web service’s runtime and set the following properties:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody><tr><td><strong>Build Command</strong></td><td><code>./bin/render-build.sh</code></td></tr><tr><td><strong>Pre-deploy Command</strong>*</td><td><code>./bin/rails db:migrate</code></td></tr><tr><td><strong>Start Command</strong></td><td><code>./bin/rails server</code></td></tr></tbody></table>
+<span data-block="info"><span>
+<p>*The <a href="https://docs.render.com/deploys#pre-deploy-command">pre-deploy command</a> requires a paid instance type. If you’re running on the Free instance type, you can include a database migration step in your build command.</p>
+</span></span>
+</li>
+<li>
+<p>Set the following environment variables for the web service:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody><tr><td><code>DATABASE_URL</code></td><td>The <strong>internal database URL</strong> for the database you created above</td></tr><tr><td><code>RAILS_MASTER_KEY</code></td><td>Paste contents of the <code>config/master.key</code> file</td></tr><tr><td><code>WEB_CONCURRENCY</code></td><td>2</td></tr></tbody></table>
+</li>
+</ol>
+<p>That’s it! You can now finalize your service deployment. It will be live on your <code>.onrender.com</code> URL as soon as the initial build and deploy are complete.</p>
+<h2 id="additional-actions"><a href="#additional-actions" aria-label="additional actions permalink"></a>Additional actions</h2>
+<h3 id="accessing-the-rails-console"><a href="#accessing-the-rails-console" aria-label="accessing the rails console permalink"></a>Accessing the Rails console</h3>
+<p><span data-block="info"><span>Only paid instance types can use the shell tab and SSH</span></span></p>
+<p>You can access the Rails console by either using the shell tab in the <a href="https://dashboard.render.com/" target="_blank" rel="nofollow">Render Dashboard</a>, or by connecting to your service using <a href="https://docs.render.com/ssh">SSH</a> and running <code>rails c</code>:</p>
+<p><span>
+      <span></span>
+  <picture>
+          <source srcset="data:application/octet-stream;base64, 245w, data:application/octet-stream;base64, 490w, data:application/octet-stream;base64, 980w, data:application/octet-stream;base64, 1240w" sizes="(max-width: 980px) 100vw, 980px" type="image/webp">
+          <source srcset="data:application/octet-stream;base64, 245w, data:application/octet-stream;base64, 490w, data:application/octet-stream;base64, 980w, data:application/octet-stream;base64, 1240w" sizes="(max-width: 980px) 100vw, 980px" type="image/png">
+          <img src="data:application/octet-stream;base64," alt="Access Rails Console" title="" loading="lazy" decoding="async">
+        </picture>
+    </span></p>
+<h3 id="adding-caching"><a href="#adding-caching" aria-label="adding caching permalink"></a>Adding caching</h3>
+<p>If you want to speed up your Rails app with a cache, see <a href="https://docs.render.com/rails-caching-redis">Rails caching with Redis</a>.</p>
+<h3 id="processing-tasks-in-the-background"><a href="#processing-tasks-in-the-background" aria-label="processing tasks in the background permalink"></a>Processing tasks in the background</h3>
+<p>If you want to process asynchronous tasks in the background, see <a href="https://docs.render.com/deploy-rails-sidekiq">Deploy Rails with Sidekiq on Render</a>.</p>
+<h3 id="setting-a-ruby-version"><a href="#setting-a-ruby-version" aria-label="setting a ruby version permalink"></a>Setting a Ruby version</h3>
+<p>See <a href="https://docs.render.com/ruby-version">Setting your Ruby Version</a> if you need to customize the version of Ruby used for your app.</p></div></div>
+  </div>
+</body>
+</html>

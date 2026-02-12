@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cleaning</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Cleaning</h1>
+    <p><strong>URL:</strong> <a href="https://docs.unstructured.io/open-source/core-functionality/cleaning">https://docs.unstructured.io/open-source/core-functionality/cleaning</a></p>
+    <p><strong>Tags:</strong> llms, nlp</p>
+    <p><strong>Bookmark ID:</strong> 876796884</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Some cleaning functions apply automatically. In the example in the <strong>Partition</strong> section, the output <code>Philadelphia Eaglesâ\x80\x99 victory</code> automatically gets converted to <code>Philadelphia Eagles' victory</code> in <code>partition_html</code> using the <code>replace_unicode_quotes</code> cleaning function. You can see how that works in the code snippet below:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> replace_unicode_quotes
+
+replace_unicode_quotes<span>(</span><span>"Philadelphia Eaglesâ\x80\x99 victory"</span><span>)</span>
+
+</code></pre></div>
+<p>Document elements in <code>unstructured</code> include an <code>apply</code> method that allow you to apply the text cleaning to the document element without instantiating a new element. The <code>apply</code> method expects a callable that takes a string as input and produces another string as output. In the example below, we invoke the <code>replace_unicode_quotes</code> cleaning function using the <code>apply</code> method.</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>documents<span>.</span>elements <span>import</span> Text
+
+element <span>=</span> Text<span>(</span><span>"Philadelphia Eaglesâ\x80\x99 victory"</span><span>)</span>
+element<span>.</span><span>apply</span><span>(</span>replace_unicode_quotes<span>)</span>
+<span>print</span><span>(</span>element<span>)</span>
+
+</code></pre></div>
+<p>Since a cleaning function is just a <code>str -&gt; str</code> function, users can also easily include their own cleaning functions for custom data preparation tasks. In the example below, we remove citations from a section of text.</p>
+<div><pre><code><span>import</span> re
+
+remove_citations <span>=</span> <span>lambda</span> text<span>:</span> re<span>.</span>sub<span>(</span><span>"\[\d{1,3}\]"</span><span>,</span> <span>""</span><span>,</span> text<span>)</span>
+
+element <span>=</span> Text<span>(</span><span>"[1] Geolocated combat footage has confirmed Russian gains in the Dvorichne area northwest of Svatove."</span><span>)</span>
+element<span>.</span><span>apply</span><span>(</span>remove_citations<span>)</span>
+<span>print</span><span>(</span>element<span>)</span>
+
+</code></pre></div>
+<p>See below for a full list of cleaning functions in the <code>unstructured</code> library.</p>
+<h2 id="bytes-string-to-string"><span><code>bytes_string_to_string</code></span></h2>
+<p>Converts an output string that looks like a byte string to a string using the specified encoding. This happens sometimes in <code>partition_html</code> when there is a character like an emoji that isn’t expected by the HTML parser. In that case, the encoded bytes get processed.</p>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> bytes_string_to_string
+
+text <span>=</span> <span>"Hello ð\x9f\x98\x80"</span>
+<span># The output should be "Hello 😀"</span>
+bytes_string_to_string<span>(</span>text<span>,</span> encoding<span>=</span><span>"utf-8"</span><span>)</span>
+
+</code></pre></div>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> bytes_string_to_string
+<span>from</span> unstructured<span>.</span>partition<span>.</span>html <span>import</span> partition_html
+
+text <span>=</span> <span>"""\n&lt;html charset="utf-8"&gt;&lt;p&gt;Hello 😀&lt;/p&gt;&lt;/html&gt;"""</span>
+elements <span>=</span> partition_html<span>(</span>text<span>=</span>text<span>)</span>
+elements<span>[</span><span>0</span><span>]</span><span>.</span><span>apply</span><span>(</span>bytes_string_to_string<span>)</span>
+<span># The output should be "Hello 😀"</span>
+elements<span>[</span><span>0</span><span>]</span><span>.</span>text
+
+</code></pre></div>
+<p>For more information about the <code>bytes_string_to_string</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="clean"><span><code>clean</code></span></h2>
+<p>Cleans a section of text with options including removing bullets, extra whitespace, dashes and trailing punctuation. Optionally, you can choose to lowercase the output.</p>
+<p>Options:</p>
+<ul>
+<li>
+<p>Applies <code>clean_bullets</code> if <code>bullets=True</code>.</p>
+</li>
+<li>
+<p>Applies <code>clean_extra_whitespace</code> if <code>extra_whitespace=True</code>.</p>
+</li>
+<li>
+<p>Applies <code>clean_dashes</code> if <code>dashes=True</code>.</p>
+</li>
+<li>
+<p>Applies <code>clean_trailing_punctuation</code> if <code>trailing_punctuation=True</code>.</p>
+</li>
+<li>
+<p>Lowercases the output if <code>lowercase=True</code>.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> clean
+
+<span># Returns "an excellent point!"</span>
+clean<span>(</span><span>"● An excellent point!"</span><span>,</span> bullets<span>=</span><span>True</span><span>,</span> lowercase<span>=</span><span>True</span><span>)</span>
+
+<span># Returns "ITEM 1A: RISK FACTORS"</span>
+clean<span>(</span><span>"ITEM 1A:     RISK-FACTORS"</span><span>,</span> extra_whitespace<span>=</span><span>True</span><span>,</span> dashes<span>=</span><span>True</span><span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>clean</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="clean-bullets"><span><code>clean_bullets</code></span></h2>
+<p>Removes bullets from the beginning of text. Bullets that do not appear at the beginning of the text are not removed.</p>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> clean_bullets
+
+<span># Returns "An excellent point!"</span>
+clean_bullets<span>(</span><span>"● An excellent point!"</span><span>)</span>
+
+<span># Returns "I love Morse Code! ●●●"</span>
+clean_bullets<span>(</span><span>"I love Morse Code! ●●●"</span><span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>clean_bullets</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="clean-dashes"><span><code>clean_dashes</code></span></h2>
+<p>Removes dashes from a section of text. Also handles special characters such as <code>\u2013</code>.</p>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> clean_dashes
+
+<span># Returns "ITEM 1A: RISK FACTORS"</span>
+clean_dashes<span>(</span><span>"ITEM 1A: RISK-FACTORS\u2013"</span><span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>clean_dashes</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="clean-non-ascii-chars"><span><code>clean_non_ascii_chars</code></span></h2>
+<p>Removes non-ascii characters from a string.</p>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> clean_non_ascii_chars
+
+text <span>=</span> <span>"\x88This text contains ®non-ascii characters!●"</span>
+
+<span># Returns "This text contains non-ascii characters!"</span>
+clean_non_ascii_chars<span>(</span>text<span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>clean_non_ascii_chars</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="clean-ordered-bullets"><span><code>clean_ordered_bullets</code></span></h2>
+<p>Remove alphanumeric bullets from the beginning of text up to three “sub-section” levels.</p>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> clean_ordered_bullets
+
+<span># Returns "This is a very important point"</span>
+clean_ordered_bullets<span>(</span><span>"1.1 This is a very important point"</span><span>)</span>
+
+<span># Returns "This is a very important point ●"</span>
+clean_ordered_bullets<span>(</span><span>"a.b This is a very important point ●"</span><span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>clean_ordered_bullets</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="clean-postfix"><span><code>clean_postfix</code></span></h2>
+<p>Removes the postfix from a string if they match a specified pattern.</p>
+<p>Options:</p>
+<ul>
+<li>
+<p>Ignores case if <code>ignore_case</code> is set to <code>True</code>. The default is <code>False</code>.</p>
+</li>
+<li>
+<p>Strips trailing whitespace is <code>strip</code> is set to <code>True</code>. The default is <code>True</code>.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> clean_postfix
+
+text <span>=</span> <span>"The end! END"</span>
+
+<span># Returns "The end!"</span>
+clean_postfix<span>(</span>text<span>,</span> <span>r"(END|STOP)"</span><span>,</span> ignore_case<span>=</span><span>True</span><span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>clean_postfix</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="clean-prefix"><span><code>clean_prefix</code></span></h2>
+<p>Removes the prefix from a string if they match a specified pattern.</p>
+<p>Options:</p>
+<ul>
+<li>
+<p>Ignores case if <code>ignore_case</code> is set to <code>True</code>. The default is <code>False</code>.</p>
+</li>
+<li>
+<p>Strips leading whitespace is <code>strip</code> is set to <code>True</code>. The default is <code>True</code>.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> clean_prefix
+
+text <span>=</span> <span>"SUMMARY: This is the best summary of all time!"</span>
+
+<span># Returns "This is the best summary of all time!"</span>
+clean_prefix<span>(</span>text<span>,</span> <span>r"(SUMMARY|DESCRIPTION):"</span><span>,</span> ignore_case<span>=</span><span>True</span><span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>clean_prefix</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="clean-trailing-punctuation"><span><code>clean_trailing_punctuation</code></span></h2>
+<p>Removes trailing punctuation from a section of text.</p>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> clean_trailing_punctuation
+
+<span># Returns "ITEM 1A: RISK FACTORS"</span>
+clean_trailing_punctuation<span>(</span><span>"ITEM 1A: RISK FACTORS."</span><span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>clean_trailing_punctuation</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="group-broken-paragraphs"><span><code>group_broken_paragraphs</code></span></h2>
+<p>Groups together paragraphs that are broken up with line breaks for visual or formatting purposes. This is common in <code>.txt</code> files. By default, <code>group_broken_paragraphs</code> groups together lines split by <code>\n</code>. You can change that behavior with the <code>line_split</code> kwarg. The function considers <code>\n\n</code> to be a paragraph break by default. You can change that behavior with the <code>paragraph_split</code> kwarg.</p>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> group_broken_paragraphs
+
+text <span>=</span> <span>"""The big brown fox
+was walking down the lane.
+
+At the end of the lane, the
+fox met a bear."""</span>
+
+group_broken_paragraphs<span>(</span>text<span>)</span>
+
+</code></pre></div>
+<div><pre><code><span>import</span> re
+<span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> group_broken_paragraphs
+
+para_split_re <span>=</span> re<span>.</span><span>compile</span><span>(</span><span>r"(\s*\n\s*){3}"</span><span>)</span>
+
+text <span>=</span> <span>"""The big brown fox
+
+was walking down the lane.
+
+
+At the end of the lane, the
+
+fox met a bear."""</span>
+
+group_broken_paragraphs<span>(</span>text<span>,</span> paragraph_split<span>=</span>para_split_re<span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>group_broken_paragraphs</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="remove-punctuation"><span><code>remove_punctuation</code></span></h2>
+<p>Removes ASCII and unicode punctuation from a string.</p>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>core <span>import</span> remove_punctuation
+
+<span># Returns "A lovely quote"</span>
+remove_punctuation<span>(</span><span>"“A lovely quote!”"</span><span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>remove_punctuation</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="replace-unicode-quotes"><span><code>replace_unicode_quotes</code></span></h2>
+<p>Replaces unicode quote characters such as <code>\x91</code> in strings.</p>
+<p>Examples:</p>
+<div><pre><code>from unstructured.cleaners.core import replace_unicode_quotes
+
+# Returns "“A lovely quote!”"
+replace_unicode_characters("\x93A lovely quote!\x94")
+
+# Returns ""‘A lovely quote!’"
+replace_unicode_characters("\x91A lovely quote!\x92")
+
+</code></pre></div>
+<p>For more information about the <code>replace_unicode_quotes</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/core.py" target="_blank" rel="noreferrer">source code here</a>.</p>
+<h2 id="translate-text"><span><code>translate_text</code></span></h2>
+<p>The <code>translate_text</code> cleaning functions translates text between languages. <code>translate_text</code> uses the <a href="https://huggingface.co/Helsinki-NLP" target="_blank" rel="noreferrer">Helsinki NLP MT models</a> from <code>transformers</code> for machine translation. Works for Russian, Chinese, Arabic, and many other languages.</p>
+<p>Parameters:</p>
+<ul>
+<li>
+<p><code>text</code>: the input string to translate.</p>
+</li>
+<li>
+<p><code>source_lang</code>: the two letter language code for the source language of the text. If <code>source_lang</code> is not specified, the language will be detected using <code>langdetect</code>.</p>
+</li>
+<li>
+<p><code>target_lang</code>: the two letter language code for the target language for translation. Defaults to <code>"en"</code>.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div><pre><code><span>from</span> unstructured<span>.</span>cleaners<span>.</span>translate <span>import</span> translate_text
+
+<span># Output is "I'm a Berliner!"</span>
+translate_text<span>(</span><span>"Ich bin ein Berliner!"</span><span>)</span>
+
+<span># Output is "I can also translate Russian!"</span>
+translate_text<span>(</span><span>"Я тоже можно переводать русский язык!"</span><span>,</span> <span>"ru"</span><span>,</span> <span>"en"</span><span>)</span>
+
+</code></pre></div>
+<p>For more information about the <code>translate_text</code> function, you can check the <a href="https://github.com/Unstructured-IO/unstructured/blob/main/unstructured/cleaners/translate.py" target="_blank" rel="noreferrer">source code here</a>.</p></div></div>
+  </div>
+</body>
+</html>

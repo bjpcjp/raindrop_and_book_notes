@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mastering PDFs: Extracting Sections, Headings, Paragraphs, and Tables with</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Mastering PDFs: Extracting Sections, Headings, Paragraphs, and Tables with</h1>
+    <p><strong>URL:</strong> <a href="https://blog.llamaindex.ai/mastering-pdfs-extracting-sections-headings-paragraphs-and-tables-with-cutting-edge-parser-faea18870125?source=rss----d7683ed5043e---4">https://blog.llamaindex.ai/mastering-pdfs-extracting-sections-headings-paragraphs-and-tables-with-cutting-edge-parser-faea18870125?source=rss----d7683ed5043e---4</a></p>
+    <p><strong>Tags:</strong> llms, pdfs, python</p>
+    <p><strong>Bookmark ID:</strong> 876793800</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>
+  Despite recent motivation to utilize NLP for wider range of real world
+  applications, most NLP papers, tasks and pipelines assume raw, clean texts.
+  However, many texts we encounter in the wild, including a vast majority of
+  legal documents (e.g., contracts and legal codes), are not so clean, with many
+  of them being visually structured documents (VSDs) such as PDFs. PDFs are
+  versatile, preserving the visual integrity of documents, but they often pose a
+  significant challenge when it comes to extracting and manipulating their
+  contents.
+</p>
+<p>
+  In this discussion, our focus will primarily be on text-only layered PDFs, a
+  category often regarded by many as a resolved issue.
+</p>
+
+<h2>Complexity of Parsing PDFs</h2>
+<ol>
+  <li>
+    <strong>Layout Complexity</strong>: PDFs can contain complex layouts, such
+    as multi-column text, tables, images, and intricate formatting. This layout
+    diversity complicates the extraction of structured data.
+  </li>
+  <li>
+    <strong>Font encoding issue</strong>s: PDFs use a variety of font encoding
+    systems, and some of these systems do not map directly to Unicode. This can
+    make it difficult to extract the text accurately.
+  </li>
+  <li>
+    <strong>Non-linear text storage:</strong> PDFs do not store text in the
+    order it appears on the page. Instead, they store text in objects that can
+    be placed anywhere on the page. This means that the order of the text in the
+    underlying code may not match the order of the text as it appears visually.
+  </li>
+  <li>
+    <strong>Inconsistent use of spaces</strong>: In some PDFs, spaces are not
+    used consistently or are not used at all between words. This can make it
+    difficult to even identify word boundaries.
+  </li>
+</ol>
+
+<h2>Do we need an efficient parser?</h2>
+<blockquote>
+  <p>
+    In the Age of LLMs, is an Efficient Parser Still Essential When LLMs Can
+    Process Entire PDFs?
+  </p>
+</blockquote>
+<p>
+  This question gains relevance if the answer to this next question is “Yes”.
+</p>
+<blockquote>
+  <p>Do we need Retrieval-Augmented Generation (RAG)?</p>
+</blockquote>
+<p>
+  While LLMs are powerful, they have certain limitations in terms of the amount
+  of text they can process at once and the scope of information they can
+  reference. Further recent research have suggested LLM performance is often
+  highest when relevant information occurs at the beginning or end of the input
+  context, and significantly degrades when models must access relevant
+  information in the middle of long contexts. Techniques like RAG help overcome
+  these limitations, enabling more effective and efficient processing of large
+  documents and broader information retrieval.
+</p>
+<blockquote>
+  <p>Still Skeptical? Let’s ask an LLM for confirmation.</p>
+</blockquote>
+<figure>
+  <img alt="Chat GPT output mentioning the necessity of an efficient parser" src="data:application/octet-stream;base64," width="700" height="675" loading="lazy">
+</figure>
+<p>
+  Now that we’ve established the importance of an efficient parser, it becomes
+  instrumental in constructing an effective Retrieval-Augmented Generation (RAG)
+  pipeline to address the limitations of an LLM. Let’s explore how we are
+  achieving this today. It’s crucial to remember that the quality of the context
+  fed to an LLM is the cornerstone of an effective RAG, as the saying goes,
+  ‘<strong><em>Garbage In — Garbage Out</em></strong>.’
+</p>
+<p>
+  In the context of building LLM-related applications,
+  <strong>chunking</strong> is the process of breaking down large pieces of text
+  into smaller segments. It’s an essential technique that helps optimize the
+  relevance of the content we get back from a database once we use the LLM to
+  embed content. Some of the strategies involved are
+</p>
+<ol>
+  <li>
+    <strong>Fixed-size chunking</strong>. This is the most common and
+    straightforward approach to chunking: we simply decide the number of tokens
+    in our chunk and, optionally, whether there should be any overlap between
+    them. Easy to implement &amp; most commonly used, but never makes it to a
+    production setting because the output is satisfactory in a Proof of Concept
+    (POC) setup, but its accuracy degrades as we conduct further testing.
+  </li>
+  <li>
+    <strong>“Content-aware” chunking</strong>. Set of methods for taking
+    advantage of the nature of the content we’re chunking and applying more
+    sophisticated chunking to it. Challenging to implement due to the reasons
+    mentioned above, but if tackled correctly, it could be the most ideal
+    building block for a production-grade Information Retrieval (IR) engine.
+  </li>
+</ol>
+
+<h2>Where’s This Article Headed, Anyway?</h2>
+<p>
+  Certainly, let’s put an end to the historical and background details, shall
+  we?
+</p>
+<p>
+  Introducing
+  <a href="https://github.com/nlmatics/llmsherpa#layoutpdfreader" rel="noopener ugc nofollow" target="_blank"><strong>LayoutPDFReader</strong></a><strong> </strong>for “<em>Context-aware</em>” chunking.
+  <a href="https://github.com/nlmatics/llmsherpa" rel="noopener ugc nofollow" target="_blank">LayoutPDFReader</a>
+  can act as the most important tool in your RAG arsenal by parsing PDFs along
+  with hierarchical layout information such as:
+</p>
+<ol>
+  <li>
+    Identifying sections and subsections, along with their respective hierarchy
+    levels.
+  </li>
+  <li>Merging lines into coherent paragraphs.</li>
+  <li>Establishing connections between sections and paragraphs.</li>
+  <li>
+    Recognizing tables and associating them with their corresponding sections.
+  </li>
+  <li>Handling lists and nested list structures with precision.</li>
+</ol>
+<p>
+  The first step in using the
+  <a href="https://github.com/nlmatics/llmsherpa" rel="noopener ugc nofollow" target="_blank">LayoutPDFReader</a>
+  is to provide a URL or file path to it (assuming it’s already been installed)
+  and get back a document object.
+</p>
+<pre><span>from llmsherpa.readers import LayoutPDFReader<p>llmsherpa_api_url = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"<br>pdf_url = "https://arxiv.org/pdf/1910.13461.pdf" # also allowed is a file path e.g. /home/downloads/xyz.pdf<br>pdf_reader = LayoutPDFReader(llmsherpa_api_url)<br>doc = pdf_reader.read_pdf(pdf_url)</p></span></pre>
+<h2>Vector search and RAG with Smart Chunking</h2>
+<p>
+  LayoutPDFReader employs intelligent chunking to maintain the cohesion of
+  related text:
+</p>
+<ul>
+  <li>
+    It groups all list items together, along with the preceding paragraph.
+  </li>
+  <li>Items within a table are chunked together.</li>
+  <li>
+    It incorporates contextual information from section headers and nested
+    section headers.
+  </li>
+</ul>
+<p>
+  As a quick example, the following code snippet generates a
+  <a href="https://github.com/run-llama/llama_index" rel="noopener ugc nofollow" target="_blank">LlamaIndex</a>
+  query engine from the document chunks produced by LayoutPDFReader.
+</p>
+<pre><span>from llama_index.readers.schema.base import Document<br>from llama_index import VectorStoreIndex<p>index = VectorStoreIndex([])<br>for chunk in doc.chunks():<br>    index.insert(Document(text=chunk.to_context_text(), extra_info={}))<br>query_engine = index.as_query_engine()</p><p># Let's run one query<br>response = query_engine.query("list all the tasks that work with bart")<br>print(response)</p></span></pre>
+<p>We get the following response:</p>
+<pre><span>BART works well for text generation, comprehension tasks, abstractive dialogue, question answering, and summarization tasks.</span></pre>
+<p>Key Considerations:</p>
+<ol>
+  <li>
+    LLMSherpa leverages a cost-free and open API server. Your PDFs are not
+    retained beyond temporary storage during the parsing process.
+  </li>
+  <li>
+    LayoutPDFReader has undergone extensive testing with a diverse range of
+    PDFs. However, achieving flawless parsing for every PDF remains a
+    challenging task.
+  </li>
+  <li>
+    Please note that OCR (Optical Character Recognition) functionality is
+    presently unavailable. The tool exclusively supports PDFs equipped with a
+    text layer.
+  </li>
+  <li>
+    For inquiries regarding private hosting options, OCR support, or tailored
+    assistance with particular PDF-related concerns, feel free to reach out to
+    <a href="mailto:contact@nlmatics.com" rel="noopener ugc nofollow" target="_blank">contact@nlmatics.com</a>
+    or to
+    <a href="mailto:%20kiran@nlmatics.com" rel="noopener ugc nofollow" target="_blank">me</a>
+    directly.
+  </li>
+</ol>
+<p>
+  If you have any questions, please leave them in the comments section, and I
+  will try to respond ASAP.
+</p>
+<p>
+  <strong><em>Connect?</em></strong>
+</p>
+<p>
+  If you want to get in touch, feel free to shoot me a message on
+  <a href="https://www.linkedin.com/in/kirannpanicker/" rel="noopener ugc nofollow" target="_blank">LinkedIn </a>or via
+  <a href="mailto:%20kirankurup@gmail.com" rel="noopener ugc nofollow" target="_blank">email</a>.
+</p>
+<h2>References</h2>
+<p>
+  <a href="https://github.com/nlmatics/llmsherpa#layoutpdfreader" rel="noopener ugc nofollow" target="_blank">https://github.com/nlmatics/llmsherpa</a>
+</p>
+<p>
+  <a href="https://arxiv.org/abs/2105.00150" rel="noopener ugc nofollow" target="_blank">Capturing Logical Structure of Visually Structured Documents with Multimodal Transition Parser</a>
+</p>
+<p>
+  <a href="https://arxiv.org/abs/2307.03172" rel="noopener ugc nofollow" target="_blank">Lost in the Middle: How Language Models Use Long Contexts</a>
+</p>
+
+</div></div>
+  </div>
+</body>
+</html>

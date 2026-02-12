@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using exec Command in Bash Shell Scripts</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using exec Command in Bash Shell Scripts</h1>
+    <p><strong>URL:</strong> <a href="https://linuxhandbook.com/exec-command-shell-scripts">https://linuxhandbook.com/exec-command-shell-scripts</a></p>
+    <p><strong>Tags:</strong> bash, linux</p>
+    <p><strong>Bookmark ID:</strong> 876791974</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><a href="https://www.warp.dev/?utm_source=linux_handbook&amp;utm_medium=display&amp;utm_campaign=linux_launch" target="_blank"><img src="data:application/octet-stream;base64," alt="Warp Terminal"></a></p><p>The <a href="https://linuxhandbook.com/shell-builtin-commands/">shell built-in</a> exec command is used for executing commands in <a href="https://linuxhandbook.com/tag/bash-beginner/">shell scripts</a>.</p><p>Wait! Don't shell scripts execute Linux commands already? They do. But <strong>exec runs the Linux commands without starting a new process</strong>. It replaces the shell process with the specified command.</p><p>Seems complex? Let me give you some examples of using the exec command in shell scripts:</p><ul><li>Process replacement</li><li>Logging within the shell script</li><li>Change standard input to read a file</li><li>Change file descriptors</li></ul><p>So let's start with the first one.</p><h2 id="1-use-the-exec-command-to-replace-process-in-shell-script">1. Use the exec command to replace process in shell script</h2><p>Replacing the process is one of the most known implementations of exec in the shell script. </p><p>So here, I will be using a simple script that will display how the exec command in the script can be used to replace the current shell process.</p><p>First, use the following command to use the nano to create and edit a new script:</p><pre><code>nano process_replacement.sh</code></pre><p>And paste the following:<span data-ez-ph-id="105"></span></p><pre><code>#!/bin/bash
+
+echo "Before exec: This is the original script"
+
+exec ls -l
+
+echo "After exec: This line will not be executed"</code></pre><p>Once done, <a href="https://linuxhandbook.com/nano-save-exit/">save the changes and exit from the nano</a> text editor.</p><p>Now, let me explain what this script will do.</p><p>Here are three command statements. First will print the basic text indicating the original script which is meant to be replaced.</p><p>The second statement involves the usage of the exec command with the ls command to list the contents of the current working directory and it will replace the previous process too!</p><p>Now, the third statement won't be executed as the process was replaced by the exec previously, and there were no additional arguments to support the execution of the third command statement.</p><p>Simply put, the process will be replaced by the 2nd command argument, and the 3rd command won't be executed.<span data-ez-ph-id="116"></span></p><p>And here's the output if you execute the shown script:</p><figure><img src="https://linuxhandbook.com/content/images/2023/05/use-the-exec-command-in-the-shell-script-to-replace-the-process.png" alt="use the exec command in the shell script to replace the process" loading="lazy" width="837" height="231" srcset="https://linuxhandbook.com/content/images/size/w600/2023/05/use-the-exec-command-in-the-shell-script-to-replace-the-process.png 600w, https://linuxhandbook.com/content/images/2023/05/use-the-exec-command-in-the-shell-script-to-replace-the-process.png 837w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 837w" data-cfsrc="https://linuxhandbook.com/content/images/2023/05/use-the-exec-command-in-the-shell-script-to-replace-the-process.png"></figure><p>And as you can see, the 3rd command statement which was supposed to print "After exec: This line will not be executed" is shown here.</p><p>That does not seem very practical? Here's another example.</p><figure><a href="https://linuxhandbook.com/bash-process-substitution/"><div><p>Bash Process Substitution: How to Use it</p><p>Multiple commands and input/output redirections can be effectively used with bash process substitution.</p><p><img src="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png" alt="" data-cfsrc="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png"><span>Abhishek Prakash</span></p></div><p><img src="https://linuxhandbook.com/content/images/2020/10/process-substitution.png" alt="" data-cfsrc="https://linuxhandbook.com/content/images/2020/10/process-substitution.png"></p></a></figure><h2 id="2-use-exec-command-in-shell-scripts-for-logging">2. Use exec command in shell scripts for logging</h2><p>Yet another interesting and easy implementation of the exec is where you can <a href="https://linuxhandbook.com/redirect-dev-null/">redirect the output to a file</a>.</p><p>Here, I will be using 3 arguments, two for the <a href="https://linuxhandbook.com/redirection-linux/">standard output and one for standard error</a>.</p><p>Here's a script:</p><pre><code>#!/bin/bash
+
+LOG_FILE="script.log"
+
+# Redirect stdout and stderr to the log file
+exec &amp;&gt; "$LOG_FILE"
+
+# Start logging
+echo "Script started at $(date)"
+
+# Perform some operations
+echo "Performing operation 1 (stdout)..."
+ls -l /path/to/directory
+
+echo "Performing operation 2 (stderr)..."
+grep "search term" /path/to/nonexistentfile
+
+echo "Performing operation 3 (stdout)..."
+cat /path/to/file
+
+# Log completion
+echo "Script completed at $(date)"</code></pre><p>I have created an empty file named <code>script.log</code> in the same directory where the above script is located to store the logs.</p><p>Here, the exec command will redirect the output to the log file including when is started and ended.</p><p>When I ran the script, the file containing the log file looked like this:</p><figure><img src="https://linuxhandbook.com/content/images/2023/05/use-exec-command-in-shell-script-to-store-logs.png" alt="use exec command in shell script to store logs" loading="lazy" width="837" height="420" srcset="https://linuxhandbook.com/content/images/size/w600/2023/05/use-exec-command-in-shell-script-to-store-logs.png 600w, https://linuxhandbook.com/content/images/2023/05/use-exec-command-in-shell-script-to-store-logs.png 837w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 837w" data-cfsrc="https://linuxhandbook.com/content/images/2023/05/use-exec-command-in-shell-script-to-store-logs.png"></figure><h2 id="3-change-standard-input-to-read-files-using-exec">3. Change standard input to read files using exec</h2><p>This can be very helpful when performing certain operations over the file. </p><p>Here, I will be using a simple text file named <code>Hello.txt</code> that contains some random text lines:</p><pre><code>Ubuntu, openSUSE, Arch, Debian, Fedora
++ - / *
+2 4 6 1
+4 6 1 2</code></pre><p>And here's the script which will read from the file and output the contents to the standard output:</p><pre><code>#!/bin/bash
+
+INPUT_FILE="Hello.txt"
+
+# Redirect stdin to read from a file
+exec &lt; "$INPUT_FILE"
+
+# Read the entire file as a single input
+content=$(cat)
+
+# Process the input
+echo "Read: $content"</code></pre><p>Now, let me explain the script.</p><ul><li><code>INPUT_FILE</code> specifies which file to read from.</li><li><code>exec &lt; "$INPUT_FILE"</code> is a redirection to read from the specified file</li><li><code>content=$(cat)</code> will read the entire text file and assign it to the <code>content</code> variable.</li><li><code>echo "Read: $content"</code> will print the value of the <code>content</code> variable.</li></ul><p>And if you execute the script, the result will look like this:</p><figure><img src="https://linuxhandbook.com/content/images/2023/05/use-exec-command-in-shell-script-to-change-the-standard-input-to-read-the-file.png" alt="use exec command in shell script to change the standard input to read the file" loading="lazy" width="837" height="214" srcset="https://linuxhandbook.com/content/images/size/w600/2023/05/use-exec-command-in-shell-script-to-change-the-standard-input-to-read-the-file.png 600w, https://linuxhandbook.com/content/images/2023/05/use-exec-command-in-shell-script-to-change-the-standard-input-to-read-the-file.png 837w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 837w" data-cfsrc="https://linuxhandbook.com/content/images/2023/05/use-exec-command-in-shell-script-to-change-the-standard-input-to-read-the-file.png"></figure><figure><a href="https://linuxhandbook.com/read-command/"><div><p>Linux Read Command: 6 Practical Examples</p><p>With read command, you can make your bash script interactive by accepting user inputs. Learn to use the read command in Linux with these practical examples.</p><p><img src="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png" alt="" data-cfsrc="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png"><span>Linux Handbook</span><span>Christopher Murray</span></p></div><p><img src="https://linuxhandbook.com/content/images/2020/06/read_command_linux-1.jpg" alt="" data-cfsrc="https://linuxhandbook.com/content/images/2020/06/read_command_linux-1.jpg"></p></a></figure><h2 id="4-change-file-descriptors-using-exec-in-the-shell-script-advanced">4. Change file descriptors using exec in the shell script (advanced)</h2><p>There are three standard file descriptors in Linux:</p><ol><li>Standard input (stdin - file descriptor 0)</li><li>Standard output (stdout - file descriptor 1)</li><li>Standard error (stderr - file descriptor 2)</li></ol><p>And using the exec command, you can change the descriptors. For example, you can use any number to use the preferred data stream, such as using 3 for stdin.</p><p>Let me share the script first and then explain how it functions:</p><pre><code>#!/bin/bash
+
+# Open a file for writing
+exec 3&gt; output.txt
+
+# Redirect stdout to file descriptor 3
+exec 1&gt;&amp;3
+
+# Print some output
+echo "This is a test message"
+
+# Close the file descriptor
+exec 3&gt;&amp;-</code></pre><p>Here, I have opened a <code>output.txt</code> file and assigned file descriptor 3 which means anything sent to file descriptor 3 will be written to the file.</p><p>Using <code>exec 1&gt;&amp;3</code>, I have redirected the standard output (1) to the file descriptor 3 which means anything written to the standard output will be sent to the file descriptor 3 (to the output.txt in my case).</p><p>The echo statement prints the text to the standard output (which will be sent to the file as we changed the file descriptor earlier).</p><p>And <code>exec 3&gt;&amp;-</code> kills the file descriptor 3 as it is no longer needed!</p><p>You can expect the following results after executing the above script:</p><figure><img src="https://linuxhandbook.com/content/images/2023/05/How-to-change-file-descriptors-using-exec-in-the-shell-script.png" alt="Change file descriptors using exec in the shell script" loading="lazy" width="837" height="177" srcset="https://linuxhandbook.com/content/images/size/w600/2023/05/How-to-change-file-descriptors-using-exec-in-the-shell-script.png 600w, https://linuxhandbook.com/content/images/2023/05/How-to-change-file-descriptors-using-exec-in-the-shell-script.png 837w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 837w" data-cfsrc="https://linuxhandbook.com/content/images/2023/05/How-to-change-file-descriptors-using-exec-in-the-shell-script.png"></figure><h2 id="do-more-by-pairing-exec-with-the-find-command">Do more by pairing exec with the find command</h2><p>Did you know that you can use the find command with the exec and trust me, it makes a killer combination? It's not the same exec discussed here, though.</p><p>And if you want to learn how to, here's a detailed guide:</p><figure><a href="https://linuxhandbook.com/find-exec-command/"><div><p>Find Exec Command in Linux: 9 Useful Examples</p><p>Find works on searching files based on a number of criteria. The exec command gives you the ability to work on those results. Here are some examples of find exec command combination.</p><p><img src="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png" alt="" data-cfsrc="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png"><span>Linux Handbook</span><span>Sagar Sharma</span></p></div><p><img src="https://linuxhandbook.com/content/images/2022/07/find-exec-command-linux.png" alt="" data-cfsrc="https://linuxhandbook.com/content/images/2022/07/find-exec-command-linux.png"></p></a></figure><p>I hope you will find this guide helpful. And if you have doubts, leave a comment. </p>
+</div></div>
+  </div>
+</body>
+</html>

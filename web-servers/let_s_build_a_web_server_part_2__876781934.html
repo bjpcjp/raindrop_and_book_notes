@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Let’s Build A Web Server. Part 2.</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Let’s Build A Web Server. Part 2.</h1>
+    <p><strong>URL:</strong> <a href="https://ruslanspivak.com/lsbaws-part2">https://ruslanspivak.com/lsbaws-part2</a></p>
+    <p><strong>Tags:</strong> web-servers</p>
+    <p><strong>Bookmark ID:</strong> 876781934</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+                
+                    <p>Remember, in <a href="http://ruslanspivak.com/lsbaws-part1/" title="Part 1">Part 1</a> I asked you a question: “How do you run a Django application, Flask application, and Pyramid application under your freshly minted Web server without making a single change to the server to accommodate all those different Web frameworks?” Read on to find out the&nbsp;answer.</p>
+<p>In the past, your choice of a Python Web framework would limit your choice of usable Web servers, and vice versa. If the framework and the server were designed to work together, then you were&nbsp;okay:</p>
+<p><img alt="Server Framework Fit" src="data:application/octet-stream;base64," width="640"></p>
+<p>But you could have been faced (and maybe you were) with the following problem when trying to combine a server and a framework that weren’t designed to work&nbsp;together:</p>
+<p><img alt="Server Framework Clash" src="data:application/octet-stream;base64," width="640"></p>
+<p>Basically you had to use what worked together and not what you might have wanted to&nbsp;use.</p>
+<p>So, how do you then make sure that you can run your Web server with multiple Web frameworks without making code changes either to the Web server or to the Web frameworks?
+And the answer to that problem became the <strong>Python Web Server Gateway Interface</strong> (or <a href="https://www.python.org/dev/peps/pep-0333/" title="WSGI"><span>WSGI</span></a> for short, pronounced <em>“wizgy”</em>).</p>
+<p><img alt="WSGI Interface" src="data:application/octet-stream;base64," width="480"></p>
+<p><a href="https://www.python.org/dev/peps/pep-0333/" title="WSGI"><span>WSGI</span></a> allowed developers to separate choice of a Web framework from choice of a Web server. Now you can actually mix and match Web servers and Web frameworks and choose a pairing that suits your needs. You can run <a href="https://www.djangoproject.com/" title="Django">Django</a>, <a href="http://flask.pocoo.org/" title="Flask">Flask</a>, or <a href="http://trypyramid.com/" title="Pyramid">Pyramid</a>, for example, with <a href="http://gunicorn.org/" title="Gunicorn">Gunicorn</a> or <a href="http://uwsgi-docs.readthedocs.org/" title="uWSGI">Nginx/uWSGI</a> or <a href="http://waitress.readthedocs.org/" title="Waitress">Waitress</a>. Real mix and match, thanks to the <span>WSGI</span> support in both servers and&nbsp;frameworks:</p>
+<p><img alt="Mix &amp; Match" src="data:application/octet-stream;base64," width="640"></p>
+<p>So, <a href="https://www.python.org/dev/peps/pep-0333/" title="WSGI"><span>WSGI</span></a> is the answer to the question I asked you in <a href="http://ruslanspivak.com/lsbaws-part1/" title="Part 1">Part 1</a> and repeated at the beginning of this article. Your Web server must implement the server portion of a <span>WSGI</span> interface and all modern Python Web Frameworks already implement the framework side of the <span>WSGI</span> interface, which allows you to use them with your Web server without ever modifying your server’s code to accommodate a particular Web&nbsp;framework.</p>
+<p>Now you know that <span>WSGI</span> support by Web servers and Web frameworks allows you to choose a pairing that suits you, but it is also beneficial to server and framework developers because they can focus on their preferred area of specialization and not step on each other’s toes. Other languages have similar interfaces too: Java, for example, has <a href="http://en.wikipedia.org/wiki/Java_servlet" title="Servlet API">Servlet <span>API</span></a> and Ruby has <a href="http://en.wikipedia.org/wiki/Rack_%28web_server_interface%29" title="Rack">Rack</a>.</p>
+<p>It’s all good, but I bet you are saying: “Show me the code!”
+Okay, take a look at this pretty minimalistic <span>WSGI</span> server&nbsp;implementation:</p>
+<div><pre><span></span><span># Tested with Python 3.7+ (Mac OS X)</span>
+<span>import</span> <span>io</span>
+<span>import</span> <span>socket</span>
+<span>import</span> <span>sys</span>
+
+
+<span>class</span> <span>WSGIServer</span><span>(</span><span>object</span><span>):</span>
+
+    <span>address_family</span> <span>=</span> <span>socket</span><span>.</span><span>AF_INET</span>
+    <span>socket_type</span> <span>=</span> <span>socket</span><span>.</span><span>SOCK_STREAM</span>
+    <span>request_queue_size</span> <span>=</span> <span>1</span>
+
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>server_address</span><span>):</span>
+        <span># Create a listening socket</span>
+        <span>self</span><span>.</span><span>listen_socket</span> <span>=</span> <span>listen_socket</span> <span>=</span> <span>socket</span><span>.</span><span>socket</span><span>(</span>
+            <span>self</span><span>.</span><span>address_family</span><span>,</span>
+            <span>self</span><span>.</span><span>socket_type</span>
+        <span>)</span>
+        <span># Allow to reuse the same address</span>
+        <span>listen_socket</span><span>.</span><span>setsockopt</span><span>(</span><span>socket</span><span>.</span><span>SOL_SOCKET</span><span>,</span> <span>socket</span><span>.</span><span>SO_REUSEADDR</span><span>,</span> <span>1</span><span>)</span>
+        <span># Bind</span>
+        <span>listen_socket</span><span>.</span><span>bind</span><span>(</span><span>server_address</span><span>)</span>
+        <span># Activate</span>
+        <span>listen_socket</span><span>.</span><span>listen</span><span>(</span><span>self</span><span>.</span><span>request_queue_size</span><span>)</span>
+        <span># Get server host name and port</span>
+        <span>host</span><span>,</span> <span>port</span> <span>=</span> <span>self</span><span>.</span><span>listen_socket</span><span>.</span><span>getsockname</span><span>()[:</span><span>2</span><span>]</span>
+        <span>self</span><span>.</span><span>server_name</span> <span>=</span> <span>socket</span><span>.</span><span>getfqdn</span><span>(</span><span>host</span><span>)</span>
+        <span>self</span><span>.</span><span>server_port</span> <span>=</span> <span>port</span>
+        <span># Return headers set by Web framework/Web application</span>
+        <span>self</span><span>.</span><span>headers_set</span> <span>=</span> <span>[]</span>
+
+    <span>def</span> <span>set_app</span><span>(</span><span>self</span><span>,</span> <span>application</span><span>):</span>
+        <span>self</span><span>.</span><span>application</span> <span>=</span> <span>application</span>
+
+    <span>def</span> <span>serve_forever</span><span>(</span><span>self</span><span>):</span>
+        <span>listen_socket</span> <span>=</span> <span>self</span><span>.</span><span>listen_socket</span>
+        <span>while</span> <span>True</span><span>:</span>
+            <span># New client connection</span>
+            <span>self</span><span>.</span><span>client_connection</span><span>,</span> <span>client_address</span> <span>=</span> <span>listen_socket</span><span>.</span><span>accept</span><span>()</span>
+            <span># Handle one request and close the client connection. Then</span>
+            <span># loop over to wait for another client connection</span>
+            <span>self</span><span>.</span><span>handle_one_request</span><span>()</span>
+
+    <span>def</span> <span>handle_one_request</span><span>(</span><span>self</span><span>):</span>
+        <span>request_data</span> <span>=</span> <span>self</span><span>.</span><span>client_connection</span><span>.</span><span>recv</span><span>(</span><span>1024</span><span>)</span>
+        <span>self</span><span>.</span><span>request_data</span> <span>=</span> <span>request_data</span> <span>=</span> <span>request_data</span><span>.</span><span>decode</span><span>(</span><span>'utf-8'</span><span>)</span>
+        <span># Print formatted request data a la 'curl -v'</span>
+        <span>print</span><span>(</span><span>''</span><span>.</span><span>join</span><span>(</span>
+            <span>f</span><span>'&lt; </span><span>{</span><span>line</span><span>}</span><span>\n</span><span>'</span> <span>for</span> <span>line</span> <span>in</span> <span>request_data</span><span>.</span><span>splitlines</span><span>()</span>
+        <span>))</span>
+
+        <span>self</span><span>.</span><span>parse_request</span><span>(</span><span>request_data</span><span>)</span>
+
+        <span># Construct environment dictionary using request data</span>
+        <span>env</span> <span>=</span> <span>self</span><span>.</span><span>get_environ</span><span>()</span>
+
+        <span># It's time to call our application callable and get</span>
+        <span># back a result that will become HTTP response body</span>
+        <span>result</span> <span>=</span> <span>self</span><span>.</span><span>application</span><span>(</span><span>env</span><span>,</span> <span>self</span><span>.</span><span>start_response</span><span>)</span>
+
+        <span># Construct a response and send it back to the client</span>
+        <span>self</span><span>.</span><span>finish_response</span><span>(</span><span>result</span><span>)</span>
+
+    <span>def</span> <span>parse_request</span><span>(</span><span>self</span><span>,</span> <span>text</span><span>):</span>
+        <span>request_line</span> <span>=</span> <span>text</span><span>.</span><span>splitlines</span><span>()[</span><span>0</span><span>]</span>
+        <span>request_line</span> <span>=</span> <span>request_line</span><span>.</span><span>rstrip</span><span>(</span><span>'</span><span>\r\n</span><span>'</span><span>)</span>
+        <span># Break down the request line into components</span>
+        <span>(</span><span>self</span><span>.</span><span>request_method</span><span>,</span>  <span># GET</span>
+         <span>self</span><span>.</span><span>path</span><span>,</span>            <span># /hello</span>
+         <span>self</span><span>.</span><span>request_version</span>  <span># HTTP/1.1</span>
+         <span>)</span> <span>=</span> <span>request_line</span><span>.</span><span>split</span><span>()</span>
+
+    <span>def</span> <span>get_environ</span><span>(</span><span>self</span><span>):</span>
+        <span>env</span> <span>=</span> <span>{}</span>
+        <span># The following code snippet does not follow PEP8 conventions</span>
+        <span># but it's formatted the way it is for demonstration purposes</span>
+        <span># to emphasize the required variables and their values</span>
+        <span>#</span>
+        <span># Required WSGI variables</span>
+        <span>env</span><span>[</span><span>'wsgi.version'</span><span>]</span>      <span>=</span> <span>(</span><span>1</span><span>,</span> <span>0</span><span>)</span>
+        <span>env</span><span>[</span><span>'wsgi.url_scheme'</span><span>]</span>   <span>=</span> <span>'http'</span>
+        <span>env</span><span>[</span><span>'wsgi.input'</span><span>]</span>        <span>=</span> <span>io</span><span>.</span><span>StringIO</span><span>(</span><span>self</span><span>.</span><span>request_data</span><span>)</span>
+        <span>env</span><span>[</span><span>'wsgi.errors'</span><span>]</span>       <span>=</span> <span>sys</span><span>.</span><span>stderr</span>
+        <span>env</span><span>[</span><span>'wsgi.multithread'</span><span>]</span>  <span>=</span> <span>False</span>
+        <span>env</span><span>[</span><span>'wsgi.multiprocess'</span><span>]</span> <span>=</span> <span>False</span>
+        <span>env</span><span>[</span><span>'wsgi.run_once'</span><span>]</span>     <span>=</span> <span>False</span>
+        <span># Required CGI variables</span>
+        <span>env</span><span>[</span><span>'REQUEST_METHOD'</span><span>]</span>    <span>=</span> <span>self</span><span>.</span><span>request_method</span>    <span># GET</span>
+        <span>env</span><span>[</span><span>'PATH_INFO'</span><span>]</span>         <span>=</span> <span>self</span><span>.</span><span>path</span>              <span># /hello</span>
+        <span>env</span><span>[</span><span>'SERVER_NAME'</span><span>]</span>       <span>=</span> <span>self</span><span>.</span><span>server_name</span>       <span># localhost</span>
+        <span>env</span><span>[</span><span>'SERVER_PORT'</span><span>]</span>       <span>=</span> <span>str</span><span>(</span><span>self</span><span>.</span><span>server_port</span><span>)</span>  <span># 8888</span>
+        <span>return</span> <span>env</span>
+
+    <span>def</span> <span>start_response</span><span>(</span><span>self</span><span>,</span> <span>status</span><span>,</span> <span>response_headers</span><span>,</span> <span>exc_info</span><span>=</span><span>None</span><span>):</span>
+        <span># Add necessary server headers</span>
+        <span>server_headers</span> <span>=</span> <span>[</span>
+            <span>(</span><span>'Date'</span><span>,</span> <span>'Mon, 15 Jul 2019 5:54:48 GMT'</span><span>),</span>
+            <span>(</span><span>'Server'</span><span>,</span> <span>'WSGIServer 0.2'</span><span>),</span>
+        <span>]</span>
+        <span>self</span><span>.</span><span>headers_set</span> <span>=</span> <span>[</span><span>status</span><span>,</span> <span>response_headers</span> <span>+</span> <span>server_headers</span><span>]</span>
+        <span># To adhere to WSGI specification the start_response must return</span>
+        <span># a 'write' callable. We simplicity's sake we'll ignore that detail</span>
+        <span># for now.</span>
+        <span># return self.finish_response</span>
+
+    <span>def</span> <span>finish_response</span><span>(</span><span>self</span><span>,</span> <span>result</span><span>):</span>
+        <span>try</span><span>:</span>
+            <span>status</span><span>,</span> <span>response_headers</span> <span>=</span> <span>self</span><span>.</span><span>headers_set</span>
+            <span>response</span> <span>=</span> <span>f</span><span>'HTTP/1.1 </span><span>{</span><span>status</span><span>}</span><span>\r\n</span><span>'</span>
+            <span>for</span> <span>header</span> <span>in</span> <span>response_headers</span><span>:</span>
+                <span>response</span> <span>+=</span> <span>'</span><span>{0}</span><span>: </span><span>{1}</span><span>\r\n</span><span>'</span><span>.</span><span>format</span><span>(</span><span>*</span><span>header</span><span>)</span>
+            <span>response</span> <span>+=</span> <span>'</span><span>\r\n</span><span>'</span>
+            <span>for</span> <span>data</span> <span>in</span> <span>result</span><span>:</span>
+                <span>response</span> <span>+=</span> <span>data</span><span>.</span><span>decode</span><span>(</span><span>'utf-8'</span><span>)</span>
+            <span># Print formatted response data a la 'curl -v'</span>
+            <span>print</span><span>(</span><span>''</span><span>.</span><span>join</span><span>(</span>
+                <span>f</span><span>'&gt; </span><span>{</span><span>line</span><span>}</span><span>\n</span><span>'</span> <span>for</span> <span>line</span> <span>in</span> <span>response</span><span>.</span><span>splitlines</span><span>()</span>
+            <span>))</span>
+            <span>response_bytes</span> <span>=</span> <span>response</span><span>.</span><span>encode</span><span>()</span>
+            <span>self</span><span>.</span><span>client_connection</span><span>.</span><span>sendall</span><span>(</span><span>response_bytes</span><span>)</span>
+        <span>finally</span><span>:</span>
+            <span>self</span><span>.</span><span>client_connection</span><span>.</span><span>close</span><span>()</span>
+
+
+<span>SERVER_ADDRESS</span> <span>=</span> <span>(</span><span>HOST</span><span>,</span> <span>PORT</span><span>)</span> <span>=</span> <span>''</span><span>,</span> <span>8888</span>
+
+
+<span>def</span> <span>make_server</span><span>(</span><span>server_address</span><span>,</span> <span>application</span><span>):</span>
+    <span>server</span> <span>=</span> <span>WSGIServer</span><span>(</span><span>server_address</span><span>)</span>
+    <span>server</span><span>.</span><span>set_app</span><span>(</span><span>application</span><span>)</span>
+    <span>return</span> <span>server</span>
+
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>'__main__'</span><span>:</span>
+    <span>if</span> <span>len</span><span>(</span><span>sys</span><span>.</span><span>argv</span><span>)</span> <span>&lt;</span> <span>2</span><span>:</span>
+        <span>sys</span><span>.</span><span>exit</span><span>(</span><span>'Provide a WSGI application object as module:callable'</span><span>)</span>
+    <span>app_path</span> <span>=</span> <span>sys</span><span>.</span><span>argv</span><span>[</span><span>1</span><span>]</span>
+    <span>module</span><span>,</span> <span>application</span> <span>=</span> <span>app_path</span><span>.</span><span>split</span><span>(</span><span>':'</span><span>)</span>
+    <span>module</span> <span>=</span> <span>__import__</span><span>(</span><span>module</span><span>)</span>
+    <span>application</span> <span>=</span> <span>getattr</span><span>(</span><span>module</span><span>,</span> <span>application</span><span>)</span>
+    <span>httpd</span> <span>=</span> <span>make_server</span><span>(</span><span>SERVER_ADDRESS</span><span>,</span> <span>application</span><span>)</span>
+    <span>print</span><span>(</span><span>f</span><span>'WSGIServer: Serving HTTP on port </span><span>{</span><span>PORT</span><span>}</span><span> ...</span><span>\n</span><span>'</span><span>)</span>
+    <span>httpd</span><span>.</span><span>serve_forever</span><span>()</span>
+</pre></div>
+
+
+<p>It’s definitely bigger than the server code in <a href="http://ruslanspivak.com/lsbaws-part1/" title="Part 1">Part 1</a>, but it’s also small enough (just under 150 lines) for you to understand without getting bogged down in details. The above server also does more - it can run your basic Web application written with your beloved Web framework, be it Pyramid, Flask, Django, or some other Python <span>WSGI</span>&nbsp;framework.</p>
+<p>Don’t believe me? Try it and see for yourself. Save the above code as <em>webserver2.py</em> or download it directly from <a href="https://github.com/rspivak/lsbaws/blob/master/part2/webserver2.py">GitHub</a>. If you try to run it without any parameters it’s going to complain and&nbsp;exit.</p>
+<div><pre><span></span>$<span> </span>python<span> </span>webserver2.py
+Provide<span> </span>a<span> </span>WSGI<span> </span>application<span> </span>object<span> </span>as<span> </span>module:callable
+</pre></div>
+
+
+<p>It really wants to serve your Web application and that’s where the fun begins. To run the server the only thing you need installed is Python (Python 3.7+, to be exact). But to run applications written with Pyramid, Flask, and Django you need to install those frameworks first. Let’s install all three of them. My preferred method is by using <a href="https://packaging.python.org/tutorials/installing-packages/#creating-virtual-environments" target="_blank">venv</a> (it is available by default in Python 3.3 and later). Just follow the steps below to create and activate a virtual environment and then install all three Web&nbsp;frameworks.</p>
+<div><pre><span></span>$<span> </span>python3<span> </span>-m<span> </span>venv<span> </span>lsbaws
+$<span> </span>ls<span> </span>lsbaws
+bin<span>   </span>include<span>   </span>lib<span>   </span>pyvenv.cfg
+$<span> </span><span>source</span><span> </span>lsbaws/bin/activate
+<span>(</span>lsbaws<span>)</span><span> </span>$<span> </span>pip<span> </span>install<span> </span>-U<span> </span>pip
+<span>(</span>lsbaws<span>)</span><span> </span>$<span> </span>pip<span> </span>install<span> </span>pyramid
+<span>(</span>lsbaws<span>)</span><span> </span>$<span> </span>pip<span> </span>install<span> </span>flask
+<span>(</span>lsbaws<span>)</span><span> </span>$<span> </span>pip<span> </span>install<span> </span>django
+</pre></div>
+
+
+<p>At this point you need to create a Web application.
+Let’s start with <a href="http://trypyramid.com/" title="Pyramid">Pyramid</a> first.
+Save the following code as <em>pyramidapp.py</em> to the same directory where you saved <em>webserver2.py</em> or download the file directly from <a href="https://github.com/rspivak/lsbaws/blob/master/part2/pyramidapp.py">GitHub</a>:</p>
+<div><pre><span></span><span>from</span> <span>pyramid.config</span> <span>import</span> <span>Configurator</span>
+<span>from</span> <span>pyramid.response</span> <span>import</span> <span>Response</span>
+
+
+<span>def</span> <span>hello_world</span><span>(</span><span>request</span><span>):</span>
+    <span>return</span> <span>Response</span><span>(</span>
+        <span>'Hello world from Pyramid!</span><span>\n</span><span>'</span><span>,</span>
+        <span>content_type</span><span>=</span><span>'text/plain'</span><span>,</span>
+    <span>)</span>
+
+<span>config</span> <span>=</span> <span>Configurator</span><span>()</span>
+<span>config</span><span>.</span><span>add_route</span><span>(</span><span>'hello'</span><span>,</span> <span>'/hello'</span><span>)</span>
+<span>config</span><span>.</span><span>add_view</span><span>(</span><span>hello_world</span><span>,</span> <span>route_name</span><span>=</span><span>'hello'</span><span>)</span>
+<span>app</span> <span>=</span> <span>config</span><span>.</span><span>make_wsgi_app</span><span>()</span>
+</pre></div>
+
+
+<p>Now you’re ready to serve your Pyramid application with your very own Web&nbsp;server:</p>
+<div><pre><span></span><span>(</span>lsbaws<span>)</span><span> </span>$<span> </span>python<span> </span>webserver2.py<span> </span>pyramidapp:app
+WSGIServer:<span> </span>Serving<span> </span>HTTP<span> </span>on<span> </span>port<span> </span><span>8888</span><span> </span>...
+</pre></div>
+
+
+<p>You just told your server to load the <em>‘app’</em> callable from the python module <em>‘pyramidapp’</em> Your server is now ready to take requests and forward them to your Pyramid application. The application only handles one route now: the <em>/hello</em> route.
+Type <a href="http://localhost:8888/hello">http://localhost:8888/hello</a> address into your browser, press Enter, and observe the&nbsp;result:</p>
+<p><img alt="Pyramid" src="data:application/octet-stream;base64,"></p>
+<p>You can also test the server on the command line using the <em>‘curl’</em>&nbsp;utility:</p>
+<div><pre><span></span>$<span> </span>curl<span> </span>-v<span> </span>http://localhost:8888/hello
+...
+</pre></div>
+
+
+<p>Check what the server and <em>curl</em> prints to standard&nbsp;output.</p>
+<p>Now onto <a href="http://flask.pocoo.org/" title="Flask">Flask</a>. Let’s follow the same&nbsp;steps.</p>
+<div><pre><span></span><span>from</span> <span>flask</span> <span>import</span> <span>Flask</span>
+<span>from</span> <span>flask</span> <span>import</span> <span>Response</span>
+<span>flask_app</span> <span>=</span> <span>Flask</span><span>(</span><span>'flaskapp'</span><span>)</span>
+
+
+<span>@flask_app</span><span>.</span><span>route</span><span>(</span><span>'/hello'</span><span>)</span>
+<span>def</span> <span>hello_world</span><span>():</span>
+    <span>return</span> <span>Response</span><span>(</span>
+        <span>'Hello world from Flask!</span><span>\n</span><span>'</span><span>,</span>
+        <span>mimetype</span><span>=</span><span>'text/plain'</span>
+    <span>)</span>
+
+<span>app</span> <span>=</span> <span>flask_app</span><span>.</span><span>wsgi_app</span>
+</pre></div>
+
+
+<p>Save the above code as <em>flaskapp.py</em> or download it from <a href="https://github.com/rspivak/lsbaws/blob/master/part2/flaskapp.py">GitHub</a> and run the server&nbsp;as:</p>
+<div><pre><span></span><span>(</span>lsbaws<span>)</span><span> </span>$<span> </span>python<span> </span>webserver2.py<span> </span>flaskapp:app
+WSGIServer:<span> </span>Serving<span> </span>HTTP<span> </span>on<span> </span>port<span> </span><span>8888</span><span> </span>...
+</pre></div>
+
+
+<p>Now type in the <a href="http://localhost:8888/hello">http://localhost:8888/hello</a> into your browser and press&nbsp;Enter:</p>
+<p><img alt="Flask" src="data:application/octet-stream;base64,"></p>
+<p>Again, try <em>‘curl’</em> and see for yourself that the server returns a message generated by the Flask&nbsp;application:</p>
+<div><pre><span></span>$<span> </span>curl<span> </span>-v<span> </span>http://localhost:8888/hello
+...
+</pre></div>
+
+
+<p>Can the server also handle a <a href="https://www.djangoproject.com/" title="Django">Django</a> application? Try it out!
+It’s a little bit more involved, though, and I would recommend cloning the whole repo and use <a href="https://github.com/rspivak/lsbaws/blob/master/part2/djangoapp.py">djangoapp.py</a>, which is part of the <a href="https://github.com/rspivak/lsbaws/">GitHub repository</a>.
+Here is the source code which basically adds the Django <em>‘helloworld’</em> project (pre-created using Django’s <em>django-admin.py startproject</em> command) to the current Python path and then imports the project’s <span>WSGI</span>&nbsp;application.</p>
+<div><pre><span></span><span>import</span> <span>sys</span>
+<span>sys</span><span>.</span><span>path</span><span>.</span><span>insert</span><span>(</span><span>0</span><span>,</span> <span>'./helloworld'</span><span>)</span>
+<span>from</span> <span>helloworld</span> <span>import</span> <span>wsgi</span>
+
+
+<span>app</span> <span>=</span> <span>wsgi</span><span>.</span><span>application</span>
+</pre></div>
+
+
+<p>Save the above code as <em>djangoapp.py</em> and run the Django application with your Web&nbsp;server:</p>
+<div><pre><span></span><span>(</span>lsbaws<span>)</span><span> </span>$<span> </span>python<span> </span>webserver2.py<span> </span>djangoapp:app
+WSGIServer:<span> </span>Serving<span> </span>HTTP<span> </span>on<span> </span>port<span> </span><span>8888</span><span> </span>...
+</pre></div>
+
+
+<p>Type in the following address and press&nbsp;Enter:</p>
+<p><img alt="Django" src="data:application/octet-stream;base64,"></p>
+<p>And as you’ve already done a couple of times before, you can test it on the command line, too, and confirm that it’s the Django application that handles your requests this time&nbsp;around:</p>
+<div><pre><span></span>$<span> </span>curl<span> </span>-v<span> </span>http://localhost:8888/hello
+...
+</pre></div>
+
+
+<p>Did you try it? Did you make sure the server works with those three frameworks? If not, then please do so. Reading is important, but this series is about rebuilding and that means you need to get your hands dirty. Go and try it. I will wait for you, don’t worry. No seriously, you must try it and, better yet, retype everything yourself and make sure that it works as&nbsp;expected.</p>
+<p>Okay, you’ve experienced the power of <span>WSGI</span>: it allows you to mix and match your Web servers and Web frameworks. <span>WSGI</span> provides a minimal interface between Python Web servers and Python Web Frameworks. It’s very simple and it’s easy to implement on both the server and the framework side. The following code snippet shows the server and the framework side of the&nbsp;interface:</p>
+<div><pre><span></span><span>def</span> <span>run_application</span><span>(</span><span>application</span><span>):</span>
+<span>    </span><span>"""Server code."""</span>
+    <span># This is where an application/framework stores</span>
+    <span># an HTTP status and HTTP response headers for the server</span>
+    <span># to transmit to the client</span>
+    <span>headers_set</span> <span>=</span> <span>[]</span>
+    <span># Environment dictionary with WSGI/CGI variables</span>
+    <span>environ</span> <span>=</span> <span>{}</span>
+
+    <span>def</span> <span>start_response</span><span>(</span><span>status</span><span>,</span> <span>response_headers</span><span>,</span> <span>exc_info</span><span>=</span><span>None</span><span>):</span>
+        <span>headers_set</span><span>[:]</span> <span>=</span> <span>[</span><span>status</span><span>,</span> <span>response_headers</span><span>]</span>
+
+    <span># Server invokes the ‘application' callable and gets back the</span>
+    <span># response body</span>
+    <span>result</span> <span>=</span> <span>application</span><span>(</span><span>environ</span><span>,</span> <span>start_response</span><span>)</span>
+    <span># Server builds an HTTP response and transmits it to the client</span>
+    <span>...</span>
+
+<span>def</span> <span>app</span><span>(</span><span>environ</span><span>,</span> <span>start_response</span><span>):</span>
+<span>    </span><span>"""A barebones WSGI app."""</span>
+    <span>start_response</span><span>(</span><span>'200 OK'</span><span>,</span> <span>[(</span><span>'Content-Type'</span><span>,</span> <span>'text/plain'</span><span>)])</span>
+    <span>return</span> <span>[</span><span>b</span><span>'Hello world!'</span><span>]</span>
+
+<span>run_application</span><span>(</span><span>app</span><span>)</span>
+</pre></div>
+
+
+<p>Here is how it&nbsp;works:</p>
+<ol>
+<li>The framework provides an <em>‘application’</em> callable (The <span>WSGI</span> specification doesn’t prescribe how that should be&nbsp;implemented)</li>
+<li>The server invokes the <em>‘application’</em> callable for each request it receives from an <span>HTTP</span> client. It passes a dictionary <em>‘environ’</em> containing <span>WSGI</span>/<span>CGI</span> variables and a <em>‘start_response’</em> callable as arguments to the <em>‘application’</em>&nbsp;callable.</li>
+<li>The framework/application generates an <span>HTTP</span> status and <span>HTTP</span> response headers and passes them to the <em>‘start_response’</em> callable for the server to store them. The framework/application also returns a response&nbsp;body.</li>
+<li>The server combines the status, the response headers, and the response body into an <span>HTTP</span> response and transmits it to the client (This step is not part of the specification but it’s the next logical step in the flow and I added it for&nbsp;clarity)</li>
+</ol>
+<p>And here is a visual representation of the&nbsp;interface:</p>
+<p><img alt="WSGI Interface" src="data:application/octet-stream;base64,"></p>
+<p>So far, you’ve seen the Pyramid, Flask, and Django Web applications and you’ve seen the server code that implements the server side of the <span>WSGI</span> specification. You’ve even seen the barebones <span>WSGI</span> application code snippet that doesn’t use any&nbsp;framework.</p>
+<p>The thing is that when you write a Web application using one of those frameworks you work at a higher level and don’t work with <span>WSGI</span> directly, but I know you’re curious about the framework side of the <span>WSGI</span> interface, too because you’re reading this article. So, let’s create a minimalistic <span>WSGI</span> Web application/Web framework without using Pyramid, Flask, or Django and run it with your&nbsp;server:</p>
+<div><pre><span></span><span>def</span> <span>app</span><span>(</span><span>environ</span><span>,</span> <span>start_response</span><span>):</span>
+<span>    </span><span>"""A barebones WSGI application.</span>
+
+<span>    This is a starting point for your own Web framework :)</span>
+<span>    """</span>
+    <span>status</span> <span>=</span> <span>'200 OK'</span>
+    <span>response_headers</span> <span>=</span> <span>[(</span><span>'Content-Type'</span><span>,</span> <span>'text/plain'</span><span>)]</span>
+    <span>start_response</span><span>(</span><span>status</span><span>,</span> <span>response_headers</span><span>)</span>
+    <span>return</span> <span>[</span><span>b</span><span>'Hello world from a simple WSGI application!</span><span>\n</span><span>'</span><span>]</span>
+</pre></div>
+
+
+<p>Again, save the above code in <em>wsgiapp.py</em> file or download it from <a href="https://github.com/rspivak/lsbaws/blob/master/part2/wsgiapp.py">GitHub</a> directly and run the application under your Web server&nbsp;as:</p>
+<div><pre><span></span><span>(</span>lsbaws<span>)</span><span> </span>$<span> </span>python<span> </span>webserver2.py<span> </span>wsgiapp:app
+WSGIServer:<span> </span>Serving<span> </span>HTTP<span> </span>on<span> </span>port<span> </span><span>8888</span><span> </span>...
+</pre></div>
+
+
+<p>Type in the following address and press Enter. This is the result you should&nbsp;see:</p>
+<p><img alt="Simple WSGI Application" src="data:application/octet-stream;base64,"></p>
+<p>You just wrote your very own minimalistic <span>WSGI</span> Web framework while learning about how to create a Web server!&nbsp;Outrageous.</p>
+<p>Now, let’s get back to what the server transmits to the client. Here is the <span>HTTP</span> response the server generates when you call your Pyramid application using an <span>HTTP</span>&nbsp;client:</p>
+<p><img alt="HTTP Response Part 1" src="data:application/octet-stream;base64," width="640"></p>
+<p>The response has some familiar parts that you saw in <a href="http://ruslanspivak.com/lsbaws-part1/" title="Part 1">Part 1</a> but it also has something new. It has, for example, four <a href="http://en.wikipedia.org/wiki/List_of_HTTP_header_fields" title="HTTP header fields"><span>HTTP</span> headers</a> that you haven’t seen before: <em>Content-Type</em>, <em>Content-Length</em>, <em>Date</em>, and <em>Server</em>. Those are the headers that a response from a Web server generally should have. None of them are strictly required, though. The purpose of the headers is to transmit additional information about the <span>HTTP</span>&nbsp;request/response.</p>
+<p>Now that you know more about the <span>WSGI</span> interface, here is the same <span>HTTP</span> response with some more information about what parts produced&nbsp;it:</p>
+<p><img alt="HTTP Response Part 2" src="data:application/octet-stream;base64,"></p>
+<p>I haven’t said anything about the <strong>‘environ’</strong> dictionary yet, but basically it’s a Python dictionary that must contain certain <span>WSGI</span> and <span>CGI</span> variables prescribed by the <span>WSGI</span> specification.
+The server takes the values for the dictionary from the <span>HTTP</span> request after parsing the request.
+This is what the contents of the dictionary look&nbsp;like:</p>
+<p><img alt="Environ Python Dictionary" src="data:application/octet-stream;base64," width="720"></p>
+<p>A Web framework uses the information from that dictionary to decide which view to use based on the specified route, request method etc., where to read the request body from and where to write errors, if&nbsp;any.</p>
+<p>By now you’ve created your own <span>WSGI</span> Web server and you’ve made Web applications written with different Web frameworks. And, you’ve also created your barebones Web application/Web framework along the way. It’s been a heck of a journey. Let’s recap what your <span>WSGI</span> Web server has to do to serve requests aimed at a <span>WSGI</span>&nbsp;application:</p>
+<ul>
+<li>First, the server starts and loads an <em>‘application’</em> callable provided by your Web&nbsp;framework/application</li>
+<li>Then, the server reads a&nbsp;request</li>
+<li>Then, the server parses&nbsp;it</li>
+<li>Then, it builds an <em>‘environ’</em> dictionary using the request&nbsp;data</li>
+<li>Then, it calls the <em>‘application’</em> callable with the <em>‘environ’</em> dictionary and a <em>‘start_response’</em> callable as parameters and gets back a response&nbsp;body.</li>
+<li>Then, the server constructs an <span>HTTP</span> response using the data returned by the call to the <em>‘application’</em> object and the status and response headers set by the <em>‘start_response’</em>&nbsp;callable.</li>
+<li>And finally, the server transmits the <span>HTTP</span> response back to the&nbsp;client</li>
+</ul>
+<p><img alt="Server Summary" src="data:application/octet-stream;base64," width="700"></p>
+<p>That’s about all there is to it. You now have a working <span>WSGI</span> server that can serve basic Web applications written with <span>WSGI</span> compliant Web frameworks like <a href="https://www.djangoproject.com/" title="Django">Django</a>, <a href="http://flask.pocoo.org/" title="Flask">Flask</a>, <a href="http://trypyramid.com/" title="Pyramid">Pyramid</a>, or your very own <span>WSGI</span> framework. The best part is that the server can be used with multiple Web frameworks without any changes to the server code base. Not bad at&nbsp;all.</p>
+<p>Before you go, here is another question for you to think about, <em>“How do you make your server handle more than one request at a&nbsp;time?”</em></p>
+<p>Stay tuned and I will show you a way to do that in <a href="https://ruslanspivak.com/lsbaws-part3/">Part 3</a>.&nbsp;Cheers!</p>
+<p><br>
+<em>Resources used in preparation for this article (some links are affiliate&nbsp;links):</em></p>
+<ol>
+<li>
+<p><a href="http://www.amazon.com/gp/product/0131411551/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0131411551&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=2F4NYRBND566JJQL">Unix Network Programming, Volume 1: The Sockets Networking <span>API</span> (3rd Edition)</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></p>
+</li>
+<li>
+<p><a href="http://www.amazon.com/gp/product/0321637739/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0321637739&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=3ZYAKB537G6TM22J">Advanced Programming in the <span>UNIX</span> Environment, 3rd Edition</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></p>
+</li>
+<li>
+<p><a href="http://www.amazon.com/gp/product/1593272200/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1593272200&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=CHFOMNYXN35I2MON">The Linux Programming Interface: A Linux and <span>UNIX</span> System Programming Handbook</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></p>
+</li>
+<li>
+<p><a href="https://www.python.org/dev/peps/pep-0333/" target="_blank"><span>PEP</span> 333 — Python Web Server Gateway&nbsp;Interface</a></p>
+</li>
+</ol>
+
+<blockquote>
+<p><em><strong><span>UPDATE</span>: Mon, July 15,&nbsp;2019</strong></em></p>
+<ul>
+<li>
+<p>Updated the server code to run under Python&nbsp;3.7+</p>
+</li>
+<li>
+<p>Added resources used in preparation for the&nbsp;article</p>
+</li>
+</ul>
+</blockquote>
+<p>Get the edge and stay sharp. Subscribe to Beyond Basics for free and get new posts without missing a beat!</p>
+
+
+
+
+<p><br>
+<strong>All articles in this&nbsp;series:</strong></p>
+<ul>
+<li><a href="https://ruslanspivak.com/lsbaws-part1/">Let’s Build A Web Server. Part&nbsp;1.</a></li>
+<li><a href="https://ruslanspivak.com/lsbaws-part2/">Let’s Build A Web Server. Part&nbsp;2.</a></li>
+<li><a href="https://ruslanspivak.com/lsbaws-part3/">Let’s Build A Web Server. Part&nbsp;3.</a></li>
+</ul>
+            </div></div>
+  </div>
+</body>
+</html>

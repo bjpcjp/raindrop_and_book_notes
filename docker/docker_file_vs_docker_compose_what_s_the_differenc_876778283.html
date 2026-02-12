@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Docker File vs Docker Compose: What's the Difference?</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Docker File vs Docker Compose: What's the Difference?</h1>
+    <p><strong>URL:</strong> <a href="https://linuxhandbook.com/docker-file-vs-docker-compose">https://linuxhandbook.com/docker-file-vs-docker-compose</a></p>
+    <p><strong>Tags:</strong> docker</p>
+    <p><strong>Bookmark ID:</strong> 876778283</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><a href="https://www.warp.dev/?utm_source=linux_handbook&amp;utm_medium=display&amp;utm_campaign=linux_launch" target="_blank"><img src="data:application/octet-stream;base64," alt="Warp Terminal"></a></p><p>I've seen many people get confused between a Dockerfile and a Compose file. This is primarily because both are used to <a href="https://linuxhandbook.com/modifying-docker-image/">modify a Docker image</a> in a way, though it's not technically correct.</p><p>It is easy to confuse the two terms, but it's also necessary to understand the difference when making a conversation with a colleague or your (potential) employer.</p><p><a href="https://linuxhandbook.com/create-custom-docker-image/">Dockerfile</a> is what's used to create a container image, and a Compose file is what's used to deploy an instance of that image as a container.</p><p>Let me go in a bit of detail so that you properly understand the difference between Docker Compose and <a href="https://docs.docker.com/engine/reference/builder/">Dockerfile</a>.</p><h2 id="what-is-a-dockerfile">What is a Dockerfile?</h2><p>I like to call Dockerfile the predecessor of a container image. You build an image from a Dockerfile. A typical Dockerfile contains special build instructions, commands like <code>RUN</code>, <code>ADD</code>, <code>COPY</code>, <code>ENTRYPOINT</code>, etc. </p><p>Take the example below:</p><pre><code>FROM alpine:latest
+
+RUN apk add --no-cache fortune
+
+ENTRYPOINT ["fortune"]
+</code></pre><p>Each line starts with an instruction for the build component. These instructions don't necessarily have to be written in capital letters. The following is just as valid as the previous one.</p><pre><code>from alpine:latest
+
+run apk add --no-cache fortune
+
+entrypoint ["fortune"]
+</code></pre><p>From this Dockerfile, you can now build a container image (or a docker image). An image is simply a template for the running containers, consisting of multiple read-only layers. Since this isn't an article on container images, I'm going to refrain from over explaining that topic.<span data-ez-ph-id="105"></span></p><p>To build an image from this Dockerfile, using the docker CLI, run the following command</p><pre><code>docker build -t fortune:alpine .
+</code></pre><p>This will build an image tagged <code>fortune:alpine</code>. I'm not going to create a container from this image yet, that's for the next section.</p><h2 id="what-is-a-compose-file">What is a Compose file?</h2><p>Compose files are used in two types of deployments: in the non-cluster deployment with <code>docker-compose</code> and a cluster deployment with <code>docker swarm</code>. </p><p>To distinguish the two types, I'm going to address the <a href="https://linuxhandbook.com/docker-compose-essential/">compose file</a> responsible for cluster deployment as stack files. I'll talk about stack files in a moment.</p><p>Compose files are part of a tool called <code>docker-compose</code>. It's a client application to the docker daemon server, kind of like the <code>docker</code> CLI client, but instead of typing the whole <code>run</code> commands every time, with <code>docker-compose</code> you can re-use the same <a href="https://linuxhandbook.com/yaml-basics/" rel="noreferrer">YAML file</a> over and over again, and deploy the same container with the same configuration as you did in the first time. </p><p>It's more readable, more maintainable, more intuitive. A single compose file can contain multiple container deployment configurations.<span data-ez-ph-id="116"></span></p>
+
+<p>
+Compose file support is going to be part of the default docker client which is written in Go, as a command-line argument, "docker compose". Notice the missing hyphen there. It's still experimental, so in production using the Python version, i.e. docker-compose is still recommended.
+</p>
+
+<p>Let's take the previous image, and deploy an instance of that using a compose file.</p><pre><code>version: "3.3"
+
+services:
+    fortune:
+        image: "fortune:alpine"
+</code></pre><p>Save the file as <code>docker-compose.yml</code>. Now run in the same directory the following command<span data-ez-ph-id="109"></span></p><pre><code>docker-compose up
+</code></pre><p>You don't <strong>have to</strong> save the file as <code>docker-compose.yml</code>, you can save it however you like, but if it's not <code>docker-compose.yml</code> or <code>docker-compose.yaml</code>, make sure you use the <code>-f [FILENAME]</code> option.</p><pre><code>docker-compose -f docker-compose.yml up
+</code></pre><p>Wait and see what happens. </p><figure><img src="https://linuxhandbook.com/content/images/2021/03/fortune.png" alt="" loading="lazy" width="1152" height="379" srcset="https://linuxhandbook.com/content/images/size/w600/2021/03/fortune.png 600w, https://linuxhandbook.com/content/images/size/w1000/2021/03/fortune.png 1000w, https://linuxhandbook.com/content/images/2021/03/fortune.png 1152w" sizes="(min-width: 720px) 720px" data-old-srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1152w" data-cfsrc="https://linuxhandbook.com/content/images/2021/03/fortune.png"></figure><p>To know what <code>fortune</code> is, read this article about <a href="https://itsfoss.com/funny-linux-commands/">funny Linux commands</a>.</p><figure><a href="https://linuxhandbook.com/docker-compose-essential/"><div><p>Essential Docker Compose Commands and Their Usage</p><p>Here’s an overview of the Docker Compose file components and various commands you can use to manage them.</p><p><img src="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png" alt="" data-cfsrc="https://linuxhandbook.com/content/images/size/w256h256/2021/08/Linux-Handbook-New-Logo.png"><span>Umair Khurshid</span></p></div><p><img src="https://linuxhandbook.com/content/images/2024/09/docker-compose-essentials.png" alt="" onerror="this.style.display = 'none'" data-cfsrc="https://linuxhandbook.com/content/images/2024/09/docker-compose-essentials.png"></p></a></figure><h3 id="what-is-a-stack-file">What is a stack file?</h3><p>Stack files are identical to compose files with similar syntax and most of the internal options, with some exceptions. Stack files are used to deploy stacks of services in a <a href="https://docs.docker.com/engine/swarm/">swarm</a> cluster.</p><p>You can re-use the previous compose file directly as a stack file.</p><p>First, initialize the cluster.</p><pre><code>docker swarm init
+</code></pre><p>Then run a command similar to the following</p><pre><code>docker stack deploy -c docker-compose.yml fortune
+</code></pre><p>If deployed like this, you need to check the output by viewing the service logs using <code>docker service logs ...</code>.</p><div>
+<p><img src="https://linuxhandbook.com/content/images/2023/10/Training_Badge_IPP-CloudEngineer.png" width="1000" height="1000" loading="lazy" data-cfsrc="https://linuxhandbook.com/content/images/2023/10/Training_Badge_IPP-CloudEngineer.png"></p><p>
+<h4><span>Cloud Engineer IT Professional Program</span></h4>
+</p>
+
+<p><span>Become a certified cloud engineer, one of the 15 highest paying IT jobs, in as little as six months.</span></p>
+<p><a href="https://itsfoss.click/lf-cloud-bootcamp" target="_blank" rel="noopener noreferrer"><span>Check it out</span></a>
+</p></div><h2 id="wrapping-up">Wrapping up</h2><p>Dockerfiles and Compose files serve a different purpose. If I could build a timeline, it'd look something like this</p><pre><code>Dockerfile -&gt; Docker Image -&gt; Compose File -&gt; Running Containers
+</code></pre><p>There's another reason beginners get confused with these two files. A Dockerfile can be pointed to through the Compose file, and then you can use <code>docker-compose</code> to build the image. </p><p>For example, you can rewrite the previous compose file so</p><pre><code>version: "3.3"
+
+services:
+    fortune:
+        build:
+            context: '.'
+            dockerfile: "./Dockerfile"
+        image: "fortune:alpine"
+</code></pre><p>Now you can run <code>docker-compose build</code> to build the image. Or you can also run <code>docker-compose up --build</code> to build and run the container at once.</p><p>Here the Dockerfile is passed through the compose file, and from the first look, it can seem like it's the compose file that's responsible for building the image, but it's not.</p><figure><a href="https://linuxhandbook.com/docker-run-vs-start-vs-create/"><div><p>Docker Run vs Start vs Create: Difference Explained</p><p>For a docker beginner, terms like docker start, docker run and docker create could be confusing. This article explains the difference with examples.</p><p><img src="https://linuxhandbook.com/assets/icon-192x192.png?v=85dc1ca7bf" alt="" data-cfsrc="https://linuxhandbook.com/assets/icon-192x192.png?v=85dc1ca7bf"><span>Linux Handbook</span><span>Abhishek Prakash</span></p></div><p><img src="https://linuxhandbook.com/content/images/2020/06/docker_run_start_create.jpg" alt="" onerror="this.style.display = 'none'" data-cfsrc="https://linuxhandbook.com/content/images/2020/06/docker_run_start_create.jpg"></p></a></figure><p>I hope this article cleared what the difference is between a Dockerfile and a Compose file. If you have any questions, let me know in the comment section down below.</p>
+</div></div>
+  </div>
+</body>
+</html>

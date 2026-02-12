@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>venv — Creation of virtual environments — Python 3.12.0 documentation</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>venv — Creation of virtual environments — Python 3.12.0 documentation</h1>
+    <p><strong>URL:</strong> <a href="https://docs.python.org/3/library/venv.html">https://docs.python.org/3/library/venv.html</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876793665</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section id="module-venv" role="main">
+<span id="venv-creation-of-virtual-environments"></span>
+<p><span>Added in version 3.3.</span></p>
+<p><strong>Source code:</strong> <a href="https://github.com/python/cpython/tree/3.13/Lib/venv/">Lib/venv/</a></p>
+<hr id="index-0">
+<p id="venv-intro"><span id="venv-def"></span>The <code><span>venv</span></code> module supports creating lightweight “virtual environments”,
+each with their own independent set of Python packages installed in
+their <a href="https://docs.python.org/3/library/site.html#module-site" title="site: Module responsible for site-specific configuration."><code><span>site</span></code></a> directories.
+A virtual environment is created on top of an existing
+Python installation, known as the virtual environment’s “base” Python, and may
+optionally be isolated from the packages in the base environment,
+so only those explicitly installed in the virtual environment are available.</p>
+<p>When used from within a virtual environment, common installation tools such as
+<a href="https://pypi.org/project/pip/">pip</a> will install Python packages into a virtual environment
+without needing to be told to do so explicitly.</p>
+<p>A virtual environment is (amongst other things):</p>
+<ul>
+<li><p>Used to contain a specific Python interpreter and software libraries and
+binaries which are needed to support a project (library or application). These
+are by default isolated from software in other virtual environments and Python
+interpreters and libraries installed in the operating system.</p></li>
+<li><p>Contained in a directory, conventionally named <code><span>.venv</span></code> or <code><span>venv</span></code> in
+the project directory, or under a container directory for lots of virtual
+environments, such as <code><span>~/.virtualenvs</span></code>.</p></li>
+<li><p>Not checked into source control systems such as Git.</p></li>
+<li><p>Considered as disposable – it should be simple to delete and recreate it from
+scratch. You don’t place any project code in the environment.</p></li>
+<li><p>Not considered as movable or copyable – you just recreate the same
+environment in the target location.</p></li>
+</ul>
+<p>See <span id="index-1"></span><a href="https://peps.python.org/pep-0405/"><strong>PEP 405</strong></a> for more background on Python virtual environments.</p>
+
+
+<section id="creating-virtual-environments">
+<h2>Creating virtual environments<a href="#creating-virtual-environments" title="Link to this heading">¶</a></h2>
+<p><a href="#venv-def"><span>Virtual environments</span></a> are created by executing the <code><span>venv</span></code>
+module:</p>
+<div><pre><span></span>python<span> </span>-m<span> </span>venv<span> </span>/path/to/new/virtual/environment
+</pre></div>
+<p>This creates the target directory (including parent directories as needed)
+and places a <code><span>pyvenv.cfg</span></code> file in it with a <code><span>home</span></code> key
+pointing to the Python installation from which the command was run.
+It also creates a <code><span>bin</span></code> (or <code><span>Scripts</span></code> on Windows) subdirectory
+containing a copy or symlink of the Python executable
+(as appropriate for the platform or arguments used at environment creation time).
+It also creates a <code><span>lib/pythonX.Y/site-packages</span></code> subdirectory
+(on Windows, this is <code><span>Libsite-packages</span></code>).
+If an existing directory is specified, it will be re-used.</p>
+<p><span>Changed in version 3.5: </span>The use of <code><span>venv</span></code> is now recommended for creating virtual environments.</p>
+<p><span>Deprecated since version 3.6, removed in version 3.8: </span><strong>pyvenv</strong> was the recommended tool for creating virtual environments
+for Python 3.3 and 3.4, and replaced in 3.5 by executing <code><span>venv</span></code> directly.</p>
+<p>On Windows, invoke the <code><span>venv</span></code> command as follows:</p>
+<div><pre><span></span><span>PS&gt; </span><span>python</span> <span>-m</span> <span>venv</span> <span>C</span><span>:\</span><span>path</span><span>\</span><span>to</span><span>\</span><span>new</span><span>\</span><span>virtual</span><span>\</span><span>environment</span>
+</pre></div>
+<p>The command, if run with <code><span>-h</span></code>, will show the available options:</p>
+<div><pre><span></span>usage: venv [-h] [--system-site-packages] [--symlinks | --copies] [--clear]
+            [--upgrade] [--without-pip] [--prompt PROMPT] [--upgrade-deps]
+            [--without-scm-ignore-files]
+            ENV_DIR [ENV_DIR ...]
+
+Creates virtual Python environments in one or more target directories.
+
+positional arguments:
+  ENV_DIR               A directory to create the environment in.
+
+options:
+  -h, --help            show this help message and exit
+  --system-site-packages
+                        Give the virtual environment access to the system
+                        site-packages dir.
+  --symlinks            Try to use symlinks rather than copies, when
+                        symlinks are not the default for the platform.
+  --copies              Try to use copies rather than symlinks, even when
+                        symlinks are the default for the platform.
+  --clear               Delete the contents of the environment directory
+                        if it already exists, before environment creation.
+  --upgrade             Upgrade the environment directory to use this
+                        version of Python, assuming Python has been
+                        upgraded in-place.
+  --without-pip         Skips installing or upgrading pip in the virtual
+                        environment (pip is bootstrapped by default)
+  --prompt PROMPT       Provides an alternative prompt prefix for this
+                        environment.
+  --upgrade-deps        Upgrade core dependencies (pip) to the latest
+                        version in PyPI
+  --without-scm-ignore-files
+                        Skips adding SCM ignore files to the environment
+                        directory (Git is supported by default).
+
+Once an environment has been created, you may wish to activate it, e.g. by
+sourcing an activate script in its bin directory.
+</pre></div>
+<p><span>Changed in version 3.4: </span>Installs pip by default, added the <code><span>--without-pip</span></code>  and <code><span>--copies</span></code>
+options.</p>
+<p><span>Changed in version 3.4: </span>In earlier versions, if the target directory already existed, an error was
+raised, unless the <code><span>--clear</span></code> or <code><span>--upgrade</span></code> option was provided.</p>
+<p><span>Changed in version 3.9: </span>Add <code><span>--upgrade-deps</span></code> option to upgrade pip + setuptools to the latest on PyPI.</p>
+<p><span>Changed in version 3.12: </span><code><span>setuptools</span></code> is no longer a core venv dependency.</p>
+<p><span>Changed in version 3.13: </span>Added the <code><span>--without-scm-ignore-files</span></code> option.</p>
+<p><span>Changed in version 3.13: </span><code><span>venv</span></code> now creates a <code><span>.gitignore</span></code> file for Git by default.</p>
+<div>
+<p>Note</p>
+<p>While symlinks are supported on Windows, they are not recommended. Of
+particular note is that double-clicking <code><span>python.exe</span></code> in File Explorer
+will resolve the symlink eagerly and ignore the virtual environment.</p>
+</div>
+<div>
+<p>Note</p>
+<p>On Microsoft Windows, it may be required to enable the <code><span>Activate.ps1</span></code>
+script by setting the execution policy for the user. You can do this by
+issuing the following PowerShell command:</p>
+<div><pre><span></span><span>PS </span><span>C</span><span>:\&gt;</span> <span>Set-ExecutionPolicy</span> <span>-ExecutionPolicy</span> <span>RemoteSigned</span> <span>-Scope</span> <span>CurrentUser</span>
+</pre></div>
+<p>See <a href="https://go.microsoft.com/fwlink/?LinkID=135170">About Execution Policies</a>
+for more information.</p>
+</div>
+<p>The created <code><span>pyvenv.cfg</span></code> file also includes the
+<code><span>include-system-site-packages</span></code> key, set to <code><span>true</span></code> if <code><span>venv</span></code> is
+run with the <code><span>--system-site-packages</span></code> option, <code><span>false</span></code> otherwise.</p>
+<p>Unless the <code><span>--without-pip</span></code> option is given, <a href="https://docs.python.org/3/library/ensurepip.html#module-ensurepip" title="ensurepip: Bootstrapping the &quot;pip&quot; installer into an existing Python installation or virtual environment."><code><span>ensurepip</span></code></a> will be
+invoked to bootstrap <code><span>pip</span></code> into the virtual environment.</p>
+<p>Multiple paths can be given to <code><span>venv</span></code>, in which case an identical virtual
+environment will be created, according to the given options, at each provided
+path.</p>
+</section>
+<section id="how-venvs-work">
+<span id="venv-explanation"></span><h2>How venvs work<a href="#how-venvs-work" title="Link to this heading">¶</a></h2>
+<p>When a Python interpreter is running from a virtual environment,
+<a href="https://docs.python.org/3/library/sys.html#sys.prefix" title="sys.prefix"><code><span>sys.prefix</span></code></a> and <a href="https://docs.python.org/3/library/sys.html#sys.exec_prefix" title="sys.exec_prefix"><code><span>sys.exec_prefix</span></code></a>
+point to the directories of the virtual environment,
+whereas <a href="https://docs.python.org/3/library/sys.html#sys.base_prefix" title="sys.base_prefix"><code><span>sys.base_prefix</span></code></a> and <a href="https://docs.python.org/3/library/sys.html#sys.base_exec_prefix" title="sys.base_exec_prefix"><code><span>sys.base_exec_prefix</span></code></a>
+point to those of the base Python used to create the environment.
+It is sufficient to check
+<code><span>sys.prefix</span> <span>!=</span> <span>sys.base_prefix</span></code> to determine if the current interpreter is
+running from a virtual environment.</p>
+<p>A virtual environment may be “activated” using a script in its binary directory
+(<code><span>bin</span></code> on POSIX; <code><span>Scripts</span></code> on Windows).
+This will prepend that directory to your <span id="index-2"></span><code><span>PATH</span></code>, so that running
+<strong>python</strong> will invoke the environment’s Python interpreter
+and you can run installed scripts without having to use their full path.
+The invocation of the activation script is platform-specific
+(<code><em><span>&lt;venv&gt;</span></em></code> must be replaced by the path to the directory
+containing the virtual environment):</p>
+<table>
+<thead>
+<tr><th><p>Platform</p></th>
+<th><p>Shell</p></th>
+<th><p>Command to activate virtual environment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr><td rowspan="4"><p>POSIX</p></td>
+<td><p>bash/zsh</p></td>
+<td><p><code><span>$</span> <span>source</span> <em><span>&lt;venv&gt;</span></em><span>/bin/activate</span></code></p></td>
+</tr>
+<tr><td><p>fish</p></td>
+<td><p><code><span>$</span> <span>source</span> <em><span>&lt;venv&gt;</span></em><span>/bin/activate.fish</span></code></p></td>
+</tr>
+<tr><td><p>csh/tcsh</p></td>
+<td><p><code><span>$</span> <span>source</span> <em><span>&lt;venv&gt;</span></em><span>/bin/activate.csh</span></code></p></td>
+</tr>
+<tr><td><p>pwsh</p></td>
+<td><p><code><span>$</span> <em><span>&lt;venv&gt;</span></em><span>/bin/Activate.ps1</span></code></p></td>
+</tr>
+<tr><td rowspan="2"><p>Windows</p></td>
+<td><p>cmd.exe</p></td>
+<td><p><code><span>C:\&gt;</span> <em><span>&lt;venv&gt;</span></em><span>\Scripts\activate.bat</span></code></p></td>
+</tr>
+<tr><td><p>PowerShell</p></td>
+<td><p><code><span>PS</span> <span>C:\&gt;</span> <em><span>&lt;venv&gt;</span></em><span>\Scripts\Activate.ps1</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><span>Added in version 3.4: </span><strong>fish</strong> and <strong>csh</strong> activation scripts.</p>
+<p><span>Added in version 3.8: </span>PowerShell activation scripts installed under POSIX for PowerShell Core
+support.</p>
+<p>You don’t specifically <em>need</em> to activate a virtual environment,
+as you can just specify the full path to that environment’s
+Python interpreter when invoking Python.
+Furthermore, all scripts installed in the environment
+should be runnable without activating it.</p>
+<p>In order to achieve this, scripts installed into virtual environments have
+a “shebang” line which points to the environment’s Python interpreter,
+<code><span>#!/</span><em><span>&lt;path-to-venv&gt;</span></em><span>/bin/python</span></code>.
+This means that the script will run with that interpreter regardless of the
+value of <span id="index-3"></span><code><span>PATH</span></code>. On Windows, “shebang” line processing is supported if
+you have the <a href="https://docs.python.org/3/using/windows.html#launcher"><span>Python Launcher for Windows</span></a> installed. Thus, double-clicking an installed
+script in a Windows Explorer window should run it with the correct interpreter
+without the environment needing to be activated or on the <span id="index-4"></span><code><span>PATH</span></code>.</p>
+<p>When a virtual environment has been activated, the <code><span>VIRTUAL_ENV</span></code>
+environment variable is set to the path of the environment.
+Since explicitly activating a virtual environment is not required to use it,
+<code><span>VIRTUAL_ENV</span></code> cannot be relied upon to determine
+whether a virtual environment is being used.</p>
+<div>
+<p>Warning</p>
+<p>Because scripts installed in environments should not expect the
+environment to be activated, their shebang lines contain the absolute paths
+to their environment’s interpreters. Because of this, environments are
+inherently non-portable, in the general case. You should always have a
+simple means of recreating an environment (for example, if you have a
+requirements file <code><span>requirements.txt</span></code>, you can invoke <code><span>pip</span> <span>install</span> <span>-r</span>
+<span>requirements.txt</span></code> using the environment’s <code><span>pip</span></code> to install all of the
+packages needed by the environment). If for any reason you need to move the
+environment to a new location, you should recreate it at the desired
+location and delete the one at the old location. If you move an environment
+because you moved a parent directory of it, you should recreate the
+environment in its new location. Otherwise, software installed into the
+environment may not work as expected.</p>
+</div>
+<p>You can deactivate a virtual environment by typing <code><span>deactivate</span></code> in your shell.
+The exact mechanism is platform-specific and is an internal implementation
+detail (typically, a script or shell function will be used).</p>
+</section>
+<section id="api">
+<span id="venv-api"></span><h2>API<a href="#api" title="Link to this heading">¶</a></h2>
+<p>The high-level method described above makes use of a simple API which provides
+mechanisms for third-party virtual environment creators to customize environment
+creation according to their needs, the <a href="#venv.EnvBuilder" title="venv.EnvBuilder"><code><span>EnvBuilder</span></code></a> class.</p>
+<dl>
+<dt id="venv.EnvBuilder">
+<em><span>class</span><span> </span></em><span><span>venv.</span></span><span><span>EnvBuilder</span></span><span>(</span><em><span><span>system_site_packages</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>clear</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>symlinks</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>upgrade</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>with_pip</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>prompt</span></span><span><span>=</span></span><span><span>None</span></span></em>, <em><span><span>upgrade_deps</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>*</span></span></em>, <em><span><span>scm_ignore_files</span></span><span><span>=</span></span><span><span>frozenset()</span></span></em><span>)</span><a href="#venv.EnvBuilder" title="Link to this definition">¶</a></dt>
+<dd><p>The <a href="#venv.EnvBuilder" title="venv.EnvBuilder"><code><span>EnvBuilder</span></code></a> class accepts the following keyword arguments on
+instantiation:</p>
+<ul>
+<li><p><em>system_site_packages</em> – a boolean value indicating that the system Python
+site-packages should be available to the environment (defaults to <code><span>False</span></code>).</p></li>
+<li><p><em>clear</em> – a boolean value which, if true, will delete the contents of
+any existing target directory, before creating the environment.</p></li>
+<li><p><em>symlinks</em> – a boolean value indicating whether to attempt to symlink the
+Python binary rather than copying.</p></li>
+<li><p><em>upgrade</em> – a boolean value which, if true, will upgrade an existing
+environment with the running Python - for use when that Python has been
+upgraded in-place (defaults to <code><span>False</span></code>).</p></li>
+<li><p><em>with_pip</em> – a boolean value which, if true, ensures pip is
+installed in the virtual environment. This uses <a href="https://docs.python.org/3/library/ensurepip.html#module-ensurepip" title="ensurepip: Bootstrapping the &quot;pip&quot; installer into an existing Python installation or virtual environment."><code><span>ensurepip</span></code></a> with
+the <code><span>--default-pip</span></code> option.</p></li>
+<li><p><em>prompt</em> – a string to be used after virtual environment is activated
+(defaults to <code><span>None</span></code> which means directory name of the environment would
+be used). If the special string <code><span>"."</span></code> is provided, the basename of the
+current directory is used as the prompt.</p></li>
+<li><p><em>upgrade_deps</em> – Update the base venv modules to the latest on PyPI</p></li>
+<li><p><em>scm_ignore_files</em> – Create ignore files based for the specified source
+control managers (SCM) in the iterable. Support is defined by having a
+method named <code><span>create_{scm}_ignore_file</span></code>. The only value supported by
+default is <code><span>"git"</span></code> via <a href="#venv.EnvBuilder.create_git_ignore_file" title="venv.EnvBuilder.create_git_ignore_file"><code><span>create_git_ignore_file()</span></code></a>.</p></li>
+</ul>
+<p><span>Changed in version 3.4: </span>Added the <code><span>with_pip</span></code> parameter</p>
+<p><span>Changed in version 3.6: </span>Added the <code><span>prompt</span></code> parameter</p>
+<p><span>Changed in version 3.9: </span>Added the <code><span>upgrade_deps</span></code> parameter</p>
+<p><span>Changed in version 3.13: </span>Added the <code><span>scm_ignore_files</span></code> parameter</p>
+<p><a href="#venv.EnvBuilder" title="venv.EnvBuilder"><code><span>EnvBuilder</span></code></a> may be used as a base class.</p>
+<dl>
+<dt id="venv.EnvBuilder.create">
+<span><span>create</span></span><span>(</span><em><span><span>env_dir</span></span></em><span>)</span><a href="#venv.EnvBuilder.create" title="Link to this definition">¶</a></dt>
+<dd><p>Create a virtual environment by specifying the target directory
+(absolute or relative to the current directory) which is to contain the
+virtual environment.  The <code><span>create</span></code> method will either create the
+environment in the specified directory, or raise an appropriate
+exception.</p>
+<p>The <code><span>create</span></code> method of the <a href="#venv.EnvBuilder" title="venv.EnvBuilder"><code><span>EnvBuilder</span></code></a> class illustrates the
+hooks available for subclass customization:</p>
+<div><pre><span></span><span>def</span> <span>create</span><span>(</span><span>self</span><span>,</span> <span>env_dir</span><span>):</span>
+<span>    </span><span>"""</span>
+<span>    Create a virtualized Python environment in a directory.</span>
+<span>    env_dir is the target directory to create an environment in.</span>
+<span>    """</span>
+    <span>env_dir</span> <span>=</span> <span>os</span><span>.</span><span>path</span><span>.</span><span>abspath</span><span>(</span><span>env_dir</span><span>)</span>
+    <span>context</span> <span>=</span> <span>self</span><span>.</span><span>ensure_directories</span><span>(</span><span>env_dir</span><span>)</span>
+    <span>self</span><span>.</span><span>create_configuration</span><span>(</span><span>context</span><span>)</span>
+    <span>self</span><span>.</span><span>setup_python</span><span>(</span><span>context</span><span>)</span>
+    <span>self</span><span>.</span><span>setup_scripts</span><span>(</span><span>context</span><span>)</span>
+    <span>self</span><span>.</span><span>post_setup</span><span>(</span><span>context</span><span>)</span>
+</pre></div>
+<p>Each of the methods <a href="#venv.EnvBuilder.ensure_directories" title="venv.EnvBuilder.ensure_directories"><code><span>ensure_directories()</span></code></a>,
+<a href="#venv.EnvBuilder.create_configuration" title="venv.EnvBuilder.create_configuration"><code><span>create_configuration()</span></code></a>, <a href="#venv.EnvBuilder.setup_python" title="venv.EnvBuilder.setup_python"><code><span>setup_python()</span></code></a>,
+<a href="#venv.EnvBuilder.setup_scripts" title="venv.EnvBuilder.setup_scripts"><code><span>setup_scripts()</span></code></a> and <a href="#venv.EnvBuilder.post_setup" title="venv.EnvBuilder.post_setup"><code><span>post_setup()</span></code></a> can be overridden.</p>
+</dd></dl>
+
+<dl>
+<dt id="venv.EnvBuilder.ensure_directories">
+<span><span>ensure_directories</span></span><span>(</span><em><span><span>env_dir</span></span></em><span>)</span><a href="#venv.EnvBuilder.ensure_directories" title="Link to this definition">¶</a></dt>
+<dd><p>Creates the environment directory and all necessary subdirectories that
+don’t already exist, and returns a context object.  This context object
+is just a holder for attributes (such as paths) for use by the other
+methods.  If the <a href="#venv.EnvBuilder" title="venv.EnvBuilder"><code><span>EnvBuilder</span></code></a> is created with the arg
+<code><span>clear=True</span></code>, contents of the environment directory will be cleared
+and then all necessary subdirectories will be recreated.</p>
+<p>The returned context object is a <a href="https://docs.python.org/3/library/types.html#types.SimpleNamespace" title="types.SimpleNamespace"><code><span>types.SimpleNamespace</span></code></a> with the
+following attributes:</p>
+<ul>
+<li><p><code><span>env_dir</span></code> - The location of the virtual environment. Used for
+<code><span>__VENV_DIR__</span></code> in activation scripts (see <a href="#venv.EnvBuilder.install_scripts" title="venv.EnvBuilder.install_scripts"><code><span>install_scripts()</span></code></a>).</p></li>
+<li><p><code><span>env_name</span></code> - The name of the virtual environment. Used for
+<code><span>__VENV_NAME__</span></code> in activation scripts (see <a href="#venv.EnvBuilder.install_scripts" title="venv.EnvBuilder.install_scripts"><code><span>install_scripts()</span></code></a>).</p></li>
+<li><p><code><span>prompt</span></code> - The prompt to be used by the activation scripts. Used for
+<code><span>__VENV_PROMPT__</span></code> in activation scripts (see <a href="#venv.EnvBuilder.install_scripts" title="venv.EnvBuilder.install_scripts"><code><span>install_scripts()</span></code></a>).</p></li>
+<li><p><code><span>executable</span></code> - The underlying Python executable used by the virtual
+environment. This takes into account the case where a virtual environment
+is created from another virtual environment.</p></li>
+<li><p><code><span>inc_path</span></code> - The include path for the virtual environment.</p></li>
+<li><p><code><span>lib_path</span></code> - The purelib path for the virtual environment.</p></li>
+<li><p><code><span>bin_path</span></code> - The script path for the virtual environment.</p></li>
+<li><p><code><span>bin_name</span></code> - The name of the script path relative to the virtual
+environment location. Used for <code><span>__VENV_BIN_NAME__</span></code> in activation
+scripts (see <a href="#venv.EnvBuilder.install_scripts" title="venv.EnvBuilder.install_scripts"><code><span>install_scripts()</span></code></a>).</p></li>
+<li><p><code><span>env_exe</span></code> - The name of the Python interpreter in the virtual
+environment. Used for <code><span>__VENV_PYTHON__</span></code> in activation scripts
+(see <a href="#venv.EnvBuilder.install_scripts" title="venv.EnvBuilder.install_scripts"><code><span>install_scripts()</span></code></a>).</p></li>
+<li><p><code><span>env_exec_cmd</span></code> - The name of the Python interpreter, taking into
+account filesystem redirections. This can be used to run Python in
+the virtual environment.</p></li>
+</ul>
+<p><span>Changed in version 3.11: </span>The <em>venv</em>
+<a href="https://docs.python.org/3/library/sysconfig.html#installation-paths"><span>sysconfig installation scheme</span></a>
+is used to construct the paths of the created directories.</p>
+<p><span>Changed in version 3.12: </span>The attribute <code><span>lib_path</span></code> was added to the context, and the context
+object was documented.</p>
+</dd></dl>
+
+<dl>
+<dt id="venv.EnvBuilder.create_configuration">
+<span><span>create_configuration</span></span><span>(</span><em><span><span>context</span></span></em><span>)</span><a href="#venv.EnvBuilder.create_configuration" title="Link to this definition">¶</a></dt>
+<dd><p>Creates the <code><span>pyvenv.cfg</span></code> configuration file in the environment.</p>
+</dd></dl>
+
+<dl>
+<dt id="venv.EnvBuilder.setup_python">
+<span><span>setup_python</span></span><span>(</span><em><span><span>context</span></span></em><span>)</span><a href="#venv.EnvBuilder.setup_python" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a copy or symlink to the Python executable in the environment.
+On POSIX systems, if a specific executable <code><span>python3.x</span></code> was used,
+symlinks to <code><span>python</span></code> and <code><span>python3</span></code> will be created pointing to that
+executable, unless files with those names already exist.</p>
+</dd></dl>
+
+<dl>
+<dt id="venv.EnvBuilder.setup_scripts">
+<span><span>setup_scripts</span></span><span>(</span><em><span><span>context</span></span></em><span>)</span><a href="#venv.EnvBuilder.setup_scripts" title="Link to this definition">¶</a></dt>
+<dd><p>Installs activation scripts appropriate to the platform into the virtual
+environment.</p>
+</dd></dl>
+
+<dl>
+<dt id="venv.EnvBuilder.upgrade_dependencies">
+<span><span>upgrade_dependencies</span></span><span>(</span><em><span><span>context</span></span></em><span>)</span><a href="#venv.EnvBuilder.upgrade_dependencies" title="Link to this definition">¶</a></dt>
+<dd><p>Upgrades the core venv dependency packages (currently <a href="https://pypi.org/project/pip/">pip</a>)
+in the environment. This is done by shelling out to the
+<code><span>pip</span></code> executable in the environment.</p>
+<p><span>Added in version 3.9.</span></p>
+<p><span>Changed in version 3.12: </span><a href="https://pypi.org/project/setuptools/">setuptools</a> is no longer a core venv dependency.</p>
+</dd></dl>
+
+<dl>
+<dt id="venv.EnvBuilder.post_setup">
+<span><span>post_setup</span></span><span>(</span><em><span><span>context</span></span></em><span>)</span><a href="#venv.EnvBuilder.post_setup" title="Link to this definition">¶</a></dt>
+<dd><p>A placeholder method which can be overridden in third party
+implementations to pre-install packages in the virtual environment or
+perform other post-creation steps.</p>
+</dd></dl>
+
+<dl>
+<dt id="venv.EnvBuilder.install_scripts">
+<span><span>install_scripts</span></span><span>(</span><em><span><span>context</span></span></em>, <em><span><span>path</span></span></em><span>)</span><a href="#venv.EnvBuilder.install_scripts" title="Link to this definition">¶</a></dt>
+<dd><p>This method can be
+called from <a href="#venv.EnvBuilder.setup_scripts" title="venv.EnvBuilder.setup_scripts"><code><span>setup_scripts()</span></code></a> or <a href="#venv.EnvBuilder.post_setup" title="venv.EnvBuilder.post_setup"><code><span>post_setup()</span></code></a> in subclasses to
+assist in installing custom scripts into the virtual environment.</p>
+<p><em>path</em> is the path to a directory that should contain subdirectories
+<code><span>common</span></code>, <code><span>posix</span></code>, <code><span>nt</span></code>; each containing scripts destined for the
+<code><span>bin</span></code> directory in the environment.  The contents of <code><span>common</span></code> and the
+directory corresponding to <a href="https://docs.python.org/3/library/os.html#os.name" title="os.name"><code><span>os.name</span></code></a> are copied after some text
+replacement of placeholders:</p>
+<ul>
+<li><p><code><span>__VENV_DIR__</span></code> is replaced with the absolute path of the environment
+directory.</p></li>
+<li><p><code><span>__VENV_NAME__</span></code> is replaced with the environment name (final path
+segment of environment directory).</p></li>
+<li><p><code><span>__VENV_PROMPT__</span></code> is replaced with the prompt (the environment
+name surrounded by parentheses and with a following space)</p></li>
+<li><p><code><span>__VENV_BIN_NAME__</span></code> is replaced with the name of the bin directory
+(either <code><span>bin</span></code> or <code><span>Scripts</span></code>).</p></li>
+<li><p><code><span>__VENV_PYTHON__</span></code> is replaced with the absolute path of the
+environment’s executable.</p></li>
+</ul>
+<p>The directories are allowed to exist (for when an existing environment
+is being upgraded).</p>
+</dd></dl>
+
+<dl>
+<dt id="venv.EnvBuilder.create_git_ignore_file">
+<span><span>create_git_ignore_file</span></span><span>(</span><em><span><span>context</span></span></em><span>)</span><a href="#venv.EnvBuilder.create_git_ignore_file" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a <code><span>.gitignore</span></code> file within the virtual environment that causes
+the entire directory to be ignored by the Git source control manager.</p>
+<p><span>Added in version 3.13.</span></p>
+</dd></dl>
+
+<p><span>Changed in version 3.7.2: </span>Windows now uses redirector scripts for <code><span>python[w].exe</span></code> instead of
+copying the actual binaries. In 3.7.2 only <a href="#venv.EnvBuilder.setup_python" title="venv.EnvBuilder.setup_python"><code><span>setup_python()</span></code></a> does
+nothing unless running from a build in the source tree.</p>
+<p><span>Changed in version 3.7.3: </span>Windows copies the redirector scripts as part of <a href="#venv.EnvBuilder.setup_python" title="venv.EnvBuilder.setup_python"><code><span>setup_python()</span></code></a>
+instead of <a href="#venv.EnvBuilder.setup_scripts" title="venv.EnvBuilder.setup_scripts"><code><span>setup_scripts()</span></code></a>. This was not the case in 3.7.2.
+When using symlinks, the original executables will be linked.</p>
+</dd></dl>
+
+<p>There is also a module-level convenience function:</p>
+<dl>
+<dt id="venv.create">
+<span><span>venv.</span></span><span><span>create</span></span><span>(</span><em><span><span>env_dir</span></span></em>, <em><span><span>system_site_packages</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>clear</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>symlinks</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>with_pip</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>prompt</span></span><span><span>=</span></span><span><span>None</span></span></em>, <em><span><span>upgrade_deps</span></span><span><span>=</span></span><span><span>False</span></span></em>, <em><span><span>*</span></span></em>, <em><span><span>scm_ignore_files</span></span><span><span>=</span></span><span><span>frozenset()</span></span></em><span>)</span><a href="#venv.create" title="Link to this definition">¶</a></dt>
+<dd><p>Create an <a href="#venv.EnvBuilder" title="venv.EnvBuilder"><code><span>EnvBuilder</span></code></a> with the given keyword arguments, and call its
+<a href="#venv.EnvBuilder.create" title="venv.EnvBuilder.create"><code><span>create()</span></code></a> method with the <em>env_dir</em> argument.</p>
+<p><span>Added in version 3.3.</span></p>
+<p><span>Changed in version 3.4: </span>Added the <em>with_pip</em> parameter</p>
+<p><span>Changed in version 3.6: </span>Added the <em>prompt</em> parameter</p>
+<p><span>Changed in version 3.9: </span>Added the <em>upgrade_deps</em> parameter</p>
+<p><span>Changed in version 3.13: </span>Added the <em>scm_ignore_files</em> parameter</p>
+</dd></dl>
+
+</section>
+<section id="an-example-of-extending-envbuilder">
+<h2>An example of extending <code><span>EnvBuilder</span></code><a href="#an-example-of-extending-envbuilder" title="Link to this heading">¶</a></h2>
+<p>The following script shows how to extend <a href="#venv.EnvBuilder" title="venv.EnvBuilder"><code><span>EnvBuilder</span></code></a> by implementing a
+subclass which installs setuptools and pip into a created virtual environment:</p>
+<div><pre><span></span><span>import</span> <span>os</span>
+<span>import</span> <span>os.path</span>
+<span>from</span> <span>subprocess</span> <span>import</span> <span>Popen</span><span>,</span> <span>PIPE</span>
+<span>import</span> <span>sys</span>
+<span>from</span> <span>threading</span> <span>import</span> <span>Thread</span>
+<span>from</span> <span>urllib.parse</span> <span>import</span> <span>urlparse</span>
+<span>from</span> <span>urllib.request</span> <span>import</span> <span>urlretrieve</span>
+<span>import</span> <span>venv</span>
+
+<span>class</span> <span>ExtendedEnvBuilder</span><span>(</span><span>venv</span><span>.</span><span>EnvBuilder</span><span>):</span>
+<span>    </span><span>"""</span>
+<span>    This builder installs setuptools and pip so that you can pip or</span>
+<span>    easy_install other packages into the created virtual environment.</span>
+
+<span>    :param nodist: If true, setuptools and pip are not installed into the</span>
+<span>                   created virtual environment.</span>
+<span>    :param nopip: If true, pip is not installed into the created</span>
+<span>                  virtual environment.</span>
+<span>    :param progress: If setuptools or pip are installed, the progress of the</span>
+<span>                     installation can be monitored by passing a progress</span>
+<span>                     callable. If specified, it is called with two</span>
+<span>                     arguments: a string indicating some progress, and a</span>
+<span>                     context indicating where the string is coming from.</span>
+<span>                     The context argument can have one of three values:</span>
+<span>                     'main', indicating that it is called from virtualize()</span>
+<span>                     itself, and 'stdout' and 'stderr', which are obtained</span>
+<span>                     by reading lines from the output streams of a subprocess</span>
+<span>                     which is used to install the app.</span>
+
+<span>                     If a callable is not specified, default progress</span>
+<span>                     information is output to sys.stderr.</span>
+<span>    """</span>
+
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>*</span><span>args</span><span>,</span> <span>**</span><span>kwargs</span><span>):</span>
+        <span>self</span><span>.</span><span>nodist</span> <span>=</span> <span>kwargs</span><span>.</span><span>pop</span><span>(</span><span>'nodist'</span><span>,</span> <span>False</span><span>)</span>
+        <span>self</span><span>.</span><span>nopip</span> <span>=</span> <span>kwargs</span><span>.</span><span>pop</span><span>(</span><span>'nopip'</span><span>,</span> <span>False</span><span>)</span>
+        <span>self</span><span>.</span><span>progress</span> <span>=</span> <span>kwargs</span><span>.</span><span>pop</span><span>(</span><span>'progress'</span><span>,</span> <span>None</span><span>)</span>
+        <span>self</span><span>.</span><span>verbose</span> <span>=</span> <span>kwargs</span><span>.</span><span>pop</span><span>(</span><span>'verbose'</span><span>,</span> <span>False</span><span>)</span>
+        <span>super</span><span>()</span><span>.</span><span>__init__</span><span>(</span><span>*</span><span>args</span><span>,</span> <span>**</span><span>kwargs</span><span>)</span>
+
+    <span>def</span> <span>post_setup</span><span>(</span><span>self</span><span>,</span> <span>context</span><span>):</span>
+<span>        </span><span>"""</span>
+<span>        Set up any packages which need to be pre-installed into the</span>
+<span>        virtual environment being created.</span>
+
+<span>        :param context: The information for the virtual environment</span>
+<span>                        creation request being processed.</span>
+<span>        """</span>
+        <span>os</span><span>.</span><span>environ</span><span>[</span><span>'VIRTUAL_ENV'</span><span>]</span> <span>=</span> <span>context</span><span>.</span><span>env_dir</span>
+        <span>if</span> <span>not</span> <span>self</span><span>.</span><span>nodist</span><span>:</span>
+            <span>self</span><span>.</span><span>install_setuptools</span><span>(</span><span>context</span><span>)</span>
+        <span># Can't install pip without setuptools</span>
+        <span>if</span> <span>not</span> <span>self</span><span>.</span><span>nopip</span> <span>and</span> <span>not</span> <span>self</span><span>.</span><span>nodist</span><span>:</span>
+            <span>self</span><span>.</span><span>install_pip</span><span>(</span><span>context</span><span>)</span>
+
+    <span>def</span> <span>reader</span><span>(</span><span>self</span><span>,</span> <span>stream</span><span>,</span> <span>context</span><span>):</span>
+<span>        </span><span>"""</span>
+<span>        Read lines from a subprocess' output stream and either pass to a progress</span>
+<span>        callable (if specified) or write progress information to sys.stderr.</span>
+<span>        """</span>
+        <span>progress</span> <span>=</span> <span>self</span><span>.</span><span>progress</span>
+        <span>while</span> <span>True</span><span>:</span>
+            <span>s</span> <span>=</span> <span>stream</span><span>.</span><span>readline</span><span>()</span>
+            <span>if</span> <span>not</span> <span>s</span><span>:</span>
+                <span>break</span>
+            <span>if</span> <span>progress</span> <span>is</span> <span>not</span> <span>None</span><span>:</span>
+                <span>progress</span><span>(</span><span>s</span><span>,</span> <span>context</span><span>)</span>
+            <span>else</span><span>:</span>
+                <span>if</span> <span>not</span> <span>self</span><span>.</span><span>verbose</span><span>:</span>
+                    <span>sys</span><span>.</span><span>stderr</span><span>.</span><span>write</span><span>(</span><span>'.'</span><span>)</span>
+                <span>else</span><span>:</span>
+                    <span>sys</span><span>.</span><span>stderr</span><span>.</span><span>write</span><span>(</span><span>s</span><span>.</span><span>decode</span><span>(</span><span>'utf-8'</span><span>))</span>
+                <span>sys</span><span>.</span><span>stderr</span><span>.</span><span>flush</span><span>()</span>
+        <span>stream</span><span>.</span><span>close</span><span>()</span>
+
+    <span>def</span> <span>install_script</span><span>(</span><span>self</span><span>,</span> <span>context</span><span>,</span> <span>name</span><span>,</span> <span>url</span><span>):</span>
+        <span>_</span><span>,</span> <span>_</span><span>,</span> <span>path</span><span>,</span> <span>_</span><span>,</span> <span>_</span><span>,</span> <span>_</span> <span>=</span> <span>urlparse</span><span>(</span><span>url</span><span>)</span>
+        <span>fn</span> <span>=</span> <span>os</span><span>.</span><span>path</span><span>.</span><span>split</span><span>(</span><span>path</span><span>)[</span><span>-</span><span>1</span><span>]</span>
+        <span>binpath</span> <span>=</span> <span>context</span><span>.</span><span>bin_path</span>
+        <span>distpath</span> <span>=</span> <span>os</span><span>.</span><span>path</span><span>.</span><span>join</span><span>(</span><span>binpath</span><span>,</span> <span>fn</span><span>)</span>
+        <span># Download script into the virtual environment's binaries folder</span>
+        <span>urlretrieve</span><span>(</span><span>url</span><span>,</span> <span>distpath</span><span>)</span>
+        <span>progress</span> <span>=</span> <span>self</span><span>.</span><span>progress</span>
+        <span>if</span> <span>self</span><span>.</span><span>verbose</span><span>:</span>
+            <span>term</span> <span>=</span> <span>'</span><span>\n</span><span>'</span>
+        <span>else</span><span>:</span>
+            <span>term</span> <span>=</span> <span>''</span>
+        <span>if</span> <span>progress</span> <span>is</span> <span>not</span> <span>None</span><span>:</span>
+            <span>progress</span><span>(</span><span>'Installing </span><span>%s</span><span> ...</span><span>%s</span><span>'</span> <span>%</span> <span>(</span><span>name</span><span>,</span> <span>term</span><span>),</span> <span>'main'</span><span>)</span>
+        <span>else</span><span>:</span>
+            <span>sys</span><span>.</span><span>stderr</span><span>.</span><span>write</span><span>(</span><span>'Installing </span><span>%s</span><span> ...</span><span>%s</span><span>'</span> <span>%</span> <span>(</span><span>name</span><span>,</span> <span>term</span><span>))</span>
+            <span>sys</span><span>.</span><span>stderr</span><span>.</span><span>flush</span><span>()</span>
+        <span># Install in the virtual environment</span>
+        <span>args</span> <span>=</span> <span>[</span><span>context</span><span>.</span><span>env_exe</span><span>,</span> <span>fn</span><span>]</span>
+        <span>p</span> <span>=</span> <span>Popen</span><span>(</span><span>args</span><span>,</span> <span>stdout</span><span>=</span><span>PIPE</span><span>,</span> <span>stderr</span><span>=</span><span>PIPE</span><span>,</span> <span>cwd</span><span>=</span><span>binpath</span><span>)</span>
+        <span>t1</span> <span>=</span> <span>Thread</span><span>(</span><span>target</span><span>=</span><span>self</span><span>.</span><span>reader</span><span>,</span> <span>args</span><span>=</span><span>(</span><span>p</span><span>.</span><span>stdout</span><span>,</span> <span>'stdout'</span><span>))</span>
+        <span>t1</span><span>.</span><span>start</span><span>()</span>
+        <span>t2</span> <span>=</span> <span>Thread</span><span>(</span><span>target</span><span>=</span><span>self</span><span>.</span><span>reader</span><span>,</span> <span>args</span><span>=</span><span>(</span><span>p</span><span>.</span><span>stderr</span><span>,</span> <span>'stderr'</span><span>))</span>
+        <span>t2</span><span>.</span><span>start</span><span>()</span>
+        <span>p</span><span>.</span><span>wait</span><span>()</span>
+        <span>t1</span><span>.</span><span>join</span><span>()</span>
+        <span>t2</span><span>.</span><span>join</span><span>()</span>
+        <span>if</span> <span>progress</span> <span>is</span> <span>not</span> <span>None</span><span>:</span>
+            <span>progress</span><span>(</span><span>'done.'</span><span>,</span> <span>'main'</span><span>)</span>
+        <span>else</span><span>:</span>
+            <span>sys</span><span>.</span><span>stderr</span><span>.</span><span>write</span><span>(</span><span>'done.</span><span>\n</span><span>'</span><span>)</span>
+        <span># Clean up - no longer needed</span>
+        <span>os</span><span>.</span><span>unlink</span><span>(</span><span>distpath</span><span>)</span>
+
+    <span>def</span> <span>install_setuptools</span><span>(</span><span>self</span><span>,</span> <span>context</span><span>):</span>
+<span>        </span><span>"""</span>
+<span>        Install setuptools in the virtual environment.</span>
+
+<span>        :param context: The information for the virtual environment</span>
+<span>                        creation request being processed.</span>
+<span>        """</span>
+        <span>url</span> <span>=</span> <span>"https://bootstrap.pypa.io/ez_setup.py"</span>
+        <span>self</span><span>.</span><span>install_script</span><span>(</span><span>context</span><span>,</span> <span>'setuptools'</span><span>,</span> <span>url</span><span>)</span>
+        <span># clear up the setuptools archive which gets downloaded</span>
+        <span>pred</span> <span>=</span> <span>lambda</span> <span>o</span><span>:</span> <span>o</span><span>.</span><span>startswith</span><span>(</span><span>'setuptools-'</span><span>)</span> <span>and</span> <span>o</span><span>.</span><span>endswith</span><span>(</span><span>'.tar.gz'</span><span>)</span>
+        <span>files</span> <span>=</span> <span>filter</span><span>(</span><span>pred</span><span>,</span> <span>os</span><span>.</span><span>listdir</span><span>(</span><span>context</span><span>.</span><span>bin_path</span><span>))</span>
+        <span>for</span> <span>f</span> <span>in</span> <span>files</span><span>:</span>
+            <span>f</span> <span>=</span> <span>os</span><span>.</span><span>path</span><span>.</span><span>join</span><span>(</span><span>context</span><span>.</span><span>bin_path</span><span>,</span> <span>f</span><span>)</span>
+            <span>os</span><span>.</span><span>unlink</span><span>(</span><span>f</span><span>)</span>
+
+    <span>def</span> <span>install_pip</span><span>(</span><span>self</span><span>,</span> <span>context</span><span>):</span>
+<span>        </span><span>"""</span>
+<span>        Install pip in the virtual environment.</span>
+
+<span>        :param context: The information for the virtual environment</span>
+<span>                        creation request being processed.</span>
+<span>        """</span>
+        <span>url</span> <span>=</span> <span>'https://bootstrap.pypa.io/get-pip.py'</span>
+        <span>self</span><span>.</span><span>install_script</span><span>(</span><span>context</span><span>,</span> <span>'pip'</span><span>,</span> <span>url</span><span>)</span>
+
+
+<span>def</span> <span>main</span><span>(</span><span>args</span><span>=</span><span>None</span><span>):</span>
+    <span>import</span> <span>argparse</span>
+
+    <span>parser</span> <span>=</span> <span>argparse</span><span>.</span><span>ArgumentParser</span><span>(</span><span>prog</span><span>=</span><span>__name__</span><span>,</span>
+                                     <span>description</span><span>=</span><span>'Creates virtual Python '</span>
+                                                 <span>'environments in one or '</span>
+                                                 <span>'more target '</span>
+                                                 <span>'directories.'</span><span>)</span>
+    <span>parser</span><span>.</span><span>add_argument</span><span>(</span><span>'dirs'</span><span>,</span> <span>metavar</span><span>=</span><span>'ENV_DIR'</span><span>,</span> <span>nargs</span><span>=</span><span>'+'</span><span>,</span>
+                        <span>help</span><span>=</span><span>'A directory in which to create the '</span>
+                             <span>'virtual environment.'</span><span>)</span>
+    <span>parser</span><span>.</span><span>add_argument</span><span>(</span><span>'--no-setuptools'</span><span>,</span> <span>default</span><span>=</span><span>False</span><span>,</span>
+                        <span>action</span><span>=</span><span>'store_true'</span><span>,</span> <span>dest</span><span>=</span><span>'nodist'</span><span>,</span>
+                        <span>help</span><span>=</span><span>"Don't install setuptools or pip in the "</span>
+                             <span>"virtual environment."</span><span>)</span>
+    <span>parser</span><span>.</span><span>add_argument</span><span>(</span><span>'--no-pip'</span><span>,</span> <span>default</span><span>=</span><span>False</span><span>,</span>
+                        <span>action</span><span>=</span><span>'store_true'</span><span>,</span> <span>dest</span><span>=</span><span>'nopip'</span><span>,</span>
+                        <span>help</span><span>=</span><span>"Don't install pip in the virtual "</span>
+                             <span>"environment."</span><span>)</span>
+    <span>parser</span><span>.</span><span>add_argument</span><span>(</span><span>'--system-site-packages'</span><span>,</span> <span>default</span><span>=</span><span>False</span><span>,</span>
+                        <span>action</span><span>=</span><span>'store_true'</span><span>,</span> <span>dest</span><span>=</span><span>'system_site'</span><span>,</span>
+                        <span>help</span><span>=</span><span>'Give the virtual environment access to the '</span>
+                             <span>'system site-packages dir.'</span><span>)</span>
+    <span>if</span> <span>os</span><span>.</span><span>name</span> <span>==</span> <span>'nt'</span><span>:</span>
+        <span>use_symlinks</span> <span>=</span> <span>False</span>
+    <span>else</span><span>:</span>
+        <span>use_symlinks</span> <span>=</span> <span>True</span>
+    <span>parser</span><span>.</span><span>add_argument</span><span>(</span><span>'--symlinks'</span><span>,</span> <span>default</span><span>=</span><span>use_symlinks</span><span>,</span>
+                        <span>action</span><span>=</span><span>'store_true'</span><span>,</span> <span>dest</span><span>=</span><span>'symlinks'</span><span>,</span>
+                        <span>help</span><span>=</span><span>'Try to use symlinks rather than copies, '</span>
+                             <span>'when symlinks are not the default for '</span>
+                             <span>'the platform.'</span><span>)</span>
+    <span>parser</span><span>.</span><span>add_argument</span><span>(</span><span>'--clear'</span><span>,</span> <span>default</span><span>=</span><span>False</span><span>,</span> <span>action</span><span>=</span><span>'store_true'</span><span>,</span>
+                        <span>dest</span><span>=</span><span>'clear'</span><span>,</span> <span>help</span><span>=</span><span>'Delete the contents of the '</span>
+                                           <span>'virtual environment '</span>
+                                           <span>'directory if it already '</span>
+                                           <span>'exists, before virtual '</span>
+                                           <span>'environment creation.'</span><span>)</span>
+    <span>parser</span><span>.</span><span>add_argument</span><span>(</span><span>'--upgrade'</span><span>,</span> <span>default</span><span>=</span><span>False</span><span>,</span> <span>action</span><span>=</span><span>'store_true'</span><span>,</span>
+                        <span>dest</span><span>=</span><span>'upgrade'</span><span>,</span> <span>help</span><span>=</span><span>'Upgrade the virtual '</span>
+                                             <span>'environment directory to '</span>
+                                             <span>'use this version of '</span>
+                                             <span>'Python, assuming Python '</span>
+                                             <span>'has been upgraded '</span>
+                                             <span>'in-place.'</span><span>)</span>
+    <span>parser</span><span>.</span><span>add_argument</span><span>(</span><span>'--verbose'</span><span>,</span> <span>default</span><span>=</span><span>False</span><span>,</span> <span>action</span><span>=</span><span>'store_true'</span><span>,</span>
+                        <span>dest</span><span>=</span><span>'verbose'</span><span>,</span> <span>help</span><span>=</span><span>'Display the output '</span>
+                                             <span>'from the scripts which '</span>
+                                             <span>'install setuptools and pip.'</span><span>)</span>
+    <span>options</span> <span>=</span> <span>parser</span><span>.</span><span>parse_args</span><span>(</span><span>args</span><span>)</span>
+    <span>if</span> <span>options</span><span>.</span><span>upgrade</span> <span>and</span> <span>options</span><span>.</span><span>clear</span><span>:</span>
+        <span>raise</span> <span>ValueError</span><span>(</span><span>'you cannot supply --upgrade and --clear together.'</span><span>)</span>
+    <span>builder</span> <span>=</span> <span>ExtendedEnvBuilder</span><span>(</span><span>system_site_packages</span><span>=</span><span>options</span><span>.</span><span>system_site</span><span>,</span>
+                                   <span>clear</span><span>=</span><span>options</span><span>.</span><span>clear</span><span>,</span>
+                                   <span>symlinks</span><span>=</span><span>options</span><span>.</span><span>symlinks</span><span>,</span>
+                                   <span>upgrade</span><span>=</span><span>options</span><span>.</span><span>upgrade</span><span>,</span>
+                                   <span>nodist</span><span>=</span><span>options</span><span>.</span><span>nodist</span><span>,</span>
+                                   <span>nopip</span><span>=</span><span>options</span><span>.</span><span>nopip</span><span>,</span>
+                                   <span>verbose</span><span>=</span><span>options</span><span>.</span><span>verbose</span><span>)</span>
+    <span>for</span> <span>d</span> <span>in</span> <span>options</span><span>.</span><span>dirs</span><span>:</span>
+        <span>builder</span><span>.</span><span>create</span><span>(</span><span>d</span><span>)</span>
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>'__main__'</span><span>:</span>
+    <span>rc</span> <span>=</span> <span>1</span>
+    <span>try</span><span>:</span>
+        <span>main</span><span>()</span>
+        <span>rc</span> <span>=</span> <span>0</span>
+    <span>except</span> <span>Exception</span> <span>as</span> <span>e</span><span>:</span>
+        <span>print</span><span>(</span><span>'Error: </span><span>%s</span><span>'</span> <span>%</span> <span>e</span><span>,</span> <span>file</span><span>=</span><span>sys</span><span>.</span><span>stderr</span><span>)</span>
+    <span>sys</span><span>.</span><span>exit</span><span>(</span><span>rc</span><span>)</span>
+</pre></div>
+<p>This script is also available for download <a href="https://gist.github.com/vsajip/4673395">online</a>.</p>
+</section>
+</section></div>
+  </div>
+</body>
+</html>

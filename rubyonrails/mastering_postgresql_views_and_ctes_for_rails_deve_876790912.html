@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mastering PostgreSQL Views and CTEs for Rails Developers: A Comprehensive G</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Mastering PostgreSQL Views and CTEs for Rails Developers: A Comprehensive G</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/yet_anotherdev/mastering-postgresql-views-and-ctes-for-rails-developers-a-comprehensive-guide-3fl4">https://dev.to/yet_anotherdev/mastering-postgresql-views-and-ctes-for-rails-developers-a-comprehensive-guide-3fl4</a></p>
+    <p><strong>Tags:</strong> databases, postgres, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876790912</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1378481" id="article-body">
+            <h2>
+  <a name="introduction" href="#introduction">
+  </a>
+  Introduction
+</h2>
+
+<p>Views and Common Table Expression or CTE are two important concept in PostgreSQL. There are good chances that you will have to deal with it if you work with data.</p>
+
+<p>In my quest to become a SQL wizard, I had to tackle this of course. In a first part I will compare Views and CTE. I will then give you an example with an app I created for my passion of Coffee.</p>
+
+<h2>
+  <a name="views-and-cte" href="#views-and-cte">
+  </a>
+  Views And CTE
+</h2>
+
+<p>First we have to give some definitions of our Views and the Common Table Expression. </p>
+
+<h3>
+  <a name="views" href="#views">
+  </a>
+  Views
+</h3>
+
+<p>In SQL the views are basically tables, they contain several fields of different tables we have in our database.<br>
+But what we need to understand is that they are virtual tables, What does this mean ?<br>
+It means that they do not exist physically in our database. </p>
+
+<p>A view is actually a stored query that you can access as a table. You execute the query each time you want to have access to certain field of this View.</p>
+
+<p>For example in my app I wanted to have the rating ,for the coffees I have in my database, along with the name and the origin of coffee.</p>
+
+<p>I can create a view for this like the following :<br>
+</p>
+
+<div>
+<pre><code><span>CREATE</span> <span>VIEW</span> <span>coffees_ratings</span> <span>AS</span> <span>(</span><span>SELECT</span> <span>cr</span><span>.</span><span>rating</span> <span>AS</span> <span>rate</span><span>,</span>
+ <span>cr</span><span>.</span><span>origin</span> <span>as</span> <span>coffee_origin</span><span>,</span> <span>c</span><span>.</span><span>name</span> <span>as</span> <span>coffee_name</span> <span>FROM</span> 
+      <span>coffees</span> <span>c</span> <span>INNER</span> <span>JOIN</span> <span>coffee_reviews</span> 
+      <span>cr</span> <span>ON</span> <span>c</span><span>.</span><span>id</span> <span>=</span> <span>cr</span><span>.</span><span>coffee_id</span><span>)</span>
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>And then I will be able to access it like a real table like this :<br>
+</p>
+
+<div>
+<pre><code><span>SELECT</span> <span>*</span> <span>FROM</span> <span>coffees_ratings</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Pretty simple isn't it , so now let's go to the common table expression. </p>
+
+<h3>
+  <a name="common-table-expression" href="#common-table-expression">
+  </a>
+  Common Table Expression
+</h3>
+
+<p>Sometimes we want to use a specific result of a query as temporary table, that we want to reference in other part of our query. <br>
+It might seems really similar to the View but not there are some differences. Views are computed each time can be used in any queries whereas CTE is executed once and then stored in-memory and then it can be reference as many times as you want but in the current current query.</p>
+
+<p>With the same example from the view we can describe the the query like this.</p>
+
+<p>Here is an example :<br>
+</p>
+
+<div>
+<pre><code><span>WITH</span> <span>coffees_rating</span> <span>as</span> 
+    <span>(</span><span>SELECT</span> <span>cr</span><span>.</span><span>rating</span> <span>AS</span> <span>rate</span><span>,</span> <span>cr</span><span>.</span><span>origin</span> <span>as</span> <span>coffee_origin</span><span>,</span> <span>c</span><span>.</span><span>name</span> <span>as</span> <span>coffee_name</span> <span>FROM</span> 
+      <span>coffees</span> <span>c</span> <span>INNER</span> <span>JOIN</span> <span>coffee_reviews</span> 
+      <span>cr</span> <span>ON</span> <span>c</span><span>.</span><span>id</span> <span>=</span> <span>cr</span><span>.</span><span>coffee_id</span><span>)</span>
+<span>SELECT</span> <span>coffee_name</span><span>,</span> <span>rate</span> <span>,</span> <span>origin</span> <span>FROM</span> <span>coffees_rating</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="thats-it-really-" href="#thats-it-really-">
+  </a>
+  That's it really ?
+</h3>
+
+<p>That said there is a bunch of things that I have not dove into for the sake of a reasonably long article. <br>
+For example you can have Views that are physically stored on your disk it is the Materialized View. </p>
+
+<p>To continue with this Materialized thing, CTE are by default materialized and stored in-memory. But you can specify that you don't want materialized your CTE for several reasons.</p>
+
+<p>So CTE and Views can quite complex with a lot of differents ways to deal with them. </p>
+<h3>
+  <a name="summarize" href="#summarize">
+  </a>
+  Summarize
+</h3>
+
+<p>To summarize a bit what are the key differences of these 2 SQL concept from my understanding.</p>
+
+<p>CTE create in-memory tables, that can be accessed from another part of your SAME query. What I mean is that you have to define the CTE before the real query that you want to make. CTE "just" enables you to write easy to follow query. But if you want to reuse a CTE in another query you have to rewrite it in your other query.</p>
+
+<p>Views helps you to have a better architecture of your code. <br>
+If there is a query that you use a lot in a different part of your code/app. You can create a View to create a virtual table and you don't have to rewrite it everywhere. You can even materialized it so it physically exists and it improves your performance.<br>
+Basically it helps you to respect the DRY principles.</p>
+
+<p>That said you can use Views and CTE with each other !</p>
+<h2>
+  <a name="rails" href="#rails">
+  </a>
+  Rails
+</h2>
+
+<p>In a first place I will tackle the </p>
+<h3>
+  <a name="common-table-expression" href="#common-table-expression">
+  </a>
+  Common Table Expression
+</h3>
+
+<p>I will deal with the API of Rails under the current latest stable version in the moment which is 7.0.4, it is really simple to create CTE in Rails. <br>
+If we want to translate the example above we have to use the Arel Gem.</p>
+
+<p>There is several way to do that I will present 2 of them way plain sql and with a lot of Arel API.</p>
+
+<p>With the Arel API :<br>
+</p>
+
+<div>
+<pre><code><span>c_table</span> <span>=</span> <span>Arel</span><span>::</span><span>Table</span><span>.</span><span>new</span><span>(</span><span>:coffees</span><span>)</span>
+<span>cr_table</span> <span>=</span> <span>Arel</span><span>::</span><span>Table</span><span>.</span><span>new</span><span>(</span><span>:coffee_reviews</span><span>)</span>
+<span>pr</span> <span>=</span> <span>c_table</span><span>[</span><span>:id</span><span>].</span><span>eq</span><span>(</span><span>cr_table</span><span>[</span><span>:coffee_id</span><span>])</span>
+<span>query</span> <span>=</span> <span>c_table</span><span>.</span><span>project</span><span>(</span><span>Arel</span><span>.</span><span>star</span><span>).</span><span>join</span><span>(</span><span>cr_table</span><span>).</span><span>on</span><span>(</span><span>pr</span><span>).</span><span>to_sql</span>
+<span>cte_table</span> <span>=</span> <span>Arel</span><span>::</span><span>Table</span><span>.</span><span>new</span><span>(</span><span>:coffees_rating</span><span>)</span>
+<span>cte_result</span> <span>=</span> <span>Arel</span><span>::</span><span>Nodes</span><span>::</span><span>As</span><span>.</span><span>new</span><span>(</span><span>cte_table</span><span>,</span><span>query</span><span>)</span>
+<span>sql</span> <span>=</span> <span>cte_table</span><span>.</span><span>project</span><span>(</span><span>cte_result</span><span>[</span><span>:name</span><span>]).</span><span>with</span><span>(</span><span>cte_result</span><span>).</span><span>to_sql</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>With Arel API and Plain SQL :<br>
+</p>
+
+<div>
+<pre><code><span>sql</span> <span>=</span> <span>Arel</span><span>.</span><span>sql</span><span>(</span><span>'WITH coffees_rating as (SELECT coffee_reviews.rating
+ AS rate, coffees.origin as origine, coffees.name as cname 
+FROM coffees INNER JOIN coffee_reviews ON coffees.id = 
+coffee_reviews.coffee_id) SELECT cname FROM coffees_rating'</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Tips : If you want to try one of the previous solution in your rails console you can do like in the following line.<br>
+</p>
+
+<div>
+<pre><code><span>ActiveRecord</span><span>::</span><span>Base</span><span>.</span><span>connection</span><span>.</span><span>exec_query</span> <span>sql</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="views" href="#views">
+  </a>
+  Views
+</h3>
+
+<p>So now let's deal with Views, there is a really well known gems out there which is Scenic. I will use this one for creating my views. But can also create them with a rails migration or directly in your database it is up to you.</p>
+
+<p>So you can add the scenic view to your gemfile. Then you can use the generator of scenic to create a new view in our ruby code.<br>
+If you wonder how to create a generator I did an article on that you can read it <a href="https://dev.to/yet_anotherdev/rails-generator-for-graphql-queries-1dfn">here</a>.<br>
+</p>
+
+<div>
+<pre><code>rails g scenic:view coffees_rating
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>It will create a new rails migration with a new method which is create_view like this:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>CreateCoffeesRatings</span> <span>&lt;</span> <span>ActiveRecord</span><span>::</span><span>Migration</span><span>[</span><span>7.0</span><span>]</span>
+  <span>def</span> <span>change</span>
+    <span>create_view</span> <span>:coffees_ratings</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This generator will also creates a sql file to create our View.<br>
+</p>
+
+<div>
+<pre><code><span>CREATE</span> <span>VIEW</span> <span>coffees_ratings</span> <span>AS</span> <span>(</span><span>SELECT</span> <span>cr</span><span>.</span><span>rating</span> <span>AS</span> <span>rate</span><span>,</span> <span>cr</span><span>.</span><span>origin</span> <span>as</span> <span>coffee_origin</span><span>,</span> <span>c</span><span>.</span><span>name</span> <span>as</span> <span>coffee_name</span> <span>FROM</span> 
+      <span>coffees</span> <span>c</span> <span>INNER</span> <span>JOIN</span> <span>coffee_reviews</span> 
+      <span>cr</span> <span>ON</span> <span>c</span><span>.</span><span>id</span> <span>=</span> <span>cr</span><span>.</span><span>coffee_id</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Eventually you can run your migration and that's it you can access your view. You can even create an ActiveRecord model for your view so it is easy to access it.</p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>So now you and I know the differences between Views and CTE and how to use them in rails. <br>
+That said there is another way to use them in rails that I did tackle in this article. </p>
+
+<p>Arel is a really good gem to deal with relational algebra and SQL in rails. For your information ActiveRecord actually rely on this in the background.<br>
+But maybe you would prefer to write a raw sql query and execute it directly. </p>
+
+<p>Same for the scenic gem, maybe it can be worthy for your needs to use it or maybe it is more worthy to use plain SQL and store it directly in your Database.</p>
+
+<p>All of this is a matter tradeoff and a matter of management of your time, outside dependency, skills you have/want. </p>
+
+<p>Thanks for reading me I hope you learn something ! </p>
+
+<p>Thanks for reading me ! </p>
+
+<h3>
+  <a name="keep-in-touch" href="#keep-in-touch">
+  </a>
+  Keep in Touch
+</h3>
+
+<p>On Twitter : <a href="https://dev.to/yet_anotherdev">@yet_anotherdev</a></p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

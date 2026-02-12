@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>docker | minikube</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>docker | minikube</h1>
+    <p><strong>URL:</strong> <a href="https://minikube.sigs.k8s.io/docs/drivers/docker">https://minikube.sigs.k8s.io/docs/drivers/docker</a></p>
+    <p><strong>Tags:</strong> containers, devops, docker, kubernetes</p>
+    <p><strong>Bookmark ID:</strong> 876776187</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+          
+          
+          <main role="main">
+            
+  
+
+            
+            
+<div>
+	
+	
+	
+	<h2 id="overview">Overview</h2>
+<p>The Docker driver allows you to install Kubernetes into an existing Docker install. On Linux, this does not require virtualization to be enabled.</p>
+<div>
+    <ul></ul>
+    <div>
+<div title="Standard Docker">
+    <h2 id="requirements">Requirements</h2>
+<ul>
+<li><a href="https://docs.docker.com/engine/install/">Install Docker</a> 18.09 or higher (20.10 or higher is recommended)</li>
+<li>amd64 or arm64 system.</li>
+<li>If using WSL complete <a href="https://minikube.sigs.k8s.io/docs/tutorials/wsl_docker_driver/">these steps</a> first</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>Start a cluster using the docker driver:</p>
+<div><pre tabindex="0"><code data-lang="shell"><span><span>minikube start --driver=docker
+</span></span></code></pre></div><p>To make docker the default driver:</p>
+<div><pre tabindex="0"><code data-lang="shell"><span><span>minikube config set driver docker
+</span></span></code></pre></div>
+</div>
+<div title="Rootless Docker">
+    <h2 id="requirements">Requirements</h2>
+<ul>
+<li>Docker 20.10 or higher, see <a href="https://rootlesscontaine.rs/getting-started/docker/">https://rootlesscontaine.rs/getting-started/docker/</a></li>
+<li>Cgroup v2 delegation, see <a href="https://rootlesscontaine.rs/getting-started/common/cgroup2/">https://rootlesscontaine.rs/getting-started/common/cgroup2/</a></li>
+<li>Kernel 5.11 or later (5.13 or later is recommended when SELinux is enabled), see <a href="https://rootlesscontaine.rs/how-it-works/overlayfs/">https://rootlesscontaine.rs/how-it-works/overlayfs/</a></li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>Start a cluster using the rootless docker driver:</p>
+<div><pre tabindex="0"><code data-lang="shell"><span><span>dockerd-rootless-setuptool.sh install -f
+</span></span><span><span>docker context use rootless
+</span></span><span><span>minikube start --driver=docker --container-runtime=containerd
+</span></span></code></pre></div><p>Unlike Podman driver, it is not necessary to set the <code>rootless</code> property of minikube (<code>minikube config set rootless true</code>).
+When the <code>rootless</code> property is explicitly set but the current Docker host is not rootless, minikube fails with an error.</p>
+<p>It is recommended to set the <code>--container-runtime</code> flag to “containerd”.</p>
+</div>
+</div>
+</div>
+<h2 id="special-features">Special features</h2>
+<ul>
+<li>Cross platform (linux, macOS, Windows)</li>
+<li>No hypervisor required when run on Linux</li>
+<li>Experimental support for <a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-install">WSL2</a> on Windows 10</li>
+</ul>
+<h2 id="known-issues">Known Issues</h2>
+<ul>
+<li>
+<p>The following Docker runtime security options are currently <em>unsupported and will not work</em> with the Docker driver (see <a href="https://github.com/kubernetes/minikube/issues/9607">#9607</a>):</p>
+<ul>
+<li><a href="https://docs.docker.com/engine/security/userns-remap/">userns-remap</a></li>
+</ul>
+</li>
+<li>
+<p>On macOS, containers might get hung and require a restart of Docker for Desktop. See <a href="https://github.com/docker/for-mac/issues/1835">docker/for-mac#1835</a></p>
+</li>
+<li>
+<p>The <code>ingress</code>, and <code>ingress-dns</code> addons are currently only supported on Linux. See <a href="https://github.com/kubernetes/minikube/issues/7332">#7332</a></p>
+</li>
+<li>
+<p>On WSL2 (experimental - see <a href="https://github.com/kubernetes/minikube/issues/5392">#5392</a>), you may need to run:</p>
+<p><code>sudo mkdir /sys/fs/cgroup/systemd &amp;&amp; sudo mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd</code>.</p>
+</li>
+</ul>
+<p>Also see <a href="https://github.com/kubernetes/minikube/labels/co%2Fdocker-driver">co/docker-driver open issues</a>.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="verify-docker-container-type-is-linux">Verify Docker container type is Linux</h3>
+<ul>
+<li>On Windows, make sure Docker Desktop’s container type setting is Linux and not windows. see docker docs on <a href="https://docs.docker.com/docker-for-windows/#switch-between-windows-and-linux-containers">switching container type</a>.
+You can verify your Docker container type by running:
+<div><pre tabindex="0"><code data-lang="shell"><span><span>docker info --format <span>'{{.OSType}}'</span>
+</span></span></code></pre></div></li>
+</ul>
+<h3 id="run-with-logs">Run with logs</h3>
+<ul>
+<li>Run <code>--alsologtostderr -v=1</code> for extra debugging information</li>
+</ul>
+<h3 id="deploying-mysql-on-a-linux-with-apparmor">Deploying MySql on a linux with AppArmor</h3>
+<ul>
+<li>
+<p>On Linux, if you want to run MySQL pod, you need to disable AppArmor for mysql profile</p>
+<p>If your docker has <a href="https://wiki.ubuntu.com/AppArmor">AppArmor</a> enabled, running mysql in privileged mode with docker driver will have the issue <a href="https://github.com/kubernetes/minikube/issues/7401">#7401</a>.
+There is a workaround - see <a href="https://github.com/moby/moby/issues/7512#issuecomment-61787845">moby/moby#7512</a>.</p>
+</li>
+</ul>
+
+	
+
+
+<br>
+
+
+</div>
+
+
+          </main>
+        </div></div>
+  </div>
+</body>
+</html>

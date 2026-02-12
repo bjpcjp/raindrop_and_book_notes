@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Vagrant up timeout - Stack Overflow</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Vagrant up timeout - Stack Overflow</h1>
+    <p><strong>URL:</strong> <a href="https://stackoverflow.com/questions/23690124/vagrant-up-timeout">https://stackoverflow.com/questions/23690124/vagrant-up-timeout</a></p>
+    <p><strong>Tags:</strong> devops, vagrant, virtualbox</p>
+    <p><strong>Bookmark ID:</strong> 876774589</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="mainbar" role="main" aria-label="question and answers">
+                
+<div data-questionid="23690124" data-position-on-page="0" data-score="45" id="question">
+        <div data-post-id="23690124" data-referrer="None">
+        <p>
+            45
+        </p>
+        <a href="https://stackoverflow.com/posts/23690124/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+                
+<p>Having some issues to get my vagrant up, 
+Got the box, run <code>vagrant init</code> and after <code>vagrant up</code> command I get this message.</p>
+
+<pre><code>Bringing machine 'default' up with 'virtualbox' provider...
+    ==&gt; default: Importing base box 'precise32'...
+    ==&gt; default: Matching MAC address for NAT networking...
+    ==&gt; default: Setting the name of the VM: virtm_default_1400193131859_61200
+    ==&gt; default: Fixed port collision for 22 =&gt; 2222. Now on port 2201.
+    ==&gt; default: Clearing any previously set network interfaces...
+    ==&gt; default: Preparing network interfaces based on configuration...
+        default: Adapter 1: nat
+    ==&gt; default: Forwarding ports...
+        default: 22 =&gt; 2201 (adapter 1)
+    ==&gt; default: Booting VM...
+    ==&gt; default: Waiting for machine to boot. This may take a few minutes...
+        default: SSH address: 127.0.0.1:2201
+        default: SSH username: vagrant
+        default: SSH auth method: private key 
+    Timed out while waiting for the machine to boot. This means that Vagrant was unable to communicate with the guest machine within the configured ("config.vm.boot_timeout" value) time period.
+
+    If you look above, you should be able to see the error(s) that Vagrant had when attempting to connect to the machine. These errors are usually good hints as to what may be wrong.
+
+    If you're using a custom box, make sure that networking is properly working and you're able to connect to the machine. It is a common problem that networking isn't setup properly in these boxes. Verify that authentication configurations are also setup properly, as well.
+
+    If the box appears to be booting properly, you may want to increase the timeout ("config.vm.boot_timeout") value.
+</code></pre>
+
+<p>Any suggestions?</p>
+    </div>
+
+        
+
+    <div>
+            
+
+                <div>
+        <a href="https://stackoverflow.com/users/3885376/romania-engineer"><p><img src="data:application/octet-stream;base64," alt="ROMANIA_engineer's user avatar" width="32" height="32"></p></a>
+    </div>
+            <div>
+    <div>
+        <p>
+            asked <span title="2014-05-15 23:03:18Z">May 15, 2014 at 23:03</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/3566468/merlo"><p><img src="data:application/octet-stream;base64," alt="Merlo's user avatar" width="32" height="32"></p></a>
+    </div>
+    
+</div>
+        </div>
+    
+</div>
+
+
+
+
+            <p><span itemprop="commentCount">1</span></p>
+    </div>
+
+
+
+
+                
+                
+                <div id="answers">
+                    
+
+
+                                    
+<div id="answer-23742373" data-answerid="23742373" data-parentid="23690124" data-score="23" data-position-on-page="1" data-highest-scored="1" data-question-has-accepted-highest-score="0" itemprop="acceptedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="23742373" data-referrer="None">
+        <p>
+            23
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/23742373/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+<p>There are several different problems which can lead to this timeout problem. A good tip for tracking it down is to enable the GUI mode. This will bring up the VirtualBox machine UI which may provide a better clue as to the problem.</p>
+
+<p>To enable GUI mode, make sure this section in your <code>Vagrantfile</code> is uncommented: </p>
+
+<pre><code>config.vm.provider "virtualbox" do |vb|
+   vb.gui = true
+end
+</code></pre>
+
+<p>Then do a <code>vagrant reload</code>. This should bring up the VirtualBox application showing your virtual machine UI. Usually the problem will become apparent, whether it's a network issue or grub boot loader problem.</p>
+
+<p>After fixing the issue, you can comment this out again, then do another <code>vagrant reload</code> to return to headless mode.</p>
+
+<p>Reference: <a href="http://docs.vagrantup.com/v2/virtualbox/configuration.html">Vagrant docs</a></p>
+    </div>
+    <div>
+    <div>
+        <p>
+            answered <span title="2014-05-19 16:05:26Z">May 19, 2014 at 16:05</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/9965/brianc"><p><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2NjIpLCBxdWFsaXR5ID0gOTAK/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0OEQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgAQABAAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A/S1ouADQIhShzkBqmZMjINZAVguB2ry34yftJ/D/AOBUKnxVraRXrjcmn2wElyw9dmRge5IFYf7YPxx1P4CfCC41jQbaO78Q31ymnacsoyqSuGO8r/FtCnA9SM8Zr4g8Ifs1XPisyeKPiddSa3rN6wnlhZ2ZQ7DJLnq7dBzxxgVy18RGgryPRwWCqYyXLA+ibX/gqL8Hbi8EUsOu2sOcG4e2iZQPUgSlvyBr6H+Gfxm8EfGfR/7S8GeJLHXbdceYtvJiWEntJGcMh/3gK+F/Fvwj8Gw6OtkNBsPJAwF+zqPy714JZeEovgz8QtN8Z+Fr270J9Muo5bhLKUr5sG4b0POCMdQeD0NZUsXCo7WO/F5TUw8eZNM/ZBo8nkVFMn7qXj+E1yfws+KWlfFnwra63pLbreZc8kZB7g+hrrp5QsUmSPumu5angbGxuHGeuKkyAuB0qFkOQaeeFq7CPlH9t2yh1vxB8L9PkBmC6lLcPGT8qrhE3H8WwPrXk/xL+Mt14L+Sztba6hjby/Jkgnc5wTkuilF47cn8wK+lf2mdPm8jw5qUSoY4ZpYZmKjcd4XaM/8AAWOPavB/E97oNw+mQ3Nmt/eyttELDK/LyXIPGB6/zOK+dxjviLSV0j77J6C+qe0pys3v97R5H8RfitqOkxaZDPpELT6tGj28UMn3SSRh+Mr1XtmvK5dbXxDHf2d01md8TDNlcNIBwcg7kUgjB7Y4rqPjf4i0nUPHGnR25eZoYxHJCqMCvJ3duDyPyrI1ax0+zvYxCjGQx5d5vmJBHP4VdOKilpqa4zmm5Lnukfa/7AnhmLRPgNp2oLdLPLfTTblQ8JsldQCPXAH4Yr6B1K82Ry89FP8AKvK/2U/Ctx4G+BPhiwvIY4L6eFr2dIxgAysXUH3CFAfpXf6vKwhnx12mvfhqkfn1Rcs2kz0rYGwM054MLk0hIGMCs7xD4q0nwvYNe6xqVrplqvWW6lWNc+gyeT7CtVFt2RzuaSuzA+Jvh6PxN4M1O08hJp0iaW33KCVlUEgr6E8rkdmPrXw3rOj6lrl9b32kXQsrqDJKyqGjnAYMY27gEFuVORwe2D7l8T/2yfDa2l7pHhE3GpahOjQJqKr5cMLEH5hu+ZiOo4A6c14ponilI9It7mJftPmRrImHwWBUYOfXmvOzXCVcOqdacbXutfK3+Z9Lw9jKeJ9rQg7qNnp53/yPIvi5ZvrWsaeIY104CXFw0ZEjHkbtpPrjqenpXS+B/B+j/Er4x+GfDkStNpaws92EchjGkZLZYc8t8uQeMiuF+K3jeS31CTyrOS3EuQGeRWG714PFcl8LvjlqPwW8bJ4h0m1h1GQQtbT21wSFlibBKhhypyFOfb61jhaE8TOMYo7MzxdPDU5y/E/XC1RLdERQFjQBQo6ACs3WriNbebkZ2mvnnwP+2t4N8XwR/b2uPDt0/Vbxd8WfaReMe7AV6d/wl1jrlibiyvIL2BlO2WCQOp49Qa9z6tVpO1SNj4qNenVXuSueNfF39uPXNSL2fg+AaJbBebqQLJO3tk5VfwyfevlPW/GOu+NdUefWdVu9SuJM5kupmkI9MZNVp5Wk1AWzH7sQYj3IP/1qqaIpe+JP8LHmv0ilhaWH92lGx+bVMXVxCcqsr/l9x0+jxOmsqWJKkM3sT8oB/RqT4f8Ai2WHXdb8H3bkzWs8s9izHG+B2L7Pqu7j2PtQb/8As+aS48tpRDFu8tTgsfTmvMLHSdcutTXxFNeI2rXU0k8aZOyNcACEH0AAA+h9a8vPMvlj8N7OmryTuj3uGc1WVY321R2g1Z/15HUfFaw1WZ3uBbSRWkSlxcOeD7D3rzaw054k8qY5mOTJk9GPUfh0/Cu58V/GCe98K2unzW5kuFmI8pgSVKg5B984Hpz7VxHhOy1Wa0RrsJK3eX7pP1HQn8q+f4fwc6adSpHXZf15n1HFePp1aip0Z3W79Xt9y/M6jRIFFxEFcgAZY9gMCu70Xxhqnh4edY3T27EY3RkqT+Vef6bHJbXAjY/NtCnHSt7UiY7OFc8k/pX3EYJx1R+bTnJTVmf/2Q==" alt="BrianC's user avatar" width="32" height="32"></p></a>
+    </div>
+    <div itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <p><a href="https://stackoverflow.com/users/9965/brianc">BrianC</a><span itemprop="name">BrianC</span></p><p><span title="reputation score 10,701" dir="ltr">10.7k</span><span>2 gold badges</span><span>34 silver badges</span><span>51 bronze badges</span>
+        </p>
+    </div>
+</div>
+    
+</div>
+
+
+
+
+            <p><span itemprop="commentCount">4</span></p>
+    </div>
+
+
+                                    
+<div id="answer-43334664" data-answerid="43334664" data-parentid="23690124" data-score="5" data-position-on-page="2" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="43334664" data-referrer="None">
+        <p>
+            5
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/43334664/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+<p>A solution is gracefully described <a href="https://pseudoscripter.wordpress.com/2016/10/23/vagrant-was-unable-to-communicate-with-the-guest-machine" rel="nofollow noreferrer">here</a>. It was the only one that worked for me on a i686 with Ubuntu 16.04.2, Vagrant 1.9.3 and Virtualbox 5.1.18 trying to run a ubuntu/trusty32.</p>
+
+<p>What you do is fix the networking on the server and add some extra time for the boot:</p>
+
+<ul>
+<li><p>start the VM, log in to the server via GUI (username: vagrant, password: vagrant) and run the following commands</p>
+
+<pre><code>$ sudo ifdown eth0
+$ sudo ifup eth0
+</code></pre></li>
+<li><p>then add the following to the file /etc/rc.local</p>
+
+<pre><code>ifdown eth0
+ifup eth0
+</code></pre></li>
+<li><p>on the host, add the following to the Vagrantfile</p>
+
+<pre><code>config.vm.boot_timeout = 600
+</code></pre></li>
+</ul>
+
+<p>Now stop the VM. Next time you do a 'vagrant up' it will be OK.</p>
+    </div>
+    <div>
+    <div>
+        <p>
+            answered <span title="2017-04-11 00:00:22Z">Apr 11, 2017 at 0:00</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/6717595/fkaralis"><p><img src="data:image/png;base64,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" alt="fkaralis's user avatar" width="32" height="32"></p></a>
+    </div>
+    <div itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <p><a href="https://stackoverflow.com/users/6717595/fkaralis">fkaralis</a><span itemprop="name">fkaralis</span></p><p><span title="reputation score " dir="ltr">465</span><span>1 gold badge</span><span>6 silver badges</span><span>11 bronze badges</span>
+        </p>
+    </div>
+</div>
+    
+</div>
+
+
+
+
+            <p><span itemprop="commentCount">1</span></p>
+    </div>
+
+                                    
+<div id="answer-41341117" data-answerid="41341117" data-parentid="23690124" data-score="4" data-position-on-page="3" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="41341117" data-referrer="None">
+        <p>
+            4
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/41341117/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <p>If your Vagrant box is running Ubuntu 16.04, it's because of this boot step ... <strong>A start job is running for raise network interfaces (5 mins 8 sec)</strong> One way to overcome this is to start the VM from VirtualBox and then do <strong>vagrant ssh</strong></p>
+    <div>
+    <div>
+        <p>
+            answered <span title="2016-12-27 07:46:14Z">Dec 27, 2016 at 7:46</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/202345/kalc"><p><img src="data:application/octet-stream;base64," alt="KalC's user avatar" width="32" height="32"></p></a>
+    </div>
+    <div itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <p><a href="https://stackoverflow.com/users/202345/kalc">KalC</a><span itemprop="name">KalC</span></p><p><span title="reputation score " dir="ltr">1,750</span><span>4 gold badges</span><span>24 silver badges</span><span>34 bronze badges</span>
+        </p>
+    </div>
+</div>
+    
+</div>
+
+
+
+
+            
+    </div>
+
+
+                                    
+<div id="answer-47837586" data-answerid="47837586" data-parentid="23690124" data-score="3" data-position-on-page="4" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="47837586" data-referrer="None">
+        <p>
+            3
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/47837586/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+<p><code>config.vm.boot_timeout</code> didn't help me even after setting up-to maximum!!!</p>
+
+<p>The real problem in my case was, it was unable to create the network adapter. I have to explicitly edit the box.ovf file in order to enable it.</p>
+
+<p>Locate the <strong>box.ovf</strong> file &amp; open it in an text editor, then add <code>cable="true"</code> as shown in below, after that save and exit. Post that destroy your vagrant using vagrant destroy and then bring it up.</p>
+
+<pre><code>Locate(box.ovf): C:\Users\&lt;use_name&gt;\.vagrant.d\boxes\box-cutter-VAGRANTSLASH-centos68-desktop\2.0.21\virtualbox\box.ovf
+
+Before: &lt;Adapter slot="0" enabled="true" MACAddress="084017AA8CEB" type="virtio"&gt;
+
+After: &lt;Adapter slot="0" enabled="true" MACAddress="084017AA8CEB" cable="true" type="virtio"&gt;
+</code></pre>
+
+<p>There is a nice thread <a href="https://github.com/chef/bento/issues/682" rel="nofollow noreferrer">here</a></p>
+    </div>
+    <div>
+    <div>
+        <p>
+            answered <span title="2017-12-15 17:59:07Z">Dec 15, 2017 at 17:59</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/1753177/lambodar"><p><img src="data:application/octet-stream;base64," alt="lambodar's user avatar" width="32" height="32"></p></a>
+    </div>
+    <div itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <p><a href="https://stackoverflow.com/users/1753177/lambodar">lambodar</a><span itemprop="name">lambodar</span></p><p><span title="reputation score " dir="ltr">3,723</span><span>5 gold badges</span><span>37 silver badges</span><span>61 bronze badges</span>
+        </p>
+    </div>
+</div>
+    
+</div>
+
+
+
+
+            
+    </div>
+
+                                    
+<div id="answer-41468176" data-answerid="41468176" data-parentid="23690124" data-score="2" data-position-on-page="5" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="41468176" data-referrer="None">
+        <p>
+            2
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/41468176/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+<h2>Upgrade VirtualBox to 5.1.12</h2>
+
+<p>I had the same problem using:</p>
+
+<ul>
+<li><strong>VirtualBox 5.0.0</strong> </li>
+<li><strong>Vagrant 1.9.1</strong> (<code>vagrant -v</code>)</li>
+<li><strong>Test Kitchen 1.14.2</strong> (<code>kitchen -v</code>)</li>
+<li><strong>centos-7.2</strong></li>
+</ul>
+
+<p>when I was trying to run the following commands:</p>
+
+<pre><code>kitchen create
+</code></pre>
+
+<p>and</p>
+
+<pre><code>kitchen test
+</code></pre>
+
+<p><strong>Upgrading Oracle VirtualBox</strong> (download + install) to <a href="http://download.virtualbox.org/virtualbox/5.1.12/VirtualBox-5.1.12-112440-Win.exe" rel="nofollow noreferrer"><strong>VirtualBox 5.1.12</strong></a> fixed the problem.</p>
+
+<hr>
+
+<p>If the upgrade is not a solution for you, you can use the following <a href="https://stackoverflow.com/a/39892470/3885376"><strong>workaround</strong></a> mentioned by @paulalexandru, but it has the following main <strong>disadvantage</strong>: you need to make that manual step for every command that you are running.</p>
+
+<hr>
+
+<p>But it seems that VirtualBox fixed the <strong>"Cable Connected"</strong> option problem. Now, if you go to <strong>Settings</strong> &gt; <strong>Network</strong> &gt; <strong>Adapter 1</strong> &gt; <strong>Advanced</strong>, you can see that the <strong>Cable Connected</strong> check box is checked by default:</p>
+
+<p><a href="https://i.sstatic.net/Pq0wF.png" rel="nofollow noreferrer"><img src="data:application/octet-stream;base64," alt="Cable Connected is checked"></a></p>
+    </div>
+    <div>
+            
+            <div>
+        <a href="https://stackoverflow.com/users/-1/community"><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAA7EAAAOxAGVKw4bAAACl0lEQVR42u2asYvTUBzHPx4dpHR0uOEGDwQ7OKiDgzicW3GrTt4gIi4dOvQvOAT3gh3uBkFcdKo43CDicDrceIJ0iHB4DkWCWtu0aZo2SevQiofgwUvzkpfL+44tr3mfT/J++TUvoKOjo6Ojo5PVnFlmcN1wcsAN4CpQiHnuNnBQK+b3EhFQN5wS0AAuJHwSD4FqrZh/E5uAuuE8BLaBnCJXsg9UasX8U+kC6oZzCfioEPxxCVdqxXxLZNBKiANtKQjPYk5booNWBM9+DigpXNRLUgUAawlUe5EU6oZzXvYSOFXJvADRYtYG1hVnauv+VlYf8OD10SrwUpXJz4DvQw8vmB3/+O7bexdNWUvgLLChioBfI/9f+D9zPP1FsDPyGXnTbN4Fem4QCXwqBVhugD0JstkHWG7AIEL4VAmQAZ8aAbLgw9wGe2H+ci4T15+Kwvd0eyerEyw/fl8AbsfS0P90CKazMENfHTy5ZctaAueA57Lhu/YkLDzAB+ZPjNNZBLv2hL7jZfN5QNzwSglIAl4ZAUnBKyEgSfjEBSQNH+Y26AJ7URy473iy4F3d3snqBK9XX+SYb46EzpdvlvQm0mxWfFlLYA04CjuzTj+Wq3Md+KpcEewOXCx7rNwSiEWANRzTHYyVrAGiAtqiVdYajulYsRVmF8GdISEB+41NH9hVFB5gV6QAhl0Cj5i/jaEavL+Ym9wasN/YbAFVxeABqmaz0pIuYCFhBygzf0MrafhDoGw2KzvSG6H/NEYbwDUgN/EC2j/sZX6yDFw+4XuDv5uzLvAJeCe67iMTEHVW72w/A+6fAH/TbFbMKI+Zlo0RKfBpESANPg0CpMKrLkA6vMoCYoFXVUBs8CoK+BwnvI6Ojo6OTsbzGwBtHXq1kBxbAAAAAElFTkSuQmCC" alt="Community's user avatar" width="32" height="32"></p></a>
+    </div>
+
+
+            <div>
+    <div>
+        <p>
+            answered <span title="2017-01-04 16:01:33Z">Jan 4, 2017 at 16:01</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/3885376/romania-engineer"><p><img src="data:application/octet-stream;base64," alt="ROMANIA_engineer's user avatar" width="32" height="32"></p></a>
+    </div>
+    <div itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <p><a href="https://stackoverflow.com/users/3885376/romania-engineer">ROMANIA_engineer</a><span itemprop="name">ROMANIA_engineer</span></p><p><span title="reputation score 56,258" dir="ltr">56.3k</span><span>30 gold badges</span><span>207 silver badges</span><span>204 bronze badges</span>
+        </p>
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+
+            <p><span itemprop="commentCount">1</span></p>
+    </div>
+
+                                    
+
+
+                                    
+<div id="answer-47801010" data-answerid="47801010" data-parentid="23690124" data-score="0" data-position-on-page="7" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="47801010" data-referrer="None">
+        <p>
+            0
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/47801010/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <p>For me, enabling virtualization option from BIOS fixed it. </p>
+    <div>
+    <div>
+        <p>
+            answered <span title="2017-12-13 19:45:49Z">Dec 13, 2017 at 19:45</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/2998832/anonymous"><p><img src="data:application/octet-stream;base64," alt="Anonymous's user avatar" width="32" height="32"></p></a>
+    </div>
+    <div itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <p><a href="https://stackoverflow.com/users/2998832/anonymous">Anonymous</a><span itemprop="name">Anonymous</span></p><p><span title="reputation score " dir="ltr">1,698</span><span>2 gold badges</span><span>15 silver badges</span><span>20 bronze badges</span>
+        </p>
+    </div>
+</div>
+    
+</div>
+
+
+
+
+            
+    </div>
+
+                                    
+<div id="answer-56156130" data-answerid="56156130" data-parentid="23690124" data-score="0" data-position-on-page="8" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="56156130" data-referrer="None">
+        <p>
+            0
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/56156130/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+<p>I am using Windows 10. </p>
+
+<p>I solved this problem by following the steps in the note </p>
+
+<p>"If you are using Windows, you may need to enable hardware virtualization (VT-x). It can usually be enabled via your BIOS. If you are using Hyper-V on a UEFI system you may additionally need to disable Hyper-V in order to access VT-x."</p>
+    </div>
+    <div>
+    <div>
+        <p>
+            answered <span title="2019-05-15 19:08:11Z">May 15, 2019 at 19:08</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/8981315/andrii-shchur"><p><img src="data:image/png;base64,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" alt="Andrii Shchur's user avatar" width="32" height="32"></p></a>
+    </div>
+    
+</div>
+    
+</div>
+
+
+
+
+            
+    </div>
+
+                                    
+<div id="answer-63805131" data-answerid="63805131" data-parentid="23690124" data-score="0" data-position-on-page="9" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="63805131" data-referrer="None">
+        <p>
+            0
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/63805131/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <p>For me, I have uninstalled Docker-CE in my windows 10 then vagrant worked fine.
+Also please check <a href="https://stackoverflow.com/a/50119065/2682494">this</a> option disabled.</p>
+    <div>
+    <div>
+        <p>
+            answered <span title="2020-09-09 05:13:29Z">Sep 9, 2020 at 5:13</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/2682494/kishore-jannarapu"><p><img src="data:image/jpeg;base64,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" alt="kishore.jannarapu's user avatar" width="32" height="32"></p></a>
+    </div>
+    
+</div>
+    
+</div>
+
+
+
+
+            
+    </div>
+
+                                    
+<div id="answer-72296366" data-answerid="72296366" data-parentid="23690124" data-score="0" data-position-on-page="10" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="72296366" data-referrer="None">
+        <p>
+            0
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/72296366/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+<p>with my setup, windows 11, vagrant 2.2.19:</p>
+<p>I tried all the suggested solutions on the internet and all of them were useless to me, finally my problem was solved simply by changing the settings of Oracle VM VirtualBox Manager as follows: setting---&gt; system ----&gt; Processor --- -&gt; Uncheck the box PAE / NX.</p>
+    </div>
+    <div>
+    <div>
+        <p>
+            answered <span title="2022-05-18 21:45:55Z">May 18, 2022 at 21:45</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/19148699/nastaran"><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAFcUlEQVR4nO1bT0gcVxj/zZ+cNiTQqluh2wRtrcfVBLpsaZJTF1QQvZRSCsYSoZdIk0NyiDAYD/EQIRIIRjbrqTQEgtbNwUIhGGrtIYnXpITSbopZ9SSsF3fn9RDeZvbNvPfmz+5Od/V3c7/3nPf9mW++75vfKIQQAg6WFrLI57Zw4dp5KIrCXTM/lYHg39QEiqLgwrXzGBwZcJQTQjA/lUE01sZdAwA6T8AqNjYx6riO/vO71++5Pnw1IFIeAOanMlhayJYdx1urGYZhsD8uLWQrFHqx8RKF3QJ6z8QdI6E73oWjxyN49mTDqx6eoSgKxiZGpZ5fWsiWf3u6+hxHj0fQHe+yrbcZgHqexVsj7OHU2R7HC3fHuxA5FsHT1ede9PEMkfIAbMpTPHuygcgxuxFUdmE+t8W9n7c3d1AqlrgXHxwZwNjEKDdfBIHM8wBQKpawvbnjKCOEIJ/bsv1ui4DeM3EUdvfwYuNlxcJkKoErty5BP8JNGwBqFwky5QFAVVUkv/wM//yZQ+7V6wrZ4MiAYzK3GUBRFJw624PCbqFshGQqgauzl6XKU1QzJ7jxvBWqpuLzVAJ/W4wgikyF9xikyWR7c8eV553AJlM/8KK8FcX9IqbHZ9Da3iJ8jHO1UhQF0VgbAEDTNc8HAIDW9hZouibMGyJouobW9pZAe6OxNmFOClwH8LC2so7p8RnfygNvk9r0+Ayu3LqEZCrhaW9d6wAWayvruHHxZiDlKUzTxNrKOk50fYTYxx9K14dWB1BUw/MsiEnw+y9/4MQnMakRQq0DqOeL+0XhIf2guF/EjYs3sbayzl0Tah1QC8+zkEVCaHVANe95GWQ5oe51APV8LcJeBP2ILnw6uK0DlMXMMgnSzz969dDXvmqhv3PY1z46T1DpvXHQQOcJOvCuSAhjslNvsJOk8mPwoEQCO0mqyGzViATZPZl+fAcfxKKOsje5PL47971wv9+cw5sh2gqhZo0E3gzR8dnWTDlBNj22RQBFs0SCbHrMNQDwrp9vVLiZJ3ANUI/avtag8wRRA+VogFp2dfWGrIu0GaAZPM9CFAkVzZCfro59Lr/J5YXrRXlF1M9TsDWEl15A0zVcnb1c0UCVDeC3q2u0ZojtIlWgue55GdicoDbjPS+DNScofR1DgUq9RrsFWAgLoYOAQwOEfYCw4f2NpwT/13kADwc+Ag4NEPYBwobQALXk/NQabpkl3CTIvkurNw8wKOgkiPZ6Tm+MAcFM0EqIaKQZITsDpJEAOBvB9VS4UWaEvBmgq6kw63kWbiIh/fiO8ICiGV1re4t0Pw+y6S8vEsoGcOthGTeYV+S4gaZrvvfLpr/WdYDFCH0dQ2RuMk28YjGzTPo7hz3vqzb6O4fJYmbZ8765yTTp6xgimJtME9M0fV3cz4WrDb9nME2TzE2mCZcg4RZB+/GgCNobHFaCYR8gbBwawPoHZYjy0oJMHiYIIbh7/R635OXJy3WAjBsclDtca8i4wTy5Dti5wdRKtBkSycMGYbjB1NMAys2QSK71nDxtiLjBr//6V8gdZhml9UZhd0/IDV7N/iaUqzJusEwuQpB5gtt+XsYNlsm1n39dNETc4NPneoXc4Z9uP3C8AO0tuns+9fUNEVWex12muP1oRsgNTqYSQrlmGIYh4gbLuMM/zt53VN7qeS/fELGed7q+Fd/+8LWQGyzjDpfJ0tTS70ffc+QG8+SsAXisbLdfk/HCnhcJ34x/VcES7/0ibru+SG7rBUrFkpAXxMqtvYBsngDwvzWW9fMU7LPc2gt4PTvgUAnKSFE8uZd5gtM6L/089/sfP2cP0ooSQkjQeULQfj4oAr8a8zsrtHrRz3eB1SrC/gMa+eYqhRWuDgAAAABJRU5ErkJggg==" alt="Nastaran's user avatar" width="32" height="32"></p></a>
+    </div>
+    
+</div>
+    
+</div>
+
+
+
+
+            <p><span itemprop="commentCount">1</span></p>
+    </div>
+
+                                    
+<div id="answer-72796277" data-answerid="72796277" data-parentid="23690124" data-score="0" data-position-on-page="11" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="72796277" data-referrer="None">
+        <p>
+            0
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/72796277/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+<p>Changing the WinRM timeout from 120 seconds to 25 minutes worked for me.</p>
+<pre><code>config.winrm.timeout =   1500 
+config.vm.boot_timeout = 1500 
+</code></pre>
+    </div>
+    <div>
+    <div>
+        <p>
+            answered <span title="2022-06-29 05:39:35Z">Jun 29, 2022 at 5:39</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/13231588/mht-haque"><p><img src="data:image/png;base64,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" alt="mht.haque's user avatar" width="32" height="32"></p></a>
+    </div>
+    <div itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <p><a href="https://stackoverflow.com/users/13231588/mht-haque">mht.haque</a><span itemprop="name">mht.haque</span></p><p><span title="reputation score " dir="ltr">345</span><span>1 gold badge</span><span>3 silver badges</span><span>10 bronze badges</span>
+        </p>
+    </div>
+</div>
+    
+</div>
+
+
+
+
+            
+    </div>
+
+                                    
+<div id="answer-75117562" data-answerid="75117562" data-parentid="23690124" data-score="0" data-position-on-page="12" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="75117562" data-referrer="None">
+        <p>
+            0
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/75117562/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+<p>For me just running</p>
+<pre><code>vagrant reload
+</code></pre>
+<p>helped, since it seems that on the first start the box had older version of guest additions. By running vagrant reload, it was able to reboot the box and install newer version, and it started to work. vagrant destroy didn't help since it always had the older guest additions on the first boot.</p>
+    </div>
+    <div>
+    <div>
+        <p>
+            answered <span title="2023-01-14 11:24:24Z">Jan 14, 2023 at 11:24</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/2032777/phz-fi-pharazon"><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAADAFBMVEX//////v7U19jl5+inPRH+/f3v8PHo6urFycuutLaYn6KssrShqKquPhbMOBX8/Pzs7u714dvV2Nn98Oqepaj7vGOlrK6qsLLCx8jtaTD2tJjtZCmgIhXheB3N0dLIzM6mOw/+9/PZch/8xnOzuLrZ292boqXg4+STm5768e3618f0poXPQhrzjCTuz8S/xMWxQhSPl5rEyMr73M/5+vr+yXWwtrjR1dbz8/T3+PitPBT2kyzYVRvCTBn0kCu/SRLuiSm7RRarNw/w19DedSb0jyeuOxL+9+715t+8URf29vb8wGj/+vj948P98+32nz37uFv89fL64dT86+L1qonubTb4w6vMNA/oxsD42r767+m1RBi2QBTYahrOPha3TymcGhDr7O3PZR382bXX2tvs1M3+7dP++PXzmDfskjSuRxb70ZmqQBHypUyqQha2ViT639T1uJr/zXri5eXb3t+7wML85tzvd0PtfUfxi1/2xbHwglLfiW/STRfrt6PbXxvneh/Zo53RknS6LRTIUxfhbBj01L747Obiu6zDajbd4OH2smbofx/0xZqZFg6XEQjHXhawMxv+9urUhl3huajnwK/7yoj+8uPZeTDPfD/yn0fJcTXSZxn3umn91p73sFS2WzL937TvrV3kgCfucTv4qkregja3vb/ucjzsXyL2ybb3v6TTmYy/a2SmLBPTSRO5OxbppG/fZRyoGwn51rHSknvcaj7BQRr74872wY3npIbNWRn77N75xIDLRx/MiW7vo1zYaEv86dXsuq3qhSTOYzb7tFbhaijVbR7EOxX538nJgXvLaifCMxOyPQu4ThO+bUrajEbetKSyUSTVgz/IazCmNQ38zouDjJCts7auSiDDclDCXyLykWf60sH2r5DTVC3drJrklYLQj4G+ZUzrrI3+8eD84tfrkEnieD/3uXvOcCioNy/UUjLjmk+2u73kbzvZYTHicz/GgWPzjE2kLybstovgk0d2gIPptYzglmG8YzZwen7jj0rYnX30n3tZ/V7dAAAFDUlEQVR42u2XZ1TTSRDAJ5UQSYE0MI0kEAIBaSKEDlIDCEhTOiJIEQi9iQVsFAsKHCAWUPGwt9NTTz17771f97rXe3tLPDxEQvLum4/5tjM7vzc7OzP//QOMyqgMK6ErAgmDNWFv6OK/d7VE0rYmE/NCkx7Oys3U2v9A9lonp5AIVlvYCrUiMDc8K4LFOvyOdv5vN7WvWnWtJyQkJMRpTXdmZtia1RvDxQ9/zuMv1A6w64rpbVN8zq2vWU5OThKJRMKKyLuYkxN8VqwlIChjce06PB4/s+Bmj6SoqKho9bWCmetWLhfzl2ifxsiWq/mmeHx+QX1Hx6ob+fiCib928Zve1ekqxx29gTfFIzHFPzCEn5LE/LlTtfBru9P9PPewqOX7dffz8+9fbaEBLElaHtwRP7J/uv/a06fTBypAFJSREdS/Wrjcrt5wZP+wLP/sm19cnDzUsqi+1hLVqEZ3Ue7G8PVXZuZcf4UNY9lfUo2faAKcX9/ZG2z3+7jhd3zuf1gTIMpPPO3hX5HDb1hi4xmuqatEveLstXe6h9uCOWDjedI7TAMA82dXew8rgpUb+CrrikYbT28//nlNZ/jt8m27W3kRGxuPD7Ud77Rx8542rZ2hsQ2uPwjwTejNy+oc0rlTs2zc1gcHz589UiW0pgTYibNPvlz2ez393fzsKJdrR66liSmJPn5N/MFln+7p73aW4up7lKBFN7T6eB3iL9g1aMZ427h1UVwDtmrXhyu9PJIW+E16oZjx6VzvLoor5X1tG9nD49DuOf8ZP4UL5iZRXO0Waz1NTnnNn+P+8Ysh/9nuMwmulBbtZ8lKLw/3mlkDS0f3OfMpvm/pMIwO+njV7Ng3kPCqHe4+rinxOgBaExOOWL9n+e9ydnJNok4BwMQEyv5k64H5c4JqnRgwRReAZYrvTioVjQXR5niAcVTqTp8gnSbyR9ubqXGo6lXW+w5GxR+hnvNYpBPgQ952atwH6DBU9zMVW47FndtvqNs3gcerizuGIkhO/rbih2+sL106odsDYduy1DqUxciv6njNp75rTk2dpxvAchtv6R5USrP2pC5bylvK09EfnX7eVnRz8RlTLvy47Msp8H/E8IIhvNZiFS3fEqp6IoqKLiuUR0eXATzjcByweuDi3NAAoIft3yVkm7ls4rA55qBvATCdPYaoEAII0gBgbF+lSXQsl+HY91j+qLrPCgj2OLrinjPgOMa2AFgO8i+RKo05SqyMqHD5wwyIMvp0Jl0KOCbq+LFvYv6ujjVhOHKtAOTlIqCRxwNMwILeGJIxgJE+Atgag2IT6BkgoEG/TmrBBKke9ANAXr1FDWDEFALQyJghAAsZemTgDADMzJlKpCvWY6MAESAmtuJRFbe6gmsFY2MYABh7W5LSbDAASOQ0NcBg/IQSc6Qj3r2rfscUcssry6pMnsi5VoRyOQAQ7IUCxcsAsLAvRgAXNmBLS/QBaMRfyEJ1BBsYALEmkSqu42aTKEBHIADoDwbg6NAgRYASmXOpFEXAKTag2SvVABECMBy5jysrGVGhQCMrAMwEUKxPIgEYTXieRCIZAUrvOQtkzmwAMo4JAo46iZFqgElVecyGGCs1ACcTShtIZAcHoT3JFgd0mQNTiABsIgDHiFnKeUZkAhg0AADjKQFg0mTCDNWkpyqVSgSYNJScNAEOXIywRnRzLJYIQBRYAIynA7K5KBUCc6ClASiJo79Wr4f8A6b9VWdwmdstAAAAAElFTkSuQmCC" alt="PHZ.fi-Pharazon's user avatar" width="32" height="32"></p></a>
+    </div>
+    
+</div>
+    
+</div>
+
+
+
+
+            
+    </div>
+
+                                    
+<div id="answer-51415323" data-answerid="51415323" data-parentid="23690124" data-score="-1" data-position-on-page="13" data-highest-scored="0" data-question-has-accepted-highest-score="0" itemprop="suggestedAnswer" itemscope="" itemtype="https://schema.org/Answer">
+        <div data-post-id="51415323" data-referrer="None">
+        <p>
+            -1
+        </p>
+        
+
+    
+    <a href="https://stackoverflow.com/posts/51415323/timeline" data-shortcut="T" data-ks-title="timeline" data-controller="s-tooltip" data-s-tooltip-placement="right" title="Show activity on this post." aria-label="Timeline"></a>
+
+</div>
+
+        
+
+<div>
+    
+    <div itemprop="text">
+<p>With my setup Win10, Vagrant 2.1.2 and Ubuntu 16 while working firewall i have enabled "ufw" for port 80 post which i was facing same problem. Command used as below to enable firewall</p>
+
+<pre><code>ufw enable
+
+ufw 80 allow
+</code></pre>
+
+<p>I did login in GUI enable mode in Vagrantfile and disabling the same is life saver for me.</p>
+
+<pre><code>ufw disable
+</code></pre>
+
+<p>Now, just do </p>
+
+<pre><code>vagrant reload
+
+vagarnt ssh
+</code></pre>
+    </div>
+    <div>
+            
+            <div>
+    
+    <div>
+        <a href="https://stackoverflow.com/users/2087247/luffy"><p><img src="data:image/jpeg;base64,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" alt="LuFFy's user avatar" width="32" height="32"></p></a>
+    </div>
+    <div>
+        <p><a href="https://stackoverflow.com/users/2087247/luffy">LuFFy</a></p><p><span title="reputation score " dir="ltr">9,217</span><span>10 gold badges</span><span>42 silver badges</span><span>59 bronze badges</span>
+        </p>
+    </div>
+</div>
+
+
+            <div>
+    <div>
+        <p>
+            answered <span title="2018-07-19 05:57:44Z">Jul 19, 2018 at 5:57</span>
+        </p>
+        
+    </div>
+    <div>
+        <a href="https://stackoverflow.com/users/8455762/prashant"><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAEvUlEQVR4nO1bzU4bSRD+ZvwjK86sEvlqC/EckfYRVlpxQb7AmQMiHAiPABcQlvAZLohTouQRIuU5ELKPwx4wDsZjpvfgbWfomZqu7h4RadWfZAmZ6enur2qqur5xBUIIgRJ8nH7CYDYsu4TEbmsH67U17E8PIVA6TQ4BApy0j3DzfOs0/2n7uPSauu4mJ+0jADBexG5rByftIwQIACyJNMFJ+wi7rZ0VcbbzayGY2Hs4EGH8lvXZezjIjT97PBe1ONKOrcWROHs8r3x+CmwCUpGyFrH3cCBSkRbe4+zxXDu+aPNVze9EgETZIjjMU55AWb7q+VUYE0BZwoT5Ik/gbL6q+bMwJkAiuwgb5qUncC1f9fwS2ixAIRthWdFWwW5rp/Dv15pfIrQdGCDAafsY67W1VaozRS/sohd2redfr63htH1sPT8AfhqkYOvCn5++ilb8XrTi9+Lz01fj8fIRcoUzAaZBTIjl5pvxu9XYZvzOiIRsEHVFZQRwPUFaXo3iXE9Q06grKiOA4wmq5dWPzhOK0qcrKieA8gTK8lxPoA5Qzuu3D59EUIXIVZBf5t+wOdnCHIl2/BwJNidb+DL/tvpuMBvi4/STcUXJQSBEeTmsQ+0uKr7xf+VsL+yiP9lmbT6LJhq4ii4wSsel5fRzZ2K85izq1AYAXj1ftoDBbIjvyQ/87NwZ52oBgf3pIdZra1h07snrdAbQ6QnkSdC1nh/Mhi+I0wkTKvanhxjMhqv5TU+LbD3BtZ4vQlG05hYrVLFDZRduEKaqyBwBpvU8lyhu0UItlNoYlyiKWJgusOwgwhE8KIK5goe6QdODmDoHdAujSFAJ4EpeFNFcyUvdKOcAloVKNLiWLyJBFiMcy1OewLU85QmuekKw93AgstHeBDKy2sjewK/IbiN7yzSXvY8JZJoNXev5m+db6xPaKB1jlI6txgoI3DzfOusJcK3nbV14474vnsRcPIm52LjvWz9CrnoC1GeKu3lZ1UmYkLBx3xeJSFZjE5EYkZCNWWHspiesCLCt5yW4niAtr4LrCWq2kt/b6gm5g5BpPa+ijATV8ip0nlCUrbL/t9ETcgSY1vMqKE+gLK+C8gTqnKJeZ6onFNYCqieUKTkUsiToLK9C9YSyc0rRmlRPKDunBGH8tjCHcet5qhyWeXaUjnEVXaCJhlGamiNBf7KNXthF2TmFKoe5egJZDss8CwAJFkaLBzJ5FkBD/xY+hwbq6IVd6/cOCRYYpWPtOcXrAdxo6/UAYmNconTBTLdQrwcQG9QRpMLrAV4PWMLrAV4P8HqA1wNeZAGvBzA8wesBXg/IX0fB6wH/Bz3ge/ID19ElHjv/kAvV/b7gz8YHvLnrOPUL1O/+IK8r+33CAgtsTrbs9IC/m3/hKrpA3ULMAH5/vwAA1FHHVXSB/mT7xU9uXsAmWuuewdfsF+CgLLvkCOBGa4qA1+4X4ILKLlA3bxKtVQJ+R7+ACYo8AdnNm1hegmN5FVX2C5hC9QTYWl6Ca3kVVfUL2CDrCbC1fHYhNp0aQixJsNm8EL88wRbSE+rX0aV1qgPg3C9gi+x7Bxs00cB1dOn7BXy/gOsNTNOY7xfw/QLlJ0HfL+D7BZZ4rX6BfwG4yx4UT9wHigAAAABJRU5ErkJggg==" alt="Prashant's user avatar" width="32" height="32"></p></a>
+    </div>
+    
+</div>
+        </div>
+    
+</div>
+
+
+
+
+            
+    </div>
+
+
+                        
+
+
+                            <h2 data-loc="1">
+                                
+                            </h2>
+                </div>
+            </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Load Code in Ruby | AppSignal Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Load Code in Ruby | AppSignal Blog</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2023/04/19/how-to-load-code-in-ruby.html">https://blog.appsignal.com/2023/04/19/how-to-load-code-in-ruby.html</a></p>
+    <p><strong>Tags:</strong> ruby, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876791791</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>There are many ways to load code and access file-related constants in Ruby. We can create a clear architecture by separating and handling concerns into classes and pulling in only the classes we depend on.</p>
+<p>Many full-stack frameworks like Rails and Hanami offer a built-in method to access the classes we want, as long as we stick with a certain convention. How does this work?</p>
+<p>In this post, we will explore three different options for loading code: using <code>load</code>, <code>require</code>, and <code>autoload</code>. We will also look into the Ruby gem <code>Zeitwerk</code>. <code>Zeitwerk</code> is the default code-loading mechanism for many new projects, and a lot of established projects are switching to this great gem. Rails and Hanami both utilize <code>Zeitwerk</code> as their code-loading tool.</p>
+<p>Before we dive into the code loading options on offer in Ruby, let's take a quick look at <code>$LOAD_PATH</code> to get to grips with how code loading works.</p>
+<h2 id="load_path-in-ruby"><code>$LOAD_PATH</code> in Ruby</h2>
+<p>Before we dive deeper into this topic, let's summarize the <code>$LOAD_PATH</code> in Ruby, as it is essential in understanding how loading works.</p>
+<p>The global variable <code>$LOAD_PATH</code> or shorter <code>$:</code> references all directories with Ruby source files registered in an array. So when you prepend <code>bundle exec</code> with your program name, Ruby adds all the program gems to the load path.</p>
+<p>Then, when we load or require a file, Ruby iterates over this array and searches for the file name. This can add significant time to the booting process, as we might have to search for a given file in many places on the hard disk.</p>
+<p>Keeping that in mind, we'll now explore some Ruby code-loading options in detail.</p>
+<h2 id="options-for-loading-code-in-ruby">Options for Loading Code in Ruby</h2>
+<p>We have three main options for loading code:</p>
+<ul>
+<li>Using the <code>load</code> method. This loads and parses a Ruby program in a specified file every time you call the method.</li>
+<li>The <code>require</code> method. With this, we load and parse a given file only once.</li>
+<li>The third option is <code>autoload</code>. We declare upfront that Ruby should require a specified file when we use a constant that doesn't exist yet.</li>
+</ul>
+<h2 id="load-a-file-in-ruby"><code>load</code> a File in Ruby</h2>
+<p>As mentioned, with <code>load</code> we parse and execute a Ruby file.
+If the filename we set as an argument is a relative path, i.e., it starts with <code>./</code> or <code>../</code>, the file will be loaded relative to the current working directory.</p>
+<p>Remember: This doesn't mean it's relative to the file where the load is located — it's instead relative to the file that started the Ruby process. If you want to know what the working directory is, run <code>Dir.pwd</code>. Otherwise, Ruby searches for a file with the given name in the <code>$LOAD_PATH</code>.</p>
+<p>Let's see how load works:</p>
+
+<p>Then we load the file with <code>load "foo.rb"</code>.</p>
+<p>What happens when we load this file? The global variable <code>$x</code> is created and set to the integer 4. The constant <code>Foo</code> is also created, and we can instantiate an object from it. So far, this seems just like the more familiar <code>require</code> call.</p>
+<p>But what happens when we <code>load</code> this file again? If we have changed our global value <code>$x</code>, it resets to 4.</p>
+<p>In older Ruby versions, we also might get a warning that the constant <code>Foo</code> is being redefined.</p>
+<p>Another problem with <code>load</code> is that every reload takes some time to run as the Ruby VM is <code>eval</code>-ing the file. <code>require</code>, on the other hand, loads and parses a file just once, during the first run.</p>
+<h3 id="wrapping-the-file-with-load">Wrapping the File with <code>load</code></h3>
+<p>Right now, every time we load or require a file, we pollute the global namespace. To avoid this, we can use the <code>load</code> method with the wrap parameter set to <code>true</code>. This will create an anonymous module where all the constants and methods defined in a loaded file are placed. Here is an example:</p>
+
+<p>If you run this, Ruby will output something like this: <code>#&lt;Module:0x00007fa3430682e8&gt;::Foo</code>.</p>
+<p>Why is this useful? For one thing, we are not polluting the global namespace. But since Ruby creates an anonymous module, we can only access the stuff we load with some trickery.</p>
+<p>Nevertheless, wrapping the file is still useful if we want to configure something in our application or set some things up. This way, we can achieve what we want without leaving anything behind.</p>
+
+<h3 id="accessing-the-wrapped-file-constants">Accessing the Wrapped File Constants</h3>
+<p>There are two ways to access the constants we create in the wrapped file. The first and most obvious is to set a module name as the argument for the wrap parameter.</p>
+
+<p>Here is how we can have access to the anonymous Ruby module:</p>
+
+<p>There is a hidden problem with <code>wrap</code>. If the author of the loaded file does something like this, it will break the sandbox:</p>
+
+<p>Now <code>Foo</code> is in the global namespace, and there is no way to prevent this pollution.</p>
+<h2 id="ruby-code-loading-with-require">Ruby Code Loading with <code>require</code></h2>
+<p>Just like the <code>load</code> method, <code>require</code> is a method in the <code>Kernel</code> module. The big difference between these two methods is how they behave on multiple calls.</p>
+<p>While <code>load</code> always reevaluates a file, <code>require</code> doesn't. Its response is also different. If you call <code>require</code> for the first time and the method actually loads something, it returns <code>true</code>, otherwise, it returns <code>false</code>. <code>load</code>, on the other hand, always returns <code>true</code>.</p>
+<p>Some pseudo-code for <code>require</code> would look something like this:</p>
+
+<p><code>require</code> accepts absolute paths for files as well as just a simple name. If we need a simple file, <code>require</code> also searches in the <code>$LOAD_PATH</code>. This, of course, means that we still have the same disadvantages we had with <code>load</code>.</p>
+<h3 id="simpler-file-searching-with-require_relative">Simpler File Searching with <code>require_relative</code></h3>
+<p><code>require_relative</code> always looks for a file that is relative to the current file you are working on. <code>require_relative</code> doesn't iterate over a directory, and no real search is involved. Ruby looks into the path specified and tries to load the file. If it isn't there, we get a <code>LoadError</code>.</p>
+<p>Unfortunately, as of now, <code>require</code> doesn't have a <code>wrap</code> parameter like <code>load</code> does, so <code>require</code> always pollutes the global namespace. But there has been <a href="https://bugs.ruby-lang.org/issues/10320">some recent discussion on the Ruby issue tracker</a> to add something like <code>wrap</code> to the <code>require</code> method.</p>
+<h2 id="autoload-code-loading-in-ruby"><code>autoload</code> Code Loading in Ruby</h2>
+<p>Our third option for code loading in Ruby is <code>autoload</code>. With <code>autoload</code>, we tell the Ruby VM upfront what constants might be accessed and where to find and load them.</p>
+<p>A big advantage of this approach is that we only load the files we really need. Therefore, the booting process can be really fast as we just pay for what we use. When we actually need the constant, <code>autoload</code> requires the file with the method <code>require</code>.</p>
+<p>Here's how we set up an autoload:</p>
+
+<p>The most popular gem for managing loading files is <code>Zeitwerk</code>, and it works with <code>autoload</code>. Now let's see how Zeitwerk works and how to set it up.</p>
+<h2 id="code-loading-with-zeitwerk">Code Loading with Zeitwerk</h2>
+<p><a href="https://github.com/fxn/zeitwerk">Zeitwerk</a> takes a directory and makes every file underneath it available to load. The convention is that every new sub-directory is a new module, and every file defines a class with the same name as the file.</p>
+<p>Zeitwerk offers an option for code reloading that is useful during development. Rails uses this mode in an active development environment.</p>
+<p>How does it work under the hood? Here is some <em>very, very</em> simplified pseudo-code:</p>
+
+<p>Now, with the last call to <code>loader.setup</code>, we get access to every constant defined in one of the files relative to the current file.
+Of course, this simplified code doesn't highlight many of the other great features that <code>Zeitwerk</code> has, like eager loading and handling namespaces. That's outside of the scope of this post, and I'll leave it to you to dig deeper and explore all <code>Zeitwerk</code> has to offer.</p>
+<h3 id="how-to-set-up-zeitwerk-with-roda">How to Set Up <code>Zeitwerk</code> with Roda</h3>
+<p>Since Rails and Hanami use <code>Zeitwerk</code> as their default, let's see how we can configure <code>Zeitwerk</code> for Roda:</p>
+
+<p>If we configure our app like this, we have code reloading during development and eager loading in production. This way, the boot time during development is fast, as only the files that are immediately needed are loaded. In production, we load everything upfront and have a faster response time.</p>
+<h2 id="wrapping-up">Wrapping Up</h2>
+<p>In this post, we first took a quick look at <code>$LOAD_PATH</code> in Ruby to lay the foundations of how code loading works. We then explored three options to load code in some detail: <code>load</code>, <code>require</code>, and <code>autoload</code> (which works well with the <code>Zeitwerk</code> gem).</p>
+<p>So, how should we load our code? Most of the time, we should use <code>require</code> and <code>Zeitwerk</code> to automate that. If you have special requirements and want to put loaded code into a namespace, the <code>load</code> method with a wrap parameter is a good option.</p>
+<p>Happy code loading!</p>
+<p><strong>P.S. If you'd like to read Ruby Magic posts as soon as they get off the press, <a href="https://blog.appsignal.com/ruby-magic">subscribe to our Ruby Magic newsletter and never miss a single post</a>!</strong></p></div></div>
+  </div>
+</body>
+</html>

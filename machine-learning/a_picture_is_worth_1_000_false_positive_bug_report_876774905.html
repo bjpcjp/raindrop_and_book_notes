@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A picture is worth 1,000 false-positive bug reports</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A picture is worth 1,000 false-positive bug reports</h1>
+    <p><strong>URL:</strong> <a href="https://multithreaded.stitchfix.com/blog/2020/05/15/tourist-intro">https://multithreaded.stitchfix.com/blog/2020/05/15/tourist-intro</a></p>
+    <p><strong>Tags:</strong> machine-learning, supply-chain</p>
+    <p><strong>Bookmark ID:</strong> 876774905</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <article>
+        <section>
+          <p>
+Note: we understand that there are more important topics in the world given that we’re in the midst of a pandemic, and we wish for everyone to remain safe &amp; healthy. We’re continuing to publish blog posts in the hope that they provide a sense of connection and a signal of continuity—while it's difficult to think beyond the day, together, we will get through this.
+</p>
+
+<p><img alt="inside a Stitch Fix warehouse" src="data:application/octet-stream;base64,"></p>
+
+<h2 id="the-problem">The problem</h2>
+
+<p>We’ve written <a href="https://multithreaded.stitchfix.com/blog/2017/08/31/warehouse-layouts/">before on this blog</a> about how our Algorithms team works to make our warehouse operations as efficient as possible. A warehouse is a vast space that requires careful organization. The starting point for our warehouse organization is to subdivide the space by business line (Women’s, Men’s, Kids’) and then by size (e.g., S, M, L).</p>
+
+<p>The shipments we send to our Stitch Fix clients typically consist of five items, though this number jumps to ten for our Kids’ business. It wouldn’t be very efficient to send our warehouse workers around collecting—“picking” in warehouse operations jargon—just the items needed to pack and ship a single shipment; this is due to the fact that a substantial portion of picking time is just the journey to and from the packing base area. Thus, our first step in improving the efficiency of our warehouse picking operations is batching: that is, an algorithm to optimize the grouping of shipments into batches of an appropriate size for one pick path, where this size is a constant determined by business line (Women’s, Men’s, or Kids’). After the batches are constructed, we run a pathing algorithm to determine a good<a name="back-fn1"></a><a href="#fn1"><sup>[1]</sup></a> sequence for the picking of the items in each batch.</p>
+
+<p>As our business has grown, we are experimenting more and more with improving our warehouse operations. For example, we’re experimenting with different ways of laying out categories and sizes of merchandise in our warehouse. The warehouse layouts themselves<a name="back-fn2"></a><a href="#fn2"><sup>[2]</sup></a> have thus become a more frequently changing input to the batching and pathing algorithms. And what comes with increased complexity in the inputs to algorithms? Increased surface areas for bugs.</p>
+
+<p>Bugs in the batching and pathing algorithms <em>have</em> happened, and they can be fairly catastrophic to a warehouse’s productivity, so it is extremely important to try to catch and fix bugs as early as possible. Before we built the app that is the subject of this blog post—<em>Tourist</em> is its internal code name—the steps to discovering a bug in batching and/or pathing were as follows:</p>
+
+<p><span role="img" aria-label="exclamation point emoji">❗</span> Warehouse employees suspected something was up because of batches with paths that seemed extraordinarily long and/or inefficient.</p>
+
+<p><span role="img" aria-label="speaker high volume emoji">🔊</span> A warehouse lead communicated this to the Operations team.</p>
+
+<p><span role="img" aria-label="envelope emoji">✉️</span> Someone from Operations opened a ticket with the Engineering team that owns our internal warehouse applications that surface batches and their associated pick paths.</p>
+
+<p><span role="img" aria-label="construction worker emoji">👷🏿‍♂️</span> An engineer did a first pass at bug-hunting in the warehouse application code, then escalated to the corresponding Algorithms team<a name="back-fn3"></a><a href="#fn3"><sup>[3]</sup></a> if there was no obvious source of the perceived problem.</p>
+
+<p><span role="img" aria-label="woman on laptop emoji">👩🏽‍💻</span> A data scientist dove into Algorithms-owned code to figure out whether a bug in an algorithm (served as an API to the warehouse application code) was the cause of “weirdness” reported by the warehouse.</p>
+
+<p>If there was no bug, the data scientist communicated that back to their Operations business partner, who communicated the same result back to the warehouse. If there was a bug, then the scientist fixed it and communicated back through the same chain when the fix was completed.</p>
+
+<p>The (likely obvious!) pain in this flow was the inability of Operations team members to triage warehouse reports of potential problems themselves. It left them relatively powerless, only serving as messengers, and it also caused pain for the engineers and data scientists whose work was somewhat frequently interrupted by tickets and requests to investigate potential bugs. This would have been less of a problem if reports from the warehouse had a very high correlation with the occurrence of actual bugs, but in reality, it happens fairly frequently that some sets of shipments are very difficult to batch efficiently (given the warehouse layouts at the time), and so what feels like a “bad” batch is actually the best solution we could deploy, and there is no bug. (We’ll dive into exactly what combinations of shipment and warehouse layout features have caused this below.) In addition, the metrics used by data scientists to make an initial assessment of a batch’s goodness are relatively simple to calculate.</p>
+
+<p>Thus, we decided it was time to put together a web application for Operations, warehouse Engineering, and Algorithms team members to be able to easily look up a batch to see its pick path and all relevant related metrics. All stakeholders can now use Tourist to do a first pass at investigating reports of potential bugs from the warehouses. And as this kind of visual troubleshooting is applicable in many business domains—ride-sharing and deliveries jump immediately to mind—we thought we’d share a bit about our (quite simple!) design.</p>
+
+<h2 id="so-what-does-tourist-look-like">So what does Tourist look like?</h2>
+
+<p>The landing page for Tourist is a simple input to look up a batch via the id of one of its constituent shipments<a name="back-fn4"></a><a href="#fn4"><sup>[4]</sup></a>:</p>
+
+<figure>
+  <img alt="Tourist landing page" src="data:application/octet-stream;base64,">
+  <figcaption>The Tourist landing page</figcaption>
+</figure>
+
+<p>This fits the intended primary use of in-the-moment debugging based on reports of “weird” batches coming down the line from warehouse leads.</p>
+
+<p>Once we’ve retrieved all the necessary data for the batch as well as the warehouse (the layout of the relevant business line-specific slice of the warehouse, most importantly) we display the batch as its pick path for the user:</p>
+
+<figure>
+  <img alt="batch displayed as a pick path" src="data:application/octet-stream;base64,">
+  <figcaption>A single batch visualized as its pick path. Note that some labels and statistics have been removed and details obscured.</figcaption>
+</figure>
+
+<p>Let’s zoom in and examine this visualization in detail:</p>
+
+<figure>
+  <img alt="batch as pick path detail" src="data:application/octet-stream;base64,">
+  <figcaption>Just the batch, visualized as its pick path within a (slice of) a warehouse.</figcaption>
+</figure>
+
+<p>The path begins with a green circle and ends on the red. Each semi-transparent grey circle represents a warehouse unit “step” in the pick path. When the picker had to retrace his or her steps, multiple circles will be layered on top of each other, resulting in a darker path segment. This has the useful side effect of making a bad pick path extremely obvious:</p>
+
+<figure>
+  <img alt="a bad pick path" src="data:application/octet-stream;base64,">
+  <figcaption>A bad (i.e., not shortest) pick path, visually obvious by the dark path segments indicating many back-and-forths and retraced steps by the picker.</figcaption>
+</figure>
+
+<p>The numerals represent both the location and ordered index of each picked item. Some numerals overlap and become unreadable, but that’s only a minor visual annoyance. The numerals serve mainly to provide the user with milestones that indicate the ordering of the path; thus not every numeral need be legible. In the case of very tightly packed paths where the ordering is difficult to visually parse, the user can click the “start” button in the lower left corner to animate the path:</p>
+
+<figure>
+  <img alt="pick path animation" src="data:application/octet-stream;base64,">
+  <figcaption>An animated pick path.</figcaption>
+</figure>
+
+<p>A dropdown menu provides a couple of other ways to view a batch, including as just a collection of circles representing the items in the batch, color-coded by each constituent item’s shipment id:</p>
+
+<figure>
+  <img alt="batch color-coded by shipment id of each item" src="data:application/octet-stream;base64,">
+  <figcaption>The same batch, visualized as items color-coded by shipment id.</figcaption>
+</figure>
+
+<p>This might not seem like a very useful display, but it can be under certain circumstances. One logical way to organize merchandise in a warehouse is by size. This is due to the fact that each customer receiving a Fix is likely receiving items that are the same size. While this assumption about clients holds quite often, there are exceptions.</p>
+
+<p>For example, look at this long pick path that crosses three merchandise zones (S, M, and L–XL):</p>
+
+<figure>
+  <img alt="a very long batch" src="data:application/octet-stream;base64,">
+  <figcaption>A batch crossing several zones, visualized as a pick path.</figcaption>
+</figure>
+
+<p>It’s not obvious from the pick path display why this path is so long, but if we switch to the color-coded by shipment id display, it becomes obvious fairly quickly that there is no way that a batch could have been constructed for these shipments that <em>didn’t</em> cross three zones and nearly the entire potential warehouse space.</p>
+
+<p>Two shipments—the orange and pink-coded (and encircled for emphasis)—contain items that are mostly spread sparsely throughout the L–XL zone, but with one item that is a S:</p>
+
+<figure>
+  <img alt="the very long batch color-coded by shipment id" src="data:application/octet-stream;base64,">
+  <figcaption>The same batch, visualized as items color-coded by shipment id, with two of the shipments containing items in the S and L–XL zones highlighted.</figcaption>
+</figure>
+
+<p>Strange? Yes. Possible? Absolutely. Some clothing brands run large or small, and some clients prefer different styles of fit in their tops versus their bottoms—perhaps preferring roomy bottoms with fitted tops or oversized tops with plenty of leeway to drape creatively or tuck into a fitted waistband. Human bodies come in a wide variety of shapes and sizes, after all. The best we can do with shipments like these is to group them together in batches that will cover a lot of area so that they don’t cause other batches to cover any more area than necessary.</p>
+
+<p>Now that we have Tourist, our Operations team can look up batches and quickly see whether further investigation into a particularly long or “weird” pick path is necessary. This ability to self-serve removes the need for engineers and algorithm developers to investigate bugs that ultimately turn out to be false positives.</p>
+
+<h2 id="and-the-technical-stack">And the technical stack?</h2>
+
+<p>Tourist is a <a href="https://reactjs.org/">React</a> single-page application built via <a href="https://create-react-app.dev/">create-react-app</a><a name="back-fn5"></a><a href="#fn5"><sup>[5]</sup></a>. It employs <a href="https://reactjs.org/docs/hooks-intro.html">React hooks</a>, <a href="https://redux-toolkit.js.org/">Redux toolkit</a>, <a href="https://react.semantic-ui.com/">Semantic UI React</a> for UI building blocks outside of the warehouse visualization code, and <a href="https://reach.tech/router">@reach/router</a> for browser routing. Its “backend” is just our internal API for executing simple SQL queries against single tables in our data warehouse.</p>
+
+<p>The warehouse visualizations themselves are SVG, and in this case <a href="https://github.com/d3/d3-scale">d3-scale</a> isn’t even a dependency because the mapping from warehouse schematic to visualization is a dead simple 1 cell: 10px mapping. (Responsiveness to screen size is achieved by using percentages for the <code>&lt;svg&gt;</code> element’s <code>width</code> and <code>height</code> but then defining a <code>viewBox</code> based on the 10px-per-cell scaling.)</p>
+
+<p>The pick path animation is accomplished with nothing more complex than CSS transitions defined via <a href="https://styled-components.com/">styled-components</a> (which is part of our customized set of create-react-app dependencies). An early version employed <a href="https://www.react-spring.io/">react-spring</a> for the path animation, but it wasn’t performant without refactoring the component tree to avoid unnecessary re-renders, and CSS transitions turned out to be perfectly adequate for the job.</p>
+
+<hr>
+
+<p><a name="fn1"></a>
+<a href="#back-fn1">[1]↩</a> “Good,” not “optimal” because we need to sequence several batches per second, and sequencing is a well-known NP-Hard problem.</p>
+
+<p><a name="fn2"></a>
+<a href="#back-fn2">[2]↩</a> For the curious, our warehouse layouts are actually laid out schematically in the cells of a Google Sheet (with very strict editing controls!). A nightly ETL reads every tab of this sheet and stores the current warehouse layout (each cell designated as item bay, walkway, etc., with higher-order designations for “zones” as well) in a table in our data warehouse where it can serve as the input to the batching and pathing algorithms.</p>
+
+<p><a name="fn3"></a>
+<a href="#back-fn3">[3]↩</a> Recall that at&nbsp;Stitch Fix Algorithms is a separate department from Engineering.</p>
+
+<p><a name="fn4"></a>
+<a href="#back-fn4">[4]↩</a> Why shipment id and not batch id? It’s complicated.</p>
+
+<p><a name="fn5"></a>
+<a href="#back-fn5">[5]↩</a> Our Algorithms UI team creates so many create-react-app (CRA) apps that we actually built a CLI wrapper around CRA that modifies the output for our environment by editing the boilerplate, installing additional dependencies, and setting up things like commit hooks to enforce linting and code styling. We are currently working on replacing this wrapper (codenamed <span role="img" aria-label="female rockstar emoji">👩‍🎤</span> rappstar for <span>R</span>eact <span>app</span> <span>star</span>ter) with <a href="https://create-react-app.dev/docs/custom-templates">a custom CRA template</a>.</p>
+
+        </section>
+      </article>
+    </div><div>
+    <h2>Come Work with Us!</h2>
+    <p>
+      We’re a diverse team dedicated to building great products, and we’d love your help. Do you want to build
+      amazing products with amazing peers? Join us!
+    </p>
+    
+  </div></div>
+  </div>
+</body>
+</html>

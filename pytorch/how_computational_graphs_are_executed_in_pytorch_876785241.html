@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How Computational Graphs are Executed in PyTorch</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How Computational Graphs are Executed in PyTorch</h1>
+    <p><strong>URL:</strong> <a href="https://substack.com/redirect/e7484b15-7584-48b5-b946-7fe144ca3241?u=1135489">https://substack.com/redirect/e7484b15-7584-48b5-b946-7fe144ca3241?u=1135489</a></p>
+    <p><strong>Tags:</strong> pytorch</p>
+    <p><strong>Bookmark ID:</strong> 876785241</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+                    
+                    <p>Welcome to the last entry into understanding the autograd engine of PyTorch series!
+If you haven’t read parts <a href="https://pytorch.org/blog/overview-of-pytorch-autograd-engine/">1</a> &amp; <a href="https://pytorch.org/blog/computational-graphs-constructed-in-pytorch/">2</a> check them now to understand how PyTorch creates the computational graph for the backward pass!</p>
+
+<p>This post is based on PyTorch v1.11, so some highlighted parts may differ across versions.</p>
+
+<h2 id="pytorch-autograd-graph-execution">PyTorch autograd graph execution</h2>
+
+<p>The last post showed how PyTorch constructs the graph to calculate the outputs’ derivatives w.r.t. the inputs when executing the forward pass. Now we will see how the execution of the backward pass is coordinated and done by looking at the whole process, starting from Python down to the lower C++ level internals.</p>
+
+<h2 id="what-happens-when-calling-backwardgrad-from-python">What Happens when Calling <code>backward()</code>/<code>grad()</code> from Python</h2>
+<h2 id="using-variablebackward">Using <code>variable.backward()</code></h2>
+
+<p>After doing all our calculations with an input set to require the gradient, we call <code>.backward()</code> on the result to initiate the backward pass execution.</p>
+
+<div><pre><code><span>&gt;&gt;&gt;</span> <span>x</span> <span>=</span> <span>torch</span><span>.</span><span>tensor</span><span>([</span><span>0.5</span><span>,</span> <span>0.75</span><span>],</span> <span>requires_grad</span><span>=</span><span>True</span><span>)</span>
+<span>&gt;&gt;&gt;</span> <span>y</span> <span>=</span> <span>torch</span><span>.</span><span>exp</span><span>(</span><span>x</span><span>).</span><span>sum</span><span>()</span>
+<span>&gt;&gt;&gt;</span> <span>y</span><span>.</span><span>backward</span><span>()</span>
+</code></pre></div>
+
+<p>Calling <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/_tensor.py#L307-L363"><code>.backward()</code></a> on a tensor results in a call to <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/autograd/__init__.py#L85-L175"><code>torch.autograd.backward()</code></a>.</p>
+<div><pre><code><span># torch/_tensor.py
+</span>
+<span>def</span> <span>backward</span><span>(</span><span>self</span><span>,</span> <span>gradient</span><span>=</span><span>None</span><span>,</span> <span>retain_graph</span><span>=</span><span>None</span><span>,</span> <span>create_graph</span><span>=</span><span>False</span><span>,</span> <span>inputs</span><span>=</span><span>None</span><span>):</span>
+    <span>…</span>
+    <span>torch</span><span>.</span><span>autograd</span><span>.</span><span>backward</span><span>(</span><span>self</span><span>,</span> <span>gradient</span><span>,</span> <span>retain_graph</span><span>,</span> <span>create_graph</span><span>,</span> <span>inputs</span><span>=</span><span>inputs</span><span>)</span>
+
+</code></pre></div>
+<p><code>torch.autograd.backward()</code> checks the arguments and calls the autograd engine in the C++ layer.</p>
+
+<div><pre><code><span>def</span> <span>backward</span><span>(</span>
+    <span>tensors</span><span>:</span> <span>_TensorOrTensors</span><span>,</span>
+    <span>grad_tensors</span><span>:</span> <span>Optional</span><span>[</span><span>_TensorOrTensors</span><span>]</span> <span>=</span> <span>None</span><span>,</span>
+    <span>retain_graph</span><span>:</span> <span>Optional</span><span>[</span><span>bool</span><span>]</span> <span>=</span> <span>None</span><span>,</span>
+    <span>create_graph</span><span>:</span> <span>bool</span> <span>=</span> <span>False</span><span>,</span>
+    <span>grad_variables</span><span>:</span> <span>Optional</span><span>[</span><span>_TensorOrTensors</span><span>]</span> <span>=</span> <span>None</span><span>,</span>
+    <span>inputs</span><span>:</span> <span>Optional</span><span>[</span><span>_TensorOrTensors</span><span>]</span> <span>=</span> <span>None</span><span>,</span>
+<span>)</span> <span>-&gt;</span> <span>None</span><span>:</span>
+    <span>…</span>
+
+    <span>if</span> <span>inputs</span> <span>is</span> <span>not</span> <span>None</span> <span>and</span> <span>len</span><span>(</span><span>inputs</span><span>)</span> <span>==</span> <span>0</span><span>:</span>
+        <span>raise</span> <span>RuntimeError</span><span>(</span><span>"'inputs' argument to backward() cannot be empty."</span><span>)</span>
+
+    <span>tensors</span> <span>=</span> <span>(</span><span>tensors</span><span>,)</span> <span>if</span> <span>isinstance</span><span>(</span><span>tensors</span><span>,</span> <span>torch</span><span>.</span><span>Tensor</span><span>)</span> <span>else</span> <span>tuple</span><span>(</span><span>tensors</span><span>)</span>
+    <span>inputs</span> <span>=</span> <span>(</span><span>inputs</span><span>,)</span> <span>if</span> <span>isinstance</span><span>(</span><span>inputs</span><span>,</span> <span>torch</span><span>.</span><span>Tensor</span><span>)</span> <span>else</span> \
+        <span>tuple</span><span>(</span><span>inputs</span><span>)</span> <span>if</span> <span>inputs</span> <span>is</span> <span>not</span> <span>None</span> <span>else</span> <span>tuple</span><span>()</span>
+
+    <span>grad_tensors_</span> <span>=</span> <span>_tensor_or_tensors_to_tuple</span><span>(</span><span>grad_tensors</span><span>,</span> <span>len</span><span>(</span><span>tensors</span><span>))</span>
+    <span>grad_tensors_</span> <span>=</span> <span>_make_grads</span><span>(</span><span>tensors</span><span>,</span> <span>grad_tensors_</span><span>)</span>
+    <span>if</span> <span>retain_graph</span> <span>is</span> <span>None</span><span>:</span>
+        <span>retain_graph</span> <span>=</span> <span>create_graph</span>
+
+    <span>Variable</span><span>.</span><span>_execution_engine</span><span>.</span><span>run_backward</span><span>(</span>
+        <span>tensors</span><span>,</span> <span>grad_tensors_</span><span>,</span> <span>retain_graph</span><span>,</span> <span>create_graph</span><span>,</span> <span>inputs</span><span>,</span>
+        <span>allow_unreachable</span><span>=</span><span>True</span><span>,</span> <span>accumulate_grad</span><span>=</span><span>True</span><span>)</span>  <span># allow_unreachable flag
+</span>
+</code></pre></div>
+<p>First, whether the <code>grad_tensors</code> argument was specified or not, there is a call to the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/autograd/__init__.py#L30-L74"><code>_make_grads</code></a> function. This is used to check the provided <code>grad_tensors</code> or to specify the default value for them by looking at the <code>tensors</code> argument values’ shapes. Check the first blog post for details on the default value for the <code>grad_tensors</code> of the backward pass. This function just provides the vector of the vector jacobian product if it was not initially specified.</p>
+
+<p>In the above code, <code>Variable</code> has an <code>_execution_engine</code> attribute that is defined in <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/autograd/variable.py#L14"><code>torch.autograd.variable</code></a> to be of type <code>ImperativeEngine</code>; the C++ engine exported to python and declared in <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/python_engine.cpp#L384"><code>torch/csrc/autograd/python_engine.cpp</code></a>. In the following sections, we explain in detail how this object executes the backward pass.</p>
+
+<p>Note that the <code>torch.autograd.backward</code> function has an <code>inputs</code> optional argument. This argument is used when we want to calculate the <code>.grad</code> field of only a subset of input tensors in the forward pass.</p>
+
+<div><pre><code><span>&gt;&gt;&gt;</span> <span>x</span> <span>=</span> <span>torch</span><span>.</span><span>tensor</span><span>([</span><span>0.5</span><span>,</span> <span>0.75</span><span>],</span> <span>requires_grad</span><span>=</span><span>True</span><span>)</span>
+<span>&gt;&gt;&gt;</span> <span>y</span> <span>=</span> <span>torch</span><span>.</span><span>tensor</span><span>([</span><span>0.1</span><span>,</span> <span>0.90</span><span>],</span> <span>requires_grad</span><span>=</span><span>True</span><span>)</span>
+<span>&gt;&gt;&gt;</span> <span>z</span> <span>=</span> <span>torch</span><span>.</span><span>exp</span><span>(</span><span>x</span> <span>*</span> <span>y</span><span>).</span><span>sum</span><span>()</span>
+<span>&gt;&gt;&gt;</span> <span>torch</span><span>.</span><span>autograd</span><span>.</span><span>backward</span><span>([</span><span>z</span><span>],</span> <span>inputs</span><span>=</span><span>[</span><span>x</span><span>])</span>
+<span>&gt;&gt;&gt;</span> <span>x</span><span>.</span><span>grad</span>
+<span>tensor</span><span>([</span><span>0.1051</span><span>,</span> <span>1.7676</span><span>])</span>
+<span>&gt;&gt;&gt;</span> <span>y</span><span>.</span><span>grad</span>  <span># None
+</span><span>&gt;&gt;&gt;</span>
+
+</code></pre></div>
+<h2 id="using-torchautogradgrad">Using <code>torch.autograd.grad</code></h2>
+
+<p>An alternative to <code>backward()</code> is to use <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/autograd/__init__.py#L177-L277"><code>torch.autograd.grad()</code></a>. The main difference to <code>backward()</code> is that <code>grad()</code> returns a tuple of tensors with the gradients of the <code>outputs</code> w.r.t. the <code>inputs</code> kwargs instead of storing them in the <code>.grad</code> field of the tensors. As you can see, the <code>grad()</code> code shown below is very similar to backward.</p>
+
+<div><pre><code><span>def</span> <span>grad</span><span>(</span>
+    <span>outputs</span><span>:</span> <span>_TensorOrTensors</span><span>,</span>
+    <span>inputs</span><span>:</span> <span>_TensorOrTensors</span><span>,</span>
+    <span>grad_outputs</span><span>:</span> <span>Optional</span><span>[</span><span>_TensorOrTensors</span><span>]</span> <span>=</span> <span>None</span><span>,</span>
+    <span>retain_graph</span><span>:</span> <span>Optional</span><span>[</span><span>bool</span><span>]</span> <span>=</span> <span>None</span><span>,</span>
+    <span>create_graph</span><span>:</span> <span>bool</span> <span>=</span> <span>False</span><span>,</span>
+    <span>only_inputs</span><span>:</span> <span>bool</span> <span>=</span> <span>True</span><span>,</span>
+    <span>allow_unused</span><span>:</span> <span>bool</span> <span>=</span> <span>False</span><span>,</span>
+   <span>is_grads_batched</span><span>:</span> <span>bool</span> <span>=</span> <span>False</span>
+<span>)</span> <span>-&gt;</span> <span>Tuple</span><span>[</span><span>torch</span><span>.</span><span>Tensor</span><span>,</span> <span>...]:</span>
+   
+    <span>outputs</span> <span>=</span> <span>(</span><span>outputs</span><span>,)</span> <span>if</span> <span>isinstance</span><span>(</span><span>outputs</span><span>,</span> <span>torch</span><span>.</span><span>Tensor</span><span>)</span> <span>else</span> <span>tuple</span><span>(</span><span>outputs</span><span>)</span>
+    <span>inputs</span> <span>=</span> <span>(</span><span>inputs</span><span>,)</span> <span>if</span> <span>isinstance</span><span>(</span><span>inputs</span><span>,</span> <span>torch</span><span>.</span><span>Tensor</span><span>)</span> <span>else</span> <span>tuple</span><span>(</span><span>inputs</span><span>)</span>
+    <span>overridable_args</span> <span>=</span> <span>outputs</span> <span>+</span> <span>inputs</span>
+    <span>if</span> <span>has_torch_function</span><span>(</span><span>overridable_args</span><span>):</span>
+        <span>return</span> <span>handle_torch_function</span><span>(</span>
+            <span>grad</span><span>,</span>
+            <span>overridable_args</span><span>,</span>
+            <span>outputs</span><span>,</span>
+            <span>inputs</span><span>,</span>
+            <span>grad_outputs</span><span>=</span><span>grad_outputs</span><span>,</span>
+            <span>retain_graph</span><span>=</span><span>retain_graph</span><span>,</span>
+            <span>create_graph</span><span>=</span><span>create_graph</span><span>,</span>
+            <span>only_inputs</span><span>=</span><span>only_inputs</span><span>,</span>
+            <span>allow_unused</span><span>=</span><span>allow_unused</span><span>,</span>
+        <span>)</span>
+
+    <span>grad_outputs_</span> <span>=</span> <span>_tensor_or_tensors_to_tuple</span><span>(</span><span>grad_outputs</span><span>,</span> <span>len</span><span>(</span><span>outputs</span><span>))</span>
+    <span>grad_outputs_</span> <span>=</span> <span>_make_grads</span><span>(</span><span>outputs</span><span>,</span> <span>grad_outputs_</span><span>)</span>
+
+    <span>if</span> <span>retain_graph</span> <span>is</span> <span>None</span><span>:</span>
+        <span>retain_graph</span> <span>=</span> <span>create_graph</span>
+
+    <span>if</span> <span>is_grads_batched</span><span>:</span>
+        <span># …. It will not be covered here
+</span>    <span>else</span><span>:</span>
+        <span>return</span> <span>Variable</span><span>.</span><span>_execution_engine</span><span>.</span><span>run_backward</span><span>(</span>
+            <span>outputs</span><span>,</span> <span>grad_outputs_</span><span>,</span> <span>retain_graph</span><span>,</span> <span>create_graph</span><span>,</span> <span>inputs</span><span>,</span>
+            <span>allow_unused</span><span>,</span> <span>accumulate_grad</span><span>=</span><span>False</span><span>)</span>  <span># Calls into the C++ engine to run the backward pass
+</span>
+</code></pre></div>
+
+<p>Figure 1 shows the computational graph with the <code>backward()</code> and <code>grad()</code> arguments highlighted in red and blue, respectively:</p>
+
+<p>
+  <img src="data:application/octet-stream;base64," width="100%">
+</p>
+
+<p>
+Fgiure 1: Correspondence of `backward`/`grad` arguments in the graphs.
+</p>
+
+<h2 id="going-inside-the-autograd-engine">Going Inside the Autograd Engine</h2>
+
+<h2 id="refreshing-concepts-nodes-and-edges">Refreshing Concepts: Nodes and Edges</h2>
+
+<p>As we saw in <a href="https://pytorch.org/blog/computational-graphs-constructed-in-pytorch/">2</a>
+The computational graph comprises <code>Node</code> and <code>Edge</code> objects. Please read that post if you haven’t done it yet.</p>
+
+<h3 id="nodes">Nodes</h3>
+
+<p><code>Node</code> objects are defined in <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/function.h#L105-L176"><code>torch/csrc/autograd/function.h</code></a>, and they provide an overload of <code>operator()</code> for the associated function and a list of edges to do the graph traversal. Note that <code>Node</code> is a base class that autograd functions inherit from and override the <code>apply</code> method to execute the backward function.</p>
+<div><pre><code><span>struct</span> <span>TORCH_API</span> <span>Node</span> <span>:</span> <span>std</span><span>::</span><span>enable_shared_from_this</span><span>&lt;</span><span>Node</span><span>&gt;</span> <span>{</span>
+ <span>...</span>
+ <span>/// Evaluates the function on the given inputs and returns the result of the</span>
+  <span>/// function call.</span>
+  <span>variable_list</span> <span>operator</span><span>()(</span><span>variable_list</span><span>&amp;&amp;</span> <span>inputs</span><span>)</span> <span>{</span>
+  <span>...</span>
+  <span>}</span>
+
+<span>protected:</span>
+  <span>/// Performs the `Node`'s actual operation.</span>
+  <span>virtual</span> <span>variable_list</span> <span>apply</span><span>(</span><span>variable_list</span><span>&amp;&amp;</span> <span>inputs</span><span>)</span> <span>=</span> <span>0</span><span>;</span>
+  <span>…</span>
+  <span>edge_list</span> <span>next_edges_</span><span>;</span>
+  <span>uint64_t</span> <span>topological_nr_</span> <span>=</span> <span>0</span><span>;</span>
+  <span>…</span>
+
+</code></pre></div>
+
+<p>There is an attribute called <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/function.h#L481"><code>topological_nr_</code></a> in every node object. This number is used to optimize the graph execution as it allows to discard of graph branches under certain conditions. The topological number is the longest distance between this node and any leaf node and it is shown in Figure 2. Its main property is that for any pair of nodes <code>x</code>, <code>y</code> in a directed graph <code>topo_nr(x) &lt; topo_nr(y)</code> means that there is no path from <code>x</code> to <code>y</code>. So this allows for reducing the number of paths in the graph in need of traversal. Check the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/function.h#L314-L343">topological_nr</a>
+) method comment for further details.</p>
+
+<p>
+  <img src="data:application/octet-stream;base64," width="100%">
+</p>
+
+<p>
+Figure 2: Example of the Topological Number calculation
+</p>
+
+<h3 id="edges">Edges</h3>
+
+<p>The <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/edge.h#L14-L39"><code>Edge</code></a> object links <code>Node</code>s together, and its implementation is straightforward.</p>
+
+<div><pre><code><span>struct</span> <span>Edge</span> <span>{</span>
+  <span>...</span>
+  <span>/// The function this `Edge` points to.</span>
+  <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>Node</span><span>&gt;</span> <span>function</span><span>;</span>
+  <span>/// The identifier of a particular input to the function.</span>
+  <span>uint32_t</span> <span>input_nr</span><span>;</span>
+<span>};</span>
+
+</code></pre></div>
+
+<p>It only requires a function pointer to the <code>Node</code> and an input number that is the index of the output from the forward function this edge points to. When preparing the set of gradients before calling “function”, we know that what is flowing from this edge should be accumulated in the “input_nr”th argument. Note that the input/output name is flipped here and this is the input to the backward function.
+ <code>Edge</code> objects are constructed using the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/variable.cpp#L221-L233"><code>gradient_edge</code></a>  function method.</p>
+
+<div><pre><code> <span>Edge</span> <span>gradient_edge</span><span>(</span><span>const</span> <span>Variable</span><span>&amp;</span> <span>self</span><span>)</span> <span>{</span>
+    <span>if</span> <span>(</span><span>const</span> <span>auto</span><span>&amp;</span> <span>gradient</span> <span>=</span> <span>self</span><span>.</span><span>grad_fn</span><span>())</span> <span>{</span>
+      <span>return</span> <span>Edge</span><span>(</span><span>gradient</span><span>,</span> <span>self</span><span>.</span><span>output_nr</span><span>());</span>
+    <span>}</span> <span>else</span> <span>{</span>
+      <span>return</span> <span>Edge</span><span>(</span><span>grad_accumulator</span><span>(</span><span>self</span><span>),</span> <span>0</span><span>);</span>
+    <span>}</span>
+  <span>}</span>
+
+</code></pre></div>
+<h2 id="entering-the-c-realm">Entering the C++ Realm</h2>
+
+<p>Once that <code>torch.autograd.backward()</code> has been invoked, the
+<a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/python_engine.cpp#L152-L286"><code>THPEngine_run_backward</code></a> routine starts the graph traversal. Following is a schema of the function body:</p>
+<div><pre><code><span>PyObject</span> <span>*</span><span>THPEngine_run_backward</span><span>(</span><span>PyObject</span> <span>*</span><span>self</span><span>,</span> <span>PyObject</span> <span>*</span><span>args</span><span>,</span> <span>PyObject</span> <span>*</span><span>kwargs</span><span>)</span>
+<span>{</span>
+  <span>HANDLE_TH_ERRORS</span>
+  <span>PyObject</span> <span>*</span><span>tensors</span> <span>=</span> <span>nullptr</span><span>;</span>
+  <span>PyObject</span> <span>*</span><span>grad_tensors</span> <span>=</span> <span>nullptr</span><span>;</span>
+  <span>unsigned</span> <span>char</span> <span>keep_graph</span> <span>=</span> <span>0</span><span>;</span>
+  <span>unsigned</span> <span>char</span> <span>create_graph</span> <span>=</span> <span>0</span><span>;</span>
+  <span>PyObject</span> <span>*</span><span>inputs</span> <span>=</span> <span>nullptr</span><span>;</span>
+  
+  <span>// Convert the python arguments to C++ objects</span>
+  <span>const</span> <span>char</span> <span>*</span><span>accepted_kwargs</span><span>[]</span> <span>=</span> <span>{</span> <span>// NOLINT</span>
+      <span>"tensors"</span><span>,</span> <span>"grad_tensors"</span><span>,</span> <span>"keep_graph"</span><span>,</span> <span>"create_graph"</span><span>,</span> <span>"inputs"</span><span>,</span>
+      <span>"allow_unreachable"</span><span>,</span> <span>"accumulate_grad"</span><span>,</span> <span>nullptr</span>
+  <span>};</span>
+  <span>if</span> <span>(</span><span>!</span><span>PyArg_ParseTupleAndKeywords</span><span>(</span><span>args</span><span>,</span> <span>kwargs</span><span>,</span> <span>"OObb|Obb"</span><span>,</span> <span>(</span><span>char</span><span>**</span><span>)</span><span>accepted_kwargs</span><span>,</span>
+        <span>&amp;</span><span>tensors</span><span>,</span> <span>&amp;</span><span>grad_tensors</span><span>,</span> <span>&amp;</span><span>keep_graph</span><span>,</span> <span>&amp;</span><span>create_graph</span><span>,</span> <span>&amp;</span><span>inputs</span><span>,</span> <span>&amp;</span><span>allow_unreachable</span><span>,</span> <span>&amp;</span><span>accumulate_grad</span><span>))</span>
+
+ <span>// Prepare arguments</span>
+ <span>for</span><span>(</span><span>const</span> <span>auto</span> <span>i</span> <span>:</span> <span>c10</span><span>::</span><span>irange</span><span>(</span><span>num_tensors</span><span>))</span> <span>{</span>
+   <span>// Check that the tensors require gradients</span>
+  <span>}</span>
+
+  <span>std</span><span>::</span><span>vector</span><span>&lt;</span><span>Edge</span><span>&gt;</span> <span>output_edges</span><span>;</span>
+  <span>if</span> <span>(</span><span>inputs</span> <span>!=</span> <span>nullptr</span><span>)</span> <span>{</span>
+     <span>// Prepare outputs</span>
+  <span>}</span>
+
+  <span>{</span>
+      <span>// Calls the actual autograd engine</span>
+    <span>pybind11</span><span>::</span><span>gil_scoped_release</span> <span>no_gil</span><span>;</span>
+    <span>outputs</span> <span>=</span> <span>engine</span><span>.</span><span>execute</span><span>(</span><span>roots</span><span>,</span> <span>grads</span><span>,</span> <span>keep_graph</span><span>,</span> <span>create_graph</span><span>,</span> <span>accumulate_grad</span><span>,</span> <span>output_edges</span><span>);</span>
+  <span>}</span>
+    <span>// Clean up and finish</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>First, we prepare the input arguments after converting the <code>PyObject</code> arguments to actual C++ objects. The <code>tensors</code> list contains the tensors from which we start the backward pass. These tensors are converted to edges using <code>torch::autograd::impl::gradient_edge</code> and added to a list called <code>roots</code> where the graph traversal starts.</p>
+
+<div><pre><code> <span>edge_list</span> <span>roots</span><span>;</span>
+  <span>roots</span><span>.</span><span>reserve</span><span>(</span><span>num_tensors</span><span>);</span>
+  <span>variable_list</span> <span>grads</span><span>;</span>
+  <span>grads</span><span>.</span><span>reserve</span><span>(</span><span>num_tensors</span><span>);</span>
+  <span>for</span><span>(</span><span>const</span> <span>auto</span> <span>i</span> <span>:</span> <span>c10</span><span>::</span><span>irange</span><span>(</span><span>num_tensors</span><span>))</span> <span>{</span>
+    <span>PyObject</span> <span>*</span><span>_tensor</span> <span>=</span> <span>PyTuple_GET_ITEM</span><span>(</span><span>tensors</span><span>,</span> <span>i</span><span>);</span>
+       <span>const</span> <span>auto</span><span>&amp;</span> <span>variable</span> <span>=</span> <span>THPVariable_Unpack</span><span>(</span><span>_tensor</span><span>);</span>
+       <span>auto</span> <span>gradient_edge</span> <span>=</span> <span>torch</span><span>::</span><span>autograd</span><span>::</span><span>impl</span><span>::</span><span>gradient_edge</span><span>(</span><span>variable</span><span>);</span>
+     <span>roots</span><span>.</span><span>push_back</span><span>(</span><span>std</span><span>::</span><span>move</span><span>(</span><span>gradient_edge</span><span>));</span>
+
+    <span>PyObject</span> <span>*</span><span>grad</span> <span>=</span> <span>PyTuple_GET_ITEM</span><span>(</span><span>grad_tensors</span><span>,</span> <span>i</span><span>);</span>
+    <span>if</span> <span>(</span><span>THPVariable_Check</span><span>(</span><span>grad</span><span>))</span> <span>{</span>
+      <span>const</span> <span>Variable</span><span>&amp;</span> <span>grad_var</span> <span>=</span> <span>THPVariable_Unpack</span><span>(</span><span>grad</span><span>);</span>
+      <span>grads</span><span>.</span><span>push_back</span><span>(</span><span>grad_var</span><span>);</span>
+    <span>}</span> 
+  <span>}</span>
+
+</code></pre></div>
+
+<p>Now, if the <code>inputs</code> argument was specified in <code>backward</code> or we used the <code>torch.autograd.grad</code> api, the following code creates a list of edges to accumulate the gradients in the specified tensors at the end of the computation. The engine uses this later to optimize the execution as it doesn’t add the gradients in all the leaf nodes, just the specified ones.</p>
+
+<div><pre><code>  <span>std</span><span>::</span><span>vector</span><span>&lt;</span><span>Edge</span><span>&gt;</span> <span>output_edges</span><span>;</span>
+  <span>if</span> <span>(</span><span>inputs</span> <span>!=</span> <span>nullptr</span><span>)</span> <span>{</span>
+    <span>int</span> <span>num_inputs</span> <span>=</span> <span>PyTuple_GET_SIZE</span><span>(</span><span>inputs</span><span>);</span>
+    <span>output_edges</span><span>.</span><span>reserve</span><span>(</span><span>num_inputs</span><span>);</span>
+    <span>for</span> <span>(</span><span>const</span> <span>auto</span> <span>i</span> <span>:</span> <span>c10</span><span>::</span><span>irange</span><span>(</span><span>num_inputs</span><span>))</span> <span>{</span>
+      <span>PyObject</span> <span>*</span><span>input</span> <span>=</span> <span>PyTuple_GET_ITEM</span><span>(</span><span>inputs</span><span>,</span> <span>i</span><span>);</span>
+      <span>const</span> <span>auto</span><span>&amp;</span> <span>tensor</span> <span>=</span> <span>THPVariable_Unpack</span><span>(</span><span>input</span><span>);</span>
+      <span>const</span> <span>auto</span> <span>output_nr</span> <span>=</span> <span>tensor</span><span>.</span><span>output_nr</span><span>();</span>
+      <span>auto</span> <span>grad_fn</span> <span>=</span> <span>tensor</span><span>.</span><span>grad_fn</span><span>();</span>
+      <span>if</span> <span>(</span><span>!</span><span>grad_fn</span><span>)</span> <span>{</span>
+        <span>grad_fn</span> <span>=</span> <span>torch</span><span>::</span><span>autograd</span><span>::</span><span>impl</span><span>::</span><span>try_get_grad_accumulator</span><span>(</span><span>tensor</span><span>);</span>
+      <span>}</span>
+      <span>if</span> <span>(</span><span>accumulate_grad</span><span>)</span> <span>{</span>
+        <span>tensor</span><span>.</span><span>retain_grad</span><span>();</span>
+      <span>}</span>
+      <span>if</span> <span>(</span><span>!</span><span>grad_fn</span><span>)</span> <span>{</span>
+        <span>output_edges</span><span>.</span><span>emplace_back</span><span>(</span><span>std</span><span>::</span><span>make_shared</span><span>&lt;</span><span>Identity</span><span>&gt;</span><span>(),</span> <span>0</span><span>);</span>
+      <span>}</span> <span>else</span> <span>{</span>
+        <span>output_edges</span><span>.</span><span>emplace_back</span><span>(</span><span>grad_fn</span><span>,</span> <span>output_nr</span><span>);</span>
+      <span>}</span>
+    <span>}</span>
+  <span>}</span>
+
+</code></pre></div>
+
+<p>The next step is the actual graph traversal and node function execution, and finally, the cleanup and return.</p>
+
+<div><pre><code>  <span>{</span>
+    <span>// Calls the actual autograd engine</span>
+    <span>pybind11</span><span>::</span><span>gil_scoped_release</span> <span>no_gil</span><span>;</span>
+    <span>auto</span><span>&amp;</span> <span>engine</span> <span>=</span> <span>python</span><span>::</span><span>PythonEngine</span><span>::</span><span>get_python_engine</span><span>();</span>
+    <span>outputs</span> <span>=</span> <span>engine</span><span>.</span><span>execute</span><span>(</span><span>roots</span><span>,</span> <span>grads</span><span>,</span> <span>keep_graph</span><span>,</span> <span>create_graph</span><span>,</span> <span>accumulate_grad</span><span>,</span> <span>output_edges</span><span>);</span>
+  <span>}</span>
+  <span>// Clean up and finish</span>
+<span>}</span>
+
+</code></pre></div>
+
+<h2 id="starting-the-real-execution">Starting the Real Execution</h2>
+
+<p><code>engine.execute</code>is present in <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L969-L1044">torch/csrc/autograd/engine.cpp</a></p>
+
+<p>There are two differentiated steps here:</p>
+
+<p>Analyze the graph to find dependencies between functions
+Create worker threads that traverse the graph</p>
+
+<h2 id="data-structures-used-for-the-execution">Data Structures Used for the Execution</h2>
+
+<h3 id="graphtask">GraphTask</h3>
+
+<p>All the execution metadata is managed by the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.h#L51-L196"><code>GraphTask</code></a> class in <a href="https://github.com/pytorch/pytorch/blob/release/1.11/torch/csrc/autograd/engine.h">torch/csrc/autograd/engine.h</a></p>
+
+<div><pre><code><span>struct</span> <span>GraphTask</span><span>:</span> <span>std</span><span>::</span><span>enable_shared_from_this</span><span>&lt;</span><span>GraphTask</span><span>&gt;</span> <span>{</span>
+  <span>std</span><span>::</span><span>atomic</span><span>&lt;</span><span>uint64_t</span><span>&gt;</span> <span>outstanding_tasks_</span><span>{</span><span>0</span><span>};</span>
+  <span>//  … </span>
+  <span>std</span><span>::</span><span>unordered_map</span><span>&lt;</span><span>Node</span><span>*</span><span>,</span> <span>InputBuffer</span><span>&gt;</span> <span>not_ready_</span><span>;</span>
+  <span>std</span><span>::</span><span>unordered_map</span><span>&lt;</span><span>Node</span><span>*</span><span>,</span> <span>int</span><span>&gt;</span> <span>dependencies_</span><span>;</span>
+
+  <span>struct</span> <span>ExecInfo</span> <span>{</span>
+     <span>// …</span>
+  <span>};</span>
+  <span>std</span><span>::</span><span>unordered_map</span><span>&lt;</span><span>Node</span><span>*</span><span>,</span> <span>ExecInfo</span><span>&gt;</span> <span>exec_info_</span><span>;</span>
+  <span>std</span><span>::</span><span>vector</span><span>&lt;</span><span>Variable</span><span>&gt;</span> <span>captured_vars_</span><span>;</span>
+  <span>// …</span>
+  <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>ReadyQueue</span><span>&gt;</span> <span>cpu_ready_queue_</span><span>;</span>
+<span>};</span>
+
+</code></pre></div>
+
+<p>Here we see a series of variables dedicated to maintaining the execution state.
+<code>outstanding_tasks_</code> tracks the number of tasks left to be executed for the backward pass to complete. <code>not_ready_</code> holds the input arguments for the <code>Node</code>s that are not ready to be executed. <code>dependencies_</code> track the number of predecessors that a <code>Node</code> has. As the count reaches <code>0</code>,  the <code>Node</code> is ready for execution; it is placed in a ready queue to be retrieved and executed later.</p>
+
+<p><code>exec_info_</code> and the associated <code>ExecInfo</code> struct are used only when the <code>inputs</code> argument is specified or it is a call to <code>autograd.grad()</code>. They allow filter paths on the graph that are not needeed since only the gradients are calculated only for the variables in the <code>inputs</code> list.</p>
+
+<p><code>captured_vars_</code> is where the results of the graph execution are temporarily stored if we used the <code>torch.autograd.grad()</code> api instead of <code>torch.autograd.backward()</code> since <code>grad()</code> returns the gradients as tensors instead of just filling the <code>.grad</code> field of the inputs.</p>
+
+<h3 id="nodetask">NodeTask</h3>
+
+<p>The <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.h#L210-L242"><code>NodeTask</code></a> struct is a basic class that holds an <code>fn_</code> pointer to the node to execute, and an <code>inputs_</code> buffer to store the input arguments to this function. Note that the functions executed by the backward pass are the derivatives specified in the <code>derivatives.yaml</code> file. or the user provided backward function when using custom functions as described in the second blog post.</p>
+
+<p>The <code>inputs_</code> buffer is also where the output gradients of the previously executed functions are aggregated, and it is defined as a <a href="https://github.com/pytorch/pytorch/blob/release/1.10/torch/csrc/autograd/input_buffer.h"><code>std::vector&lt;Variable&gt;</code> container</a> with facilities to accumulate values at a given position.</p>
+
+<div><pre><code><span>struct</span> <span>NodeTask</span> <span>{</span>
+  <span>std</span><span>::</span><span>weak_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;</span> <span>base_</span><span>;</span>
+  <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>Node</span><span>&gt;</span> <span>fn_</span><span>;</span>
+  <span>// This buffer serves as an implicit "addition" node for all of the</span>
+  <span>// gradients flowing here.  Once all the dependencies are finished, we</span>
+  <span>// use the contents of this buffer to run the function.</span>
+  <span>InputBuffer</span> <span>inputs_</span><span>;</span>
+<span>};</span>
+
+</code></pre></div>
+<h3 id="graphroot">GraphRoot</h3>
+
+<p>The <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/functions/basic_ops.h#L72-L89"><code>GraphRoot</code></a> is a special function used to hold multiple input variables in a single place. The code is pretty simple as it only acts as a container of variables.</p>
+
+<div><pre><code><span>struct</span> <span>TORCH_API</span> <span>GraphRoot</span> <span>:</span> <span>public</span> <span>Node</span> <span>{</span>
+  <span>GraphRoot</span><span>(</span><span>edge_list</span> <span>functions</span><span>,</span> <span>variable_list</span> <span>inputs</span><span>)</span>
+      <span>:</span> <span>Node</span><span>(</span><span>std</span><span>::</span><span>move</span><span>(</span><span>functions</span><span>)),</span>
+      <span>outputs</span><span>(</span><span>std</span><span>::</span><span>move</span><span>(</span><span>inputs</span><span>))</span> <span>{</span>
+    <span>for</span> <span>(</span><span>const</span> <span>auto</span><span>&amp;</span> <span>t</span> <span>:</span> <span>outputs</span><span>)</span> <span>{</span>
+      <span>add_input_metadata</span><span>(</span><span>t</span><span>);</span>
+    <span>}</span>
+  <span>}</span>
+
+  <span>variable_list</span> <span>apply</span><span>(</span><span>variable_list</span><span>&amp;&amp;</span> <span>inputs</span><span>)</span> <span>override</span> <span>{</span>
+    <span>return</span> <span>outputs</span><span>;</span>
+  <span>}</span>
+
+</code></pre></div>
+
+<h3 id="accumulategrad">AccumulateGrad</h3>
+
+<p>This function is set during the graph creation in <code>gradient_edge</code> when the <code>Variable</code> object doesn’t have a <code>grad_fn</code>. This is, it is a leaf node.</p>
+
+<div><pre><code>    <span>if</span> <span>(</span><span>const</span> <span>auto</span><span>&amp;</span> <span>gradient</span> <span>=</span> <span>self</span><span>.</span><span>grad_fn</span><span>())</span> <span>{</span>
+      <span>// …</span>
+    <span>}</span> <span>else</span> <span>{</span>
+      <span>return</span> <span>Edge</span><span>(</span><span>grad_accumulator</span><span>(</span><span>self</span><span>),</span> <span>0</span><span>);</span>
+    <span>}</span>
+
+</code></pre></div>
+
+<p>The function body is defined in <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/functions/accumulate_grad.cpp#L25-L63"><code>torch/csrc/autograd/functions/accumulate_grad.cpp</code></a> and it essentially accumulates the input grads in the object’s <code>.grad</code> attribute.</p>
+
+<div><pre><code><span>auto</span> <span>AccumulateGrad</span><span>::</span><span>apply</span><span>(</span><span>variable_list</span><span>&amp;&amp;</span> <span>grads</span><span>)</span> <span>-&gt;</span> <span>variable_list</span> <span>{</span>
+  <span>check_input_variables</span><span>(</span><span>"AccumulateGrad"</span><span>,</span> <span>grads</span><span>,</span> <span>1</span><span>,</span> <span>0</span><span>);</span>
+  <span>…</span>
+
+  <span>at</span><span>::</span><span>Tensor</span> <span>new_grad</span> <span>=</span> <span>callHooks</span><span>(</span><span>variable</span><span>,</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>grads</span><span>[</span><span>0</span><span>]));</span>
+  <span>std</span><span>::</span><span>lock_guard</span><span>&lt;</span><span>std</span><span>::</span><span>mutex</span><span>&gt;</span> <span>lock</span><span>(</span><span>mutex_</span><span>);</span>
+
+  <span>at</span><span>::</span><span>Tensor</span><span>&amp;</span> <span>grad</span> <span>=</span> <span>variable</span><span>.</span><span>mutable_grad</span><span>();</span>
+  <span>accumulateGrad</span><span>(</span>
+      <span>variable</span><span>,</span>
+      <span>grad</span><span>,</span>
+      <span>new_grad</span><span>,</span>
+      <span>1</span> <span>+</span> <span>!</span><span>post_hooks</span><span>().</span><span>empty</span><span>()</span> <span>/* num_expected_refs */</span><span>,</span>
+      <span>[</span><span>&amp;</span><span>grad</span><span>](</span><span>at</span><span>::</span><span>Tensor</span><span>&amp;&amp;</span> <span>grad_update</span><span>)</span> <span>{</span> <span>grad</span> <span>=</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>grad_update</span><span>);</span> <span>});</span>
+  <span>return</span> <span>variable_list</span><span>();</span>
+<span>}</span>
+<span>}}</span> <span>// namespace torch::autograd</span>
+
+
+
+</code></pre></div>
+
+<p><a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/functions/accumulate_grad.h#L100"><code>accumulateGrad</code></a>
+does several checks on the tensors format and eventually performs the <code>variable_grad += new_grad;</code> accumulation.</p>
+
+<h2 id="preparing-the-graph-for-execution">Preparing the graph for execution</h2>
+
+<p>Now, let’s walk through <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L969-L1126"><code>Engine::execute</code></a>. The first thing to do besides arguments consistency checks is to create the actual <code>GraphTask</code> object we described above. This object keeps all the metadata of the graph execution.</p>
+
+<div><pre><code><span>auto</span> <span>Engine</span><span>::</span><span>execute</span><span>(</span><span>const</span> <span>edge_list</span><span>&amp;</span> <span>roots</span><span>,</span>
+                     <span>const</span> <span>variable_list</span><span>&amp;</span> <span>inputs</span><span>,</span>
+                     <span>bool</span> <span>keep_graph</span><span>,</span>
+                     <span>bool</span> <span>create_graph</span><span>,</span>
+                     <span>bool</span> <span>accumulate_grad</span><span>,</span>
+                     <span>const</span> <span>edge_list</span><span>&amp;</span> <span>outputs</span><span>)</span> <span>-&gt;</span> <span>variable_list</span> <span>{</span>
+
+  <span>validate_outputs</span><span>(</span><span>roots</span><span>,</span> <span>const_cast</span><span>&lt;</span><span>variable_list</span><span>&amp;&gt;</span><span>(</span><span>inputs</span><span>),</span> <span>[](</span><span>const</span> <span>std</span><span>::</span><span>string</span><span>&amp;</span> <span>msg</span><span>)</span> <span>{</span>
+    <span>return</span> <span>msg</span><span>;</span>
+  <span>});</span>
+
+  <span>// Checks</span>
+
+  <span>auto</span> <span>graph_task</span> <span>=</span> <span>std</span><span>::</span><span>make_shared</span><span>&lt;</span><span>GraphTask</span><span>&gt;</span><span>(</span>
+      <span>/* keep_graph */</span> <span>keep_graph</span><span>,</span>
+      <span>/* create_graph */</span> <span>create_graph</span><span>,</span>
+      <span>/* depth */</span> <span>not_reentrant_backward_call</span> <span>?</span> <span>0</span> <span>:</span> <span>total_depth</span> <span>+</span> <span>1</span><span>,</span>
+      <span>/* cpu_ready_queue */</span> <span>local_ready_queue</span><span>);</span>
+
+  <span>// If we receive a single root, skip creating extra root node</span>
+  <span>// …</span>
+  <span>// Prepare graph by computing dependencies</span>
+  <span>// …</span>
+  <span>// Queue the root </span>
+  <span>// …</span>
+  <span>// launch execution</span>
+  <span>// …</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>After creating the <code>GraphTask</code>, we use its associated function if we only have one root node. If we have multiple root nodes, we create a special <code>GraphRoot</code> object as described before.</p>
+
+<div><pre><code>  <span>bool</span> <span>skip_dummy_node</span> <span>=</span> <span>roots</span><span>.</span><span>size</span><span>()</span> <span>==</span> <span>1</span><span>;</span>
+  <span>auto</span> <span>graph_root</span> <span>=</span> <span>skip_dummy_node</span> <span>?</span>
+    <span>roots</span><span>.</span><span>at</span><span>(</span><span>0</span><span>).</span><span>function</span> <span>:</span>
+    <span>std</span><span>::</span><span>make_shared</span><span>&lt;</span><span>GraphRoot</span><span>&gt;</span><span>(</span><span>roots</span><span>,</span> <span>inputs</span><span>);</span>
+
+</code></pre></div>
+
+<p>The next step is to fill the <code>dependencies_</code> map in the <code>GraphTask</code> object since the engine must know when it can execute a task. The <code>outputs</code> here is the <code>inputs</code> argument passed to the <code>torch.autograd.backward()</code> call in Python. But here, we have reversed the names since the gradients w.r.t. the inputs of the forward pass are now the outputs of the backward pass. And from now on, there is no concept of forward/backward, but only graph traversal and execution.</p>
+
+<div><pre><code>  <span>auto</span> <span>min_topo_nr</span> <span>=</span> <span>compute_min_topological_nr</span><span>(</span><span>outputs</span><span>);</span>
+  <span>// Now compute the dependencies for all executable functions</span>
+  <span>compute_dependencies</span><span>(</span><span>graph_root</span><span>.</span><span>get</span><span>(),</span> <span>*</span><span>graph_task</span><span>,</span> <span>min_topo_nr</span><span>);</span>
+
+  <span>if</span> <span>(</span><span>!</span><span>outputs</span><span>.</span><span>empty</span><span>())</span> <span>{</span>
+    <span>graph_task</span><span>-&gt;</span><span>init_to_execute</span><span>(</span><span>*</span><span>graph_root</span><span>,</span> <span>outputs</span><span>,</span> <span>accumulate_grad</span><span>,</span> <span>min_topo_nr</span><span>);</span>
+  <span>}</span>
+
+</code></pre></div>
+
+<p>Here we preprocess the graph for the execution of the nodes. First, <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L922-L933"><code>compute_min_topological_nr</code></a> is called to to obtain the minimum topological number of the tensors specified in <code>outputs</code> (0 if no <code>inputs</code> kwarg was supplied to <code>.backward</code> or <code>input</code> for <code>.grad</code>). This computation prunes paths in the graph that lead to input variables of which we don’t want/need to calculate the grads.</p>
+
+<p>Second, is the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L935-L967"><code>compute_dependencies</code></a> call. This function is a very simple graph traversal that starts with the root <code>Node</code>, and for each of the edges in <code>node.next_edges()</code> it increments the counter in <code>dependencies_</code>. Figure 3 shows the result of the dependencies calculation for the example graph. Note that the number of dependencies of any node is just the number of edges arriving at it.</p>
+
+<p>
+  <img src="data:application/octet-stream;base64," width="100%">
+</p>
+
+<p>
+Figure 3:  Number of dependencies for each node
+</p>
+
+<p>Finally, the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L1281-L1383"><code>init_to_execute</code></a> call, this is the one that populates the <code>GraphTask::exec_info_</code> map in case that <code>inputs</code> were specified in the python <code>backward</code> call. It iterates the graph again, starting from the root, and records in the <code>exec_info_</code> map the intermediate nodes needed to calculate only the given <code>inputs</code> gradients.</p>
+
+<div><pre><code>  <span>// Queue the root</span>
+  <span>if</span> <span>(</span><span>skip_dummy_node</span><span>)</span> <span>{</span>
+    <span>InputBuffer</span> <span>input_buffer</span><span>(</span><span>roots</span><span>.</span><span>at</span><span>(</span><span>0</span><span>).</span><span>function</span><span>-&gt;</span><span>num_inputs</span><span>());</span>
+    <span>auto</span> <span>input</span> <span>=</span> <span>inputs</span><span>.</span><span>at</span><span>(</span><span>0</span><span>);</span>
+
+
+    <span>input_buffer</span><span>.</span><span>add</span><span>(</span><span>roots</span><span>.</span><span>at</span><span>(</span><span>0</span><span>).</span><span>input_nr</span><span>,</span>
+                      <span>std</span><span>::</span><span>move</span><span>(</span><span>input</span><span>),</span>
+                      <span>input_stream</span><span>,</span>
+                      <span>opt_next_stream</span><span>);</span>
+
+    <span>execute_with_graph_task</span><span>(</span><span>graph_task</span><span>,</span> <span>graph_root</span><span>,</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>input_buffer</span><span>));</span>
+  <span>}</span> <span>else</span> <span>{</span>
+    <span>execute_with_graph_task</span><span>(</span><span>graph_task</span><span>,</span> <span>graph_root</span><span>,</span> <span>InputBuffer</span><span>(</span><span>variable_list</span><span>()));</span>
+  <span>}</span>
+  <span>// Avoid a refcount bump for the Future, since we check for refcount in</span>
+  <span>// DistEngine (see TORCH_INTERNAL_ASSERT(futureGrads.use_count() == 1)</span>
+  <span>// in dist_engine.cpp).</span>
+  <span>auto</span><span>&amp;</span> <span>fut</span> <span>=</span> <span>graph_task</span><span>-&gt;</span><span>future_result_</span><span>;</span>
+  <span>fut</span><span>-&gt;</span><span>wait</span><span>();</span>
+  <span>return</span> <span>fut</span><span>-&gt;</span><span>value</span><span>().</span><span>toTensorVector</span><span>();</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>And now, we are ready to start the actual execution by creating the <code>InputBuffer</code>. In case we only have one root variable, we begin by copying the value of the <code>inputs</code> tensor (this is the <code>gradients</code> passed to python <code>backward</code>) in position 0 of the input_buffer. This is a small optimization that avoids running the <code>RootNode</code> for no reason. Also, if the rest of the graph is not on the cpu, we directly start on that worker while the <code>RootNode</code> is always placed on the cpu ready queue. Details of the workers and ready queues are explained in the section below.</p>
+
+<p>On the other hand, if we have multiple roots, the <code>GraphRoot</code> object also holds the inputs, so it is enough to pass it an empty <code>InputBuffer</code>.</p>
+
+<h2 id="graph-traversal-and-node-execution">Graph Traversal and Node Execution</h2>
+<h3 id="devices-threads-and-queues">Devices, Threads and Queues</h3>
+
+<p>Before diving into the actual execution, we need to see how the engine is structured.</p>
+
+<p>First of all, the engine is multithreaded with one thread per device. For example, the caller thread is associated with the CPU while additional threads are created and associated with each GPU or other devices available in the system. Each thread tracks its device using thread-local storage in the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L69"><code>worker_device</code></a> variable. In addition, the threads have a queue of tasks to be executed also located in thread-local storage, the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L103-L104"><code>local_ready_queue</code></a>. This is where work is queued for this thread to execute in the <code>thread_main</code> function that is explained later.
+You will wonder how the device where a task should be executed is decided. The <code>InputBuffer</code> class has a <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/input_buffer.cpp#L173-L189"><code>device()</code></a> function that returns the first non-cpu device of all its tensors.
+This function is used together with <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L1181-L1190"><code>Engine::ready_queue</code></a> to select the queue to queue a task.</p>
+
+<div><pre><code><span>auto</span> <span>Engine</span><span>::</span><span>ready_queue</span><span>(</span><span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>ReadyQueue</span><span>&gt;</span> <span>cpu_ready_queue</span><span>,</span> <span>at</span><span>::</span><span>Device</span> <span>device</span><span>)</span> <span>-&gt;</span> <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>ReadyQueue</span><span>&gt;</span><span>{</span>
+  <span>if</span> <span>(</span><span>device</span><span>.</span><span>type</span><span>()</span> <span>==</span> <span>at</span><span>::</span><span>kCPU</span> <span>||</span> <span>device</span><span>.</span><span>type</span><span>()</span> <span>==</span> <span>at</span><span>::</span><span>DeviceType</span><span>::</span><span>Meta</span><span>)</span> <span>{</span>
+    <span>return</span> <span>cpu_ready_queue</span><span>;</span>
+  <span>}</span> <span>else</span> <span>{</span>
+    <span>// See Note [Allocating GPUs to autograd threads]</span>
+    <span>return</span> <span>device_ready_queues_</span><span>.</span><span>at</span><span>(</span><span>device</span><span>.</span><span>index</span><span>());</span>
+  <span>}</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>The <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.h#L245-L283"><code>ReadyQueue</code></a> object is defined in <code>torch/csrc/autograd/engine.h</code> and it is a simple wrapper over <code>std::priority_queue</code> that allows a thread to <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L219">wait for a task</a> if it’s empty. One interesting property of the <code>ReadyQueue</code> is that it increases the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L195"><code>GraphTask::outstanding_tasks_</code></a> value used to determine if the execution has completed or not.</p>
+
+<div><pre><code><span>auto</span> <span>ReadyQueue</span><span>::</span><span>push</span><span>(</span><span>NodeTask</span> <span>item</span><span>,</span> <span>bool</span> <span>incrementOutstandingTasks</span><span>)</span> <span>-&gt;</span> <span>void</span> <span>{</span>
+  <span>{</span>
+    <span>std</span><span>::</span><span>lock_guard</span><span>&lt;</span><span>std</span><span>::</span><span>mutex</span><span>&gt;</span> <span>lock</span><span>(</span><span>mutex_</span><span>);</span>
+    <span>if</span> <span>(</span><span>incrementOutstandingTasks</span><span>)</span> <span>{</span>
+      <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;</span> <span>graph_task</span> <span>=</span> <span>item</span><span>.</span><span>base_</span><span>.</span><span>lock</span><span>();</span>
+      <span>++</span><span>graph_task</span><span>-&gt;</span><span>outstanding_tasks_</span><span>;</span>
+    <span>}</span>
+    <span>heap_</span><span>.</span><span>push</span><span>(</span><span>std</span><span>::</span><span>move</span><span>(</span><span>item</span><span>));</span>
+  <span>}</span>
+  <span>not_empty_</span><span>.</span><span>notify_one</span><span>();</span>
+<span>}</span>
+
+<span>auto</span> <span>ReadyQueue</span><span>::</span><span>pop</span><span>()</span> <span>-&gt;</span> <span>NodeTask</span> <span>{</span>
+  <span>std</span><span>::</span><span>unique_lock</span><span>&lt;</span><span>std</span><span>::</span><span>mutex</span><span>&gt;</span> <span>lock</span><span>(</span><span>mutex_</span><span>);</span>
+  <span>not_empty_</span><span>.</span><span>wait</span><span>(</span><span>lock</span><span>,</span> <span>[</span><span>this</span><span>]{</span> <span>return</span> <span>!</span><span>heap_</span><span>.</span><span>empty</span><span>();</span> <span>});</span>
+  <span>auto</span> <span>task</span> <span>=</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>const_cast</span><span>&lt;</span><span>NodeTask</span><span>&amp;&gt;</span><span>(</span><span>heap_</span><span>.</span><span>top</span><span>()));</span> <span>heap_</span><span>.</span><span>pop</span><span>();</span>
+  <span>return</span> <span>task</span><span>;</span>
+<span>}</span>
+
+</code></pre></div>
+
+<h3 id="reentrant-backward">Reentrant Backward</h3>
+
+<p>A reentrant backward happens when one of the tasks in a backward pass calls again <code>backward</code>. It is not a very common case, but it can be used to reduce memory utilization as it could potentially avoid saving intermediate results. For more information, check this <a href="https://discuss.pytorch.org/t/what-is-the-scenario-of-reentrant-backwards-in-pytorch-source-code/19330/2">PyTorch forum post</a>.</p>
+
+<div><pre><code><span>class</span> <span>ReentrantBackward</span><span>(</span><span>torch</span><span>.</span><span>autograd</span><span>.</span><span>Function</span><span>):</span>
+    <span>@</span><span>staticmethod</span>
+    <span>def</span> <span>forward</span><span>(</span><span>ctx</span><span>,</span> <span>input</span><span>):</span>
+        <span>return</span> <span>input</span><span>.</span><span>sum</span><span>()</span>
+
+    <span>@</span><span>staticmethod</span>
+    <span>def</span> <span>backward</span><span>(</span><span>ctx</span><span>,</span> <span>input</span><span>):</span>
+        <span># Let's compute the backward by using autograd
+</span>        <span>input</span> <span>=</span> <span>input</span><span>.</span><span>detach</span><span>().</span><span>requires_grad_</span><span>()</span>
+        <span>with</span> <span>torch</span><span>.</span><span>enable_grad</span><span>():</span>
+            <span>out</span> <span>=</span> <span>input</span><span>.</span><span>sum</span><span>()</span>
+        <span>out</span><span>.</span><span>backward</span><span>()</span>  <span># REENTRANT CALL!!
+</span>        <span>return</span> <span>out</span><span>.</span><span>detach</span><span>()</span>
+
+</code></pre></div>
+
+<p>Here, we call <code>backward()</code> inside <code>backward()</code> for a user custom-defined autograd function.
+This situation can lead to deadlocks because the first backward needs to wait for the second one to complete. But some internal implementation details can prevent the second backward from completing as it is explained in the dedicated subsection.</p>
+<h2 id="thread-initialization">Thread Initialization</h2>
+
+<p><a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L1054-L1126"><code>execute_with_graph_task</code></a> is in charge of initializing the threads taking care of the computation and placing the <code>root</code> node in the queue of the device that produced it.</p>
+
+<div><pre><code><span>c10</span><span>::</span><span>intrusive_ptr</span><span>&lt;</span><span>at</span><span>::</span><span>ivalue</span><span>::</span><span>Future</span><span>&gt;</span> <span>Engine</span><span>::</span><span>execute_with_graph_task</span><span>(</span>
+    <span>const</span> <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;&amp;</span> <span>graph_task</span><span>,</span>
+    <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>Node</span><span>&gt;</span> <span>graph_root</span><span>,</span>
+    <span>InputBuffer</span><span>&amp;&amp;</span> <span>input_buffer</span><span>)</span> <span>{</span>
+
+  <span>initialize_device_threads_pool</span><span>();</span>
+  <span>// Lock mutex for GraphTask.</span>
+  <span>std</span><span>::</span><span>unique_lock</span><span>&lt;</span><span>std</span><span>::</span><span>mutex</span><span>&gt;</span> <span>lock</span><span>(</span><span>graph_task</span><span>-&gt;</span><span>mutex_</span><span>);</span>
+
+  <span>auto</span> <span>queue</span> <span>=</span> <span>ready_queue</span><span>(</span><span>graph_task</span><span>-&gt;</span><span>cpu_ready_queue_</span><span>,</span> <span>input_buffer</span><span>.</span><span>device</span><span>());</span>
+
+  <span>if</span> <span>(</span><span>worker_device</span> <span>==</span> <span>NO_DEVICE</span><span>)</span> <span>{</span>
+    <span>set_device</span><span>(</span><span>CPU_DEVICE</span><span>);</span>
+    <span>graph_task</span><span>-&gt;</span><span>owner_</span> <span>=</span> <span>worker_device</span><span>;</span>
+    <span>queue</span><span>-&gt;</span><span>push</span><span>(</span><span>NodeTask</span><span>(</span><span>graph_task</span><span>,</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>graph_root</span><span>),</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>input_buffer</span><span>)));</span>
+    <span>lock</span><span>.</span><span>unlock</span><span>();</span>
+    <span>thread_main</span><span>(</span><span>graph_task</span><span>);</span>
+    <span>worker_device</span> <span>=</span> <span>NO_DEVICE</span><span>;</span>
+  <span>}</span> <span>else</span> <span>{</span>
+     <span>// This deals with reentrant backwards, we will see it later.</span>
+  <span>}</span>
+  <span>return</span> <span>graph_task</span><span>-&gt;</span><span>future_result_</span><span>;</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>First, this function initializes several threads (one per device) calling <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L1046-L1052"><code> initialize_device_threads_pool()</code></a> where several things happen:
+One <code>ReadyQueue</code> per device is created.
+One thread per non-cpu device is created.
+A thread local <code>worker_device</code> variable is set to track the current device associated with the thread.
+<code>thread_main</code> function is called, and threads wait for tasks to be put in their queues.</p>
+
+<p>Then it retrieves the queue to place the root node based on the device that holds the tensors present in the <code>input_buffer</code> using the <code>ready_queue</code> function. Now, the main thread (the one also executing the Python interpreter) has its <code>worker_device</code> set to <code>NO_DEVICE</code>, and it is in charge of executing functions with all its tensors living in the cpu. If <code>worker_device</code> is set to any other value, the graph execution is already started, and <code>.backward()</code> was called inside a running <code>Node</code>, creating a reentrant backward call. This is explained later. For now, 
+the main thread places the task in the queue and call <code>thread_main</code>.</p>
+<h2 id="where-the-magic-happens">Where the Magic Happens</h2>
+
+<p>It’s been a long way, but finally, we are ready to traverse the graph and execute the nodes. Each of the spawned threads, and the main thread call <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L377-L464"><code>thread_main</code></a>.</p>
+
+<div><pre><code><span>auto</span> <span>Engine</span><span>::</span><span>thread_main</span><span>(</span><span>const</span> <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;&amp;</span> <span>graph_task</span><span>)</span> <span>-&gt;</span> <span>void</span> <span>{</span>
+
+  <span>while</span> <span>(</span><span>graph_task</span> <span>==</span> <span>nullptr</span> <span>||</span> <span>!</span><span>graph_task</span><span>-&gt;</span><span>future_result_</span><span>-&gt;</span><span>completed</span><span>())</span> <span>{</span>
+    <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;</span> <span>local_graph_task</span><span>;</span>
+    <span>{</span>
+      <span>NodeTask</span> <span>task</span> <span>=</span> <span>local_ready_queue</span><span>-&gt;</span><span>pop</span><span>();</span>
+
+      <span>if</span> <span>(</span><span>task</span><span>.</span><span>isShutdownTask_</span><span>)</span> <span>{</span>
+        <span>break</span><span>;</span>
+      <span>}</span>
+
+      <span>if</span> <span>(</span><span>!</span><span>(</span><span>local_graph_task</span> <span>=</span> <span>task</span><span>.</span><span>base_</span><span>.</span><span>lock</span><span>()))</span> <span>{</span>
+        <span>// GraphTask for function is no longer valid, skipping further</span>
+        <span>// execution.</span>
+        <span>continue</span><span>;</span>
+      <span>}</span>
+
+      <span>if</span> <span>(</span><span>task</span><span>.</span><span>fn_</span> <span>&amp;&amp;</span> <span>!</span><span>local_graph_task</span><span>-&gt;</span><span>has_error_</span><span>.</span><span>load</span><span>())</span> <span>{</span>
+        <span>at</span><span>::</span><span>ThreadLocalStateGuard</span> <span>tls_guard</span><span>(</span><span>local_graph_task</span><span>-&gt;</span><span>thread_locals_</span><span>);</span>
+
+        <span>try</span> <span>{</span>
+          <span>GraphTaskGuard</span> <span>guard</span><span>(</span><span>local_graph_task</span><span>);</span>
+          <span>NodeGuard</span> <span>ndguard</span><span>(</span><span>task</span><span>.</span><span>fn_</span><span>);</span>
+          <span>{</span>
+            <span>evaluate_function</span><span>(</span>
+                <span>local_graph_task</span><span>,</span>
+                <span>task</span><span>.</span><span>fn_</span><span>.</span><span>get</span><span>(),</span>
+                <span>task</span><span>.</span><span>inputs_</span><span>,</span>
+                <span>local_graph_task</span><span>-&gt;</span><span>cpu_ready_queue_</span><span>);</span>
+          <span>}</span>
+        <span>}</span> <span>catch</span> <span>(</span><span>std</span><span>::</span><span>exception</span><span>&amp;</span> <span>e</span><span>)</span> <span>{</span>
+          <span>thread_on_exception</span><span>(</span><span>local_graph_task</span><span>,</span> <span>task</span><span>.</span><span>fn_</span><span>,</span> <span>e</span><span>);</span>
+        <span>}</span>
+      <span>}</span>
+    <span>}</span>
+
+    <span>// Decrement the outstanding tasks.</span>
+    <span>--</span><span>local_graph_task</span><span>-&gt;</span><span>outstanding_tasks_</span><span>;</span>
+
+    <span>// Check if we've completed execution.</span>
+    <span>if</span> <span>(</span><span>local_graph_task</span><span>-&gt;</span><span>completed</span><span>())</span> <span>{</span>
+      <span>local_graph_task</span><span>-&gt;</span><span>mark_as_completed_and_run_post_processing</span><span>();</span>
+      <span>auto</span> <span>base_owner</span> <span>=</span> <span>local_graph_task</span><span>-&gt;</span><span>owner_</span><span>;</span>
+      <span>if</span> <span>(</span><span>worker_device</span> <span>!=</span> <span>base_owner</span><span>)</span> <span>{</span>
+        <span>std</span><span>::</span><span>atomic_thread_fence</span><span>(</span><span>std</span><span>::</span><span>memory_order_release</span><span>);</span>
+        <span>ready_queue_by_index</span><span>(</span><span>local_graph_task</span><span>-&gt;</span><span>cpu_ready_queue_</span><span>,</span> <span>base_owner</span><span>)</span>
+            <span>-&gt;</span><span>push</span><span>(</span><span>NodeTask</span><span>(</span><span>local_graph_task</span><span>,</span> <span>nullptr</span><span>,</span> <span>InputBuffer</span><span>(</span><span>0</span><span>)));</span>
+      <span>}</span>
+    <span>}</span>
+  <span>}</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>The code here is simple, given the <code>local_ready_queue</code> assigned to each thread in thread-local storage. The threads loop until there are no tasks left to execute in the graph. Note that for device-associated threads, the passed <code>graph_task</code> argument is <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L326-L327"><code>nullptr</code></a>, and they block in <code>local_ready_queue-&gt;pop()</code> until a task is pushed in their queue. After some consistency checks (the task type is shutdown, or the graph is still valid). We get to the actual function invocation in <code>evaluate_function</code>.</p>
+
+<div><pre><code>        <span>try</span> <span>{</span>
+          <span>GraphTaskGuard</span> <span>guard</span><span>(</span><span>local_graph_task</span><span>);</span>
+          <span>NodeGuard</span> <span>ndguard</span><span>(</span><span>task</span><span>.</span><span>fn_</span><span>);</span>
+          <span>{</span>
+            <span>evaluate_function</span><span>(</span>
+                <span>local_graph_task</span><span>,</span>
+                <span>task</span><span>.</span><span>fn_</span><span>.</span><span>get</span><span>(),</span>
+                <span>task</span><span>.</span><span>inputs_</span><span>,</span>
+                <span>local_graph_task</span><span>-&gt;</span><span>cpu_ready_queue_</span><span>);</span>
+          <span>}</span>
+        <span>}</span> <span>catch</span> <span>(</span><span>std</span><span>::</span><span>exception</span><span>&amp;</span> <span>e</span><span>)</span> <span>{</span>
+          <span>thread_on_exception</span><span>(</span><span>local_graph_task</span><span>,</span> <span>task</span><span>.</span><span>fn_</span><span>,</span> <span>e</span><span>);</span>
+        <span>}</span>
+      <span>}</span>
+
+</code></pre></div>
+
+<p>After calling <code>evaluate_function</code>, we check if the <code>graph_task</code> execution is complete by looking the <code>outstanding_tasks_</code> number. This number increases when a task is pushed to a queue and is decreased in <code>local_graph_task-&gt;completed()</code> when a task is executed. When the execution is done, we return the results that are be in the <code>captured_vars_</code> in case we called <code>torch.autograd.grad()</code> instead of <code>torch.autograd.backward()</code> as this function returns tensors instead of storing them in the <code>.grad</code> attribute of the inputs. Finally we wake up the main thread if it’s waiting by sending a dummy task.</p>
+
+<div><pre><code>   <span>// Decrement the outstanding tasks.</span>
+    <span>--</span><span>local_graph_task</span><span>-&gt;</span><span>outstanding_tasks_</span><span>;</span>
+
+    <span>// Check if we've completed execution.</span>
+    <span>if</span> <span>(</span><span>local_graph_task</span><span>-&gt;</span><span>completed</span><span>())</span> <span>{</span>
+      <span>local_graph_task</span><span>-&gt;</span><span>mark_as_completed_and_run_post_processing</span><span>();</span>
+      <span>auto</span> <span>base_owner</span> <span>=</span> <span>local_graph_task</span><span>-&gt;</span><span>owner_</span><span>;</span>
+      <span>if</span> <span>(</span><span>worker_device</span> <span>!=</span> <span>base_owner</span><span>)</span> <span>{</span>
+        <span>std</span><span>::</span><span>atomic_thread_fence</span><span>(</span><span>std</span><span>::</span><span>memory_order_release</span><span>);</span>
+        <span>ready_queue_by_index</span><span>(</span><span>local_graph_task</span><span>-&gt;</span><span>cpu_ready_queue_</span><span>,</span> <span>base_owner</span><span>)</span>
+            <span>-&gt;</span><span>push</span><span>(</span><span>NodeTask</span><span>(</span><span>local_graph_task</span><span>,</span> <span>nullptr</span><span>,</span> <span>InputBuffer</span><span>(</span><span>0</span><span>)));</span>
+      <span>}</span>
+    <span>}</span>
+
+</code></pre></div>
+
+<h2 id="calling-the-function-and-unlocking-new-tasks">Calling the Function and Unlocking New Tasks</h2>
+
+<p><a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L786-L920"><code>evaluate_function</code></a> serves three purposes:</p>
+
+<p>Run the function.
+Accumulate its results in the next node <code>InputBuffers</code>.
+Decrease the dependencies counter of the next nodes and enqueues the tasks reaching 0 to be executed.</p>
+
+<div><pre><code><span>void</span> <span>Engine</span><span>::</span><span>evaluate_function</span><span>(</span>
+    <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;&amp;</span> <span>graph_task</span><span>,</span>
+    <span>Node</span><span>*</span> <span>func</span><span>,</span>
+    <span>InputBuffer</span><span>&amp;</span> <span>inputs</span><span>,</span>
+    <span>const</span> <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>ReadyQueue</span><span>&gt;&amp;</span> <span>cpu_ready_queue</span><span>)</span> <span>{</span>
+
+  <span>// If exec_info_ is not empty, we have to instrument the execution</span>
+  <span>auto</span><span>&amp;</span> <span>exec_info_</span> <span>=</span> <span>graph_task</span><span>-&gt;</span><span>exec_info_</span><span>;</span>
+  <span>if</span> <span>(</span><span>!</span><span>exec_info_</span><span>.</span><span>empty</span><span>())</span> <span>{</span>
+    <span>// Checks if the function needs to be executed </span>
+    <span>if</span> <span>(</span><span>!</span><span>fn_info</span><span>.</span><span>needed_</span><span>)</span> <span>{</span>
+      <span>// Skip execution if we don't need to execute the function.</span>
+      <span>return</span><span>;</span>
+    <span>}</span>
+  <span>}</span>
+
+  <span>auto</span> <span>outputs</span> <span>=</span> <span>call_function</span><span>(</span><span>graph_task</span><span>,</span> <span>func</span><span>,</span> <span>inputs</span><span>);</span>
+
+  <span>auto</span><span>&amp;</span> <span>fn</span> <span>=</span> <span>*</span><span>func</span><span>;</span>
+  <span>if</span> <span>(</span><span>!</span><span>graph_task</span><span>-&gt;</span><span>keep_graph_</span><span>)</span> <span>{</span>
+    <span>fn</span><span>.</span><span>release_variables</span><span>();</span>
+  <span>}</span>
+
+</code></pre></div>
+
+<p>Initially, we check the <code>exec_info_</code> map of the <code>GraphTask</code> structure to determine if the current node needs to be executed. Remember that if this map is empty, all the nodes are executed because we are calculating the grads for all the inputs of the forward pass.</p>
+
+<p>After this check, the function is executed by running <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L735-L784"><code>call_function</code></a>. Its implementation is very straightforward and calls the actual derivative function and registered hooks if any.</p>
+
+<div><pre><code>  <span>int</span> <span>num_outputs</span> <span>=</span> <span>outputs</span><span>.</span><span>size</span><span>();</span>
+  <span>if</span> <span>(</span><span>num_outputs</span> <span>==</span> <span>0</span><span>)</span> <span>{</span>
+    <span>// Records leaf stream (if applicable)</span>
+    <span>return</span><span>;</span>
+  <span>}</span>
+
+  <span>if</span> <span>(</span><span>AnomalyMode</span><span>::</span><span>is_enabled</span><span>())</span> <span>{</span>
+    <span>// check for nan values in result</span>
+  <span>}</span>
+
+</code></pre></div>
+
+<p>Next, we check the outputs of the function after <code>call_function</code> is done. If the number of outputs is 0, there are no following nodes to be executed so we can safely return. This is the case of the <code>AccumulateGrad</code> node associated with the leaf nodes.</p>
+
+<p>Also, the check for <code>NaN</code> values in the gradients is done here if requested.</p>
+<div><pre><code>
+  <span>std</span><span>::</span><span>lock_guard</span><span>&lt;</span><span>std</span><span>::</span><span>mutex</span><span>&gt;</span> <span>lock</span><span>(</span><span>graph_task</span><span>-&gt;</span><span>mutex_</span><span>);</span>
+  <span>for</span> <span>(</span><span>const</span> <span>auto</span> <span>i</span> <span>:</span> <span>c10</span><span>::</span><span>irange</span><span>(</span><span>num_outputs</span><span>))</span> <span>{</span>
+    <span>auto</span><span>&amp;</span> <span>output</span> <span>=</span> <span>outputs</span><span>[</span><span>i</span><span>];</span>
+    <span>const</span> <span>auto</span><span>&amp;</span> <span>next</span> <span>=</span> <span>fn</span><span>.</span><span>next_edge</span><span>(</span><span>i</span><span>);</span>
+
+    <span>if</span> <span>(</span><span>!</span><span>next</span><span>.</span><span>is_valid</span><span>())</span> <span>continue</span><span>;</span>
+
+   
+
+</code></pre></div>
+
+<p>We have now executed a <code>grad_fn</code> that has returned one gradient per each of the associated forward pass function inputs. As we saw in the <a href="https://pytorch.org/blog/computational-graphs-constructed-in-pytorch/#linking-nodes-together">previous blog post</a>, we have an <code>Edge</code> object per each of these input tensors, and the <code>grad_fn</code> of the function producing them in the forward pass. Essentially, Output[0] of the node in the backward pass, corresponds to the first argument of the forward pass associated function. Figure 4 shows how the outputs of a backward function are related to the inputs of the forward function. See that the outputs of <code>grad_fn C</code> are the gradients of <code>z</code> w.r.t. the inputs of <code>Function C</code></p>
+
+<p>
+  <img src="data:application/octet-stream;base64," width="100%">
+</p>
+
+<p>
+Figure 4: Correspondence between forward and backward functions inputs and outputs
+</p>
+
+<p>We now iterate through these edges and check if the associated functions are ready to be executed.</p>
+
+<div><pre><code> <span>// Check if the next function is ready to be computed</span>
+    <span>bool</span> <span>is_ready</span> <span>=</span> <span>false</span><span>;</span>
+    <span>auto</span><span>&amp;</span> <span>dependencies</span> <span>=</span> <span>graph_task</span><span>-&gt;</span><span>dependencies_</span><span>;</span>
+    <span>auto</span> <span>it</span> <span>=</span> <span>dependencies</span><span>.</span><span>find</span><span>(</span><span>next</span><span>.</span><span>function</span><span>.</span><span>get</span><span>());</span>
+
+    <span>if</span> <span>(</span><span>it</span> <span>==</span> <span>dependencies</span><span>.</span><span>end</span><span>())</span> <span>{</span>
+      <span>auto</span> <span>name</span> <span>=</span> <span>next</span><span>.</span><span>function</span><span>-&gt;</span><span>name</span><span>();</span>
+      <span>throw</span> <span>std</span><span>::</span><span>runtime_error</span><span>(</span><span>std</span><span>::</span><span>string</span><span>(</span><span>"dependency not found for "</span><span>)</span> <span>+</span> <span>name</span><span>);</span>
+    <span>}</span> <span>else</span> <span>if</span> <span>(</span><span>--</span><span>it</span><span>-&gt;</span><span>second</span> <span>==</span> <span>0</span><span>)</span> <span>{</span>
+      <span>dependencies</span><span>.</span><span>erase</span><span>(</span><span>it</span><span>);</span>
+      <span>is_ready</span> <span>=</span> <span>true</span><span>;</span>
+    <span>}</span>
+
+    <span>auto</span><span>&amp;</span> <span>not_ready</span> <span>=</span> <span>graph_task</span><span>-&gt;</span><span>not_ready_</span><span>;</span>
+    <span>auto</span> <span>not_ready_it</span> <span>=</span> <span>not_ready</span><span>.</span><span>find</span><span>(</span><span>next</span><span>.</span><span>function</span><span>.</span><span>get</span><span>());</span>
+
+</code></pre></div>
+
+<p>For this, we check the <code>graph_task-&gt;dependencies_</code> map. We decrement the counter, and if it reaches 0, we mark the function pointed by the edge ready to be executed. Following, we prepare the input buffers of the tasks indicated by the next edges.</p>
+
+<div><pre><code>    <span>if</span> <span>(</span><span>not_ready_it</span> <span>==</span> <span>not_ready</span><span>.</span><span>end</span><span>())</span> <span>{</span>
+      <span>if</span> <span>(</span><span>!</span><span>exec_info_</span><span>.</span><span>empty</span><span>())</span> <span>{</span>
+        <span>// Skip functions that aren't supposed to be executed</span>
+      <span>}</span>
+
+      <span>// Creates an InputBuffer and moves the output to the corresponding input position</span>
+      <span>InputBuffer</span> <span>input_buffer</span><span>(</span><span>next</span><span>.</span><span>function</span><span>-&gt;</span><span>num_inputs</span><span>());</span>
+      <span>input_buffer</span><span>.</span><span>add</span><span>(</span><span>next</span><span>.</span><span>input_nr</span><span>,</span>
+                       <span>std</span><span>::</span><span>move</span><span>(</span><span>output</span><span>),</span>
+                       <span>opt_parent_stream</span><span>,</span>
+                       <span>opt_next_stream</span><span>);</span>
+
+      <span>if</span> <span>(</span><span>is_ready</span><span>)</span> <span>{</span>
+        <span>auto</span> <span>queue</span> <span>=</span> <span>ready_queue</span><span>(</span><span>cpu_ready_queue</span><span>,</span> <span>input_buffer</span><span>.</span><span>device</span><span>());</span>
+        <span>queue</span><span>-&gt;</span><span>push</span><span>(</span>
+            <span>NodeTask</span><span>(</span><span>graph_task</span><span>,</span> <span>next</span><span>.</span><span>function</span><span>,</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>input_buffer</span><span>)));</span>
+      <span>}</span> <span>else</span> <span>{</span>
+        <span>not_ready</span><span>.</span><span>emplace</span><span>(</span><span>next</span><span>.</span><span>function</span><span>.</span><span>get</span><span>(),</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>input_buffer</span><span>));</span>
+      <span>}</span>
+
+</code></pre></div>
+
+<p>Here, we look for the task in the <code>graph_task-&gt;not_ready_</code> map. If it is not present, we create a new <code>InputBuffer</code> object and set the current output in the <code>input_nr</code> position of the buffer associated with the edge. If the task is ready to be executed, we enqueue it in the appropriate device <code>ready_queue</code> and complete the execution. However, if the task is not ready and we have seen it before, it is present in the <code>not_ready_map_</code>.</p>
+
+<div><pre><code>    <span>}</span> <span>else</span> <span>{</span>
+      <span>// The function already has a buffer</span>
+      <span>auto</span> <span>&amp;</span><span>input_buffer</span> <span>=</span> <span>not_ready_it</span><span>-&gt;</span><span>second</span><span>;</span>
+      <span>// Accumulates into buffer</span>
+      <span>input_buffer</span><span>.</span><span>add</span><span>(</span><span>next</span><span>.</span><span>input_nr</span><span>,</span>
+                       <span>std</span><span>::</span><span>move</span><span>(</span><span>output</span><span>),</span>
+                       <span>opt_parent_stream</span><span>,</span>
+                       <span>opt_next_stream</span><span>);</span>
+      <span>if</span> <span>(</span><span>is_ready</span><span>)</span> <span>{</span>
+        <span>auto</span> <span>queue</span> <span>=</span> <span>ready_queue</span><span>(</span><span>cpu_ready_queue</span><span>,</span> <span>input_buffer</span><span>.</span><span>device</span><span>());</span>
+        <span>queue</span><span>-&gt;</span><span>push</span><span>(</span><span>NodeTask</span><span>(</span><span>graph_task</span><span>,</span> <span>next</span><span>.</span><span>function</span><span>,</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>input_buffer</span><span>)));</span>
+        <span>not_ready</span><span>.</span><span>erase</span><span>(</span><span>not_ready_it</span><span>);</span>
+      <span>}</span>
+    <span>}</span>
+  <span>}</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>In this case, we accumulate the output in the existing <code>input_buffer</code> instead of creating a new one. Once all the tasks are processed, the worker thread exits the loop and complete.
+All this process is summarized in the animation in Figure 5. We see how a thread peeks at the tasks in the ready queue and decrements the next nodes’ dependencies, unlocking them for execution.</p>
+
+<p>
+  <img src="data:application/octet-stream;base64," width="100%">
+</p>
+
+<p>
+Figure 5: Animation of the execution of the computational graph
+</p>
+
+<h2 id="flow-with-reentrant-backward">Flow with Reentrant Backward</h2>
+
+<p>As we saw above, the reentrant backward problem is when the currently executed function does a nested call to <code>backward</code>. When this happens, the thread running this function goes all the way down to <code>execute_with_graph_task</code> as in the non-reentrant case, but here is when things are different.</p>
+
+<div><pre><code><span>c10</span><span>::</span><span>intrusive_ptr</span><span>&lt;</span><span>at</span><span>::</span><span>ivalue</span><span>::</span><span>Future</span><span>&gt;</span> <span>Engine</span><span>::</span><span>execute_with_graph_task</span><span>(</span>
+    <span>const</span> <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;&amp;</span> <span>graph_task</span><span>,</span>
+    <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>Node</span><span>&gt;</span> <span>graph_root</span><span>,</span>
+    <span>InputBuffer</span><span>&amp;&amp;</span> <span>input_buffer</span><span>)</span> <span>{</span>
+
+  <span>initialize_device_threads_pool</span><span>();</span>
+  <span>// Lock mutex for GraphTask.</span>
+  <span>std</span><span>::</span><span>unique_lock</span><span>&lt;</span><span>std</span><span>::</span><span>mutex</span><span>&gt;</span> <span>lock</span><span>(</span><span>graph_task</span><span>-&gt;</span><span>mutex_</span><span>);</span>
+
+  <span>auto</span> <span>queue</span> <span>=</span> <span>ready_queue</span><span>(</span><span>graph_task</span><span>-&gt;</span><span>cpu_ready_queue_</span><span>,</span> <span>input_buffer</span><span>.</span><span>device</span><span>());</span>
+
+  <span>if</span> <span>(</span><span>worker_device</span> <span>==</span> <span>NO_DEVICE</span><span>)</span> <span>{</span>
+    <span>//Regular case</span>
+  <span>}</span> <span>else</span> <span>{</span>
+    <span>// If worker_device is any devices (i.e. CPU, CUDA): this is a re-entrant</span>
+    <span>//    backward call from that device.</span>
+    <span>graph_task</span><span>-&gt;</span><span>owner_</span> <span>=</span> <span>worker_device</span><span>;</span>
+
+    <span>// Now that all the non-thread safe fields of the graph_task have been populated,</span>
+    <span>// we can enqueue it.</span>
+    <span>queue</span><span>-&gt;</span><span>push</span><span>(</span><span>NodeTask</span><span>(</span><span>graph_task</span><span>,</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>graph_root</span><span>),</span> <span>std</span><span>::</span><span>move</span><span>(</span><span>input_buffer</span><span>)));</span>
+
+    <span>if</span> <span>(</span><span>current_depth</span> <span>&gt;=</span> <span>max_recursion_depth_</span><span>)</span> <span>{</span>
+      <span>// If reached the max depth, switch to a different thread</span>
+      <span>add_thread_pool_task</span><span>(</span><span>graph_task</span><span>);</span>
+    <span>}</span> <span>else</span> <span>{</span>
+      <span>++</span><span>total_depth</span><span>;</span>
+      <span>++</span><span>current_depth</span><span>;</span>
+      <span>lock</span><span>.</span><span>unlock</span><span>();</span>
+      <span>thread_main</span><span>(</span><span>graph_task</span><span>);</span>
+      <span>--</span><span>current_depth</span><span>;</span>
+      <span>--</span><span>total_depth</span><span>;</span>
+    <span>}</span>
+  <span>}</span>
+  <span>return</span> <span>graph_task</span><span>-&gt;</span><span>future_result_</span><span>;</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>Here, <code>execute_with_graph_task</code> detects this as a reentrant call and then looks for the current number of nested calls. If it exceeds the limit, we create a new thread to take care of the execution of this graph, and if not, we execute this reentrant call regularly.
+The limit of nested calls was originally set to avoid stack overflow due to reentrant calls creating very large call stacks. However, the number was further reduced when sanitizer tests were added because of the maximum amount of locks a thread can hold at a given moment. This can be seen in <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.h#L36-L42"><code>torch/csrc/autograd/engine.h</code></a>.</p>
+
+<p>When this maximum depth is exceeded, a new thread is created with the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L1239-L1255"><code>add_thread_pool_task</code></a> function.</p>
+
+<div><pre><code><span>void</span> <span>Engine</span><span>::</span><span>add_thread_pool_task</span><span>(</span><span>const</span> <span>std</span><span>::</span><span>weak_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;&amp;</span> <span>graph_task</span><span>)</span> <span>{</span>
+  <span>std</span><span>::</span><span>unique_lock</span><span>&lt;</span><span>std</span><span>::</span><span>mutex</span><span>&gt;</span> <span>lck</span><span>(</span><span>thread_pool_shared_</span><span>-&gt;</span><span>mutex_</span><span>);</span>
+  <span>// if we have pending graph_task objects to be processed, create a worker.</span>
+   <span>bool</span> <span>create_thread</span> <span>=</span> <span>(</span><span>thread_pool_shared_</span><span>-&gt;</span><span>num_workers_</span> <span>&lt;=</span> <span>thread_pool_shared_</span><span>-&gt;</span><span>graphtasks_queue_</span><span>.</span><span>size</span><span>());</span>
+  <span>thread_pool_shared_</span><span>-&gt;</span><span>graphtasks_queue_</span><span>.</span><span>push</span><span>(</span><span>graph_task</span><span>);</span>
+
+
+  <span>lck</span><span>.</span><span>unlock</span><span>();</span>
+  <span>if</span> <span>(</span><span>create_thread</span><span>)</span> <span>{</span>
+    <span>std</span><span>::</span><span>thread</span> <span>t</span><span>(</span><span>&amp;</span><span>Engine</span><span>::</span><span>reentrant_thread_init</span><span>,</span> <span>this</span><span>);</span>
+    <span>t</span><span>.</span><span>detach</span><span>();</span>
+  <span>}</span>
+
+  <span>thread_pool_shared_</span><span>-&gt;</span><span>work_</span><span>.</span><span>notify_one</span><span>();</span>
+<span>}</span>
+
+
+
+</code></pre></div>
+
+<p>Before going in-depth, let’s look at the <code>thread_pool_shared_</code> object in the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.h#L421"><code>Engine</code></a> which manages all the information related to the threads associated to the reentrant backward calls.</p>
+
+<div><pre><code>  <span>struct</span> <span>ThreadPoolShared</span> <span>{</span>
+    <span>unsigned</span> <span>int</span> <span>num_workers_</span><span>;</span>
+    <span>std</span><span>::</span><span>condition_variable</span> <span>work_</span><span>;</span>
+    <span>std</span><span>::</span><span>mutex</span> <span>mutex_</span><span>;</span>
+    <span>std</span><span>::</span><span>queue</span><span>&lt;</span><span>std</span><span>::</span><span>weak_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;&gt;</span> <span>graphtasks_queue_</span><span>;</span>
+
+    <span>// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)</span>
+    <span>ThreadPoolShared</span><span>()</span> <span>:</span> <span>num_workers_</span><span>(</span><span>0</span><span>)</span> <span>{}</span>
+ <span>};</span>
+
+
+
+</code></pre></div>
+
+<p><a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.h#L398-L414"><code>ThreadPoolShared</code></a> is a simple container holding a queue of <code>GraphTask</code> objects with synchronization mechanisms and the number of current workers.</p>
+
+<p>Now it is easy to understand how <code>add_thread_pool_task</code> creates a thread when there are <code>graph_task</code> objects enqueued and insufficient workers to process them.</p>
+
+<p><code>add_thread_pool_task</code> initializes a thread by executing <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L471-L493"><code>reentrant_thread_init</code></a></p>
+
+<div><pre><code><span>void</span> <span>Engine</span><span>::</span><span>reentrant_thread_init</span><span>()</span> <span>{</span>
+  <span>at</span><span>::</span><span>init_num_threads</span><span>();</span>
+  <span>auto</span> <span>tp_shared</span> <span>=</span> <span>thread_pool_shared_</span><span>;</span>
+  <span>while</span><span>(</span><span>true</span><span>)</span> <span>{</span>
+    <span>std</span><span>::</span><span>unique_lock</span><span>&lt;</span><span>std</span><span>::</span><span>mutex</span><span>&gt;</span> <span>lk</span><span>(</span><span>tp_shared</span><span>-&gt;</span><span>mutex_</span><span>);</span>
+    <span>++</span><span>thread_pool_shared_</span><span>-&gt;</span><span>num_workers_</span><span>;</span>
+    <span>tp_shared</span><span>-&gt;</span><span>work_</span><span>.</span><span>wait</span><span>(</span><span>lk</span><span>,</span> <span>[</span><span>&amp;</span><span>tp_shared</span><span>]{</span> <span>return</span> <span>!</span><span>tp_shared</span><span>-&gt;</span><span>graphtasks_queue_</span><span>.</span><span>empty</span><span>();});</span>
+    <span>--</span><span>thread_pool_shared_</span><span>-&gt;</span><span>num_workers_</span><span>;</span>
+    <span>auto</span> <span>task</span> <span>=</span> <span>tp_shared</span><span>-&gt;</span><span>graphtasks_queue_</span><span>.</span><span>front</span><span>();</span>
+    <span>tp_shared</span><span>-&gt;</span><span>graphtasks_queue_</span><span>.</span><span>pop</span><span>();</span>
+    <span>lk</span><span>.</span><span>unlock</span><span>();</span>
+    <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;</span> <span>graph_task</span><span>;</span>
+    <span>if</span> <span>(</span><span>!</span><span>(</span><span>graph_task</span> <span>=</span> <span>task</span><span>.</span><span>lock</span><span>()))</span> <span>{</span>
+      <span>continue</span><span>;</span>
+    <span>}</span>
+    <span>set_device</span><span>(</span><span>graph_task</span><span>-&gt;</span><span>owner_</span><span>);</span>
+    <span>// set the local_ready_queue to the ready queue on the graph_task-&gt;owner_ device</span>
+    <span>local_ready_queue</span> <span>=</span> <span>ready_queue_by_index</span><span>(</span><span>graph_task</span><span>-&gt;</span><span>cpu_ready_queue_</span><span>,</span> <span>graph_task</span><span>-&gt;</span><span>owner_</span><span>);</span>
+    <span>total_depth</span> <span>=</span> <span>graph_task</span><span>-&gt;</span><span>reentrant_depth_</span><span>;</span>
+    <span>thread_main</span><span>(</span><span>graph_task</span><span>);</span>
+  <span>}</span>
+<span>}</span>
+
+
+
+</code></pre></div>
+
+<p>The code is straightforward. The newly created thread waits on the <code>thread_pool_shared-&gt;graphtasks_queue_</code> for reentrant backward graphs to be available and executes them. Notice that this thread uses the task-ready queue associated with the device of the thread that started this call by accessing the <code>graph_task-&gt;owner_</code> field set in the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L1092"><code>execute_with_graph_task</code></a> function.</p>
+
+<h2 id="error-handling">Error Handling</h2>
+
+<p>Whenever an error happens in one of the worker threads. It will be propagated to the <code>backward</code> calling thread.</p>
+
+<p>To achieve this, there is a try/catch block in the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L415-L438"><code>thread_main</code></a> that catches any exception in the <code>Node</code> function call and sets it to the associated <code>GraphTask</code> object.</p>
+
+<div><pre><code>       <span>try</span> <span>{</span>
+          <span>…</span>
+          <span>GraphTaskGuard</span> <span>guard</span><span>(</span><span>local_graph_task</span><span>);</span>
+          <span>NodeGuard</span> <span>ndguard</span><span>(</span><span>task</span><span>.</span><span>fn_</span><span>);</span>
+          <span>{</span>
+            <span>evaluate_function</span><span>(</span>
+               <span>…</span>
+          <span>}</span>
+        <span>}</span> <span>catch</span> <span>(</span><span>std</span><span>::</span><span>exception</span><span>&amp;</span> <span>e</span><span>)</span> <span>{</span>
+          <span>thread_on_exception</span><span>(</span><span>local_graph_task</span><span>,</span> <span>task</span><span>.</span><span>fn_</span><span>,</span> <span>e</span><span>);</span>
+        <span>}</span>
+      <span>}</span>
+    <span>}</span>
+
+</code></pre></div>
+
+<p><a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L495-L500"><code>thread_on_exception</code></a> and the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/torch/csrc/autograd/engine.cpp#L605-L621">functions it calls</a> end up setting the exception in the <code>local_graph_task</code> object.</p>
+
+<div><pre><code><span>void</span> <span>Engine</span><span>::</span><span>thread_on_exception</span><span>(</span>
+    <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>GraphTask</span><span>&gt;</span> <span>graph_task</span><span>,</span>
+    <span>const</span> <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>Node</span><span>&gt;&amp;</span> <span>fn</span><span>,</span>
+    <span>std</span><span>::</span><span>exception</span><span>&amp;</span> <span>e</span><span>)</span> <span>{</span>
+  <span>graph_task</span><span>-&gt;</span><span>set_exception</span><span>(</span><span>std</span><span>::</span><span>current_exception</span><span>(),</span> <span>fn</span><span>);</span>
+<span>}</span>
+
+<span>void</span> <span>GraphTask</span><span>::</span><span>set_exception_without_signal</span><span>(</span><span>const</span> <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>Node</span><span>&gt;&amp;</span> <span>fn</span><span>)</span> <span>{</span>
+  <span>if</span> <span>(</span><span>!</span><span>has_error_</span><span>.</span><span>exchange</span><span>(</span><span>true</span><span>))</span> <span>{</span>
+    <span>if</span> <span>(</span><span>AnomalyMode</span><span>::</span><span>is_enabled</span><span>()</span> <span>&amp;&amp;</span> <span>fn</span><span>)</span> <span>{</span>
+      <span>fn</span><span>-&gt;</span><span>metadata</span><span>()</span><span>-&gt;</span><span>print_stack</span><span>(</span><span>fn</span><span>-&gt;</span><span>name</span><span>());</span>
+    <span>}</span>
+  <span>}</span>
+<span>}</span>
+
+<span>void</span> <span>GraphTask</span><span>::</span><span>set_exception</span><span>(</span>
+    <span>std</span><span>::</span><span>exception_ptr</span> <span>eptr</span><span>,</span>
+    <span>const</span> <span>std</span><span>::</span><span>shared_ptr</span><span>&lt;</span><span>Node</span><span>&gt;&amp;</span> <span>fn</span><span>)</span> <span>{</span>
+  <span>set_exception_without_signal</span><span>(</span><span>fn</span><span>);</span>
+  <span>if</span> <span>(</span><span>!</span><span>future_completed_</span><span>.</span><span>exchange</span><span>(</span><span>true</span><span>))</span> <span>{</span>
+    <span>// NOLINTNEXTLINE(performance-move-const-arg)</span>
+    <span>future_result_</span><span>-&gt;</span><span>setError</span><span>(</span><span>std</span><span>::</span><span>move</span><span>(</span><span>eptr</span><span>));</span>
+  <span>}</span>
+<span>}</span>
+
+</code></pre></div>
+
+<p>In <code>set_exception</code> it sets the <code>has_error_</code> flag to <code>true</code> and it calls the <a href="https://pytorch.org/blog/how-computational-graphs-are-executed-in-pytorch/?utm_source=substack&amp;utm_medium=email"><code>setError</code></a>
+function of the <a href="https://github.com/pytorch/pytorch/blob/bc2c6edaf163b1a1330e37a6e34caf8c553e4755/aten/src/ATen/core/ivalue_inl.h#L770-L1322"><code>future_result_</code></a> object. This will make the error to be re-thrown at the caller thread when <code>future_result_-&gt;value()</code> is accessed.</p>
+
+<div><pre><code> <span>IValue</span> <span>value</span><span>()</span> <span>{</span>
+    <span>std</span><span>::</span><span>unique_lock</span><span>&lt;</span><span>std</span><span>::</span><span>mutex</span><span>&gt;</span> <span>lock</span><span>(</span><span>mutex_</span><span>);</span>
+    <span>AT_ASSERT</span><span>(</span><span>completed</span><span>());</span>
+    <span>if</span> <span>(</span><span>eptr_</span><span>)</span> <span>{</span>
+      <span>std</span><span>::</span><span>rethrow_exception</span><span>(</span><span>eptr_</span><span>);</span>
+    <span>}</span>
+    <span>return</span> <span>value_</span><span>;</span>
+  <span>}</span>
+
+</code></pre></div>
+
+
+
+<p>This has been the last post of this series covering how PyTorch does the auto differentiation. We hope you enjoyed reading it and that now you are familiar enough with PyTorch internals to start contributing in PyTorch development!</p>
+
+                </article></div>
+  </div>
+</body>
+</html>

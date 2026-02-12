@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GPT-4.1 Prompting Guide | OpenAI Cookbook</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>GPT-4.1 Prompting Guide | OpenAI Cookbook</h1>
+    <p><strong>URL:</strong> <a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide">https://cookbook.openai.com/examples/gpt4-1_prompting_guide</a></p>
+    <p><strong>Tags:</strong> prompt-engineering, openai</p>
+    <p><strong>Bookmark ID:</strong> 1041512019</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="content"><article><p>The GPT-4.1 family of models represents a significant step forward from GPT-4o in capabilities across coding, instruction following, and long context. In this prompting guide, we collate a series of important prompting tips derived from extensive internal testing to help developers fully leverage the improved abilities of this new model family.</p>
+<p>Many typical best practices still apply to GPT-4.1, such as providing context examples, making instructions as specific and clear as possible, and inducing planning via prompting to maximize model intelligence. However, we expect that getting the most out of this model will require some prompt migration. GPT-4.1 is trained to follow instructions more closely and more literally than its predecessors, which tended to more liberally infer intent from user and system prompts. This also means, however, that GPT-4.1 is highly steerable and responsive to well-specified prompts - if model behavior is different from what you expect, a single sentence firmly and unequivocally clarifying your desired behavior is almost always sufficient to steer the model on course.</p>
+<p>Please read on for prompt examples you can use as a reference, and remember that while this guidance is widely applicable, no advice is one-size-fits-all. AI engineering is inherently an empirical discipline, and large language models are inherently nondeterministic; in addition to following this guide, we advise building informative evals and iterating often to ensure your prompt engineering changes are yielding benefits for your use case.</p></article><article><h2 id="1-agentic-workflows"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#1-agentic-workflows">1. Agentic Workflows</a></h2>
+<p>GPT-4.1 is a great place to build agentic workflows. In model training we emphasized providing a diverse range of agentic problem-solving trajectories, and our agentic harness for the model achieves state-of-the-art performance for non-reasoning models on SWE-bench Verified, solving 55% of problems.</p>
+<h2 id="system-prompt-reminders"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#system-prompt-reminders">System Prompt Reminders</a></h2>
+<p>In order to fully utilize the agentic capabilities of GPT-4.1, we recommend including three key types of reminders in all agent prompts. The following prompts are optimized specifically for the agentic coding workflow, but can be easily modified for general agentic use cases.</p>
+<ol>
+<li>Persistence: this ensures the model understands it is entering a multi-message turn, and prevents it from prematurely yielding control back to the user. Our example is the following:</li>
+</ol>
+<div data-rehype-pretty-code-fragment=""><pre><code data-language="" data-theme="default"><span data-line=""><span>You are an agent - please keep going until the user’s query is completely resolved, before ending your turn and yielding back to the user. Only terminate your turn when you are sure that the problem is solved.</span></span></code></pre></div>
+<ol start="2">
+<li>Tool-calling: this encourages the model to make full use of its tools, and reduces its likelihood of hallucinating or guessing an answer. Our example is the following:</li>
+</ol>
+<div data-rehype-pretty-code-fragment=""><pre><code data-language="" data-theme="default"><span data-line=""><span>If you are not sure about file content or codebase structure pertaining to the user’s request, use your tools to read files and gather the relevant information: do NOT guess or make up an answer.</span></span></code></pre></div>
+<ol start="3">
+<li>Planning [optional]: if desired, this ensures the model explicitly plans and reflects upon each tool call in text, instead of completing the task by chaining together a series of only tool calls. Our example is the following:</li>
+</ol>
+<div data-rehype-pretty-code-fragment=""><pre><code data-language="" data-theme="default"><span data-line=""><span>You MUST plan extensively before each function call, and reflect extensively on the outcomes of the previous function calls. DO NOT do this entire process by making function calls only, as this can impair your ability to solve the problem and think insightfully.</span></span></code></pre></div>
+<p>GPT-4.1 is trained to respond very closely to both user instructions and system prompts in the agentic setting. The model adhered closely to these three simple instructions and increased our internal SWE-bench Verified score by close to 20% - so we highly encourage starting any agent prompt with clear reminders covering the three categories listed above. As a whole, we find that these three instructions transform the model from a chatbot-like state into a much more “eager” agent, driving the interaction forward autonomously and independently.</p>
+<h2 id="tool-calls"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#tool-calls">Tool Calls</a></h2>
+<p>Compared to previous models, GPT-4.1 has undergone more training on effectively utilizing tools passed as arguments in an OpenAI API request. We encourage developers to exclusively use the tools field to pass tools, rather than manually injecting tool descriptions into your prompt and writing a separate parser for tool calls, as some have reported doing in the past. This is the best way to minimize errors and ensure the model remains in distribution during tool-calling trajectories - in our own experiments, we observed a 2% increase in SWE-bench Verified pass rate when using API-parsed tool descriptions versus manually injecting the schemas into the system prompt.</p>
+<p>Developers should name tools clearly to indicate their purpose and add a clear, detailed description in the "description" field of the tool. Similarly, for each tool param, lean on good naming and descriptions to ensure appropriate usage. If your tool is particularly complicated and you'd like to provide examples of tool usage, we recommend that you create an <code># Examples</code> section in your system prompt and place the examples there, rather than adding them into the "description' field, which should remain thorough but relatively concise. Providing examples can be helpful to indicate when to use tools, whether to include user text alongside tool calls, and what parameters are appropriate for different inputs. Remember that you can use “Generate Anything” in the <a href="https://platform.openai.com/playground">Prompt Playground</a> to get a good starting point for your new tool definitions.</p>
+<h2 id="prompting-induced-planning--chain-of-thought"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#prompting-induced-planning--chain-of-thought">Prompting-Induced Planning &amp; Chain-of-Thought</a></h2>
+<p>As mentioned already, developers can optionally prompt agents built with GPT-4.1 to plan and reflect between tool calls, instead of silently calling tools in an unbroken sequence. GPT-4.1 is not a reasoning model - meaning that it does not produce an internal chain of thought before answering - but in the prompt, a developer can induce the model to produce an explicit, step-by-step plan by using any variant of the Planning prompt component shown above. This can be thought of as the model “thinking out loud.” In our experimentation with the SWE-bench Verified agentic task, inducing explicit planning increased the pass rate by 4%.</p>
+<h2 id="sample-prompt-swe-bench-verified"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#sample-prompt-swe-bench-verified">Sample Prompt: SWE-bench Verified</a></h2>
+<p>Below, we share the agentic prompt that we used to achieve our highest score on SWE-bench Verified, which features detailed instructions about workflow and problem-solving strategy. This general pattern can be used for any agentic task.</p></article><div><div><pre tabindex="0"><code><span><span>from</span><span> openai </span><span>import</span><span> OpenAI</span></span>
+<span><span>import</span><span> os</span></span>
+<span></span>
+<span><span>client </span><span>=</span><span> OpenAI(</span></span>
+<span><span>    </span><span>api_key</span><span>=</span><span>os.environ.get(</span></span>
+<span><span>        </span><span>"OPENAI_API_KEY"</span><span>, </span><span>"&lt;your OpenAI API key if not set as env var&gt;"</span></span>
+<span><span>    )</span></span>
+<span><span>)</span></span>
+<span></span>
+<span><span>SYS_PROMPT_SWEBENCH</span><span> </span><span>=</span><span> </span><span>"""</span></span>
+<span><span>You will be tasked to fix an issue from an open-source repository.</span></span>
+<span></span>
+<span><span>Your thinking should be thorough and so it's fine if it's very long. You can think step by step before and after each action you decide to take.</span></span>
+<span></span>
+<span><span>You MUST iterate and keep going until the problem is solved.</span></span>
+<span></span>
+<span><span>You already have everything you need to solve this problem in the /testbed folder, even without internet connection. I want you to fully solve this autonomously before coming back to me.</span></span>
+<span></span>
+<span><span>Only terminate your turn when you are sure that the problem is solved. Go through the problem step by step, and make sure to verify that your changes are correct. NEVER end your turn without having solved the problem, and when you say you are going to make a tool call, make sure you ACTUALLY make the tool call, instead of ending your turn.</span></span>
+<span></span>
+<span><span>THE PROBLEM CAN DEFINITELY BE SOLVED WITHOUT THE INTERNET.</span></span>
+<span></span>
+<span><span>Take your time and think through every step - remember to check your solution rigorously and watch out for boundary cases, especially with the changes you made. Your solution must be perfect. If not, continue working on it. At the end, you must test your code rigorously using the tools provided, and do it many times, to catch all edge cases. If it is not robust, iterate more and make it perfect. Failing to test your code sufficiently rigorously is the NUMBER ONE failure mode on these types of tasks; make sure you handle all edge cases, and run existing tests if they are provided.</span></span>
+<span></span>
+<span><span>You MUST plan extensively before each function call, and reflect extensively on the outcomes of the previous function calls. DO NOT do this entire process by making function calls only, as this can impair your ability to solve the problem and think insightfully.</span></span>
+<span></span>
+<span><span># Workflow</span></span>
+<span></span>
+<span><span>## High-Level Problem Solving Strategy</span></span>
+<span></span>
+<span><span>1. Understand the problem deeply. Carefully read the issue and think critically about what is required.</span></span>
+<span><span>2. Investigate the codebase. Explore relevant files, search for key functions, and gather context.</span></span>
+<span><span>3. Develop a clear, step-by-step plan. Break down the fix into manageable, incremental steps.</span></span>
+<span><span>4. Implement the fix incrementally. Make small, testable code changes.</span></span>
+<span><span>5. Debug as needed. Use debugging techniques to isolate and resolve issues.</span></span>
+<span><span>6. Test frequently. Run tests after each change to verify correctness.</span></span>
+<span><span>7. Iterate until the root cause is fixed and all tests pass.</span></span>
+<span><span>8. Reflect and validate comprehensively. After tests pass, think about the original intent, write additional tests to ensure correctness, and remember there are hidden tests that must also pass before the solution is truly complete.</span></span>
+<span></span>
+<span><span>Refer to the detailed sections below for more information on each step.</span></span>
+<span></span>
+<span><span>## 1. Deeply Understand the Problem</span></span>
+<span><span>Carefully read the issue and think hard about a plan to solve it before coding.</span></span>
+<span></span>
+<span><span>## 2. Codebase Investigation</span></span>
+<span><span>- Explore relevant files and directories.</span></span>
+<span><span>- Search for key functions, classes, or variables related to the issue.</span></span>
+<span><span>- Read and understand relevant code snippets.</span></span>
+<span><span>- Identify the root cause of the problem.</span></span>
+<span><span>- Validate and update your understanding continuously as you gather more context.</span></span>
+<span></span>
+<span><span>## 3. Develop a Detailed Plan</span></span>
+<span><span>- Outline a specific, simple, and verifiable sequence of steps to fix the problem.</span></span>
+<span><span>- Break down the fix into small, incremental changes.</span></span>
+<span></span>
+<span><span>## 4. Making Code Changes</span></span>
+<span><span>- Before editing, always read the relevant file contents or section to ensure complete context.</span></span>
+<span><span>- If a patch is not applied correctly, attempt to reapply it.</span></span>
+<span><span>- Make small, testable, incremental changes that logically follow from your investigation and plan.</span></span>
+<span></span>
+<span><span>## 5. Debugging</span></span>
+<span><span>- Make code changes only if you have high confidence they can solve the problem</span></span>
+<span><span>- When debugging, try to determine the root cause rather than addressing symptoms</span></span>
+<span><span>- Debug for as long as needed to identify the root cause and identify a fix</span></span>
+<span><span>- Use print statements, logs, or temporary code to inspect program state, including descriptive statements or error messages to understand what's happening</span></span>
+<span><span>- To test hypotheses, you can also add test statements or functions</span></span>
+<span><span>- Revisit your assumptions if unexpected behavior occurs.</span></span>
+<span></span>
+<span><span>## 6. Testing</span></span>
+<span><span>- Run tests frequently using `!python3 run_tests.py` (or equivalent).</span></span>
+<span><span>- After each change, verify correctness by running relevant tests.</span></span>
+<span><span>- If tests fail, analyze failures and revise your patch.</span></span>
+<span><span>- Write additional tests if needed to capture important behaviors or edge cases.</span></span>
+<span><span>- Ensure all tests pass before finalizing.</span></span>
+<span></span>
+<span><span>## 7. Final Verification</span></span>
+<span><span>- Confirm the root cause is fixed.</span></span>
+<span><span>- Review your solution for logic correctness and robustness.</span></span>
+<span><span>- Iterate until you are extremely confident the fix is complete and all tests pass.</span></span>
+<span></span>
+<span><span>## 8. Final Reflection and Additional Testing</span></span>
+<span><span>- Reflect carefully on the original intent of the user and the problem statement.</span></span>
+<span><span>- Think about potential edge cases or scenarios that may not be covered by existing tests.</span></span>
+<span><span>- Write additional tests that would need to pass to fully validate the correctness of your solution.</span></span>
+<span><span>- Run these new tests and ensure they all pass.</span></span>
+<span><span>- Be aware that there are additional hidden tests that must also pass for the solution to be successful.</span></span>
+<span><span>- Do not assume the task is complete just because the visible tests pass; continue refining until you are confident the fix is robust and comprehensive.</span></span>
+<span><span>"""</span></span>
+<span></span>
+<span><span>PYTHON_TOOL_DESCRIPTION</span><span> </span><span>=</span><span> </span><span>"""This function is used to execute Python code or terminal commands in a stateful Jupyter notebook environment. python will respond with the output of the execution or time out after 60.0 seconds. Internet access for this session is disabled. Do not make external web requests or API calls as they will fail. Just as in a Jupyter notebook, you may also execute terminal commands by calling this function with a terminal command, prefaced with an exclamation mark.</span></span>
+<span></span>
+<span><span>In addition, for the purposes of this task, you can call this function with an `apply_patch` command as input.  `apply_patch` effectively allows you to execute a diff/patch against a file, but the format of the diff specification is unique to this task, so pay careful attention to these instructions. To use the `apply_patch` command, you should pass a message of the following structure as "input":</span></span>
+<span></span>
+<span><span>%%</span><span>bash</span></span>
+<span><span>apply_patch &lt;&lt;"EOF"</span></span>
+<span><span>*** Begin Patch</span></span>
+<span><span>[YOUR_PATCH]</span></span>
+<span><span>*** End Patch</span></span>
+<span><span>EOF</span></span>
+<span></span>
+<span><span>Where [YOUR_PATCH] is the actual content of your patch, specified in the following V4A diff format.</span></span>
+<span></span>
+<span><span>*** [ACTION] File: [path/to/file] -&gt; ACTION can be one of Add, Update, or Delete.</span></span>
+<span><span>For each snippet of code that needs to be changed, repeat the following:</span></span>
+<span><span>[context_before] -&gt; See below for further instructions on context.</span></span>
+<span><span>- [old_code] -&gt; Precede the old code with a minus sign.</span></span>
+<span><span>+ [new_code] -&gt; Precede the new, replacement code with a plus sign.</span></span>
+<span><span>[context_after] -&gt; See below for further instructions on context.</span></span>
+<span></span>
+<span><span>For instructions on [context_before] and [context_after]:</span></span>
+<span><span>- By default, show 3 lines of code immediately above and 3 lines immediately below each change. If a change is within 3 lines of a previous change, do NOT duplicate the first change's [context_after] lines in the second change's [context_before] lines.</span></span>
+<span><span>- If 3 lines of context is insufficient to uniquely identify the snippet of code within the file, use the @@ operator to indicate the class or function to which the snippet belongs. For instance, we might have:</span></span>
+<span><span>@@ class BaseClass</span></span>
+<span><span>[3 lines of pre-context]</span></span>
+<span><span>- [old_code]</span></span>
+<span><span>+ [new_code]</span></span>
+<span><span>[3 lines of post-context]</span></span>
+<span></span>
+<span><span>- If a code block is repeated so many times in a class or function such that even a single @@ statement and 3 lines of context cannot uniquely identify the snippet of code, you can use multiple `@@` statements to jump to the right context. For instance:</span></span>
+<span></span>
+<span><span>@@ class BaseClass</span></span>
+<span><span>@@ 	def method():</span></span>
+<span><span>[3 lines of pre-context]</span></span>
+<span><span>- [old_code]</span></span>
+<span><span>+ [new_code]</span></span>
+<span><span>[3 lines of post-context]</span></span>
+<span></span>
+<span><span>Note, then, that we do not use line numbers in this diff format, as the context is enough to uniquely identify code. An example of a message that you might pass as "input" to this function, in order to apply a patch, is shown below.</span></span>
+<span></span>
+<span><span>%%</span><span>bash</span></span>
+<span><span>apply_patch &lt;&lt;"EOF"</span></span>
+<span><span>*** Begin Patch</span></span>
+<span><span>*** Update File: pygorithm/searching/binary_search.py</span></span>
+<span><span>@@ class BaseClass</span></span>
+<span><span>@@     def search():</span></span>
+<span><span>-        pass</span></span>
+<span><span>+        raise NotImplementedError()</span></span>
+<span></span>
+<span><span>@@ class Subclass</span></span>
+<span><span>@@     def search():</span></span>
+<span><span>-        pass</span></span>
+<span><span>+        raise NotImplementedError()</span></span>
+<span></span>
+<span><span>*** End Patch</span></span>
+<span><span>EOF</span></span>
+<span></span>
+<span><span>File references can only be relative, NEVER ABSOLUTE. After the apply_patch command is run, python will always say "Done!", regardless of whether the patch was successfully applied or not. However, you can determine if there are issue and errors by looking at any warnings or logging lines printed BEFORE the "Done!" is output.</span></span>
+<span><span>"""</span></span>
+<span></span>
+<span><span>python_bash_patch_tool </span><span>=</span><span> {</span></span>
+<span><span>  </span><span>"type"</span><span>: </span><span>"function"</span><span>,</span></span>
+<span><span>  </span><span>"name"</span><span>: </span><span>"python"</span><span>,</span></span>
+<span><span>  </span><span>"description"</span><span>: </span><span>PYTHON_TOOL_DESCRIPTION</span><span>,</span></span>
+<span><span>  </span><span>"parameters"</span><span>: {</span></span>
+<span><span>      </span><span>"type"</span><span>: </span><span>"object"</span><span>,</span></span>
+<span><span>      </span><span>"strict"</span><span>: </span><span>True</span><span>,</span></span>
+<span><span>      </span><span>"properties"</span><span>: {</span></span>
+<span><span>          </span><span>"input"</span><span>: {</span></span>
+<span><span>              </span><span>"type"</span><span>: </span><span>"string"</span><span>,</span></span>
+<span><span>              </span><span>"description"</span><span>: </span><span>" The Python code, terminal command (prefaced by exclamation mark), or apply_patch command that you wish to execute."</span><span>,</span></span>
+<span><span>          }</span></span>
+<span><span>      },</span></span>
+<span><span>      </span><span>"required"</span><span>: [</span><span>"input"</span><span>],</span></span>
+<span><span>  },</span></span>
+<span><span>}</span></span>
+<span></span>
+<span><span># Additional harness setup:</span></span>
+<span><span># - Add your repo to /testbed</span></span>
+<span><span># - Add your issue to the first user message</span></span>
+<span><span># - Note: Even though we used a single tool for python, bash, and apply_patch, we generally recommend defining more granular tools that are focused on a single function</span></span>
+<span></span>
+<span><span>response </span><span>=</span><span> client.responses.create(</span></span>
+<span><span>    </span><span>instructions</span><span>=</span><span>SYS_PROMPT_SWEBENCH</span><span>,</span></span>
+<span><span>    </span><span>model</span><span>=</span><span>"gpt-4.1-2025-04-14"</span><span>,</span></span>
+<span><span>    </span><span>tools</span><span>=</span><span>[python_bash_patch_tool],</span></span>
+<span><span>    </span><span>input</span><span>=</span><span>f</span><span>"Please answer the following question:</span><span>\n</span><span>Bug: Typerror..."</span></span>
+<span><span>)</span></span>
+<span></span>
+<span><span>response.to_dict()[</span><span>"output"</span><span>]</span></span></code></pre></div><div><pre>[{'id': 'msg_67fe92df26ac819182ffafce9ff4e4fc07c7e06242e51f8b',
+<!-- -->  'content': [{'annotations': [],
+<!-- -->    'text': "Thank you for the report, but “Typerror” is too vague for me to start debugging right away.\n\n**To make progress, I need to:**\n1. Find the exact error message text (e.g. `'TypeError: ...'`).\n2. Find which file and which line/function/class the error occurred in.\n3. Figure out what triggered the error (test file, usage, reproduction steps).\n4. Find the root cause and details.\n\n**Next steps:**\n- Investigate error/log/test output files for a Python `TypeError` message.\n- Examine the relevant code sections for problematic type usage.\n- If possible, reproduce the bug locally.\n\n**Plan:**\n- First, I will search for test files and log output in the `/testbed` directory that may contain the full error message and stack trace.\n\nLet’s start by listing the contents of the `/testbed` directory to look for clues.",
+<!-- -->    'type': 'output_text'}],
+<!-- -->  'role': 'assistant',
+<!-- -->  'status': 'completed',
+<!-- -->  'type': 'message'},
+<!-- --> {'arguments': '{"input":"!ls -l /testbed"}',
+<!-- -->  'call_id': 'call_frnxyJgKi5TsBem0nR9Zuzdw',
+<!-- -->  'name': 'python',
+<!-- -->  'type': 'function_call',
+<!-- -->  'id': 'fc_67fe92e3da7081918fc18d5c96dddc1c07c7e06242e51f8b',
+<!-- -->  'status': 'completed'}]</pre></div></div><article><h2 id="2-long-context"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#2-long-context">2. Long context</a></h2>
+<p>GPT-4.1 has a performant 1M token input context window, and is useful for a variety of long context tasks, including structured document parsing, re-ranking, selecting relevant information while ignoring irrelevant context, and performing multi-hop reasoning using context.</p></article><article><h2 id="optimal-context-size"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#optimal-context-size">Optimal Context Size</a></h2>
+<p>We observe very good performance on needle-in-a-haystack evaluations up to our full 1M token context, and we’ve observed very strong performance at complex tasks with a mix of both relevant and irrelevant code and other documents. However, long context performance can degrade as more items are required to be retrieved, or perform complex reasoning that requires knowledge of the state of the entire context (like performing a graph search, for example).</p>
+<h2 id="tuning-context-reliance"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#tuning-context-reliance">Tuning Context Reliance</a></h2>
+<p>Consider the mix of external vs. internal world knowledge that might be required to answer your question. Sometimes it’s important for the model to use some of its own knowledge to connect concepts or make logical jumps, while in others it’s desirable to only use provided context</p>
+<div data-rehype-pretty-code-fragment=""><pre><code data-language="" data-theme="default"><span data-line=""><span># Instructions</span></span>
+<span data-line=""><span>// for internal knowledge</span></span>
+<span data-line=""><span>- Only use the documents in the provided External Context to answer the User Query. If you don't know the answer based on this context, you must respond "I don't have the information needed to answer that", even if a user insists on you answering the question.</span></span>
+<span data-line=""><span>// For internal and external knowledge</span></span>
+<span data-line=""><span>- By default, use the provided external context to answer the User Query, but if other basic knowledge is needed to answer, and you're confident in the answer, you can use some of your own knowledge to help answer the question.</span></span></code></pre></div>
+<h2 id="prompt-organization"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#prompt-organization">Prompt Organization</a></h2>
+<p>Especially in long context usage, placement of instructions and context can impact performance. If you have long context in your prompt, ideally place your instructions at both the beginning and end of the provided context, as we found this to perform better than only above or below. If you’d prefer to only have your instructions once, then above the provided context works better than below.</p></article><article><h2 id="3-chain-of-thought"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#3-chain-of-thought">3. Chain of Thought</a></h2>
+<p>As mentioned above, GPT-4.1 is not a reasoning model, but prompting the model to think step by step (called “chain of thought”) can be an effective way for a model to break down problems into more manageable pieces, solve them, and improve overall output quality, with the tradeoff of higher cost and latency associated with using more output tokens. The model has been trained to perform well at agentic reasoning about and real-world problem solving, so it shouldn’t require much prompting to perform well.</p>
+<p>We recommend starting with this basic chain-of-thought instruction at the end of your prompt:</p>
+<div data-rehype-pretty-code-fragment=""><pre><code data-language="" data-theme="default"><span data-line=""><span>...</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span>First, think carefully step by step about what documents are needed to answer the query. Then, print out the TITLE and ID of each document. Then, format the IDs into a list.</span></span></code></pre></div>
+<p>From there, you should improve your chain-of-thought (CoT) prompt by auditing failures in your particular examples and evals, and addressing systematic planning and reasoning errors with more explicit instructions. In the unconstrained CoT prompt, there may be variance in the strategies it tries, and if you observe an approach that works well, you can codify that strategy in your prompt. Generally speaking, errors tend to occur from misunderstanding user intent, insufficient context gathering or analysis, or insufficient or incorrect step by step thinking, so watch out for these and try to address them with more opinionated instructions.</p>
+<p>Here is an example prompt instructing the model to focus more methodically on analyzing user intent and considering relevant context before proceeding to answer.</p>
+<div data-rehype-pretty-code-fragment=""><pre><code data-language="" data-theme="default"><span data-line=""><span># Reasoning Strategy</span></span>
+<span data-line=""><span>1. Query Analysis: Break down and analyze the query until you're confident about what it might be asking. Consider the provided context to help clarify any ambiguous or confusing information.</span></span>
+<span data-line=""><span>2. Context Analysis: Carefully select and analyze a large set of potentially relevant documents. Optimize for recall - it's okay if some are irrelevant, but the correct documents must be in this list, otherwise your final answer will be wrong. Analysis steps for each:</span></span>
+<span data-line=""><span>	a. Analysis: An analysis of how it may or may not be relevant to answering the query.</span></span>
+<span data-line=""><span>	b. Relevance rating: [high, medium, low, none]</span></span>
+<span data-line=""><span>3. Synthesis: summarize which documents are most relevant and why, including all documents with a relevance rating of medium or higher.</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span># User Question</span></span>
+<span data-line=""><span>{user_question}</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span># External Context</span></span>
+<span data-line=""><span>{external_context}</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span>First, think carefully step by step about what documents are needed to answer the query, closely adhering to the provided Reasoning Strategy. Then, print out the TITLE and ID of each document. Then, format the IDs into a list.</span></span></code></pre></div></article><article><h2 id="4-instruction-following"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#4-instruction-following">4. Instruction Following</a></h2>
+<p>GPT-4.1 exhibits outstanding instruction-following performance, which developers can leverage to precisely shape and control the outputs for their particular use cases. Developers often extensively prompt for agentic reasoning steps, response tone and voice, tool calling information, output formatting, topics to avoid, and more. However, since the model follows instructions more literally, developers may need to include explicit specification around what to do or not to do. Furthermore, existing prompts optimized for other models may not immediately work with this model, because existing instructions are followed more closely and implicit rules are no longer being as strongly inferred.</p></article><article><h2 id="recommended-workflow"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#recommended-workflow">Recommended Workflow</a></h2>
+<p>Here is our recommended workflow for developing and debugging instructions in prompts:</p>
+<ol>
+<li>Start with an overall “Response Rules” or “Instructions” section with high-level guidance and bullet points.</li>
+<li>If you’d like to change a more specific behavior, add a section to specify more details for that category, like <code># Sample Phrases</code>.</li>
+<li>If there are specific steps you’d like the model to follow in its workflow, add an ordered list and instruct the model to follow these steps.</li>
+<li>If behavior still isn’t working as expected:
+<ol>
+<li>Check for conflicting, underspecified, or wrong instructions and examples. If there are conflicting instructions, GPT-4.1 tends to follow the one closer to the end of the prompt.</li>
+<li>Add examples that demonstrate desired behavior; ensure that any important behavior demonstrated in your examples are also cited in your rules.</li>
+<li>It’s generally not necessary to use all-caps or other incentives like bribes or tips. We recommend starting without these, and only reaching for these if necessary for your particular prompt. Note that if your existing prompts include these techniques, it could cause GPT-4.1 to pay attention to it too strictly.</li>
+</ol>
+</li>
+</ol>
+<p><em>Note that using your preferred AI-powered IDE can be very helpful for iterating on prompts, including checking for consistency or conflicts, adding examples, or making cohesive updates like adding an instruction and updating instructions to demonstrate that instruction.</em></p>
+<h2 id="common-failure-modes"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#common-failure-modes">Common Failure Modes</a></h2>
+<p>These failure modes are not unique to GPT-4.1, but we share them here for general awareness and ease of debugging.</p>
+<ul>
+<li>Instructing a model to always follow a specific behavior can occasionally induce adverse effects. For instance, if told “you must call a tool before responding to the user,” models may hallucinate tool inputs or call the tool with null values if they do not have enough information. Adding “if you don’t have enough information to call the tool, ask the user for the information you need” should mitigate this.</li>
+<li>When provided sample phrases, models can use those quotes verbatim and start to sound repetitive to users. Ensure you instruct the model to vary them as necessary.</li>
+<li>Without specific instructions, some models can be eager to provide additional prose to explain their decisions, or output more formatting in responses than may be desired. Provide instructions and potentially examples to help mitigate.</li>
+</ul></article><article><h2 id="example-prompt-customer-service"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#example-prompt-customer-service">Example Prompt: Customer Service</a></h2>
+<p>This demonstrates best practices for a fictional customer service agent. Observe the diversity of rules, the specificity, the use of additional sections for greater detail, and an example to demonstrate precise behavior that incorporates all prior rules.</p>
+<p>Try running the following notebook cell - you should see both a user message and tool call, and the user message should start with a greeting, then echo back their answer, then mention they're about to call a tool. Try changing the instructions to shape the model behavior, or trying other user messages, to test instruction following performance.</p></article><div><div><pre tabindex="0"><code><span><span>SYS_PROMPT_CUSTOMER_SERVICE</span><span> </span><span>=</span><span> </span><span>"""You are a helpful customer service agent working for NewTelco, helping a user efficiently fulfill their request while adhering closely to provided guidelines.</span></span>
+<span></span>
+<span><span># Instructions</span></span>
+<span><span>- Always greet the user with "Hi, you've reached NewTelco, how can I help you?"</span></span>
+<span><span>- Always call a tool before answering factual questions about the company, its offerings or products, or a user's account. Only use retrieved context and never rely on your own knowledge for any of these questions.</span></span>
+<span><span>    - However, if you don't have enough information to properly call the tool, ask the user for the information you need.</span></span>
+<span><span>- Escalate to a human if the user requests.</span></span>
+<span><span>- Do not discuss prohibited topics (politics, religion, controversial current events, medical, legal, or financial advice, personal conversations, internal company operations, or criticism of any people or company).</span></span>
+<span><span>- Rely on sample phrases whenever appropriate, but never repeat a sample phrase in the same conversation. Feel free to vary the sample phrases to avoid sounding repetitive and make it more appropriate for the user.</span></span>
+<span><span>- Always follow the provided output format for new messages, including citations for any factual statements from retrieved policy documents.</span></span>
+<span><span>- If you're going to call a tool, always message the user with an appropriate message before and after calling the tool.</span></span>
+<span><span>- Maintain a professional and concise tone in all responses, and use emojis between sentences.</span></span>
+<span><span>- If you've resolved the user's request, ask if there's anything else you can help with</span></span>
+<span></span>
+<span><span># Precise Response Steps (for each response)</span></span>
+<span><span>1. If necessary, call tools to fulfill the user's desired action. Always message the user before and after calling a tool to keep them in the loop.</span></span>
+<span><span>2. In your response to the user</span></span>
+<span><span>    a. Use active listening and echo back what you heard the user ask for.</span></span>
+<span><span>    b. Respond appropriately given the above guidelines.</span></span>
+<span></span>
+<span><span># Sample Phrases</span></span>
+<span><span>## Deflecting a Prohibited Topic</span></span>
+<span><span>- "I'm sorry, but I'm unable to discuss that topic. Is there something else I can help you with?"</span></span>
+<span><span>- "That's not something I'm able to provide information on, but I'm happy to help with any other questions you may have."</span></span>
+<span></span>
+<span><span>## Before calling a tool</span></span>
+<span><span>- "To help you with that, I'll just need to verify your information."</span></span>
+<span><span>- "Let me check that for you—one moment, please."</span></span>
+<span><span>- "I'll retrieve the latest details for you now."</span></span>
+<span></span>
+<span><span>## After calling a tool</span></span>
+<span><span>- "Okay, here's what I found: [response]"</span></span>
+<span><span>- "So here's what I found: [response]"</span></span>
+<span></span>
+<span><span># Output Format</span></span>
+<span><span>- Always include your final response to the user.</span></span>
+<span><span>- When providing factual information from retrieved context, always include citations immediately after the relevant statement(s). Use the following citation format:</span></span>
+<span><span>    - For a single source: [NAME](ID)</span></span>
+<span><span>    - For multiple sources: [NAME](ID), [NAME](ID)</span></span>
+<span><span>- Only provide information about this company, its policies, its products, or the customer's account, and only if it is based on information provided in context. Do not answer questions outside this scope.</span></span>
+<span></span>
+<span><span># Example</span></span>
+<span><span>## User</span></span>
+<span><span>Can you tell me about your family plan options?</span></span>
+<span></span>
+<span><span>## Assistant Response 1</span></span>
+<span><span>### Message</span></span>
+<span><span>"Hi, you've reached NewTelco, how can I help you? 😊🎉</span><span>\n\n</span><span>You'd like to know about our family plan options. 🤝 Let me check that for you—one moment, please. 🚀"</span></span>
+<span></span>
+<span><span>### Tool Calls</span></span>
+<span><span>lookup_policy_document(topic="family plan options")</span></span>
+<span></span>
+<span><span>// After tool call, the assistant would follow up with:</span></span>
+<span></span>
+<span><span>## Assistant Response 2 (after tool call)</span></span>
+<span><span>### Message</span></span>
+<span><span>"Okay, here's what I found: 🎉 Our family plan allows up to 5 lines with shared data and a 10</span><span>% d</span><span>iscount for each additional line [Family Plan Policy](ID-010). 📱 Is there anything else I can help you with today? 😊"</span></span>
+<span><span>"""</span></span>
+<span></span>
+<span><span>get_policy_doc </span><span>=</span><span> {</span></span>
+<span><span>    </span><span>"type"</span><span>: </span><span>"function"</span><span>,</span></span>
+<span><span>    </span><span>"name"</span><span>: </span><span>"lookup_policy_document"</span><span>,</span></span>
+<span><span>    </span><span>"description"</span><span>: </span><span>"Tool to look up internal documents and policies by topic or keyword."</span><span>,</span></span>
+<span><span>    </span><span>"parameters"</span><span>: {</span></span>
+<span><span>        </span><span>"strict"</span><span>: </span><span>True</span><span>,</span></span>
+<span><span>        </span><span>"type"</span><span>: </span><span>"object"</span><span>,</span></span>
+<span><span>        </span><span>"properties"</span><span>: {</span></span>
+<span><span>            </span><span>"topic"</span><span>: {</span></span>
+<span><span>                </span><span>"type"</span><span>: </span><span>"string"</span><span>,</span></span>
+<span><span>                </span><span>"description"</span><span>: </span><span>"The topic or keyword to search for in company policies or documents."</span><span>,</span></span>
+<span><span>            },</span></span>
+<span><span>        },</span></span>
+<span><span>        </span><span>"required"</span><span>: [</span><span>"topic"</span><span>],</span></span>
+<span><span>        </span><span>"additionalProperties"</span><span>: </span><span>False</span><span>,</span></span>
+<span><span>    },</span></span>
+<span><span>}</span></span>
+<span></span>
+<span><span>get_user_acct </span><span>=</span><span> {</span></span>
+<span><span>    </span><span>"type"</span><span>: </span><span>"function"</span><span>,</span></span>
+<span><span>    </span><span>"name"</span><span>: </span><span>"get_user_account_info"</span><span>,</span></span>
+<span><span>    </span><span>"description"</span><span>: </span><span>"Tool to get user account information"</span><span>,</span></span>
+<span><span>    </span><span>"parameters"</span><span>: {</span></span>
+<span><span>        </span><span>"strict"</span><span>: </span><span>True</span><span>,</span></span>
+<span><span>        </span><span>"type"</span><span>: </span><span>"object"</span><span>,</span></span>
+<span><span>        </span><span>"properties"</span><span>: {</span></span>
+<span><span>            </span><span>"phone_number"</span><span>: {</span></span>
+<span><span>                </span><span>"type"</span><span>: </span><span>"string"</span><span>,</span></span>
+<span><span>                </span><span>"description"</span><span>: </span><span>"Formatted as '(xxx) xxx-xxxx'"</span><span>,</span></span>
+<span><span>            },</span></span>
+<span><span>        },</span></span>
+<span><span>        </span><span>"required"</span><span>: [</span><span>"phone_number"</span><span>],</span></span>
+<span><span>        </span><span>"additionalProperties"</span><span>: </span><span>False</span><span>,</span></span>
+<span><span>    },</span></span>
+<span><span>}</span></span>
+<span></span>
+<span><span>response </span><span>=</span><span> client.responses.create(</span></span>
+<span><span>    </span><span>instructions</span><span>=</span><span>SYS_PROMPT_CUSTOMER_SERVICE</span><span>,</span></span>
+<span><span>    </span><span>model</span><span>=</span><span>"gpt-4.1-2025-04-14"</span><span>,</span></span>
+<span><span>    </span><span>tools</span><span>=</span><span>[get_policy_doc, get_user_acct],</span></span>
+<span><span>    </span><span>input</span><span>=</span><span>"How much will it cost for international service? I'm traveling to France."</span><span>,</span></span>
+<span><span>    </span><span># input="Why was my last bill so high?"</span></span>
+<span><span>)</span></span>
+<span></span>
+<span><span>response.to_dict()[</span><span>"output"</span><span>]</span></span></code></pre></div><div><pre>[{'id': 'msg_67fe92d431548191b7ca6cd604b4784b06efc5beb16b3c5e',
+<!-- -->  'content': [{'annotations': [],
+<!-- -->    'text': "Hi, you've reached NewTelco, how can I help you? 🌍✈️\n\nYou'd like to know the cost of international service while traveling to France. 🇫🇷 Let me check the latest details for you—one moment, please. 🕑",
+<!-- -->    'type': 'output_text'}],
+<!-- -->  'role': 'assistant',
+<!-- -->  'status': 'completed',
+<!-- -->  'type': 'message'},
+<!-- --> {'arguments': '{"topic":"international service cost France"}',
+<!-- -->  'call_id': 'call_cF63DLeyhNhwfdyME3ZHd0yo',
+<!-- -->  'name': 'lookup_policy_document',
+<!-- -->  'type': 'function_call',
+<!-- -->  'id': 'fc_67fe92d5d6888191b6cd7cf57f707e4606efc5beb16b3c5e',
+<!-- -->  'status': 'completed'}]</pre></div></div><article><h2 id="5-general-advice"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#5-general-advice">5. General Advice</a></h2>
+<h2 id="prompt-structure"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#prompt-structure">Prompt Structure</a></h2>
+<p>For reference, here is a good starting point for structuring your prompts.</p>
+<div data-rehype-pretty-code-fragment=""><pre><code data-language="" data-theme="default"><span data-line=""><span># Role and Objective</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span># Instructions</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span>## Sub-categories for more detailed instructions</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span># Reasoning Steps</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span># Output Format</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span># Examples</span></span>
+<span data-line=""><span>## Example 1</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span># Context</span></span>
+<span data-line=""><span></span></span>
+<span data-line=""><span># Final instructions and prompt to think step by step</span></span></code></pre></div>
+<p>Add or remove sections to suit your needs, and experiment to determine what’s optimal for your usage.</p>
+<h2 id="delimiters"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#delimiters">Delimiters</a></h2>
+<p>Here are some general guidelines for selecting the best delimiters for your prompt. Please refer to the Long Context section for special considerations for that context type.</p>
+<ol>
+<li>Markdown: We recommend starting here, and using markdown titles for major sections and subsections (including deeper hierarchy, to H4+). Use inline backticks or backtick blocks to precisely wrap code, and standard numbered or bulleted lists as needed.</li>
+<li>XML: These also perform well, and we have improved adherence to information in XML with this model. XML is convenient to precisely wrap a section including start and end, add metadata to the tags for additional context, and enable nesting. Here is an example of using XML tags to nest examples in an example section, with inputs and outputs for each:</li>
+</ol>
+<div data-rehype-pretty-code-fragment=""><pre><code data-language="" data-theme="default"><span data-line=""><span>&lt;examples&gt;</span></span>
+<span data-line=""><span>&lt;example1 type="Abbreviate"&gt;</span></span>
+<span data-line=""><span>&lt;input&gt;San Francisco&lt;/input&gt;</span></span>
+<span data-line=""><span>&lt;output&gt;- SF&lt;/output&gt;</span></span>
+<span data-line=""><span>&lt;/example1&gt;</span></span>
+<span data-line=""><span>&lt;/examples&gt;</span></span></code></pre></div>
+<ol start="3">
+<li>JSON is highly structured and well understood by the model particularly in coding contexts. However it can be more verbose, and require character escaping that can add overhead.</li>
+</ol>
+<p>Guidance specifically for adding a large number of documents or files to input context:</p>
+<ul>
+<li>XML performed well in our long context testing.
+<ul>
+<li>Example: <code>&lt;doc id='1' title='The Fox'&gt;The quick brown fox jumps over the lazy dog&lt;/doc&gt;</code></li>
+</ul>
+</li>
+<li>This format, proposed by Lee et al. (<a href="https://arxiv.org/pdf/2406.13121">ref</a>), also performed well in our long context testing.
+<ul>
+<li>Example: <code>ID: 1 | TITLE: The Fox | CONTENT: The quick brown fox jumps over the lazy dog</code></li>
+</ul>
+</li>
+<li>JSON performed particularly poorly.
+<ul>
+<li>Example: <code>[{'id': 1, 'title': 'The Fox', 'content': 'The quick brown fox jumped over the lazy dog'}]</code></li>
+</ul>
+</li>
+</ul>
+<p>The model is trained to robustly understand structure in a variety of formats. Generally, use your judgement and think about what will provide clear information and “stand out” to the model. For example, if you’re retrieving documents that contain lots of XML, an XML-based delimiter will likely be less effective.</p>
+<h2 id="caveats"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#caveats">Caveats</a></h2>
+<ul>
+<li>In some isolated cases we have observed the model being resistant to producing very long, repetitive outputs, for example, analyzing hundreds of items one by one. If this is necessary for your use case, instruct the model strongly to output this information in full, and consider breaking down the problem or using a more concise approach.</li>
+<li>We have seen some rare instances of parallel tool calls being incorrect. We advise testing this, and considering setting the <a href="https://platform.openai.com/docs/api-reference/responses/create#responses-create-parallel_tool_calls">parallel_tool_calls</a> param to false if you’re seeing issues.</li>
+</ul></article><article><h2 id="appendix-generating-and-applying-file-diffs"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#appendix-generating-and-applying-file-diffs">Appendix: Generating and Applying File Diffs</a></h2>
+<p>Developers have provided us feedback that accurate and well-formed diff generation is a critical capability to power coding-related tasks. To this end, the GPT-4.1 family features substantially improved diff capabilities relative to previous GPT models. Moreover, while GPT-4.1 has strong performance generating diffs of any format given clear instructions and examples, we open-source here one recommended diff format, on which the model has been extensively trained. We hope that in particular for developers just starting out, that this will take much of the guesswork out of creating diffs yourself.</p>
+<h2 id="apply-patch"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#apply-patch">Apply Patch</a></h2>
+<p>See the example below for a prompt that applies our recommended tool call correctly.</p></article><div><pre tabindex="0"><code><span><span>APPLY_PATCH_TOOL_DESC</span><span> </span><span>=</span><span> </span><span>"""This is a custom utility that makes it more convenient to add, remove, move, or edit code files. `apply_patch` effectively allows you to execute a diff/patch against a file, but the format of the diff specification is unique to this task, so pay careful attention to these instructions. To use the `apply_patch` command, you should pass a message of the following structure as "input":</span></span>
+<span></span>
+<span><span>%%</span><span>bash</span></span>
+<span><span>apply_patch &lt;&lt;"EOF"</span></span>
+<span><span>*** Begin Patch</span></span>
+<span><span>[YOUR_PATCH]</span></span>
+<span><span>*** End Patch</span></span>
+<span><span>EOF</span></span>
+<span></span>
+<span><span>Where [YOUR_PATCH] is the actual content of your patch, specified in the following V4A diff format.</span></span>
+<span></span>
+<span><span>*** [ACTION] File: [path/to/file] -&gt; ACTION can be one of Add, Update, or Delete.</span></span>
+<span><span>For each snippet of code that needs to be changed, repeat the following:</span></span>
+<span><span>[context_before] -&gt; See below for further instructions on context.</span></span>
+<span><span>- [old_code] -&gt; Precede the old code with a minus sign.</span></span>
+<span><span>+ [new_code] -&gt; Precede the new, replacement code with a plus sign.</span></span>
+<span><span>[context_after] -&gt; See below for further instructions on context.</span></span>
+<span></span>
+<span><span>For instructions on [context_before] and [context_after]:</span></span>
+<span><span>- By default, show 3 lines of code immediately above and 3 lines immediately below each change. If a change is within 3 lines of a previous change, do NOT duplicate the first change’s [context_after] lines in the second change’s [context_before] lines.</span></span>
+<span><span>- If 3 lines of context is insufficient to uniquely identify the snippet of code within the file, use the @@ operator to indicate the class or function to which the snippet belongs. For instance, we might have:</span></span>
+<span><span>@@ class BaseClass</span></span>
+<span><span>[3 lines of pre-context]</span></span>
+<span><span>- [old_code]</span></span>
+<span><span>+ [new_code]</span></span>
+<span><span>[3 lines of post-context]</span></span>
+<span></span>
+<span><span>- If a code block is repeated so many times in a class or function such that even a single @@ statement and 3 lines of context cannot uniquely identify the snippet of code, you can use multiple `@@` statements to jump to the right context. For instance:</span></span>
+<span></span>
+<span><span>@@ class BaseClass</span></span>
+<span><span>@@ 	def method():</span></span>
+<span><span>[3 lines of pre-context]</span></span>
+<span><span>- [old_code]</span></span>
+<span><span>+ [new_code]</span></span>
+<span><span>[3 lines of post-context]</span></span>
+<span></span>
+<span><span>Note, then, that we do not use line numbers in this diff format, as the context is enough to uniquely identify code. An example of a message that you might pass as "input" to this function, in order to apply a patch, is shown below.</span></span>
+<span></span>
+<span><span>%%</span><span>bash</span></span>
+<span><span>apply_patch &lt;&lt;"EOF"</span></span>
+<span><span>*** Begin Patch</span></span>
+<span><span>*** Update File: pygorithm/searching/binary_search.py</span></span>
+<span><span>@@ class BaseClass</span></span>
+<span><span>@@     def search():</span></span>
+<span><span>-          pass</span></span>
+<span><span>+          raise NotImplementedError()</span></span>
+<span></span>
+<span><span>@@ class Subclass</span></span>
+<span><span>@@     def search():</span></span>
+<span><span>-          pass</span></span>
+<span><span>+          raise NotImplementedError()</span></span>
+<span></span>
+<span><span>*** End Patch</span></span>
+<span><span>EOF</span></span>
+<span><span>"""</span></span>
+<span></span>
+<span><span>APPLY_PATCH_TOOL</span><span> </span><span>=</span><span> {</span></span>
+<span><span>    </span><span>"name"</span><span>: </span><span>"apply_patch"</span><span>,</span></span>
+<span><span>    </span><span>"description"</span><span>: </span><span>APPLY_PATCH_TOOL_DESC</span><span>,</span></span>
+<span><span>    </span><span>"parameters"</span><span>: {</span></span>
+<span><span>        </span><span>"type"</span><span>: </span><span>"object"</span><span>,</span></span>
+<span><span>        </span><span>"properties"</span><span>: {</span></span>
+<span><span>            </span><span>"input"</span><span>: {</span></span>
+<span><span>                </span><span>"type"</span><span>: </span><span>"string"</span><span>,</span></span>
+<span><span>                </span><span>"description"</span><span>: </span><span>" The apply_patch command that you wish to execute."</span><span>,</span></span>
+<span><span>            }</span></span>
+<span><span>        },</span></span>
+<span><span>        </span><span>"required"</span><span>: [</span><span>"input"</span><span>],</span></span>
+<span><span>    },</span></span>
+<span><span>}</span></span></code></pre></div><article><h2 id="reference-implementation-apply_patchpy"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#reference-implementation-apply_patchpy">Reference Implementation: apply_patch.py</a></h2>
+<p>Here’s a reference implementation of the apply_patch tool that we used as part of model training. You’ll need to make this an executable and available as `apply_patch` from the shell where the model will execute commands:</p></article><div><pre tabindex="0"><code><span><span>#!/usr/bin/env python3</span></span>
+<span></span>
+<span><span>"""</span></span>
+<span><span>A self-contained **pure-Python 3.9+** utility for applying human-readable</span></span>
+<span><span>“pseudo-diff” patch files to a collection of text files.</span></span>
+<span><span>"""</span></span>
+<span></span>
+<span><span>from</span><span> </span><span>__future__</span><span> </span><span>import</span><span> annotations</span></span>
+<span></span>
+<span><span>import</span><span> pathlib</span></span>
+<span><span>from</span><span> dataclasses </span><span>import</span><span> dataclass, field</span></span>
+<span><span>from</span><span> enum </span><span>import</span><span> Enum</span></span>
+<span><span>from</span><span> typing </span><span>import</span><span> (</span></span>
+<span><span>    Callable,</span></span>
+<span><span>    Dict,</span></span>
+<span><span>    List,</span></span>
+<span><span>    Optional,</span></span>
+<span><span>    Tuple,</span></span>
+<span><span>    Union,</span></span>
+<span><span>)</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  Domain objects</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>class</span><span> </span><span>ActionType</span><span>(</span><span>str</span><span>, </span><span>Enum</span><span>):</span></span>
+<span><span>    </span><span>ADD</span><span> </span><span>=</span><span> </span><span>"add"</span></span>
+<span><span>    </span><span>DELETE</span><span> </span><span>=</span><span> </span><span>"delete"</span></span>
+<span><span>    </span><span>UPDATE</span><span> </span><span>=</span><span> </span><span>"update"</span></span>
+<span></span>
+<span></span>
+<span><span>@dataclass</span></span>
+<span><span>class</span><span> </span><span>FileChange</span><span>:</span></span>
+<span><span>    </span><span>type</span><span>: ActionType</span></span>
+<span><span>    old_content: Optional[</span><span>str</span><span>] </span><span>=</span><span> </span><span>None</span></span>
+<span><span>    new_content: Optional[</span><span>str</span><span>] </span><span>=</span><span> </span><span>None</span></span>
+<span><span>    move_path: Optional[</span><span>str</span><span>] </span><span>=</span><span> </span><span>None</span></span>
+<span></span>
+<span></span>
+<span><span>@dataclass</span></span>
+<span><span>class</span><span> </span><span>Commit</span><span>:</span></span>
+<span><span>    changes: Dict[</span><span>str</span><span>, FileChange] </span><span>=</span><span> field(</span><span>default_factory</span><span>=</span><span>dict</span><span>)</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  Exceptions</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>class</span><span> </span><span>DiffError</span><span>(</span><span>ValueError</span><span>):</span></span>
+<span><span>    </span><span>"""Any problem detected while parsing or applying a patch."""</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  Helper dataclasses used while parsing patches</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>@dataclass</span></span>
+<span><span>class</span><span> </span><span>Chunk</span><span>:</span></span>
+<span><span>    orig_index: </span><span>int</span><span> </span><span>=</span><span> </span><span>-</span><span>1</span></span>
+<span><span>    del_lines: List[</span><span>str</span><span>] </span><span>=</span><span> field(</span><span>default_factory</span><span>=</span><span>list</span><span>)</span></span>
+<span><span>    ins_lines: List[</span><span>str</span><span>] </span><span>=</span><span> field(</span><span>default_factory</span><span>=</span><span>list</span><span>)</span></span>
+<span></span>
+<span></span>
+<span><span>@dataclass</span></span>
+<span><span>class</span><span> </span><span>PatchAction</span><span>:</span></span>
+<span><span>    </span><span>type</span><span>: ActionType</span></span>
+<span><span>    new_file: Optional[</span><span>str</span><span>] </span><span>=</span><span> </span><span>None</span></span>
+<span><span>    chunks: List[Chunk] </span><span>=</span><span> field(</span><span>default_factory</span><span>=</span><span>list</span><span>)</span></span>
+<span><span>    move_path: Optional[</span><span>str</span><span>] </span><span>=</span><span> </span><span>None</span></span>
+<span></span>
+<span></span>
+<span><span>@dataclass</span></span>
+<span><span>class</span><span> </span><span>Patch</span><span>:</span></span>
+<span><span>    actions: Dict[</span><span>str</span><span>, PatchAction] </span><span>=</span><span> field(</span><span>default_factory</span><span>=</span><span>dict</span><span>)</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  Patch text parser</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>@dataclass</span></span>
+<span><span>class</span><span> </span><span>Parser</span><span>:</span></span>
+<span><span>    current_files: Dict[</span><span>str</span><span>, </span><span>str</span><span>]</span></span>
+<span><span>    lines: List[</span><span>str</span><span>]</span></span>
+<span><span>    index: </span><span>int</span><span> </span><span>=</span><span> </span><span>0</span></span>
+<span><span>    patch: Patch </span><span>=</span><span> field(</span><span>default_factory</span><span>=</span><span>Patch)</span></span>
+<span><span>    fuzz: </span><span>int</span><span> </span><span>=</span><span> </span><span>0</span></span>
+<span></span>
+<span><span>    </span><span># ------------- low-level helpers -------------------------------------- #</span></span>
+<span><span>    </span><span>def</span><span> </span><span>_cur_line</span><span>(self) -&gt; </span><span>str</span><span>:</span></span>
+<span><span>        </span><span>if</span><span> </span><span>self</span><span>.index </span><span>&gt;=</span><span> </span><span>len</span><span>(</span><span>self</span><span>.lines):</span></span>
+<span><span>            </span><span>raise</span><span> DiffError(</span><span>"Unexpected end of input while parsing patch"</span><span>)</span></span>
+<span><span>        </span><span>return</span><span> </span><span>self</span><span>.lines[</span><span>self</span><span>.index]</span></span>
+<span></span>
+<span><span>    </span><span>@</span><span>staticmethod</span></span>
+<span><span>    </span><span>def</span><span> </span><span>_norm</span><span>(line: </span><span>str</span><span>) -&gt; </span><span>str</span><span>:</span></span>
+<span><span>        </span><span>"""Strip CR so comparisons work for both LF and CRLF input."""</span></span>
+<span><span>        </span><span>return</span><span> line.rstrip(</span><span>"</span><span>\r</span><span>"</span><span>)</span></span>
+<span></span>
+<span><span>    </span><span># ------------- scanning convenience ----------------------------------- #</span></span>
+<span><span>    </span><span>def</span><span> </span><span>is_done</span><span>(self, prefixes: Optional[Tuple[</span><span>str</span><span>, </span><span>...</span><span>]] </span><span>=</span><span> </span><span>None</span><span>) -&gt; </span><span>bool</span><span>:</span></span>
+<span><span>        </span><span>if</span><span> </span><span>self</span><span>.index </span><span>&gt;=</span><span> </span><span>len</span><span>(</span><span>self</span><span>.lines):</span></span>
+<span><span>            </span><span>return</span><span> </span><span>True</span></span>
+<span><span>        </span><span>if</span><span> (</span></span>
+<span><span>            prefixes</span></span>
+<span><span>            </span><span>and</span><span> </span><span>len</span><span>(prefixes) </span><span>&gt;</span><span> </span><span>0</span></span>
+<span><span>            </span><span>and</span><span> </span><span>self</span><span>._norm(</span><span>self</span><span>._cur_line()).startswith(prefixes)</span></span>
+<span><span>        ):</span></span>
+<span><span>            </span><span>return</span><span> </span><span>True</span></span>
+<span><span>        </span><span>return</span><span> </span><span>False</span></span>
+<span></span>
+<span><span>    </span><span>def</span><span> </span><span>startswith</span><span>(self, prefix: Union[</span><span>str</span><span>, Tuple[</span><span>str</span><span>, </span><span>...</span><span>]]) -&gt; </span><span>bool</span><span>:</span></span>
+<span><span>        </span><span>return</span><span> </span><span>self</span><span>._norm(</span><span>self</span><span>._cur_line()).startswith(prefix)</span></span>
+<span></span>
+<span><span>    </span><span>def</span><span> </span><span>read_str</span><span>(self, prefix: </span><span>str</span><span>) -&gt; </span><span>str</span><span>:</span></span>
+<span><span>        </span><span>"""</span></span>
+<span><span>        Consume the current line if it starts with *prefix* and return the text</span></span>
+<span><span>        **after** the prefix.  Raises if prefix is empty.</span></span>
+<span><span>        """</span></span>
+<span><span>        </span><span>if</span><span> prefix </span><span>==</span><span> </span><span>""</span><span>:</span></span>
+<span><span>            </span><span>raise</span><span> </span><span>ValueError</span><span>(</span><span>"read_str() requires a non-empty prefix"</span><span>)</span></span>
+<span><span>        </span><span>if</span><span> </span><span>self</span><span>._norm(</span><span>self</span><span>._cur_line()).startswith(prefix):</span></span>
+<span><span>            text </span><span>=</span><span> </span><span>self</span><span>._cur_line()[</span><span>len</span><span>(prefix) :]</span></span>
+<span><span>            </span><span>self</span><span>.index </span><span>+=</span><span> </span><span>1</span></span>
+<span><span>            </span><span>return</span><span> text</span></span>
+<span><span>        </span><span>return</span><span> </span><span>""</span></span>
+<span></span>
+<span><span>    </span><span>def</span><span> </span><span>read_line</span><span>(self) -&gt; </span><span>str</span><span>:</span></span>
+<span><span>        </span><span>"""Return the current raw line and advance."""</span></span>
+<span><span>        line </span><span>=</span><span> </span><span>self</span><span>._cur_line()</span></span>
+<span><span>        </span><span>self</span><span>.index </span><span>+=</span><span> </span><span>1</span></span>
+<span><span>        </span><span>return</span><span> line</span></span>
+<span></span>
+<span><span>    </span><span># ------------- public entry point -------------------------------------- #</span></span>
+<span><span>    </span><span>def</span><span> </span><span>parse</span><span>(self) -&gt; </span><span>None</span><span>:</span></span>
+<span><span>        </span><span>while</span><span> </span><span>not</span><span> </span><span>self</span><span>.is_done((</span><span>"*** End Patch"</span><span>,)):</span></span>
+<span><span>            </span><span># ---------- UPDATE ---------- #</span></span>
+<span><span>            path </span><span>=</span><span> </span><span>self</span><span>.read_str(</span><span>"*** Update File: "</span><span>)</span></span>
+<span><span>            </span><span>if</span><span> path:</span></span>
+<span><span>                </span><span>if</span><span> path </span><span>in</span><span> </span><span>self</span><span>.patch.actions:</span></span>
+<span><span>                    </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Duplicate update for file: </span><span>{</span><span>path</span><span>}</span><span>"</span><span>)</span></span>
+<span><span>                move_to </span><span>=</span><span> </span><span>self</span><span>.read_str(</span><span>"*** Move to: "</span><span>)</span></span>
+<span><span>                </span><span>if</span><span> path </span><span>not</span><span> </span><span>in</span><span> </span><span>self</span><span>.current_files:</span></span>
+<span><span>                    </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Update File Error - missing file: </span><span>{</span><span>path</span><span>}</span><span>"</span><span>)</span></span>
+<span><span>                text </span><span>=</span><span> </span><span>self</span><span>.current_files[path]</span></span>
+<span><span>                action </span><span>=</span><span> </span><span>self</span><span>._parse_update_file(text)</span></span>
+<span><span>                action.move_path </span><span>=</span><span> move_to </span><span>or</span><span> </span><span>None</span></span>
+<span><span>                </span><span>self</span><span>.patch.actions[path] </span><span>=</span><span> action</span></span>
+<span><span>                </span><span>continue</span></span>
+<span></span>
+<span><span>            </span><span># ---------- DELETE ---------- #</span></span>
+<span><span>            path </span><span>=</span><span> </span><span>self</span><span>.read_str(</span><span>"*** Delete File: "</span><span>)</span></span>
+<span><span>            </span><span>if</span><span> path:</span></span>
+<span><span>                </span><span>if</span><span> path </span><span>in</span><span> </span><span>self</span><span>.patch.actions:</span></span>
+<span><span>                    </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Duplicate delete for file: </span><span>{</span><span>path</span><span>}</span><span>"</span><span>)</span></span>
+<span><span>                </span><span>if</span><span> path </span><span>not</span><span> </span><span>in</span><span> </span><span>self</span><span>.current_files:</span></span>
+<span><span>                    </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Delete File Error - missing file: </span><span>{</span><span>path</span><span>}</span><span>"</span><span>)</span></span>
+<span><span>                </span><span>self</span><span>.patch.actions[path] </span><span>=</span><span> PatchAction(</span><span>type</span><span>=</span><span>ActionType.</span><span>DELETE</span><span>)</span></span>
+<span><span>                </span><span>continue</span></span>
+<span></span>
+<span><span>            </span><span># ---------- ADD ---------- #</span></span>
+<span><span>            path </span><span>=</span><span> </span><span>self</span><span>.read_str(</span><span>"*** Add File: "</span><span>)</span></span>
+<span><span>            </span><span>if</span><span> path:</span></span>
+<span><span>                </span><span>if</span><span> path </span><span>in</span><span> </span><span>self</span><span>.patch.actions:</span></span>
+<span><span>                    </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Duplicate add for file: </span><span>{</span><span>path</span><span>}</span><span>"</span><span>)</span></span>
+<span><span>                </span><span>if</span><span> path </span><span>in</span><span> </span><span>self</span><span>.current_files:</span></span>
+<span><span>                    </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Add File Error - file already exists: </span><span>{</span><span>path</span><span>}</span><span>"</span><span>)</span></span>
+<span><span>                </span><span>self</span><span>.patch.actions[path] </span><span>=</span><span> </span><span>self</span><span>._parse_add_file()</span></span>
+<span><span>                </span><span>continue</span></span>
+<span></span>
+<span><span>            </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Unknown line while parsing: </span><span>{self</span><span>._cur_line()</span><span>}</span><span>"</span><span>)</span></span>
+<span></span>
+<span><span>        </span><span>if</span><span> </span><span>not</span><span> </span><span>self</span><span>.startswith(</span><span>"*** End Patch"</span><span>):</span></span>
+<span><span>            </span><span>raise</span><span> DiffError(</span><span>"Missing *** End Patch sentinel"</span><span>)</span></span>
+<span><span>        </span><span>self</span><span>.index </span><span>+=</span><span> </span><span>1</span><span>  </span><span># consume sentinel</span></span>
+<span></span>
+<span><span>    </span><span># ------------- section parsers ---------------------------------------- #</span></span>
+<span><span>    </span><span>def</span><span> </span><span>_parse_update_file</span><span>(self, text: </span><span>str</span><span>) -&gt; PatchAction:</span></span>
+<span><span>        action </span><span>=</span><span> PatchAction(</span><span>type</span><span>=</span><span>ActionType.</span><span>UPDATE</span><span>)</span></span>
+<span><span>        lines </span><span>=</span><span> text.split(</span><span>"</span><span>\n</span><span>"</span><span>)</span></span>
+<span><span>        index </span><span>=</span><span> </span><span>0</span></span>
+<span><span>        </span><span>while</span><span> </span><span>not</span><span> </span><span>self</span><span>.is_done(</span></span>
+<span><span>            (</span></span>
+<span><span>                </span><span>"*** End Patch"</span><span>,</span></span>
+<span><span>                </span><span>"*** Update File:"</span><span>,</span></span>
+<span><span>                </span><span>"*** Delete File:"</span><span>,</span></span>
+<span><span>                </span><span>"*** Add File:"</span><span>,</span></span>
+<span><span>                </span><span>"*** End of File"</span><span>,</span></span>
+<span><span>            )</span></span>
+<span><span>        ):</span></span>
+<span><span>            def_str </span><span>=</span><span> </span><span>self</span><span>.read_str(</span><span>"@@ "</span><span>)</span></span>
+<span><span>            section_str </span><span>=</span><span> </span><span>""</span></span>
+<span><span>            </span><span>if</span><span> </span><span>not</span><span> def_str </span><span>and</span><span> </span><span>self</span><span>._norm(</span><span>self</span><span>._cur_line()) </span><span>==</span><span> </span><span>"@@"</span><span>:</span></span>
+<span><span>                section_str </span><span>=</span><span> </span><span>self</span><span>.read_line()</span></span>
+<span></span>
+<span><span>            </span><span>if</span><span> </span><span>not</span><span> (def_str </span><span>or</span><span> section_str </span><span>or</span><span> index </span><span>==</span><span> </span><span>0</span><span>):</span></span>
+<span><span>                </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Invalid line in update section:</span><span>\n{self</span><span>._cur_line()</span><span>}</span><span>"</span><span>)</span></span>
+<span></span>
+<span><span>            </span><span>if</span><span> def_str.strip():</span></span>
+<span><span>                found </span><span>=</span><span> </span><span>False</span></span>
+<span><span>                </span><span>if</span><span> def_str </span><span>not</span><span> </span><span>in</span><span> lines[:index]:</span></span>
+<span><span>                    </span><span>for</span><span> i, s </span><span>in</span><span> </span><span>enumerate</span><span>(lines[index:], index):</span></span>
+<span><span>                        </span><span>if</span><span> s </span><span>==</span><span> def_str:</span></span>
+<span><span>                            index </span><span>=</span><span> i </span><span>+</span><span> </span><span>1</span></span>
+<span><span>                            found </span><span>=</span><span> </span><span>True</span></span>
+<span><span>                            </span><span>break</span></span>
+<span><span>                </span><span>if</span><span> </span><span>not</span><span> found </span><span>and</span><span> def_str.strip() </span><span>not</span><span> </span><span>in</span><span> [</span></span>
+<span><span>                    s.strip() </span><span>for</span><span> s </span><span>in</span><span> lines[:index]</span></span>
+<span><span>                ]:</span></span>
+<span><span>                    </span><span>for</span><span> i, s </span><span>in</span><span> </span><span>enumerate</span><span>(lines[index:], index):</span></span>
+<span><span>                        </span><span>if</span><span> s.strip() </span><span>==</span><span> def_str.strip():</span></span>
+<span><span>                            index </span><span>=</span><span> i </span><span>+</span><span> </span><span>1</span></span>
+<span><span>                            </span><span>self</span><span>.fuzz </span><span>+=</span><span> </span><span>1</span></span>
+<span><span>                            found </span><span>=</span><span> </span><span>True</span></span>
+<span><span>                            </span><span>break</span></span>
+<span></span>
+<span><span>            next_ctx, chunks, end_idx, eof </span><span>=</span><span> peek_next_section(</span><span>self</span><span>.lines, </span><span>self</span><span>.index)</span></span>
+<span><span>            new_index, fuzz </span><span>=</span><span> find_context(lines, next_ctx, index, eof)</span></span>
+<span><span>            </span><span>if</span><span> new_index </span><span>==</span><span> </span><span>-</span><span>1</span><span>:</span></span>
+<span><span>                ctx_txt </span><span>=</span><span> </span><span>"</span><span>\n</span><span>"</span><span>.join(next_ctx)</span></span>
+<span><span>                </span><span>raise</span><span> DiffError(</span></span>
+<span><span>                    </span><span>f</span><span>"Invalid </span><span>{</span><span>'EOF '</span><span> </span><span>if</span><span> eof </span><span>else</span><span> </span><span>''</span><span>}</span><span>context at </span><span>{</span><span>index</span><span>}</span><span>:</span><span>\n{</span><span>ctx_txt</span><span>}</span><span>"</span></span>
+<span><span>                )</span></span>
+<span><span>            </span><span>self</span><span>.fuzz </span><span>+=</span><span> fuzz</span></span>
+<span><span>            </span><span>for</span><span> ch </span><span>in</span><span> chunks:</span></span>
+<span><span>                ch.orig_index </span><span>+=</span><span> new_index</span></span>
+<span><span>                action.chunks.append(ch)</span></span>
+<span><span>            index </span><span>=</span><span> new_index </span><span>+</span><span> </span><span>len</span><span>(next_ctx)</span></span>
+<span><span>            </span><span>self</span><span>.index </span><span>=</span><span> end_idx</span></span>
+<span><span>        </span><span>return</span><span> action</span></span>
+<span></span>
+<span><span>    </span><span>def</span><span> </span><span>_parse_add_file</span><span>(self) -&gt; PatchAction:</span></span>
+<span><span>        lines: List[</span><span>str</span><span>] </span><span>=</span><span> []</span></span>
+<span><span>        </span><span>while</span><span> </span><span>not</span><span> </span><span>self</span><span>.is_done(</span></span>
+<span><span>            (</span><span>"*** End Patch"</span><span>, </span><span>"*** Update File:"</span><span>, </span><span>"*** Delete File:"</span><span>, </span><span>"*** Add File:"</span><span>)</span></span>
+<span><span>        ):</span></span>
+<span><span>            s </span><span>=</span><span> </span><span>self</span><span>.read_line()</span></span>
+<span><span>            </span><span>if</span><span> </span><span>not</span><span> s.startswith(</span><span>"+"</span><span>):</span></span>
+<span><span>                </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Invalid Add File line (missing '+'): </span><span>{</span><span>s</span><span>}</span><span>"</span><span>)</span></span>
+<span><span>            lines.append(s[</span><span>1</span><span>:])  </span><span># strip leading '+'</span></span>
+<span><span>        </span><span>return</span><span> PatchAction(</span><span>type</span><span>=</span><span>ActionType.</span><span>ADD</span><span>, </span><span>new_file</span><span>=</span><span>"</span><span>\n</span><span>"</span><span>.join(lines))</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  Helper functions</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>def</span><span> </span><span>find_context_core</span><span>(</span></span>
+<span><span>    lines: List[</span><span>str</span><span>], context: List[</span><span>str</span><span>], start: </span><span>int</span></span>
+<span><span>) -&gt; Tuple[</span><span>int</span><span>, </span><span>int</span><span>]:</span></span>
+<span><span>    </span><span>if</span><span> </span><span>not</span><span> context:</span></span>
+<span><span>        </span><span>return</span><span> start, </span><span>0</span></span>
+<span></span>
+<span><span>    </span><span>for</span><span> i </span><span>in</span><span> </span><span>range</span><span>(start, </span><span>len</span><span>(lines)):</span></span>
+<span><span>        </span><span>if</span><span> lines[i : i </span><span>+</span><span> </span><span>len</span><span>(context)] </span><span>==</span><span> context:</span></span>
+<span><span>            </span><span>return</span><span> i, </span><span>0</span></span>
+<span><span>    </span><span>for</span><span> i </span><span>in</span><span> </span><span>range</span><span>(start, </span><span>len</span><span>(lines)):</span></span>
+<span><span>        </span><span>if</span><span> [s.rstrip() </span><span>for</span><span> s </span><span>in</span><span> lines[i : i </span><span>+</span><span> </span><span>len</span><span>(context)]] </span><span>==</span><span> [</span></span>
+<span><span>            s.rstrip() </span><span>for</span><span> s </span><span>in</span><span> context</span></span>
+<span><span>        ]:</span></span>
+<span><span>            </span><span>return</span><span> i, </span><span>1</span></span>
+<span><span>    </span><span>for</span><span> i </span><span>in</span><span> </span><span>range</span><span>(start, </span><span>len</span><span>(lines)):</span></span>
+<span><span>        </span><span>if</span><span> [s.strip() </span><span>for</span><span> s </span><span>in</span><span> lines[i : i </span><span>+</span><span> </span><span>len</span><span>(context)]] </span><span>==</span><span> [</span></span>
+<span><span>            s.strip() </span><span>for</span><span> s </span><span>in</span><span> context</span></span>
+<span><span>        ]:</span></span>
+<span><span>            </span><span>return</span><span> i, </span><span>100</span></span>
+<span><span>    </span><span>return</span><span> </span><span>-</span><span>1</span><span>, </span><span>0</span></span>
+<span></span>
+<span></span>
+<span><span>def</span><span> </span><span>find_context</span><span>(</span></span>
+<span><span>    lines: List[</span><span>str</span><span>], context: List[</span><span>str</span><span>], start: </span><span>int</span><span>, eof: </span><span>bool</span></span>
+<span><span>) -&gt; Tuple[</span><span>int</span><span>, </span><span>int</span><span>]:</span></span>
+<span><span>    </span><span>if</span><span> eof:</span></span>
+<span><span>        new_index, fuzz </span><span>=</span><span> find_context_core(lines, context, </span><span>len</span><span>(lines) </span><span>-</span><span> </span><span>len</span><span>(context))</span></span>
+<span><span>        </span><span>if</span><span> new_index </span><span>!=</span><span> </span><span>-</span><span>1</span><span>:</span></span>
+<span><span>            </span><span>return</span><span> new_index, fuzz</span></span>
+<span><span>        new_index, fuzz </span><span>=</span><span> find_context_core(lines, context, start)</span></span>
+<span><span>        </span><span>return</span><span> new_index, fuzz </span><span>+</span><span> </span><span>10_000</span></span>
+<span><span>    </span><span>return</span><span> find_context_core(lines, context, start)</span></span>
+<span></span>
+<span></span>
+<span><span>def</span><span> </span><span>peek_next_section</span><span>(</span></span>
+<span><span>    lines: List[</span><span>str</span><span>], index: </span><span>int</span></span>
+<span><span>) -&gt; Tuple[List[</span><span>str</span><span>], List[Chunk], </span><span>int</span><span>, </span><span>bool</span><span>]:</span></span>
+<span><span>    old: List[</span><span>str</span><span>] </span><span>=</span><span> []</span></span>
+<span><span>    del_lines: List[</span><span>str</span><span>] </span><span>=</span><span> []</span></span>
+<span><span>    ins_lines: List[</span><span>str</span><span>] </span><span>=</span><span> []</span></span>
+<span><span>    chunks: List[Chunk] </span><span>=</span><span> []</span></span>
+<span><span>    mode </span><span>=</span><span> </span><span>"keep"</span></span>
+<span><span>    orig_index </span><span>=</span><span> index</span></span>
+<span></span>
+<span><span>    </span><span>while</span><span> index </span><span>&lt;</span><span> </span><span>len</span><span>(lines):</span></span>
+<span><span>        s </span><span>=</span><span> lines[index]</span></span>
+<span><span>        </span><span>if</span><span> s.startswith(</span></span>
+<span><span>            (</span></span>
+<span><span>                </span><span>"@@"</span><span>,</span></span>
+<span><span>                </span><span>"*** End Patch"</span><span>,</span></span>
+<span><span>                </span><span>"*** Update File:"</span><span>,</span></span>
+<span><span>                </span><span>"*** Delete File:"</span><span>,</span></span>
+<span><span>                </span><span>"*** Add File:"</span><span>,</span></span>
+<span><span>                </span><span>"*** End of File"</span><span>,</span></span>
+<span><span>            )</span></span>
+<span><span>        ):</span></span>
+<span><span>            </span><span>break</span></span>
+<span><span>        </span><span>if</span><span> s </span><span>==</span><span> </span><span>"***"</span><span>:</span></span>
+<span><span>            </span><span>break</span></span>
+<span><span>        </span><span>if</span><span> s.startswith(</span><span>"***"</span><span>):</span></span>
+<span><span>            </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Invalid Line: </span><span>{</span><span>s</span><span>}</span><span>"</span><span>)</span></span>
+<span><span>        index </span><span>+=</span><span> </span><span>1</span></span>
+<span></span>
+<span><span>        last_mode </span><span>=</span><span> mode</span></span>
+<span><span>        </span><span>if</span><span> s </span><span>==</span><span> </span><span>""</span><span>:</span></span>
+<span><span>            s </span><span>=</span><span> </span><span>" "</span></span>
+<span><span>        </span><span>if</span><span> s[</span><span>0</span><span>] </span><span>==</span><span> </span><span>"+"</span><span>:</span></span>
+<span><span>            mode </span><span>=</span><span> </span><span>"add"</span></span>
+<span><span>        </span><span>elif</span><span> s[</span><span>0</span><span>] </span><span>==</span><span> </span><span>"-"</span><span>:</span></span>
+<span><span>            mode </span><span>=</span><span> </span><span>"delete"</span></span>
+<span><span>        </span><span>elif</span><span> s[</span><span>0</span><span>] </span><span>==</span><span> </span><span>" "</span><span>:</span></span>
+<span><span>            mode </span><span>=</span><span> </span><span>"keep"</span></span>
+<span><span>        </span><span>else</span><span>:</span></span>
+<span><span>            </span><span>raise</span><span> DiffError(</span><span>f</span><span>"Invalid Line: </span><span>{</span><span>s</span><span>}</span><span>"</span><span>)</span></span>
+<span><span>        s </span><span>=</span><span> s[</span><span>1</span><span>:]</span></span>
+<span></span>
+<span><span>        </span><span>if</span><span> mode </span><span>==</span><span> </span><span>"keep"</span><span> </span><span>and</span><span> last_mode </span><span>!=</span><span> mode:</span></span>
+<span><span>            </span><span>if</span><span> ins_lines </span><span>or</span><span> del_lines:</span></span>
+<span><span>                chunks.append(</span></span>
+<span><span>                    Chunk(</span></span>
+<span><span>                        </span><span>orig_index</span><span>=</span><span>len</span><span>(old) </span><span>-</span><span> </span><span>len</span><span>(del_lines),</span></span>
+<span><span>                        </span><span>del_lines</span><span>=</span><span>del_lines,</span></span>
+<span><span>                        </span><span>ins_lines</span><span>=</span><span>ins_lines,</span></span>
+<span><span>                    )</span></span>
+<span><span>                )</span></span>
+<span><span>            del_lines, ins_lines </span><span>=</span><span> [], []</span></span>
+<span></span>
+<span><span>        </span><span>if</span><span> mode </span><span>==</span><span> </span><span>"delete"</span><span>:</span></span>
+<span><span>            del_lines.append(s)</span></span>
+<span><span>            old.append(s)</span></span>
+<span><span>        </span><span>elif</span><span> mode </span><span>==</span><span> </span><span>"add"</span><span>:</span></span>
+<span><span>            ins_lines.append(s)</span></span>
+<span><span>        </span><span>elif</span><span> mode </span><span>==</span><span> </span><span>"keep"</span><span>:</span></span>
+<span><span>            old.append(s)</span></span>
+<span></span>
+<span><span>    </span><span>if</span><span> ins_lines </span><span>or</span><span> del_lines:</span></span>
+<span><span>        chunks.append(</span></span>
+<span><span>            Chunk(</span></span>
+<span><span>                </span><span>orig_index</span><span>=</span><span>len</span><span>(old) </span><span>-</span><span> </span><span>len</span><span>(del_lines),</span></span>
+<span><span>                </span><span>del_lines</span><span>=</span><span>del_lines,</span></span>
+<span><span>                </span><span>ins_lines</span><span>=</span><span>ins_lines,</span></span>
+<span><span>            )</span></span>
+<span><span>        )</span></span>
+<span></span>
+<span><span>    </span><span>if</span><span> index </span><span>&lt;</span><span> </span><span>len</span><span>(lines) </span><span>and</span><span> lines[index] </span><span>==</span><span> </span><span>"*** End of File"</span><span>:</span></span>
+<span><span>        index </span><span>+=</span><span> </span><span>1</span></span>
+<span><span>        </span><span>return</span><span> old, chunks, index, </span><span>True</span></span>
+<span></span>
+<span><span>    </span><span>if</span><span> index </span><span>==</span><span> orig_index:</span></span>
+<span><span>        </span><span>raise</span><span> DiffError(</span><span>"Nothing in this section"</span><span>)</span></span>
+<span><span>    </span><span>return</span><span> old, chunks, index, </span><span>False</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  Patch → Commit and Commit application</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>def</span><span> </span><span>_get_updated_file</span><span>(text: </span><span>str</span><span>, action: PatchAction, path: </span><span>str</span><span>) -&gt; </span><span>str</span><span>:</span></span>
+<span><span>    </span><span>if</span><span> action.type </span><span>is</span><span> </span><span>not</span><span> ActionType.</span><span>UPDATE</span><span>:</span></span>
+<span><span>        </span><span>raise</span><span> DiffError(</span><span>"_get_updated_file called with non-update action"</span><span>)</span></span>
+<span><span>    orig_lines </span><span>=</span><span> text.split(</span><span>"</span><span>\n</span><span>"</span><span>)</span></span>
+<span><span>    dest_lines: List[</span><span>str</span><span>] </span><span>=</span><span> []</span></span>
+<span><span>    orig_index </span><span>=</span><span> </span><span>0</span></span>
+<span></span>
+<span><span>    </span><span>for</span><span> chunk </span><span>in</span><span> action.chunks:</span></span>
+<span><span>        </span><span>if</span><span> chunk.orig_index </span><span>&gt;</span><span> </span><span>len</span><span>(orig_lines):</span></span>
+<span><span>            </span><span>raise</span><span> DiffError(</span></span>
+<span><span>                </span><span>f</span><span>"</span><span>{</span><span>path</span><span>}</span><span>: chunk.orig_index </span><span>{</span><span>chunk.orig_index</span><span>}</span><span> exceeds file length"</span></span>
+<span><span>            )</span></span>
+<span><span>        </span><span>if</span><span> orig_index </span><span>&gt;</span><span> chunk.orig_index:</span></span>
+<span><span>            </span><span>raise</span><span> DiffError(</span></span>
+<span><span>                </span><span>f</span><span>"</span><span>{</span><span>path</span><span>}</span><span>: overlapping chunks at </span><span>{</span><span>orig_index</span><span>}</span><span> &gt; </span><span>{</span><span>chunk.orig_index</span><span>}</span><span>"</span></span>
+<span><span>            )</span></span>
+<span></span>
+<span><span>        dest_lines.extend(orig_lines[orig_index : chunk.orig_index])</span></span>
+<span><span>        orig_index </span><span>=</span><span> chunk.orig_index</span></span>
+<span></span>
+<span><span>        dest_lines.extend(chunk.ins_lines)</span></span>
+<span><span>        orig_index </span><span>+=</span><span> </span><span>len</span><span>(chunk.del_lines)</span></span>
+<span></span>
+<span><span>    dest_lines.extend(orig_lines[orig_index:])</span></span>
+<span><span>    </span><span>return</span><span> </span><span>"</span><span>\n</span><span>"</span><span>.join(dest_lines)</span></span>
+<span></span>
+<span></span>
+<span><span>def</span><span> </span><span>patch_to_commit</span><span>(patch: Patch, orig: Dict[</span><span>str</span><span>, </span><span>str</span><span>]) -&gt; Commit:</span></span>
+<span><span>    commit </span><span>=</span><span> Commit()</span></span>
+<span><span>    </span><span>for</span><span> path, action </span><span>in</span><span> patch.actions.items():</span></span>
+<span><span>        </span><span>if</span><span> action.type </span><span>is</span><span> ActionType.</span><span>DELETE</span><span>:</span></span>
+<span><span>            commit.changes[path] </span><span>=</span><span> FileChange(</span></span>
+<span><span>                </span><span>type</span><span>=</span><span>ActionType.</span><span>DELETE</span><span>, </span><span>old_content</span><span>=</span><span>orig[path]</span></span>
+<span><span>            )</span></span>
+<span><span>        </span><span>elif</span><span> action.type </span><span>is</span><span> ActionType.</span><span>ADD</span><span>:</span></span>
+<span><span>            </span><span>if</span><span> action.new_file </span><span>is</span><span> </span><span>None</span><span>:</span></span>
+<span><span>                </span><span>raise</span><span> DiffError(</span><span>"ADD action without file content"</span><span>)</span></span>
+<span><span>            commit.changes[path] </span><span>=</span><span> FileChange(</span></span>
+<span><span>                </span><span>type</span><span>=</span><span>ActionType.</span><span>ADD</span><span>, </span><span>new_content</span><span>=</span><span>action.new_file</span></span>
+<span><span>            )</span></span>
+<span><span>        </span><span>elif</span><span> action.type </span><span>is</span><span> ActionType.</span><span>UPDATE</span><span>:</span></span>
+<span><span>            new_content </span><span>=</span><span> _get_updated_file(orig[path], action, path)</span></span>
+<span><span>            commit.changes[path] </span><span>=</span><span> FileChange(</span></span>
+<span><span>                </span><span>type</span><span>=</span><span>ActionType.</span><span>UPDATE</span><span>,</span></span>
+<span><span>                </span><span>old_content</span><span>=</span><span>orig[path],</span></span>
+<span><span>                </span><span>new_content</span><span>=</span><span>new_content,</span></span>
+<span><span>                </span><span>move_path</span><span>=</span><span>action.move_path,</span></span>
+<span><span>            )</span></span>
+<span><span>    </span><span>return</span><span> commit</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  User-facing helpers</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>def</span><span> </span><span>text_to_patch</span><span>(text: </span><span>str</span><span>, orig: Dict[</span><span>str</span><span>, </span><span>str</span><span>]) -&gt; Tuple[Patch, </span><span>int</span><span>]:</span></span>
+<span><span>    lines </span><span>=</span><span> text.splitlines()  </span><span># preserves blank lines, no strip()</span></span>
+<span><span>    </span><span>if</span><span> (</span></span>
+<span><span>        </span><span>len</span><span>(lines) </span><span>&lt;</span><span> </span><span>2</span></span>
+<span><span>        </span><span>or</span><span> </span><span>not</span><span> Parser._norm(lines[</span><span>0</span><span>]).startswith(</span><span>"*** Begin Patch"</span><span>)</span></span>
+<span><span>        </span><span>or</span><span> Parser._norm(lines[</span><span>-</span><span>1</span><span>]) </span><span>!=</span><span> </span><span>"*** End Patch"</span></span>
+<span><span>    ):</span></span>
+<span><span>        </span><span>raise</span><span> DiffError(</span><span>"Invalid patch text - missing sentinels"</span><span>)</span></span>
+<span></span>
+<span><span>    parser </span><span>=</span><span> Parser(</span><span>current_files</span><span>=</span><span>orig, </span><span>lines</span><span>=</span><span>lines, </span><span>index</span><span>=</span><span>1</span><span>)</span></span>
+<span><span>    parser.parse()</span></span>
+<span><span>    </span><span>return</span><span> parser.patch, parser.fuzz</span></span>
+<span></span>
+<span></span>
+<span><span>def</span><span> </span><span>identify_files_needed</span><span>(text: </span><span>str</span><span>) -&gt; List[</span><span>str</span><span>]:</span></span>
+<span><span>    lines </span><span>=</span><span> text.splitlines()</span></span>
+<span><span>    </span><span>return</span><span> [</span></span>
+<span><span>        line[</span><span>len</span><span>(</span><span>"*** Update File: "</span><span>) :]</span></span>
+<span><span>        </span><span>for</span><span> line </span><span>in</span><span> lines</span></span>
+<span><span>        </span><span>if</span><span> line.startswith(</span><span>"*** Update File: "</span><span>)</span></span>
+<span><span>    ] </span><span>+</span><span> [</span></span>
+<span><span>        line[</span><span>len</span><span>(</span><span>"*** Delete File: "</span><span>) :]</span></span>
+<span><span>        </span><span>for</span><span> line </span><span>in</span><span> lines</span></span>
+<span><span>        </span><span>if</span><span> line.startswith(</span><span>"*** Delete File: "</span><span>)</span></span>
+<span><span>    ]</span></span>
+<span></span>
+<span></span>
+<span><span>def</span><span> </span><span>identify_files_added</span><span>(text: </span><span>str</span><span>) -&gt; List[</span><span>str</span><span>]:</span></span>
+<span><span>    lines </span><span>=</span><span> text.splitlines()</span></span>
+<span><span>    </span><span>return</span><span> [</span></span>
+<span><span>        line[</span><span>len</span><span>(</span><span>"*** Add File: "</span><span>) :]</span></span>
+<span><span>        </span><span>for</span><span> line </span><span>in</span><span> lines</span></span>
+<span><span>        </span><span>if</span><span> line.startswith(</span><span>"*** Add File: "</span><span>)</span></span>
+<span><span>    ]</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  File-system helpers</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>def</span><span> </span><span>load_files</span><span>(paths: List[</span><span>str</span><span>], open_fn: Callable[[</span><span>str</span><span>], </span><span>str</span><span>]) -&gt; Dict[</span><span>str</span><span>, </span><span>str</span><span>]:</span></span>
+<span><span>    </span><span>return</span><span> {path: open_fn(path) </span><span>for</span><span> path </span><span>in</span><span> paths}</span></span>
+<span></span>
+<span></span>
+<span><span>def</span><span> </span><span>apply_commit</span><span>(</span></span>
+<span><span>    commit: Commit,</span></span>
+<span><span>    write_fn: Callable[[</span><span>str</span><span>, </span><span>str</span><span>], </span><span>None</span><span>],</span></span>
+<span><span>    remove_fn: Callable[[</span><span>str</span><span>], </span><span>None</span><span>],</span></span>
+<span><span>) -&gt; </span><span>None</span><span>:</span></span>
+<span><span>    </span><span>for</span><span> path, change </span><span>in</span><span> commit.changes.items():</span></span>
+<span><span>        </span><span>if</span><span> change.type </span><span>is</span><span> ActionType.</span><span>DELETE</span><span>:</span></span>
+<span><span>            remove_fn(path)</span></span>
+<span><span>        </span><span>elif</span><span> change.type </span><span>is</span><span> ActionType.</span><span>ADD</span><span>:</span></span>
+<span><span>            </span><span>if</span><span> change.new_content </span><span>is</span><span> </span><span>None</span><span>:</span></span>
+<span><span>                </span><span>raise</span><span> DiffError(</span><span>f</span><span>"ADD change for </span><span>{</span><span>path</span><span>}</span><span> has no content"</span><span>)</span></span>
+<span><span>            write_fn(path, change.new_content)</span></span>
+<span><span>        </span><span>elif</span><span> change.type </span><span>is</span><span> ActionType.</span><span>UPDATE</span><span>:</span></span>
+<span><span>            </span><span>if</span><span> change.new_content </span><span>is</span><span> </span><span>None</span><span>:</span></span>
+<span><span>                </span><span>raise</span><span> DiffError(</span><span>f</span><span>"UPDATE change for </span><span>{</span><span>path</span><span>}</span><span> has no new content"</span><span>)</span></span>
+<span><span>            target </span><span>=</span><span> change.move_path </span><span>or</span><span> path</span></span>
+<span><span>            write_fn(target, change.new_content)</span></span>
+<span><span>            </span><span>if</span><span> change.move_path:</span></span>
+<span><span>                remove_fn(path)</span></span>
+<span></span>
+<span></span>
+<span><span>def</span><span> </span><span>process_patch</span><span>(</span></span>
+<span><span>    text: </span><span>str</span><span>,</span></span>
+<span><span>    open_fn: Callable[[</span><span>str</span><span>], </span><span>str</span><span>],</span></span>
+<span><span>    write_fn: Callable[[</span><span>str</span><span>, </span><span>str</span><span>], </span><span>None</span><span>],</span></span>
+<span><span>    remove_fn: Callable[[</span><span>str</span><span>], </span><span>None</span><span>],</span></span>
+<span><span>) -&gt; </span><span>str</span><span>:</span></span>
+<span><span>    </span><span>if</span><span> </span><span>not</span><span> text.startswith(</span><span>"*** Begin Patch"</span><span>):</span></span>
+<span><span>        </span><span>raise</span><span> DiffError(</span><span>"Patch text must start with *** Begin Patch"</span><span>)</span></span>
+<span><span>    paths </span><span>=</span><span> identify_files_needed(text)</span></span>
+<span><span>    orig </span><span>=</span><span> load_files(paths, open_fn)</span></span>
+<span><span>    patch, _fuzz </span><span>=</span><span> text_to_patch(text, orig)</span></span>
+<span><span>    commit </span><span>=</span><span> patch_to_commit(patch, orig)</span></span>
+<span><span>    apply_commit(commit, write_fn, remove_fn)</span></span>
+<span><span>    </span><span>return</span><span> </span><span>"Done!"</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  Default FS helpers</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>def</span><span> </span><span>open_file</span><span>(path: </span><span>str</span><span>) -&gt; </span><span>str</span><span>:</span></span>
+<span><span>    </span><span>with</span><span> </span><span>open</span><span>(path, </span><span>"rt"</span><span>, </span><span>encoding</span><span>=</span><span>"utf-8"</span><span>) </span><span>as</span><span> fh:</span></span>
+<span><span>        </span><span>return</span><span> fh.read()</span></span>
+<span></span>
+<span></span>
+<span><span>def</span><span> </span><span>write_file</span><span>(path: </span><span>str</span><span>, content: </span><span>str</span><span>) -&gt; </span><span>None</span><span>:</span></span>
+<span><span>    target </span><span>=</span><span> pathlib.Path(path)</span></span>
+<span><span>    target.parent.mkdir(</span><span>parents</span><span>=</span><span>True</span><span>, </span><span>exist_ok</span><span>=</span><span>True</span><span>)</span></span>
+<span><span>    </span><span>with</span><span> target.open(</span><span>"wt"</span><span>, </span><span>encoding</span><span>=</span><span>"utf-8"</span><span>) </span><span>as</span><span> fh:</span></span>
+<span><span>        fh.write(content)</span></span>
+<span></span>
+<span></span>
+<span><span>def</span><span> </span><span>remove_file</span><span>(path: </span><span>str</span><span>) -&gt; </span><span>None</span><span>:</span></span>
+<span><span>    pathlib.Path(path).unlink(</span><span>missing_ok</span><span>=</span><span>True</span><span>)</span></span>
+<span></span>
+<span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>#  CLI entry-point</span></span>
+<span><span># --------------------------------------------------------------------------- #</span></span>
+<span><span>def</span><span> </span><span>main</span><span>() -&gt; </span><span>None</span><span>:</span></span>
+<span><span>    </span><span>import</span><span> sys</span></span>
+<span></span>
+<span><span>    patch_text </span><span>=</span><span> sys.stdin.read()</span></span>
+<span><span>    </span><span>if</span><span> </span><span>not</span><span> patch_text:</span></span>
+<span><span>        </span><span>print</span><span>(</span><span>"Please pass patch text through stdin"</span><span>, </span><span>file</span><span>=</span><span>sys.stderr)</span></span>
+<span><span>        </span><span>return</span></span>
+<span><span>    </span><span>try</span><span>:</span></span>
+<span><span>        result </span><span>=</span><span> process_patch(patch_text, open_file, write_file, remove_file)</span></span>
+<span><span>    </span><span>except</span><span> DiffError </span><span>as</span><span> exc:</span></span>
+<span><span>        </span><span>print</span><span>(exc, </span><span>file</span><span>=</span><span>sys.stderr)</span></span>
+<span><span>        </span><span>return</span></span>
+<span><span>    </span><span>print</span><span>(result)</span></span>
+<span></span>
+<span></span>
+<span><span>if</span><span> </span><span>__name__</span><span> </span><span>==</span><span> </span><span>"__main__"</span><span>:</span></span>
+<span><span>    main()</span></span>
+<span></span></code></pre></div><article><h2 id="other-effective-diff-formats"><a href="https://cookbook.openai.com/examples/gpt4-1_prompting_guide#other-effective-diff-formats">Other Effective Diff Formats</a></h2>
+<p>If you want to try using a different diff format, we found in testing that the SEARCH/REPLACE diff format used in Aider’s polyglot benchmark, as well as a pseudo-XML format with no internal escaping, both had high success rates.</p>
+<p>These diff formats share two key aspects: (1) they do not use line numbers, and (2) they provide both the exact code to be replaced, and the exact code with which to replace it, with clear delimiters between the two.</p></article><div><pre tabindex="0"><code><span><span>SEARCH_REPLACE_DIFF_EXAMPLE</span><span> </span><span>=</span><span> </span><span>"""</span></span>
+<span><span>path/to/file.py</span></span>
+<span><span>```</span></span>
+<span><span>&gt;&gt;&gt;&gt;&gt;&gt;&gt; SEARCH</span></span>
+<span><span>def search():</span></span>
+<span><span>    pass</span></span>
+<span><span>=======</span></span>
+<span><span>def search():</span></span>
+<span><span>   raise NotImplementedError()</span></span>
+<span><span>&lt;&lt;&lt;&lt;&lt;&lt;&lt; REPLACE</span></span>
+<span><span>"""</span></span>
+<span></span>
+<span><span>PSEUDO_XML_DIFF_EXAMPLE</span><span> </span><span>=</span><span> </span><span>"""</span></span>
+<span><span>&lt;edit&gt;</span></span>
+<span><span>&lt;file&gt;</span></span>
+<span><span>path/to/file.py</span></span>
+<span><span>&lt;/file&gt;</span></span>
+<span><span>&lt;old_code&gt;</span></span>
+<span><span>def search():</span></span>
+<span><span>    pass</span></span>
+<span><span>&lt;/old_code&gt;</span></span>
+<span><span>&lt;new_code&gt;</span></span>
+<span><span>def search():</span></span>
+<span><span>   raise NotImplementedError()</span></span>
+<span><span>&lt;/new_code&gt;</span></span>
+<span><span>&lt;/edit&gt;</span></span>
+<span><span>"""</span></span></code></pre></div><article></article></div></div>
+  </div>
+</body>
+</html>

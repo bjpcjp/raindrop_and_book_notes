@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Better Error Handling, in Go</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Better Error Handling, in Go</h1>
+    <p><strong>URL:</strong> <a href="https://bet365techblog.com/better-error-handling-in-go">https://bet365techblog.com/better-error-handling-in-go</a></p>
+    <p><strong>Tags:</strong> golang</p>
+    <p><strong>Bookmark ID:</strong> 876771876</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-586">
+
+        
+		
+
+		<div>
+
+							
+				<p>It’s no secret that we’re big golang fans at bet365. It has allowed us to create exciting new products, like Bet Builder and our custom sports search engine. Within the very near future, the majority of our sports website will be powered by <em>Go</em>.</p>
+<p>We’ve used this move in technology as an opportunity to review what simplicity means within our vast codebase, and embrace the idiomatic ‘Go way’.</p>
+<p>Our internal standards document bares signage to “leave your OO baggage at the door”.</p>
+<p>And we did; Our code organization has become more literal, with less obfuscating OO patterns, clearer logic paths and a focus on reducing ‘code golf’ for maintainability. Go promotes this kind of behavior and generally makes it obvious when it’s punishing you for not abiding by its rules.</p>
+<h2>I’ll get to the point</h2>
+<p>One great example of this simplicity is the way it handles errors at runtime; Rather than adding a bespoke language construct for dealing with the raising and propagation of errors throughout your call stacks, go chose to simply make use of its ability to return more than one value from a function. This is great because there is no confusion when you’re invoking a function or method as to whether or not it is your responsibility to handle what happens when something goes wrong. If you see an <code>error</code> is part of that functions return signature, then it’s on you to deal with it.</p>
+<p>Now, whilst this does make your code declaratively more obvious, one thing we noticed was if you’re calling a few functions which return errors it’s quite easy for things to get a little <em>too obvious</em> that you’re doing a bit of error handling by falling into the pattern I’m about to demonstrate.</p>
+<p>You may have seen this pattern occurring yourself, you may have solved this problem yourself in a different way, you may be totally fine with this code and not see it as a problem at all, and that’s okay.</p>
+<h2>Our problem, an example</h2>
+<p>Let’s take a look at a somewhat contrived example of what I’m talking about. We’ll use a typical HTTP handler for some context</p>
+<pre><code>
+func <span>myHandler</span><span>(</span><span>w http<span>.</span>Response<span>,</span> r <span>*</span>http<span>.</span>Request</span><span>)</span> <span>{</span>
+
+    err <span>:</span><span>=</span> <span>validateRequest</span><span>(</span>r<span>)</span>
+    <span>if</span> err <span>!=</span> nil <span>{</span>
+        log<span>.</span><span>Printf</span><span>(</span><span>"error validating request to myHandler - err: %v"</span><span>,</span> err<span>)</span>
+        w<span>.</span><span>WriteHeader</span><span>(</span>http<span>.</span>StatusInternalServerError<span>)</span>
+        <span>return</span>
+    <span>}</span>
+
+    user<span>,</span> err <span>:</span><span>=</span> <span>getUserFromRequest</span><span>(</span>r<span>)</span>
+    <span>if</span> err <span>!=</span> nil <span>{</span>
+        log<span>.</span><span>Printf</span><span>(</span><span>"error getting user from request in myHandler - err: %v"</span><span>,</span> err<span>)</span>
+        w<span>.</span><span>WriteHeader</span><span>(</span>http<span>.</span>StatusInternalServerError<span>)</span>
+        <span>return</span> 
+    <span>}</span>
+
+    dataset<span>,</span> err <span>:</span><span>=</span> db<span>.</span><span>GetUserData</span><span>(</span>user<span>)</span>
+    <span>if</span> err <span>!=</span> nil <span>{</span>
+        log<span>.</span><span>Printf</span><span>(</span><span>"error retrieving user data in myHandler - err: %v"</span><span>,</span> err<span>)</span>
+        w<span>.</span><span>WriteHeader</span><span>(</span>http<span>.</span>StatusInternalServerError<span>)</span>
+        <span>return</span>
+    <span>}</span>
+
+    buffer <span>:</span><span>=</span> <span>newBuffer</span><span>(</span><span>)</span>
+    err <span>:</span><span>=</span> serialize<span>.</span><span>UserData</span><span>(</span>dataset<span>,</span> <span>&amp;</span>buffer<span>)</span>
+    <span>if</span> err <span>!=</span> nil <span>{</span>
+        log<span>.</span><span>Printf</span><span>(</span><span>"error serializing user data in myHandler - err %v"</span><span>,</span> err<span>)</span>
+        w<span>.</span><span>WriteHeader</span><span>(</span>http<span>.</span>StatusInternalServerError<span>)</span>
+        <span>return</span>
+    <span>}</span>
+
+    err <span>:</span><span>=</span> buffer<span>.</span><span>WriteTo</span><span>(</span>w<span>)</span><span>;</span>
+    <span>if</span> err <span>!=</span> nil <span>{</span>
+        log<span>.</span><span>Printf</span><span>(</span><span>"error writing buffer to response in myHandler - err %v"</span><span>,</span> err<span>)</span>
+        <span>return</span>
+    <span>}</span>
+<span>}</span>
+
+</code></pre>
+<p>Okay, so a nice straightforward HTTP handler. Let’s quickly break down what tasks it was performing for us.</p>
+<ul>
+<li>Validate the request</li>
+<li>Grab a user from the request</li>
+<li>Fetch a user dataset from the database</li>
+<li>Serialize the dataset into a buffer</li>
+<li>Write the buffer to the HTTP response</li>
+</ul>
+<p>So we’ve done those five things, fine, but take a look at that code again – it doesn’t feel like we just did five basic things there, it feels like a lot more was happening due to the noise created by the error handling after each action we took.</p>
+<p>The first thing to consider here is the amount of additional context we’re wrapping into each one of these errors for logging purposes. The messages generally start off with <code>"there was an error doing thing"</code> – which seems like an obvious thing to pad out your error message with, but it could actually be redundant when you consider the function it originated from could’ve (should’ve) added enough context about where the error originated from itself. We found we were able to remove a lot of <code>return fmt.Errorf("there was a db error %v", err)</code> statements that were simply adding zero additional information.</p>
+<p>Of course, that doesn’t necessarily mean the error was raised in the function we called. The point is wherever we have an error ‘origin site’ within our own codebase, we should take the opportunity to decorate the error with enough context that it doesn’t need wrapping multiple times as we pass it back up the stack. This could be parameter information, generated URLs or other context useful to someone diagnosing an issue later on. We can then simply bare-return errors up the stack up until the point we can handle them – in our case, exit safely and log the error.</p>
+<p>So how do we remove the need to wrap these errors multiple times during the execution path of our handler but still maintain the same level of information? After all, the information we wrapped it with wasn’t useless, it also stated <code>in myHandler</code> as the error ‘destination site’, which again could be vital in a diagnosis investigation by an engineer looking at the issue later on.</p>
+<p>After trying a few different approaches, and there are many ways to do this, we took inspiration from how go 2.0 had proposed solving the problem (<a href="https://go.googlesource.com/proposal/+/master/design/go2draft-error-handling.md" rel="noopener noreferrer" target="_blank">check/handle</a>) and came up with a more concise solution we can use today using what we call the error defer pattern. A halfway house, if you like.</p>
+<h2>The solution, an example</h2>
+<p>This is the same code, but we’re going to switch out the error handling to use error defer. Let’s take a look</p>
+<pre><code>
+func <span>myHandler</span><span>(</span><span>w http<span>.</span>Response<span>,</span> r <span>*</span>http<span>.</span>Request</span><span>)</span> <span>{</span>
+
+    <span>var</span> err error
+    defer <span>func</span><span>(</span><span>)</span> <span>{</span>
+        <span>if</span> err <span>!=</span> nil <span>{</span>
+            log<span>.</span><span>Printf</span><span>(</span><span>"error in myHandler - error: %v"</span><span>,</span> err<span>)</span>
+            w<span>.</span><span>WriteHeader</span><span>(</span>http<span>.</span>StatusInternalServerErrror<span>)</span>
+        <span>}</span>
+    <span>}</span><span>(</span><span>)</span>
+
+    err <span>=</span> <span>validateRequest</span><span>(</span>r<span>)</span>
+    <span>if</span> err <span>!=</span> nil <span>{</span> <span>return</span> <span>}</span>
+
+    user<span>,</span> err <span>:</span><span>=</span> <span>getUserFromRequest</span><span>(</span>r<span>)</span>
+    <span>if</span> err <span>!=</span> nil <span>{</span> <span>return</span>  <span>}</span>
+
+    dataset<span>,</span> err <span>:</span><span>=</span> db<span>.</span><span>GetUserData</span><span>(</span>user<span>)</span>
+    <span>if</span> err <span>!=</span> nil <span>{</span> <span>return</span> <span>}</span>
+
+    buffer <span>:</span><span>=</span> <span>newBuffer</span><span>(</span><span>)</span>
+    err <span>=</span> serialize<span>.</span><span>UserData</span><span>(</span>dataset<span>,</span> <span>&amp;</span>buffer<span>)</span>
+    <span>if</span> err <span>!=</span> nil <span>{</span> <span>return</span> <span>}</span>
+
+    err2 <span>:</span><span>=</span> buffer<span>.</span><span>WriteTo</span><span>(</span>w<span>)</span>
+    <span>if</span> err2 <span>!=</span> nil <span>{</span>
+        log<span>.</span><span>Printf</span><span>(</span><span>"error writing buffer to response in myHandler - error %v"</span><span>,</span> err2<span>)</span>
+        <span>return</span>
+    <span>}</span>
+<span>}</span>
+
+</code></pre>
+<p>Straight away, that feels much easier and quicker to digest. We can see the application logic hasn’t changed but has become more visible due to the error handling blocks being reduced to a more basic form. We’ve also made more use of the context added at the origin sites within the functions we’ve called.</p>
+<p>The error we respond with is now tracked by the top level <code>var err error</code>. Each function which returns an error writes to that single declaration, then simply checks the value is not <code>nil</code> each time it can be set, before it continues to the next statement. If the value isn’t <code>nil</code> we just return. When we return, no matter what stage we do, we always drop into the <code>defer func</code> we declared at the top of the handler. From there, we check the error, wrap with the destination site information and continue to handle as previously by logging and setting an http status code.</p>
+<p>You’ll notice the last block shows an exception to the pattern and how we can deal with scenarios where sharing an error handler is not sufficient – We failed the write, so there’s little point setting an http status code at that point, we just need to log the error, so we don’t write to <code>err</code>.</p>
+<p>Without wanting to bang on about errors too much more, there are also other options within this approach, for example we can tag more information into custom <code>error</code> structs, then check their types in the <code>defer func</code> to give ourselves additional context or configuration whilst still keeping this handling code out of the main execution path, like so</p>
+<pre><code>
+<span>if</span> custom<span>,</span> ok <span>:</span><span>=</span> err<span>.</span><span>(</span>CustomErrorType<span>)</span><span>;</span> ok <span>{</span>
+     <span>/// handle the custom type</span>
+<span>}</span>
+
+</code></pre>
+<h2>Conclusion</h2>
+<p>Go is a fantastic language to work with, but like any tool it can easily become unwieldy without proper care for how it is used. Error handling has been identified by the wider community as being somewhat of a bugbear, so this is how we solved that problem in a way that worked for us. We look forward to using <a href="https://go.googlesource.com/proposal/+/master/design/go2draft-error-handling.md" rel="noopener noreferrer" target="_blank">check/handle</a> when it finally arrives in golang 2.0!</p>
+				
+								
+			</div><!-- .post-Post_Content -->
+
+				
+		
+	</article></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Definitive Guide to Rack for Rails Developers</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The Definitive Guide to Rack for Rails Developers</h1>
+    <p><strong>URL:</strong> <a href="https://www.akshaykhot.com/definitive-guide-to-rack">https://www.akshaykhot.com/definitive-guide-to-rack</a></p>
+    <p><strong>Tags:</strong> rack, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876791745</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-canvas-grid="content" data-canvas-grid-self="full">
+            <p><em>P.S. I originally published this post last year, when I was just starting to learn Rails. Since then, I've learned a few more things and hence decided to revise, polish, and re-publish it. Also, a ton of new subscribers have joined the email list, and I thought you all might find it helpful.</em></p><p>You’ve been around in the Rails world for a while. You know your way around rails. But you keep hearing the word ‘Rack’ and don’t really understand what it is or what it does for you. </p><p>You try to read the documentation on the Rack Github <a href="https://github.com/rack/rack?ref=writesoftwarewell.com">repository</a> or the <a href="https://guides.rubyonrails.org/rails_on_rack.html?ref=writesoftwarewell.com">Rails on Rack</a> guides, but the only thing it does is add to the confusion. Everyone keeps saying that it provides a <strong>minimal</strong>, <strong>modular</strong>, and <strong>adaptable</strong> interface for building web applications. <strong>But what the heck does that really mean?</strong></p><p>If there’s a list of topics that confuses most new Rails developers, Rack is definitely up there at the top. When I started learning Ruby and Rails last year, Rack took a really long time to wrap my head around. <strong>If you are in the same boat, fear not</strong>. In this article, I will try to explain pretty much everything that you need to know about Rack as a Ruby and Rails developer. </p><h2 id="what-youll-learn">What You'll Learn:</h2><ul><li><a href="#making-ruby-code-talk-to-web-servers">Making Ruby Talk to Web Servers with Rack</a></li><li><a href="#the-rack-protocol">The Rack Protocol</a></li><li><a href="#the-rack-gem">The Rack Gem</a></li><li><a href="#1-middleware-toolbox">Middleware Toolbox</a></li><li><a href="#2-tools-to-build-rack-applications-and-middleware">Tools to Build Rack Apps and Middleware</a></li><li><a href="#3-the-rackup-command">The <code>rackup</code> Command</a></li><li><a href="#4-convenient-dsl">The Rack DSL</a></li></ul><p>It’s quite a long article, but if you stick to the end, you will have a much better understanding of Rack. We'll cover the Rack protocol, the Rack gem, the middleware toolbox, the Rack DSL, and much more. <strong>This is the day when you learned Rack.</strong></p><p>Sounds good? Let's get started.</p><p>I strongly believe that <strong>to understand any solution, we first need to understand the problem</strong>. Hence, before we try to understand the theory behind Rack, let’s try to understand the basic problem it's trying to solve, by building a very simple web application in Ruby using different web servers, such as Puma, Thin, and Unicorn. </p><h2 id="making-ruby-code-talk-to-web-servers">Making Ruby Code Talk to Web Servers</h2><p>Let's build a simple web application in plain Ruby.</p><p>Create a new directory and add a file named <code>config.ru</code>. Don’t worry, it’s just a regular Ruby file with a different extension (it’s short for <code>rackup</code>, but let’s ignore that for now). All Rails apps have a <code>config.ru</code> file in the root directory.</p><pre><code>mkdir web
+cd web 
+
+touch config.ru
+</code></pre><p>Now add the following code in this file, which creates the most basic web application you have seen. Don’t worry about the <code>run</code> method at the bottom for now. We will return to it later.</p><pre><code># config.ru
+
+class App
+   def call(env)
+     headers = { 'Content-Type' =&gt; 'text/html' }
+     
+     response = ['&lt;h1&gt;Greetings from Rack!!&lt;/h1&gt;']
+     
+     [200, headers, response]
+   end
+end
+
+run App.new
+</code></pre><p>This is our very own web application that returns a simple response. Now let’s try to run it in the browser. For that, we will need a web server, a piece of software that accepts HTTP requests and returns HTTP response.</p><p>I will use <a href="https://github.com/puma/puma?ref=writesoftwarewell.com">Puma</a>, which is the web server that Ruby on Rails ships with.</p><p><strong>Puma</strong></p><p>Install and launch Puma using the following commands from the <code>web</code> directory:</p><pre><code>➜ gem install puma 
+
+➜ puma
+Puma starting in single mode...
+* Puma version: 5.6.4 (ruby 3.1.0-p0) ("Birdie's Version")
+*  Min threads: 0
+*  Max threads: 5
+*  Environment: development
+*          PID: 32026
+* Listening on http://0.0.0.0:9292
+Use Ctrl-C to stop
+</code></pre><p>By default, Puma looks for a <code>config.ru</code> file in the same directory, and uses that to launch our web application.</p><p>Now our server is up and running. Point your browser to <a href="http://localhost:9292/?ref=writesoftwarewell.com">http://localhost:9292</a> and you will see this:</p><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy" width="691" height="556" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 691w"></figure><p>Stop the server using <code>Ctrl + c</code> command. At this point, we have a very simple web application up and running using the Puma web server.</p><p>Now let’s run this application using a different server. We’ll use <a href="https://github.com/macournoyer/thin?ref=writesoftwarewell.com">Thin</a>, a small, simple, and fast web server.</p><p><strong>Thin</strong></p><p>Install and launch the Thin web server using the following commands.</p><pre><code>gem install thin
+thin start
+</code></pre><p>The Thin server is up and running and serving our application. Point your browser to <a href="http://localhost:3000/?ref=writesoftwarewell.com">http://localhost:3000</a> and you should see the same web page that we saw earlier.</p><p>Let’s try one last time to use a different web server. This time we’ll use <a href="https://yhbt.net/unicorn/?ref=writesoftwarewell.com">Unicorn</a>, an old web server that used to be popular in the Rails community.</p><p><strong>Unicorn</strong></p><p>Install and launch the Unicorn web server using the following commands.</p><pre><code>gem install unicorn
+unicorn
+</code></pre><p>Point your browser to <a href="http://localhost:8080/?ref=writesoftwarewell.com">http://localhost:8080</a>. Again, you should see the same web page.</p><h2 id="whats-the-point">What's the Point?</h2><p>A few questions you might have right now:</p><ol><li><strong>How did all of these web servers know how to run our application?</strong></li><li><strong>Why didn’t we have to change even a single line in our application to make it work with a different server?</strong></li></ol><p>The answer is that our application follows the Rack protocol, and they all are <strong>rack-compliant</strong> web servers.</p><p><strong>Okay, but what does that mean?</strong></p><p>It means, when started, all web servers looked for an application (Ruby class or object) that satisfied the following three conditions:</p><ol><li>It has a <code>call</code> method.</li><li>It accepts the <code>env</code> object representing the HTTP request (don't worry, it's just a Ruby Hash).</li><li>It returns an array containing three values: <strong>the status code, the headers, and the response</strong>.</li></ol><pre><code>class App
+   def call(env)
+     headers = { 'Content-Type' =&gt; 'text/html' }
+     
+     response = ['&lt;h1&gt;Greetings from Rack!!&lt;/h1&gt;']
+     
+     [200, headers, response]
+   end
+end</code></pre><p>This is what everyone means when they say <strong><em>“Rack provides a minimal, modular, and adaptable interface.”</em></strong> You can use any class or object that satisfies the above three conditions with any web server, and everything will still work as expected.</p><blockquote>Every rack compliant webserver will always invoke a <code>call</code> method on an object (the Rack application) and serve the result of that method.</blockquote><p>If you're curious how it works in Rails, here's the <code>config.ru</code> file in your Rails app:</p><pre><code># This file is used by Rack-based servers to start the application.
+
+require_relative "config/environment"
+
+run Rails.application
+Rails.application.load_server
+</code></pre><p>The <code>Rails.application</code> has a <code>call</code> method defined in the <code>Rails::Engine</code> class, the superclass of <code>Rails::Application</code>. </p><pre><code>module Rails
+  class Engine &lt; Railtie
+  
+    # Define the Rack API for this engine.
+    def call(env)
+      req = build_request env
+      app.call req.env
+    end
+  end
+end</code></pre><p>In a future post, we'll learn <a href="https://www.writesoftwarewell.com/metal-controller-in-rails/">how Rails handles incoming requests</a> (it's fascinating), but let's continue learning Rack for now.</p><p>So far, we've seen how the same Ruby application works with multiple servers. However, the other way works, too. You can replace our simple application with another script, a Rails application, or even a Sinatra application, and any Rack-compliant web server can run it without a problem.</p><blockquote>Rack allows application frameworks &amp; web servers to communicate with each other, and replace each without changing the other.</blockquote><p>This is Rack’s main benefit. </p><p><strong>Rack provides a common protocol (or interface, or specification) that different web servers can use to talk to different web applications, without worrying about the internals of each.</strong></p><p><strong>The Problem: </strong>Before Rack came along, each framework had to understand each other web server’s API to communicate with it. </p><p><strong>The Solution: </strong>With Rack, the creators of web servers and web frameworks all agreed to talk to each other using a standardized way to reduce the efforts involved with communicating with different standards.</p><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy" width="696" height="675" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 696w"></figure><p>If you are building the next high-performant web server or application framework, you can talk with any other rack-compliant web application or web server as long as you follow the Rack specification.</p><p>This is pretty useful. Now let’s learn some theory.</p>
+
+
+        </div></div>
+  </div>
+</body>
+</html>

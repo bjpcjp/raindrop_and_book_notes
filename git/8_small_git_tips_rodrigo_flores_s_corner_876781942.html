@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>8 Small git tips · Rodrigo Flores's Corner</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>8 Small git tips · Rodrigo Flores's Corner</h1>
+    <p><strong>URL:</strong> <a href="http://blog.rlmflores.me/git/2015/03/31/8-small-git-tips">http://blog.rlmflores.me/git/2015/03/31/8-small-git-tips</a></p>
+    <p><strong>Tags:</strong> git</p>
+    <p><strong>Bookmark ID:</strong> 876781942</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+  
+  <p><span>31 Mar 2015</span></p><p>As git is one of my daily tools, I’ve compiled 8 useful (and short) tips that I use almost everyday.</p>
+
+<h2 id="selectively-add-with--p">Selectively add with -p</h2>
+
+<p>When you want to commit something, you can either: select all the files through <code>git commit -am</code> or add a specific file through <code>git add file</code>. However, you may want to only add only a part of a file to the commit. You can use <code>git add -p</code> and select interactively what parts you want to add to your commit.</p>
+
+<p>After selecting interactively all the chunks you want to commit, just do a git commit (without <code>-a</code>) and you will only commit the selected parts. There is also the <code>git checkout -p</code> to select changes to be reverted. After adding, you can see what you have selected using <code>git diff --cached</code>.</p>
+
+<h2 id="interactive-rebase">Interactive Rebase</h2>
+
+<p>If you’re working on a branch and you made some WIP commits that you want to squash or you want to remove a commit plus the reversion of this commit, you can do a interactive rebase to reorganize your commits.</p>
+
+<p>To do it, you just need to run <code>git rebase -i &lt;commit&gt;</code> where the <code>&lt;commit&gt;</code> is the sha1 of a commit before the one you want begin rewriting. Then it will open on your editor (the one specified on <code>$EDITOR</code> env var or the one specified on your git config) some instructions to change your commits history where you can pick, squash (merge two commits on a single one), reword (change the commit message), edit or even remove a commit.</p>
+
+<p>Be aware that this change the history, so if you have pushed this commits, you will have to force to push it again, so never do this on master branches or branches that you’re not the only one using.</p>
+
+<h2 id="stashing">Stashing</h2>
+
+<p>If you in the middle of something and you have to change a context to fix something else, you can <code>git stash</code> the current changes. However, you may end up forgetting about this stashed changes some time later. So I try to keep a stash zero (just like inbox zero but for stashes) policy. Every time I have a stash a dollar sign appears on my prompt and then I check it through <code>git stash show -p</code> and then I can pop it through <code>git stash pop</code> or discard it through <code>git stash clear</code>.</p>
+
+<h2 id="global-gitignore">Global gitignore</h2>
+
+<p>You can specify what files git should ignore through a <code>.gitignore</code> file on the root of a project. But if you have files that git should ignore but you’re the only one that generates that files (like vim’s bkp files or something that your editor or OS generates like <code>.DS_Store</code> files for OSX), you can specify on your configure a global gitignore file that uses the same syntax of a project <code>.gitignore</code> that will .</p>
+
+<pre><code>git config --global core.excludesfile=/Users/flores/.gitignore
+</code></pre>
+
+<h2 id="warn-whitespace">Warn whitespace</h2>
+
+<p>I have to admit: sometimes I forget some trailing whitespaces on my code. But I normally don’t commit them because I use this option: <code>apply.whitespace=warn</code>. Every time I’m adding a chunk of a file through <code>git add -p</code>, and this chunk contains trailing whitespaces, git warns me of it so I can fix it before committing.</p>
+
+<h2 id="auto-setup-rebase">Auto setup rebase</h2>
+
+<p>Another cool tip is to auto setup rebase: if you have a branch with some commits that aren’t pushed and someone else also commits and pushes on that branch, when you pull, git will create a commit merging your commits to the commits upstream. As this commit is meaningless, I prefer to setup auto rebase on pull through the configuration: <code>branch.autosetuprebase=always</code>. Doing so, on every pull, git will try to reapply your commits with the current version of the upstream branches.</p>
+
+<h2 id="better-logging">Better logging</h2>
+
+<p>Have you tried to find an specific commit merged from a branch ?  <code>git log</code> provides some basic information, but you can use git log with a more useful message:</p>
+
+<pre><code>git log --graph --decorate --pretty=oneline --abbrev-commit
+</code></pre>
+
+<p><code>--graph</code> will generate lines between commits and will expose branches, <code>--decorate</code> shows where branches are located in this commits, <code>--pretty=oneline</code> will show only the <code>sha1</code> and the title line and <code>--abbrev-commit</code> will reduce the sha1 to the first 7 chars (which is normally unique in your repository). You can check a more detailed explanation of these options (and a whole lot more) on <a href="http://explainshell.com/explain?cmd=git+log+--graph+--decorate+--pretty%3Doneline+--abbrev-commit">explain shell</a>.</p>
+
+<h2 id="rewrite-a-commit-message">Rewrite a commit message</h2>
+
+<p>So you’ve commited something but did a poor job describing it. Or else, you just made a typo. You can rewrite the message with <code>git commit --amend</code>. You can use the <code>-m</code> to set a message through the command line or it will open the default editor with the commit message so you can change. You can also include new things with git add and add it to the previous commit. Remember that just like <code>Interactive Rebase</code>, it changes the history, so if you have pushed that commit, you will need to force push this changes.</p>
+
+<p>If you use git on your job, you probably know a git trick that increases your productivity. Can you share it on the comments ?</p>
+
+</div></div>
+  </div>
+</body>
+</html>

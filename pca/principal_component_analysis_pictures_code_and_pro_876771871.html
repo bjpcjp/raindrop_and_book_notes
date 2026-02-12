@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Principal component analysis: pictures, code and proofs</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Principal component analysis: pictures, code and proofs</h1>
+    <p><strong>URL:</strong> <a href="https://joellaity.com/2018/10/18/pca.html">https://joellaity.com/2018/10/18/pca.html</a></p>
+    <p><strong>Tags:</strong> machine-learning, pca</p>
+    <p><strong>Bookmark ID:</strong> 876771871</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div aria-label="Content">
+        <article itemscope="" itemtype="http://schema.org/BlogPosting">
+
+  
+
+  <div itemprop="articleBody">
+    <p><small>The code used to generate the plots for this post can be found <a href="https://github.com/joelypoley/joelypoley.github.io/blob/master/assets/notebooks/pca.ipynb">here</a>.</small></p>
+
+<h2 id="i">I.</h2>
+
+<p>Principal component analysis is a form of <a href="https://en.wikipedia.org/wiki/Feature_engineering">feature engineering</a> that reduces the number of dimensions needed to represent your data. If a neural network has fewer inputs then there are less weights to train, which makes it easier and faster to train the model.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<p>The data above is two dimensional, but it is “almost” one dimensional in the sense that every point is close to a line.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<p>The first step in principal component analysis is to center the data. Given the list of 2d points, <span><span id="MJXp-Span-1"><span id="MJXp-Span-2"><span id="MJXp-Span-3">x</span><span id="MJXp-Span-4">1</span></span><span id="MJXp-Span-5">,</span><span id="MJXp-Span-6"><span id="MJXp-Span-7">x</span><span id="MJXp-Span-8">2</span></span><span id="MJXp-Span-9">,</span><span id="MJXp-Span-10">…</span><span id="MJXp-Span-11">,</span><span id="MJXp-Span-12"><span id="MJXp-Span-13">x</span><span id="MJXp-Span-14">n</span></span><span id="MJXp-Span-15">∈</span><span id="MJXp-Span-16"><span id="MJXp-Span-17"><span id="MJXp-Span-18">R</span></span><span id="MJXp-Span-19">2</span></span></span></span> we first center the data by calculating the mean <span><span id="MJXp-Span-20"><span id="MJXp-Span-21"><span><span><span><span id="MJXp-Span-23">¯</span></span><span><span id="MJXp-Span-22">x</span></span></span></span></span><span id="MJXp-Span-24">=</span><span id="MJXp-Span-25"><span><span id="MJXp-Span-26">1</span></span><span><span><span><span></span></span><span><span><span id="MJXp-Span-27">n</span></span></span></span></span></span><span id="MJXp-Span-28"><span id="MJXp-Span-29">∑</span><span><span><span><span><span id="MJXp-Span-34">n</span></span></span></span><span><span><span><span id="MJXp-Span-30"><span id="MJXp-Span-31">i</span><span id="MJXp-Span-32">=</span><span id="MJXp-Span-33">1</span></span></span></span></span></span></span><span id="MJXp-Span-35"><span id="MJXp-Span-36">x</span><span id="MJXp-Span-37">i</span></span></span></span> and replacing each <span><span id="MJXp-Span-38"><span id="MJXp-Span-39"><span id="MJXp-Span-40">x</span><span id="MJXp-Span-41">i</span></span></span></span> with <span><span id="MJXp-Span-42"><span id="MJXp-Span-43"><span id="MJXp-Span-44">x</span><span id="MJXp-Span-45">i</span></span><span id="MJXp-Span-46">−</span><span id="MJXp-Span-47"><span><span><span><span id="MJXp-Span-49">¯</span></span><span><span id="MJXp-Span-48">x</span></span></span></span></span></span></span>. Now the data looks like this.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<p>We then put the data in a matrix
+<span><span id="MJXp-Span-50"><span id="MJXp-Span-51">X</span><span id="MJXp-Span-52">=</span><span id="MJXp-Span-53"><span id="MJXp-Span-54"><span>(</span></span><span id="MJXp-Span-55"><span><span id="MJXp-Span-56"><span id="MJXp-Span-57"><span id="MJXp-Span-58"><span id="MJXp-Span-59">|</span></span></span><span id="MJXp-Span-60"><span id="MJXp-Span-61"><span id="MJXp-Span-62">|</span></span></span><span id="MJXp-Span-63"></span><span id="MJXp-Span-64"><span id="MJXp-Span-65"><span id="MJXp-Span-66">|</span></span></span></span><span id="MJXp-Span-67"><span id="MJXp-Span-68"><span id="MJXp-Span-69"><span id="MJXp-Span-70">x</span><span id="MJXp-Span-71">1</span></span></span><span id="MJXp-Span-72"><span id="MJXp-Span-73"><span id="MJXp-Span-74">x</span><span id="MJXp-Span-75">2</span></span></span><span id="MJXp-Span-76"><span id="MJXp-Span-77">⋯</span></span><span id="MJXp-Span-78"><span id="MJXp-Span-79"><span id="MJXp-Span-80">x</span><span id="MJXp-Span-81">n</span></span></span></span><span id="MJXp-Span-82"><span id="MJXp-Span-83"><span id="MJXp-Span-84"><span id="MJXp-Span-85">|</span></span></span><span id="MJXp-Span-86"><span id="MJXp-Span-87"><span id="MJXp-Span-88">|</span></span></span><span id="MJXp-Span-89"></span><span id="MJXp-Span-90"><span id="MJXp-Span-91"><span id="MJXp-Span-92">|</span></span></span></span></span></span><span id="MJXp-Span-93"><span>)</span></span></span><span id="MJXp-Span-94">.</span></span></span>
+And calculate the eigenvectors and eigenvalues of the <em>covariance matrix</em> <span><span id="MJXp-Span-95"><span id="MJXp-Span-96"><span><span id="MJXp-Span-97">1</span></span><span><span><span><span></span></span><span><span><span id="MJXp-Span-98">n</span><span id="MJXp-Span-99">−</span><span id="MJXp-Span-100">1</span></span></span></span></span></span><span id="MJXp-Span-101">X</span><span id="MJXp-Span-102"><span id="MJXp-Span-103">X</span><span id="MJXp-Span-104">⊤</span></span></span></span>.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<p>The eigenvectors tell us the <em>direction</em> of the data. The first eigenvector in the picture above has the same slope as the data and the second eigenvector is perpendicular to the first. Now let’s scale each of the eigenvectors by its corresponding eigenvalue <sup id="a1"><a href="#f1">1</a></sup>.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<p>And draw an ellipse around the eigenvectors.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<p>The eigenvalues tell us how spread out the data is in the direction of that particular eigenvector. Thus we can reduce the dimension of the data by projecting onto the line given by the largest eigenvalue.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<p>The data is now one dimensional since it fits on a single line. Each point has not moved too far from its original spot, so these new points still represent the data well.</p>
+
+<p>In two dimensions this is the same as projecting onto the line of best fit, but this technique generalizes. If your data is <span><span id="MJXp-Span-105"><span id="MJXp-Span-106">n</span></span></span>-dimensional then PCA lets you find the best <span><span id="MJXp-Span-107"><span id="MJXp-Span-108">m</span></span></span>-dimensional subspace to project the data down onto; you just project your data onto the subspace spanned by the <span><span id="MJXp-Span-109"><span id="MJXp-Span-110">m</span></span></span> eigenvectors with the largest eigenvalues. If <span><span id="MJXp-Span-111"><span id="MJXp-Span-112">m</span><span id="MJXp-Span-113">&lt;&lt;</span><span id="MJXp-Span-114">n</span></span></span> this can compress your data a lot, and PCA guarantees that this <span><span id="MJXp-Span-115"><span id="MJXp-Span-116">m</span></span></span> dimensional subspace is optimal, in the sense that it minimizes the mean squared error between the original data points and the projected data points.</p>
+
+<h2 id="ii">II.</h2>
+
+<p>The data in the plots above was generated using a random number generator. Let’s try PCA on a real dataset.</p>
+
+<p>We will use the MNIST dataset, which is a collection of grayscale, 28x28 images of hand written digits. To simplify the analysis we will discard images of 2,3,4,5,6,7,8,9 and only look at images of 0 and 1. Below are some examples of the images from MNIST.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<p>To process the images we will:</p>
+
+<ul>
+  <li>Flatten each image into a <span><span id="MJXp-Span-117"><span id="MJXp-Span-118">784</span><span id="MJXp-Span-119">=</span><span id="MJXp-Span-120">28</span><span id="MJXp-Span-121">×</span><span id="MJXp-Span-122">28</span></span></span> dimensional vector.</li>
+  <li>Use PCA to project each 784-dimensional vector to a 2-dimensional vector.</li>
+  <li>Plot the 2 dimensional vectors, with images of ‘0’ in red and images of ‘1’ in blue.</li>
+</ul>
+
+<p>The result looks like this.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<p>You can see that the zeros are clustered to the left, and the ones are clustered to the right. We could create a reasonable classifier by drawing a vertical line at <span><span id="MJXp-Span-123"><span id="MJXp-Span-124">x</span><span id="MJXp-Span-125">=</span><span id="MJXp-Span-126">−</span><span id="MJXp-Span-127">250</span></span></span>, and all we did was linearly project the raw pixels down to a two dimensional subspace!</p>
+
+<p>We can project onto any number of dimensions. Here is the three dimensional projection.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="scatter plot"></p>
+
+<h2 id="iii">III.</h2>
+
+<p>It’s not obvious why the eigenvalues and eigenvectors of the covariance matrix have all these useful properties. There are proofs at the end of the post, but they’re not particularly enlightening. Thankfully there’s a more intuitive way of thinking about it.</p>
+
+<p>Continuing with the MNIST example, let <span><span id="MJXp-Span-128"><span id="MJXp-Span-129"><span id="MJXp-Span-130">p</span><span id="MJXp-Span-131">1</span></span></span></span> be the vector where the <span><span id="MJXp-Span-132"><span id="MJXp-Span-133">i</span></span></span>-th entry is the first pixel in the <span><span id="MJXp-Span-134"><span id="MJXp-Span-135">i</span></span></span>-th image. Simlarly let <span><span id="MJXp-Span-136"><span id="MJXp-Span-137"><span id="MJXp-Span-138">p</span><span id="MJXp-Span-139">2</span></span><span id="MJXp-Span-140">,</span><span id="MJXp-Span-141"><span id="MJXp-Span-142">p</span><span id="MJXp-Span-143">3</span></span><span id="MJXp-Span-144">,</span><span id="MJXp-Span-145">…</span><span id="MJXp-Span-146">,</span><span id="MJXp-Span-147"><span id="MJXp-Span-148">p</span><span id="MJXp-Span-149"><span id="MJXp-Span-150">784</span></span></span></span></span> be the vectors consisting of the 2nd, 3rd … , 784th pixels across all images. Then</p>
+
+<p><span><span id="MJXp-Span-151"><span id="MJXp-Span-152">X</span><span id="MJXp-Span-153"><span id="MJXp-Span-154">X</span><span id="MJXp-Span-155">⊤</span></span><span id="MJXp-Span-156">=</span><span id="MJXp-Span-157"><span id="MJXp-Span-158"><span>(</span></span><span id="MJXp-Span-159"><span><span id="MJXp-Span-160"><span id="MJXp-Span-161"><span id="MJXp-Span-162">⟨</span><span id="MJXp-Span-163"><span id="MJXp-Span-164">p</span><span id="MJXp-Span-165">1</span></span><span id="MJXp-Span-166">,</span><span id="MJXp-Span-167"><span id="MJXp-Span-168">p</span><span id="MJXp-Span-169">1</span></span><span id="MJXp-Span-170">⟩</span></span><span id="MJXp-Span-171"><span id="MJXp-Span-172">⟨</span><span id="MJXp-Span-173"><span id="MJXp-Span-174">p</span><span id="MJXp-Span-175">1</span></span><span id="MJXp-Span-176">,</span><span id="MJXp-Span-177"><span id="MJXp-Span-178">p</span><span id="MJXp-Span-179">2</span></span><span id="MJXp-Span-180">⟩</span></span><span id="MJXp-Span-181"><span id="MJXp-Span-182">⋯</span></span><span id="MJXp-Span-183"><span id="MJXp-Span-184">⟨</span><span id="MJXp-Span-185"><span id="MJXp-Span-186">p</span><span id="MJXp-Span-187">1</span></span><span id="MJXp-Span-188">,</span><span id="MJXp-Span-189"><span id="MJXp-Span-190">p</span><span id="MJXp-Span-191"><span id="MJXp-Span-192">784</span></span></span><span id="MJXp-Span-193">⟩</span></span></span><span id="MJXp-Span-194"><span id="MJXp-Span-195"><span id="MJXp-Span-196">⟨</span><span id="MJXp-Span-197"><span id="MJXp-Span-198">p</span><span id="MJXp-Span-199">2</span></span><span id="MJXp-Span-200">,</span><span id="MJXp-Span-201"><span id="MJXp-Span-202">p</span><span id="MJXp-Span-203">1</span></span><span id="MJXp-Span-204">⟩</span></span><span id="MJXp-Span-205"><span id="MJXp-Span-206">⟨</span><span id="MJXp-Span-207"><span id="MJXp-Span-208">p</span><span id="MJXp-Span-209">2</span></span><span id="MJXp-Span-210">,</span><span id="MJXp-Span-211"><span id="MJXp-Span-212">p</span><span id="MJXp-Span-213">2</span></span><span id="MJXp-Span-214">⟩</span></span><span id="MJXp-Span-215"><span id="MJXp-Span-216">⋯</span></span><span id="MJXp-Span-217"><span id="MJXp-Span-218">⟨</span><span id="MJXp-Span-219"><span id="MJXp-Span-220">p</span><span id="MJXp-Span-221">2</span></span><span id="MJXp-Span-222">,</span><span id="MJXp-Span-223"><span id="MJXp-Span-224">p</span><span id="MJXp-Span-225"><span id="MJXp-Span-226">784</span></span></span><span id="MJXp-Span-227">⟩</span></span></span><span id="MJXp-Span-228"><span id="MJXp-Span-229"><span id="MJXp-Span-230">⋮</span></span><span id="MJXp-Span-231"><span id="MJXp-Span-232">⋮</span></span><span id="MJXp-Span-233"><span id="MJXp-Span-234">⋱</span></span><span id="MJXp-Span-235"><span id="MJXp-Span-236">⋮</span></span></span><span id="MJXp-Span-237"><span id="MJXp-Span-238"><span id="MJXp-Span-239">⟨</span><span id="MJXp-Span-240"><span id="MJXp-Span-241">p</span><span id="MJXp-Span-242"><span id="MJXp-Span-243">784</span></span></span><span id="MJXp-Span-244">,</span><span id="MJXp-Span-245"><span id="MJXp-Span-246">p</span><span id="MJXp-Span-247">1</span></span><span id="MJXp-Span-248">⟩</span></span><span id="MJXp-Span-249"><span id="MJXp-Span-250">⟨</span><span id="MJXp-Span-251"><span id="MJXp-Span-252">p</span><span id="MJXp-Span-253"><span id="MJXp-Span-254">784</span></span></span><span id="MJXp-Span-255">,</span><span id="MJXp-Span-256"><span id="MJXp-Span-257">p</span><span id="MJXp-Span-258">2</span></span><span id="MJXp-Span-259">⟩</span></span><span id="MJXp-Span-260"><span id="MJXp-Span-261">⋯</span></span><span id="MJXp-Span-262"><span id="MJXp-Span-263">⟨</span><span id="MJXp-Span-264"><span id="MJXp-Span-265">p</span><span id="MJXp-Span-266"><span id="MJXp-Span-267">784</span></span></span><span id="MJXp-Span-268">,</span><span id="MJXp-Span-269"><span id="MJXp-Span-270">p</span><span id="MJXp-Span-271"><span id="MJXp-Span-272">784</span></span></span><span id="MJXp-Span-273">⟩</span></span></span></span></span><span id="MJXp-Span-274"><span>)</span></span></span><span id="MJXp-Span-275">.</span></span></span></p><p>This matrix can be diagonalized <span><span id="MJXp-Span-276"><span id="MJXp-Span-277">X</span><span id="MJXp-Span-278"><span id="MJXp-Span-279">X</span><span id="MJXp-Span-280">⊤</span></span><span id="MJXp-Span-281">=</span><span id="MJXp-Span-282">U</span><span id="MJXp-Span-283">D</span><span id="MJXp-Span-284"><span id="MJXp-Span-285">U</span><span id="MJXp-Span-286"><span id="MJXp-Span-287">−</span><span id="MJXp-Span-288">1</span></span></span></span></span> where <span><span id="MJXp-Span-289"><span id="MJXp-Span-290">U</span></span></span> is a change of basis matrix and <span><span id="MJXp-Span-291"><span id="MJXp-Span-292">D</span><span id="MJXp-Span-293">=</span><span id="MJXp-Span-294">diag</span><span id="MJXp-Span-295"></span><span id="MJXp-Span-296">(</span><span id="MJXp-Span-297"><span id="MJXp-Span-298">λ</span><span id="MJXp-Span-299">1</span></span><span id="MJXp-Span-300">,</span><span id="MJXp-Span-301">⋯</span><span id="MJXp-Span-302">,</span><span id="MJXp-Span-303"><span id="MJXp-Span-304">λ</span><span id="MJXp-Span-305">n</span></span><span id="MJXp-Span-306">)</span></span></span> is diagonal.
+We can view the change of basis as creating new features <span><span id="MJXp-Span-307"><span id="MJXp-Span-308"><span id="MJXp-Span-309">p</span><span><span><span><span><span id="MJXp-Span-311">′</span></span></span></span><span><span><span><span id="MJXp-Span-310">1</span></span></span></span></span></span><span id="MJXp-Span-312">,</span><span id="MJXp-Span-313"><span id="MJXp-Span-314">p</span><span><span><span><span><span id="MJXp-Span-316">′</span></span></span></span><span><span><span><span id="MJXp-Span-315">2</span></span></span></span></span></span><span id="MJXp-Span-317">,</span><span id="MJXp-Span-318">…</span><span id="MJXp-Span-319">,</span><span id="MJXp-Span-320"><span id="MJXp-Span-321">p</span><span><span><span><span><span id="MJXp-Span-324">′</span></span></span></span><span><span><span><span id="MJXp-Span-322"><span id="MJXp-Span-323">748</span></span></span></span></span></span></span></span></span> from the original pixels. And the diagonal matrix is the covariance matrix for these new features.</p>
+
+<p>Since <span><span id="MJXp-Span-325"><span id="MJXp-Span-326">⟨</span><span id="MJXp-Span-327"><span id="MJXp-Span-328">p</span><span><span><span><span><span id="MJXp-Span-330">′</span></span></span></span><span><span><span><span id="MJXp-Span-329">i</span></span></span></span></span></span><span id="MJXp-Span-331">,</span><span id="MJXp-Span-332"><span id="MJXp-Span-333">p</span><span><span><span><span><span id="MJXp-Span-335">′</span></span></span></span><span><span><span><span id="MJXp-Span-334">j</span></span></span></span></span></span><span id="MJXp-Span-336">⟩</span><span id="MJXp-Span-337">=</span><span id="MJXp-Span-338">0</span></span></span> for <span><span id="MJXp-Span-339"><span id="MJXp-Span-340">i</span><span id="MJXp-Span-341">≠</span><span id="MJXp-Span-342">j</span></span></span> the features are independent, and the variance of <span><span id="MJXp-Span-343"><span id="MJXp-Span-344"><span id="MJXp-Span-345">p</span><span><span><span><span><span id="MJXp-Span-347">′</span></span></span></span><span><span><span><span id="MJXp-Span-346">i</span></span></span></span></span></span></span></span> is <span><span id="MJXp-Span-348"><span id="MJXp-Span-349">⟨</span><span id="MJXp-Span-350"><span id="MJXp-Span-351">p</span><span><span><span><span><span id="MJXp-Span-353">′</span></span></span></span><span><span><span><span id="MJXp-Span-352">i</span></span></span></span></span></span><span id="MJXp-Span-354">,</span><span id="MJXp-Span-355"><span id="MJXp-Span-356">p</span><span><span><span><span><span id="MJXp-Span-358">′</span></span></span></span><span><span><span><span id="MJXp-Span-357">i</span></span></span></span></span></span><span id="MJXp-Span-359">⟩</span><span id="MJXp-Span-360">=</span><span id="MJXp-Span-361"><span id="MJXp-Span-362">λ</span><span id="MJXp-Span-363">i</span></span></span></span>.</p>
+
+<p>So given a vector of pixels <span><span id="MJXp-Span-364"><span id="MJXp-Span-365">x</span></span></span>, we can convert <span><span id="MJXp-Span-366"><span id="MJXp-Span-367">x</span></span></span> into a vector of new features <span><span id="MJXp-Span-368"><span id="MJXp-Span-369"><span id="MJXp-Span-370">x</span><span id="MJXp-Span-371">′</span></span></span></span> by applying a change of basis. Then the eigenvalues <span><span id="MJXp-Span-372"><span id="MJXp-Span-373"><span id="MJXp-Span-374">λ</span><span id="MJXp-Span-375">i</span></span></span></span> are the variances of the new features, it seems reasonable that the features with the largest variance are the most important, while the features with the smallest variance can be discarded.</p>
+
+<h2 id="iv">IV.</h2>
+
+<p>Now that we have some intuition, the preceding discussion can be formalized into a theorem.</p>
+
+<p><strong>Theorem:</strong> Let <span><span id="MJXp-Span-376"><span id="MJXp-Span-377"><span id="MJXp-Span-378">x</span><span id="MJXp-Span-379">1</span></span><span id="MJXp-Span-380">,</span><span id="MJXp-Span-381">…</span><span id="MJXp-Span-382">,</span><span id="MJXp-Span-383"><span id="MJXp-Span-384">x</span><span id="MJXp-Span-385">n</span></span><span id="MJXp-Span-386">∈</span><span id="MJXp-Span-387"><span id="MJXp-Span-388"><span id="MJXp-Span-389">R</span></span><span id="MJXp-Span-390">d</span></span></span></span> be a sequence of data points. 
+Let</p>
+
+<p><span><span id="MJXp-Span-391"><span id="MJXp-Span-392">X</span><span id="MJXp-Span-393">=</span><span id="MJXp-Span-394"><span id="MJXp-Span-395"><span>(</span></span><span id="MJXp-Span-396"><span><span id="MJXp-Span-397"><span id="MJXp-Span-398"><span id="MJXp-Span-399"><span id="MJXp-Span-400">|</span></span></span><span id="MJXp-Span-401"><span id="MJXp-Span-402"><span id="MJXp-Span-403">|</span></span></span><span id="MJXp-Span-404"></span><span id="MJXp-Span-405"><span id="MJXp-Span-406"><span id="MJXp-Span-407">|</span></span></span></span><span id="MJXp-Span-408"><span id="MJXp-Span-409"><span id="MJXp-Span-410"><span id="MJXp-Span-411">x</span><span id="MJXp-Span-412">1</span></span></span><span id="MJXp-Span-413"><span id="MJXp-Span-414"><span id="MJXp-Span-415">x</span><span id="MJXp-Span-416">2</span></span></span><span id="MJXp-Span-417"><span id="MJXp-Span-418">⋯</span></span><span id="MJXp-Span-419"><span id="MJXp-Span-420"><span id="MJXp-Span-421">x</span><span id="MJXp-Span-422">n</span></span></span></span><span id="MJXp-Span-423"><span id="MJXp-Span-424"><span id="MJXp-Span-425"><span id="MJXp-Span-426">|</span></span></span><span id="MJXp-Span-427"><span id="MJXp-Span-428"><span id="MJXp-Span-429">|</span></span></span><span id="MJXp-Span-430"></span><span id="MJXp-Span-431"><span id="MJXp-Span-432"><span id="MJXp-Span-433">|</span></span></span></span></span></span><span id="MJXp-Span-434"><span>)</span></span></span></span></span></p><p>be the <span><span id="MJXp-Span-435"><span id="MJXp-Span-436">d</span><span id="MJXp-Span-437">×</span><span id="MJXp-Span-438">n</span></span></span> matrix where each column is a data point.
+Let <span><span id="MJXp-Span-439"><span id="MJXp-Span-440">W</span><span id="MJXp-Span-441">=</span><span id="MJXp-Span-442">X</span><span id="MJXp-Span-443"><span id="MJXp-Span-444">X</span><span id="MJXp-Span-445">⊤</span></span></span></span> (the <span><span id="MJXp-Span-446"><span id="MJXp-Span-447"><span><span id="MJXp-Span-448">1</span></span><span><span><span><span></span></span><span><span><span id="MJXp-Span-449">n</span><span id="MJXp-Span-450">−</span><span id="MJXp-Span-451">1</span></span></span></span></span></span></span></span> factor from before does not affect the eigenvectors or the relative order of the eigenvalues).
+Then <span><span id="MJXp-Span-452"><span id="MJXp-Span-453">W</span></span></span> is <a href="https://en.wikipedia.org/wiki/Positive-definite_matrix#Positive_semidefinite">positive semidefinite</a> and hence has eigenvectors <span><span id="MJXp-Span-454"><span id="MJXp-Span-455"><span id="MJXp-Span-456">u</span><span id="MJXp-Span-457">1</span></span><span id="MJXp-Span-458">,</span><span id="MJXp-Span-459">…</span><span id="MJXp-Span-460">,</span><span id="MJXp-Span-461"><span id="MJXp-Span-462">u</span><span id="MJXp-Span-463">d</span></span></span></span> which form an <a href="https://en.wikipedia.org/wiki/Orthonormal_basis">orthonormal basis</a> for <span><span id="MJXp-Span-464"><span id="MJXp-Span-465"><span id="MJXp-Span-466"><span id="MJXp-Span-467">R</span></span><span id="MJXp-Span-468">d</span></span></span></span>.
+Let <span><span id="MJXp-Span-469"><span id="MJXp-Span-470"><span id="MJXp-Span-471">λ</span><span id="MJXp-Span-472">1</span></span><span id="MJXp-Span-473">,</span><span id="MJXp-Span-474">…</span><span id="MJXp-Span-475">,</span><span id="MJXp-Span-476"><span id="MJXp-Span-477">λ</span><span id="MJXp-Span-478">d</span></span></span></span> be the corresponding eigenvalues and without loss of generality assume <span><span id="MJXp-Span-479"><span id="MJXp-Span-480"><span id="MJXp-Span-481">λ</span><span id="MJXp-Span-482">1</span></span><span id="MJXp-Span-483">≥</span><span id="MJXp-Span-484"><span id="MJXp-Span-485">λ</span><span id="MJXp-Span-486">2</span></span><span id="MJXp-Span-487">⋯</span><span id="MJXp-Span-488">≥</span><span id="MJXp-Span-489"><span id="MJXp-Span-490">λ</span><span id="MJXp-Span-491">d</span></span></span></span>.
+The <em>projection error</em> for <span><span id="MJXp-Span-492"><span id="MJXp-Span-493"><span id="MJXp-Span-494">x</span><span id="MJXp-Span-495">i</span></span></span></span> onto a subspace <span><span id="MJXp-Span-496"><span id="MJXp-Span-497">V</span><span id="MJXp-Span-498">⊂</span><span id="MJXp-Span-499"><span id="MJXp-Span-500"><span id="MJXp-Span-501">R</span></span><span id="MJXp-Span-502">d</span></span></span></span> is defined as <span><span id="MJXp-Span-503"><span id="MJXp-Span-504">‖</span></span></span> where <span>P_V:\mathbb{R}^d \to \mathbb{R}^d</span> is the projection-onto-<span>V</span> operator.
+Then for any positive integer <span>m &lt; d</span> the subspace <span>U_m := \operatorname{span}\{u_1, \dots , u_m\}</span> minimizes the sum of the projection errors. In symbols,</p>
+
+<p><span>\sum_{i=1}^n \|x_i - P_{U_m}x_i\|_2^2 = \min_{\substack{V \subset \mathbb{R}^d \\ \operatorname{dim}V = m}} \sum_{i=1}^n \|x_i - P_Vx_i\|_2^2.</span></p><p><em>Proof:</em></p>
+
+<p>Fix <span>m &lt; d</span> and let <span>V \subset \mathbb{R}^d</span> be an <span>m</span>-dimensional subspace. Define the <span>d \times n</span> error matrix
+<span>
+E = 
+\begin{pmatrix}
+    | &amp; | &amp;  &amp; |\\
+     x_1 - P_Vx_1  &amp; x_2 - P_Vx_2 &amp; \cdots &amp; x_n - P_Vx_n\\
+     | &amp; | &amp;  &amp; | \\
+\end{pmatrix}
+= X - P_VX.
+</span>
+We want to minimize
+<span>
+\sum_{i=1}^n \|x_i - P_Vx_i\|_2^2 = \|E\|_F^2
+</span>
+where <span>\|\cdot \|_F</span> is the <a href="https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm">Frobenius norm</a>.
+We now rewrite the error using matrix algebra
+<span>
+\begin{align}\newcommand{\tr}{\mathrm{tr}}
+\|E \|_F^2 
+&amp;= \| X- P_VX\|_F^2 \\
+&amp;=\tr\left(( X- P_VX)( X- P_VX)^\top\right) &amp; (\|A \|_F^2 = \tr(A^\top A)) \\
+&amp;=\tr\left(( X- P_VX)( X^\top - X^\top P_V^\top)\right) \\
+&amp;=\tr\left(XX^\top - XX^\top P_V^\top - P_VXX^\top + P_VXX^\top P_V^\top \right) \\
+&amp;=\tr\left(W- W P_V^\top - P_VW + P_VW P_V^\top \right) &amp; (W = XX^\top)\\
+&amp;=\tr\left(W- W P_V - P_VW + P_VW P_V \right) &amp; (P_V = P_V^\top )\\
+&amp;=\tr(W)- \tr(W P_V) - \tr(P_VW) + \tr(P_VW P_V ) \\
+&amp;=\tr(W)- \tr(P_VW ) - \tr(P_VW) + \tr(P_VW) &amp; (\tr(AB) = \tr(BA) \text{ and } P_V^2 = P_V)\\
+&amp;=\tr(W)- \tr(P_VW).
+\end{align}
+</span></p>
+
+<p>The quantity <span>\mathrm{tr}(W)</span> is a constant, so minimizing <span>\|E \|_F^2</span> is the same as maximizing <span>\tr(P_VW)</span>. Let <span>\{v_1, \dots , v_m\} \subset \mathbb{R}^d</span> be an orthonormal basis for <span>V</span>. Then 
+<span>
+P_V = \sum_{i = 1}^m v_iv_i^\top
+</span>
+so
+<span>
+\begin{align}\newcommand{\tr}{\mathrm{tr}}
+    \tr(P_VW)
+    &amp;= \tr\left(\sum_{i = 1}^m v_iv_i^\top W \right) \\
+    &amp;= \sum_{i=1}^m \tr\left(v_iv_i^\top W\right) \\
+    &amp;= \sum_{i=1}^m \tr(v_i^\top W v_i) &amp; (\tr(AB) = \tr(BA)).
+\end{align}
+</span></p>
+
+<p>Let 
+<span>
+U = \begin{pmatrix}
+| &amp; | &amp;  &amp; | \\
+u_1 &amp; u_2 &amp;\cdots &amp; u_d \\
+| &amp; | &amp;  &amp; |\end{pmatrix}
+</span>
+where the <span>u_i \in \mathbb{R}^d</span> are the eigenvectors of <span>W</span> as stated in the theorem. The matrix <span>U</span> diagonalizes <span>W</span> so <span>W = UDU^{-1} =  UDU^\top</span> where 
+<span>D = \begin{pmatrix}
+\lambda_1 &amp; 0 &amp; \dots &amp; 0 \\
+0 &amp; \lambda_2 &amp; \dots &amp; 0 \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+0 &amp; 0 &amp; \dots &amp; \lambda_n
+\end{pmatrix}.
+</span>
+Now
+<span>
+\begin{align}\newcommand{\tr}{\mathrm{tr}}
+\tr(P_VW)
+&amp;= \sum_{i=1}^m \tr(v_i^\top W v_i)  \\
+&amp;= \sum_{i=1}^m \tr(v_i^\top UDU^\top v_i)  \\
+&amp;= \sum_{i=1}^m  \tr((U^\top v_i)^\top D (U^\top v_i) 
+\end{align}
+</span></p>
+
+<p>If <span>v_i = u_i</span> for all <span>1 \leq i \leq m</span> then 
+<span>U^\top v_i = U^\top u_i = (0, \dots, 0, 1, 0, \dots, 0)^\top</span>
+is the <span>i</span>-th standard basis vector. Thus 
+<span>
+\begin{align}\newcommand{\tr}{\mathrm{tr}}
+\tr(P_VW)
+&amp;= \sum_{i=1}^m  \tr((U^\top v_i)^\top D (U^\top v_i) \\
+&amp;= \sum_{i=1}^m \lambda_i
+\end{align}
+</span></p>
+
+<p>Therefore it suffices to show that <span>\mathrm{tr}(P_VW) \leq \sum_{i=1}^m \lambda_i</span> for all dimension <span>m</span> subspaces <span>V</span>.</p>
+
+<p>We will show this is true in the case <span>m = 2</span>, i.e. <span>\mathrm{tr}(P_VW) \leq \lambda_1 + \lambda_2</span> when <span>V</span> is 2 dimensional. The case <span>m &gt; 2</span> uses the same argument but it is more notationally heavy. Let <span>\alpha = U^\top v_1 \in \mathbb{R}^d</span> and <span>\beta =U^\top v_2 \in \mathbb{R}^d</span>. Note that since <span>U</span> is unitary <span>\|\alpha\|_2^2 = \|\beta\|_2^2 = 1</span> and <span>\langle \alpha, \beta \rangle = 0</span>.</p>
+
+<p>The first step is to show that <span>\alpha_i^2 + \beta_i^2 \leq 1</span> for all <span>i</span>. Let <span>e_i = (0, \dots , 0, 1, 0, \dots , 0)</span> be the <span>i</span>-th standard basis vector. Since <span>\alpha</span> and <span>\beta</span> are orthogonal and have length 1, the projection of <span>e_i</span> onto <span>\operatorname{span}\{\alpha, \beta \}</span> is given by
+<span>\hat{e}_i = \langle e_i, \alpha \rangle \alpha + \langle e_i, \beta \rangle \beta = \alpha_i \alpha + \beta_i \beta .</span>
+Then
+<span> \alpha_i^2 + \beta_i^2 = \|\hat{e_i}\|_2^2 \leq \|e_i\|_2^2 = 1 </span>
+since a projected vector always has length less than or equal to the original vector.</p>
+
+<p>The second step is to observe that <span>\sum_{i=1}^d (\alpha_i^2 + \beta_i^2) = \|\alpha \|_2^2 + \|\beta \|_2^2 = 2</span>.</p>
+
+<p>Finally, we want to maximize 
+<span> \mathrm{tr}(P_VW) = \sum_{i=1}^d \lambda_i(\alpha_i^2 + \beta_i^2) </span>
+and we know that
+<span>\alpha_i^2 + \beta_i^2 \leq 1 \text{ and } \sum_{i=1}^d(\alpha_i^2 + \beta_i^2) = 2 .</span></p>
+
+<p>The eigenvalues of a positive semidefinite matrix are nonnegative so the sum <span>\sum_{i=1}^d \lambda_i(\alpha_i^2 + \beta_i^2)</span> is maximized when when the first and second coefficient are as large as possible, i.e. when <span>\alpha_1^2 + \beta_1^2 = \alpha_2^2 + \beta_2^2 = 1</span>. But then the second condition implies that <span>\alpha_i^2 + \beta_i^2 = 0</span> for <span>i &gt; 2</span>. Thus
+<span> \mathrm{tr}(P_VW) = \sum_{i=1}^d \lambda_i(\alpha_i^2 + \beta_i^2) \leq \lambda_1 + \lambda_2. </span>
+<span>\square</span></p>
+
+<p>We also need to prove that the size of the eigenvalue is proportional to the variance in the direction of the corresponding eigenvector.</p>
+
+<p><strong>Theorem:</strong> As in the previous theorem let <span>X = \begin{pmatrix}x_1 &amp; x_2 &amp; \cdots &amp; x_n \end{pmatrix}</span> be the data matrix, <span>W = XX^\top</span> the covariance matrix, <span>u_1, \dots , u_d</span> the eigenvectors of <span>W</span> and <span>\lambda_1, \dots , \lambda_d</span> the eigenvalues. Let <span>P_{u_i}: \mathbb{R}^d \to \mathbb{R}^d</span> be the projection operator onto the subspace <span>\mathrm{span}\{u_i\}</span>. Then <span>
+    \sum_{j=1}^m\|P_{u_i}x_j\|_2^2 = \lambda_i
+</span> </p>
+
+<p><em>Proof:</em> </p>
+
+<p>
+The working is similar to the previous proof so I'll omit some steps.
+<span>
+\begin{align}
+\sum_{j=1}^m\|P_{u_i}x_j\|_2^2 
+&amp;= \|u_iu_i^\top X\|_F^2 \\
+&amp;= \mathrm{tr}((u_iu_i^\top X)(u_iu_i^\top X)^\top)  \\
+&amp;= \mathrm{tr}(u_i^\top W u_i)  \\
+&amp;=  \mathrm{tr}((U^\top u_i)^\top D (U^\top u_i) \\
+&amp;= \lambda_i .
+\end{align}
+</span> 
+</p>
+
+<p><a href="https://news.ycombinator.com/item?id=19356584">Comment on Hacker News.</a></p>
+
+<hr>
+<p><b id="f1">1</b> I actually scaled by two times the square root of the eigenvalue. The eigenvalue tells you the variance and I wanted the standard deviation. I multiplied by two so that ellipse would capture most of the data. <a href="#a1">↩</a></p>
+
+  </div>
+</article>
+      </div></div>
+  </div>
+</body>
+</html>

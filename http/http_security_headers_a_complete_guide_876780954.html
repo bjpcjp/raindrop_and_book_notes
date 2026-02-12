@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HTTP Security Headers - A Complete Guide</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>HTTP Security Headers - A Complete Guide</h1>
+    <p><strong>URL:</strong> <a href="https://nullsweep.com/http-security-headers-a-complete-guide">https://nullsweep.com/http-security-headers-a-complete-guide</a></p>
+    <p><strong>Tags:</strong> http</p>
+    <p><strong>Bookmark ID:</strong> 876780954</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+
+
+
+			
+			
+			<section>
+					<p>Companies selling "security scorecards" are on the rise, and have started to become a factor in enterprise sales. I have heard from customers who were concerned about purchasing from suppliers who had been given poor ratings, and in at least one case changed a purchasing decision based initially on the rating.</p><p>I investigated how these ratings companies calculate company security scores, and it turns out they use a combination of HTTP security header usage and IP reputation.</p><p>IP reputation is based on blacklists and spam lists combined with public IP ownership data. These should generally be clean as long as your company doesn't spam and can quickly detect and stop malware infections. HTTP security header usage is calculated similar to how the <a href="https://observatory.mozilla.org/?ref=nullsweep.com">Mozilla Observatory</a> works.</p><p>Therefore, for most companies, their score is largely determined by the security headers being set on public facing websites. </p><p>Setting the right headers can be done quickly (usually without significant testing), can improve website security, and can now help you win deals with security conscious customers.</p><p>I am dubious about the value of this test methodology and exorbitant pricing schemes these companies ask. I don't believe it correlates to real product security all that well. However it certainly increases the importance of spending time setting headers and getting them right.</p><p>In this article, I will walk through the commonly evaluated headers, recommend security values for each, and give a sample header setting. At the end of the article, I will include sample setups for common applications and web servers.</p><h3 id="content-security-policy">Content-Security-Policy</h3><p>A CSP is used to prevent cross site scripting by specifying which resources are allowed to load. Of all the items in this list, this is perhaps the most time consuming to create and maintain properly and the most prone to risks. During development of your CSP, be careful to test it thoroughly – blocking a content source that your site uses in a valid way will break site functionality.</p><p>A great tool for creating a first draft is the <a href="https://addons.mozilla.org/en-US/firefox/addon/laboratory-by-mozilla/?ref=nullsweep.com">Mozilla laboratory CSP browser extension</a>. Install this in your browser, thoroughly browse the site you want to create a CSP for, and then use the generated CSP on your site. &nbsp;Ideally, also work to refactor the JavaScript so no inline scripts remain, so you can remove the 'unsafe inline' directive.</p><p>CSP's can be complex and confusing, so if you want a deeper dive, see the <a href="https://content-security-policy.com/?ref=nullsweep.com">official site</a>.</p><p>A good starting CSP might be the following (this likely requires a lot of modifications on a real site). Add domains in each section that your site includes somewhere.</p><!--kg-card-begin: markdown--><pre><code># Default to only allow content from the current site
+# Allow images from current site and imgur.com
+# Don't allow objects such as Flash and Java
+# Only allow scripts from the current site
+# Only allow styles from the current site
+# Only allow frames from the current site
+# Restrict URL's in the &lt;base&gt; tag to current site
+# Allow forms to submit only to the current site
+Content-Security-Policy: default-src 'self'; img-src 'self' https://i.imgur.com; object-src 'none'; script-src 'self'; style-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self';
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="strict-transport-security">Strict-Transport-Security</h3><p>This header tells the browser that the site should only be accessed via HTTPS – always enable when your site has HTTPS enabled. If you use subdomains, I also recommend enforcing this on any used sub domains.</p><!--kg-card-begin: markdown--><pre><code>Strict-Transport-Security: max-age=3600; includeSubDomains
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="x-content-type-options">X-Content-Type-Options</h3><p>This header ensures that the MIME types set by the application are respected by browsers. This can help prevent certain types of cross site scripting bypasses. </p><p>It also reduces unexpected application behavior where a browser may “guess” some kind of content incorrectly, such as when a developer labels a page “HTML” but the browser thinks it looks like JavaScript and tries to render it as JavaScript. This header will ensure the browser always respects the MIME type set by the server.</p><!--kg-card-begin: markdown--><pre><code>X-Content-Type-Options: nosniff
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="cache-control">Cache-Control</h3><p>This one is a bit trickier than the others because you likely want different caching policies for different content types. </p><p>Any page with sensitive data, such as a user page or a customer checkout page, should be set to no-cache. One reason for this is preventing someone on a shared computer from pressing the back button or going through history and being able to view personal information.</p><p>However, pages that change rarely, such as static assets (images, CSS files, and JS files), are good to cache. This could be done on a page by page basis, or using regex on the server configuration.</p><!--kg-card-begin: markdown--><pre><code># Don’t cache by default
+Header set Cache-Control no-cache
+
+# Cache static assets for 1 day
+&lt;filesMatch ".(css|jpg|jpeg|png|gif|js|ico)$"&gt;
+    Header set Cache-Control "max-age=86400, public"
+&lt;/filesMatch&gt;
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="expires">Expires</h3><p>This sets the time the cache should expire the current request. It is ignored if the Cache-Control max-age header is set, so we only set it in case a naive scanner is testing for it without considering cache-control. </p><p>For security purposes, we will assume that the browser should not cache anything, so we’ll set this to a date that always evaluates to the past.</p><!--kg-card-begin: markdown--><pre><code>Expires: 0
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="x-frame-options">X-Frame-Options</h3><p>This header indicates whether the site should be allowed to be displayed within an iFrame. </p><p>If a malicious site puts your website within an iFrame, the malicious site is able to perform a click jacking attack by running some JavaScript that will capture mouse clicks on the iFrame and then interact with the site on the users behalf (not necessarily clicking where they think they clicked!). </p><p>This should always be set to deny unless you are specifically using frames, in which case it should be set to same-origin. If you are using Frames with another site by design, you can white list the other domain here as well.</p><p>It should also be noted that this header is superseded by the CSP frame-ancestors directive. I still recommend setting this for now to appease tools, but in the future it will likely be phased out.</p><!--kg-card-begin: markdown--><pre><code>X-Frame-Options: deny
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="access-control-allow-origin">Access-Control-Allow-Origin</h3><p>Tell the browser which other sites' front end JavaScript code may make requests of the page in question. Unless you need to set this, the default is usually the right setting.</p><p>For instance, if SiteA serves up some JavaScript which wants to make a request to siteB, then siteB must serve the response with the header specifying that SiteA is allowed to make this request. If you need to set multiple origins, see the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin?ref=nullsweep.com">details page on MDN</a>.</p><p>This can be a little confusing, so I drew up a diagram to illustrate how this header functions:</p><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy"><figcaption>Data flow with Access-Control-Allow-Origin</figcaption></figure><!--kg-card-begin: markdown--><pre><code>Access-Control-Allow-Origin: http://www.one.site.com
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="set-cookie">Set-Cookie</h3><p>Ensure that your cookies are sent via HTTPS (encrypted) only, and that they are not accessible via JavaScript. You can only send HTTPS cookies if your site also supports HTTPS, which it should. You should always set the following flags:</p><ul><li>Secure</li><li>HttpOnly</li></ul><p>A sample Cookie definition:</p><!--kg-card-begin: markdown--><pre><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Domain=&lt;domain-value&gt;; Secure; HttpOnly
+</code></pre>
+<!--kg-card-end: markdown--><p>See the excellent <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie?ref=nullsweep.com">Mozilla documentation</a> on cookies for more information. </p><h3 id="x-xss-protection">X-XSS-Protection</h3><p>This header instructs browsers to halt execution of detected cross site scripting attacks. It is generally low risk to set, but should still be tested before putting in production.</p><!--kg-card-begin: markdown--><pre><code>X-XSS-Protection: 1; mode=block
+</code></pre>
+<!--kg-card-end: markdown--><h2 id="web-server-example-configurations">Web Server Example Configurations</h2><p>Generally, it's best to add headers site-wide in your server configuration. Cookies are the exception here, as they are often defined in the application itself.</p><p>Before adding any headers to your site, I recommend first checking the observatory or manually looking at headers to see which are set already. Some frameworks and servers will automatically set some of these for you, so only implement the ones you need or want to change.</p><h3 id="apache-configuration">Apache Configuration</h3><p>A sample Apache setting in .htaccess:</p><!--kg-card-begin: markdown--><pre><code>&lt;IfModule mod_headers.c&gt;
+    ## CSP
+    Header set Content-Security-Policy: default-src 'self'; img-src 'self' https://i.imgur.com; object-src 'none'; script-src 'self'; style-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self';
+
+    ## General Security Headers
+    Header set X-XSS-Protection: 1; mode=block
+    Header set Access-Control-Allow-Origin: http://www.one.site.com
+    Header set X-Frame-Options: deny
+    Header set X-Content-Type-Options: nosniff
+    Header set Strict-Transport-Security: max-age=3600; includeSubDomains
+
+    ## Caching rules
+    # Don’t cache by default
+    Header set Cache-Control no-cache
+    Header set Expires: 0
+
+    # Cache static assets for 1 day
+    &lt;filesMatch ".(ico|css|js|gif|jpeg|jpg|png|svg|woff|ttf|eot)$"&gt;
+        Header set Cache-Control "max-age=86400, public"
+    &lt;/filesMatch&gt;
+
+&lt;/IfModule&gt;
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="nginx-configuration">Nginx Configuration</h3><!--kg-card-begin: markdown--><pre><code>## CSP
+add_header Content-Security-Policy: default-src 'self'; img-src 'self' https://i.imgur.com; object-src 'none'; script-src 'self'; style-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self';
+
+## General Security Headers
+add_header X-XSS-Protection: 1; mode=block;
+add_header Access-Control-Allow-Origin: http://www.one.site.com;
+add_header X-Frame-Options: deny;
+add_header X-Content-Type-Options: nosniff;
+add_header Strict-Transport-Security: max-age=3600; includeSubDomains;
+
+## Caching rules
+# Don’t cache by default
+add_header Cache-Control no-cache;
+add_header Expires: 0;
+
+# Cache static assets for 1 day
+location ~* \.(?:ico|css|js|gif|jpe?g|png|svg|woff|ttf|eot)$ {
+    try_files $uri @rewriteapp;
+    add_header Cache-Control "max-age=86400, public";
+}
+</code></pre>
+<!--kg-card-end: markdown--><p>If you don't have access to the web server, or have complex header setting needs, you may want to set these in the application itself. This can usually be done with framework middleware for an entire site, and on a per-response basis for one-off header setting.</p><p>I only included one header for brevity in the examples. Add all that are needed via this method in the same way.</p><h3 id="node-and-express-">Node and express:</h3><p>Add a global mount path:</p><!--kg-card-begin: markdown--><pre><code>app.use(function(req, res, next) {
+    res.header('X-XSS-Protection', 1; mode=block);    
+    next();
+});
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="java-and-spring-">Java and Spring:</h3><p>I don't have a lot of experience with Spring, but <a href="https://www.baeldung.com/spring-response-header?ref=nullsweep.com">Baeldung</a> has a great guide to header setting in Spring. </p><h3 id="php-">PHP:</h3><p>I am not familiar with the various PHP frameworks. Look for middleware that can handle requests. For a single response, it is very simple.</p><!--kg-card-begin: markdown--><pre><code>header("X-XSS-Protection: 1; mode=block");
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="python-django">Python / Django</h3><p>Django includes configurable <a href="https://docs.djangoproject.com/en/2.2/ref/middleware/?ref=nullsweep.com">security middleware</a> that can handle all these settings for you. Enable those first.</p><p>For specific pages, you can treat the response like a dictionary. Django has a special way to handle caching that should be investigated if trying to set cache headers this way.</p><!--kg-card-begin: markdown--><pre><code>response = HttpResponse()
+response["X-XSS-Protection"] = "1; mode=block"
+</code></pre>
+<!--kg-card-end: markdown--><h2 id="conclusions">Conclusions</h2><p>Setting headers is relatively quick and easy. You will have a fairly significant increase in your site security for data protection, cross site scripting, and click jacking. </p><p>You also ensure you don't lose future business deals as a result of company security ratings that rely on this information. This practice seems to be increasing, and I expect it to continue to play a role in enterprise sales in future years.</p><p>Did I miss a header you think should be included? Let me know!</p>
+				</section>
+		</article></div>
+  </div>
+</body>
+</html>

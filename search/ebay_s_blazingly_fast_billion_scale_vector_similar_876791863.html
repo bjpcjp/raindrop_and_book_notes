@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>eBay’s Blazingly Fast Billion-Scale Vector Similarity Engine</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>eBay’s Blazingly Fast Billion-Scale Vector Similarity Engine</h1>
+    <p><strong>URL:</strong> <a href="https://tech.ebayinc.com/engineering/ebays-blazingly-fast-billion-scale-vector-similarity-engine">https://tech.ebayinc.com/engineering/ebays-blazingly-fast-billion-scale-vector-similarity-engine</a></p>
+    <p><strong>Tags:</strong> ecommerce, machine-learning, search, vector-databases</p>
+    <p><strong>Bookmark ID:</strong> 876791863</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+				
+				<h3 dir="ltr">Introduction</h3>
+<p dir="ltr">Often, ecommerce marketplaces provide buyers with listings similar to those previously visited by the buyer, as well as a personalized shopping experience based on profiles, past shopping histories and behavior signals such as clicks, views and additions to cart. These are vital to the shopping experience, and so it’s equally vital that we continuously improve accuracy and robustness in scalability and performance.</p>
+<p dir="ltr">eBay has approximately 134 million users and 1.7 billion live listings at any given time on the marketplace, as of December 2022. Recently, the eBay CoreAI team launched an "Approximate Nearest Neighbor" (ANN) vector similarity engine that provides tooling to build use cases that match semantically similar items and personalize recommendations. More specifically, given an input listing, the similarity engine finds the most similar listings based on listing attributes (title, aspect, image) for item-to-item similarity or generates personalized listing recommendations based on a user’s past browsing activity for user-to-item objective.</p>
+<p dir="ltr">This article takes a look at the architecture we constructed for vector-based similarity, meeting the scale using data sharding, partitioning and replication, and features including attribute-based features and a pluggable ANN backend based on index building, recall accuracy, latencies and memory footprint.</p>
+
+<h3 dir="ltr">What is Vector Similarity?</h3>
+<p dir="ltr">Keyword-based retrieval methods often struggle with certain challenges. Among those are words that have a dual meaning (otherwise known as homonyms); more targeted keyword phrases in which users add a great deal of detail (long tail queries); and user intent. In addition, there are many users who are unfamiliar with the jargon of a particular category, or users who do exploratory searches to figure out what their next, more important search will be.</p>
+<p dir="ltr"><span id="docs-internal-guid-dbcdb193-7fff-1889-628b-6e3c32c74398">Vector-based similarity for deep learning (DL)models tackles these and other keyword-based retrieval pitfalls. The paradigm for building semantic matching systems is computing vector representations of the entities. These vector representations are often called embeddings. Items that are close to each other in the embedding space are more similar to each other.</span></p>
+<p dir="ltr"><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-1.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 1" width="600" height="224"></a></p>
+<p dir="ltr">Traditional nearest neighbor algorithms, like k-Nearest Neighbor Algorithm (kNN), are prohibitively computationally expensive and are not suitable for applications where a low latency response is needed. Approximate Nearest Neighbor (ANN) sacrifices perfect accuracy in exchange for executing efficiently in high dimensional embedding spaces, at scale.</p>
+<p dir="ltr">eBay's Similarity Engine uses an ANN algorithm called Hierarchical Navigable Small World Graphs (HNSW) and Scalable Nearest Neighbors (ScaNN). ANN techniques speed up the search by preprocessing the data into an efficient index, and are often tackled using data structures like inverted files, trees and neighborhood graphs.</p>
+
+<h3 dir="ltr">eBay Similarity Engine</h3>
+<p dir="ltr">Here are some of the key features of the eBay Similarity Engine:</p>
+<p dir="ltr"><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-2.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 2" width="600" height="284"></a></p>
+<p dir="ltr">eBay Similarity Engine is a billion-scale vector similarity matching engine, deployed on eBay's private cloud. It is a lightning-fast and massively scalable nearest neighbor search that can handle thousands of requests per second and returns similarity results in less than 25 milliseconds for 95 percent of the responses while searching through eBay's entire active inventory of 1.7 billion items. It supports attribute-based filtering, which allows the user to specify attributes such as item location, item category, item attributes and more at the time of query to improve relevance. It also supports multiple distance matrices: Squared L2, Inner product, Cosine similarity, and Hamming distance. And it supports multiple ANN backends, including:</p>
+<ul>
+<li>
+<p dir="ltr"><a href="https://arxiv.org/pdf/1603.09320.pdf">HNSW</a>, a graph-based search algorithm. We use our own modified&nbsp;<a href="https://github.corp.ebay.com/ppetrushkov/google-research/tree/scann-experiments-dynamic/scann">version</a> with various improvements.</p>
+</li>
+<li>
+<p dir="ltr"><a href="https://arxiv.org/pdf/1908.10396.pdf">ScaNN</a>, an efficient search implementation from Google based on product quantization and partitioning.</p>
+</li>
+</ul>
+<h3 dir="ltr">Similarity Engine Building Blocks</h3>
+<p dir="ltr"><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-3.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 3" width="600" height="332"></a></p>
+<p dir="ltr">In vector similarity lookup, we build embeddings representing images, listing titles and aspects, storing them in an index (a database for embeddings), and then searching through that index with input embedding. The Similarity Engine serves tens of thousands of requests per second over a low-latency representational state transfer (REST) API to meet high-volume production traffic requirements.</p>
+<p dir="ltr">Here are the key building blocks of the eBay Similarity Engine.</p>
+<p><span id="docs-internal-guid-3846bc40-7fff-3474-7bc7-f2eda759605a"><strong>Index Builder:</strong> The index builder is a distributed process in which multiple nodes and/or executors are used to create a sharded ANN index. Shards are the basic units of scale here. Sharding allows application memory and CPU resources to be resized by partitioning data into smaller chunks that can be distributed across multiple clusters of query nodes to serve the incoming traffic.</span></p>
+<p dir="ltr">The ingestion service will record submitted index builder requests in the job-metadata store, from which the task scheduler will pick up and manage the distributed index building.</p>
+<p dir="ltr"><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-4.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 4" width="600" height="356"></a></p>
+<p dir="ltr">The index builder nodes will partition the input embedding files based on the shard key or clustering algorithm in a pre-processing task called a "shard," and will build a HNSW or ScaNN index for every shard. The task scheduler will monitor distributed building processes on index builder nodes and restart or reschedule them on a different node if necessary.</p>
+<p dir="ltr"><strong>Query Node:</strong> Once the index shards are created by the index builder and copied to the shared storage, the query node will automatically pick up the newest index according to its timestamp and load it into memory in the background. Following that, it performs a hot swap operation, refreshing the in-memory active index without any downtime.</p>
+<p dir="ltr">In order to keep the index up-to-date for near-real-time functionality, query nodes can be configured to periodically pool the similarity engine's delta service to get embeddings for new or modified listings. Query Node is a high-performance ANN microservice written in C++. For high availability and fault tolerance, the query nodes are replicated on several eBay clusters.</p>
+<p dir="ltr">Based on the size of the embeddings files, the Similarity Engine will generate the optimal number of shards. With automatic sharding enabled, the shards will be redistributed in the background, using the least amount of data movement while not interfering with live traffic.</p>
+<p dir="ltr">A single shard is replicated on multiple query nodes for load balancing and fault tolerance.</p>
+
+<h3 dir="ltr">Real Time Updates</h3>
+<p dir="ltr">The Similarity Engine supports adding, updating, and removing eBay listings in near-real-time (NRT). eBay buyers and sellers can discover, for similarity, a new item listing or catalog product within seconds.</p>
+<p dir="ltr">Add, update, and remove list events are consumed in the NRT pipeline, which will call the embeddings service and record these generated embeddings in a time series database (TSDB). These events are streamed to query nodes, which update their in-memory hnswlib index.</p>
+<p><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-5.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 5" width="600" height="284"></a></p>
+
+<h3 dir="ltr">Central Control Plane</h3>
+<p dir="ltr">The central control plane (CCP) is a pure control plane service that monitors the data plane and is responsible for optimal shard allocation to query nodes. It has the following tasks:</p>
+<ul>
+<li>
+<p dir="ltr">It centrally coordinates operational events to orchestrate shard transitions and shard movements of query nodes.</p>
+</li>
+<li>
+<p dir="ltr">It maintains the grid, i.e., the number of shards, and the query nodes (data plane) that load these shards.</p>
+</li>
+<li>
+<p dir="ltr">It collects query node state changes, i.e., query nodes joining or leaving the data plane, and is responsible for redistributing shard allocation on query nodes.&nbsp;</p>
+</li>
+<li>
+<p dir="ltr">It feeds the updated shard grid information to the Ingest Gateway for traffic routing and load balancing.</p>
+</li>
+</ul>
+<p dir="ltr">CCP has deployed multiple replicas for high availability and is not the critical path for serving the traffic, since its primary job is to have grid information available to SDK. Applications can continue to function in degraded mode with existing shard allocations if CCP goes down.</p>
+<p dir="ltr"><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-6.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 6" width="600" height="284"></a></p>
+
+<h3 dir="ltr">Ingest Gateway</h3>
+<p dir="ltr">The Ingest Gateway provides a set of simple and expressive high-level APIs to hide the low-level execution details from the listing service. It uses the shard grid configuration from the Central Control Plane (CCP) to dispatch similarity lookup requests to all shards. Each shard's results are combined into a single response ranked by distance matrix and returned to the listing service.</p>
+<p dir="ltr">The Ingest Gateway is also in charge of load-balancing the traffic between query nodes that hold the same shard index. The Ingest Gateway is required to keep the shard grid in sync with the CCP.</p>
+<p dir="ltr"><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-7.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 7" width="600" height="387"></a>&nbsp;</p>
+<h3 dir="ltr">ANN Backend Evaluation For eBay Dataset</h3>
+<p dir="ltr">This section presents our benchmarks of various performance characteristics for ANN backends used in the Similarity Engine.</p>
+<p dir="ltr"><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-19.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 19" width="600" height="263"></a></p>
+<p dir="ltr">Before we can run a similarity lookup, we need to build an index. Index build time depends mostly on embedding size and the total number of records, but also on some backend-specific parameters. These parameters have an impact on performance characteristics such as search quality and query latency.</p>
+
+<p dir="ltr"><strong>HNSWLib</strong></p>
+<p dir="ltr">In HNSWLib, “M” represents the number of edges for each node in the graph. Higher values improve accuracy and run time, but use more memory. We also indicate “ef /efConstruction,” which represents the size of the dynamic list for the nearest neighbors (used during the search).</p>
+<p dir="ltr"><strong>ScaNN</strong></p>
+<p dir="ltr">Several parameters, like sample size or iterations used in partitioning, affect build time but aren't presented here, as using non-default values does not change other performance characteristics significantly.</p>
+<p><span id="docs-internal-guid-e66d6e8c-7fff-d209-2f88-7f7aa93abc4d">The following analysis plots show the trade-off between index size (total number of records), memory usage, and embedding size for HNSWLib and ScaNN. The plots have names that include the ANN backend name and parameters. For example, hnswlib_m16efC200_q8 means hnswlib index with M = 16, efConstruction = 200, and 8-bit data quantization. scann_d64_f32 means ScaNN index built on full precision (32-bit) data, where vectors are 64-dimensional.</span></p>
+<div>
+<p><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-9.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 9" width="600" height="387"></a></p><p>Memory usage vs index size: Memory usage grows linearly with index size. Using 8-bit quantized data uses a lot less memory than full precision (32 bits). Both ScaNN and HNSWLib use similar amounts of memory on tested index sizes.</p>
+</div>
+
+<div>
+<p><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-10.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 10" width="600" height="387"></a></p><p>Index Size vs Index build in minutes: ScaNN usually has a faster build time for most index sizes.</p>
+</div>
+<div>
+<p><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-11.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 11" width="600" height="387"></a></p><p>Vector Dimension vs. Memory Usage: This plot shows memory usage for a 40 million listings index against dimensionality. Memory usage grows linearly with vector dimensionality. HNSW has a better tradeoff with large vectors.</p>
+</div>
+<div>
+<p><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-12.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 12" width="600" height="387"></a></p><p>Vector Dimension vs Index Build time: Data dimensionality influences speed and quality, as well as build time and memory usage. Both memory usage and build time grow linearly with vector dimensionality. HNSW has a better tradeoff with large vectors, while ScaNN does better with index build time.</p>
+</div>
+
+<div>
+<p><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-13.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 13" width="600" height="387"></a></p><p>NRT Dynamic Updates to HNSWLib and ScaNN: A ScaNN index typically loses less recall over time and does not require special maintenance. HNSWLib requires periodic maintenance of the index to maintain high recall. With ScaNN, it is important to set the maximum index size in advance to avoid expensive memory reallocation.</p>
+
+</div>
+<h3 dir="ltr">Top k-nearest neighbors</h3>
+<p dir="ltr">Here we show a single core accuracy/speed tradeoff for various values of top k on an eBay 20M Listing dataset.</p>
+<p><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-14.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 14" width="600" height="284"></a></p>
+<p>Top k Recall vs Latency: With top k increased, HNSWLib becomes slower because of efSearch (the size of the dynamic list for the nearest neighbors, used during the search), which leads to higher search accuracy at the cost of longer search time. However, it does not lose quality.</p>
+<p dir="ltr">Top k Recall vs Latency: With top k increased, HNSWLib becomes slower because of efSearch (the size of the dynamic list for the nearest neighbors, used during the search), which leads to higher search accuracy at the cost of longer search time. However, it does not lose quality.</p>
+<p dir="ltr">ScaNN does not have a significant slowdown; however, rescoring with full precision becomes a bottleneck with a large top k.</p>
+
+<h3 dir="ltr">Similarity Engine Attribute-Based Filters</h3>
+<p dir="ltr">Similarity engine search techniques allow massive datasets with billions of vectors to be searched in mere tens of milliseconds. Yet despite this achievement, what seem to be the most straightforward problems are often the most difficult to solve.</p>
+<p dir="ltr">Filtering has the appearance of being a simple task, but in practice it is incredibly complex. Applying fast yet accurate filters when performing a vector search (i.e., nearest-neighbor search) on massive datasets is a surprisingly stubborn problem.</p>
+<p dir="ltr">Restricting the similarity scope to relevant vectors is an absolute necessity for providing a better customer experience. The simplest approach is post-filtering, which involves removing results that do not meet our filter conditions. Post-filtering is applied to top-k returned recalls. This leaves us with fewer results than the client requested. Unfortunately, with multiple filter conditions, recall suffered further, potentially returning zero results in the case of multiple strict conditions. We can eliminate the risk of returning too few (or zero) results by increasing k to a high number. But doing so increases lookup latency for excessively high-K searches.</p>
+<p dir="ltr">The better solution compared to post-filtering is inline "attribute-based filtering." This section explains the similarity engine's "Attribute-Based Filter," which will apply filter criteria to the nodes of the graph and use in the greedy search only those that meet these criteria.</p>
+<p dir="ltr"><strong>Experiments: Filter-Aware HNSW Search</strong></p>
+<p><span id="docs-internal-guid-ed729343-7fff-9ef5-e220-dbf5983dc35a">The following section covers one of the experiments we conducted on the eBay Ads dataset. Inline metadata filtering works by merging the vector and metadata indexes into a single index.</span></p>
+<p>&nbsp;<a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-18.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 18" width="600" height="387"></a><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-16.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 16" width="600" height="284"></a><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-15.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 15" width="600" height="284"></a></p>
+<div>
+<p><a href="https://innovation.ebayinc.com/assets/Uploads/Editor/230501-Similarity-Engine-tech-blog-v1-inc-1600x-image-17.jpg"><img title="" src="data:application/octet-stream;base64," alt="230501 Similarity Engine tech blog v1 inc 1600x image 17" width="600" height="387"></a></p><p>Acceptable latencies throughout: ☺</p>
+</div>
+
+<p dir="ltr"><strong>Latency Spikes</strong></p>
+<p dir="ltr"><em>candidate_filter, k=200:</em> With the restrictive filters, search becomes more and more exhaustive, which spikes the search latency.</p>
+<p dir="ltr"><em>candidate_filter_max_SearchSteps800, k=200:</em> Places an upper bound on the number of search iterations which will limit exhaustive search.</p>
+<p dir="ltr"><em>candidate_filter_max_SearchSteps800_bruteforce_500k, k=200:</em> upper bound on the number of search iterations Falling back on brute-force search for restrictive filters performs very well.</p>
+
+<h3 dir="ltr">Summary</h3>
+<p dir="ltr">The Similarity Engine is able to solve any embedding or vector retrieval task, wherein the embeddings can represent any entity, including images, text, items, users, queries and more.</p>
+<p dir="ltr">Deployment of the Similarity Engine for a specific use case requires resource scaling based on embedding size, corpus size and the number of requests per second it serves.</p>
+<p dir="ltr">Attribute-based filtering allows for adding multiple conditions during the query, which improves relevance. It eliminates the risk of returning too few (or no) results and high latency from excessively high-K searches, as seen with post-filing.&nbsp;</p>
+<p dir="ltr">The Similarity Engine’s performance can be measured in terms of latency, throughput (queries per second), build time and accuracy (recall). These four components frequently have tradeoffs, so choosing the optimal method depends on the use case.</p>
+<p dir="ltr">Finally, the Similarity Engine has been successfully adopted by several product teams at eBay, generating millions of dollars in revenue per year. There are currently a total of 13 indices that the similarity engine is serving in production for item-to-item, query-to-item, query-to-query, and user-to-item (personalized recommendation) that support multiple modalities (text and image). The index consists of 1.7 billion all-active listing embeddings, making it the biggest index in terms of number of records and returning the top k=200 nearest neighbor items within 12 milliseconds at the 95 percentile for item-to-item similarity and user-to-item (personalized recommendation).</p>
+<p dir="ltr">Acknowledgements</p>
+<p dir="ltr">This work would not have been possible without support of Nitzan Mekel, Kopru Selcuk, Henry Saputra, Yuri Brovman, Arman Uygur, Sathish Veeraraghavan, Sriganesh Madhvanath, Zhe Wu,<a href="mailto:supain@ebay.com"><span data-rich-links="{&quot;per_n&quot;:&quot;Suman Pain&quot;,&quot;per_e&quot;:&quot;supain@ebay.com&quot;,&quot;type&quot;:&quot;person&quot;}">Suman Pain</span></a>, <a href="mailto:araveendrann@ebay.com"><span data-rich-links="{&quot;per_n&quot;:&quot;Ashwin Raveendran&quot;,&quot;per_e&quot;:&quot;araveendrann@ebay.com&quot;,&quot;type&quot;:&quot;person&quot;}">Ashwin Raveendran</span></a>, Sami Ben-Romdhane as well as eBay Ads team and Search team members.</p>
+<p dir="ltr">References</p>
+<p dir="ltr">[1] Yu. A. Malkov, D. A. Yashunin: Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs (<a href="https://arxiv.org/abs/1603.09320">https://arxiv.org/abs/1603.09320</a>)<br>[2] Ruiqi Guo, Philip Sun, Erik Lindgren, Quan Geng, David Simcha, Felix Chern, Sanjiv Kumar: Accelerating Large-Scale Inference with Anisotropic Vector Quantization (<a href="https://arxiv.org/abs/1908.10396">https://arxiv.org/abs/1908.10396</a>)</p>
+<p dir="ltr">[3] Y Malkov, A Ponomarenko, A Logvinov, V Krylov: Approximate nearest neighbor algorithm based on navigable small world graphs (<a href="https://www.sciencedirect.com/science/article/abs/pii/S0306437913001300">https://www.sciencedirect.com/science/article/abs/pii/S0306437913001300</a>)</p>
+<p dir="ltr">[4] Yuri M. Brovman : Building a Deep Learning Based Retrieval System for Personalized Recommendations (<a href="https://tech.ebayinc.com/engineering/building-a-deep-learning-based-retrieval-system-for-personalized-recommendations">https://tech.ebayinc.com/engineering/building-a-deep-learning-based-retrieval-system-for-personalized-recommendations</a>)&nbsp;</p>
+<p dir="ltr">[5] Qdrant: Filterable approximate nearest neighbors search (<a href="https://blog.vasnetsov.com/posts/categorical-hnsw/">https://blog.vasnetsov.com/posts/categorical-hnsw/</a>)</p>
+<p dir="ltr">[6] git repo Hnswlib - fast approximate nearest neighbor search (<a href="https://github.com/nmslib/hnswlib">https://github.com/nmslib/hnswlib</a>)</p>
+<p><span id="docs-internal-guid-d0b38ae0-7fff-0a16-5086-f2faa9ae806b">[7] Liying Zheng, Yingji Pan, Yuri M. Brovman, Page-Wise Personalized Recommendations in an Industrial e-Commerce Setting, ORSUM Workshop at RecSys 2022 [<a href="https://ceur-ws.org/Vol-3303/paper2.pdf">paper</a>]</span></p>
+
+				
+			</div></div>
+  </div>
+</body>
+</html>

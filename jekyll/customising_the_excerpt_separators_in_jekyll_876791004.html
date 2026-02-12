@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Customising the Excerpt Separators in Jekyll</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Customising the Excerpt Separators in Jekyll</h1>
+    <p><strong>URL:</strong> <a href="https://cjshelton.github.io/blog/2019/05/27/customising-jekyll-excerpt-start.html">https://cjshelton.github.io/blog/2019/05/27/customising-jekyll-excerpt-start.html</a></p>
+    <p><strong>Tags:</strong> jekyll</p>
+    <p><strong>Bookmark ID:</strong> 876791004</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="post-content">
+                <p id="logo-single-container"><img src="data:application/octet-stream;base64," alt="Jekyll Logo" title="Jekyll logo"></p>
+
+<h2 id="introduction">Introduction</h2>
+
+<!-- excerpt-start -->
+<p>Jekyll offers a multitude of blog related functionality out-of-the-box, all which make creating a custom blog much easier. One of these features is excerpts, which allow you to display a subset of text from blog post – useful on a list page to give the reader a quick insight into what each post is about.</p>
+
+<p>When creating my blog, I found this feature useful, but it had one limitation which I needed to work around – configuring where the excerpt should start from.
+<!-- excerpt-end --></p>
+
+<p>By default, the excerpt for a blog post is set as the first paragraph of text. The end of the excerpt can be configured through Jekyll, allowing it to include text beyond the first paragraph, but the the point at which the excerpt should start from is not.</p>
+
+<p>This was a problem for me because my blog posts start with a title, and sometimes an image, neither of which I want to be included in the excerpt.</p>
+
+<h2 id="customising-the-end-excerpt-separator">Customising the End Excerpt Separator</h2>
+
+<p>A custom separator can be used to tell Jekyll at what point to stop when building the Excerpt text for a blog post. This can be found on the Jekyll documentation, but in short: this can be set on the page itself in the Front Matter block, or across the site in the <code>config.yml</code> file. I opted for the latter, as I wanted this to be applied to all posts in a consistent and maintainable way. I added the following line to the config file:</p>
+
+<div><pre><code>excerpt_separator: &lt;!-- excerpt-end --&gt;
+</code></pre></div>
+
+<p>Now the <code>&lt;!-- excerpt-end --&gt;</code> separator can be placed at any point in each post, and all text before it will be included in the excerpt.</p>
+
+<h2 id="customising-the-start-excerpt-separator">Customising the Start Excerpt Separator</h2>
+
+<p>Defining the start point of the excerpt isn’t configurable in Jekyll. I’m assuming because, for most, the beginning of the blog is suitable.</p>
+
+<p>The standard way of including a post’s excerpt on a page is by accessing the <code>excerpt</code> property which is available on a
+post.</p>
+
+<div><pre><code>{% for post in site.posts %}
+    &lt;!-- Code removed for brevity --&gt;
+    {{ post.excerpt }}
+{% endfor %}
+</code></pre></div>
+
+<p>With the help of some Liquid syntax, I was able to replace the above with:</p>
+
+<div><pre><code>{% for post in site.posts %}
+    &lt;!-- Code removed for brevity --&gt;
+    {% assign excerptParts = post.excerpt | split: "&lt;!-- excerpt-start --&gt;" %}
+    {{ excerptParts[1] | strip_newlines | truncatewords: 50 }}
+{% endfor %}
+</code></pre></div>
+
+<p>This is hopefully quite self-explanatory, but this is doing a couple of things:</p>
+
+<ol>
+  <li>Taking the original <code>post.excerpt</code> text and splitting it into an array of strings using the separator <code>&lt;!-- excerpt-start --&gt;</code>. Assuming the separator is included exactly once in each post, then this should result in an array of two strings: the text before the separator which shouldn’t be included, and the text after which should.</li>
+  <li>Outputting the new excerpt which is the second element of the array, discarding any text before the start separator. I have also included some Liquid filters to strip out any new lines and truncate the text to 50 characters, both of which are optional and can be configured as you prefer.</li>
+</ol>
+
+<p>This approach obviously relies on the presence of the start separator in each blog post to define where the excerpt should start from, and the end separator to define where the excerpt should stop. But this does achieve a simple and clean way to configure the excerpt for each blog post.</p>
+
+
+            </div></div>
+  </div>
+</body>
+</html>

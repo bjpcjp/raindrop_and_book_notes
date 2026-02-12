@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How AWS’s Firecracker virtual machines work</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How AWS’s Firecracker virtual machines work</h1>
+    <p><strong>URL:</strong> <a href="https://www.amazon.science/blog/how-awss-firecracker-virtual-machines-work?fbclid=IwAR2YrSK-kHSKlgspyaX07ZlJVzU4syJ1t3_MBFXTlXQufX8aUesSql_eos8">https://www.amazon.science/blog/how-awss-firecracker-virtual-machines-work?fbclid=IwAR2YrSK-kHSKlgspyaX07ZlJVzU4syJ1t3_MBFXTlXQufX8aUesSql_eos8</a></p>
+    <p><strong>Tags:</strong> containers</p>
+    <p><strong>Bookmark ID:</strong> 876779805</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Since 2014, Amazon Web Services (AWS) has been offering “serverless” computing through <a href="https://aws.amazon.com/lambda/" target="_blank" data-cms-ai="0">AWS Lambda</a>. With Lambda, customers don’t have to worry about managing servers or adjusting capacity in response to fluctuating demand. AWS does the provisioning automatically, and customers simply pay for the resources they use.</p><p>When we first built Lambda, we had to choose between two security approaches. One, containerization, is fast and resource efficient but doesn’t provide strong isolation between customers; the other, running code inside a virtual machine, offers greater security at the cost of computational overhead. Security is always our top priority at AWS, so we built Lambda using traditional VMs.</p><p>Our customers challenged us to offer faster scaling, lower latency, and advanced features like <i>provisioned concurrency.</i> We knew we couldn’t build those features on traditional VMs, so we built Firecracker, which we released in November 2018 as an <a href="https://github.com/firecracker-microvm/firecracker" target="_blank" data-cms-ai="0">open-source</a> virtualization platform.</p><p>Firecracker offers the best of both worlds: the security of hardware-virtualization-based virtual machines and the resource efficiency and fast startup time of containers. Last week, at the USENIX Symposium on Networked Systems Design and Implementation (NSDI ’20), my colleagues and I presented a <a href="https://www.amazon.science/publications/firecracker-lightweight-virtualization-for-serverless-applications" data-cms-ai="0">paper</a> explaining how Firecracker works.</p><div data-align-left=""><figure>
+    
+
+    
+        <div><figcaption>Containers <i>(left)</i> give code direct access to some of an operating system’s core functions (its “kernel”). They enforce security by denying access to other functions (the x’s in the “sandbox” layer). Virtual machines <i>(right)</i> give workloads their own guest kernels and isolate them using hardware virtualization features.</figcaption><p>Stacy Reilly</p></div>
+    
+</figure></div><p>Part of the virtualization stack is the Virtual Machine Monitor (or VMM), which sets up virtualization, manages memory, and handles I/O (like network connectivity and on-disk storage).</p><p>Traditional VMMs can be nearly as complex as full operating systems. QEMU, a virtual machine monitor that is commonly used in conjunction with the Linux kernel virtual machine (KVM), has more than 1.4 million lines of code (and a correspondingly broad and powerful feature set).</p><p>One reason Firecracker is so much more efficient than a typical virtual machine is its stripped-down VMM, which has only 50,000 lines of code — a 96% reduction over QEMU. This allows us to create a single microVM for the code that each customer program executes in Firecracker, a simple but strong security model. Moreover, those 50,000 lines of code are written in the Rust language, which is notable for its built-in security and correctness features. A single server can create up to 150 Firecracker microVMs per second and run thousands of microVMs at the same time.</p><p>Of course, drastically reducing the size of the VMM reduces its functionality just as drastically. Firecracker doesn’t implement traditional devices like a BIOS or PCI bus and instead communicates with the guest kernel through optimized <i>virtio</i> interfaces. Where a typical virtualization environment simulates the behavior of the machine that a program <i>thinks</i> it’s running on, with virtio, the program knows that it’s running on a simulation. This enables it to cooperate better with the virtual machine, making execution more efficient.</p><p>We also know that serverless workloads don’t need hardware features like USB, displays, speakers, and microphones, so we simply didn’t implement support for any of these. Traditional VMMs, which target both desktop and cloud use cases, need to include all this complexity.</p><p>Firecracker powers the AWS Lambda service, where it currently handles trillions of requests each month for hundreds of thousands of AWS customers.<br></p></div></div>
+  </div>
+</body>
+</html>

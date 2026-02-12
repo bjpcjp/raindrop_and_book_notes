@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to draw any regular shape with just one JavaScript function | MDN Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to draw any regular shape with just one JavaScript function | MDN Blog</h1>
+    <p><strong>URL:</strong> <a href="https://developer.mozilla.org/en-US/blog/javascript-shape-drawing-function">https://developer.mozilla.org/en-US/blog/javascript-shape-drawing-function</a></p>
+    <p><strong>Tags:</strong> javascript, animation</p>
+    <p><strong>Bookmark ID:</strong> 876791989</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article lang="en-US"><figure><img alt="A yellow and purple gradient, with hexagon shape highlights background, with the words 'How to draw any regular shape with one JavaScript function' and the date May 26, 2023" src="data:application/octet-stream;base64," height="420" width="800"></figure><div><p>Ok alright, I know I used a clickbait title, but bear with me. I want to share a function I've been using for ages. I originally wrote it to draw a hexagon – hexagons are cool, lots of hexagons are better, and <a href="https://www.dictionary.com/browse/tessellated" target="_blank">tessellated</a> hexagons are the best. So I wrote a function to draw one, which I could then repeat.</p>
+<p>
+  As I was doing so, I started modifying the hexagon to enable drawing a number of shapes that are based on just a couple of parameters.
+  Let's begin with what I did with the hexagon and we'll take it from there.
+</p></div><section aria-labelledby="drawing_a_hexagon_with_javascript"><h2 id="drawing_a_hexagon_with_javascript"><a href="#drawing_a_hexagon_with_javascript">Drawing a hexagon with JavaScript</a></h2><div><p>Hexagons have six equal sides. If we imagine our starting point as the center of the hexagon, we can move around this point six times, joining each point as we go to make the sides.</p>
+<p>Let's start off by creating a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas"><code>&lt;canvas&gt;</code></a> with a <code>2d</code> <a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D">drawing context</a>. We'll fix the size of the canvas to 400 x 200 pixels for this example and set the center point as <code>(200, 100)</code>.</p>
+<div><pre><code>&lt;canvas&gt;&lt;/canvas&gt;
+</code></pre></div>
+<div><pre><code>const canvas = document.querySelector("canvas");
+canvas.width = 400;
+canvas.height = 200;
+
+const ctx = canvas.getContext("2d");
+const cx = 200;
+const cy = 100;
+</code></pre></div>
+<p>Now we need to figure out the x (horizontal) and y (vertical) position of points around the center, which when joined with a line, will make six equal sides. For this, we use the measurement from the center to the point (we'll call this the radius) and the angle of direction from the center.</p>
+<p>As there are 360 degrees in a full rotation and six points we want to create, we can divide 360/6 and know we'll make a point every 60 degrees. However, there's a tiny caveat to this – JavaScript works with <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/angle#units"><code>radians</code></a> rather than <code>degrees</code>. One thing I always remember is that the value <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/PI"><code>pi</code></a> in <code>radians</code> is 180 degrees, or half a circle. So <code>(Math.PI*2)/6</code> would give us each rotation in <code>radians</code> <em>or</em> even simpler <code>Math.PI/3</code>.</p>
+<p>
+  Next we need to add a bit of trigonometry to find the x and y position of each point. For the x position, we can use the sum <em>radius multiplied by <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/cos">cos(angle)</a></em> and for the y position <em>radius multiplied by <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sin">sin(angle)</a>.</em>
+  Let's put it all together, adding to our JavaScript code above:
+</p>
+<div><pre><code>// set the radius of the hexagon
+const radius = 50;
+
+// move the canvas to the center position
+ctx.translate(cx, cy);
+
+for (let i = 0; i &lt; 6; i++) {
+  // calculate the rotation
+  const rotation = (Math.PI / 3) * i;
+
+  // for the first point move to
+  if (i === 0) {
+    ctx.moveTo(radius * Math.cos(rotation), radius * Math.sin(rotation));
+  } else {
+    // for the rest draw a line
+    ctx.lineTo(radius * Math.cos(rotation), radius * Math.sin(rotation));
+  }
+}
+
+// close path and stroke it
+ctx.closePath();
+ctx.stroke();
+</code></pre></div></div></section><section aria-labelledby="drawing_a_shape_with_any_number_of_sides"><h2 id="drawing_a_shape_with_any_number_of_sides"><a href="#drawing_a_shape_with_any_number_of_sides">Drawing a shape with any number of sides</a></h2><div><p>Let's say we wanted to draw a triangle, a square, or an octagon. All we would need to modify in the above function, used to draw the hexagon, is the number of times we draw lines in our <code>for</code> loop and the angle for each point.</p>
+<p>Let's turn this into a function that takes the center point, the radius, and number of sides as parameters:</p>
+<div><pre><code>&lt;canvas&gt;&lt;/canvas&gt;
+</code></pre></div>
+<div><pre><code>const canvas = document.querySelector("canvas");
+canvas.width = 400;
+canvas.height = 200;
+
+const ctx = canvas.getContext("2d");
+</code></pre></div>
+<div><pre><code>function drawShape(x, y, r, sides) {
+  // move the canvas to the center position
+  ctx.translate(x, y);
+
+  for (let i = 0; i &lt; sides; i++) {
+    // calculate the rotation
+    const rotation = ((Math.PI * 2) / sides) * i;
+
+    // for the first point move to
+    if (i === 0) {
+      ctx.moveTo(r * Math.cos(rotation), r * Math.sin(rotation));
+    } else {
+      // for the rest draw a line
+      ctx.lineTo(r * Math.cos(rotation), r * Math.sin(rotation));
+    }
+  }
+
+  // close path and stroke it
+  ctx.closePath();
+  ctx.stroke();
+
+  // reset the translate position
+  ctx.resetTransform();
+}
+</code></pre></div>
+<p>Now we can draw different shapes by adjusting the <code>sides</code> parameter:</p>
+<div><pre><code>drawShape(100, 100, 50, 3);
+drawShape(225, 100, 50, 7);
+drawShape(350, 100, 50, 4);
+</code></pre></div></div></section><section aria-labelledby="summary"><h2 id="summary"><a href="#summary">Summary</a></h2><div><p>
+  This was a little introduction to the <code>&lt;canvas&gt;</code> element for drawing on a web page and a few of the methods you can use to draw shapes.
+  If you want to dive deeper into how all the pieces work, here's a recap of what we used:
+</p>
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas"><code>&lt;canvas&gt;</code></a>, the element on which we can display graphics</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D"><code>CanvasRenderingContext2D</code></a> to draw 2D shapes to the canvas</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/translate"><code>translate()</code></a> to move the origin to a new position</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineTo"><code>lineTo()</code></a> to draw a line from one point to another</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/closePath"><code>closePath()</code></a> to join the first point to the last point</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/stroke"><code>stroke()</code></a> to stroke the path with a stroke style</li>
+</ul>
+<p>To calculate the position of each point, we used a little bit of maths and trigonometry:</p>
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/cos"><code>Math.cos()</code></a> to calculate the x position of a point</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sin"><code>Math.sin()</code></a> to calculate the y position of a point</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/PI"><code>Math.PI</code></a> to calculate the angle of rotation in radians</li>
+</ul>
+<p>To get some more inspiration for what you can do with the <code>&lt;canvas&gt;</code> element, check out the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial">Canvas tutorial</a> that starts off with the basics and then covers more advanced topics like animation and pixel manipulation.</p>
+<p>There are plenty of ways you can expand on this basic shape function. I like to include an inner radius, so you can create diamonds and stars. I've also experimented a little with <a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D#paths">curves</a> instead of straight lines - feel free to experiment for yourself. Or try some tessellation, which is always fun!</p>
+<p>
+  <img src="data:application/octet-stream;base64," alt="An image of colorful hexagons and diamonds in a tessellated pattern" loading="lazy">
+</p>
+<p>Let me know if you try out this function and if you like it as much as I do. As always, feel free to leave any feedback on the <a href="https://github.com/orgs/mdn/discussions/categories/the-mdn-web-docs-blog" target="_blank">GitHub discussion</a> or join us for a chat in the MDN Web Docs <a href="https://developer.mozilla.org/discord">Discord server</a>.</p></div></section><section><a href="https://developer.mozilla.org/en-US/blog/regular-expressions-reference-updates/"><article><h2><strong>Previous<!-- --> Post</strong> <!-- -->New reference pages on MDN for JavaScript regular expressions</h2></article></a><a href="https://developer.mozilla.org/en-US/blog/mdn-docs-june-2023/"><article><h2><strong>Next<!-- --> Post</strong> <!-- -->MDN doc updates: CSS selectors &amp; media queries, WebGPU &amp; WebTransport APIs, Progressive web apps</h2></article></a></section></article></div>
+  </div>
+</body>
+</html>

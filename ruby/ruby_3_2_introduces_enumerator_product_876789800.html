@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ruby 3.2 introduces Enumerator::product</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Ruby 3.2 introduces Enumerator::product</h1>
+    <p><strong>URL:</strong> <a href="https://rubyweekly.com/link/133471/ad5e785e3b">https://rubyweekly.com/link/133471/ad5e785e3b</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876789800</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="post-content-parent"><p>It is that time of the year again when a new version of Ruby is released. Let us take a closer look at a new Enumerator method: <code>::product</code>.</p>
+<h2 id="heading-method-syntax">Method Syntax</h2>
+<p>Here is the thread for this change: <a target="_blank" href="https://bugs.ruby-lang.org/issues/18685">https://bugs.ruby-lang.org/issues/18685</a></p>
+<p>To understand what this new <code>Enumerator::product</code> method does, imagine you want to get a Cartesian product from two arrays like so:</p>
+<pre><code>array_1 = [<span>1</span>, <span>2</span>, <span>3</span>]
+array_2 = [<span>:a</span>, <span>:b</span>, <span>:c</span>]
+
+<span># Cartesian product</span>
+[[<span>1</span>, <span>:a</span>], [<span>1</span>, <span>:b</span>], [<span>1</span>, <span>:c</span>], [<span>2</span>, <span>:a</span>], [<span>2</span>, <span>:b</span>], [<span>2</span>, <span>:c</span>], [<span>3</span>, <span>:a</span>], [<span>3</span>, <span>:b</span>], [<span>3</span>, <span>:c</span>]]
+</code></pre>
+<p>To be able to do this before Ruby 3.2, one would need to nest the arrays. Here is a solution taken from this <a target="_blank" href="https://stackoverflow.com/a/11352771">StackOverflow answer</a>:</p>
+<pre><code><span><span>class</span> <span>CartesianProduct</span></span>
+  <span>include</span> Enumerable
+
+  <span><span>def</span> <span>initialize</span><span>(xs, ys)</span></span>
+    @xs = xs
+    @ys = ys
+  <span>end</span>
+
+  <span><span>def</span> <span>each</span></span>
+    <span>return</span> to_enum <span>unless</span> block_given?
+    @xs.each <span>do</span> <span>|x|</span> 
+      @ys.each { <span>|y|</span> <span>yield</span> [x, y] }
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+
+products = CartesianProduct.new(array_1, array_2).each.to_a
+<span># [[1, :a], [1, :b], [1, :c], [2, :a], [2, :b], [2, :c], [3, :a], [3, :b], [3, :c]]</span>
+</code></pre>
+<p>Beginning in Ruby 3.2, we can do this instead:</p>
+<pre><code>products = Enumerator.product(array_1, array_2).to_a
+<span># [[1, :a], [1, :b], [1, :c], [2, :a], [2, :b], [2, :c], [3, :a], [3, :b], [3, :c]]</span>
+</code></pre>
+<h2 id="heading-practical-applications">Practical Applications</h2>
+<p>Let's take a look at how we might use this method. Imagine we are building an e-commerce application, and we need to create an array of options for a T-shirt.</p>
+<p>The T-shirt would have the following options:</p>
+<ul>
+<li><p>Size (Small, Medium, Large)</p>
+</li>
+<li><p>Color (Blue, Red, Green, Yellow)</p>
+</li>
+<li><p>Fabric (Cotton, Nylon)</p>
+</li>
+</ul>
+<p>Using <code>Enumerator::product</code>, we can quickly construct an array of options like so:</p>
+<pre><code>colors = [<span>'blue'</span>, <span>'red'</span>, <span>'green'</span>, <span>'yellow'</span>]
+sizes = [<span>'small'</span>, <span>'medium'</span>, <span>'large'</span>]
+fabrics = [<span>'cotton'</span>, <span>'nylon'</span>]
+
+variants = Enumerator.product(colors, sizes, fabrics).to_a
+<span># [</span>
+<span>#   ["blue", "small", "cotton"],</span>
+<span>#   ["blue", "small", "nylon"],</span>
+<span>#   ["blue", "medium", "cotton"],</span>
+<span>#   ["blue", "medium", "nylon"],</span>
+<span>#   ["blue", "large", "cotton"],</span>
+<span>#   ...</span>
+<span># ]</span>
+</code></pre>
+<p>Nice! Now we don't need to iterate through all the different combinations to come up with the right options.</p>
+<h2 id="heading-digging-deeper">Digging Deeper</h2>
+<p>Some readers may also notice that recent Ruby versions already include an <code>Array#product</code> method. For this method, it is defined here: <a target="_blank" href="https://github.com/ruby/ruby/blob/v3_2_0_rc1/tool/transcode-tblgen.rb#L10-L20">https://github.com/ruby/ruby/blob/v3_2_0_rc1/tool/transcode-tblgen.rb#L10-L20</a></p>
+<pre><code><span><span>def</span> <span>product</span><span>(*args)</span></span>
+  <span>if</span> args.empty?
+    <span>self</span>.map {<span>|e|</span> [e] }
+  <span>else</span>
+    result = []
+    <span>self</span>.each {<span>|e0|</span>
+      result.concat args.first.product(*args[<span>1</span>..-<span>1</span>]).map {<span>|es|</span> [e<span>0</span>, *es] }
+    }
+    result
+  <span>end</span>
+<span>end</span>
+</code></pre>
+<p>However, the newer <code>Enumerable::product</code> method's implementation is different and is implemented in C. That code is too long to paste in here, so here is the link: <a target="_blank" href="https://github.com/ruby/ruby/blob/v3_2_0_rc1/enumerator.c#L3382">https://github.com/ruby/ruby/blob/v3_2_0_rc1/enumerator.c#L3382</a>.</p>
+</div></div>
+  </div>
+</body>
+</html>

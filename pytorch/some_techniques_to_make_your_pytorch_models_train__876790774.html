@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Some Techniques To Make Your PyTorch Models Train Faster</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Some Techniques To Make Your PyTorch Models Train Faster</h1>
+    <p><strong>URL:</strong> <a href="https://sebastianraschka.com/blog/2023/pytorch-faster.html">https://sebastianraschka.com/blog/2023/pytorch-faster.html</a></p>
+    <p><strong>Tags:</strong> pytorch</p>
+    <p><strong>Bookmark ID:</strong> 876790774</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+   <p>This blog post outlines techniques for improving the training performance of your PyTorch model without compromising its accuracy. To do so, we will wrap a PyTorch model in a LightningModule and use the Trainer class to enable various training optimizations. By changing only a few lines of code, we can reduce the training time on a single GPU from 22.53 minutes to 2.75 minutes while maintaining the model’s prediction accuracy.</p>
+
+<p>Yes, that’s a 8x performance boost!</p>
+
+<p><img src="data:application/octet-stream;base64," alt="benchmark-last"></p>
+
+<p><strong>(This blog post was updated on 03/17/2023, now using PyTorch 2.0 and Lightning 2.0!)</strong></p>
+      <h2 id="introduction">
+        
+        
+          Introduction <a href="#introduction"></a>
+        
+        
+      </h2>
+    
+
+<p>In this tutorial, we will finetune a <a href="https://arxiv.org/abs/1910.01108">DistilBERT model</a>, a distilled version of BERT that is 40% smaller at almost identical predictive performance.
+There are several ways we can finetune a pretrained language model. The figure below depicts the three most common approaches.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="3-techniques"></p>
+
+<p>All three approaches above (a-c) assume we have pretrained the model on an unlabeled dataset using self-supervised learning. Then, in step 2, when we transfer the model to the target task, we either</p>
+
+<ul>
+  <li>a) extract the embeddings and train a classifier on these (this can be a support vector machine from scikit-learn, for example);</li>
+  <li>b) replace/add an output layer and finetune the last layer(s) of the transformer;</li>
+  <li>c) replace/add an output layer and finetune all layers.</li>
+</ul>
+
+<p>The approaches a-c are ordered by computational efficiency, where a) is typically the fastest. In my experience, this sorting order also reflects the model’s predictive performance, where c) usually yields the highest prediction accuracy.</p>
+
+<p>In this tutorial, we will use approach c) and train a model to predict the sentiment of movie reviews in the <a href="https://ai.stanford.edu/~amaas/data/sentiment/">IMDB Large Movie Review</a> dataset consisting of 50,000 movie reviews in total.</p>
+      <h2 id="1-plain-pytorch-baseline">
+        
+        
+          1) Plain PyTorch Baseline <a href="#1-plain-pytorch-baseline"></a>
+        
+        
+      </h2>
+    
+
+<p>As a warm-up exercise, let’s start with the plain PyTorch baseline for training the DistilBERT model on the IMDB movie review dataset. If you want to run the code yourself, you can set up a virtual environment with the relevant Python libraries as follows:</p>
+
+<div><pre><code>conda create <span>-n</span> faster-blog <span>python</span><span>=</span>3.9
+conda activate faster-blog
+
+pip <span>install </span>watermark transformers datasets torchmetrics lightning
+</code></pre></div>
+
+<p>For reference, the relevant software versions I was using are the following (they will be printed to the terminal when you run the code later in this article.):</p>
+
+<div><pre><code>Python version: 3.9.15
+torch         : 2.0.0+cu118
+lightning     : 2.0.0
+transformers  : 4.26.1
+</code></pre></div>
+
+<p>To avoid bloating this article with boring data-loading utilities, I will skip over the <a href="https://github.com/rasbt/faster-pytorch-blog/blob/main/local_dataset_utilities.py">local_dataset_utilities.py</a> file, which contains code to load the dataset. The only relevant information here is that we are partitioning the dataset into 35,000 training examples, 5,000 validation set records, and 10,000 test records.</p>
+
+<p>Let’s get to the main PyTorch code. This code is self-contained except for the dataset loading utilities I placed in the <a href="https://github.com/rasbt/faster-pytorch-blog/blob/main/local_dataset_utilities.py">local_dataset_utilities.py</a> file. Have a look at the PyTorch code before we discuss it below:</p>
+
+<div><pre><code><span>import</span> <span>os</span>
+<span>import</span> <span>os.path</span> <span>as</span> <span>op</span>
+<span>import</span> <span>time</span>
+
+<span>from</span> <span>datasets</span> <span>import</span> <span>load_dataset</span>
+<span>import</span> <span>torch</span>
+<span>from</span> <span>torch.utils.data</span> <span>import</span> <span>DataLoader</span>
+<span>import</span> <span>torchmetrics</span>
+<span>from</span> <span>transformers</span> <span>import</span> <span>AutoTokenizer</span>
+<span>from</span> <span>transformers</span> <span>import</span> <span>AutoModelForSequenceClassification</span>
+<span>from</span> <span>watermark</span> <span>import</span> <span>watermark</span>
+
+<span>from</span> <span>local_dataset_utilities</span> <span>import</span> <span>(</span>
+    <span>download_dataset</span><span>,</span>
+    <span>load_dataset_into_to_dataframe</span><span>,</span>
+    <span>partition_dataset</span><span>,</span>
+<span>)</span>
+<span>from</span> <span>local_dataset_utilities</span> <span>import</span> <span>IMDBDataset</span>
+
+
+<span>def</span> <span>tokenize_text</span><span>(</span><span>batch</span><span>):</span>
+    <span>return</span> <span>tokenizer</span><span>(</span><span>batch</span><span>[</span><span>"text"</span><span>],</span> <span>truncation</span><span>=</span><span>True</span><span>,</span> <span>padding</span><span>=</span><span>True</span><span>)</span>
+
+
+<span>def</span> <span>train</span><span>(</span><span>num_epochs</span><span>,</span> <span>model</span><span>,</span> <span>optimizer</span><span>,</span> <span>train_loader</span><span>,</span> <span>val_loader</span><span>,</span> <span>device</span><span>):</span>
+    <span>for</span> <span>epoch</span> <span>in</span> <span>range</span><span>(</span><span>num_epochs</span><span>):</span>
+        <span>train_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>).</span><span>to</span><span>(</span><span>device</span><span>)</span>
+
+        <span>for</span> <span>batch_idx</span><span>,</span> <span>batch</span> <span>in</span> <span>enumerate</span><span>(</span><span>train_loader</span><span>):</span>
+            <span>model</span><span>.</span><span>train</span><span>()</span>
+            <span>for</span> <span>s</span> <span>in</span> <span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>]:</span>
+                <span>batch</span><span>[</span><span>s</span><span>]</span> <span>=</span> <span>batch</span><span>[</span><span>s</span><span>].</span><span>to</span><span>(</span><span>device</span><span>)</span>
+
+            <span>### FORWARD AND BACK PROP
+</span>            <span>outputs</span> <span>=</span> <span>model</span><span>(</span>
+                <span>batch</span><span>[</span><span>"input_ids"</span><span>],</span>
+                <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span>
+                <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>],</span>
+            <span>)</span>
+            <span>optimizer</span><span>.</span><span>zero_grad</span><span>()</span>
+            <span>outputs</span><span>[</span><span>"loss"</span><span>].</span><span>backward</span><span>()</span>
+
+            <span>### UPDATE MODEL PARAMETERS
+</span>            <span>optimizer</span><span>.</span><span>step</span><span>()</span>
+
+            <span>### LOGGING
+</span>            <span>if</span> <span>not</span> <span>batch_idx</span> <span>%</span> <span>300</span><span>:</span>
+                <span>print</span><span>(</span>
+                    <span>f</span><span>"Epoch: </span><span>{</span><span>epoch</span><span>+</span><span>1</span><span>:</span><span>04</span><span>d</span><span>}</span><span>/</span><span>{</span><span>num_epochs</span><span>:</span><span>04</span><span>d</span><span>}</span><span> | Batch </span><span>{</span><span>batch_idx</span><span>:</span><span>04</span><span>d</span><span>}</span><span>/</span><span>{</span><span>len</span><span>(</span><span>train_loader</span><span>):</span><span>04</span><span>d</span><span>}</span><span> | Loss: </span><span>{</span><span>outputs</span><span>[</span><span>'loss'</span><span>]:.</span><span>4</span><span>f</span><span>}</span><span>"</span>
+                <span>)</span>
+
+            <span>model</span><span>.</span><span>eval</span><span>()</span>
+            <span>with</span> <span>torch</span><span>.</span><span>no_grad</span><span>():</span>
+                <span>predicted_labels</span> <span>=</span> <span>torch</span><span>.</span><span>argmax</span><span>(</span><span>outputs</span><span>[</span><span>"logits"</span><span>],</span> <span>1</span><span>)</span>
+                <span>train_acc</span><span>.</span><span>update</span><span>(</span><span>predicted_labels</span><span>,</span> <span>batch</span><span>[</span><span>"label"</span><span>])</span>
+
+        <span>### MORE LOGGING
+</span>        <span>with</span> <span>torch</span><span>.</span><span>no_grad</span><span>():</span>
+            <span>model</span><span>.</span><span>eval</span><span>()</span>
+            <span>val_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>).</span><span>to</span><span>(</span><span>device</span><span>)</span>
+            <span>for</span> <span>batch</span> <span>in</span> <span>val_loader</span><span>:</span>
+                <span>for</span> <span>s</span> <span>in</span> <span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>]:</span>
+                    <span>batch</span><span>[</span><span>s</span><span>]</span> <span>=</span> <span>batch</span><span>[</span><span>s</span><span>].</span><span>to</span><span>(</span><span>device</span><span>)</span>
+                <span>outputs</span> <span>=</span> <span>model</span><span>(</span>
+                    <span>batch</span><span>[</span><span>"input_ids"</span><span>],</span>
+                    <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span>
+                    <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>],</span>
+                <span>)</span>
+                <span>predicted_labels</span> <span>=</span> <span>torch</span><span>.</span><span>argmax</span><span>(</span><span>outputs</span><span>[</span><span>"logits"</span><span>],</span> <span>1</span><span>)</span>
+                <span>val_acc</span><span>.</span><span>update</span><span>(</span><span>predicted_labels</span><span>,</span> <span>batch</span><span>[</span><span>"label"</span><span>])</span>
+
+            <span>print</span><span>(</span>
+                <span>f</span><span>"Epoch: </span><span>{</span><span>epoch</span><span>+</span><span>1</span><span>:</span><span>04</span><span>d</span><span>}</span><span>/</span><span>{</span><span>num_epochs</span><span>:</span><span>04</span><span>d</span><span>}</span><span> | Train acc.: </span><span>{</span><span>train_acc</span><span>.</span><span>compute</span><span>()</span><span>*</span><span>100</span><span>:.</span><span>2</span><span>f</span><span>}</span><span>% | Val acc.: </span><span>{</span><span>val_acc</span><span>.</span><span>compute</span><span>()</span><span>*</span><span>100</span><span>:.</span><span>2</span><span>f</span><span>}</span><span>%"</span>
+            <span>)</span>
+
+
+    <span>print</span><span>(</span><span>watermark</span><span>(</span><span>packages</span><span>=</span><span>"torch,lightning,transformers"</span><span>,</span> <span>python</span><span>=</span><span>True</span><span>))</span>
+    <span>print</span><span>(</span><span>"Torch CUDA available?"</span><span>,</span> <span>torch</span><span>.</span><span>cuda</span><span>.</span><span>is_available</span><span>())</span>
+    <span>device</span> <span>=</span> <span>"cuda:0"</span> <span>if</span> <span>torch</span><span>.</span><span>cuda</span><span>.</span><span>is_available</span><span>()</span> <span>else</span> <span>"cpu"</span>
+
+    <span>torch</span><span>.</span><span>manual_seed</span><span>(</span><span>123</span><span>)</span>
+
+    <span>##########################
+</span>    <span>### 1 Loading the Dataset
+</span>    <span>##########################
+</span>    <span>download_dataset</span><span>()</span>
+    <span>df</span> <span>=</span> <span>load_dataset_into_to_dataframe</span><span>()</span>
+    <span>if</span> <span>not</span> <span>(</span><span>op</span><span>.</span><span>exists</span><span>(</span><span>"train.csv"</span><span>)</span> <span>and</span> <span>op</span><span>.</span><span>exists</span><span>(</span><span>"val.csv"</span><span>)</span> <span>and</span> <span>op</span><span>.</span><span>exists</span><span>(</span><span>"test.csv"</span><span>)):</span>
+        <span>partition_dataset</span><span>(</span><span>df</span><span>)</span>
+
+    <span>imdb_dataset</span> <span>=</span> <span>load_dataset</span><span>(</span>
+        <span>"csv"</span><span>,</span>
+        <span>data_files</span><span>=</span><span>{</span>
+            <span>"train"</span><span>:</span> <span>"train.csv"</span><span>,</span>
+            <span>"validation"</span><span>:</span> <span>"val.csv"</span><span>,</span>
+            <span>"test"</span><span>:</span> <span>"test.csv"</span><span>,</span>
+        <span>},</span>
+    <span>)</span>
+
+    <span>#########################################
+</span>    <span>### 2 Tokenization and Numericalization
+</span>    <span>#########################################
+</span>
+    <span>tokenizer</span> <span>=</span> <span>AutoTokenizer</span><span>.</span><span>from_pretrained</span><span>(</span><span>"distilbert-base-uncased"</span><span>)</span>
+    <span>print</span><span>(</span><span>"Tokenizer input max length:"</span><span>,</span> <span>tokenizer</span><span>.</span><span>model_max_length</span><span>,</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+    <span>print</span><span>(</span><span>"Tokenizer vocabulary size:"</span><span>,</span> <span>tokenizer</span><span>.</span><span>vocab_size</span><span>,</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+
+    <span>print</span><span>(</span><span>"Tokenizing ..."</span><span>,</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+    <span>imdb_tokenized</span> <span>=</span> <span>imdb_dataset</span><span>.</span><span>map</span><span>(</span><span>tokenize_text</span><span>,</span> <span>batched</span><span>=</span><span>True</span><span>,</span> <span>batch_size</span><span>=</span><span>None</span><span>)</span>
+    <span>del</span> <span>imdb_dataset</span>
+    <span>imdb_tokenized</span><span>.</span><span>set_format</span><span>(</span><span>"torch"</span><span>,</span> <span>columns</span><span>=</span><span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>])</span>
+    <span>os</span><span>.</span><span>environ</span><span>[</span><span>"TOKENIZERS_PARALLELISM"</span><span>]</span> <span>=</span> <span>"false"</span>
+
+    <span>#########################################
+</span>    <span>### 3 Set Up DataLoaders
+</span>    <span>#########################################
+</span>
+    <span>train_dataset</span> <span>=</span> <span>IMDBDataset</span><span>(</span><span>imdb_tokenized</span><span>,</span> <span>partition_key</span><span>=</span><span>"train"</span><span>)</span>
+    <span>val_dataset</span> <span>=</span> <span>IMDBDataset</span><span>(</span><span>imdb_tokenized</span><span>,</span> <span>partition_key</span><span>=</span><span>"validation"</span><span>)</span>
+    <span>test_dataset</span> <span>=</span> <span>IMDBDataset</span><span>(</span><span>imdb_tokenized</span><span>,</span> <span>partition_key</span><span>=</span><span>"test"</span><span>)</span>
+
+    <span>train_loader</span> <span>=</span> <span>DataLoader</span><span>(</span>
+        <span>dataset</span><span>=</span><span>train_dataset</span><span>,</span>
+        <span>batch_size</span><span>=</span><span>12</span><span>,</span>
+        <span>shuffle</span><span>=</span><span>True</span><span>,</span>
+        <span>num_workers</span><span>=</span><span>1</span><span>,</span>
+        <span>drop_last</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>val_loader</span> <span>=</span> <span>DataLoader</span><span>(</span>
+        <span>dataset</span><span>=</span><span>val_dataset</span><span>,</span>
+        <span>batch_size</span><span>=</span><span>12</span><span>,</span>
+        <span>num_workers</span><span>=</span><span>1</span><span>,</span>
+        <span>drop_last</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>test_loader</span> <span>=</span> <span>DataLoader</span><span>(</span>
+        <span>dataset</span><span>=</span><span>test_dataset</span><span>,</span>
+        <span>batch_size</span><span>=</span><span>12</span><span>,</span>
+        <span>num_workers</span><span>=</span><span>1</span><span>,</span>
+        <span>drop_last</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>#########################################
+</span>    <span>### 4 Initializing the Model
+</span>    <span>#########################################
+</span>
+    <span>model</span> <span>=</span> <span>AutoModelForSequenceClassification</span><span>.</span><span>from_pretrained</span><span>(</span>
+        <span>"distilbert-base-uncased"</span><span>,</span> <span>num_labels</span><span>=</span><span>2</span>
+    <span>)</span>
+
+    <span>model</span><span>.</span><span>to</span><span>(</span><span>device</span><span>)</span>
+    <span>optimizer</span> <span>=</span> <span>torch</span><span>.</span><span>optim</span><span>.</span><span>Adam</span><span>(</span><span>model</span><span>.</span><span>parameters</span><span>(),</span> <span>lr</span><span>=</span><span>5e-5</span><span>)</span>
+
+    <span>#########################################
+</span>    <span>### 5 Finetuning
+</span>    <span>#########################################
+</span>
+    <span>start</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+    <span>train</span><span>(</span>
+        <span>num_epochs</span><span>=</span><span>3</span><span>,</span>
+        <span>model</span><span>=</span><span>model</span><span>,</span>
+        <span>optimizer</span><span>=</span><span>optimizer</span><span>,</span>
+        <span>train_loader</span><span>=</span><span>train_loader</span><span>,</span>
+        <span>val_loader</span><span>=</span><span>val_loader</span><span>,</span>
+        <span>device</span><span>=</span><span>device</span><span>,</span>
+    <span>)</span>
+
+    <span>end</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+    <span>elapsed</span> <span>=</span> <span>end</span> <span>-</span> <span>start</span>
+    <span>print</span><span>(</span><span>f</span><span>"Time elapsed </span><span>{</span><span>elapsed</span><span>/</span><span>60</span><span>:.</span><span>2</span><span>f</span><span>}</span><span> min"</span><span>)</span>
+
+    <span>with</span> <span>torch</span><span>.</span><span>no_grad</span><span>():</span>
+        <span>model</span><span>.</span><span>eval</span><span>()</span>
+        <span>test_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>).</span><span>to</span><span>(</span><span>device</span><span>)</span>
+        <span>for</span> <span>batch</span> <span>in</span> <span>test_loader</span><span>:</span>
+            <span>for</span> <span>s</span> <span>in</span> <span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>]:</span>
+                <span>batch</span><span>[</span><span>s</span><span>]</span> <span>=</span> <span>batch</span><span>[</span><span>s</span><span>].</span><span>to</span><span>(</span><span>device</span><span>)</span>
+            <span>outputs</span> <span>=</span> <span>model</span><span>(</span>
+                <span>batch</span><span>[</span><span>"input_ids"</span><span>],</span>
+                <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span>
+                <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>],</span>
+            <span>)</span>
+            <span>predicted_labels</span> <span>=</span> <span>torch</span><span>.</span><span>argmax</span><span>(</span><span>outputs</span><span>[</span><span>"logits"</span><span>],</span> <span>1</span><span>)</span>
+            <span>test_acc</span><span>.</span><span>update</span><span>(</span><span>predicted_labels</span><span>,</span> <span>batch</span><span>[</span><span>"label"</span><span>])</span>
+
+    <span>print</span><span>(</span><span>f</span><span>"Test accuracy </span><span>{</span><span>test_acc</span><span>.</span><span>compute</span><span>()</span><span>*</span><span>100</span><span>:.</span><span>2</span><span>f</span><span>}</span><span>%"</span><span>)</span>
+</code></pre></div>
+
+<p>(You can also find this code on GitHub here: <a href="https://github.com/rasbt/faster-pytorch-blog/blob/main/1_pytorch-distilbert.py">1_pytorch-distilbert.py</a>.)</p>
+
+<p>To keep this article focused, I will skip over the PyTorch basics and focus on describing the main outline of this script. However, if you are new to PyTorch, I recommend checking out my free <a href="https://lightning.ai/pages/courses/deep-learning-fundamentals/">Deep Learning Fundamentals course</a>, where I teach PyTorch in great detail in Units 1-4.</p>
+
+<p>The code above is structured into two parts, the function definitions and the code executed under <code>if __name__ == "__main__"</code>. This recommended structure is necessary to avoid issues with Python’s multiprocessing when using multiple GPUs later.</p>
+
+<p>The first three sections of the <code>if __name__ == "__main__"</code> part contain the code to set up the dataset loaders. The fourth part is where we initialize the model: a pretrained DistilBERT model we will finetune. Then, in the fifth part, we run our training function and evaluate the finetuned model on the test set.</p>
+
+<p>After running the code on an A100 GPU, I got the following results:</p>
+
+<div><pre><code>Epoch: 0001/0003 | Batch 0000/2916 | Loss: 0.6867
+Epoch: 0001/0003 | Batch 0300/2916 | Loss: 0.3633
+Epoch: 0001/0003 | Batch 0600/2916 | Loss: 0.4122
+Epoch: 0001/0003 | Batch 0900/2916 | Loss: 0.3046
+Epoch: 0001/0003 | Batch 1200/2916 | Loss: 0.3859
+Epoch: 0001/0003 | Batch 1500/2916 | Loss: 0.4489
+Epoch: 0001/0003 | Batch 1800/2916 | Loss: 0.5721
+Epoch: 0001/0003 | Batch 2100/2916 | Loss: 0.6470
+Epoch: 0001/0003 | Batch 2400/2916 | Loss: 0.3116
+Epoch: 0001/0003 | Batch 2700/2916 | Loss: 0.2002
+Epoch: 0001/0003 | Train acc.: 89.81% | Val acc.: 92.17%
+Epoch: 0002/0003 | Batch 0000/2916 | Loss: 0.0935
+Epoch: 0002/0003 | Batch 0300/2916 | Loss: 0.0674
+Epoch: 0002/0003 | Batch 0600/2916 | Loss: 0.1279
+Epoch: 0002/0003 | Batch 0900/2916 | Loss: 0.0686
+Epoch: 0002/0003 | Batch 1200/2916 | Loss: 0.0104
+Epoch: 0002/0003 | Batch 1500/2916 | Loss: 0.0888
+Epoch: 0002/0003 | Batch 1800/2916 | Loss: 0.1151
+Epoch: 0002/0003 | Batch 2100/2916 | Loss: 0.0648
+Epoch: 0002/0003 | Batch 2400/2916 | Loss: 0.0656
+Epoch: 0002/0003 | Batch 2700/2916 | Loss: 0.0354
+Epoch: 0002/0003 | Train acc.: 95.02% | Val acc.: 92.09%
+Epoch: 0003/0003 | Batch 0000/2916 | Loss: 0.0143
+Epoch: 0003/0003 | Batch 0300/2916 | Loss: 0.0108
+Epoch: 0003/0003 | Batch 0600/2916 | Loss: 0.0228
+Epoch: 0003/0003 | Batch 0900/2916 | Loss: 0.0140
+Epoch: 0003/0003 | Batch 1200/2916 | Loss: 0.0220
+Epoch: 0003/0003 | Batch 1500/2916 | Loss: 0.0123
+Epoch: 0003/0003 | Batch 1800/2916 | Loss: 0.0495
+Epoch: 0003/0003 | Batch 2100/2916 | Loss: 0.0039
+Epoch: 0003/0003 | Batch 2400/2916 | Loss: 0.0168
+Epoch: 0003/0003 | Batch 2700/2916 | Loss: 0.1293
+Epoch: 0003/0003 | Train acc.: 97.28% | Val acc.: 89.88%
+Time elapsed 21.33 min
+Test accuracy 89.92%
+</code></pre></div>
+
+<p>As we can see above, the model starts overfitting slightly from epochs 2 to 3, and the validation accuracy decreased from 92.09% to 89.88%. The final test accuracy is 89.92%, which we reached after finetuning the model for 21.33 min.</p>
+      <h2 id="2-using-the-trainer-class">
+        
+        
+          2) Using the Trainer Class <a href="#2-using-the-trainer-class"></a>
+        
+        
+      </h2>
+    
+
+<p>Now, let’s wrap our PyTorch model in a <code>LightningModule</code> so that we can use the <code>Trainer</code> class from Lightning:</p>
+
+<div><pre><code><span>import</span> <span>os</span>
+<span>import</span> <span>os.path</span> <span>as</span> <span>op</span>
+<span>import</span> <span>time</span>
+
+<span>from</span> <span>datasets</span> <span>import</span> <span>load_dataset</span>
+<span>import</span> <span>lightning</span> <span>as</span> <span>L</span>
+<span>from</span> <span>lightning.pytorch.callbacks</span> <span>import</span> <span>ModelCheckpoint</span>
+<span>from</span> <span>lightning.pytorch.loggers</span> <span>import</span> <span>CSVLogger</span>
+<span>import</span> <span>matplotlib.pyplot</span> <span>as</span> <span>plt</span>
+<span>import</span> <span>pandas</span> <span>as</span> <span>pd</span>
+<span>import</span> <span>torch</span>
+<span>from</span> <span>torch.utils.data</span> <span>import</span> <span>DataLoader</span>
+<span>import</span> <span>torchmetrics</span>
+<span>from</span> <span>transformers</span> <span>import</span> <span>AutoTokenizer</span>
+<span>from</span> <span>transformers</span> <span>import</span> <span>AutoModelForSequenceClassification</span>
+<span>from</span> <span>watermark</span> <span>import</span> <span>watermark</span>
+
+<span>from</span> <span>local_dataset_utilities</span> <span>import</span> <span>(</span>
+    <span>download_dataset</span><span>,</span>
+    <span>load_dataset_into_to_dataframe</span><span>,</span>
+    <span>partition_dataset</span><span>,</span>
+<span>)</span>
+<span>from</span> <span>local_dataset_utilities</span> <span>import</span> <span>IMDBDataset</span>
+
+
+<span>def</span> <span>tokenize_text</span><span>(</span><span>batch</span><span>):</span>
+    <span>return</span> <span>tokenizer</span><span>(</span><span>batch</span><span>[</span><span>"text"</span><span>],</span> <span>truncation</span><span>=</span><span>True</span><span>,</span> <span>padding</span><span>=</span><span>True</span><span>)</span>
+
+<span>class</span> <span>LightningModel</span><span>(</span><span>L</span><span>.</span><span>LightningModule</span><span>):</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>model</span><span>,</span> <span>learning_rate</span><span>=</span><span>5e-5</span><span>):</span>
+        <span>super</span><span>().</span><span>__init__</span><span>()</span>
+
+        <span>self</span><span>.</span><span>learning_rate</span> <span>=</span> <span>learning_rate</span>
+        <span>self</span><span>.</span><span>model</span> <span>=</span> <span>model</span>
+
+        <span>self</span><span>.</span><span>train_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>)</span>
+        <span>self</span><span>.</span><span>val_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>)</span>
+        <span>self</span><span>.</span><span>test_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>)</span>
+
+    <span>def</span> <span>forward</span><span>(</span><span>self</span><span>,</span> <span>input_ids</span><span>,</span> <span>attention_mask</span><span>,</span> <span>labels</span><span>):</span>
+        <span>return</span> <span>self</span><span>.</span><span>model</span><span>(</span><span>input_ids</span><span>,</span> <span>attention_mask</span><span>=</span><span>attention_mask</span><span>,</span> <span>labels</span><span>=</span><span>labels</span><span>)</span>
+
+    <span>def</span> <span>training_step</span><span>(</span><span>self</span><span>,</span> <span>batch</span><span>,</span> <span>batch_idx</span><span>):</span>
+        <span>outputs</span> <span>=</span> <span>self</span><span>(</span>
+            <span>batch</span><span>[</span><span>"input_ids"</span><span>],</span>
+            <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span>
+            <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>],</span>
+        <span>)</span>
+        <span>self</span><span>.</span><span>log</span><span>(</span><span>"train_loss"</span><span>,</span> <span>outputs</span><span>[</span><span>"loss"</span><span>])</span>
+        <span>with</span> <span>torch</span><span>.</span><span>no_grad</span><span>():</span>
+            <span>logits</span> <span>=</span> <span>outputs</span><span>[</span><span>"logits"</span><span>]</span>
+            <span>predicted_labels</span> <span>=</span> <span>torch</span><span>.</span><span>argmax</span><span>(</span><span>logits</span><span>,</span> <span>1</span><span>)</span>
+            <span>self</span><span>.</span><span>train_acc</span><span>(</span><span>predicted_labels</span><span>,</span> <span>batch</span><span>[</span><span>"label"</span><span>])</span>
+            <span>self</span><span>.</span><span>log</span><span>(</span><span>"train_acc"</span><span>,</span> <span>self</span><span>.</span><span>train_acc</span><span>,</span> <span>on_epoch</span><span>=</span><span>True</span><span>,</span> <span>on_step</span><span>=</span><span>False</span><span>)</span>
+        <span>return</span> <span>outputs</span><span>[</span><span>"loss"</span><span>]</span>  <span># this is passed to the optimizer for training
+</span>
+    <span>def</span> <span>validation_step</span><span>(</span><span>self</span><span>,</span> <span>batch</span><span>,</span> <span>batch_idx</span><span>):</span>
+        <span>outputs</span> <span>=</span> <span>self</span><span>(</span>
+            <span>batch</span><span>[</span><span>"input_ids"</span><span>],</span>
+            <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span>
+            <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>],</span>
+        <span>)</span>
+        <span>self</span><span>.</span><span>log</span><span>(</span><span>"val_loss"</span><span>,</span> <span>outputs</span><span>[</span><span>"loss"</span><span>],</span> <span>prog_bar</span><span>=</span><span>True</span><span>)</span>
+
+        <span>logits</span> <span>=</span> <span>outputs</span><span>[</span><span>"logits"</span><span>]</span>
+        <span>predicted_labels</span> <span>=</span> <span>torch</span><span>.</span><span>argmax</span><span>(</span><span>logits</span><span>,</span> <span>1</span><span>)</span>
+        <span>self</span><span>.</span><span>val_acc</span><span>(</span><span>predicted_labels</span><span>,</span> <span>batch</span><span>[</span><span>"label"</span><span>])</span>
+        <span>self</span><span>.</span><span>log</span><span>(</span><span>"val_acc"</span><span>,</span> <span>self</span><span>.</span><span>val_acc</span><span>,</span> <span>prog_bar</span><span>=</span><span>True</span><span>)</span>
+
+    <span>def</span> <span>test_step</span><span>(</span><span>self</span><span>,</span> <span>batch</span><span>,</span> <span>batch_idx</span><span>):</span>
+        <span>outputs</span> <span>=</span> <span>self</span><span>(</span>
+            <span>batch</span><span>[</span><span>"input_ids"</span><span>],</span>
+            <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span>
+            <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>],</span>
+        <span>)</span>
+
+        <span>logits</span> <span>=</span> <span>outputs</span><span>[</span><span>"logits"</span><span>]</span>
+        <span>predicted_labels</span> <span>=</span> <span>torch</span><span>.</span><span>argmax</span><span>(</span><span>logits</span><span>,</span> <span>1</span><span>)</span>
+        <span>self</span><span>.</span><span>test_acc</span><span>(</span><span>predicted_labels</span><span>,</span> <span>batch</span><span>[</span><span>"label"</span><span>])</span>
+        <span>self</span><span>.</span><span>log</span><span>(</span><span>"accuracy"</span><span>,</span> <span>self</span><span>.</span><span>test_acc</span><span>,</span> <span>prog_bar</span><span>=</span><span>True</span><span>)</span>
+
+    <span>def</span> <span>configure_optimizers</span><span>(</span><span>self</span><span>):</span>
+        <span>optimizer</span> <span>=</span> <span>torch</span><span>.</span><span>optim</span><span>.</span><span>Adam</span><span>(</span>
+            <span>self</span><span>.</span><span>trainer</span><span>.</span><span>model</span><span>.</span><span>parameters</span><span>(),</span> <span>lr</span><span>=</span><span>self</span><span>.</span><span>learning_rate</span>
+        <span>)</span>
+        <span>return</span> <span>optimizer</span>
+
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>"__main__"</span><span>:</span>
+    <span>print</span><span>(</span><span>watermark</span><span>(</span><span>packages</span><span>=</span><span>"torch,lightning,transformers"</span><span>,</span> <span>python</span><span>=</span><span>True</span><span>),</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+    <span>print</span><span>(</span><span>"Torch CUDA available?"</span><span>,</span> <span>torch</span><span>.</span><span>cuda</span><span>.</span><span>is_available</span><span>(),</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+
+    <span>torch</span><span>.</span><span>manual_seed</span><span>(</span><span>123</span><span>)</span>
+
+    <span>##########################
+</span>    <span>### 1 Loading the Dataset
+</span>    <span>##########################
+</span>    <span>download_dataset</span><span>()</span>
+    <span>df</span> <span>=</span> <span>load_dataset_into_to_dataframe</span><span>()</span>
+    <span>if</span> <span>not</span> <span>(</span><span>op</span><span>.</span><span>exists</span><span>(</span><span>"train.csv"</span><span>)</span> <span>and</span> <span>op</span><span>.</span><span>exists</span><span>(</span><span>"val.csv"</span><span>)</span> <span>and</span> <span>op</span><span>.</span><span>exists</span><span>(</span><span>"test.csv"</span><span>)):</span>
+        <span>partition_dataset</span><span>(</span><span>df</span><span>)</span>
+
+    <span>imdb_dataset</span> <span>=</span> <span>load_dataset</span><span>(</span>
+        <span>"csv"</span><span>,</span>
+        <span>data_files</span><span>=</span><span>{</span>
+            <span>"train"</span><span>:</span> <span>"train.csv"</span><span>,</span>
+            <span>"validation"</span><span>:</span> <span>"val.csv"</span><span>,</span>
+            <span>"test"</span><span>:</span> <span>"test.csv"</span><span>,</span>
+        <span>},</span>
+    <span>)</span>
+
+    <span>#########################################
+</span>    <span>### 2 Tokenization and Numericalization
+</span>    <span>########################################
+</span>
+    <span>tokenizer</span> <span>=</span> <span>AutoTokenizer</span><span>.</span><span>from_pretrained</span><span>(</span><span>"distilbert-base-uncased"</span><span>)</span>
+    <span>print</span><span>(</span><span>"Tokenizer input max length:"</span><span>,</span> <span>tokenizer</span><span>.</span><span>model_max_length</span><span>,</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+    <span>print</span><span>(</span><span>"Tokenizer vocabulary size:"</span><span>,</span> <span>tokenizer</span><span>.</span><span>vocab_size</span><span>,</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+
+    <span>print</span><span>(</span><span>"Tokenizing ..."</span><span>,</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+    <span>imdb_tokenized</span> <span>=</span> <span>imdb_dataset</span><span>.</span><span>map</span><span>(</span><span>tokenize_text</span><span>,</span> <span>batched</span><span>=</span><span>True</span><span>,</span> <span>batch_size</span><span>=</span><span>None</span><span>)</span>
+    <span>del</span> <span>imdb_dataset</span>
+    <span>imdb_tokenized</span><span>.</span><span>set_format</span><span>(</span><span>"torch"</span><span>,</span> <span>columns</span><span>=</span><span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>])</span>
+    <span>os</span><span>.</span><span>environ</span><span>[</span><span>"TOKENIZERS_PARALLELISM"</span><span>]</span> <span>=</span> <span>"false"</span>
+
+    <span>#########################################
+</span>    <span>### 3 Set Up DataLoaders
+</span>    <span>#########################################
+</span>
+    <span>train_dataset</span> <span>=</span> <span>IMDBDataset</span><span>(</span><span>imdb_tokenized</span><span>,</span> <span>partition_key</span><span>=</span><span>"train"</span><span>)</span>
+    <span>val_dataset</span> <span>=</span> <span>IMDBDataset</span><span>(</span><span>imdb_tokenized</span><span>,</span> <span>partition_key</span><span>=</span><span>"validation"</span><span>)</span>
+    <span>test_dataset</span> <span>=</span> <span>IMDBDataset</span><span>(</span><span>imdb_tokenized</span><span>,</span> <span>partition_key</span><span>=</span><span>"test"</span><span>)</span>
+
+    <span>train_loader</span> <span>=</span> <span>DataLoader</span><span>(</span>
+        <span>dataset</span><span>=</span><span>train_dataset</span><span>,</span>
+        <span>batch_size</span><span>=</span><span>12</span><span>,</span>
+        <span>shuffle</span><span>=</span><span>True</span><span>,</span>
+        <span>num_workers</span><span>=</span><span>1</span><span>,</span>
+        <span>drop_last</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>val_loader</span> <span>=</span> <span>DataLoader</span><span>(</span>
+        <span>dataset</span><span>=</span><span>val_dataset</span><span>,</span>
+        <span>batch_size</span><span>=</span><span>12</span><span>,</span>
+        <span>num_workers</span><span>=</span><span>1</span><span>,</span>
+        <span>drop_last</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>test_loader</span> <span>=</span> <span>DataLoader</span><span>(</span>
+        <span>dataset</span><span>=</span><span>test_dataset</span><span>,</span>
+        <span>batch_size</span><span>=</span><span>12</span><span>,</span>
+        <span>num_workers</span><span>=</span><span>1</span><span>,</span>
+        <span>drop_last</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>#########################################
+</span>    <span>### 4 Initializing the Model
+</span>    <span>#########################################
+</span>
+    <span>model</span> <span>=</span> <span>AutoModelForSequenceClassification</span><span>.</span><span>from_pretrained</span><span>(</span>
+        <span>"distilbert-base-uncased"</span><span>,</span> <span>num_labels</span><span>=</span><span>2</span>
+    <span>)</span>
+
+    <span>#########################################
+</span>    <span>### 5 Finetuning
+</span>    <span>#########################################
+</span>
+    <span>lightning_model</span> <span>=</span> <span>LightningModel</span><span>(</span><span>model</span><span>)</span>
+
+    <span>callbacks</span> <span>=</span> <span>[</span>
+        <span>ModelCheckpoint</span><span>(</span><span>save_top_k</span><span>=</span><span>1</span><span>,</span> <span>mode</span><span>=</span><span>"max"</span><span>,</span> <span>monitor</span><span>=</span><span>"val_acc"</span><span>)</span>  <span># save top 1 model
+</span>    <span>]</span>
+    <span>logger</span> <span>=</span> <span>CSVLogger</span><span>(</span><span>save_dir</span><span>=</span><span>"logs/"</span><span>,</span> <span>name</span><span>=</span><span>"my-model"</span><span>)</span>
+
+    <span>trainer</span> <span>=</span> <span>L</span><span>.</span><span>Trainer</span><span>(</span>
+        <span>max_epochs</span><span>=</span><span>3</span><span>,</span>
+        <span>callbacks</span><span>=</span><span>callbacks</span><span>,</span>
+        <span>accelerator</span><span>=</span><span>"gpu"</span><span>,</span>
+        <span>devices</span><span>=</span><span>[</span><span>1</span><span>],</span>
+        <span>logger</span><span>=</span><span>logger</span><span>,</span>
+        <span>log_every_n_steps</span><span>=</span><span>10</span><span>,</span>
+        <span>deterministic</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>start</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+    <span>trainer</span><span>.</span><span>fit</span><span>(</span>
+        <span>model</span><span>=</span><span>lightning_model</span><span>,</span>
+        <span>train_dataloaders</span><span>=</span><span>train_loader</span><span>,</span>
+        <span>val_dataloaders</span><span>=</span><span>val_loader</span><span>,</span>
+    <span>)</span>
+
+    <span>end</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+    <span>elapsed</span> <span>=</span> <span>end</span> <span>-</span> <span>start</span>
+    <span>print</span><span>(</span><span>f</span><span>"Time elapsed </span><span>{</span><span>elapsed</span><span>/</span><span>60</span><span>:.</span><span>2</span><span>f</span><span>}</span><span> min"</span><span>)</span>
+
+    <span>test_acc</span> <span>=</span> <span>trainer</span><span>.</span><span>test</span><span>(</span><span>lightning_model</span><span>,</span> <span>dataloaders</span><span>=</span><span>test_loader</span><span>,</span> <span>ckpt_path</span><span>=</span><span>"best"</span><span>)</span>
+    <span>print</span><span>(</span><span>test_acc</span><span>)</span>
+
+    <span>with</span> <span>open</span><span>(</span><span>op</span><span>.</span><span>join</span><span>(</span><span>trainer</span><span>.</span><span>logger</span><span>.</span><span>log_dir</span><span>,</span> <span>"outputs.txt"</span><span>),</span> <span>"w"</span><span>)</span> <span>as</span> <span>f</span><span>:</span>
+        <span>f</span><span>.</span><span>write</span><span>((</span><span>f</span><span>"Time elapsed </span><span>{</span><span>elapsed</span><span>/</span><span>60</span><span>:.</span><span>2</span><span>f</span><span>}</span><span> min</span><span>\n</span><span>"</span><span>))</span>
+        <span>f</span><span>.</span><span>write</span><span>(</span><span>f</span><span>"Test acc: </span><span>{</span><span>test_acc</span><span>}</span><span>"</span><span>)</span>
+</code></pre></div>
+
+<p>(You can also find this code on GitHub here: <a href="https://github.com/rasbt/faster-pytorch-blog/blob/main/2_pytorch-with-trainer.py">2_pytorch-with-trainer.py</a>.)</p>
+
+<p>Again, I am skipping the details of the <code>LightningModule</code> to keep this article focused on the performance aspects. However, I will cover the <code>LightningModule</code> and <code>Trainer</code> classes in more detail in Unit 5 of my <a href="https://lightning.ai/pages/courses/deep-learning-fundamentals/">Deep Learning Fundamentals course</a>, which is set to come out in March. In the meantime, I recommend the <a href="https://pytorch-lightning.readthedocs.io/en/stable/starter/introduction.html">official PyTorch Lightning tutorial</a>.</p>
+
+<p>In short, we set up a <code>LightningModule</code> that defines how a training, validation, and test step is executed. Then, the main change is in the code section 5, where we finetune the model. What’s new is that we are now wrapping the PyTorch model  in the <code>LightningModel</code> class and using the <code>Trainer</code> class to fit the model:</p>
+
+<div><pre><code>    <span>#########################################
+</span>    <span>### 5 Finetuning
+</span>    <span>#########################################
+</span>
+    <span>lightning_model</span> <span>=</span> <span>LightningModel</span><span>(</span><span>model</span><span>)</span>
+
+    <span>callbacks</span> <span>=</span> <span>[</span>
+        <span>ModelCheckpoint</span><span>(</span><span>save_top_k</span><span>=</span><span>1</span><span>,</span> <span>mode</span><span>=</span><span>"max"</span><span>,</span> <span>monitor</span><span>=</span><span>"val_acc"</span><span>)</span>  <span># save top 1 model
+</span>    <span>]</span>
+    <span>logger</span> <span>=</span> <span>CSVLogger</span><span>(</span><span>save_dir</span><span>=</span><span>"logs/"</span><span>,</span> <span>name</span><span>=</span><span>"my-model"</span><span>)</span>
+
+    <span>trainer</span> <span>=</span> <span>L</span><span>.</span><span>Trainer</span><span>(</span>
+        <span>max_epochs</span><span>=</span><span>3</span><span>,</span>
+        <span>callbacks</span><span>=</span><span>callbacks</span><span>,</span>
+        <span>accelerator</span><span>=</span><span>"gpu"</span><span>,</span>
+        <span>devices</span><span>=</span><span>1</span><span>,</span>
+        <span>logger</span><span>=</span><span>logger</span><span>,</span>
+        <span>log_every_n_steps</span><span>=</span><span>10</span><span>,</span>
+        <span>deterministic</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>trainer</span><span>.</span><span>fit</span><span>(</span>
+        <span>model</span><span>=</span><span>lightning_model</span><span>,</span>
+        <span>train_dataloaders</span><span>=</span><span>train_loader</span><span>,</span>
+        <span>val_dataloaders</span><span>=</span><span>val_loader</span><span>,</span>
+    <span>)</span>
+</code></pre></div>
+
+<p>Since we previously noticed that the validation accuracy decreases from epoch 2 to 3, we use a <code>ModelCheckpoint</code> callback to load the best model (based on the highest validation accuracy) for model evaluation on the test set. Moreover, we will log the performance to a CSV file (my preferred method for record-keeping) and set the PyTorch behavior to deterministic.</p>
+
+<p>On the same machine, this model reached a test accuracy of 92.6% in 21.79 min:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="2-trainer"></p>
+
+<p>Note that if we disable checkpointing and allow PyTorch to run in non-deterministic mode, we would get the same runtime as will plain PyTorch.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="benchmark-last"></p>
+      <h2 id="3-automatic-mixed-precision-training">
+        
+        
+          3) Automatic Mixed Precision Training <a href="#3-automatic-mixed-precision-training"></a>
+        
+        
+      </h2>
+    
+
+<p>If our GPU supports mixed precision training, enabling it is often one of the main ways to boost computational efficiency. In particular, we use automatic mixed precision training, which switches between 32-bit and 16-bit floating point representations during training without sacrificing accuracy.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="mixed-precision"></p>
+
+<p>Using the <code>Trainer</code> class, we can enable automatic mixed precision training with one line of code:</p>
+
+<div><pre><code>    <span>trainer</span> <span>=</span> <span>L</span><span>.</span><span>Trainer</span><span>(</span>
+        <span>max_epochs</span><span>=</span><span>3</span><span>,</span>
+        <span>callbacks</span><span>=</span><span>callbacks</span><span>,</span>
+        <span>accelerator</span><span>=</span><span>"gpu"</span><span>,</span>
+        <span>precision</span><span>=</span><span>"16"</span><span>,</span>  <span># &lt;-- NEW
+</span>        <span>devices</span><span>=</span><span>[</span><span>1</span><span>],</span>
+        <span>logger</span><span>=</span><span>logger</span><span>,</span>
+        <span>log_every_n_steps</span><span>=</span><span>10</span><span>,</span>
+        <span>deterministic</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+</code></pre></div>
+
+<p>Using mixed precision training, as shown above, boosts the training time from 21.79 min to 8.25 min! That’s almost 3x faster!</p>
+
+<p>The test set accuracy is 93.2% – even slightly improved compared to the 92.6% before (likely due to rounding-induced differences when switching between the different precision modes.)</p>
+
+<p><img src="data:application/octet-stream;base64," alt="benchmark-2"></p>
+      <h2 id="4-static-graphs-with-torchcompile">
+        
+        
+          4) Static Graphs with Torch.Compile <a href="#4-static-graphs-with-torchcompile"></a>
+        
+        
+      </h2>
+    
+
+<p>In the <a href="https://pytorch.org/get-started/pytorch-2.0/">recent PyTorch 2.0 announcement</a>, the PyTorch team introduced the new <code>toch.compile</code> function that can speed up PyTorch code execution by generating optimized static graphs instead of running PyTorch code with dynamic graphs (the so-called <em>eager</em> mode). Under the hood, this is a 3-step process including graph acquisition, graph lowering, and graph compilation.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="pytorch-2.0-img4"></p>
+
+<p>(Image source: <a href="https://pytorch.org/get-started/pytorch-2.0/">https://pytorch.org/get-started/pytorch-2.0/</a>)</p>
+
+<p>There are lots of sophisticated things under the hood that make this happen, which are <a href="https://pytorch.org/get-started/pytorch-2.0/">explained in more detail in the PyTorch 2.0 announcement</a>. As a user, we can use this new feature via one simple command, <code>torch.compile</code>.</p>
+
+<p>To take advantage of <code>torch.compile</code>, we can modify our code by adding this one-liner:</p>
+
+<div><pre><code><span># ...
+</span><span>model</span> <span>=</span> <span>AutoModelForSequenceClassification</span><span>.</span><span>from_pretrained</span><span>(</span>
+        <span>"distilbert-base-uncased"</span><span>,</span> <span>num_labels</span><span>=</span><span>2</span>
+    <span>)</span>
+
+<span>model</span> <span>=</span> <span>torch</span><span>.</span><span>compile</span><span>(</span><span>model</span><span>)</span> <span># NEW
+</span><span>lightning_model</span> <span>=</span> <span>LightningModel</span><span>(</span><span>model</span><span>)</span>
+<span># ...
+</span></code></pre></div>
+
+<p>(For more details on the <code>torch.compile</code> function, please also see the official <a href="https://pytorch.org/tutorials/intermediate/torch_compile_tutorial.html">torch.compile tutorial</a>)</p>
+
+<p>Unfortunately, it seems that <code>torch.compile</code> does not result in a performance boost for DistilBERT model in this mixed-precision context when using the default parameters. The training time was 8.44 min, compared to 8.25 min before. So, the followin benchmarks in this tutorial will not be using <code>torch.compile</code>.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="benchmark-3"></p>
+
+
+
+<hr>
+
+<p><strong>Sidenote:</strong> when applyting two tricks,</p>
+
+<ol>
+  <li>placing the compilation before the timing starts;</li>
+  <li>priming the model with an example batch as shown below</li>
+</ol>
+
+<div><pre><code>  <span>model</span><span>.</span><span>to</span><span>(</span><span>torch</span><span>.</span><span>device</span><span>(</span><span>"cuda:0"</span><span>))</span>
+  <span>model</span> <span>=</span> <span>torch</span><span>.</span><span>compile</span><span>(</span><span>model</span><span>)</span>
+
+  <span>for</span> <span>batch_idx</span><span>,</span> <span>batch</span> <span>in</span> <span>enumerate</span><span>(</span><span>train_loader</span><span>):</span>
+      <span>model</span><span>.</span><span>train</span><span>()</span>
+      <span>for</span> <span>s</span> <span>in</span> <span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>]:</span>
+          <span>batch</span><span>[</span><span>s</span><span>]</span> <span>=</span> <span>batch</span><span>[</span><span>s</span><span>].</span><span>to</span><span>(</span><span>torch</span><span>.</span><span>device</span><span>(</span><span>"cuda:0"</span><span>))</span>
+      <span>break</span>
+
+  <span>outputs</span> <span>=</span> <span>model</span><span>(</span>
+      <span>batch</span><span>[</span><span>"input_ids"</span><span>],</span>
+      <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span>
+      <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>],</span>
+  <span>)</span>
+
+  <span>lightning_model</span> <span>=</span> <span>LightningModel</span><span>(</span><span>model</span><span>)</span>
+  <span># start timing and training below
+</span></code></pre></div>
+
+<p>the runtime improves to 5.6 min. This indicates that the initial optimization compilation step takes a few minutes but eventually accelerates the model training. In this case, since we are only training the model for three epochs, the benefits of the compilation are not visible due to the extra overhead. However, if we were training the model for longer or training a larger model, the compilation would be worth it.</p>
+
+<p>(Caveat: it is currently a bit tricky to prime the model for distributed settings since each individual GPU device would require a copy of the models. It will require some code reengineering which I may revisit later, so I will not use <code>torch.compile</code> for the codes below.)</p><hr>
+
+
+
+
+      <h2 id="5-training-on-4-gpus-with-distributed-data-parallel">
+        
+        
+          5) Training on 4 GPUs with Distributed Data Parallel <a href="#5-training-on-4-gpus-with-distributed-data-parallel"></a>
+        
+        
+      </h2>
+    
+
+<p>After adding mixed precision training (and trying to add graph compilation) above to speed up our code on a single GPU, let’s now explore multi-GPU strategies. In particular, we will now run the same code on four instead of one GPU.</p>
+
+<p>Note that there are several different multi-GPU training techniques out there that I summarized in the figure below.</p>
+
+<p>To keep this blog post focused and brief, I recommend checking out my <a href="https://leanpub.com/machine-learning-q-and-ai/">Machine Learning Q and AI</a> book for more details on the different multi-GPU training paradigms. The section is included in the free preview version. Moreover, I will also cover these in my Deep Learning Fundamentals course Unit 9, which is scheduled to be released in April.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="multi-gpu"></p>
+
+<p>We will start with the simplest technique, data parallelism via <code>DistributedDataParallel</code>. Using the <code>Trainer</code>, we only have to modify one line of code:</p>
+
+<div><pre><code>    <span>trainer</span> <span>=</span> <span>L</span><span>.</span><span>Trainer</span><span>(</span>
+        <span>max_epochs</span><span>=</span><span>3</span><span>,</span>
+        <span>callbacks</span><span>=</span><span>callbacks</span><span>,</span>
+        <span>accelerator</span><span>=</span><span>"gpu"</span><span>,</span>
+        <span>devices</span><span>=</span><span>4</span><span>,</span>  <span># &lt;-- NEW
+</span>        <span>strategy</span><span>=</span><span>"ddp"</span><span>,</span>  <span># &lt;-- NEW
+</span>        <span>precision</span><span>=</span><span>"16"</span><span>,</span>
+        <span>logger</span><span>=</span><span>logger</span><span>,</span>
+        <span>log_every_n_steps</span><span>=</span><span>10</span><span>,</span>
+        <span>deterministic</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+</code></pre></div>
+
+<p>On my computer, with four A100 GPUs, this code ran in 3.07 min, reaching a test accuracy of 93.1%. Again, the test set improvement is likely due to the gradient averaging when using the data parallelism.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="benchmark-3"></p>
+
+<p>(Explaining data parallelism in detail is another great topic for a future article.)</p>
+
+<p><img src="data:application/octet-stream;base64," alt="ddp"></p>
+      <h2 id="6-deepspeed">
+        
+        
+          6) DeepSpeed <a href="#6-deepspeed"></a>
+        
+        
+      </h2>
+    
+
+<p>Lastly, let us explore the <a href="https://github.com/microsoft/DeepSpeed">DeepSpeed</a> multi-GPU strategies we can use from within the <code>Trainer</code>.</p>
+
+<p>But before trying it out in practice, l wanted to share my multi-GPU usage recommendations. Which strategy to use largely depends on the model, the number of GPUs, and the memory size of the GPUs. For example, when pretraining large models where the model does not fit on a single GPU, it’s a good idea to start with the simple <code>"ddp_sharded</code>” strategy, which adds tensor parallelism to <code>"ddp"</code>. Using the previous code, <code>"ddp_sharded"</code> takes 2.58 min to run.</p>
+
+<p>Alternatively, we can also consider the more sophisticated <code>"deepspeed_stage_2"</code> strategy, which shards the optimizer states and gradients. If this is not enough to fit the model into GPU memory, try the <code>"deepspeed_stage_2_offload"</code> variant, which offloads optimizer and gradient states to CPU memory (at a performance cost). You can find more information about the DeepSpeed strategies and their ZeRO (zero-redundancy optimizer) in the official <a href="https://www.deepspeed.ai/tutorials/zero/">ZeRO tutorial</a>—furthermore, see the <a href="https://www.deepspeed.ai/tutorials/zero-offload/">ZeRO offload tutorial</a> for more information about offloading.</p>
+
+<p>Returning to the recommendations, if you want to finetune a model, computational throughput is usually less of a concern than being able to fit the model into the memory of a smaller number of GPUs. In this case, you can explore the <code>"stage_3"</code> variants of deepspeed, which shard everything, optimizers, gradients, and parameters, i.e.</p>
+
+<ul>
+  <li><code>strategy="deepspeed_stage_3"</code></li>
+  <li><code>strategy="deepspeed_stage_3_offload"</code></li>
+</ul>
+
+<p>Since GPU memory is not a concern with a small model like DistilBERT, let’s try out <code>"deepspeed_stage_2"</code>:</p>
+
+<p>First, we have to install the DeepSpeed Python library:</p>
+
+<div><pre><code>pip <span>install</span> <span>-U</span> deepspeed
+</code></pre></div>
+
+<p>(On my machine, this installed deepspeed-0.8.2.)</p>
+
+<p>Next, we can enable <code>"deepspeed_stage_2"</code> with changing only one line of code:</p>
+
+<div><pre><code>    <span>trainer</span> <span>=</span> <span>L</span><span>.</span><span>Trainer</span><span>(</span>
+        <span>max_epochs</span><span>=</span><span>3</span><span>,</span>
+        <span>callbacks</span><span>=</span><span>callbacks</span><span>,</span>
+        <span>accelerator</span><span>=</span><span>"gpu"</span><span>,</span>
+        <span>devices</span><span>=</span><span>4</span><span>,</span>
+        <span>strategy</span><span>=</span><span>"deepspeed_stage_2"</span><span>,</span>  <span># &lt;-- NEW
+</span>        <span>precision</span><span>=</span><span>"16"</span><span>,</span>
+        <span>logger</span><span>=</span><span>logger</span><span>,</span>
+        <span>log_every_n_steps</span><span>=</span><span>10</span><span>,</span>
+        <span>deterministic</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+</code></pre></div>
+
+<p>This took 2.75 min to run on my machine and achieved 92.6% test accuracy.</p>
+
+<p>Note that PyTorch now also has its own alternative to DeepSpeed, called fully-sharded DataParallel, which we can use via <code>strategy="fsdp"</code>.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="benchmark-last"></p>
+      <h2 id="7-fabric">
+        
+        
+          7) Fabric <a href="#7-fabric"></a>
+        
+        
+      </h2>
+    
+
+<p>With the recent Lightning 2.0 release, Lightning AI released the new <a href="https://lightning.ai/docs/fabric/stable/">Fabric open-source library for PyTorch</a>. Fabric is essentially an alternative way to scale PyTorch code without using the <code>LightningModule</code> and <code>Trainer</code> I introduced above in section  <em>2) Using the Trainer Class</em>.</p>
+
+<p>Fabric only requires changing a few lines of code, as shown in the code below. The <code>-</code> indicate lines that were removed and <code>+</code> were the lines that were added to convert the Python code to use Fabric.</p>
+
+<div><pre><code><span>import</span> <span>os</span>
+<span>import</span> <span>os.path</span> <span>as</span> <span>op</span>
+<span>import</span> <span>time</span>
+
+<span>+</span> <span>from</span> <span>lightning</span> <span>import</span> <span>Fabric</span>
+
+<span>from</span> <span>datasets</span> <span>import</span> <span>load_dataset</span>
+<span>import</span> <span>matplotlib.pyplot</span> <span>as</span> <span>plt</span>
+<span>import</span> <span>pandas</span> <span>as</span> <span>pd</span>
+<span>import</span> <span>torch</span>
+<span>from</span> <span>torch.utils.data</span> <span>import</span> <span>DataLoader</span>
+<span>import</span> <span>torchmetrics</span>
+<span>from</span> <span>transformers</span> <span>import</span> <span>AutoTokenizer</span>
+<span>from</span> <span>transformers</span> <span>import</span> <span>AutoModelForSequenceClassification</span>
+<span>from</span> <span>watermark</span> <span>import</span> <span>watermark</span>
+
+<span>from</span> <span>local_dataset_utilities</span> <span>import</span> <span>download_dataset</span><span>,</span> <span>load_dataset_into_to_dataframe</span><span>,</span> <span>partition_dataset</span>
+<span>from</span> <span>local_dataset_utilities</span> <span>import</span> <span>IMDBDataset</span>
+
+
+<span>def</span> <span>tokenize_text</span><span>(</span><span>batch</span><span>):</span>
+    <span>return</span> <span>tokenizer</span><span>(</span><span>batch</span><span>[</span><span>"text"</span><span>],</span> <span>truncation</span><span>=</span><span>True</span><span>,</span> <span>padding</span><span>=</span><span>True</span><span>)</span>
+
+
+<span>def</span> <span>plot_logs</span><span>(</span><span>log_dir</span><span>):</span>
+    <span>metrics</span> <span>=</span> <span>pd</span><span>.</span><span>read_csv</span><span>(</span><span>op</span><span>.</span><span>join</span><span>(</span><span>log_dir</span><span>,</span> <span>"metrics.csv"</span><span>))</span>
+
+    <span>aggreg_metrics</span> <span>=</span> <span>[]</span>
+    <span>agg_col</span> <span>=</span> <span>"epoch"</span>
+    <span>for</span> <span>i</span><span>,</span> <span>dfg</span> <span>in</span> <span>metrics</span><span>.</span><span>groupby</span><span>(</span><span>agg_col</span><span>):</span>
+        <span>agg</span> <span>=</span> <span>dict</span><span>(</span><span>dfg</span><span>.</span><span>mean</span><span>())</span>
+        <span>agg</span><span>[</span><span>agg_col</span><span>]</span> <span>=</span> <span>i</span>
+        <span>aggreg_metrics</span><span>.</span><span>append</span><span>(</span><span>agg</span><span>)</span>
+
+    <span>df_metrics</span> <span>=</span> <span>pd</span><span>.</span><span>DataFrame</span><span>(</span><span>aggreg_metrics</span><span>)</span>
+    <span>df_metrics</span><span>[[</span><span>"train_loss"</span><span>,</span> <span>"val_loss"</span><span>]].</span><span>plot</span><span>(</span>
+        <span>grid</span><span>=</span><span>True</span><span>,</span> <span>legend</span><span>=</span><span>True</span><span>,</span> <span>xlabel</span><span>=</span><span>"Epoch"</span><span>,</span> <span>ylabel</span><span>=</span><span>"Loss"</span>
+    <span>)</span>
+    <span>plt</span><span>.</span><span>savefig</span><span>(</span><span>op</span><span>.</span><span>join</span><span>(</span><span>log_dir</span><span>,</span> <span>"loss.pdf"</span><span>))</span>
+
+    <span>df_metrics</span><span>[[</span><span>"train_acc"</span><span>,</span> <span>"val_acc"</span><span>]].</span><span>plot</span><span>(</span>
+        <span>grid</span><span>=</span><span>True</span><span>,</span> <span>legend</span><span>=</span><span>True</span><span>,</span> <span>xlabel</span><span>=</span><span>"Epoch"</span><span>,</span> <span>ylabel</span><span>=</span><span>"Accuracy"</span>
+    <span>)</span>
+    <span>plt</span><span>.</span><span>savefig</span><span>(</span><span>op</span><span>.</span><span>join</span><span>(</span><span>log_dir</span><span>,</span> <span>"acc.pdf"</span><span>))</span>
+
+
+<span>-</span> <span>def</span> <span>train</span><span>(</span><span>num_epochs</span><span>,</span> <span>model</span><span>,</span> <span>optimizer</span><span>,</span> <span>train_loader</span><span>,</span> <span>val_loader</span><span>,</span> <span>device</span><span>):</span>
+<span>+</span> <span>def</span> <span>train</span><span>(</span><span>num_epochs</span><span>,</span> <span>model</span><span>,</span> <span>optimizer</span><span>,</span> <span>train_loader</span><span>,</span> <span>val_loader</span><span>,</span> <span>fabric</span><span>):</span>
+
+      <span>for</span> <span>epoch</span> <span>in</span> <span>range</span><span>(</span><span>num_epochs</span><span>):</span>
+<span>-</span>         <span>train_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>).</span><span>to</span><span>(</span><span>device</span><span>)</span>
+<span>+</span>         <span>train_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>).</span><span>to</span><span>(</span><span>fabric</span><span>.</span><span>device</span><span>)</span>
+
+        <span>model</span><span>.</span><span>train</span><span>()</span>
+        <span>for</span> <span>batch_idx</span><span>,</span> <span>batch</span> <span>in</span> <span>enumerate</span><span>(</span><span>train_loader</span><span>):</span>
+
+<span>-</span>             <span>for</span> <span>s</span> <span>in</span> <span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>]:</span>
+<span>-</span>                 <span>batch</span><span>[</span><span>s</span><span>]</span> <span>=</span> <span>batch</span><span>[</span><span>s</span><span>].</span><span>to</span><span>(</span><span>device</span><span>)</span>
+
+            <span>outputs</span> <span>=</span> <span>model</span><span>(</span><span>batch</span><span>[</span><span>"input_ids"</span><span>],</span> <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span> <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>])</span> 
+            <span>optimizer</span><span>.</span><span>zero_grad</span><span>()</span>
+<span>-</span>            <span>outputs</span><span>[</span><span>"loss"</span><span>].</span><span>backward</span><span>()</span>
+<span>+</span>            <span>fabric</span><span>.</span><span>backward</span><span>(</span><span>outputs</span><span>[</span><span>"loss"</span><span>])</span>
+
+            <span>### UPDATE MODEL PARAMETERS
+</span>            <span>optimizer</span><span>.</span><span>step</span><span>()</span>
+
+            <span>### LOGGING
+</span>            <span>if</span> <span>not</span> <span>batch_idx</span> <span>%</span> <span>300</span><span>:</span>
+                <span>print</span><span>(</span><span>f</span><span>"Epoch: </span><span>{</span><span>epoch</span><span>+</span><span>1</span><span>:</span><span>04</span><span>d</span><span>}</span><span>/</span><span>{</span><span>num_epochs</span><span>:</span><span>04</span><span>d</span><span>}</span><span> | Batch </span><span>{</span><span>batch_idx</span><span>:</span><span>04</span><span>d</span><span>}</span><span>/</span><span>{</span><span>len</span><span>(</span><span>train_loader</span><span>):</span><span>04</span><span>d</span><span>}</span><span> | Loss: </span><span>{</span><span>outputs</span><span>[</span><span>'loss'</span><span>]:.</span><span>4</span><span>f</span><span>}</span><span>"</span><span>)</span>
+
+            <span>model</span><span>.</span><span>eval</span><span>()</span>
+            <span>with</span> <span>torch</span><span>.</span><span>no_grad</span><span>():</span>
+                <span>predicted_labels</span> <span>=</span> <span>torch</span><span>.</span><span>argmax</span><span>(</span><span>outputs</span><span>[</span><span>"logits"</span><span>],</span> <span>1</span><span>)</span>
+                <span>train_acc</span><span>.</span><span>update</span><span>(</span><span>predicted_labels</span><span>,</span> <span>batch</span><span>[</span><span>"label"</span><span>])</span>
+
+        <span>### MORE LOGGING
+</span>        <span>model</span><span>.</span><span>eval</span><span>()</span>
+        <span>with</span> <span>torch</span><span>.</span><span>no_grad</span><span>():</span>
+<span>-</span>            <span>val_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>).</span><span>to</span><span>(</span><span>device</span><span>)</span>
+<span>+</span>            <span>val_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>).</span><span>to</span><span>(</span><span>fabric</span><span>.</span><span>device</span><span>)</span>
+            <span>for</span> <span>batch</span> <span>in</span> <span>val_loader</span><span>:</span>
+<span>-</span>                <span>for</span> <span>s</span> <span>in</span> <span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>]:</span>
+<span>-</span>                    <span>batch</span><span>[</span><span>s</span><span>]</span> <span>=</span> <span>batch</span><span>[</span><span>s</span><span>].</span><span>to</span><span>(</span><span>device</span><span>)</span>
+                <span>outputs</span> <span>=</span> <span>model</span><span>(</span><span>batch</span><span>[</span><span>"input_ids"</span><span>],</span> <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span> <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>])</span>
+                <span>predicted_labels</span> <span>=</span> <span>torch</span><span>.</span><span>argmax</span><span>(</span><span>outputs</span><span>[</span><span>"logits"</span><span>],</span> <span>1</span><span>)</span>
+                <span>val_acc</span><span>.</span><span>update</span><span>(</span><span>predicted_labels</span><span>,</span> <span>batch</span><span>[</span><span>"label"</span><span>])</span>
+
+            <span>print</span><span>(</span><span>f</span><span>"Epoch: </span><span>{</span><span>epoch</span><span>+</span><span>1</span><span>:</span><span>04</span><span>d</span><span>}</span><span>/</span><span>{</span><span>num_epochs</span><span>:</span><span>04</span><span>d</span><span>}</span><span> | Train acc.: </span><span>{</span><span>train_acc</span><span>.</span><span>compute</span><span>()</span><span>*</span><span>100</span><span>:.</span><span>2</span><span>f</span><span>}</span><span>% | Val acc.: </span><span>{</span><span>val_acc</span><span>.</span><span>compute</span><span>()</span><span>*</span><span>100</span><span>:.</span><span>2</span><span>f</span><span>}</span><span>%"</span><span>)</span>
+            <span>train_acc</span><span>.</span><span>reset</span><span>(),</span> <span>val_acc</span><span>.</span><span>reset</span><span>()</span>
+
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>"__main__"</span><span>:</span>
+
+    <span>print</span><span>(</span><span>watermark</span><span>(</span><span>packages</span><span>=</span><span>"torch,lightning,transformers"</span><span>,</span> <span>python</span><span>=</span><span>True</span><span>))</span>
+    <span>print</span><span>(</span><span>"Torch CUDA available?"</span><span>,</span> <span>torch</span><span>.</span><span>cuda</span><span>.</span><span>is_available</span><span>())</span>    
+<span>-</span>   <span>device</span> <span>=</span> <span>"cuda"</span> <span>if</span> <span>torch</span><span>.</span><span>cuda</span><span>.</span><span>is_available</span><span>()</span> <span>else</span> <span>"cpu"</span>
+    <span>torch</span><span>.</span><span>manual_seed</span><span>(</span><span>123</span><span>)</span>
+
+    <span>##########################
+</span>    <span>### 1 Loading the Dataset
+</span>    <span>##########################
+</span>    <span>download_dataset</span><span>()</span>
+    <span>df</span> <span>=</span> <span>load_dataset_into_to_dataframe</span><span>()</span>
+    <span>if</span> <span>not</span> <span>(</span><span>op</span><span>.</span><span>exists</span><span>(</span><span>"train.csv"</span><span>)</span> <span>and</span> <span>op</span><span>.</span><span>exists</span><span>(</span><span>"val.csv"</span><span>)</span> <span>and</span> <span>op</span><span>.</span><span>exists</span><span>(</span><span>"test.csv"</span><span>)):</span>
+        <span>partition_dataset</span><span>(</span><span>df</span><span>)</span>
+
+    <span>imdb_dataset</span> <span>=</span> <span>load_dataset</span><span>(</span>
+        <span>"csv"</span><span>,</span>
+        <span>data_files</span><span>=</span><span>{</span>
+            <span>"train"</span><span>:</span> <span>"train.csv"</span><span>,</span>
+            <span>"validation"</span><span>:</span> <span>"val.csv"</span><span>,</span>
+            <span>"test"</span><span>:</span> <span>"test.csv"</span><span>,</span>
+        <span>},</span>
+    <span>)</span>
+
+    <span>#########################################
+</span>    <span>### 2 Tokenization and Numericalization
+</span>    <span>#########################################
+</span>
+    <span>tokenizer</span> <span>=</span> <span>AutoTokenizer</span><span>.</span><span>from_pretrained</span><span>(</span><span>"distilbert-base-uncased"</span><span>)</span>
+    <span>print</span><span>(</span><span>"Tokenizer input max length:"</span><span>,</span> <span>tokenizer</span><span>.</span><span>model_max_length</span><span>,</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+    <span>print</span><span>(</span><span>"Tokenizer vocabulary size:"</span><span>,</span> <span>tokenizer</span><span>.</span><span>vocab_size</span><span>,</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+
+    <span>print</span><span>(</span><span>"Tokenizing ..."</span><span>,</span> <span>flush</span><span>=</span><span>True</span><span>)</span>
+    <span>imdb_tokenized</span> <span>=</span> <span>imdb_dataset</span><span>.</span><span>map</span><span>(</span><span>tokenize_text</span><span>,</span> <span>batched</span><span>=</span><span>True</span><span>,</span> <span>batch_size</span><span>=</span><span>None</span><span>)</span>
+    <span>del</span> <span>imdb_dataset</span>
+    <span>imdb_tokenized</span><span>.</span><span>set_format</span><span>(</span><span>"torch"</span><span>,</span> <span>columns</span><span>=</span><span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>])</span>
+    <span>os</span><span>.</span><span>environ</span><span>[</span><span>"TOKENIZERS_PARALLELISM"</span><span>]</span> <span>=</span> <span>"false"</span>
+
+    <span>#########################################
+</span>    <span>### 3 Set Up DataLoaders
+</span>    <span>#########################################
+</span>
+    <span>train_dataset</span> <span>=</span> <span>IMDBDataset</span><span>(</span><span>imdb_tokenized</span><span>,</span> <span>partition_key</span><span>=</span><span>"train"</span><span>)</span>
+    <span>val_dataset</span> <span>=</span> <span>IMDBDataset</span><span>(</span><span>imdb_tokenized</span><span>,</span> <span>partition_key</span><span>=</span><span>"validation"</span><span>)</span>
+    <span>test_dataset</span> <span>=</span> <span>IMDBDataset</span><span>(</span><span>imdb_tokenized</span><span>,</span> <span>partition_key</span><span>=</span><span>"test"</span><span>)</span>
+
+    <span>train_loader</span> <span>=</span> <span>DataLoader</span><span>(</span>
+        <span>dataset</span><span>=</span><span>train_dataset</span><span>,</span>
+        <span>batch_size</span><span>=</span><span>12</span><span>,</span>
+        <span>shuffle</span><span>=</span><span>True</span><span>,</span> 
+        <span>num_workers</span><span>=</span><span>2</span><span>,</span>
+        <span>drop_last</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>val_loader</span> <span>=</span> <span>DataLoader</span><span>(</span>
+        <span>dataset</span><span>=</span><span>val_dataset</span><span>,</span>
+        <span>batch_size</span><span>=</span><span>12</span><span>,</span>
+        <span>num_workers</span><span>=</span><span>2</span><span>,</span>
+        <span>drop_last</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+    <span>test_loader</span> <span>=</span> <span>DataLoader</span><span>(</span>
+        <span>dataset</span><span>=</span><span>test_dataset</span><span>,</span>
+        <span>batch_size</span><span>=</span><span>12</span><span>,</span>
+        <span>num_workers</span><span>=</span><span>2</span><span>,</span>
+        <span>drop_last</span><span>=</span><span>True</span><span>,</span>
+    <span>)</span>
+
+
+    <span>#########################################
+</span>    <span>### 4 Initializing the Model
+</span>    <span>#########################################
+</span>
+<span>+</span>    <span>fabric</span> <span>=</span> <span>Fabric</span><span>(</span><span>accelerator</span><span>=</span><span>"cuda"</span><span>,</span> <span>devices</span><span>=</span><span>4</span><span>,</span> 
+<span>+</span>                    <span>strategy</span><span>=</span><span>"deepspeed_stage_2"</span><span>,</span> <span>precision</span><span>=</span><span>"16-mixed"</span><span>)</span>
+<span>+</span>    <span>fabric</span><span>.</span><span>launch</span><span>()</span>
+
+    <span>model</span> <span>=</span> <span>AutoModelForSequenceClassification</span><span>.</span><span>from_pretrained</span><span>(</span>
+        <span>"distilbert-base-uncased"</span><span>,</span> <span>num_labels</span><span>=</span><span>2</span><span>)</span>
+
+<span>-</span>   <span>model</span><span>.</span><span>to</span><span>(</span><span>device</span><span>)</span>
+    <span>optimizer</span> <span>=</span> <span>torch</span><span>.</span><span>optim</span><span>.</span><span>Adam</span><span>(</span><span>model</span><span>.</span><span>parameters</span><span>(),</span> <span>lr</span><span>=</span><span>5e-5</span><span>)</span>
+
+<span>+</span>    <span>model</span><span>,</span> <span>optimizer</span> <span>=</span> <span>fabric</span><span>.</span><span>setup</span><span>(</span><span>model</span><span>,</span> <span>optimizer</span><span>)</span>
+<span>+</span>    <span>train_loader</span><span>,</span> <span>val_loader</span><span>,</span> <span>test_loader</span> <span>=</span> <span>fabric</span><span>.</span><span>setup_dataloaders</span><span>(</span>
+<span>+</span>        <span>train_loader</span><span>,</span> <span>val_loader</span><span>,</span> <span>test_loader</span><span>)</span>
+
+    <span>#########################################
+</span>    <span>### 5 Finetuning
+</span>    <span>#########################################
+</span>
+    <span>start</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+    <span>train</span><span>(</span>
+        <span>num_epochs</span><span>=</span><span>3</span><span>,</span>
+        <span>model</span><span>=</span><span>model</span><span>,</span>
+        <span>optimizer</span><span>=</span><span>optimizer</span><span>,</span>
+        <span>train_loader</span><span>=</span><span>train_loader</span><span>,</span>
+        <span>val_loader</span><span>=</span><span>val_loader</span><span>,</span>
+<span>-</span>       <span>device</span><span>=</span><span>device</span>
+<span>+</span>       <span>fabric</span><span>=</span><span>fabric</span>
+    <span>)</span>
+
+    <span>end</span> <span>=</span> <span>time</span><span>.</span><span>time</span><span>()</span>
+    <span>elapsed</span> <span>=</span> <span>end</span><span>-</span><span>start</span>
+    <span>print</span><span>(</span><span>f</span><span>"Time elapsed </span><span>{</span><span>elapsed</span><span>/</span><span>60</span><span>:.</span><span>2</span><span>f</span><span>}</span><span> min"</span><span>)</span>
+
+    <span>with</span> <span>torch</span><span>.</span><span>no_grad</span><span>():</span>
+        <span>model</span><span>.</span><span>eval</span><span>()</span>
+<span>-</span>       <span>test_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>).</span><span>to</span><span>(</span><span>device</span><span>)</span>
+<span>+</span>       <span>test_acc</span> <span>=</span> <span>torchmetrics</span><span>.</span><span>Accuracy</span><span>(</span><span>task</span><span>=</span><span>"multiclass"</span><span>,</span> <span>num_classes</span><span>=</span><span>2</span><span>).</span><span>to</span><span>(</span><span>fabric</span><span>.</span><span>device</span><span>)</span>
+        <span>for</span> <span>batch</span> <span>in</span> <span>test_loader</span><span>:</span>
+<span>-</span>           <span>for</span> <span>s</span> <span>in</span> <span>[</span><span>"input_ids"</span><span>,</span> <span>"attention_mask"</span><span>,</span> <span>"label"</span><span>]:</span>
+<span>-</span>               <span>batch</span><span>[</span><span>s</span><span>]</span> <span>=</span> <span>batch</span><span>[</span><span>s</span><span>].</span><span>to</span><span>(</span><span>device</span><span>)</span>
+            <span>outputs</span> <span>=</span> <span>model</span><span>(</span><span>batch</span><span>[</span><span>"input_ids"</span><span>],</span> <span>attention_mask</span><span>=</span><span>batch</span><span>[</span><span>"attention_mask"</span><span>],</span> <span>labels</span><span>=</span><span>batch</span><span>[</span><span>"label"</span><span>])</span>
+            <span>predicted_labels</span> <span>=</span> <span>torch</span><span>.</span><span>argmax</span><span>(</span><span>outputs</span><span>[</span><span>"logits"</span><span>],</span> <span>1</span><span>)</span>
+            <span>test_acc</span><span>.</span><span>update</span><span>(</span><span>predicted_labels</span><span>,</span> <span>batch</span><span>[</span><span>"label"</span><span>])</span>
+
+    <span>print</span><span>(</span><span>f</span><span>"Test accuracy </span><span>{</span><span>test_acc</span><span>.</span><span>compute</span><span>()</span><span>*</span><span>100</span><span>:.</span><span>2</span><span>f</span><span>}</span><span>%"</span><span>)</span>
+</code></pre></div>
+
+<p>As we can see, the modifications are really lightweight! How well does it run? Fabric completed the finetuning in just 1.8 min! Fabric is a bit more lightweight than the Trainer – although it’s capable using callbacks and logging as well, we haven’t enabled these features here to demonstrate Fabric with a minimalist example. It’s blazing fast, isn’t it?</p>
+
+<p><img src="data:application/octet-stream;base64," alt="benchmark-last"></p>
+
+<p>When to use the Lightning Trainer or Fabric depends on your personal preference. As a rule of thumb, if you prefer a light wrapper around existing PyTorch code, check out Fabric. On the other hand, if you move towards bigger projects and prefer the code organization that Lightning provides, I recommend the Trainer.</p>
+      <h2 id="conclusion">
+        
+        
+          Conclusion <a href="#conclusion"></a>
+        
+        
+      </h2>
+    
+
+<p>In this article, we explored various techniques to improve the training speed of PyTorch models. If we use the Lightning Trainer, we can toggle between these options with one line of code, which is very convenient – especially if you are toggling between a CPU and GPU machine when debugging your code.</p>
+
+<p>Another aspect we haven’t explored yet is maximizing the batch size, which could further improve the throughput of our model. However, we will leave this optimization for another day.</p>
+
+<p><a href="https://github.com/rasbt/faster-pytorch-blog">If you want to try the codes yourself, I shared them all on GitHub here</a></p>
+
+    </article><p>
+
+
+    
+
+    <em>This blog is a personal passion project that does not offer direct compensation.
+    However, for those who wish to support me, please consider purchasing a copy of <a href="https://sebastianraschka.com/books">one of my books</a>.
+    If you find them insightful and beneficial, please feel free to recommend them to your friends and colleagues.
+    (Sharing your feedback with others via a book review on Amazon helps a lot, too!)
+    </em></p></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Eager Loading and the N+1 Query Problem | Learn Enough News & Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Eager Loading and the N+1 Query Problem | Learn Enough News & Blog</h1>
+    <p><strong>URL:</strong> <a href="https://news.learnenough.com/eager-loading">https://news.learnenough.com/eager-loading</a></p>
+    <p><strong>Tags:</strong> databases, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876782151</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div class="page">
+  <article>
+    <header>
+      
+      <h5>
+        Feb 4, 2021 • Kevin Gilpin
+        
+      </h5>
+      
+    </header>
+
+    <main>
+      <blockquote><p>This is a special guest post from <a href="https://twitter.com/kegilpin" target="_blank" rel="noopener">Kevin Gilpin</a> of <a href="https://appland.org/" target="_blank" rel="noopener">AppLand</a>.<span></span> Kevin reached out about
+an improvement to the <a href="https://www.railstutorial.org/" target="_blank" rel="noopener"><em>Ruby on Rails Tutorial</em></a> regarding an important type of database query optimization known as
+<a href="https://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations" target="_blank" rel="noopener"><em>eager loading</em></a>, which is the solution to a corresponding problem known as an “<span>\( N+1 \)</span> query”.<span></span> I suggested he write up a post on the subject for the Learn Enough blog, and he happily agreed.<span></span> I even updated the <a href="https://www.learnenough.com/ruby-on-rails-6th-edition-tutorial/following_users#sec-scopes_subselects_and_a_lambda" target="_blank" rel="noopener">relevant section</a> of the <em>Rails Tutorial</em> accordingly.<span></span> Thanks to Kevin for the excellent contribution!</p>
+<p><em>UPDATE</em>: There’s now a <a href="https://dev.to/appland/find-the-n-1-query-problem-in-rails-apps-in-under-5-mins-2bgg" target="_blank" rel="noopener">video version</a> narrated by <a href="https://twitter.com/dw_ux" target="_blank" rel="noopener">Dan from AppLand</a>!</p>
+<p>Michael Hartl<span></span>
+Author, the <a href="https://www.railstutorial.org/" target="_blank" rel="noopener"><em>Ruby on Rails Tutorial</em></a></p>
+</blockquote> <hr>
+<p>Working with any popular programming framework today typically means using an object-relational mapping (ORM) library like Rails’ <a href="https://guides.rubyonrails.org/active_record_basics.html" target="_blank" rel="noopener">Active Record</a>
+to interact with the database.<span></span> ORM systems are a definite plus for developer productivity and general happiness.<span></span> They also allow a programmer to get by with a little bit less knowledge (sometimes a whole lot less) about what’s
+happening in between their code and the database.<span></span> But that convenience comes with some pitfalls, including the common <em><span>\( N+1 \)</span> query problem</em>.<span></span> What does that mean?<span></span> Read on to find out!</p>
+<div id="working_with_an_orm"><h2><a href="#working_with_an_orm">Working with an ORM</a></h2>
+<p>When we use an ORM library to load what our code calls an <em>object</em> (and the database calls a <em>row</em>),
+providing the unique identifier (primary key) is sufficient to generate and execute the <a href="https://en.wikipedia.org/wiki/SQL" target="_blank" rel="noopener">Structured Query Language</a> (SQL) needed
+to load our object data into memory.<span></span> Similarly, we can update attributes on the object and then simply
+<code>save</code> it.<span></span> Once again, SQL is generated automatically by the ORM to save the changes to the database.</p>
+<p>This is straightforward when working with a single row of data.<span></span> But there are lots of places in our application
+where we want to show data in lists, tables, graphs, etc.<span></span> If we were writing that SQL by hand, we’d write a <code>SELECT</code> clause
+to specify the columns we want and a <code>WHERE</code> clause that matches all the data we want to see.<span></span> In this way, we’d grab the
+entire table’s worth of data in one query.<span></span> This batch retrieval is lot more efficient than querying the rows one at a time
+using <span>\( N \)</span> queries for <span>\( N \)</span> rows.</p>
+</div>
+<div id="batch_retrieval_and_associations"><h2><a href="#batch_retrieval_and_associations">Batch retrieval and associations</a></h2>
+<p>ORM systems have a couple of features to support batch retrieval.<span></span> The first is <em>accessor methods</em> that allow the programmer
+to specify the conditions of a <code>WHERE</code> clause and return multiple objects in an array, rather than just a single object.<span></span> This feature makes it easy to find all rows that, for example, match a user-specified search term.<span></span> The second (more complex) feature is <em>associations</em>.<span></span> An association is a relationship (or, in database terms, a <em>relation</em>) between two types of
+data.</p>
+<p>A classic example of an association, which is used in the <a href="https://github.com/mhartl/sample_app_6th_ed" target="_blank" rel="noopener">Rails Tutorial sample app</a>, is <code>users -&gt; microposts -&gt; attachments</code>.<span></span> The Rails
+sample app requires all users to log in.<span></span> Each user is represented in the database as a row in the <code>users</code> table.<span></span> Once logged in, users can submit <code>microposts</code> (think of a micropost as a “tweet”).<span></span> Each micropost can have an optional image attachment.<span></span> In database terms, the relationship between users and microposts is one-to-many, and between microposts
+and attachments is one-to-one.<span></span> If an attachment could be shared by multiple microposts, then the relation would be
+many-to-one.</p>
+<p>Let’s take a look at how the ORM interacts with this schema in a common scenario: showing the microposts “feed” for a user consisting of the microposts of the user plus those of the other users being followed.<span></span> Consider a controller that retrieves a page of microposts for this user:</p>
+<div><pre><span></span><span>@user</span><span>.</span><span>microposts</span><span>.</span><span>paginate</span><span>(</span><span>page</span><span>:</span> <span>params</span><span>[</span><span>:page</span><span>]</span><span>)</span>
+</pre></div>
+<p>The ORM is smart enough to fetch one page of microposts in one batch, making the this operation simple and efficient… right?<span></span> Not necessarily.</p>
+</div>
+<div id="pitfall_–_the_n1_query_problem"><h2><a href="#pitfall_%E2%80%93_the_n1_query_problem">Pitfall – The N+1 query problem</a></h2>
+<p>When we look under the covers, there’s a problem.</p>
+<p>Suppose the HTML page template that uses <code>@microposts</code> looks something like <a href="#code-microposts_template">Listing&nbsp;<span>1</span></a>.</p>
+<div id="code-microposts_template" data-tralics-id="uid1" data-number="1"><p><span>Listing 1:</span> 
+
+<span>The <a href="https://haml.info/" target="_blank" rel="noopener">Haml</a> code to show microposts.</span>
+</p>
+
+<div><pre><span></span><span>-</span> <span>@microposts</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>post</span><span>|</span>
+  <span>%li</span>
+    <span>=</span> <span>post</span><span>.</span><span>body</span>
+    <span>%br</span>
+    created by
+    <span>=</span> <span>post</span><span>.</span><span>user</span><span>.</span><span>name</span>
+    <span>%ul</span>
+      <span>-</span> <span>post</span><span>.</span><span>attachments</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>attachment</span><span>|</span>
+        <span>%li</span>
+        <span>=</span> <span>attachment</span><span>.</span><span>url</span>
+</pre></div></div><p>(The code in <a href="#code-microposts_template">Listing&nbsp;<span>1</span></a> uses the <a href="https://haml.info/" target="_blank" rel="noopener">Haml</a> syntax for representing HTML.<span></span> Refer to the <a href="https://haml.info/docs.html" target="_blank" rel="noopener">Haml documentation</a> or use your <a href="https://www.railstutorial.org/book/beginning#aside-technical_sophistication" target="_blank" rel="noopener">technical sophistication</a> to figure out the correspondence between Haml syntax and HTML tags.)</p>
+<p>Using one of the techniques described in <a href="#aside-sql_queries">Box&nbsp;<span>1</span></a>, we can observe
+the queries which are issued by this block of code.<span></span> The first query that we see fetches the number of microposts for the user:</p>
+<div><pre><span></span><span>SELECT</span>
+  <span>COUNT</span><span>(</span><span>*</span><span>)</span>
+<span>FROM</span>
+  <span>"microposts"</span>
+<span>WHERE</span>
+  <span>(</span><span>user_id</span> <span>=</span> <span>?</span><span>)</span>
+</pre></div>
+<p>Next, there’s a query to fetch a page of microposts:</p>
+<div><pre><span></span><span>SELECT</span>
+  <span>"microposts"</span><span>.</span><span>*</span>
+<span>FROM</span>
+  <span>"microposts"</span>
+<span>WHERE</span>
+  <span>(</span><span>user_id</span> <span>=</span> <span>762146111</span><span>)</span>
+<span>ORDER</span> <span>BY</span>
+  <span>"microposts"</span><span>.</span><span>"created_at"</span> <span>DESC</span>
+<span>LIMIT</span> <span>?</span> <span>OFFSET</span> <span>?</span>
+</pre></div>
+<p>The <code>LIMIT</code> and <code>OFFSET</code> are the query clauses that select the page offset and the page size.<span></span> Note that an <code>ORDER BY</code> is always
+required for pagination; otherwise, the <code>OFFSET</code> might not have the desired effect across multiple queries.</p>
+<p>So far, so good.</p>
+<p>But now there’s a problem.<span></span> We see the two queries shown in <a href="#code-attachments_query">Listing&nbsp;<span>2</span></a> and <a href="#code-users_query">Listing&nbsp;<span>3</span></a> repeated many times—once for each micropost, in fact.</p>
+<div id="code-attachments_query" data-tralics-id="uid2" data-number="2"><p><span>Listing 2:</span> 
+
+<span>The SQL for finding micropost attachments.</span>
+</p>
+
+<div><pre><span></span><span>SELECT</span>
+  <span>"active_storage_attachments"</span><span>.</span><span>*</span>
+<span>FROM</span>
+  <span>"active_storage_attachments"</span>
+<span>WHERE</span>
+  <span>"active_storage_attachments"</span><span>.</span><span>"record_id"</span> <span>=</span> <span>?</span>
+  <span>AND</span> <span>"active_storage_attachments"</span><span>.</span><span>"record_type"</span> <span>=</span> <span>?</span>
+  <span>AND</span> <span>"active_storage_attachments"</span><span>.</span><span>"name"</span> <span>=</span> <span>?</span>
+<span>LIMIT</span>
+  <span>?</span>
+</pre></div></div><div id="code-users_query" data-tralics-id="uid3" data-number="3"><p><span>Listing 3:</span> 
+
+<span>The SQL query for finding users associated with a micropost.</span>
+</p>
+
+<div><pre><span></span><span>SELECT</span>
+  <span>"users"</span><span>.</span><span>*</span>
+<span>FROM</span>
+  <span>"users"</span>
+<span>WHERE</span>
+  <span>"users"</span><span>.</span><span>"id"</span> <span>=</span> <span>?</span>
+<span>LIMIT</span>
+  <span>?</span>
+</pre></div></div><p>What’s going on?<span></span> What we are seeing here is known as the <em><span>\( N+1 \)</span> query problem</em>.<span></span> The number of queries to fetch the data is not <span>\( 1 \)</span>, as we would
+expect; rather, it’s <span>\( 1 \)</span> to fetch the page of microposts, plus an additional <span>\( N \)</span> queries for the users, for a total of <span>\( N+1 \)</span>.<span></span> (In this case, there are an additional <span>\( N \)</span> queries for the user attachments, so the total is actually <span>\( 2N+1 \)</span>, which is even worse.)</p>
+<p>When SQL is hand-coded, a programmer has control over which queries are issued.<span></span> The downside is that there can be a lot of
+repetitive and mundane work (as well as security risk) required to perform simple tasks of saving and loading data.<span></span> ORMs
+relieve programmers of that work and risk, making
+development faster and more secure.<span></span> But because queries are issued automatically, we cannot tell by looking at
+one section of the code—in this case, the HTML template—which queries will be executed behind the scenes.<span></span> Changes to one part of the code could change the SQL behavior of
+virtually any other part of the code.<span></span> That’s pretty tough to handle.<span></span> So, what to do?</p>
+<div id="aside-sql_queries" data-tralics-id="uid4" data-number="1"><p><span>Box 1.</span> 
+
+<span>Active Record SQL</span></p>
+<p>Figuring out what SQL your code is issuing can be tricky.</p>
+<p>One useful tool is the <a href="https://github.com/MiniProfiler/rack-mini-profiler" target="_blank" rel="noopener">mini_profiler</a> Ruby gem.<span></span> When you integrate and activate <code>mini_profiler</code>, it
+displays a breakdown of the time spent in your backend code.<span></span> You can click into
+SQL for detailed timing of each query.</p>
+<p><code>mini_profiler</code> shows you all the queries, but it doesn’t show you which part of the code
+is responsible for each query.<span></span> For visual debugging of web services, code, and SQL
+you can use the open-source
+<a href="https://appland.org/" target="_blank" rel="noopener">AppLand framework</a>,
+which consists of an open data format, data-recording clients, visualization libraries, and
+IDE integrations such as the
+<a href="https://marketplace.visualstudio.com/items?itemName=appland.appmap" target="_blank" rel="noopener">AppMap extension for VSCode</a>.<span></span> The AppLand framework records the behavior of your code,
+either from test cases or from user interaction.<span></span> The AppLand IDE extension displays the recorded data as interactive
+diagrams, graphs, tables, and visualizations.<span></span> You can see exactly which function is
+generating each query, and you can navigate all the way down to the Ruby code level if you want to.</p>
+<p>Here’s an example:</p>
+<div><p><img src="data:application/octet-stream;base64," alt="images/figures/appmap_sql"></p>
+</div>
+</div></div>
+<div id="the_fix"><h2><a href="#the_fix">The fix</a></h2>
+<p>Fortunately, ORMs such as ActiveRecord do provide a way to fix this <span>\( N+1 \)</span> query problem.<span></span> The solution is called
+<em>eager loading</em>.<span></span> “Eager loading” is named to contrast with “lazy loading”, in which data is retrieved just-in-time
+as it’s needed.<span></span> Lazy loading doesn’t refer to lazy programmers; it refers to lazy code.<span></span> With lazy loading, the
+code takes the “lazy” approach of waiting until data is needed to load it.<span></span> Unfortunately, in the example above,
+each micropost is lazy-loading its users and its attachments.<span></span> The microposts aren’t “smart” enough to coordinate with each
+other and “lazy load” all the attachments at once—it’s every micropost for itself.<span></span> The result is a slew of queries as each micropost loads its attachments and associated user.</p>
+<p>Eager loading is a programmable option in which data associations are loaded “eagerly”, as in up-front,
+right now.<span></span> The advantage of eager loading is that the ORM will be smart enough to use the eagerly loaded data
+when it’s needed.</p>
+<p>More concretely, let’s look at an actual Active Record query from the Rails Tutorial sample app.<span></span> <a href="#code-feed">Listing&nbsp;<span>4</span></a> shows the micropost feed from the <a href="https://github.com/mhartl/sample_app_6th_ed/blob/master/app/models/user.rb#L88" target="_blank" rel="noopener">User model</a>.</p>
+<div id="code-feed" data-tralics-id="uid5" data-number="4"><p><span>Listing 4:</span> 
+
+<span>The micropost status feed.<span></span> <span></span> <code>app/models/user.rb</code></span>
+</p>
+
+<div><pre><span></span><span>class</span> <span>User</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>.</span>
+  <span>.</span>
+  <span>.</span>
+  <span># Returns a user's status feed.</span>
+  <span>def</span> <span>feed</span>
+    <span>following_ids</span> <span>=</span> <span>"SELECT followed_id FROM relationships</span>
+<span>                     WHERE  follower_id = :user_id"</span>
+    <span>Micropost</span><span>.</span><span>where</span><span>(</span><span>"user_id IN (</span><span>#{</span><span>following_ids</span><span>}</span><span>)</span>
+<span>                     OR user_id = :user_id"</span><span>,</span> <span>user_id</span><span>:</span> <span>id</span><span>)</span>
+  <span>end</span>
+  <span>.</span>
+  <span>.</span>
+  <span>.</span>
+<span>end</span>
+</pre></div></div><p>What we want to do is turn this:</p>
+<div><pre><span></span><span>Micropost</span><span>.</span><span>where</span><span>(</span><span>"user_id IN (</span><span>#{</span><span>following_ids</span><span>}</span><span>)</span>
+<span>                 OR user_id = :user_id"</span><span>,</span> <span>user_id</span><span>:</span> <span>id</span><span>)</span>
+</pre></div>
+<p>into this:</p>
+<div><pre><span></span><span>Micropost</span><span>.</span><span>where</span><span>(</span><span>"user_id IN (</span><span>#{</span><span>following_ids</span><span>}</span><span>)</span>
+<span>                 OR user_id = :user_id"</span><span>,</span> <span>user_id</span><span>:</span> <span>id</span><span>)</span>
+<span>         <span>.</span><span>includes</span><span>(</span><span>:user</span><span>,</span> <span>image_attachment</span><span>:</span> <span>:blob</span><span>)</span>
+</span></pre></div>
+<p>The <code>includes</code> clause is the key.<span></span> As the <a href="https://apidock.com/rails/ActiveRecord/QueryMethods/includes" target="_blank" rel="noopener">Active Record documentation</a> says, <code>includes</code> enables the programmer to:</p>
+<blockquote><p>specify relationships to be included in the result set… This will often result in a performance improvement over a simple join.<span></span></p>
+</blockquote><p>In this case, we’re using Active Record to create an underlying SQL query that <code>includes</code> both the associated user (via the symbol <code>:user</code>) and any image attachments (via <code>image_attachment: :blob</code>).</p>
+<p>If we don’t need that extra data, then eager loading is a wasted effort, which is why Active Record doesn’t do it automatically.<span></span> But if we
+do need it, the efficiency savings can be substantial.</p>
+</div>
+<div id="finding_n1_query_bugs"><h2><a href="#finding_n1_query_bugs">Finding N+1 query bugs</a></h2>
+<p>Figuring out when we have an <span>\( N+1 \)</span> query problem is tricky, because it’s not the type of problem that’s revealed by any
+mainstream testing strategy.<span></span> Unit tests, functional tests, and integration tests will all happily pass whether
+the data is being lazy-loaded or eager-loaded.<span></span> Performance tests may reveal an issue, but a single <span>\( N+1 \)</span> query problem,
+while inefficient, does not generally result in a really big performance penalty.<span></span> Rather, <span>\( N+1 \)</span> queries are sort of like
+an extra weight or drag on our app, slowly adding more and more inefficiency until, as a whole, our app
+is noticeably slowed down.</p>
+<p>An effective way to find <span>\( N+1 \)</span> query problems is to look ar the number of SQL queries that are performed in a
+realistic situation, such as an integration test, and compare this number with a “reasonable” expectation.<span></span> Two tools, when combined together, will yield the query count for any test case in a straightforward way.<span></span> These two tools are <code>appmap-ruby</code> and <code>jq</code>.</p>
+<div><h3><a>appmap-ruby</a></h3>
+<p><a href="https://github.com/applandinc/appmap-ruby" target="_blank" rel="noopener">appmap</a> is a Ruby gem that records the execution of code
+and writes it as a JSON file.</p>
+</div>
+<div><h3><a>jq</a></h3>
+<p><a href="https://stedolan.github.io/jq/" target="_blank" rel="noopener">jq</a> is a lightweight and flexible command-line JSON processor.<span></span> See the <a href="https://stedolan.github.io/jq/" target="_blank" rel="noopener">jq website</a> for installation instructions on your system.<span></span> (Mac users with Homebrew can install jq using <code>brew install jq</code>.)</p>
+</div>
+<div><h3><a>appmap-ruby + jq</a></h3>
+<p>We can use the following procedure to count the number of SQL queries in a test case:</p>
+<ol>
+<li>Run the test case with <code>appmap-ruby</code> enabled, which will create a JSON file containing the recorded code events.<span></span>
+</li>
+<li>Process the recorded code events through <code>jq</code> to count the number of SQL queries.<span></span>
+</li></ol>
+<p>The steps below show how to update a generic Rails app with these tools.<span></span> If you’d like to follow along with a concrete example, you can clone the <a href="https://github.com/mhartl/sample_app_6th_ed" target="_blank" rel="noopener">Rails Tutorial sample app</a>, follow the setup steps described in the <a href="https://github.com/mhartl/sample_app_6th_ed#ruby-on-rails-tutorial-sample-application" target="_blank" rel="noopener">README</a>, and then check out the <code>eager-loading</code> branch:</p>
+<div><pre><span></span><span>$ </span>git clone https://github.com/mhartl/sample_app_6th_ed.git
+<span>$ </span><span>cd</span> sample_app_6th_ed
+<span>$ </span>git checkout eager-loading
+</pre></div>
+<p>The <code>eager-loading</code> branch of the reference app adds the <code>appmap</code> gem to its <code>Gemfile</code>, as shown in <a href="#code-appmap_gemfile">Listing&nbsp;<span>5</span></a>.</p>
+<div id="code-appmap_gemfile" data-tralics-id="uid8" data-number="5"><p><span>Listing 5:</span> 
+
+<span>Adding the <code>appmap</code> gem to the sample app.<span></span> <span></span> <code>Gemfile</code></span>
+</p>
+
+<div><pre><span></span><span>,</span>
+<span>,</span>
+<span>,</span>
+<span>group</span> <span>:development</span><span>,</span> <span>:test</span> <span>do</span>
+  <span>gem</span> <span>'sqlite3'</span><span>,</span> <span>'1.4.2'</span>
+  <span>gem</span> <span>'byebug'</span><span>,</span>  <span>'11.1.3'</span><span>,</span> <span>platforms</span><span>:</span> <span>[</span><span>:mri</span><span>,</span> <span>:mingw</span><span>,</span> <span>:x64_mingw</span><span>]</span>
+<span>  <span>gem</span> <span>'appmap'</span><span>,</span>  <span>'0.40.0'</span>
+</span><span>end</span>
+<span>.</span>
+<span>.</span>
+<span>.</span>
+</pre></div></div><p>To install the new gem, run <code>bundle install</code> as usual:</p>
+<div><pre><span></span><span>$ </span>bundle install
+</pre></div>
+<p>A second change, already implemented in the reference app, is the addition of a YAML configuration file to be used by <code>appmap-ruby</code>, which appears as in <a href="#code-appmap_yml">Listing&nbsp;<span>6</span></a>.</p>
+<div id="code-appmap_yml" data-tralics-id="uid9" data-number="6"><p><span>Listing 6:</span> 
+
+<span>Adding an AppMap configuration file.<span></span> <span></span> <code>appmap.yml</code></span>
+</p>
+
+<div><pre><span></span><span>name</span><span>:</span> <span>SampleApp</span>
+<span>packages</span><span>:</span>
+<span>-</span> <span>path</span><span>:</span> <span>app/controllers</span>
+<span>-</span> <span>path</span><span>:</span> <span>app/models</span>
+<span>-</span> <span>gem</span><span>:</span> <span>activerecord</span>
+</pre></div></div><p>Taking the steps shown above one at a time, the first step is to record a test case.<span></span> Let’s suppose we have an integration
+test like <a href="https://github.com/mhartl/sample_app_6th_ed/blob/master/test/integration/microposts_interface_test.rb" target="_blank" rel="noopener"><code>microposts_interface_test.rb</code></a>.<span></span> Run the test with <code>APPMAP=true</code>:</p>
+<div><pre><span></span>  $ <span>APPMAP</span><span>=</span><span>true</span> bundle <span>exec</span> ruby -Ilib -Itest <span>\</span>
+    test/integration/microposts_interface_test.rb
+</pre></div>
+<p>Because the sample app’s <code>test_helper.rb</code> file has been configured as described in the <a href="https://github.com/applandinc/appmap-ruby#minitest" target="_blank" rel="noopener">appmap minitest documentation</a>, this test will automatically create a file called</p>
+<div><pre><span></span>tmp/appmap/minitest/Microposts_interface_micropost_interface.appmap.json
+</pre></div>
+<p>To get some insight into the application’s behavior, we can process this file through the <code>jq</code> query shown in <a href="#code-jq_test">Listing&nbsp;<span>7</span></a>, which:</p>
+<ol>
+<li>Enumerates all the code events that occurred during the test case.<span></span> Code events include HTTP server requests, function calls, and SQL queries.<span></span>
+</li>
+<li>Selects just those code events that are SQL queries.<span></span>
+</li>
+<li>Counts the number of queries.<span></span>
+</li></ol>
+<div id="code-jq_test" data-tralics-id="uid13" data-number="7"><p><span>Listing 7:</span> 
+
+<span>Processing test output using <code>jq</code>.</span>
+</p>
+
+<div><pre><span></span>  $ jq <span>'[.events[] | select(has("sql_query"))] | length'</span> <span>\</span>
+    tmp/appmap/minitest/Microposts_interface_micropost_interface.appmap.json
+<span>  <span>237</span>
+</span></pre></div></div><p><strong>237</strong> queries is a lot for one test case!<sup id="cha-0_footnote-ref-1"><a href="#cha-0_footnote-1">1</a></sup><span></span> I’ve recorded all of the 66 test cases in the Rails Sample App
+6th Edition, and <a href="https://docs.google.com/spreadsheets/d/1tmIOI3RUwKhYarDViU9F37eTG4MynhN8oQSoChyVopI/edit?usp=sharing" target="_blank" rel="noopener">plotted the number of SQL queries</a> in each test case as a histogram (<a href="#fig-query_histogram">Figure&nbsp;<span>1</span></a>).</p>
+<div id="fig-query_histogram" data-tralics-id="uid15" data-number="1">
+<p><img src="data:application/octet-stream;base64," alt="images/figures/query_histogram"></p><p><span>A histogram for unoptimized queries.
+</span></p></div>
+<p>That 237 in <a href="#fig-query_histogram">Figure&nbsp;<span>1</span></a> really sticks out.<span></span> Next, I have applied the eager loading fix and re-run the test cases.<span></span> The number of queries drops to 72, as shown in <a href="#fig-optimized_query_histogram">Figure&nbsp;<span>2</span></a>.</p>
+<div id="fig-optimized_query_histogram" data-tralics-id="uid16" data-number="2">
+<p><img src="data:application/octet-stream;base64," alt="images/figures/optimized_query_histogram"></p><p><span>A histogram for optimized queries.
+</span></p></div>
+<p>It’s still quite a few; maybe there is more room for optimization?<span></span> I will leave that as an exercise for the reader!</p>
+<p>(By the way, you may have noticed in <a href="#fig-optimized_query_histogram">Figure&nbsp;<span>2</span></a> that one of the query counts, around 120, is actually <em>worse</em> after being “optimized”.<span></span> This is because there is a test case in the sample app, <a href="https://github.com/mhartl/sample_app_6th_ed/blob/8bf1938e196997511cee7a44a90f1f7e2c661e3d/test/models/user_test.rb#L94" target="_blank" rel="noopener"><code>"feed should have the right posts"</code></a>, that loops through the posts of each of four users and checks that the user’s
+feed includes the post.<span></span> The number of queries in this test is actually
+<em>increased</em> by adding eager loading because fetching a feed now takes three
+queries instead of one.<span></span> But this is really an artificial scenario: the app
+itself never fetches <span>\( N\times M \)</span> feeds, and when it does fetch a feed it renders
+it in the view, which traverses the associations and hence benefits from eager loading.)</p>
+</div></div>
+<div id="verifying_the_fix"><h2><a href="#verifying_the_fix">Verifying the fix</a></h2>
+<p>Once you have tuned the ORM and queries, you can add an assertion to your test case that
+will verify the query count.<span></span> In
+<a href="https://github.com/mhartl/sample_app_6th_ed/blob/master/test/integration/microposts_interface_test.rb#L26" target="_blank" rel="noopener">one unoptimized test case in the Rails Sample App 6th Edition</a>,
+a page issues over 100 SQL queries:</p>
+<div><pre><span></span><span>require</span> <span>'test_helper'</span>
+
+<span>class</span> <span>MicropostsInterfaceTest</span> <span>&lt;</span> <span>ActionDispatch</span><span>::</span><span>IntegrationTest</span>
+  <span>.</span>
+  <span>.</span>
+  <span>.</span>
+  <span>test</span> <span>"micropost interface"</span> <span>do</span>
+    <span>.</span>
+    <span>.</span>
+    <span>.</span>
+    <span># Valid submission</span>
+    <span>content</span> <span>=</span> <span>"This micropost really ties the room together"</span>
+    <span>image</span> <span>=</span> <span>fixture_file_upload</span><span>(</span><span>'kitten.jpg'</span><span>,</span> <span>'image/jpeg'</span><span>)</span>
+    <span>assert_difference</span> <span>'Micropost.count'</span><span>,</span> <span>1</span> <span>do</span>
+      <span>post</span> <span>microposts_path</span><span>,</span> <span>params</span><span>:</span> <span>{</span> <span>micropost</span><span>:</span> <span>{</span> <span>content</span><span>:</span> <span>content</span><span>,</span>
+                                                   <span>image</span><span>:</span>   <span>image</span> <span>}</span> <span>}</span>
+    <span>end</span>
+    <span>assert</span> <span>assigns</span><span>(</span><span>:micropost</span><span>)</span><span>.</span><span>image</span><span>.</span><span>attached?</span>
+    <span>follow_redirect!</span>
+    <span>assert_match</span> <span>content</span><span>,</span> <span>response</span><span>.</span><span>body</span>
+    <span>.</span>
+    <span>.</span>
+    <span>.</span>
+  <span>end</span>
+<span>end</span>
+</pre></div>
+<p>With eager-loading optimization applied,
+the page issues under 100 queries.<span></span> What we’d like is a test that will fail if the query count goes over this limit, thereby catching any <a href="https://en.wikipedia.org/wiki/Software_regression" target="_blank" rel="noopener">regressions</a>.</p>
+<p>To make the test, we can use the <a href="https://www.rubydoc.info/gems/minitest/4.2.0/MiniTest%2FAssertions:assert_operator" target="_blank" rel="noopener"><code>assert_operator</code></a> minitest assertion, which lets us assert that one number is less than another using the symbol <code>:&lt;</code> to represent the “less than” operator:</p>
+<div><pre><span></span><span>assert_operator</span> <span>50</span><span>,</span> <span>:&lt;</span><span>,</span> <span>100</span>
+</pre></div>
+<p>This would assert the relationship <code>50 &lt; 100</code>, which would pass because the statement is true.</p>
+<p>The actual query happens upon redirecting after successful submission, which renders the feed on the user’s home page, so we can wrap the redirect in a block that uses appmap to make a list of events associated with the newly rendered page:</p>
+<div><pre><span></span><span>events</span> <span>=</span> <span>AppMap</span><span>.</span><span>record</span> <span>do</span>
+    <span>follow_redirect!</span>
+  <span>end</span><span>[</span><span>'events'</span><span>].</span><span>map</span> <span>{</span> <span>|</span><span>event</span><span>|</span> <span>OpenStruct</span><span>.</span><span>new</span><span>(</span><span>event</span><span>)</span> <span>}</span>
+</pre></div>
+<p>(This code is a little advanced, so don’t worry too much about the details.<span></span> Try putting <code>p events</code> somewhere after the code above if you’d like to see what the <code>events</code> variable looks like in this case.)</p>
+<p>Using the <code>select</code> method to select SQL query events then looks like this:</p>
+<div><pre><span></span><span>sql</span> <span>=</span> <span>events</span><span>.</span><span>select</span><span>(</span><span>&amp;</span><span>:sql_query</span><span>)</span>
+</pre></div>
+<p>Knowing how to do this involves reading a bit of the <a href="https://github.com/applandinc/appmap-ruby" target="_blank" rel="noopener">appmap documentation</a> or using the <code>p</code> trick above to figure out what the internals of the <code>event</code> array look like.<sup id="cha-0_footnote-ref-2"><a href="#cha-0_footnote-2">2</a></sup></p>
+<p>We can then test that the number of queries is less than 100 using <code>assert_operator</code>:</p>
+<div><pre><span></span><span>assert_operator</span> <span>sql</span><span>.</span><span>count</span><span>,</span> <span>:&lt;</span><span>,</span> <span>100</span>
+</pre></div>
+<p>Putting everything together gives the test shown in <a href="#code-eager_loading_test">Listing&nbsp;<span>8</span></a>.</p>
+<div id="code-eager_loading_test" data-tralics-id="uid18" data-number="8"><p><span>Listing 8:</span> 
+
+<span>A regression test for eager loading.<span></span> <span><span></span><span><strong>red</strong></span><span></span></span><span></span> <code>test/integration/microposts_interface_test.rb</code></span>
+</p>
+
+<div><pre><span></span><span>require</span> <span>'test_helper'</span>
+
+<span>class</span> <span>MicropostsInterfaceTest</span> <span>&lt;</span> <span>ActionDispatch</span><span>::</span><span>IntegrationTest</span>
+
+  <span>def</span> <span>setup</span>
+    <span>@user</span> <span>=</span> <span>users</span><span>(</span><span>:michael</span><span>)</span>
+  <span>end</span>
+
+  <span>test</span> <span>"micropost interface"</span> <span>do</span>
+    <span>.</span>
+    <span>.</span>
+    <span>.</span>
+    <span>assert</span> <span>assigns</span><span>(</span><span>:micropost</span><span>)</span><span>.</span><span>image</span><span>.</span><span>attached?</span>
+<span>    <span>events</span> <span>=</span> <span>AppMap</span><span>.</span><span>record</span> <span>do</span>
+</span><span>        <span>follow_redirect!</span>
+</span><span>      <span>end</span><span>[</span><span>'events'</span><span>].</span><span>map</span> <span>{</span> <span>|</span><span>event</span><span>|</span> <span>OpenStruct</span><span>.</span><span>new</span><span>(</span><span>event</span><span>)</span> <span>}</span>
+</span><span>    <span>sql</span> <span>=</span> <span>events</span><span>.</span><span>select</span><span>(</span><span>&amp;</span><span>:sql_query</span><span>)</span>
+</span><span>    <span># Without the eager-loading optimization, &gt; 100 queries are issued here.</span>
+</span><span>    <span>assert_operator</span> <span>sql</span><span>.</span><span>count</span><span>,</span> <span>:&lt;</span><span>,</span> <span>100</span>
+</span>    <span>assert_match</span> <span>content</span><span>,</span> <span>response</span><span>.</span><span>body</span>
+    <span>.</span>
+    <span>.</span>
+    <span>.</span>
+  <span>end</span>
+<span>end</span>
+</pre></div></div><p>Running the tests with the default status feed (without eager loading) should then give us a <span><span></span><span><strong>red</strong></span><span></span></span> test suite:</p>
+<div><pre><span></span><span>$ </span>rails <span>test</span>
+<span>66 tests, 344 assertions, 1 failures, 0 errors, 0 skips</span>
+</pre></div>
+<p>To get the test to <span><span></span><span><strong>green</strong></span><span></span></span>, we can update the <code>feed</code> method in the User model with eager loading, as shown in <a href="#code-feed_with_eager_loading">Listing&nbsp;<span>9</span></a>.</p>
+<div id="code-feed_with_eager_loading" data-tralics-id="uid19" data-number="9"><p><span>Listing 9:</span> 
+
+<span>Adding eager loading to the status feed.<span></span> <span><span></span><span><strong>green</strong></span><span></span></span><span></span> <code>app/models/user.rb</code></span>
+</p>
+
+<div><pre><span></span><span>class</span> <span>User</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>.</span>
+  <span>.</span>
+  <span>.</span>
+  <span># Returns a user's status feed.</span>
+  <span>def</span> <span>feed</span>
+    <span>following_ids</span> <span>=</span> <span>"SELECT followed_id FROM relationships</span>
+<span>                     WHERE  follower_id = :user_id"</span>
+    <span>Micropost</span><span>.</span><span>where</span><span>(</span><span>"user_id IN (</span><span>#{</span><span>following_ids</span><span>}</span><span>)</span>
+<span>                     OR user_id = :user_id"</span><span>,</span> <span>user_id</span><span>:</span> <span>id</span><span>)</span>
+<span>             <span>.</span><span>includes</span><span>(</span><span>:user</span><span>,</span> <span>image_attachment</span><span>:</span> <span>:blob</span><span>)</span>
+</span>  <span>end</span>
+  <span>.</span>
+  <span>.</span>
+  <span>.</span>
+<span>end</span>
+</pre></div></div><p>With the eager loading added as in <a href="#code-eager_loading_test">Listing&nbsp;<span>8</span></a>, the test suite should be <span><span></span><span><strong>green</strong></span><span></span></span>:</p>
+<div><pre><span></span><span>$ </span>rails <span>test</span>
+<span>66 tests, 349 assertions, 0 failures, 0 errors, 0 skips</span>
+</pre></div>
+<p>Great!<span></span> Now our test suite will tell us immediately if eager loading ever stops working for some reason or is accidentally removed.<span></span> (It’s worth noting that the exact number of SQL queries can be system-dependent, which can lead to spurious test failures.<span></span> For production systems, it’s a good idea to avoid this issue by using a standard test environment at a continuous-integration service like <a href="https://travis-ci.org/" target="_blank" rel="noopener">Travis CI</a> or <a href="https://circleci.com/" target="_blank" rel="noopener">Circle CI</a>.)</p>
+</div>
+<div id="in_conclusion"><h2><a href="#in_conclusion">In conclusion</a></h2>
+<p>ORMs are powerful.<span></span> With great power comes great responsibility, and in this case, it’s a responsibility
+to keep an eye on what that ORM is doing under the covers.<span></span> It’s very easy to accidentally introduce an <span>\( N+1 \)</span> query problem, because all a developer needs to do is
+traverse a new object relationship in a view, and a separate SQL query <em>for each object</em> can be triggered.</p>
+<p>In this blog post, you’ve learned what the <span>\( N+1 \)</span> query problem is, how to fix it with eager loading,
+and how to add a test case to verify that the fix is working.<span></span> That should be everything you need to
+tackle this thorny problem.<span></span> Good luck!
+</p></div><div id="cha-0_footnotes">
+    <p><a href="#cha-0_footnote-ref-1">1.</a> This number could be slightly system-dependent; when running <a href="#code-jq_test">Listing&nbsp;<span>7</span></a>, I got 208 instead of 237.<span></span> —MH</p>
+    <div id="cha-0_footnote-2"><p><a href="#cha-0_footnote-ref-2">2.</a> The <code>p &lt;var&gt;</code> method is just an alias for <code>puts &lt;var&gt;.inspect</code>, so <code>p</code> is a convenient way to view the contents of things like arrays or hashes by printing literal versions to the screen:</p>
+<div><pre><span></span><span>$ irb</span>
+<span>&gt;&gt; </span><span>a</span> <span>=</span> <span>[</span><span>1</span><span>,</span> <span>2</span><span>,</span> <span>3</span><span>]</span>
+<span>&gt;&gt; </span><span>puts</span> <span>a</span>
+<span>1</span>
+<span>2</span>
+<span>3</span>
+<span>&gt;&gt; </span><span>p</span> <span>a</span>
+<span>[1, 2, 3]</span>
+</pre></div>
+</div>
+  </div>
+    </main>
+
+  </article>
+</div></div>
+  </div>
+</body>
+</html>

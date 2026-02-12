@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Python decorators, the right way: the 4 audiences of programming languages</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Python decorators, the right way: the 4 audiences of programming languages</h1>
+    <p><strong>URL:</strong> <a href="https://codewithoutrules.com/2017/08/10/python-decorators">https://codewithoutrules.com/2017/08/10/python-decorators</a></p>
+    <p><strong>Tags:</strong> decorators, python</p>
+    <p><strong>Bookmark ID:</strong> 876769493</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div itemprop="articleBody">
+  <p>Python decorators are a useful but flawed language feature.
+Intended to make source code easier to write, and a little more readable, they neglect to address another use case: that of the programmer who will be calling the decorated code.</p>
+
+<p>If you’re a Python programmer, the following post will show you why decorators exist, and how to compensate for their limitations.
+And even if you’re not a Python a programmer, I hope to demonstrate the importance of keeping in mind all of the different audiences for the code you write.</p>
+
+<!-- TEASER_END -->
+
+<h2 id="why-decorators-exists-authoring-and-reading-code">Why decorators exists: authoring and reading code</h2>
+
+<p>A programming language needs to satisfy four different audiences:</p>
+
+<ol>
+  <li>The <strong>computer</strong> which will run the source code.</li>
+  <li>The <strong>author</strong>, the programmer writing the source code.</li>
+  <li>A future <strong>reader</strong> of the source code.</li>
+  <li>A future <strong>caller</strong> of the source code, a programmer who will write code that calls functions and classes in the source code.</li>
+</ol>
+
+<p>Python decorators were created for authors and readers, but neglect the needs of callers.
+Let’s start by seeing what decorators are, and how they make it easier to author and read code.</p>
+
+<p>Imagine you want to emulate the Java <code>synchronized</code> keyword: you want to run a method of a class with a lock held, so only one thread can call the method at a time.
+You can do so with the following code, where the <code>synchronized</code> functions creates a new, replacement method that wraps the given one:</p>
+
+<div><pre><code><span>from</span> <span>threading</span> <span>import</span> <span>Lock</span>
+
+<span>def</span> <span>synchronized</span><span>(</span><span>function</span><span>):</span>
+    <span>"""</span><span>
+    Given a method, return a new method that acquires a
+    lock, calls the given method, and then releases the
+    lock.
+    </span><span>"""</span>
+    <span>def</span> <span>wrapper</span><span>(</span><span>self</span><span>,</span> <span>*</span><span>args</span><span>,</span> <span>**</span><span>kwargs</span><span>):</span>
+        <span>"""</span><span>A synchronized wrapper.</span><span>"""</span>
+        <span>with</span> <span>self</span><span>.</span><span>_lock</span><span>:</span>
+            <span>return</span> <span>function</span><span>(</span><span>self</span><span>,</span> <span>*</span><span>args</span><span>,</span> <span>**</span><span>kwargs</span><span>)</span>
+    <span>return</span> <span>wrapper</span>
+</code></pre></div>
+
+<p>You can then use the <code>synchronized</code> utility like so:</p>
+
+<div><pre><code><span>class</span> <span>ExampleSynchronizedClass</span><span>:</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>):</span>
+        <span>self</span><span>.</span><span>_lock</span> <span>=</span> <span>Lock</span><span>()</span>
+        <span>self</span><span>.</span><span>_items</span> <span>=</span> <span>[]</span>
+
+    <span># Problematic usage:
+</span>    <span>def</span> <span>add</span><span>(</span><span>self</span><span>,</span> <span>item</span><span>):</span>
+        <span>"""</span><span>Add a new item.</span><span>"""</span>
+        <span>self</span><span>.</span><span>_items</span><span>.</span><span>append</span><span>(</span><span>item</span><span>)</span>
+    <span>add</span> <span>=</span> <span>synchronized</span><span>(</span><span>add</span><span>)</span>
+</code></pre></div>
+
+<p>As an author this usage is problematic: you need to type “add” twice, leading to a potential for typos.
+As a reader of the code you also only learn that <code>add()</code> is synchronized at the end, rather than the beginning.
+Python therefore provides the decorator syntax, which does the exact same thing as the above but more succinctly:</p>
+
+<div><pre><code><span>class</span> <span>ExampleSynchronizedClass</span><span>:</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>):</span>
+        <span>self</span><span>.</span><span>_lock</span> <span>=</span> <span>Lock</span><span>()</span>
+        <span>self</span><span>.</span><span>_items</span> <span>=</span> <span>[]</span>
+
+    <span># Nicer decorator usage:
+</span>    <span>@synchronized</span>
+    <span>def</span> <span>add</span><span>(</span><span>self</span><span>,</span> <span>item</span><span>):</span>
+        <span>"""</span><span>Add a new item.</span><span>"""</span>
+        <span>self</span><span>.</span><span>_items</span><span>.</span><span>append</span><span>(</span><span>item</span><span>)</span>
+</code></pre></div>
+
+<h2 id="where-decorators-fail-calling-code">Where decorators fail: calling code</h2>
+
+<p>The problem with decorators is that they fail to address the needs of programmers calling the decorated functions.
+As a user of <code>ExampleSynchronizedClass</code> you likely want your editor or IDE to show the docstring for <code>add</code>, and to detect the appropriate signature.
+Likewise if you’re writing documentation and want to automatically generate an API reference from the source code.</p>
+
+<p>But in fact, what you get is the signature, name and docstring for the wrapper function:</p>
+
+<div><pre><code>&gt;&gt;&gt; help(ExampleSynchronizedClass.add)
+Help on method wrapper in module synchronized:
+
+wrapper(self, *args, **kwargs) unbound synchronized.ExampleSynchronizedClass method
+    A synchronized wrapper.
+</code></pre></div>
+
+<p>To solve this Python provides a utility decorator called <code>functools.wraps</code>, that copies attributes like name and docstring from the wrapped function.
+We change the implementation of the decorator:</p>
+
+<div><pre><code><span>from</span> <span>threading</span> <span>import</span> <span>Lock</span>
+<span>from</span> <span>functools</span> <span>import</span> <span>wraps</span>
+
+<span>def</span> <span>synchronized</span><span>(</span><span>function</span><span>):</span>
+    <span>"""</span><span>
+    Given a method, return a new method that acquires a
+    lock, calls the given method, and then releases the
+    lock.
+    </span><span>"""</span>
+    <span>@wraps</span><span>(</span><span>function</span><span>)</span>
+    <span>def</span> <span>wrapper</span><span>(</span><span>self</span><span>,</span> <span>*</span><span>args</span><span>,</span> <span>**</span><span>kwargs</span><span>):</span>
+        <span>"""</span><span>A synchronized wrapper.</span><span>"""</span>
+        <span>with</span> <span>self</span><span>.</span><span>_lock</span><span>:</span>
+            <span>return</span> <span>function</span><span>(</span><span>self</span><span>,</span> <span>*</span><span>args</span><span>,</span> <span>**</span><span>kwargs</span><span>)</span>
+    <span>return</span> <span>wrapper</span>
+</code></pre></div>
+
+<p>And now we get better help:</p>
+
+<div><pre><code>Help on method add in module synchronized:
+
+add(self, item) unbound synchronized.ExampleSynchronizedClass method
+    Add a new item.
+</code></pre></div>
+
+<p>In versions of Python less than 3.4 signature will still be wrong: it’s still the signature of the wrapper, not the underlying function.
+If you want to support older versions of Python, one solution is to use a 3rd party library called <a href="https://wrapt.readthedocs.io/">wrapt</a>.
+We redefine our decorator once more, this time using <code>wrapt</code> instead of <code>functools.wraps</code>:</p>
+
+<div><pre><code><span>import</span> <span>wrapt</span>
+<span>from</span> <span>threading</span> <span>import</span> <span>Lock</span>
+
+<span>@wrapt.decorator</span>
+<span>def</span> <span>synchronized</span><span>(</span><span>function</span><span>,</span> <span>self</span><span>,</span> <span>args</span><span>,</span> <span>kwargs</span><span>):</span>
+    <span>"""</span><span>
+    Given a method, return a new method that acquires a
+    lock, calls the given method, and then releases the
+    lock.
+    </span><span>"""</span>
+    <span>with</span> <span>self</span><span>.</span><span>_lock</span><span>:</span>
+        <span>return</span> <span>function</span><span>(</span><span>*</span><span>args</span><span>,</span> <span>**</span><span>kwargs</span><span>)</span>
+</code></pre></div>
+
+<p>Beyond supporting older versions of Python, <code>wrapt</code> also has the benefit of being more succinct.</p>
+
+<h2 id="addressing-all-audiences">Addressing all audiences</h2>
+
+<p>While <code>functols.wraps</code> and <code>wrapt</code> do the trick, they still require you to remember to use them every time you define a new decorator.
+Arguably this is a failure in the Python language: it would’ve been more elegant to do the equivalent functionality as part of the <code>@</code> syntax in the language itself, rather than relying on library code to fix it.</p>
+
+<p>When you are writing a library, or perhaps even designing a programming language, it’s always worth keeping in mind that you need to support four distinct audiences: the computer, authors, readers and callers.
+And if you’re a Python programmer creating a decorator, do use <code>wrapt</code>: it’ll make your callers happier, and since it’s also more succinct it will also make life a little easier for your readers.</p>
+
+<p><strong>Updated:</strong> Noted Python 3.4 does do signatures, and tried to make the issue with flaw more explicit. Thanks to Kevin Granger and hwayne for suggestions.</p>
+
+  </div></div>
+  </div>
+</body>
+</html>

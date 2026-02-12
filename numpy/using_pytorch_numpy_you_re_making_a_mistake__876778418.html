@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using PyTorch + NumPy? You're making a mistake.</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using PyTorch + NumPy? You're making a mistake.</h1>
+    <p><strong>URL:</strong> <a href="https://tanelp.github.io/posts/a-bug-that-plagues-thousands-of-open-source-ml-projects">https://tanelp.github.io/posts/a-bug-that-plagues-thousands-of-open-source-ml-projects</a></p>
+    <p><strong>Tags:</strong> numpy, python, pytorch</p>
+    <p><strong>Bookmark ID:</strong> 876778418</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section>
+    <article>
+      <header>
+        
+        <div>
+          <p>
+            <h5>A bug that plagues thousands of open-source ML projects.</h5>
+          </p>
+          <p><span>
+              
+              <time datetime="2021-04-10T00:00:00+03:00">
+                April 10, 2021
+              </time>
+            </span>
+            <span>
+              
+              7-minute read
+            </span>
+          </p>
+          
+          
+          
+        </div>
+      </header>
+
+      <div>
+        
+        <p><span><em>Update: The problem is now fixed in Pytorch but can still happen in tensorflow-keras. Discussion on <a href="https://www.reddit.com/r/MachineLearning/comments/mocpgj/p_using_pytorch_numpy_a_bug_that_plagues/">reddit</a>.</em></span></p>
+<p>Bugs in ML code are notoriously hard to fix - they don’t cause compile errors but silently regress accuracy. Once you have endured the pain and fixed one of these, the lesson is forever etched into your brain, right? <a href="https://www.youtube.com/watch?v=jAWvLQvacpc">Wrong</a>. Recently, an old foe made a comeback - a familiar bug bit me again! As before, the performance improved significantly after fixing it.</p>
+<p>The bug was subtle and easy to make. How many others has it done damage to? Curious, I downloaded over a hundred thousand repositories from GitHub that import PyTorch, and analysed their source code. I kept projects that define a custom dataset, use NumPy’s random number generator with multi-process data loading, and are more-or-less straightforward to analyse using abstract syntax trees. Out of these, over 95% of the repositories are plagued by this problem. It’s inside PyTorch’s official <a href="https://github.com/pytorch/tutorials/blob/af754cbdaf5f6b0d66a7c5cd07ab97b349f3dd9b/beginner_source/data_loading_tutorial.py#L270-L271">tutorial</a>, OpenAI’s <a href="https://github.com/openai/ebm_code_release/blob/18898a24ee24dcd75c41ac3e228b9db79e53237c/data.py#L465-L470">code</a>, and NVIDIA’s <a href="https://github.com/NVlabs/Deep_Object_Pose/blob/11bbc3b8545e099b35901a13f549ddddacd7dd1f/scripts/train.py#L518-L521">projects</a>. Even Karpathy <a href="https://twitter.com/karpathy/status/1328600817797132288">admitted</a> falling prey to it.</p>
+<h2 id="the-bug">
+  The bug
+  <a href="#the-bug">
+    
+  </a>
+</h2>
+<p>The canonical way to load, pre-process and augment data in PyTorch is to subclass the <code>torch.utils.data.Dataset</code> and overwrite its <code>__getitem__</code> method. To apply augmentations, such as random cropping and image flipping, the <code>__getitem__</code> method often makes use of NumPy to generate random numbers. The map-styled dataset is then passed to the <code>DataLoader</code> to create batches. The training pipeline might be bottlenecked by data pre-processing, and therefore it makes sense to load data in parallel. This can be achieved by increasing the <code>num_workers</code> parameter in the <code>DataLoader</code> object.</p>
+<p><strong>The problem:</strong> this workflow results in identical augmentations.</p>
+<h3 id="a-minimal-example">
+  A minimal example
+  <a href="#a-minimal-example">
+    
+  </a>
+</h3>
+<p>To make the issue concrete, here’s an example dataset which returns three-element random vectors. We use a batch size of two and four worker processes.</p>
+<div><pre><code data-lang="py"><span>import</span> <span>numpy</span> <span>as</span> <span>np</span>
+<span>from</span> <span>torch.utils.data</span> <span>import</span> Dataset, DataLoader
+
+<span>class</span> <span>RandomDataset</span>(Dataset):
+    <span>def</span> __getitem__(self, index):
+        <span>return</span> np<span>.</span>random<span>.</span>randint(<span>0</span>, <span>1000</span>, <span>3</span>)
+
+    <span>def</span> __len__(self):
+        <span>return</span> <span>16</span>
+    
+dataset <span>=</span> RandomDataset()
+dataloader <span>=</span> DataLoader(dataset, batch_size<span>=</span><span>2</span>, num_workers<span>=</span><span>4</span>)
+<span>for</span> batch <span>in</span> dataloader:
+    <span>print</span>(batch)
+</code></pre></div><p>The code returns the following tensors:</p>
+<div><pre><code data-lang="py">tensor([[<span>116</span>, <span>760</span>, <span>679</span>],   <span># 1st batch, returned by process 0</span>
+        [<span>754</span>, <span>897</span>, <span>764</span>]])
+tensor([[<span>116</span>, <span>760</span>, <span>679</span>],   <span># 2nd batch, returned by process 1</span>
+        [<span>754</span>, <span>897</span>, <span>764</span>]])
+tensor([[<span>116</span>, <span>760</span>, <span>679</span>],   <span># 3rd batch, returned by process 2</span>
+        [<span>754</span>, <span>897</span>, <span>764</span>]])
+tensor([[<span>116</span>, <span>760</span>, <span>679</span>],   <span># 4th batch, returned by process 3</span>
+        [<span>754</span>, <span>897</span>, <span>764</span>]])
+
+tensor([[<span>866</span>, <span>919</span>, <span>441</span>],   <span># 5th batch, returned by process 0</span>
+        [ <span>20</span>, <span>727</span>, <span>680</span>]])
+tensor([[<span>866</span>, <span>919</span>, <span>441</span>],   <span># 6th batch, returned by process 1</span>
+        [ <span>20</span>, <span>727</span>, <span>680</span>]])
+tensor([[<span>866</span>, <span>919</span>, <span>441</span>],   <span># 7th batch, returned by process 2</span>
+        [ <span>20</span>, <span>727</span>, <span>680</span>]])
+tensor([[<span>866</span>, <span>919</span>, <span>441</span>],   <span># 8th batch, returned by process 3</span>
+        [ <span>20</span>, <span>727</span>, <span>680</span>]])
+</code></pre></div><p>The random numbers returned from each process are identical!</p>
+<h2 id="why-does-this-happen">
+  Why does this happen?
+  <a href="#why-does-this-happen">
+    
+  </a>
+</h2>
+<p>PyTorch uses multiprocessing to load data in parallel. The worker processes are created using the <code>fork</code> <a href="https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods">start method</a>. This means each worker process inherits all resources of the parent, including the state of NumPy’s random number generator.</p>
+<h2 id="the-fix">
+  The fix
+  <a href="#the-fix">
+    
+  </a>
+</h2>
+<p>The <code>DataLoader</code> constructor has an optional <code>worker_init_fn</code> parameter. This function is called in each worker process at initialization before any data loading has happened. You can set the seed for NumPy in the <code>worker_init_fn</code>, for example:</p>
+<div><pre><code data-lang="py"><span>def</span> <span>worker_init_fn</span>(worker_id):                                                          
+    np<span>.</span>random<span>.</span>seed(np<span>.</span>random<span>.</span>get_state()[<span>1</span>][<span>0</span>] <span>+</span> worker_id)
+
+dataset <span>=</span> RandomDataset()
+dataloader <span>=</span> DataLoader(dataset, batch_size<span>=</span><span>2</span>, num_workers<span>=</span><span>4</span>, 
+                        worker_init_fn<span>=</span>worker_init_fn)
+
+<span>for</span> batch <span>in</span> dataloader:
+    <span>print</span>(batch)
+</code></pre></div><p>The code outputs different values for each batch, as one would expect:</p>
+<div><pre><code data-lang="py">tensor([[<span>282</span>,   <span>4</span>, <span>785</span>],
+        [ <span>35</span>, <span>581</span>, <span>521</span>]])
+tensor([[<span>684</span>,  <span>17</span>,  <span>95</span>],
+        [<span>774</span>, <span>794</span>, <span>420</span>]])
+tensor([[<span>939</span>, <span>988</span>,  <span>37</span>],
+        [<span>983</span>, <span>933</span>, <span>821</span>]])
+tensor([[<span>832</span>,  <span>50</span>, <span>453</span>],
+        [ <span>37</span>, <span>322</span>, <span>981</span>]])
+
+tensor([[<span>180</span>, <span>413</span>,  <span>50</span>],
+        [<span>894</span>, <span>318</span>, <span>729</span>]])
+tensor([[<span>530</span>, <span>594</span>, <span>116</span>],
+        [<span>636</span>, <span>468</span>, <span>264</span>]])
+tensor([[<span>142</span>,  <span>88</span>, <span>429</span>],
+        [<span>407</span>, <span>499</span>, <span>422</span>]])
+tensor([[ <span>69</span>, <span>965</span>, <span>760</span>],
+        [<span>360</span>, <span>872</span>,  <span>22</span>]])
+</code></pre></div><p>But wait a minute, when we iterate over epochs,</p>
+<div><pre><code data-lang="py"><span>for</span> epoch <span>in</span> <span>range</span>(<span>3</span>):
+    <span>print</span>(f<span>"epoch: {epoch}"</span>)
+    <span>for</span> batch <span>in</span> dataloader:
+        <span>print</span>(batch)
+    <span>print</span>(<span>"-"</span><span>*</span><span>25</span>)
+</code></pre></div><p>this happens:</p>
+<div><pre><code data-lang="py">
+epoch: <span>0</span>
+tensor([[<span>282</span>,   <span>4</span>, <span>785</span>],
+        [ <span>35</span>, <span>581</span>, <span>521</span>]])
+tensor([[<span>684</span>,  <span>17</span>,  <span>95</span>],
+        [<span>774</span>, <span>794</span>, <span>420</span>]])
+tensor([[<span>939</span>, <span>988</span>,  <span>37</span>],
+        [<span>983</span>, <span>933</span>, <span>821</span>]])
+tensor([[<span>832</span>,  <span>50</span>, <span>453</span>],
+        [ <span>37</span>, <span>322</span>, <span>981</span>]])
+<span>-------------------------</span>
+epoch: <span>1</span>
+tensor([[<span>282</span>,   <span>4</span>, <span>785</span>],
+        [ <span>35</span>, <span>581</span>, <span>521</span>]])
+tensor([[<span>684</span>,  <span>17</span>,  <span>95</span>],
+        [<span>774</span>, <span>794</span>, <span>420</span>]])
+tensor([[<span>939</span>, <span>988</span>,  <span>37</span>],
+        [<span>983</span>, <span>933</span>, <span>821</span>]])
+tensor([[<span>832</span>,  <span>50</span>, <span>453</span>],
+        [ <span>37</span>, <span>322</span>, <span>981</span>]])
+<span>-------------------------</span>
+epoch: <span>2</span>
+tensor([[<span>282</span>,   <span>4</span>, <span>785</span>],
+        [ <span>35</span>, <span>581</span>, <span>521</span>]])
+tensor([[<span>684</span>,  <span>17</span>,  <span>95</span>],
+        [<span>774</span>, <span>794</span>, <span>420</span>]])
+tensor([[<span>939</span>, <span>988</span>,  <span>37</span>],
+        [<span>983</span>, <span>933</span>, <span>821</span>]])
+tensor([[<span>832</span>,  <span>50</span>, <span>453</span>],
+        [ <span>37</span>, <span>322</span>, <span>981</span>]])
+<span>-------------------------</span>
+</code></pre></div><p><em>(the dataset length is reduced from 16 to 8 for brevity).</em></p>
+<p>Iterating over the dataset three times produces the same random numbers at each epoch. This happens because all changes to random states are local to each worker. By default, the worker processes are killed at the end of each epoch, and all worker resources are lost. At the same time, the random state in the main process hasn’t changed, and it’s used to initialize each worker process again.</p>
+<p>Therefore you need to change the NumPy’s seed at every epoch, for example by <code>np.random.seed(initial_seed + epoch)</code>.</p>
+<p>Moreover, you won’t have these issues if you sample random numbers using PyTorch (for example, <code>torch.randint</code>) or Python’s built-in random number generator. PyTorch takes care of these by <a href="https://github.com/pytorch/pytorch/blob/98baad57642115d1f66723f6f10585ed933fd731/torch/utils/data/_utils/worker.py#L137">setting</a> the above seeds to <code>seed + worker_id</code> automatically.</p>
+<h2 id="in-the-wild-examples">
+  In the wild examples
+  <a href="#in-the-wild-examples">
+    
+  </a>
+</h2>
+<p>Here I have listed a few projects with the aforementioned bug.</p>
+<h3 id="official-pytorch-tutorial-on-custom-datasets">
+  Official PyTorch tutorial on custom datasets
+  <a href="#official-pytorch-tutorial-on-custom-datasets">
+    
+  </a>
+</h3>
+<p>A go-to tutorial for using a custom dataset in PyTorch is the one listed on their <a href="https://pytorch.org/tutorials/beginner/data_loading_tutorial.html">website</a>. The tutorial demonstrates how to use the <code>Dataset</code> and <code>DataLoader</code> classes on a face-landmarks dataset. It also mentions the importance of data augmentation, and provides an example of a random crop augmentation. This is implemented using NumPy’s random number generator.</p>
+<div><pre><code data-lang="py">top <span>=</span> np<span>.</span>random<span>.</span>randint(<span>0</span>, h <span>-</span> new_h)
+left <span>=</span> np<span>.</span>random<span>.</span>randint(<span>0</span>, w <span>-</span> new_w)
+</code></pre></div><p>Following the tip of speeding up data loading by increasing <code>num_workers</code>, you get identical crops:</p>
+<!-- ![](/images/pytorch_tutorial.png) -->
+<figure>
+    <img src="data:application/octet-stream;base64," alt="(batch size 8, num_workers 2, random crop augmentation)"> <figcaption>
+            <p>(batch size 8, num_workers 2, random crop augmentation)</p>
+        </figcaption>
+</figure>
+
+<h3 id="openais-ebm">
+  OpenAI’s EBM
+  <a href="#openais-ebm">
+    
+  </a>
+</h3>
+<p>In the paper <em>Implicit Generation and Modeling with Energy-Based Models</em>, an energy-based model is used for generative modeling of images. The dataset’s <code>__getitem__</code> <a href="https://github.com/openai/ebm_code_release/blob/18898a24ee24dcd75c41ac3e228b9db79e53237c/data.py#L465-L470">method</a> reads images and labels from disk, corrupts the former, and returns all three:</p>
+<div><pre><code data-lang="py"><span>if</span> FLAGS<span>.</span>datasource <span>==</span> <span>'default'</span>:
+    im_corrupt <span>=</span> im <span>+</span> <span>0.3</span> <span>*</span> np<span>.</span>random<span>.</span>randn(image_size, image_size)
+<span>elif</span> FLAGS<span>.</span>datasource <span>==</span> <span>'random'</span>:
+    im_corrupt <span>=</span> <span>0.5</span> <span>+</span> <span>0.5</span> <span>*</span> np<span>.</span>random<span>.</span>randn(image_size, image_size)
+
+<span>return</span> im_corrupt, im, label
+</code></pre></div><p>These corruptions, however, are identical:</p>
+<!-- ![some text](/images/openai_ebm.png) -->
+<figure>
+    <img src="data:application/octet-stream;base64," alt="(the first corrupted image in batch 1 and 2)"> <figcaption>
+            <p>(the first corrupted image in batch 1 and 2)</p>
+        </figcaption>
+</figure>
+
+<h3 id="melgan">
+  MelGAN
+  <a href="#melgan">
+    
+  </a>
+</h3>
+<p>The official code for MelGAN, a model for generative audio synthesis published in the NeurIPS conference, <a href="https://github.com/descriptinc/melgan-neurips/blob/6488045bfba1975602288de07a58570c7b4d66ea/mel2wav/dataset.py#L66-L68">augments</a> the loudness of audio files by sampling random scalars using NumPy.</p>
+<div><pre><code data-lang="py">data, sampling_rate <span>=</span> load(full_path, sr<span>=</span>self<span>.</span>sampling_rate)
+data <span>=</span> <span>0.95</span> <span>*</span> normalize(data)
+
+<span>if</span> self<span>.</span>augment:
+    amplitude <span>=</span> np<span>.</span>random<span>.</span>uniform(low<span>=</span><span>0.3</span>, high<span>=</span><span>1.0</span>)
+    data <span>=</span> data <span>*</span> amplitude
+</code></pre></div><p>With <code>num_workers</code> set to four, the audio levels are identical between the processes.</p>
+<h2 id="conclusion">
+  Conclusion
+  <a href="#conclusion">
+    
+  </a>
+</h2>
+<p>The bug is easy to make. In some cases, it has minimal effect on final performance. In others, the identical augmentations can cause severe degradations.</p>
+<p>Based on the analysis of open-source PyTorch projects, I am afraid the issue is present in many codebases supporting real products. I hope that better awareness of the trap, and eventually, <a href="https://github.com/pytorch/pytorch/issues/5059">better handling</a> of it in PyTorch, makes these products a little bit better.</p>
+
+<p><em>Thanks to Sten Sootla and Kaspar Märtens for their comments and suggestions.</em></p>
+<hr>
+<p>Updates:</p>
+<ul>
+<li>
+<p>The problem is now fixed in Pytorch: <a href="https://github.com/pytorch/pytorch/pull/56488">relevant pull request</a>.</p>
+</li>
+<li>
+<p>The post generated a lively discussion on <a href="https://www.reddit.com/r/MachineLearning/comments/mocpgj/p_using_pytorch_numpy_a_bug_that_plagues/">reddit</a>. 
+It was one of the most discussed and upvoted posts for the month.</p>
+</li>
+<li>
+<p>The same problem happens in <code>tensorflow-keras</code> when using the <code>Sequence</code> class. It’s way more hidden and harder to fix.</p>
+</li>
+</ul>
+<div><pre><code data-lang="py"><span>import</span> <span>numpy</span> <span>as</span> <span>np</span>
+<span>import</span> <span>tensorflow</span> <span>as</span> <span>tf</span>
+
+<span>class</span> <span>RandomDataset</span>(tf<span>.</span>keras<span>.</span>utils<span>.</span>Sequence):
+    <span>def</span> __getitem__(self, ix):
+        x <span>=</span> np<span>.</span>random<span>.</span>randint(<span>0</span>, <span>1000</span>, <span>3</span>)
+        x <span>=</span> np<span>.</span>array(x, dtype<span>=</span>np<span>.</span>float32)
+        y <span>=</span> np<span>.</span>array([<span>1</span>]<span>*</span><span>3</span>, dtype<span>=</span>np<span>.</span>float32)
+        <span>print</span>(f<span>"{ix}: {x}"</span>)
+        <span>return</span> x, y
+
+    <span>def</span> __len__(self):
+        <span>return</span> <span>16</span>
+
+<span>def</span> <span>create_identity_model</span>():
+    model <span>=</span> tf<span>.</span>keras<span>.</span>Sequential()
+    model<span>.</span>add(tf<span>.</span>keras<span>.</span>layers<span>.</span>Layer())
+    <span>return</span> model
+
+model <span>=</span> create_identity_model()
+model<span>.</span>compile(optimizer<span>=</span><span>"adam"</span>, loss<span>=</span><span>"mse"</span>)
+dataset <span>=</span> RandomDataset()
+
+model<span>.</span>fit(
+    dataset, 
+    steps_per_epoch<span>=</span><span>16</span>, 
+    epochs<span>=</span><span>1</span>, 
+    verbose<span>=</span><span>0</span>, 
+    workers<span>=</span><span>4</span>, 
+    use_multiprocessing<span>=</span>True, 
+    shuffle<span>=</span>False)
+</code></pre></div><p>The above code outputs the following:</p>
+<div><pre><code data-lang="py"><span>3</span>: [<span>631.</span> <span>448.</span> <span>701.</span>]
+<span>1</span>: [<span>631.</span> <span>448.</span> <span>701.</span>]
+<span>0</span>: [<span>631.</span> <span>448.</span> <span>701.</span>]
+<span>2</span>: [<span>631.</span> <span>448.</span> <span>701.</span>]
+<span>4</span>: [<span>972.</span> <span>209.</span> <span>426.</span>]
+<span>6</span>: [<span>972.</span> <span>209.</span> <span>426.</span>]
+<span>7</span>: [<span>478.</span> <span>428.</span> <span>715.</span>]
+<span>5</span>: [<span>972.</span> <span>209.</span> <span>426.</span>]
+<span>9</span>: [<span>478.</span> <span>428.</span> <span>715.</span>]
+<span>8</span>: [<span>972.</span> <span>209.</span> <span>426.</span>]
+<span>10</span>: [<span>624.</span> <span>644.</span> <span>844.</span>]
+<span>11</span>: [<span>478.</span> <span>428.</span> <span>715.</span>]
+<span>12</span>: [<span>624.</span> <span>644.</span> <span>844.</span>]
+<span>13</span>: [<span>478.</span> <span>428.</span> <span>715.</span>]
+<span>14</span>: [<span>471.</span> <span>538.</span>  <span>33.</span>]
+<span>15</span>: [<span>624.</span> <span>644.</span> <span>844.</span>]
+</code></pre></div>
+      </div>
+
+
+      
+    </article>
+
+    
+  </section></div>
+  </div>
+</body>
+</html>

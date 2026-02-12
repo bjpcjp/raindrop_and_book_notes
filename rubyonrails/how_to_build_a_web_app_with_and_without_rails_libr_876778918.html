@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Build a Web App with and without Rails Libraries — Development (2021</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Build a Web App with and without Rails Libraries — Development (2021</h1>
+    <p><strong>URL:</strong> <a href="https://shopify.engineering/building-web-app-ruby-rails">https://shopify.engineering/building-web-app-ruby-rails</a></p>
+    <p><strong>Tags:</strong> ruby, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876778918</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="article-content" itemprop="articleBody"><p>Ruby on Rails is a web framework that contains many libraries you’d need to create and deploy a successful web application. We often take for granted the ability to run <code>rails new</code> to create a fully functional web application with tons of built-in features. For many of us, that’s good enough since the goal of Rails is to magically have everything work without needing to know what’s happening under the hood.</p>
+<p>In order to fully appreciate Ruby on Rails in all its glory, we’ll first need to understand the problem it’s trying to solve. Let’s picture a world where Rails doesn’t exist. It’s hard, I know.</p>
+<p>How would we build a web application only using the standard Ruby libraries? In this article, I’ll break down the key foundational concepts of how a web application works while building one from the ground up. If we can build a web application only using Ruby libraries, why would we need web server interfaces like Rack and web applications like Ruby on Rails? By the end of this article, you’ll gain a new appreciation for Rails and its magic.</p>
+<h2>The Journey</h2>
+<p>I’ll cover topics including: network protocols (TCP and HTTP), persistent data stores, web server interface (Rack), and Rails libraries (Action Controller, Action Dispatch, Active Record, and Action View). In the first half of the tutorial, we’ll only be using core Ruby libraries, which is sufficient to learn the key concepts of how a web application works. In the second half, we’ll substitute the code with modules from Rails.</p>
+<h2>Before We Get Started</h2>
+<p>My assumption writing is you, dear reader, know how to use a file editor and navigate the terminal. You should also be familiar with terms related to the Internet, like web browsers. Being familiar with Ruby or Ruby on Rails and data structures isn’t a requirement, but it’ll help greatly! Lastly, it’s assumed you’re following along on a computer with MacOS and know how to <a href="https://guides.rubygems.org/rubygems-basics/" target="_blank" title="Ruby Gems Basics" rel="nofollow noopener noreferrer">install and use Ruby gems</a>.</p>
+<p>In any case, I highly recommend following along with the code samples and running the code on your computer to get the full learning experience. After all, there’s no learning without experience doing.</p>
+<h2>The Mirth Web Application</h2>
+<figure>
+<p><img src="data:application/octet-stream;base64," alt=" An image of the Mirth web application. The top of the screen displays a bulleted list with that displays 3 different birthdays.  Below the birthday information are two text boxes that allow the user to enter their name and Birthday. Below those fields is a button called Submit birthday."></p>
+<figcaption>The sophisticated Mirth web application in action</figcaption>
+</figure>
+<p>The web application we’ll be building today is called Mirth, a web application with the functionality for users to see displayed data and enter new data that would persist in the application. How you want the data to look is up to you. The Mirth web application for this tutorial will be a birthday tracker. Instead of relying on a certain social media to inform us of people’s birthdays, you can now ask them, record it, and view it in a list.</p>
+<h2>Conversations with the Network</h2>
+<p>Now that we got everything in order. Let’s start with the basics of how a web application works. How does the web application, or server, talk to the internet? Like humans, networked applications have a specific protocol they use to communicate with each other, called the <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol" target="_blank" rel="nofollow noopener noreferrer">Transmission Control Protocol</a> (TCP). You may have already heard of TCP before but what’s the role of TCP in web applications?</p>
+<p>To understand what TCP does, we must first understand the <a href="https://en.wikipedia.org/wiki/Internet_Protocol" target="_blank" rel="nofollow noopener noreferrer">Internet Protocol</a> (IP). You'll soon find that levels of abstraction is a theme to understanding how this works. TCP is simply an abstraction of IP, a lower level protocol that’s used to transfer individual packets of data.</p>
+<p>Although IP is the basis of how the Internet works, it’s a primitive protocol and therefore unreliable. Using IP poses risks like the wrong order of packet delivery or no delivery at all. TCP is built on top of IP to make the system more reliable with additional features. To solve the issue of out-of-order packet delivery, TCP allows the sender to add an auto-incrementing number inside the packet that is reassembled at the receiver’s end. Another key feature TCP adds is the concept of sockets.</p>
+<h2>Creating Sockets</h2>
+<p>Sockets are meant to represent a persistent connection between a server and a client. Ruby has a core library called <code><a href="https://ruby-doc.org/stdlib-2.7.0/libdoc/socket/rdoc/Socket.html" target="_blank" title="Ruby Sockets Guide" rel="nofollow noopener noreferrer">sockets</a>&nbsp;</code>that builds on top of the TCP implementation from your operating system (which by the way, is yet another abstraction!).</p>
+<h3>Use Ruby’s Socket Library</h3>
+
+<p>The <code>socket</code> library allows you to create a TCP server socket. In our case, Mirth’s server socket wants to keep an eye out to any incoming connections. But, how would a connection know the application to connect with? TCP creates a socket on a specific port that can be identified as the application that’s using it. In this case, we specify Mirth’s port to be 1337.</p>
+<h3>Accept Incoming Connections</h3>
+
+<p>Now that the server socket is created, we decide what we want to give the client when a connection is made. In a loop, we accept any clients through <code>#accept</code>. Once a client is accepted as a connection, we receive information in a form of an IO object.</p>
+<h3>Get the Input from Client Side</h3>
+
+<p>Once you’ve accepted the client’s connection, now you can get any input from the client. In this case, we ask the client “What’s your name?”, and retrieve and regurgitate a modified reply.</p>
+<h3>Close the Client Socket</h3>
+
+<p>After we’re done responding to the client, we must close the connection.</p>
+<h3>Run the Code to Create a Server Socket and Client</h3>
+<p>View the complete code snippet, <a href="https://gist.github.com/ShopifyEng/380218296a07109ebdb359fcafa06d62#file-mirth-1-rb" target="_blank" rel="nofollow noopener noreferrer"><code>mirth-1.rb</code> on Github</a>.</p>
+<ol>
+<li>To run this code on your computer, run the file, <code>ruby mirth-1.rb</code>. By doing so, you create a server socket. Now you need a client to connect to the server with.</li>
+<li>Open a new terminal window and run <code>nc localhost 1337</code>. You’re now connected to your local server socket at port number 1337 using <a href="https://en.wikipedia.org/wiki/Netcat" target="_blank" title="Netcat Wiki" rel="nofollow noopener noreferrer">netcat</a>. Subsequently, entering any input after the connection is established results in the print statements we have in the code.</li>
+</ol>
+<h2>More Structured Conversations with the Network</h2>
+<p>Now that you’re able to create a TCP socket, you’re ready to go further up the abstraction. Currently our TCP server still can’t communicate properly with a browser. That’s because the web browser speaks in the language of another protocol called the Hypertext Transfer Protocol (HTTP). TCP is application agnostic so any type of application can use TCP. HTTP, on the other hand, is specific to the web. So, we can actually implement HTTP in Ruby ourselves.</p>
+<figure><img alt="A directed network diagram showing the layers of abstraction between 3 network protocols (IP, TCP, HTTP). The bottom layer is the Network Layer that uses IP. That flows up to the Transport Layer that uses TCP. That then flows to the Application Layer which using HTTP." src="data:application/octet-stream;base64," loading="lazy">
+<figcaption>Abstraction layers of network protocols</figcaption>
+</figure>
+<p>There are many types of browsers and servers out in the world and that’s why we have HTTP. The protocol was set up by the <a href="https://httpwg.org/" target="_blank" title="HTTP Working Group" rel="nofollow noopener noreferrer">HTTP Working Group</a> so everyone in the world can speak in the same language when it comes to web browsers.</p>
+<p>Every single HTTP message has the same structure:</p>
+<ul>
+<li>a <em>start line </em>
+</li>
+<li>zero or more <em>header fields </em>
+</li>
+<li>a blank line</li>
+<li>an optional <em>message body</em>.</li>
+</ul>
+<p>HTTP messages specialize into two types: requests and responses. A web browser can make a request to a server for a page, and the server obliges with the requested page in it’s response. The difference between requests and responses differ only in the&nbsp;<code>start-line&nbsp;</code>of a HTTP message, where a request has a <code>request-line</code> and a response has a <code>status-line</code>. The structure of these requests and responses are specified in detail in a document called RFC.</p>
+<p>Let’s break this part down into requests and responses.</p>
+<h3>Making Requests</h3>
+<p>From the perspective of the Mirth web application, it wants to be ready to serve the client with the requested information after the connection. Instead of providing a string of your name from the previous example, the client will now make the HTTP request.</p>
+<p>The key component of a HTTP request is the request-line that contains vital information for the web application to act on. These are the method token, target path and HTTP protocol version number. The method token is the type of request from the server, the two common ones being GET (to get data) and POST (to post data to make a change in the server). As you would expect, the method token leads the code down separate paths depending on what’s requested. The target is the path the request is coming from. For example, the target path the server gets from a user requesting info to this webpage, <code>www.mirth.com/baked-brownies/123</code> is <code>baked-brownies/12</code>. Lastly, the version number is the HTTP version the web browser is using, the most common one being <code> HTTP/1.1.</code></p>
+<h3>Get the Request-line of the Request</h3>
+
+<p>Once the server accepts the client socket, we read the request line of a request. Unlike the #<code>gets</code> method that we’ve used previously, <code>#readline</code> returns an error if there’s no more input to get.</p>
+<h3>Break Down the Request-line of the Request</h3>
+
+<p>We break down the HTTP request into parts, the <code>method_token, target</code> and <code>version_number</code>. All these parts are essential information to a server on how to respond to the request. The code simply prints the information we got from the HTTP request and returns it in the body of the HTTP request to display on the web browser page.</p>
+<h3>Run the Code to Make a Request</h3>
+<p>View the complete code snippet, <a href="https://gist.github.com/ShopifyEng/806ffbda77cf449a701001a97ab8363f" target="_blank" rel="nofollow noopener noreferrer"><code>mirth-2.rb</code> on GitHub</a>.</p>
+<ol>
+<li>For this exercise, run <code>ruby mirth-2.rb</code>.</li>
+<li>Instead of making a request from another socket, we make a request directly from the browser. Open your browser and enter <code>localhost:1337/cakes-and/pies</code>. Your browser won’t have anything displayed because the server hasn't responded. Instead, make note of the string logged in your output.</li>
+</ol>
+<h3>Responding to Requests</h3>
+<p>The key part in our next code snippet is the <code>http_response</code> variable that contains:</p>
+<ul>
+<li>the start-line</li>
+<li>header fields</li>
+<li>&nbsp;a blank space&nbsp;</li>
+<li>the body, containing the message to be rendered by the browser.</li>
+</ul>
+<p>The first part of the HTTP response is the status code that represents the start-line. In our case, we want to ensure the browser that all is well, so we make the status code <code>201 OK</code>. If there are any issues with the server, the browser would then be able to relay that information to the users, which explains the most commonly seen <code>404 Error</code> status code when you visit a bad webpage.</p>
+<p>There are other notable parts of the HTTP response like the header fields. The header fields are lines of key-value pairs, in our case, <code>Content-Type:
+text/html</code>. You can find a list of other headers at the RFC documentation page.</p>
+<p>The types of header fields may vary between request and responses, but for responses, the header is where you enter any additional information about the response like path of redirection, caching and cookies, and security-related details. The browser reads the header fields and takes action accordingly, like redirect to the appropriate page, store the appropriate user settings, or secure the webpage.</p>
+<p>The body is where you put the HTML code that’s rendered by the web browser.</p>
+<figure><img alt="A directed network diagram showing the movement of HTTP messages between the user, the Client_Request, the Server Response, and Web app/Server.The user send's a Client Request message to the Web app/Server. The Web app/Server sends the client the Server Response." src="data:application/octet-stream;base64," loading="lazy">
+<figcaption>HTTP Request and Response message specifications between a client and server.</figcaption>
+</figure>
+<h3>Adding Complexity to the Web Application</h3>
+<p>Alright, let’s add some complexity to our web application and reply to the web browser with better-formed HTTP responses of our own. We’ll add some mock data to display (in this case birthdates), and two HTTP responses to display data and update the data with new user input.</p>
+<h3>Add Some Mock Birthdates</h3>
+<p>Let’s first create some default data. All the birthday data in a hash that’s found right after the server is initialized. Note that the data isn’t persistent, meaning once the server restarts, any objects added to this hash disappears.</p>
+<h3>Create a Case Statement for all the Endpoints</h3>
+
+<p>Next, we create a case statement in order to separate the different method tokens and path targets. This gives us a clear outline of the three endpoints we have for our little web application. The three endpoints are, <code>GET
+/show/birthday, POST /add/birthday</code>&nbsp;and any other generic path. If the request matches any of the endpoints, the code within the block will run.</p>
+<h3>Add the GET Endpoint</h3>
+
+<p>Because each endpoint will yield a different HTTP response, we define the following variables,<code> response_status_code, content_type</code> and <code>response_message</code> for each of the endpoints.</p>
+<h3>Add the POST Method</h3>
+<p>As for the POST method, we add some user input to our birthday data hash. For now, it won’t be persistent, but you’re still able to add to the list while the same server is running.</p>
+
+<p>The POST endpoint will look a little different from the GET endpoint. The status code won’t be <code>“200 OK”&nbsp;</code>this time because instead of just informing the browser that the request has succeeded, we can be more helpful and redirect the user to the <code>/show/birthdates&nbsp;</code>page using a <code> “303 See Other”&nbsp;</code>status code.</p>
+<p>Next, there’s an important header field needed from the request, the <code>Content-Length</code> header. The content length header is the size of the body message in the HTTP request in bytes. Once we know how many bytes the message body consists of, we accurately read the body from the client socket’s IO. Lastly, we use Ruby’s built in decoder library called <a href="https://www.rubydoc.info/stdlib/uri/URI" title="Module Documentation Ruby" rel="nofollow noopener noreferrer" target="_blank">uri</a> to decode the body of the request into a Ruby hash that we append to the end of our list of birthdays.</p>
+<h3>Construct the HTTP Response</h3>
+
+<p>Once we’ve successfully determined all the components of the HTTP response based on each of the end points, we reconstruct the response. The response is constructed following HTTP specification: the response start-line contains the version number and response status code, followed by headers, an empty line, and the response body. In the next exercise we accept GET and POST responses from the web browser.</p>
+<h3>Run the Code to Accept GET and POST Responses</h3>
+<p>View the complete code snippet, <a href="https://gist.github.com/ShopifyEng/7beaecb09ebc71fc63d45bd04d883e0b" rel="nofollow noopener noreferrer" target="_blank"><code>mirth-3.rb</code> on GitHub.</a></p>
+<ol>
+<li>&nbsp;Let’s run the code, <code>ruby mirth-3.rb</code>.</li>
+<li>Similar to the previous exercise, we open a browser to the URL, but this time we go to <code>localhost:1337/show/birthdays</code> that’s the URL to show the birthdates.</li>
+<li>Add a new birthday information in the form, the page updates with the new data.</li>
+<li>Restart the server by pressing Control-C to close the server and running it with <code>ruby mirth-3.rb&nbsp;</code>again. Restarting causes the server to start with the default data provided in the code.</li>
+</ol>
+<p>Let’s try to solve the data persistent problem in the next section.</p>
+<h2>Persistent Data Storage</h2>
+<p>What is a web application without the ability to store data? We easily collect and display some user-submitted data but it won’t stick around once the socket is closed. We need a way to store the data so the next time the server restarts, we can still use the same set of data that was previously saved. But how would we?</p>
+<p>Obviously the answer is to store in a database. A database stores information on physical disks or servers. But pretend we live in an age where databases didn’t exist. What’s the most primitive way to persist some information? We save our data to a file.</p>
+<p>We could use a plain text file, but we would have to implement our own format for representing the data in plain text. The good news is that Ruby has a built-in library, PStore, that translates Ruby objects into binary and stores it in a file. Alternatively, PStore is also able to read from the file and translate the binary back into Ruby objects. The serialization and deserialization is the process of marshaling Ruby objects into binary and vice versa.</p>
+<p>However, PStore stores the file in binary that’s not readable by us humans. So, we move up the abstraction and use <code>YAML::Store</code>, which is an implementation of PStore. Instead of serializing the Ruby objects into binary, <code>YAML::Store</code> serializes into the human readable YAML file format.</p>
+
+<p>What the structure of a YAML file looks like.</p>
+<h4>Run the Code to Create Persistent Data Storage with YAML</h4>
+<p>View the complete code snippet, <a href="https://gist.github.com/ShopifyEng/c09cf3ce7cc506a778c5b46cc36a3aa9" target="_blank" rel="nofollow noopener noreferrer"><code>mirth-4.rb </code>on GitHub</a>.</p>
+<ol>
+<li>Ensure you have both <code>mirth-4.rb</code> and the YAML file, <code>mirth.yml</code> in the same folder.</li>
+<li>Run <code>ruby mirth-4.rb&nbsp;</code>and go to <code>localhost:1337/show/birthdays</code> on your browser. You’ll see the default data displayed exactly the same as the previous run.</li>
+<li>Input some data and restart the application. You should still see your previously inputted data! The YAML file will be updated to reflect the new input.</li>
+</ol>
+<h2>Breakpoint, You’ve Got a Working Web Application Now!</h2>
+<p>Phew, that’s a lot to take in. If there’s a topic you’re interested in learning more about see the Additional Information section at the end of the post.</p>
+<p>But wait—we have a working web application written fully only with Ruby libraries. It took a lot for us to get here. We needed to understand all the low level details of how TCP runs, what makes HTTP requests and responses, and how to persist data by storing it in a file. I mean… surely there’s a better way to write a Ruby web application but how? Yep—with more abstractions!</p>
+<h2>Rack (n’ Roll) Specification</h2>
+<p>The code that implements the TCP sockets to create a network connection is generally similar throughout all the types of web applications—the server creates a socket to accept clients. HTTP requests and responses are also standardised across all types of web applications. As we’ve seen above, it takes a lot of time and effort to rewrite the functionality to parse HTTP. A web developer would have to understand intricate details about the network protocols.</p>
+<p>There’s an opportunity to abstract these functionality away from the developer who’s just trying to make a web application, reducing the overhead work. Instead of creating a network connection and writing HTTP parsing logic every single time we want to start a new web application, we can use an application server.</p>
+<p>An application server is a program that deals with HTTP on behalf of the web application, it accepts and parses requests, and then generates and sends responses. Just like how HTTP has its specifications, application servers too have an agreement on how the server talks to our code.</p>
+<p><a href="https://github.com/rack/rack" target="_blank" title="Rack on Github" rel="nofollow noopener noreferrer">Rack</a>&nbsp;is the specification for Ruby application server. If our web application implements the Rack specification, we can then run any application server that supports the Rack specification. There are <a href="https://github.com/rack/rack#supported-web-servers-" target="_blank" title="Supported Web Servers - Rack" rel="nofollow noopener noreferrer">many application servers</a> you can use based on your web application’s needs, and we’ll be using&nbsp;<code><a href="https://github.com/puma/puma" target="_blank" title="Puma on Github" rel="nofollow noopener noreferrer">puma</a></code> as our application server in this tutorial.
+</p>
+<h3>Rack Requests</h3>
+<p>A Rack application (or a web application that follows Rack specification) is any Ruby object that responds to the #call message, accepts a hash argument called the environment, and returns a three-element array that contains:</p>
+<ul>
+<li>a status code&nbsp;</li>
+<li>hash of response headers</li>
+<li>an array of the response body.</li>
+</ul>
+<p>It’s similar to how a HTTP message would look like, but instead of a string format, they are Ruby objects.</p>
+
+<p>Imagine your web application as a box that takes in an HTTP request and outputs a HTTP response. Rack is a layer on top of the web application that enables Puma, the application server, to intercept the HTTP request on the web application’s behalf and return the three-element array.</p>
+<p>Once you’ve made your application a Rack application, you can access more functionalities provided by Rack. But first, let’s see how a Rack application looks integrated into our existing application.</p>
+<h3>Create an Application Server and New <code>Rack::Request</code> Object</h3>
+
+<p>Instead of instantiating our own TCP socket, we defer it to Puma by following the Rack specification. The first thing our app does is create a <a href="https://www.rubydoc.info/gems/rack/Rack/Request" target="_blank" title="Rack Request Documentation on Ruby Doc" rel="nofollow noopener noreferrer"><code>rack::request</code></a> object with the environment provided. After this, we won’t have to worry about accepting and splitting the HTTP request’s request-line ourselves because it’s provided within the request object.</p>
+<h3>Use Built-in <code>Rack::Request</code> Methods</h3>
+
+<p>This code was previously our case statement that determined which endpoint to lead the request down. Now we use built-in request methods like <code>#get?</code> and <code>#path</code>.</p>
+
+<p>Another notable built-in method is the <code>#params</code> method, which returns the request’s body and query string decoded into a hash of parameters. We use this in the POST endpoint where we take the parameters from the request, which is the user’s input, and store it in our YAML file.</p>
+<h3>Return the Three-Element Array</h3>
+
+<p>As outlined in the Rack specification, we need to return a three-element array that consists of the status, headers, and body. Note that the status has to be an integer 200 or larger, the headers has to be a Hash and the body has to be an object that responds to <code>#each</code>. To make things simple the body object is a Ruby Array in this example.</p>
+<h3>Run the Application Using Puma</h3>
+
+<p>Lastly we want to make sure to run the application using <code>Rack::Handler::Puma</code>, which is the Puma API to run a Rack application. Puma goes on to create a TCP socket and handles the networking on the web application’s behalf.</p>
+<h3>Run the Code to Integrate <code>Rack::Request</code> in Our Example</h3>
+<p>View the complete code snippet, <a href="https://gist.github.com/ShopifyEng/7e3542df1c5491ec491627747776f517" target="_blank" rel="nofollow noopener noreferrer"><code>mirth-5.rb</code> on GitHub</a>.</p>
+<ol>
+<li>Run <code>ruby mirth-5.rb</code>. Mirth should have the same behaviour as the previous run. Notice how much detail has been removed and replaced with methods from the <code>rack::request</code> library in the code.</li>
+</ol>
+<h3>Rack Responses</h3>
+<p>Now that Mirth is a Rack application using <code>rack::request</code>, we can now use <code><a href="https://www.rubydoc.info/gems/rack/Rack/Response" target="_blank" rel="nofollow noopener noreferrer">rack::response</a></code> to wrap the HTTP response objects. Similar to how <code>rack::request</code> worked, we are encapsulating the response logic of the application using <code>rack::response</code> object. Once the HTTP response object is created and ready to go, Rack will send the response for the application.</p>
+<h3>Create a new Rack Response Object</h3>
+<p>Similar to how a <code>rack::request</code> object is created, we create a new <code>rack::response</code> object to handle the response.</p>
+<h4>Use the Built-in <code>Rack::Response</code> Methods</h4>
+<p>Again, similar to how you can ask a <code>rack::request</code> questions about the request, you can now modify the response object to your liking based on the different endpoints. For example, in the GET endpoint, we will use <code>#write</code>&nbsp;to append a string to the body of the response. This will now be done behind the scenes in the <code>rack::response</code> library.</p>
+<p><code>rack::response</code> also takes care of setting the defaults. You won’t have to declare the status as 200 for each endpoint as it’s assumed that 200 is the default code. The content type is set to “text/plain”. If you’d like your response to look differently, you can modify it.</p>
+
+<p>For page redirections, you can now use r<code>ack::response’s&nbsp;</code><code>#write&nbsp;</code>method to set the status of redirection and the path to be redirected to. What was previously done in two lines of code is now done in one.</p>
+<h4>Mark the Response as Finish</h4>
+
+<p>Once every single endpoint is done modifying the response object, you can call <code>#finish</code> in order to send the response through Puma.</p>
+<h4>Run the Code to Integrate <code>Rack::Response</code> in Our Example</h4>
+<p>View the complete code snippet, <a href="https://gist.github.com/ShopifyEng/c6e899e1fff2067e7171fccae18671cc" target="_blank" rel="nofollow noopener noreferrer"><code>mirth-6.rb</code> on GitHub</a>.</p>
+<p>1. Run <code>ruby mirth-6.rb</code>. Notice how different the code looks—most of the manual variable assignment to ensure the proper HTTP response is now gone and taken care of by r<code>ack::response</code> library.</p>
+<h2>Persistent Data Storage, For Real</h2>
+<p>Clearly, storing our data in a YAML file isn’t scalable with more requests. Plus, once your application has to store more complex data models and it will, YAML file storage becomes problematic. Millions of data items take too much time and memory to be processed and loaded on every single request. In yet another abstraction, we use a database so we won’t have to worry about optimising the queries and updates we make.</p>
+<p>SQLite is a lightweight relational database that doesn’t use the traditional networked client-server model of alternatives like MySQL and PostgreSQL. Instead, the SQLite database engine runs in the application process, and the data lives in a local file that’s read directly by the web application. SQLite is great for what we’re trying to accomplish because it means we don’t have to deal with the additional complexity of running a separate database server.</p>
+<p>Unsurprisingly, there’s a Ruby gem called <code><a href="https://github.com/sparklemotion/sqlite3-ruby" target="_blank" rel="nofollow noopener noreferrer">sqlite3</a>&nbsp;</code>whose API we conveniently use. We now replace the <code>YAML::Store</code> read and write actions with the SQLite database read and write actions through the gem’s API.</p>
+<h3>Create a SQLite3 Table Called Birthdays</h3>
+<figure><img alt="A terminal window showing the code to setup the birthday's table in SQLite3. The code included one CREATE statement and three INSERT statements for the initial data. Complete details of the code is found in the code gist called ruby mirth-7.rb that is linked under the heading titled " run="" the="" code="" to="" create="" persistent="" data="" storage="" with="" sqlite3="" src="data:application/octet-stream;base64," loading="lazy">
+<figcaption>Creating a table called birthdays with default values</figcaption>
+</figure>
+<p>The first step is for us to create a SQLite3 table with the appropriate columns. For us, it’ll be a name column and a birthdate column. To keep things simple both columns are the String type and we insert some default values like the previous Mirth implementation.</p>
+<h3>Create a SQLite3 Database Object</h3>
+
+<p>After creating the table, we create a reference to it in the code through the <code>sqlite3</code> gem. We access the database table by creating a new instance of <code>SQLite3::Database.new</code> with the table’s name. Thanks to SQLite3, we also add an optional setting to return all results in the form of a Ruby hash using the <code>results_as_hash:</code> keyword argument.</p>
+<h3>Get All Birthday Data</h3>
+
+<p>When we were using YAML::Store, we created a transaction in order to obtain data from the YAML file. Using the SQLite3 gem, we execute a query directly on the database table. For our GET endpoint, where we want to display all the birthday information stored in the database, we execute <code>SELECT * FROM
+birthdays</code> which returns all the birthdays in a Ruby hash. <code>SELECT
+*</code> is a risky query to have because of the performance implications, but for our purposes it’ works fine. At this point, we access the Hash just as we would using YAML::Store.</p>
+<h3>Create a Query For New User-Inputted Row</h3>
+
+<p>As for our POST request endpoint that creates a new birthday data, we execute an INSERT query,&nbsp;<code>INSERT INTO birthdays (name, date)VALUES(?, ?)&nbsp;</code>with the new name and birthdate. SQLite3 handles the addition of the new row into the table.</p>
+<h3>Run the Code to Create Persistent Data Storage with SQLite3</h3>
+<p>View the complete code snippet,&nbsp;<a href="https://gist.github.com/ShopifyEng/9a3cedc46a97f53ef91cead65f65b328" target="_blank" rel="nofollow noopener noreferrer"><code>mirth-7.rb</code> on GitHub</a>.</p>
+<ol>
+<ol>
+<li>Before running the ruby file, we must create a database and table. Run the following on the terminal to create the database and table:</li>
+</ol>
+</ol>
+<p>```</p>
+<p><code>sqlite3 mirth.sqlite3
+</code></p>
+<p><code>CREATE TABLE birthdays (name TEXT, date TEXT);
+</code></p>
+<p><code>INSERT INTO
+birthdays VALUES("Gma", "2021-01-01");
+</code></p>
+<p><code>INSERT INTO birthdays VALUES("Tom", "2021-01-02");
+</code></p>
+<p><code>INSERT INTO birthdays VALUES("Sesame", "2021-01-03");
+</code></p>
+<p><code>.quit </code></p>
+<p><code></code>```</p>
+<p>2. Run <code>ruby mirth-7.rb</code>. You’re now running Mirth with a database and all reads and writes will be through Sqlite3.</p>
+<h2>Rails Libraries</h2>
+<p>In this part of the tutorial, we substitute our work with some Rails libraries without actually requiring Rails as a whole. This will give you a better understanding of what each library can do individually to paint a better mental model of what Rails is capable of as a whole.</p>
+<p>Before we begin, I’d like you to reflect on if there are any parts of our Mirth application that could be abstracted away, meaning which common parts of the application can be removed and replaced just with an API.</p>
+<h3>Using the Active Record Library</h3>
+<p><a href="https://github.com/rails/rails/tree/main/activerecord" target="_blank" title="ActiveRecord on Github" rel="nofollow noopener noreferrer">Active Record</a>, one of the main components of Rails, is an object-relational mapping library, meaning it maps Ruby objects to rows in the database. It may sound obvious to you that a <code>House</code> object should map to a row in the <code>house</code> table. But this is an implementation of the <a href="https://en.wikipedia.org/wiki/Active_record_pattern" target="_blank" title="Active Record Pattern Wiki" rel="nofollow noopener noreferrer">active-record pattern</a>, where “an object that wraps a row in a database table or view, encapsulates the database access, and adds domain logic on that data.” Using Active Record library, we interact directly with the database through object-oriented API without having to concern ourselves with the SQL database.</p>
+<p>Active Record specialises in Create, Read, Update, Delete (CRUD) operations. The library takes care of the complexity of performing these CRUD operations manually. For example, the object, Birthday, is mapped to the Birthdays table in SQLite. Note that the Active Record model’s name is singular while the table’s name is pluralized.</p>
+<p>For example, in our GET request endpoint, we can use <code>Birthday.all </code>to get a list of all the rows in the birthdays table. The returned object is an array of Birthday objects that has helper methods for each of the columns like name and birthday.</p>
+<p>As for our POST request endpoint, we use Active Record by simply using <code>Birthday.create(name:, date:)</code> to create the new user inputted row. Active Record does the work of creating and saving the new record in the database table.</p>
+<ol>
+<ol>
+
+</ol>
+</ol>
+<p>Before we use these built-in methods from the Active Record library, we must establish a connection between Active Record and the Sqlite3 database, and then create a class connecting the data model and the table in the database. The Active Record library handles the matches of the class name with the table name in the database.</p>
+<h3>Using the Action Dispatch Library</h3>
+<p>The endpoint routing logic we see in our code is the other thing we can abstract away. In this case, Action Dispatch is the library we use. More specifically, <a href="https://www.rubydoc.info/docs/rails/ActionDispatch/Routing/RouteSet" title="Action Dispatch Routing with Ruby" rel="nofollow noopener noreferrer" target="_blank"><code>ActionDispatch::Routing::RouteSet</code></a> provides a router that can process incoming requests and routes them to the appropriate code path.</p>
+<figure><img alt="" src="data:application/octet-stream;base64," loading="lazy">
+<figcaption></figcaption>
+</figure>
+<p>Currently the code still handles requests by checking for each request method and path to decide which code path to take. Using Action Dispatch, we break up our application into multiple mini Rack applications and configure a route for each endpoint separately. The <code>RouteSet#draw</code>&nbsp;method is used to take a block with several helper methods in the form of the request method (i.e. GET, POST) to configure the request to the particular endpoint.</p>
+<p>By now we have some mini Rack applications in the form of an endpoint leading up to a larger Rack application. Any incoming requests goes through the large Rack application, that’s led by Action Dispatch down to the corresponding endpoint.</p>
+<p>However, it seems like we can do even better than having three mini Rack applications. Let’s see what Action Controller has to offer.</p>
+<h3>Using the Action Controller Library</h3>
+<p>Action Controller is another library provided with Rails. It follows the <a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller" target="_blank" title="MVC Model on Wiki" rel="nofollow noopener noreferrer">MVC model</a> where given a request, the controller will determine what to do with it like figuring out what data to query and which view to render. As you see in the MVC diagram, the controller acts as the intermediary entity between the view and data model.</p>
+<figure><img alt="A directed network diagram showing the relationship between the user, the Model, View, and Controller. The user kicks off the flow by seeing the View. The View updates the Controller and displays the Model. The Model only accepts input from the View and Controller. The Controller manipulates the Model and it renders the View." src="data:application/octet-stream;base64," loading="lazy">
+<figcaption>A generic MVC model, where the controller renders the view and updates the data model based on user input.</figcaption>
+</figure>
+<p>In Action Controller, the methods in the <code>ActionController::Base</code> class are called “<a href="https://guides.rubyonrails.org/action_controller_overview.html#methods-and-actions" title="Ruby on Rails Guide on Actions" rel="nofollow noopener noreferrer" target="_blank">actions</a>”. First we create a controller for our Active Record model, calling it <code>BirthdaysController</code>. (Note the pluralized version of the Active Record model, Birthday.)</p>
+<p>In our case, the action could be called <code>#show_all_birthdays&nbsp;</code>because that’s exactly what our action would be doing—routing the GET endpoint to display everyone’s birthdays. These actions essentially are the endpoints that were previously in a mini Rail app.</p>
+<p>However, because we want our action to work along with Action View (as you’ll see in the next section), we’d have to follow the Rails conventions of naming and call the action <code>#index</code> for <code>GET /birthdays </code>and <code>#create</code> for <code>POST /birthdays</code>. Rails has several other naming conventions that can be found in the <a href="https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions" title="Rail Routing API" rel="nofollow noopener noreferrer" target="_blank">Rails Routing API</a>.</p>
+<ol>
+<ol>
+
+</ol>
+</ol>
+<p>Using Action Controller and Action Dispatch, we route the requests onto the ActionController’s action. Action Controller makes accessing the request and generating response much more convenient through instance methods such as, <code>#params</code>, <code>#render&nbsp;</code>and&nbsp;<a href="https://api.rubyonrails.org/classes/ActionController/Redirecting.html#method-i-redirect_to" target="_blank" title="Ruby on Rails API" rel="nofollow noopener noreferrer"><code>#redirect_to</code></a>. All these methods that were previously provided to us by Rack Request and Rack Response libraries are now handled by Action Controller. As a result, the code for each HTTP endpoint is much shorter.</p>
+<p>Aside from controlling the flow of request through the application, Action Controller has many, many other functionalities, such as HTTP authentication, storing data in sessions and raising exceptions throughout the application’s lifecycle.</p>
+<h3>Using the Action View Library</h3>
+<p>In the section about Action Controller, you’ve probably noticed that a huge chunk of HTML code that was previously rendered inline is missing. Yet, the web application still works! Action View, the view component of the MVC model, works with Action Controller to help us generate HTML code from embedded Ruby (ERB) code through ERB templates. The HTML code is then passed back to the Action Controller and placed into a response object that’s returned to the client.</p>
+<p>The caveat here is that the view has to be stored in a way that matches Rails conventions. In our case, we declare the directory <code>birthdays/index.html.erb</code>, and ensure that the controller accesses to the view path by using <a href="https://www.rubydoc.info/docs/rails/ActionView%2FViewPaths%2FClassMethods:prepend_view_path" target="_blank" rel="nofollow noopener noreferrer"><code>#prepend_view_path</code></a>&nbsp;method.</p>
+<ol>
+<ol>
+<div itemprop="text" id="gist108659443" translate="no" data-color-mode="light" data-light-theme="light">
+
+  <template>
+  <div data-view-component="true" class="flash flash-warn flash-full d-flex flex-items-center">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
+    <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+    <span>
+      This file contains bidirectional Unicode text that may be interpreted or compiled differently than what appears below. To review, open the file in an editor that reveals hidden Unicode characters.
+      <a class="Link--inTextBlock" href="https://github.co/hiddenchars" target="_blank">Learn more about bidirectional Unicode characters</a>
+    </span>
+
+
+  <div data-view-component="true" class="flash-action">        <a href="{{ revealButtonHref }}" data-view-component="true" class="btn-sm btn">    Show hidden characters
+</a>
+</div>
+</div></template>
+<template>
+  <span aria-label="This line has hidden Unicode characters" data-view-component="true" class="line-alert tooltipped tooltipped-e">
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
+    <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+</span></template>
+
+  <table data-hpc="" data-tab-size="8" data-paste-markdown-skip="" data-tagsearch-lang="HTML+ERB" data-tagsearch-path="index.html.erb">
+        <tbody><tr>
+          <td id="file-index-html-erb-L1" data-line-number="1"></td>
+          <td id="file-index-html-erb-LC1"><span><span>&lt;%#</span> Use ActionView's tag help <span>%&gt;</span></span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L2" data-line-number="2"></td>
+          <td id="file-index-html-erb-LC2"><span>&lt;%=</span> <span>form_tag</span><span>(</span><span>birthdays_path</span><span>)</span> <span>do</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L3" data-line-number="3"></td>
+          <td id="file-index-html-erb-LC3"><span>  &lt;%=</span> <span>tag</span><span>.</span><span>p</span> <span>do</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L4" data-line-number="4"></td>
+          <td id="file-index-html-erb-LC4"><span>    &lt;%=</span> <span>label_tag</span><span>(</span><span>"text"</span><span>,</span> <span>"Name"</span><span>)</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L5" data-line-number="5"></td>
+          <td id="file-index-html-erb-LC5"><span>    &lt;%=</span> <span>date_field_tag</span><span>(</span><span>"name"</span><span>)</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L6" data-line-number="6"></td>
+          <td id="file-index-html-erb-LC6"><span>  &lt;%</span> <span>end</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L7" data-line-number="7"></td>
+          <td id="file-index-html-erb-LC7"><span>  &lt;%=</span> <span>tag</span><span>.</span><span>p</span> <span>do</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L8" data-line-number="8"></td>
+          <td id="file-index-html-erb-LC8"><span>    &lt;%=</span> <span>label_tag</span><span>(</span><span>"date"</span><span>,</span> <span>"Date"</span><span>)</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L9" data-line-number="9"></td>
+          <td id="file-index-html-erb-LC9"><span>    &lt;%=</span> <span>number_field_tag</span><span>(</span><span>"date"</span><span>)</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L10" data-line-number="10"></td>
+          <td id="file-index-html-erb-LC10"><span>  &lt;%</span> <span>end</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L11" data-line-number="11"></td>
+          <td id="file-index-html-erb-LC11"><span>  &lt;%=</span> <span>button_tag</span><span>(</span><span>"Submit birthday"</span><span>)</span> <span>%&gt;</span><span></span></td>
+        </tr>
+        <tr>
+          <td id="file-index-html-erb-L12" data-line-number="12"></td>
+          <td id="file-index-html-erb-LC12"><span>&lt;%</span> <span>end</span> <span>%&gt;</span></td>
+        </tr>
+  </tbody></table>
+</div>
+
+</ol>
+</ol>
+<p>Within the HTML-ERB file itself, there’s some functionality that is abstracted away, most of them being boilerplate code like the form and content tag. The Action View library provides us access to <a href="https://api.rubyonrails.org/classes/ActionView/Helpers/TagHelper.html#method-i-tag" target="_blank" rel="nofollow noopener noreferrer">helper methods</a> that replace the boilerplate code. Additionally, any instance variables from the controller are accessed in the view using the same name. In our case, after the controller action queries all the birthdays, we read the instance variable <code>@all_birthdays</code> in <code>index.html.erb</code> and display them.</p>
+<figure><img alt="A directed network diagram showing the relationship between the all the Rails components in the Mirth application. The Client uses Puma to send and receive data from Action Dispatch. Action Dispatch sends and receives data from the Action Controller. The Action Controller sends data to Action View. The Action Controller sends and receives data from Action Model. Finally Action Model sends and receives data from SQLite3" src="data:application/octet-stream;base64," loading="lazy">
+<figcaption>Overview of all how the Rails components work together in Mirth.</figcaption>
+</figure>
+<h3>Run the Application Using Rails Libraries</h3>
+<p>View the complete code snippet, <a href="https://gist.github.com/wildmaples/880c57c7beaa1dab7c44681279c66e6d" target="_blank" rel="nofollow noopener noreferrer"><code>mirth-final.rb</code> on GitHub</a>.</p>
+<p>Alright, now that you have a general idea of what to expect, check out the finalized Mirth web application that uses Rails libraries.</p>
+<ol>
+<ol>
+<ol>
+<li>Assuming you’ve already created an SQLite3 database from the previous section, place <code>index.html.erb</code> in a folder called <code>birthdays/</code> and run <code>ruby mirth-final.rb</code>.</li>
+<li>Go to the URL <code>localhost:1337/birthdays </code>to see the same web application running but now, using Rails libraries.</li>
+</ol>
+</ol>
+</ol>
+<h2>The End of the Beginning</h2>
+<p>Rails does so much more than what we just covered in this tutorial and each section can be written in much more detail. On top of the primary libraries we learned about in this tutorial, Rails also has libraries for sending emails, creating and managing background jobs, and adding internationalization to your web application.</p>
+<p>With just a little bit of familiarity with the Rails framework, you’re able to build a web application—that’s the magic of Rails. Building your own Ruby web application from scratch however isn’t only educational—I’d argue that it’s also a rite of passage in a Ruby and Rails developer’s career!</p>
+<p>Just kidding. This was fun, but it’s probably best if you used Rails for your web development needs. Now that you understand the low-level details of how a web application works in Ruby, you’re able to appreciate why Rails tries to hide all the implementation details under the hood.</p>
+<p><strong>Maple</strong> is yet another software developer who made it without a formal education in CS. She currently works on the <a href="https://github.com/oracle/truffleruby" rel="nofollow noopener noreferrer" target="_blank">TruffleRuby</a> team at Shopify where speedy Ruby code isn’t a fantasy. Previously, Maple worked on Packwerk, a Ruby gem to enforce modularity in Rails applications. Reach out to <a href="https://twitter.com/ongmaple?lang=en" rel="nofollow noopener noreferrer" target="_blank">Maple on Twitter</a>&nbsp;to rave about well-documented open source projects and cute pets pictures.</p>
+<h3>Additional Information</h3>
+<ol>
+<ol></ol>
+</ol>
+<ul>
+<li>
+<a href="https://guides.rubygems.org/rubygems-basics/" rel="nofollow noopener noreferrer" target="_blank"><span>Ruby Gems Basics</span></a><span>&nbsp;</span>
+</li>
+<li>
+<a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol" rel="nofollow noopener noreferrer" target="_blank"><span>Transmission Control Protocol</span></a><span> (TCP)</span>
+</li>
+<li>
+<a href="https://en.wikipedia.org/wiki/Internet_Protocol" rel="nofollow noopener noreferrer" target="_blank"><span>Internet Protocol</span></a><span> (IP)</span>
+</li>
+<li><a href="https://ruby-doc.org/stdlib-2.7.0/libdoc/socket/rdoc/Socket.html" rel="nofollow noopener noreferrer" target="_blank"><span>Class: Socket (Ruby 2.7.0)</span></a></li>
+<li><a href="https://en.wikipedia.org/wiki/Netcat" rel="nofollow noopener noreferrer" target="_blank"><span>Netcat</span></a></li>
+<li><a href="https://httpwg.org/" rel="nofollow noopener noreferrer" target="_blank"><span>HTTP Working Group</span></a></li>
+<li><a href="https://www.rubydoc.info/stdlib/uri/URI" rel="nofollow noopener noreferrer" target="_blank"><span>Module: URI — Documentation for uri (2.7.0)</span></a></li>
+<li><a href="https://github.com/rack/rack" rel="nofollow noopener noreferrer" target="_blank"><span>rack/rack: A modular Ruby web server interface</span></a></li>
+<li><a href="https://github.com/puma/puma" rel="nofollow noopener noreferrer" target="_blank"><span>puma/puma: A Ruby/Rack web server built for concurrency</span></a></li>
+<li><a href="https://github.com/rack/rack/blob/master/SPEC.rdoc#rack-applications-" rel="nofollow noopener noreferrer" target="_blank"><span>Rack specification</span></a></li>
+<li>
+<a href="https://www.rubydoc.info/gems/rack/Rack/Request" rel="nofollow noopener noreferrer" target="_blank"><span>Rack::Request</span></a><span> object</span>
+</li>
+<li>
+<a href="https://www.rubydoc.info/gems/rack/Rack/Response" rel="nofollow noopener noreferrer" target="_blank"><span>Rack::Response</span></a><span> object</span>
+</li>
+<li><a href="https://github.com/sparklemotion/sqlite3-ruby" rel="nofollow noopener noreferrer" target="_blank"><span>Sqlite3</span></a></li>
+<li><a href="https://github.com/rails/rails/tree/main/activerecord" rel="nofollow noopener noreferrer" target="_blank"><span>Active Record</span></a></li>
+<li><a href="https://en.wikipedia.org/wiki/Active_record_pattern" rel="nofollow noopener noreferrer" target="_blank"><span>Active record pattern</span></a></li>
+<li><a href="https://www.rubydoc.info/docs/rails/ActionDispatch/Routing/RouteSet" rel="nofollow noopener noreferrer" target="_blank"><span>Class: ActionDispatch::Routing::RouteSet — Documentation for rails (6.0.2.1)</span></a></li>
+<li><a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller" rel="nofollow noopener noreferrer" target="_blank"><span>Model–view–controller</span></a></li>
+<li><a href="https://guides.rubyonrails.org/action_controller_overview.html#methods-and-actions" rel="nofollow noopener noreferrer" target="_blank"><span>Action Controller Overview</span></a></li>
+<li><a href="https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions" rel="nofollow noopener noreferrer" target="_blank"><span>Rails Routing API</span></a></li>
+<li><a href="https://api.rubyonrails.org/classes/ActionController/Redirecting.html#method-i-redirect_to" rel="nofollow noopener noreferrer" target="_blank"><span>Method: ActionView::ViewPaths::ClassMethods#prepend_view_path</span></a></li>
+<li><a href="https://www.rubydoc.info/docs/rails/ActionView%2FViewPaths%2FClassMethods:prepend_view_path" rel="nofollow noopener noreferrer" target="_blank"><span>#prepend_view_path</span></a></li>
+<li><a href="https://api.rubyonrails.org/classes/ActionView/Helpers/TagHelper.html#method-i-tag" rel="nofollow noopener noreferrer" target="_blank"><span>Ruby on Rails 6.1.3 Module ActionView::Helpers::TagHelper</span></a></li>
+</ul>
+<hr>
+<ol>
+<ol>We're planning to DOUBLE our engineering team in 2021 by hiring 2,021 new technical roles (see what we did there?). Our platform handled record-breaking sales over BFCM and commerce isn't slowing down.</ol>
+</ol>
+<p><a href="https://www.shopify.com/careers/2021?itcat=EngBlog&amp;itterm=Post" target="_blank">Help us scale &amp; make commerce better for everyone</a>.</p></div></div>
+  </div>
+</body>
+</html>

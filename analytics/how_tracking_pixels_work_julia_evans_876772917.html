@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How tracking pixels work - Julia Evans</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How tracking pixels work - Julia Evans</h1>
+    <p><strong>URL:</strong> <a href="https://jvns.ca/blog/how-tracking-pixels-work">https://jvns.ca/blog/how-tracking-pixels-work</a></p>
+    <p><strong>Tags:</strong> analytics, webdev</p>
+    <p><strong>Bookmark ID:</strong> 876772917</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+     <p>I spent some time talking to a reporter yesterday about how
+advertisers track people on the internet. We had a really fun time looking at
+Firefox’s developer tools together (I’m not an internet privacy expert, but I
+do know how to use the network tab in developer tools!) and I learned a few
+things about how tracking pixels actually work in practice!</p>
+<h3 id="the-question-how-does-facebook-know-that-you-went-to-old-navy">
+    <a href="#the-question-how-does-facebook-know-that-you-went-to-old-navy">
+      the question: how does Facebook know that you went to Old Navy?
+    </a>
+</h3>
+<p>I often hear about this slightly creepy internet experience: you’re looking at
+a product online, and a day later see an ad for the same boots or whatever that
+you were looking at. This is called “retargeting”, but how does it actually
+work exactly in practice?</p>
+<p>In this post we’ll experiment a bit and see exactly how Facebook can know what
+products you’ve looked at online! I’m using Facebook as an example in this blog
+post just because it’s easy to find websites with Facebook tracking pixels on
+them but of course almost every internet advertising company does this kind of
+tracking.</p>
+<h3 id="the-setup-allow-third-party-trackers-turn-off-my-adblocker">
+    <a href="#the-setup-allow-third-party-trackers-turn-off-my-adblocker">
+      the setup: allow third party trackers, turn off my adblocker
+    </a>
+</h3>
+<p>I use Firefox, and by default Firefox blocks a lot of this kind of tracking. So
+I needed to modify my Firefox privacy settings to get this tracking to work.</p>
+<p>I changed my privacy settings from the default
+(<a href="https://jvns.ca/images/trackers.png">screenshot</a>) to a custom setting that allows
+third-party trackers (<a href="https://jvns.ca/images/firefox-insecure-settings.png">screenshot</a>). I
+also disabled some privacy extensions I usually have running.</p>
+<h3 id="tracking-pixels-it-s-not-the-gif-it-s-the-url-query-parameters">
+    <a href="#tracking-pixels-it-s-not-the-gif-it-s-the-url-query-parameters">
+      tracking pixels: it’s not the gif, it’s the URL + query parameters
+    </a>
+</h3>
+<p>A tracking pixel is a 1x1 transparent gif that sites use to track you. By itself, obviously a tiny 1x1 gif doesn’t do too much. So how do tracking pixels track you? 2 ways:</p>
+<ol>
+<li>Sites use the <strong>URL and query parameters</strong> in the tracking pixel to add extra information, like the URL of the page you’re visiting. So instead of just requesting <code>https://www.facebook.com/tr/</code> (which is a 44-byte 1x1 gif), it’ll request <code>https://www.facebook.com/tr/?the_website_you're_on</code>. (email marketers use similar tricks to figure out if you’ve opened an email, by giving the tracking pixel a unique URL)</li>
+<li>Sites send <strong>cookies</strong> with the tracking pixel so that they can tell that the person who visited oldnavy.com is the same as the person who’s using Facebook on the same computer.</li>
+</ol>
+<h3 id="the-facebook-tracking-pixel-on-old-navy-s-website">
+    <a href="#the-facebook-tracking-pixel-on-old-navy-s-website">
+      the Facebook tracking pixel on Old Navy’s website
+    </a>
+</h3>
+<p>To test this out, I went to look at a product on the Old Navy site with the URL <a href="https://oldnavy.gap.com/browse/product.do?pid=504753002&amp;cid=1125694&amp;pcid=1135640&amp;vid=1&amp;grid=pds_0_109_1">https://oldnavy.gap.com/browse/product.do?pid=504753002&amp;cid=1125694&amp;pcid=1135640&amp;vid=1&amp;grid=pds_0_109_1</a> (a “Soft-Brushed Plaid Topcoat for Men”).</p>
+<p>When I did that, the Javascript running on that page (presumably <a href="https://developers.facebook.com/docs/facebook-pixel/implementation/">this code</a>) sent a request to facebook.com that looks like this in Developer tools: (I censored most of the cookie values because some of them are my login cookies :) )</p>
+<img src="https://jvns.ca/images/fb-old-navy.png">
+<p>Let’s break down what’s happening:</p>
+<ol>
+<li>My browser sends a request to</li>
+</ol>
+<pre><code>https://www.facebook.com/tr/?id=937725046402747&amp;ev=PageView&amp;dl=https%3A%2F%2Foldnavy.gap.com%2Fbrowse%2Fproduct.do%3Fpid%3D504753002%26cid%3D1125694%26pcid%3Dxxxxxx0%26vid%3D1%26grid%3Dpds_0_109_1%23pdp-page-content&amp;rl=https%3A%2F%2Foldnavy.gap.com%2Fbrowse%2Fcategory.do%3Fcid%3D1135640%26mlink%3D5155%2Cm_mts_a&amp;if=false&amp;ts=1576684838096&amp;sw=1920&amp;sh=1080&amp;v=2.9.15&amp;r=stable&amp;a=tmtealium&amp;ec=0&amp;o=30&amp;fbp=fb.1.1576684798512.1946041422&amp;it=15xxxxxxxxxx4&amp;coo=false&amp;rqm=GET
+</code></pre>
+<ol start="2">
+<li>With that request, it sends a cookie called <code>fr</code> which is set to <code>10oGXEcKfGekg67iy.AWVdJq5MG3VLYaNjz4MTNRaU1zg.Bd-kxt.KU.F36.0.0.Bd-kx6.</code> (which I guess is my Facebook ad tracking ID)</li>
+</ol>
+<p>So the three most notable things that are being sent in the tracking pixel query string are:</p>
+<ul>
+<li>the page I visited: <a href="https://oldnavy.gap.com/browse/product.do?pid=504753002&amp;cid=1125694&amp;pcid=1135640&amp;vid=1&amp;grid=pds_0_109_1#pdp-page-content">https://oldnavy.gap.com/browse/product.do?pid=504753002&amp;cid=1125694&amp;pcid=1135640&amp;vid=1&amp;grid=pds_0_109_1#pdp-page-content</a></li>
+<li>the page that referred me to that page: <a href="https://oldnavy.gap.com/browse/category.do?cid=1135640&amp;mlink=5155,m_mts_a">https://oldnavy.gap.com/browse/category.do?cid=1135640&amp;mlink=5155,m_mts_a</a></li>
+<li>an identifier cookie for me: <code>10oGXEcKfGekg67iy.AWVdJq5MG3VLYaNjz4MTNRaU1zg.Bd-kxt.KU.F36.0.0.Bd-kx6.</code></li>
+</ul>
+<h3 id="now-let-s-visit-facebook">
+    <a href="#now-let-s-visit-facebook">
+      now let’s visit Facebook!
+    </a>
+</h3>
+<p>Next, let’s visit Facebook, where I’m logged in. What cookies is my browser sending Facebook?</p>
+<p>Unsurprisingly, it’s the same <code>fr</code> cookie from before:
+<code>10oGXEcKfGekg67iy.AWVdJq5MG3VLYaNjz4MTNRaU1zg.Bd-kxt.KU.F36.0.0.Bd-kx6.</code>. So
+Facebook now definitely knows that I (Julia Evans, the person with this Facebook
+account) visited the Old Navy website a couple of minutes ago and looked at a
+“Soft-Brushed Plaid Topcoat for Men”, because they can use that identifier to
+match up the data.</p>
+<h3 id="these-cookies-are-third-party-cookies">
+    <a href="#these-cookies-are-third-party-cookies">
+      these cookies are third-party cookies
+    </a>
+</h3>
+<p>The <code>fr</code> cookie that Facebook is using to track what websites I go to is called
+a “third party cookie”, because Old Navy’s website is using it to identify me
+to a third party (facebook.com). This is different from first-party cookies,
+which are used to keep you logged in.</p>
+<p>Safari and Firefox both block many third-party cookies by default (which is why I
+had to change Firefox’s privacy settings to get this experiment to work), and
+as of today Chrome doesn’t (presumably because Chrome is owned by an ad company).</p>
+<h3 id="sites-have-lots-of-tracking-pixels">
+    <a href="#sites-have-lots-of-tracking-pixels">
+      sites have lots of tracking pixels
+    </a>
+</h3>
+<p>Like I expected, sites have <strong>lots</strong> of tracking pixels. For example,
+wrangler.com loaded 19 different tracking pixels in my browser from a bunch of
+different domains. The tracking pixels on wrangler.com came from:
+<code>ct.pinterest.com</code>, <code>af.monetate.net</code>, <code>csm.va.us.criteo.net</code>, <code>google-analytics.com</code>,
+<code>dpm.demdex.net</code>, <code>google.ca</code>, <code>a.tribalfusion.com</code>, <code>data.photorank.me</code>,
+<code>stats.g.doubleclick.net</code>, <code>vfcorp.dl.sc.omtrdc.net</code>, <code>ib.adnxs.com</code>,
+<code>idsync.rlcdn.com</code>, <code>p.brsrvr.com</code>, and <code>adservice.google.com</code>.</p>
+<p>For most of these trackers, Firefox helpfully pointed out that it would have
+blocked them if I was using the standard Firefox privacy settings:</p>
+<img src="https://jvns.ca/images/firefox-helpful.png">
+<h3 id="why-browsers-matter">
+    <a href="#why-browsers-matter">
+      why browsers matter
+    </a>
+</h3>
+<p>The reason browsers matter so much is that your browser has the final word on
+what information it sends about you to which websites. The Javascript on the
+Old Navy’s website can ask your browser to send tracking information about you
+to Facebook, but your browser doesn’t have to do it! It can decide “oh yeah,
+I know that facebook.com/tr/ is a tracking pixel, I don’t want my users to be
+tracked, I’m just not going to send that request”.</p>
+<p>And it can make that behaviour configurable by changing browser settings or
+installing browser extensions, which is why there are lots of privacy extensions.</p>
+<h3 id="it-s-fun-to-see-how-this-works">
+    <a href="#it-s-fun-to-see-how-this-works">
+      it’s fun to see how this works!
+    </a>
+</h3>
+<p>I think it’s fun to see how cookies / tracking pixels are used to track you in
+practice, even if it’s kinda creepy! I sort of knew how this worked before but
+I’d never actually looked at the cookies on a tracking pixel myself or what
+kind of information it was sending in its query parameters exactly.</p>
+<p>And if you know how it works, it’s easier to figure out how to be tracked less!</p>
+<h3 id="what-can-you-do">
+    <a href="#what-can-you-do">
+      what can you do?
+    </a>
+</h3>
+<p>I do a few small things to get tracked on the internet a little less:</p>
+<ul>
+<li>install an adblocker (like ublock origin or something), which will block a lot of tracker domains</li>
+<li>use Firefox/Safari instead of Chrome (which have stronger default privacy settings right now)</li>
+<li>use the <a href="https://addons.mozilla.org/en-CA/firefox/addon/facebook-container/">Facebook Container</a> Firefox extension, which takes extra steps to specifically prevent Facebook from tracking you</li>
+</ul>
+<p>There are still lots of other ways to be tracked on the internet (especially
+when using mobile apps where you don’t have the same kind of control as with
+your browser), but I like understanding how this one method of tracking works
+and think it’s nice to be tracked a little bit less.</p>
+
+
+</div></div>
+  </div>
+</body>
+</html>

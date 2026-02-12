@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>APT Encounters of the Third Kind - Igor’s Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>APT Encounters of the Third Kind - Igor’s Blog</h1>
+    <p><strong>URL:</strong> <a href="https://igor-blue.github.io/2021/03/24/apt1.html">https://igor-blue.github.io/2021/03/24/apt1.html</a></p>
+    <p><strong>Tags:</strong> devops, security</p>
+    <p><strong>Bookmark ID:</strong> 876778316</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main" role="main">
+  
+
+
+  <article class="page" itemscope="" itemtype="https://schema.org/CreativeWork">
+    
+    
+    
+    
+
+    <div>
+      
+        <header>
+          
+          
+
+  <p>
+    
+
+    
+
+    
+      
+      
+
+      <span>
+        
+        
+          18 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section itemprop="text">
+        
+        <p>A few weeks ago an ordinary security assessment turned into an incident response whirlwind. It was definitely a first for me, and I was kindly granted permission to outline the events in this blog post. This investigation started scary but turned out be quite fun, and I hope reading it will be informative to you too.  I'll be back to posting about my hardware research soon.</p>
+
+<ul id="markdown-toc">
+  <li><a href="#how-it-started" id="markdown-toc-how-it-started">How it started</a></li>
+  <li><a href="#what-hell-is-this" id="markdown-toc-what-hell-is-this">What hell is this?</a></li>
+  <li><a href="#the-nfs-server" id="markdown-toc-the-nfs-server">The NFS Server</a></li>
+  <li><a href="#2nd-malicious-binary" id="markdown-toc-2nd-malicious-binary">2nd malicious binary</a></li>
+  <li><a href="#further-forensics" id="markdown-toc-further-forensics">Further forensics</a></li>
+  <li><a href="#eureka-moment" id="markdown-toc-eureka-moment">Eureka Moment</a></li>
+  <li><a href="#the-golang-thingy" id="markdown-toc-the-golang-thingy">The GOlang thingy</a></li>
+  <li><a href="#how-the-kernel-got-patched-and-why-not-the-golang-app" id="markdown-toc-how-the-kernel-got-patched-and-why-not-the-golang-app">How the kernel got patched? and why not the golang app?</a></li>
+  <li><a href="#what-we-have-so-far" id="markdown-toc-what-we-have-so-far">What we have so far</a></li>
+  <li><a href="#qa" id="markdown-toc-qa">Q&amp;A</a></li>
+</ul>
+
+<h2 id="how-it-started">How it started</h2>
+<p>Twice a year I am hired to do security assessments for a specific client. We have been working together for several years, and I had a pretty good understanding of their network and what to look for.</p>
+
+<p>This time my POC, Klaus, asked me to focus on privacy issues and GDPR compliance. However, he asked me to first look at their cluster of reverse gateways / load balancers:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="LB Architecture"></p>
+
+<p>I had some prior knowledge of these gateways, but decided to start by creating my own test environment first.
+The gateways run a custom Linux stack: basically a monolithic compiled kernel (without any modules), and a static GOlang application on top. The 100+ machines have no internal storage, but rather boot from an external USB media that has the kernel and the application. The GOlang app serves in two capacities: an <code>init</code> replacement and the reverse gateway software. During initialization it mounts /proc, /sys, devfs and so on, then mounts an NFS share hardcoded in the app. The NFS share contains the app's configuration, TLS certificates, blacklist data and a few more. It starts listening on 443, filters incoming communication and passes valid requests on different services in the production segment.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="GW Architecture"></p>
+
+<p>I set up a self contained test environment, and spent a day in black box examination. Having found nothing much I suggested we move on to looking at the production network, but Klaus insisted I continue with the gateways. Specifically he wanted to know if I could develop a methodology for testing if an attacker has gained access to the gateways and is trying to access PII (Personally Identifiable Information) from within the decrypted HTTP stream.</p>
+
+<p>I couldn't SSH into the host (no SSH), so I figured we will have to add some kind of instrumentation to the GO app. Klaus still insisted I start by looking at the traffic before (red) and after the GW (green), and gave me access to a mirrored port on both sides so I could capture traffic to a standalone laptop he prepared for me and I could access through an LTE modem but was not allowed to upload data from:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="GW Architecture"></p>
+
+<p>The problem I faced now was how to find out what HTTPS traffic corresponded to requests with embedded PII. One possible avenue was to try and correlate the encrypted traffic with the decrypted HTTP traffic. This proved impossible using timing alone. However, unspecting the decoded traffic I noticed the GW app adds an 'X-Orig-Connection' with the four-tuple of the TLS connection! Yay!</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Original connection"></p>
+
+<p>I wrote a small python program to scan the port 80 traffic capture and create a mapping from each four-tuple TLS connection to a boolean - True for connection with PII and False for all others:</p>
+<div><pre><code>10.4.254.254,443,[Redacted],43404,376106847.319,False
+10.4.254.254,443,[Redacted],52064,376106856.146,False
+10.4.254.254,443,[Redacted],40946,376106856.295,False
+10.4.254.254,443,[Redacted],48366,376106856.593,False
+10.4.254.254,443,[Redacted],48362,376106856.623,True
+10.4.254.254,443,[Redacted],45872,376106856.645,False
+10.4.254.254,443,[Redacted],40124,376106856.675,False 
+...
+</code></pre></div>
+
+<p>With this in mind I could now extract the data from the PCAPs and do some correlations. After a few long hours getting <code>scapy</code> to actually parse timestamps consistently enough for comparisons, I had a list of connection timing information correlated with PII. A few more fun hours with Excel and I got histogram graphs of time vs count of packets. Everything looked normal for the HTTP traffic, although I expected more of a normal distribution than the power-low type thingy I got. Port 443 initially looked the same, and I got the normal distribution I expected. But when filtering for PII something was <em>seriously</em> wrong. The distribution was skewed and shifted to longer time frames. And there was nothing similar on the port 80 end.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Histograms"></p>
+
+<p>My only explanation was that something was wrong with my testing setup (the blue bars) vs. the real live setup (the orange bars). I wrote on our slack channel 'I think my setup is sh*t, can anyone resend me the config files?', but this was already very late at night, and no one responded. Having a slight OCD I couldn’t let this go. To my rescue came another security? feature of the GWs: Thet restarted daily, staggered one by one, with about 10 minutes between hosts. This means that every ten minutes or so one of them would reboot, and thus reload it’s configuration files over NFS. And since I could see the NFS traffic through the port mirror I had access to, I recokoned I could get the production configuration files from the NFS capture (bottom dotted blue line in the diagram before).</p>
+
+<p>So to cut a long story short I found the NFS read reply packet, and got the <strong>data</strong> I need. But … why the hack is <code>eof</code> 77685??? Come on people, its 3:34AM!</p>
+
+<p>What's more, the actual data was 77685 bytes, exactly 8192 bytes more then the ‘Read length’. The entropy for that data was pretty uniform, suggesting it was encrypted. The file I had was definitely not encrypted.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="First NFS capture"></p>
+
+<p>Histogram of extra 8192 bytes:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="NFS capture hist"></p>
+
+<p>When I mounted the NFS export myself I got a normal EOF value of <code>1</code>!</p>
+
+<p><img src="data:application/octet-stream;base64," alt="NFS capture hist"></p>
+
+<h2 id="what-hell-is-this">What hell is this?</h2>
+
+<p>Comparing the capture from my testing machine with the one from the port mirror I saw something else weird:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="NFS capture hist"></p>
+
+<p>For other NFS open requests (on all of my test system captures and for other files in the production system) we get:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="NFS capture hist"></p>
+
+<p>Spot the difference?</p>
+
+<p>The <code>open id:</code> string became <code>open-id:</code>. Was I dealing with some corrupt packet? But the exact same problem reappeared the next time <code>blacklist.db</code> was send over the wire by another GW host.</p>
+
+<p>Time to look at the kernel source code:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="NFS capture hist"></p>
+
+<p>The “open id” string is hardcoded. What's up?</p>
+
+<p>After a good night sleep and no beer this time I repeated the experiment and convincing myself I was not hullucinating I decided to compare the source code of the exact kernel version with the kernel binary I got.</p>
+
+<p>What I expected to see was this (from nfs4xdr.c):</p>
+
+<div><pre><code><span>static</span> <span>inline</span> <span>void</span> <span>encode_openhdr</span><span>(</span><span>struct</span> <span>xdr_stream</span> <span>*</span><span>xdr</span><span>,</span> <span>const</span> <span>struct</span> <span>nfs_openargs</span> <span>*</span><span>arg</span><span>)</span>
+<span>{</span>
+    <span>__be32</span> <span>*</span><span>p</span><span>;</span>
+ <span>/*
+ * opcode 4, seqid 4, share_access 4, share_deny 4, clientid 8, ownerlen 4,
+ * owner 4 = 32
+ */</span>
+    <span>encode_nfs4_seqid</span><span>(</span><span>xdr</span><span>,</span> <span>arg</span><span>-&gt;</span><span>seqid</span><span>);</span>
+    <span>encode_share_access</span><span>(</span><span>xdr</span><span>,</span> <span>arg</span><span>-&gt;</span><span>share_access</span><span>);</span>
+    <span>p</span> <span>=</span> <span>reserve_space</span><span>(</span><span>xdr</span><span>,</span> <span>36</span><span>);</span>
+    <span>p</span> <span>=</span> <span>xdr_encode_hyper</span><span>(</span><span>p</span><span>,</span> <span>arg</span><span>-&gt;</span><span>clientid</span><span>);</span>
+    <span>*</span><span>p</span><span>++</span> <span>=</span> <span>cpu_to_be32</span><span>(</span><span>24</span><span>);</span>
+    <span>p</span> <span>=</span> <span>xdr_encode_opaque_fixed</span><span>(</span><span>p</span><span>,</span> <span>"open id:"</span><span>,</span> <span>8</span><span>);</span>
+    <span>*</span><span>p</span><span>++</span> <span>=</span> <span>cpu_to_be32</span><span>(</span><span>arg</span><span>-&gt;</span><span>server</span><span>-&gt;</span><span>s_dev</span><span>);</span>
+    <span>*</span><span>p</span><span>++</span> <span>=</span> <span>cpu_to_be32</span><span>(</span><span>arg</span><span>-&gt;</span><span>id</span><span>.</span><span>uniquifier</span><span>);</span>
+    <span>xdr_encode_hyper</span><span>(</span><span>p</span><span>,</span> <span>arg</span><span>-&gt;</span><span>id</span><span>.</span><span>create_time</span><span>);</span>
+<span>}</span>
+</code></pre></div>
+
+<p>Running <code>binwalk -e -M bzImage</code> I got the internal ELF image, and opened it in IDA. Of course I didn’t have any symbols, but I got <code>nfs4_xdr_enc_open()</code> from /proc/kallsyms, and from there to <code>encode_open()</code> which led me to <code>encode_openhdr()</code>.
+With some help from hex-rays I got code that looked very similiar, but with one key difference:</p>
+
+<div><pre><code><span>static</span> <span>inline</span> <span>void</span> <span>encode_openhdr</span><span>(</span><span>struct</span> <span>xdr_stream</span> <span>*</span><span>xdr</span><span>,</span> <span>const</span> <span>struct</span> <span>nfs_openargs</span> <span>*</span><span>arg</span><span>)</span>
+<span>{</span>
+    <span>...</span>
+    <span>p</span> <span>=</span> <span>xdr_encode_opaque_fixed</span><span>(</span><span>p</span><span>,</span> <span>unknown_func</span><span>(</span><span>"open id:"</span><span>,</span> <span>arg</span><span>),</span> <span>8</span><span>);</span>
+    <span>...</span>
+<span>}</span>
+</code></pre></div>
+
+<p>The function <code>unknown_func</code> was pretty long and complicated but eventually sometimes decided to replace the space between 'open' and 'id' with a hyphen.</p>
+
+<p>Does the NFS server care? Apparently this string it is some opaque client identifier that is ignored by the NFS server, so no one would see the difference. That is unless they were trying to extract something from an NFS stream, and obviously this was not a likely scenario. OK, back to the weird 'eof' thingy from the NFS server.</p>
+
+<h2 id="the-nfs-server">The NFS Server</h2>
+
+<p>The server was running the 'NFS-ganesha-3.3' package. This is a very modular user-space NFS server that is implemented as a series of loadable modules called FSALs. For example support for files on the regular filesystem is implemented through a module called <code>libfsalvfs.so</code>.
+Having verified all the files on disk had the same SHA1 as the distro package, I decided to dump the process memory. I didn't have any tools on the host, so I used GDB which helpfully was already there. Unexpectadly GDB was suddenly killed, the file I specified as output got erased, and the nfs server process restarted.</p>
+
+<p>I took the dump again but there was nothing special there!</p>
+
+<p>I was pretty suspicious at this time, and wanted to recover the original dump file from the first dump. Fortunately for me I was dumping the file to the laptop, again over NFS. The file had been deleted, but I managed to recover it from the disk on that server.</p>
+
+<h2 id="2nd-malicious-binary">2nd malicious binary</h2>
+
+<p>The memory dump was truncated, but had a <strong>corrupt</strong> version of NFS-ganesha inside. There were two <code>libfsalvfs.so</code> libraries loaded: the original one and an injected SO file with the same name. The injected file was clearly malicious. The main binary was patched in a few places, and the  function table into <code>libfsalvfs.so</code> as replaced with the alternate <code>libfsalvfs.so</code>. The alternate file was compiled from NFS-ganesha sources, but modified to include <em>new and improved</em> (wink wink) functionality.</p>
+
+<p>The most interesting of the new functionality were two separate implementations of covert channels.</p>
+
+<p>The first one we encountered already:</p>
+
+<ul>
+  <li>When an open request comes in with 'open-id' instead of 'open id', the file handle is marked. This change is opaque to the NFS server, so unpatched servers just ignore it and nothing much happens.</li>
+  <li>For infiltrated NFS server, when the file handle opened this way is read, the NFS server appends the last block with a payload coming from the malware's runtime storage, and the 'eof' on-the-wire value is changed to be the new total size. An unpatched kernel (which shouldn’t really happen, since it marked the file in the first place) will just ignore the extra bytes. The EOF value is used as a bool, e.g. checked for 0 or not and not a specific value, so having a large integer values doesn’t change anything in the flow of an unmodified kernel.</li>
+</ul>
+
+<p>The second covert channel is used for command and control, and is implemented in the VFS code as a fake directory.</p>
+
+<p>Any writes to <code>/&lt;export&gt;/.snapshot/meta/&lt;cmdid&gt;</code> are handled by the malware code and not passed on to the FS. They are pseudo-files that implement commands through read and write operations.</p>
+
+<p>The malware implemented the following commands:</p>
+<ul>
+  <li>1701 - self destruct</li>
+  <li>1702 - set auto self destruct time</li>
+  <li>1703 - run shell command</li>
+  <li>1704 - load SO file from buffer specified in command</li>
+  <li>1706 - get basic system description</li>
+  <li>1707 - get network connections</li>
+  <li>170A - upgrade to new SO file</li>
+  <li>74201 - put buffer in memory dict by ID</li>
+  <li>74202 - get buffer from memory dict by ID</li>
+  <li>74650 - put a payload in memory for the first covert channel</li>
+  <li>74651 - arm the first covert channel</li>
+  <li>74652 - disarm the first covert channel</li>
+</ul>
+
+<p>For example <code>cp payload.so /mnt/server/.snapshot/meta/1704</code> will load the SO file in the NFS ganesha process on the target server, and <code>echo 1616580589 &gt; /mnt/server/.snapshot/meta/1702</code> will set an autodestruct time. Reading this file will retrieve the time.</p>
+
+<p>The self destruct command (0x1701) is very interesting - it sends a UDP broadcast on port 41701 with a random payload of size 321 bytes, and then restarts a clean NFS-ganesha. I guess this is some kind of network signalling.</p>
+
+<p>It appears the malware has a watchdog that iterates over all <code>/proc/&lt;pid&gt;/fd/*</code> links every 25ms, and if a link is open to <code>/proc/&lt;malware pid&gt;/maps</code> or <code>/proc/&lt;malware pid&gt;/smaps</code> or  <code>/proc/&lt;malware pid&gt;/mem</code> it:</p>
+<ul>
+  <li>kills the offending process,</li>
+  <li>deletes any writeable file handle it had opened (before it was killed) in <code>/proc/&lt;pid&gt;/fd/</code>, first trying to wipe it,</li>
+  <li>calls the self destruct command (0x1701).</li>
+</ul>
+
+<h2 id="further-forensics">Further forensics</h2>
+<p>Lets go back to that awful Saturday I triggered the self-destruct. Having a faint understanding I triggered something (that being before I reversed the devil) I asked Klaus to disconnect all the network connections to the outer world and we started taking memory dumps of whatever we could, storing them all on the laptop.
+In hindsight we destroyed quiet a bit of evidence by triggering more self destructs in other subnets, but I think the self destruct signal has already gone out to the bad guys through a different piece of malware that I later partially recovered, and probably "heard" the UDP distress signal (that's what is was called in the binary, not my naming).</p>
+
+<p>After getting all the forensics the client insisted on reconnecting his systems to the web, they were "losing money". I switched from forensics to reversing.  In the process, while inspecting the malicious <code>libfsalvfs.so</code> I discovered the commands I mentioned above, and discovered a "feature" that helped me fill more paces of the puzzle.</p>
+
+<p>Reversing malware you always find some feeble attempt to obfuscate string using XOR or RC4, or just scrambling the letter ordering. In this case I pretty quickly found a function I called <code>get_obfuscated_string(buffer, string_id)</code>. The difference however, was that this one was just horrendous, practically irreversible:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="NFS capture hist"></p>
+
+<p>It had like a billion nested switches:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="NFS capture hist"></p>
+
+<p>I think they let some intern fresh out of college write that one. It seems the complete list of strings used by the tool are encoded inside in a <em>tree</em> of nested switches, with a variable length encoding, e.g. in one branch the 2nd level might have 3 bits and in another it might have 5 and in a third only a single bit. Some kind of prefix tree if I remember anything from Uni.</p>
+
+<p>Eventually I managed to write code to just brute force the function:</p>
+<div><pre><code><span>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string&gt;
+#include &lt;set&gt;
+</span>
+<span>int</span> <span>main</span><span>(</span><span>int</span> <span>argc</span><span>,</span> <span>char</span><span>*</span> <span>argv</span><span>[])</span>
+<span>{</span>
+	<span>// error handling code omitted</span>
+	<span>const</span> <span>char</span><span>*</span> <span>filename</span> <span>=</span> <span>(</span><span>argc</span> <span>&gt;</span> <span>1</span><span>)</span> <span>?</span> <span>argv</span><span>[</span><span>1</span><span>]</span> <span>:</span> <span>"reconstructed.elf"</span><span>;</span>
+	<span>unsigned</span> <span>long</span> <span>offset</span> <span>=</span> <span>(</span><span>argc</span> <span>&gt;</span> <span>1</span><span>)</span> <span>?</span> <span>strtol</span><span>(</span><span>argv</span><span>[</span><span>2</span><span>],</span> <span>NULL</span><span>,</span> <span>16</span><span>)</span> <span>:</span> <span>0x22a0</span><span>;</span>
+
+	<span>int</span> <span>fd</span> <span>=</span> <span>open</span><span>(</span><span>filename</span><span>,</span> <span>O_RDONLY</span><span>);</span>
+	<span>struct</span> <span>stat</span> <span>stbuf</span><span>;</span>
+	<span>fstat</span><span>(</span><span>fd</span><span>,</span> <span>&amp;</span><span>stbuf</span><span>);</span>
+	<span>const</span> <span>char</span><span>*</span> <span>addr</span> <span>=</span> <span>(</span><span>char</span><span>*</span><span>)</span><span>mmap</span><span>(</span><span>NULL</span><span>,</span> <span>stbuf</span><span>.</span><span>st_size</span><span>,</span> <span>PROT_READ</span> <span>|</span> <span>PROT_EXEC</span><span>,</span> <span>MAP_PRIVATE</span><span>,</span> <span>fd</span><span>,</span> <span>0</span><span>);</span>
+	<span>close</span><span>(</span><span>fd</span><span>);</span>
+	<span>const</span> <span>char</span><span>*</span> <span>base</span> <span>=</span> <span>addr</span> <span>+</span> <span>offset</span><span>;</span>
+
+	<span>typedef</span> <span>int</span> <span>(</span><span>*</span><span>entry_t</span><span>)(</span><span>char</span><span>*</span> <span>outbuf</span><span>,</span> <span>int</span> <span>id</span><span>);</span>
+	<span>entry_t</span> <span>entry</span> <span>=</span> <span>(</span><span>entry_t</span><span>)</span><span>base</span><span>;</span>
+	<span>std</span><span>::</span><span>set</span><span>&lt;</span><span>std</span><span>::</span><span>string</span><span>&gt;</span> <span>found</span><span>;</span>
+	<span>char</span> <span>buffer</span><span>[</span><span>1024</span><span>];</span>
+	
+	<span>for</span><span>(</span><span>long</span> <span>bits</span> <span>=</span> <span>1</span><span>;</span> <span>bits</span> <span>&lt;</span> <span>64</span><span>;</span> <span>++</span> <span>bits</span><span>)</span> <span>{</span>
+		<span>bool</span> <span>any_new</span> <span>=</span> <span>false</span><span>;</span>
+		<span>for</span><span>(</span><span>long</span> <span>id</span> <span>=</span> <span>(</span><span>bits</span> <span>==</span> <span>1</span><span>)</span> <span>?</span> <span>0</span> <span>:</span> <span>(</span><span>1</span> <span>&lt;&lt;</span> <span>(</span><span>bits</span> <span>-</span> <span>1</span><span>));</span> <span>id</span> <span>&lt;</span> <span>(</span><span>1</span><span>&lt;&lt;</span><span>bits</span><span>);</span> <span>++</span> <span>id</span><span>)</span> <span>{</span>
+			<span>int</span> <span>status</span> <span>=</span> <span>entry</span><span>(</span><span>buffer</span><span>,</span> <span>id</span><span>);</span>
+			<span>if</span><span>(</span><span>status</span> <span>==</span> <span>0</span><span>)</span>
+				<span>continue</span><span>;</span>
+			<span>if</span><span>(</span><span>found</span><span>.</span><span>find</span><span>(</span><span>buffer</span><span>)</span> <span>!=</span> <span>found</span><span>.</span><span>end</span><span>())</span>
+				<span>continue</span><span>;</span>
+			<span>found</span><span>.</span><span>insert</span><span>(</span><span>buffer</span><span>);</span>
+			<span>printf</span><span>(</span><span>"Got '%s'! [0x%x]</span><span>\n</span><span>"</span><span>,</span> <span>buffer</span><span>,</span> <span>id</span><span>);</span>
+			<span>any_new</span> <span>=</span> <span>true</span><span>;</span>
+		<span>}</span>
+		<span>if</span><span>(</span><span>!</span><span>any_new</span><span>)</span>
+			<span>break</span><span>;</span>
+	<span>}</span>
+
+	<span>return</span> <span>0</span><span>;</span>
+<span>}</span>
+</code></pre></div>
+
+<p>This first binary had the following strings (I am keeping 3 to myself as they have client related info):</p>
+
+<div><pre><code>'/proc/self/mem', 
+'/proc/self/maps',
+'/proc/self/cwd',
+'/proc/self/environ',
+'/proc/self/fd/%d',
+'/proc/self/fdinfo/%d',
+'/proc/self/limits',
+'/proc/self/cgroup',
+'/proc/self/exe',
+'/proc/self/cmdline',
+'/proc/self/mounts',
+'/proc/self/smaps',
+'/proc/self/stat',
+'/proc/%d/mem', 
+'/proc/%d/maps',
+'/proc/%d/cwd',
+'/proc/%d/environ',
+'/proc/%d/fd/%d',
+'/proc/%d/fdinfo/%d',
+'/proc/%d/limits',
+'/proc/%d/cgroup',
+'/proc/%d/exe',
+'/proc/%d/cmdline',
+'/proc/%d/mounts',
+'/proc/%d/smaps',
+'/proc/%d/stat',        
+'nfs',
+'nfs4',
+'tmpfs',
+'devtmpfs',
+'procfs',
+'sysfs',
+'WSL2',
+'/etc/os-release',
+'/etc/passwd',
+'/etc/lsb-release',
+'/etc/debian_version',
+'/etc/redhat-release',
+'/home/%s/.ssh',
+'/var/log/wtmp',
+'/var/log/syslog',
+'/var/log/auth.log',
+'/var/log/cron.log',
+'/var/log/syslog.log',
+'/etc/netplan/*.yaml',
+'/etc/yp.conf',
+'/var/yp/binding/',
+'/etc/krb5.conf',
+'/var/kerberos/krb5kdc/kdc.conf',
+'/var/log/ganesha.log',
+'/etc/ganesha/ganesha.conf',
+'/etc/ganesha/exports',
+'/etc/exports',
+'Error: init failed',
+'DELL',
+'/usr/lib/x86_64-linux-gnu/libnfs.so.4',
+'/tmp/.Test-unix/.fa76c5adb8c04239ff3034106842773b',
+'Error: config missing',
+'Error: sysdep missing',
+'Running',
+'LOG',
+'/usr/lib/x86_64-linux-gnu/ganesha/libfsalvfs.so',
+'none',
+'/etc/sudoers',
+'/proc/net/tcp',
+'/proc/net/udp',
+'/etc/selinux/config',
+'libdl.so.2',
+'libc-',
+'.so',
+'cluster-config',
+'recovery-signal',
+</code></pre></div>
+
+<h2 id="eureka-moment">Eureka Moment</h2>
+<p>Staring endlessly at this weird function I thought to myself: maybe I can look for code that is structured like this in all the dumps we obtained. We have all those block of <code>mov byte ptr [rdi+?], '?'</code>:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="MoveRDI"></p>
+
+<p>So lets look for blocks of code that are highly dense with these opcodes:</p>
+
+<div><pre><code><span>import</span> <span>sys</span>
+
+<span>with</span> <span>open</span><span>(</span><span>sys</span><span>.</span><span>argv</span><span>[</span><span>1</span><span>],</span> <span>'</span><span>rb</span><span>'</span><span>)</span> <span>as</span> <span>f</span><span>:</span>
+    <span>data</span> <span>=</span> <span>f</span><span>.</span><span>read</span><span>()</span>
+
+<span>STATE</span><span>=</span><span>None</span>
+<span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>len</span><span>(</span><span>data</span><span>)</span> <span>-</span> <span>6</span><span>)</span><span>:</span>
+    <span>if</span> <span>ord</span><span>(</span><span>data</span><span>[</span><span>i</span><span>])</span> <span>==</span> <span>0xc6</span> <span>and</span> <span>ord</span><span>(</span><span>data</span><span>[</span><span>i</span> <span>+</span> <span>1</span><span>])</span> <span>==</span> <span>0x47</span><span>:</span>
+        <span>if</span> <span>STATE</span> <span>and</span> <span>(</span><span>STATE</span><span>[</span><span>0</span><span>]</span> <span>+</span> <span>STATE</span><span>[</span><span>1</span><span>]</span> <span>+</span> <span>0x40</span><span>)</span> <span>&gt;=</span> <span>i</span><span>:</span>
+            <span>STATE</span><span>[</span><span>1</span><span>]</span> <span>=</span> <span>i</span> <span>-</span> <span>STATE</span><span>[</span><span>0</span><span>]</span>
+            <span>STATE</span><span>[</span><span>2</span><span>]</span> <span>+=</span> <span>1</span>
+        <span>else</span><span>:</span>
+            <span>if</span> <span>STATE</span> <span>and</span> <span>STATE</span><span>[</span><span>2</span><span>]</span> <span>&gt;=</span> <span>20</span><span>:</span>
+                <span>print</span><span>(</span><span>'</span><span>Found</span> <span>region</span> <span>at</span> <span>0</span><span>x</span><span>%</span><span>x</span> <span>-</span> <span>0</span><span>x</span><span>%</span><span>x</span><span>'</span> <span>%</span> <span>(</span><span>STATE</span><span>[</span><span>0</span><span>],</span> <span>STATE</span><span>[</span><span>0</span><span>]</span> <span>+</span> <span>STATE</span><span>[</span><span>1</span><span>]))</span>
+            <span>STATE</span> <span>=</span> <span>[</span><span>i</span><span>,</span> <span>4</span><span>,</span> <span>1</span><span>]</span> 
+</code></pre></div>
+
+<p>And I found them. Oh I did. Some adjustment even led to a version for ARM systems:</p>
+
+<p><img src="data:image/png;base64,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" alt="MoveRDIARM"></p>
+
+<h2 id="the-golang-thingy">The GOlang thingy</h2>
+
+<p>I finally found the payload that was sent over to the GW machines. It had 2 stages: the first was the 8192 buffer loaded through the first covert channel. The kernel was modified to inject this buffer into the GOlang application and hook it. This will get fairly technical, but I enjoyed it and so will you:</p>
+
+<ul>
+  <li>First note that in the Golang stdlib an HTTP connection can be read through the <code>net/http.(connReader).Read</code> function. The calls are made through a <code>io.Reader</code> interface, so the calls are made through a virtual table, and the call locations cannot be statically identified.</li>
+  <li>the kernel inject begins by allocating a bunch of RWX memory immediately after the GOlang binary - let's call it the trampoline area, and it will include two types of generated trampoline functions,</li>
+  <li>Next the ELF symbol table was used to find the 'net/http.(*connReader).Read' symbol,</li>
+  <li>What we’ll call the 1st trampoline function (code below) is copied to the trampoline area, patching the area marked with <code>HERE</code> with the first 9 bytes of <code>net/http.(\*connReader).Read</code></li>
+  <li><code>mprotect(net_http_connReader_read &amp; ~0xfff, 8192, PROT_EXEC | PROT_READ | PROT_WRITE)</code></li>
+  <li>modified the beginning of <code>net/http.(\*connReader).Read</code> to a near jump into the trampoline - using 5 bytes of the 9 original used by 'move rcx, fs:….' that are the preamble to function.</li>
+</ul>
+
+<p>First trampoline function</p>
+<div><pre><code>     <span>pop</span>     <span>rax</span>            
+     <span>pop</span>     <span>rcx</span>
+     <span>push</span>    <span>rcx</span>
+     <span>push</span>    <span>rax</span>
+     <span>mov</span>     <span>r11</span><span>,</span> <span>cs</span><span>:</span><span>qword</span><span>_</span><span>&lt;</span><span>relocated</span><span>&gt;</span>
+     <span>mov</span>     <span>rdi</span><span>,</span> <span>rcx</span>
+     <span>call</span>    <span>qword</span> <span>ptr</span> <span>[</span><span>r11</span><span>+</span><span>8</span><span>]</span>
+     <span>pop</span>     <span>rax</span>
+     <span>pop</span>     <span>rcx</span>
+     <span>push</span>    <span>rcx</span>
+     <span>mov</span>     <span>rcx</span><span>,</span> <span>fs</span><span>:</span><span>0FFFFFFFFFFFFFFF8h</span> <span>&lt;----</span> <span>HERE</span>
+     <span>cmp</span>     <span>rsp</span><span>,</span> <span>[</span><span>rcx</span><span>+</span><span>10h</span><span>]</span>
+     <span>jmp</span>     <span>rax</span>
+</code></pre></div>
+
+<ul>
+  <li>When the trampoline is called (from the new near jump in the beginning of <code>net/http.(*connReader).Read</code>) it examines the stack to locate the return address, and checks if a second type of trampoline we'll refer to as the <strong>return trampoline</strong> has already been allocated for the return address for the function,</li>
+  <li>If not it allocates a new trampoline per call location of <code>net/http.(*connReader).Read</code> from the code below, replacing 123456789ABCDEFh with the absolute address of a function in the malware,</li>
+  <li>GOlang uses memory for all function argument passing, so immediately after the virtual function call to <code>Read()</code> there will always be a 5 byte <code>mov     reg, [rsp+?]</code> to load <code>Read()</code>'s result into a register. This <code>mov</code> instruction is copied into the first <code>db 5 dup(0)</code> area,</li>
+  <li>those same 5 bytes are then replacing with a near jump to the 2nd trampoline</li>
+  <li>the 2nd db 5 dup(0) are filled with a relative near <code>jmp</code> back to the original code patch site.
+    <div><pre><code>    <span>mov</span>     <span>rax</span><span>,</span> <span>123456789ABCDEFh</span>
+    <span>mov</span>     <span>rdi</span><span>,</span> <span>rsp</span>
+    <span>call</span>    <span>rax</span>
+    <span>db</span> <span>5</span> <span>dup</span><span>(</span><span>0</span><span>)</span>
+    <span>db</span> <span>5</span> <span>dup</span><span>(</span><span>0</span><span>)</span>      
+</code></pre></div>
+  </li>
+</ul>
+
+<p>This way eventually all the <code>net/http.(*connReader).Read</code> call sites are patched to call a function immediatly after <code>net/http.(*connReader).Read</code> virtual call returns. This lets the malicous code inspect the decoded HTTP packet.</p>
+
+<p>On initialization the 1st stage malware also loads the hefty 2nd stage through the 2nd covert channel, and passes each buffer received from the patch on <code>net/http.(*connReader).Read</code> to it for inspection.
+The data collected is collected and compressed by the malware and stored back to the NFS server (the 2nd covert channel which bypasses read ACLs on NFS).</p>
+
+<p>Before this case I did not think there was any nice way to hook random GO binaries, this technique is pretty cool.</p>
+
+<p>Unfortunatly I cannot discuss what the 2nd payload actually as it will reveal stuff my employer isn't ready for yet.</p>
+
+<h2 id="how-the-kernel-got-patched-and-why-not-the-golang-app">How the kernel got patched? and why not the golang app?</h2>
+<p>The golang app is built inside the CI/CD network segment. This segment can only be accessed through monitored jump hosts with MFA. Each day, the CI/CD pipline clones the source code from the GIT server, builds it, and automatically tests it in a pre-production segment. Once tested it gets digitally signed and uploaded to the NFS server. The running app self updates, checking the digital signature beforehand.</p>
+
+<p>The kernel, on the other hand, is manually built by the guy responsible for it on his own laptop. He then digitally signs it and stores it on a server where it is used by the CI/CD pipeline. Fortunatly for us a commented out line in a script in the CI/CD pipline (a line that was not commented out in the GIT!) did not delete old versions of the kernel and we know which versions were tampered with.</p>
+
+<p>We noticed a 3 month gap about 5 month ago, and it corresponded with the guy moving the kernel build from a Linux laptop to a new Windows laptop with a VirtualBox VM in it for compiling the kernel. It looks as if it took the attackers three months to gain access back into the box and into the VM build.</p>
+
+<h2 id="what-we-have-so-far">What we have so far</h2>
+
+<p>We found a bunch of malware sitting in the network collecting PII information from incoming HTTPS connection after they are decoded in a GOlang app. The data is exfiltrated through the malware network and eventually is sent to the bad guys.
+We have more info but I am still working on it, expect another blog post in the future with more details, samples, etc’.</p>
+
+<h2 id="qa">Q&amp;A</h2>
+
+<ul>
+  <li>
+    <p><strong>Q</strong>: What was the initial access vector?</p>
+
+    <p><strong>A</strong>: We have a pretty good idea, but I cannot publish it yet (RD and stuff). Stay tuned!</p>
+  </li>
+  <li>
+    <p><strong>Q</strong>: Why didn't you upload anything to VT yet?</p>
+
+    <p><strong>A</strong>: A few reasons:</p>
+    <ul>
+      <li>I need to make sure no client info is in the binaries - some of the binaries have hardcoded strings that cannot be shared</li>
+      <li>All of the binaries I have have been reconstructed from memory dumps, so are not in their original form. Does anyone know how to upload partial dumps into VT?</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Q</strong>: It there a security vulnerability in GO? in the Kernel?</p>
+
+    <p><strong>A</strong>: Defenitly not! this is just an obnoxious attacker doing what obnoxious attacker do. I might even say the complexity of the stuff means they don’t have a 0day for this platform.</p>
+  </li>
+  <li>
+    <p><strong>Q</strong>: What about YARA rules, C2 address, etc'?</p>
+
+    <p><strong>A</strong>: Wait for it, there is a lot more coming!</p>
+  </li>
+  <li>
+    <p><strong>Q</strong>: Why did you publish instead of collecting more?</p>
+
+    <p><strong>A</strong>: To quote the client "I don't care who else they are attacking. I just want them off my lawn!", and he thinks publishing will prevent them from returning to <strong>THIS</strong> network. 
+   Hopefully what we publish next time will get them off other people’s lawns.</p>
+  </li>
+  <li>
+    <p><strong>Q</strong>: Any Windows malware?</p>
+
+    <p><strong>A</strong>: Definitly, including what we believe is an EDR bypass. Still working on it.</p>
+  </li>
+  <li>
+    <p><strong>Q</strong>: Any zero days?</p>
+
+    <p><strong>A</strong>: Maybe …</p>
+  </li>
+  <li>
+    <p><strong>Q</strong>: Who are these bad guys you keep refering to?</p>
+
+    <p><strong>A</strong>: No clue. Didn’t find anything similiar published. There is now sure way to make anything except unsubstantiated guesses, and I won’t do that.</p>
+  </li>
+</ul>
+
+<p><strong>To be continued.</strong></p>
+
+
+        
+      </section>
+
+      
+
+      
+
+      
+  
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div></div>
+  </div>
+</body>
+</html>

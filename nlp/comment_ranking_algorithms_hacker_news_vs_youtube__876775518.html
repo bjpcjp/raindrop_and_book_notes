@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Comment Ranking Algorithms: Hacker News vs. YouTube vs. Reddit</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Comment Ranking Algorithms: Hacker News vs. YouTube vs. Reddit</h1>
+    <p><strong>URL:</strong> <a href="http://amacfie.github.io/2020/05/21/comment-ranking">http://amacfie.github.io/2020/05/21/comment-ranking</a></p>
+    <p><strong>Tags:</strong> machine-learning, nlp</p>
+    <p><strong>Bookmark ID:</strong> 876775518</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+  <h2>Comment ranking algorithms: Hacker News vs. YouTube vs. Reddit</h2>
+  <p><span>2020-May-21</span></p><p>Comments on social sites have to be sorted somehow.
+How do big platforms do it – is it some complicated mix of
+recommender systems,
+learning-to-rank algorithms,
+Markov decision processes,
+neural networks, and
+learning automata?
+Well, maybe in <a href="https://engineering.linkedin.com/blog/2017/09/serving-top-comments-in-professional-social-networks">some cases</a>
+but often it’s just a simple formula.
+In this article we put the formulas used by Hacker News, YouTube, and
+Reddit, along with a few alternatives, to the test, using virtual comment
+section simulations.
+Spoiler alert: YouTube does not do well.</p>
+
+<h2 id="the-simulation-model">The simulation model</h2>
+
+<p>240 visitors arrive at equally spaced increments over a 24 hour period.
+Each visitor is randomly assigned as a commenter (10%) or a voter (90%).
+Commenters leave a single comment, which gets a randomly assigned quality
+category: great (10%), mediocre (80%), or stinker (10%).
+Great comments have a high probability of receiving upvotes and a low
+probability of receiving downvotes;
+stinkers are the reverse;
+and mediocre comments have a low probability of receiving any votes.
+Voters, on the other hand, see the top-ranked comment and vote according
+to its probabilities.
+At this point they stop reading or keep going based on a probability that
+depends on the vote they just gave (0% for upvotes, 50% for downvotes, 15% for
+non-votes).
+If they don’t leave, they see the next-ranked comment and the process continues
+until they finally do leave or they read all the comments.
+When the simulation concludes, we log the average number of upvotes per
+visitor which we use as our utility function.</p>
+
+<p>See <a href="https://github.com/amacfie/amacfie.github.io/tree/master/_posts/comment_orderings">Python source code</a>
+for full details.</p>
+
+<p>Of course this is not a perfect model of every comment section.
+These parameter values will not always be accurate, although I did play around
+with e.g. the commenter/voter ratio
+<!--and how likely a voter is to leave-->
+and I got basically the same final conclusions.
+Realistically the rate of visitors may vary over time.
+A voter’s probability of leaving after a certain comment conditional on the
+most recent (non-)vote may also depend on how many comments they’ve already
+read.
+Comment threads are not represented here.
+Vote probabilities may change over time.
+Et cetera, et cetera.</p>
+
+<h2 id="the-ranking-formulas">The ranking formulas</h2>
+
+<p>Here we use the following symbols</p>
+
+<ul>
+  <li>Number of upvotes received so far: \(n_{+}\)</li>
+  <li>Number of downvotes received so far: \(n_{-}\)</li>
+  <li>Age of comment, in hours: \(h\)</li>
+</ul>
+
+<p>All ranking methods in our analysis rank comments by scoring each comment
+and sorting in descending order.
+The scores are determined by the formulas below.</p>
+
+<p>Starting with the basics, we have the <em>ratio</em>
+\((n_{+} - n_{-})/(n_{+} + n_{-})\)
+and the <em>difference</em> \(n_{+} - n_{-}\), a.k.a. the number of net upvotes.
+We don’t expect these to be optimal but they’re useful baselines.
+Another version of the ratio is
+\(n_{+}/(n_{+} + n_{-})\) which performs similarly.</p>
+
+<p>For testing purposes, we have the <em>random</em> ranking which is, well, just
+random, and the <em>upvote probability</em> ranking which ranks according to the true
+upvote probability.</p>
+
+<p>Reddit’s algorithm, detailed <a href="https://www.evanmiller.org/how-not-to-sort-by-average-rating.html">here</a>,
+is a frequentist method for estimating the true voting probabilities
+based on \(n_{+}\) and \(n_{-}\).
+The <a href="https://districtdatalabs.silvrback.com/computing-a-bayesian-estimate-of-star-rating-means">Bayesian</a>
+version of this is what we’ll call the <em>Bayesian average</em>: the same as
+<em>ratio</em> but we imagine that a few extra “phantom” votes have been cast, say 3
+downvotes and 3 upvotes.</p>
+
+<p>Hacker News <a href="https://medium.com/hacking-and-gonzo/how-hacker-news-ranking-algorithm-works-1d9b0cf2c08d">roughly</a>
+uses the formula \((n_{+} - n_{-}) / (h+2)^{1.8}\),
+which is like <em>ratio</em>, if we interpret the denominator \((h+2)^{1.8}\)
+as an estimate of the number votes cast.
+In fact, this denominator is probably more naturally thought of as an
+estimate of the number of votes cast including implicit non-votes.
+Non-votes (with a value of 0) would not impact the numerator.</p>
+
+<p>To get a sense of how the simulations look, here are the comments as presented
+to the 240th visitor from one run using the Hacker News scoring formula:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>\(h\)</th>
+      <th>Upvote probability</th>
+      <th>Downvote probability</th>
+      <th>\(n_{+}\)</th>
+      <th>\(n_{-}\)</th>
+      <th>HN score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>7.9</td>
+      <td>0.671</td>
+      <td>0.324</td>
+      <td>47</td>
+      <td>5</td>
+      <td>0.657</td>
+    </tr>
+    <tr>
+      <td>14.2</td>
+      <td>0.671</td>
+      <td>0.076</td>
+      <td>82</td>
+      <td>3</td>
+      <td>0.515</td>
+    </tr>
+    <tr>
+      <td>21.9</td>
+      <td>0.496</td>
+      <td>0.14</td>
+      <td>110</td>
+      <td>10</td>
+      <td>0.324</td>
+    </tr>
+    <tr>
+      <td>23.3</td>
+      <td>0.434</td>
+      <td>0.051</td>
+      <td>72</td>
+      <td>12</td>
+      <td>0.174</td>
+    </tr>
+    <tr>
+      <td>8.9</td>
+      <td>0.162</td>
+      <td>0.03</td>
+      <td>8</td>
+      <td>0</td>
+      <td>0.094</td>
+    </tr>
+    <tr>
+      <td>14.1</td>
+      <td>0.112</td>
+      <td>0.054</td>
+      <td>12</td>
+      <td>3</td>
+      <td>0.060</td>
+    </tr>
+    <tr>
+      <td>10.9</td>
+      <td>0.184</td>
+      <td>0.058</td>
+      <td>6</td>
+      <td>0</td>
+      <td>0.059</td>
+    </tr>
+    <tr>
+      <td>5.1</td>
+      <td>0.151</td>
+      <td>0.008</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0.058</td>
+    </tr>
+    <tr>
+      <td>12.9</td>
+      <td>0.226</td>
+      <td>0.049</td>
+      <td>6</td>
+      <td>0</td>
+      <td>0.046</td>
+    </tr>
+    <tr>
+      <td>15.0</td>
+      <td>0.114</td>
+      <td>0.061</td>
+      <td>10</td>
+      <td>6</td>
+      <td>0.024</td>
+    </tr>
+    <tr>
+      <td>7.3</td>
+      <td>0.021</td>
+      <td>0.009</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0.017</td>
+    </tr>
+    <tr>
+      <td>13.4</td>
+      <td>0.071</td>
+      <td>0.008</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>5.2</td>
+      <td>0.489</td>
+      <td>0.038</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>3.6</td>
+      <td>0.151</td>
+      <td>0.041</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>1.0</td>
+      <td>0.579</td>
+      <td>0.087</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>0.7</td>
+      <td>0.047</td>
+      <td>0.024</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>21.7</td>
+      <td>0.158</td>
+      <td>0.222</td>
+      <td>19</td>
+      <td>20</td>
+      <td>-0.003</td>
+    </tr>
+    <tr>
+      <td>20.7</td>
+      <td>0.048</td>
+      <td>0.017</td>
+      <td>1</td>
+      <td>3</td>
+      <td>-0.007</td>
+    </tr>
+    <tr>
+      <td>10.4</td>
+      <td>0.055</td>
+      <td>0.044</td>
+      <td>1</td>
+      <td>2</td>
+      <td>-0.010</td>
+    </tr>
+    <tr>
+      <td>11.3</td>
+      <td>0.041</td>
+      <td>0.027</td>
+      <td>0</td>
+      <td>2</td>
+      <td>-0.018</td>
+    </tr>
+    <tr>
+      <td>19.5</td>
+      <td>0.104</td>
+      <td>0.166</td>
+      <td>5</td>
+      <td>10</td>
+      <td>-0.019</td>
+    </tr>
+    <tr>
+      <td>5.4</td>
+      <td>0.045</td>
+      <td>0.604</td>
+      <td>1</td>
+      <td>3</td>
+      <td>-0.054</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>YouTube also uses a <a href="https://stackoverflow.com/a/39048550">formula</a> that
+involves the age of the comment.
+Their system additionally factors in the user’s lifetime ratio, which
+for our tests we set to 0 as if all users are new.</p>
+
+<p>Lastly, let’s consider how we might modify the Bayesian average to take
+time into account.
+To make new comments more visible we’ll make the phantom votes all upvotes
+at first, then asymptotically reduce them to non-votes.
+We’ll also switch to a denominator similar to the Hacker News formula’s in
+order to estimate non-votes.
+This yields the <em>modified Bayes</em> formula</p><p>
+
+\[\frac{n_{+} - n_{-} + n_p / (h+1)}{n_p + h},\]
+
+</p><p>where \(n_p\) is the number of phantom votes.
+We use the value \(n_p=7\) in the simulations.</p>
+
+<h2 id="ranking-the-rankings">Ranking the rankings</h2>
+
+<p>I did enough simulation runs (1000-20000) with each formula
+to be pretty confident about how they compare.
+Without further ado, voila:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ranking algorithm</th>
+      <th>Average number of upvotes per visitor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><em>Upvote probability</em></td>
+      <td>0.978</td>
+    </tr>
+    <tr>
+      <td><em>Modified Bayes</em></td>
+      <td>0.916</td>
+    </tr>
+    <tr>
+      <td>Hacker News</td>
+      <td>0.899</td>
+    </tr>
+    <tr>
+      <td><em>Bayesian average</em></td>
+      <td>0.878</td>
+    </tr>
+    <tr>
+      <td><em>Difference</em></td>
+      <td>0.848</td>
+    </tr>
+    <tr>
+      <td>Reddit</td>
+      <td>0.836</td>
+    </tr>
+    <tr>
+      <td><em>Ratio</em></td>
+      <td>0.813</td>
+    </tr>
+    <tr>
+      <td>YouTube</td>
+      <td>0.644</td>
+    </tr>
+    <tr>
+      <td><em>Random</em></td>
+      <td>0.607</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>So YouTube is marginally better than <em>random</em>, Reddit is worse than the simple <em>difference</em>, and
+Hacker News is the only one of the three better than <em>Bayesian average</em>.
+Disappointing but also plausible. How generalizable are the results?
+As always, more work required…</p>
+
+</div></div>
+  </div>
+</body>
+</html>

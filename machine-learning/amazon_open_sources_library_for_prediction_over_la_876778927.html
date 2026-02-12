@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Amazon open-sources library for prediction over large output spaces</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Amazon open-sources library for prediction over large output spaces</h1>
+    <p><strong>URL:</strong> <a href="https://www.amazon.science/blog/amazon-open-sources-library-for-prediction-over-large-output-spaces">https://www.amazon.science/blog/amazon-open-sources-library-for-prediction-over-large-output-spaces</a></p>
+    <p><strong>Tags:</strong> forecasting-predictions, machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876778927</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>In the Internet age, many computational tasks involve finding a handful of solutions in an enormous space of candidates. Question-answering systems, for instance, can pull answers from anywhere on the web, while the Wikipedia taxonomy for classifying article topic classification has 500,000 terms. And of course, a product query at the Amazon Store has millions of potential matches.</p><p>Such&nbsp;<i>extreme multilabel ranking</i>&nbsp;(XMR) problems pose two major challenges. The first is one of scale, but the second is one of scarcity. The items in these large search spaces tend to have long-tailed distributions: most sentences rarely serve as answers to questions; most topics in the Wikipedia taxonomy rarely apply to texts; most products are rarely purchased; and so on. That means that attempts to use machine learning to solve XMR problems rarely have enough data to go on.</p><p>At Amazon, we have developed a general framework for meeting both these challenges, which we call PECOS, for prediction for enormous and correlated output spaces. After successfully using PECOS internally for key projects in product search and recommendation,&nbsp;<a href="https://github.com/amzn/pecos" target="_blank" data-cms-ai="0"><u>we have publicly released the code</u></a>&nbsp;to help stimulate further research on this important topic.</p><p>In the XMR context, the items retrieved from the search space are known as&nbsp;<i>labels</i>. If the task is document retrieval, the documents themselves are interpreted as candidate labels for a search string; the search string is the&nbsp;<i>input</i>. The “multilabel” in XMR indicates that a given input may have multiple labels; several different topics from the Wikipedia taxonomy, for instance, might apply to the same document.</p><p>PECOS decomposes the XMR problem into three stages:</p><ol><li><i>semantic label indexing</i>, or grouping labels together according to semantic content;</li><li><i>matching</i>, or associating the input instance with a label group;</li><li><i>ranking</i>, or finding the labels in each group that best fit the input.</li></ol><div data-align-center-expanded=""><figure>
+    
+
+    
+        <div><figcaption>The three-stage PECOS model.</figcaption><p>Credit: Stacy Reilly</p></div>
+    
+</figure></div><p>PECOS lets users create their own algorithms to implement any of these stages, but the code release comes with a library of standard algorithms for each stage, including both a recursive linear model and a trained deep-learning model for matching.</p><p>The three-stage framework helps with both the scaling and long-tail problems. By enabling matching with groups of labels rather than individual labels, label indexing drastically reduces the search space for the matching step. It also helps with the long-tail problem, since it enables the ranking model to exploit semantic similarities between common labels and less common labels.</p><p>For machine-learning-based implementations of the ranking stage, label indexing aids in the selection of&nbsp;<i>hard negatives</i>. Machine learning models must be trained on both positive examples and negative examples; in the XMR context, most negative examples are so irrelevant as to impart little information to the model. Selecting negative examples from the same groups as the positive examples ensures that they’ll be challenging enough to improve the quality of the model.</p><p>The initial release of PECOS includes two models that implement the entire PECOS framework. One is a recursive linear model, the other a deep-learning model. In tests involving a dataset with 2.8 million labels, the deep-learning model improved the precision of the top-ranked result (precision@1) by 10% relative to the recursive linear model, but it took 265 times as long to train. It’s up to the individual users to evaluate that trade-off for their own use cases.</p><h2><p>Semantic label indexing</p></h2><p>Semantic label indexing has two components: a representation scheme and a grouping algorithm. For text-based inputs, the representation scheme might take advantage of pre-trained text embeddings such as Word2Vec or ELMo; for graph-based inputs, it might use information about the input’s relationships with its neighbors in the graph. PECOS includes efficient implementations of representation schemes such as positive instance indices (PII), positive instance feature aggregation (PIFA), and the graph spectrum representation.</p><p>For grouping, we’ve concentrated on clustering algorithms, but users could implement other approaches, such as approximate nearest-neighbor search. PECOS includes our implementations of the&nbsp;<i>k</i>-means and spherical&nbsp;<i>k</i>-means clustering algorithms, which feature recursive&nbsp;<i>B</i>-ary partitioning. For some value of&nbsp;<i>B</i>&nbsp;(usually between 2 and 16), the algorithm first partitions the label set into&nbsp;<i>B</i>&nbsp;clusters, then partitions each of those into&nbsp;<i>B</i>&nbsp;clusters, and so on.</p><div data-align-center-expanded=""><figure>
+    
+
+    
+        <p><figcaption>A simple example of our <i>B</i>-ary partitioning scheme.</figcaption></p>
+    
+</figure></div><p>In a&nbsp;<a href="https://arxiv.org/pdf/2010.05878.pdf" target="_blank" data-cms-ai="0"><u>paper about PECOS</u></a>&nbsp;that we’ve published to the arXiv, we show that&nbsp;<i>B</i>-ary partitioning can significantly reduce the time required for semantic-label indexing, an important consideration given that we’re dealing with enormous label spaces. We also use the&nbsp;<i>B</i>-ary partitioning to implement the recursive linear model.</p><h2><p>Built-in models</p></h2><p>For text inputs, PECOS includes X-Transformer, which leverages pretrained transformer models from Huggingface to improve performance on extreme multilabel text classification applications. At the 2020 Conference on Knowledge Discovery and Data Mining (<a href="https://www.amazon.science/tag/kdd" data-cms-ai="0"><u>KDD</u></a>), we presented a&nbsp;<a href="https://www.amazon.science/publications/taming-pretrained-transformers-for-extreme-multi-label-text-classification" data-cms-ai="0"><u>paper about the PECOS deep-learning model</u></a>, which we also described in&nbsp;<a href="https://www.amazon.science/blog/natural-language-processing-techniques-text-classification-with-transformers-at-scale" data-cms-ai="0"><u>a related blog post</u></a>&nbsp;on Amazon Science.</p><p>PECOS also includes a linear model, XR-Linear, which learns its matching algorithm recursively. First, it learns a&nbsp;<i>B</i>-ary partition of the label space. Then, to implement a matcher for that partition, it learns a new&nbsp;<i>B</i>-ary partition for each of the existing groups. To implement matchers for those, it learns a new&nbsp;<i>B</i>-ary partition for each, and so on, until it reaches the desired recursive depth. At that point, it learns a simple linear one-versus-all ranker for the labels in each partition.</p><p>Then, for each level of recursion, it learns a ranker for the outputs of the layer below.</p><div data-align-center-expanded=""><figure>
+    
+
+    
+        <p><figcaption>A diagram of the recursive linear matcher.</figcaption></p>
+    
+</figure></div><p>This makes training very efficient, as the full set of weights for each recursive layer can fit in memory at once, saving time on inefficient retrieval from storage.</p><p>At inference time, XR-Linear works through the same recursion tree to identify relevant labels. For efficiency, we use&nbsp;<i>beam search</i>&nbsp;to restrict the search space. For instance, if the&nbsp;<i>beam width</i>&nbsp;is two, then at each layer of the recursion tree, the model will pursue only the two highest-weight connections to the next layer.</p><div data-align-center-expanded=""><figure>
+    
+
+    
+        <div><figcaption>An example of linear ranking with a beam width of two. At each level of the tree, two nodes <i>(green)</i> are selected for further exploration. Each of their descendant nodes is evaluated <i>(orange)</i>, and two of those are selected for further exploration.</figcaption><p>Credit: Giana Bucchino</p></div>
+    
+</figure></div><p>Our PECOS software has benefited from open research that has been conducted at Amazon and at other universities and companies. By open-sourcing the PECOS software, we are thrilled to contribute back to the open-research community. Our hope is to spur further research on problems where the output spaces are very large. These include zero-shot learning for extreme multilabel problems, extreme contextual bandits, and deep reinforcement learning.</p><p>For more information about the optimizations we’ve incorporated into the PECOS code release, please see our&nbsp;<a href="https://arxiv.org/pdf/2010.05878.pdf" target="_blank" data-cms-ai="0"><u>arXiv paper</u></a>. The code itself can be&nbsp;<a href="https://github.com/amzn/pecos" target="_blank" data-cms-ai="0"><u>downloaded at GitHub</u></a>.<br></p></div><div>
+                        
+                            
+    <div>
+            
+                
+            
+            
+            
+                <p>
+                    Hsiang-Fu Yu is a senior applied scientist at Amazon.
+                </p>
+            
+        </div>
+
+
+                        
+                            
+    <div>
+            
+                <p>
+                    Inderjit S. Dhillon
+                </p>
+            
+            
+            
+                <p>
+                    Inderjit S. Dhillon is a vice president and distinguished scientist at Amazon and the Gottesman Family Centennial Professor in the computer science department of the University of Texas at Austin.
+                </p>
+            
+        </div>
+
+
+                        
+                    </div></div>
+  </div>
+</body>
+</html>

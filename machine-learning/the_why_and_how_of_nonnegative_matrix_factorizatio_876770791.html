@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The why and how of nonnegative matrix factorization</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The why and how of nonnegative matrix factorization</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2019/02/18/the-why-and-how-of-nonnegative-matrix-factorization">https://blog.acolyer.org/2019/02/18/the-why-and-how-of-nonnegative-matrix-factorization</a></p>
+    <p><strong>Tags:</strong> machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876770791</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="content">
+		<main id="main" role="main">
+
+		
+			
+<article id="post-8289">
+	<!-- .entry-header -->
+
+	<div>
+		
+<p><a href="https://arxiv.org/abs/1401.5226">The why and how of nonnegative matrix factorization</a> Gillis, <em>arXiv 2014</em>  from: ‘<a href="https://www.crcpress.com/Regularization-Optimization-Kernels-and-Support-Vector-Machines/Suykens-Signoretto-Argyriou/p/book/9781482241396">Regularization, Optimization, Kernels, and Support Vector Machines</a>.’</p>
+
+
+
+<p>Last week we looked at the paper ‘<a href="https://blog.acolyer.org/2019/02/13/beyond-news-contents-the-role-of-social-context-for-fake-news-detection/">Beyond news content</a>,’ which made heavy use of nonnegative matrix factorisation. Today we’ll be looking at that technique in a little more detail. As the name suggests, ‘The <em>Why</em> and <em>How</em> of Nonnegative matrix factorisation’ describes both why NMF is interesting (the intuition for how it works), and how to compute an NMF. I’m mostly interested in the intuition (and also out of my depth for some of the how!), but I’ll give you a sketch of the implementation approaches.</p>
+
+
+
+<blockquote><p>
+  Nonnegative matrix factorization (NMF) has become a widely used tool for the analysis of high dimensional data as it automatically extracts sparse and meaningful features from a set of nonnegative data vectors.
+</p></blockquote>
+
+
+
+<p>NMF was first introduced by Paatero andTapper in 1994, and popularised in a article by <a href="http://www.columbia.edu/~jwp2128/Teaching/E4903/papers/nmf_nature.pdf">Lee and Seung</a> in 1999. Since then, the number of publications referencing the technique has grown rapidly:</p>
+
+
+
+<figure><img src="data:application/octet-stream;base64," alt=""></figure>
+
+
+
+<h3>What is NMF?</h3>
+
+
+
+<p>NMF approximates a matrix <img src="data:application/octet-stream;base64," alt="\mathbf{X}" title="\mathbf{X}"> with a low-rank matrix approximation such that <img src="data:application/octet-stream;base64," alt="\mathbf{X} \approx \mathbf{WH}" title="\mathbf{X} \approx \mathbf{WH}">.</p>
+
+
+
+<p>For the discussion in this paper, we’ll assume that <img src="data:application/octet-stream;base64," alt="\mathbf{X}" title="\mathbf{X}"> is set up so that there are <img src="data:application/octet-stream;base64," alt="n" title="n"> data points each with <img src="data:application/octet-stream;base64," alt="p" title="p"> dimensions, and every <em>column</em> of <img src="data:application/octet-stream;base64," alt="\mathbf{X}" title="\mathbf{X}"> is a data point, i.e. <img src="data:application/octet-stream;base64," alt="\mathbf{X} \in \mathbb{R}^{p \times n}" title="\mathbf{X} \in \mathbb{R}^{p \times n}">.</p>
+
+
+
+<figure><img src="data:application/octet-stream;base64," alt=""></figure>
+
+
+
+<p>We want to reduce the <img src="data:application/octet-stream;base64," alt="p" title="p"> original dimensions to <img src="data:application/octet-stream;base64," alt="r" title="r"> (aka, create a rank <img src="data:application/octet-stream;base64," alt="r" title="r"> approximation).  So we’ll have <img src="data:application/octet-stream;base64," alt="\mathbf{W} \in \mathbb{R}^{p \times r}" title="\mathbf{W} \in \mathbb{R}^{p \times r}"> and <img src="data:application/octet-stream;base64," alt="\mathbf{H} \in \mathbb{R}^{r \times n}" title="\mathbf{H} \in \mathbb{R}^{r \times n}">.</p>
+
+
+
+<p>The interpretation of <img src="data:application/octet-stream;base64," alt="\mathbf{W}" title="\mathbf{W}"> is that each column is a <em>basis element</em>.  By basis element we mean some component that crops up again and again in all of the <img src="data:application/octet-stream;base64," alt="n" title="n"> original data points.  These are the fundamental building blocks from which we can reconstruct approximations to all of the original data points.</p>
+
+
+
+<p>The interpretation of <img src="data:application/octet-stream;base64," alt="\mathbf{H}" title="\mathbf{H}"> is that each column gives the ‘coordinates of a data point’ in the basis <img src="data:application/octet-stream;base64," alt="\mathbf{W}" title="\mathbf{W}">. In other words, it tells you how to reconstruct an approximation to the original data point from a linear combination of the building blocks in <img src="data:application/octet-stream;base64," alt="\mathbf{W}" title="\mathbf{W}"></p>
+
+
+
+<figure><img src="data:application/octet-stream;base64," alt=""></figure>
+
+
+
+<p>A popular way of measuring how good the approximation <img src="data:application/octet-stream;base64," alt="\mathbf{WH}" title="\mathbf{WH}"> actually is, is the <em>Frobenius norm</em> (denoted by the F subscript you may have noticed). The Frobenius norm is:</p>
+
+
+
+<p><img src="data:application/octet-stream;base64," alt="\displaystyle ||\mathbf{X} - \mathbf{WH}||^{2}_{F} = \sum_{i,j}(\mathbf{X} - \mathbf{WH})^{2}_{ij}" title="\displaystyle ||\mathbf{X} - \mathbf{WH}||^{2}_{F} = \sum_{i,j}(\mathbf{X} - \mathbf{WH})^{2}_{ij}">.</p>
+
+
+
+<p>An optimal approximation to the Frobenius norm can be computed through truncated Singular Value Decomposition (SVD).</p>
+
+
+
+<h3>Why does it work? The intuition.</h3>
+
+
+
+<blockquote><p>
+  The reason why NMF has become so popular is because of its ability to automatically extract sparse and easily interpretable factors.
+</p></blockquote>
+
+
+
+<p>The authors give three examples of NMF at work: in image processing, text mining, and hyperspectral imaging.</p>
+
+
+
+<h4>Image processing</h4>
+
+
+
+<p>Say we take a gray-level image of a face containing <em>p</em> pixels, and squash the data into a single vector such that the <em>ith</em> entry represents the value of the <em>ith</em> pixel.  Let the rows of <img src="data:application/octet-stream;base64," alt="\mathbf{X} \in \mathbb{R}^{p \times n}" title="\mathbf{X} \in \mathbb{R}^{p \times n}"> represent the <em>p</em> pixels, and the <em>n</em> columns each represent one image.</p>
+
+
+
+<p>NMF will produce two matrices W and H. The columns of W can be interpreted as images (the basis images), and H tells us how to sum up the basis images in order to reconstruct an approximation to a given face.</p>
+
+
+
+<figure><img src="data:application/octet-stream;base64," alt=""></figure>
+
+
+
+<blockquote><p>
+  In the case of facial images, the basis images are features such as eyes, noses, moustaches, and lips, while the columns of H indicate which feature is present in which image.
+</p></blockquote>
+
+
+
+<h4>Text mining</h4>
+
+
+
+<p>In text mining consider the bag-of-words matrix representation where each row corresponds to a word, and each column to a document (for the attentive reader, that’s the transpose of the bag-of-words matrix we looked at in ‘<a href="https://blog.acolyer.org/2019/02/13/beyond-news-contents-the-role-of-social-context-for-fake-news-detection/">Beyond news content</a>’9).</p>
+
+
+
+<p>NMF will produce two matrices W and H. The columns of W can be interpreted as basis documents (bags of words). What interpretation can we give to such a basis document in this case? They represent <em>topics</em>! Sets of words found simultaneously in different documents.  H tells us how to sum contributions from different topics to reconstruct the word mix of a given original document.</p>
+
+
+
+<figure><img src="data:application/octet-stream;base64," alt=""></figure>
+
+
+
+<blockquote><p>
+  Therefore, given a set of documents, NMF identifies topics and simultaneously classifies the documents among these different topics.
+</p></blockquote>
+
+
+
+<h4>Hyperspectral unmixing</h4>
+
+
+
+<p>A hyperspectral image typically has 100 to 200 wavelength-indexed bands showing the fraction of incident light being reflected by the pixel at each of those wavelengths. Given such an image we want to identify the different materials present in it (e.g. grass, roads, metallic surfaces) – these are called the <em>endmembers</em>. Then we want to know which endmembers are present in each pixel, and in what proportion. For example, a pixel might be reflecting 0.3 x the spectral signal of grass, and 0.7 x the spectral signal of a road surface.</p>
+
+
+
+<p>NMF will produce two matrices W and H. The columns of W can be interpreted as basis endmembers. H tells us how to sum contributions from different endmembers to reconstruct the spectral signal observed at a pixel.</p>
+
+
+
+<figure><img src="data:application/octet-stream;base64," alt=""></figure>
+
+
+
+<blockquote><p>
+  …given a hyperspectral image, NMF is able to compute the spectral signatures of the endmembers, and simultaneously the abundance of each endmember in each pixel.
+</p></blockquote>
+
+
+
+<h3>Implementing NMF</h3>
+
+
+
+<p>For a rank <em>r</em> factorisation, we have the following optimisation problem:</p>
+
+
+
+<figure><img src="data:application/octet-stream;base64," alt=""></figure>
+
+
+
+<p>Though note that the Frobenius norm show here assumes Gaussian noise, and other norms may be used in practice depending on the distribution (e.g., Kullback-Leibler divergence for text-mining, the Itakura-Saito distance for music analysis, or the <img src="data:application/octet-stream;base64," alt="l_1" title="l_1"> norm to improve robustness against outliers).</p>
+
+
+
+<p>So far everything to do with NMF sounds pretty good, until you reach the key moment in section 3:</p>
+
+
+
+<blockquote><p>
+  There are many issues when using NMF in practice. In particular, NMF is NP-hard. Unfortunately, as opposed to the unconstrained problem which can be solved efficiently using the SVD, NMF is NP-hard in general.
+</p></blockquote>
+
+
+
+<p>Fortunately there are heuristic approximations which have been proven to work well in many applications.</p>
+
+
+
+<p>Another issue with NMF is that there is not guaranteed to be a single unique decomposition (in general, there might be many schemes for defining sets of basis elements). For example, in text mining you would end up with different topics and classifications. “<em>In practice, this issue is tackled using other priors on the factors W and H and adding proper regularization terms in the objective function</em>.”</p>
+
+
+
+<p>Finally, it’s hard to know how to choose the factorisation rank, r. Some approaches include trial and error, estimation using SVD based of the decay of the singular values, and insights from experts (e.g., there are roughly so many endmembers you might expect to find in a hyperspectral image).</p>
+
+
+
+<blockquote><p>
+  Almost all NMF algorithms use a two-block coordinate descent scheme (exact or inexact), that is, they optimize alternatively over one of the two factors, W or H, while keeping the other fixed. The reason is that the subproblem in one factor is convex. More precisely, it is a nonnegative least squares problem (NNLS). Many algorithms exist to solve the NNLS problem; and NMF algorithms based on two-block coordinate descent differ by which NNLS algorithm is used.
+</p></blockquote>
+
+
+
+<figure><img src="data:application/octet-stream;base64," alt=""></figure>
+
+
+
+<p>Some NNLS algorithms that can be plugged in include multiplicative updates, alternating least squares, alternating nonnegative least squares, and hierarchical alternating least squares.</p>
+
+
+
+<p>The following charts show the performance of these algorithms on a dense data set (left), and a sparse data set (right).</p>
+
+
+
+<figure><img src="data:application/octet-stream;base64," alt=""></figure>
+
+
+
+<p>You can initialise W and H randomly, but there are also alternate strategies designed to give better initial estimates in the hope of converging more rapidly to a good solution:</p>
+
+
+
+<ul><li>Use some clustering method, and make the cluster means of the top <em>r</em> clusters as the columns of W, and H as a scaling of the cluster indicator matrix (which elements belong to which cluster).</li><li>Finding the best rank-r approximation of X using SVD and using this to initialise W and H (see section 3.1.8)</li><li>Picking <em>r</em> columns of X and just using those as the initial values for W. </li></ul>
+
+
+
+<p>Section 3.2 in the paper discusses an emerging class of polynomial time algorithms for NMF in the special case where the matrix X is r-separable. That is, there exist a subset of <em>r</em> columns such that all other columns of X can be reconstructed from them. In the text mining example for instance this would mean that each topic has at least one document focused solely on that topic.</p>
+
+
+
+<blockquote><p>
+  … we believe NMF has a bright future…
+</p></blockquote>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+</article><!-- #post-## -->
+
+				<!-- .navigation -->
+	
+			
+
+
+<!-- 3.1.5 -->
+
+
+		
+		</main><!-- #main -->
+	</div></div>
+  </div>
+</body>
+</html>

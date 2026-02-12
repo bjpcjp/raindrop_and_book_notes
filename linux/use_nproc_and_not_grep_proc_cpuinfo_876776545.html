@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Use `nproc` and not grep /proc/cpuinfo</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Use `nproc` and not grep /proc/cpuinfo</h1>
+    <p><strong>URL:</strong> <a href="https://www.flamingspork.com/blog/2020/11/25/why-you-should-use-nproc-and-not-grep-proc-cpuinfo">https://www.flamingspork.com/blog/2020/11/25/why-you-should-use-nproc-and-not-grep-proc-cpuinfo</a></p>
+    <p><strong>Tags:</strong> cpus, linux</p>
+    <p><strong>Bookmark ID:</strong> 876776545</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+		
+<p>There’s something really quite subtle about how the <code>nproc</code> utility from GNU coreutils works. If you look <a href="https://www.gnu.org/software/coreutils/manual/html_node/nproc-invocation.html">at the man page</a>, it’s even the very first sentence:</p>
+
+
+
+<blockquote><p>Print the number of processing units available to the current process, which may be less than the number of online processors.</p></blockquote>
+
+
+
+<p>So, what does that actually mean? Well, just because the computer some code is running on has a certain number of CPUs (and here I mean “number of hardware threads”) doesn’t necessarily mean that you can spawn a process that uses that many. What’s a simple example? Containers! Did you know that when you invoke <code>docker</code> to run a container, you can easily limit how much CPU the container can use? In this case, we’re looking at the <code>--cpuset-cpus</code> parameter, as the <code>--cpus </code>one works differently.</p>
+
+
+
+<pre><code>$ nproc
+8
+
+$ docker run --cpuset-cpus=0-1 --rm=true -it  amazonlinux:2
+bash-4.2# nproc
+2
+bash-4.2# exit
+
+$ docker run --cpuset-cpus=0-2 --rm=true -it  amazonlinux:2
+bash-4.2# nproc
+3
+</code></pre>
+
+
+
+<p>As you can see, <code>nproc</code> here gets the right bit of information, so if you’re wanting to do a calculation such as “Please use up to the maximum available CPUs” as a parameter to the configuration of a piece of software (such as how many threads to run), you get the right number.</p>
+
+
+
+<p>But what if you use some of the other common methods?</p>
+
+
+
+<pre><code>$ /usr/bin/lscpu -p | grep -c "^[0-9]"
+8
+$ grep -c 'processor' /proc/cpuinfo 
+8
+
+$ docker run --cpuset-cpus=0-1 --rm=true -it  amazonlinux:2
+bash-4.2# yum install -y /usr/bin/lscpu
+......
+bash-4.2# /usr/bin/lscpu -p | grep -c "^[0-9]"
+8
+bash-4.2# grep -c 'processor' /proc/cpuinfo 
+8
+bash-4.2# nproc
+2</code></pre>
+
+
+
+<p>In this case, if you base your number of threads off grepping <code>lscpu</code> you take another dependency (on the <code>util-linux</code> package), which isn’t needed. You also get the wrong answer, as you do by grepping <code>/proc/cpuinfo</code>. So, what this will end up doing is <strong>just increase the number of context switches, possibly also adding a performance degradation.</strong> It’s not just in <code>docker</code> containers where this could be an issue of course, you can use the same mechanism that <code>docker</code> uses anywhere you want to control resources of a process.</p>
+
+
+
+<p>Another subtle thing to watch out for is differences in <code>/proc/cpuinfo</code> content depending on CPU architecture. You may not think it’s an issue today, but who wants to needlessly debug something?</p>
+
+
+
+<p><strong>tl;dr: for determining “how many processes to run”: use <code>nproc</code>, don’t grep <code>lscpu</code> or <code>/proc/cpuinfo</code></strong></p>
+
+			</div></div>
+  </div>
+</body>
+</html>

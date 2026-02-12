@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Supply Chain Analysis with R Using the planr Package | R-bloggers</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Supply Chain Analysis with R Using the planr Package | R-bloggers</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/2024/10/supply-chain-analysis-with-r-using-the-planr-package/">https://www.r-bloggers.com/2024/10/supply-chain-analysis-with-r-using-the-planr-package/</a></p>
+    <p><strong>Tags:</strong> supply-chain, analytics, forecasting-predictions, _r_</p>
+    <p><strong>Bookmark ID:</strong> 881493046</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					<!-- 
+<div style="min-height: 30px;">
+[social4i size="small" align="align-left"]
+</div>
+-->
+
+<div><p>
+[This article was first published on  <strong><a href="https://www.business-science.io/code-tools/2024/10/20/supply-chain-analysis-in-R-using-planr.html"> business-science.io</a></strong>, and kindly contributed to <a href="https://www.r-bloggers.com/" rel="nofollow">R-bloggers</a>].  (You can report issue about the content on this page <a href="https://www.r-bloggers.com/contact-us/">here</a>)
+</p><hr><p>Want to share your content on R-bloggers?<a href="https://www.r-bloggers.com/add-your-blog/" rel="nofollow"> click here</a> if you have a blog, or <a href="http://r-posts.com/" rel="nofollow"> here</a> if you don't.
+</p></div>
+
+            <!-- Share buttons by mashshare.net - Version: 4.0.47-->
+
+	<p>Hey guys, welcome back to my <a href="https://learn.business-science.io/r-tips-newsletter?el=website" rel="nofollow" target="_blank">R-tips newsletter</a>. Supply chain management is essential in making sure that your company’s business runs smoothly. One of the key elements is <strong>managing inventory efficiently</strong>. Today, I’m going to show you how to estimate inventory and forecast inventory levels using the </p><p><span><span>planr</span></span></p><p><code>planr</code> package in R. Let’s dive in!</p>
+
+<h3 id="table-of-contents">Table of Contents</h3>
+
+<p>Here’s what you’ll learn in this article:</p>
+
+<ul>
+  <li><strong>Why Inventory Projections Are Crucial to Supply Chain Management</strong></li>
+  <li><strong>How to Use the <p><span><span>planr</span></span></p><code>planr</code> Package to Project Inventories</strong>
+    <ul>
+      <li>Loading Supply Chain Data</li>
+      <li>Projecting Inventory Levels</li>
+      <li>Visualizing Demand Over Time</li>
+      <li>Creating Interactive Tables for Projected Inventories</li>
+    </ul>
+  </li>
+  <li><strong>Before You Go Any Further:</strong> <strong><a href="https://learn.business-science.io/r-tips-newsletter?el=website" rel="nofollow" target="_blank">Join the R-Tips Newsletter to get the Data and Code so you can follow along</a></strong></li>
+</ul>
+
+<p><img src="https://i2.wp.com/www.business-science.io/assets/087_supply_chain_analytics_planr.jpg?w=584&amp;ssl=1" alt="Supply Chain Analysis with R Using the planr Package" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/www.business-science.io/assets/087_supply_chain_analytics_planr.jpg?w=584&amp;ssl=1"></p>
+
+<p><a href="https://learn.business-science.io/r-tips-newsletter?el=website" rel="nofollow" target="_blank">Get the Code (In the R-Tip 084 Folder)</a></p>
+
+<hr>
+
+<!--
+# SPECIAL ANNOUNCEMENT: How To Become A <u>6-Figure Business Scientist</u> (Even In A Recession) on August 30th
+
+![Business Scientist](/assets/business-science-cube-2.jpg)
+
+**What:** How To Become A 6-Figure Business Scientist (Even In A Recession)
+
+**When:** Wednesday August 30th, 2pm EST
+
+**How It Will Help You:** Data science in 2023 has changed. *The 10+ person data science team is out.* And the one-person Business Scientist is in. I'll show you how to become a 1-person data science team inside [my LIVE 6-figure business scientist masterclass](https://learn.business-science.io/registration-2-page?el=website). 
+
+**Price:** Does **Free** sound good?
+
+**How To Join:** [**👉 Register Here**](https://learn.business-science.io/registration-2-page?el=website)
+-->
+
+<h2 id="special-announcement-chatgpt-for-data-scientists-workshop-on-october-23rd">SPECIAL ANNOUNCEMENT: ChatGPT for Data Scientists Workshop on October 23rd</h2>
+
+<p><a href="https://learn.business-science.io/registration-chatgpt-2?el=website" rel="nofollow" target="_blank">Inside the workshop</a> I’ll share how I built a Machine Learning Powered Production Shiny App with </p><p><span><span>ChatGPT</span></span></p><p><code>ChatGPT</code> (extends this data analysis to an <em>insane</em> production app):</p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/lab_82_chatgpt_rcode.jpg?w=584&amp;ssl=1" alt="ChatGPT for Data Scientists" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/lab_82_chatgpt_rcode.jpg?w=584&amp;ssl=1"></p>
+
+<p><strong>What:</strong> ChatGPT for Data Scientists</p>
+
+<p><strong>When:</strong> Wednesday October 23rd, 2pm EST</p>
+
+<p><strong>How It Will Help You:</strong> Whether you are new to data science or are an expert, ChatGPT is changing the game. There’s a ton of hype. But how can ChatGPT actually help you become a better data scientist and help you stand out in your career? I’ll show you inside <a href="https://learn.business-science.io/registration-chatgpt-2?el=website" rel="nofollow" target="_blank">my free chatgpt for data scientists workshop</a>.</p>
+
+<p><strong>Price:</strong> Does <strong>Free</strong> sound good?</p>
+
+<p><strong>How To Join:</strong> <a href="https://learn.business-science.io/registration-chatgpt-2?el=website" rel="nofollow" target="_blank"><strong>👉 Register Here</strong></a></p>
+
+<hr>
+
+<h2 id="r-tips-weekly">R-Tips Weekly</h2>
+
+<p>This article is part of R-Tips Weekly, a <a href="https://learn.business-science.io/r-tips-newsletter?el=website" rel="nofollow" target="_blank">weekly video tutorial</a> that shows you step-by-step how to do common R coding tasks. Pretty cool, right?</p>
+
+<p>Here is the link to get set up. 👇</p>
+
+<ul> 
+    <li><a href="https://learn.business-science.io/r-tips-newsletter?el=website" rel="nofollow" target="_blank">Sign up for our R-Tips Newsletter and get the code.</a></li> 
+</ul>
+
+<h2 id="how-to-project-inventories-with-the-planr-package">How to Project Inventories with the <p><span><span>planr</span></span></p><code>planr</code> Package</h2>
+
+<h2 id="why-inventory-projections-are-crucial-to-supply-chain-management">Why Inventory Projections Are Crucial to Supply Chain Management</h2>
+
+<p>Supply chain management is all about balancing <strong>supply and demand</strong> to ensure that inventory levels are optimized. Overestimating demand leads to excess stock, while underestimating it causes shortages. <strong>Accurate inventory projections</strong> allow businesses to plan ahead, make data-driven decisions, and avoid costly errors like over-buying inventory or getting into a stock-outage and having no inventory to meet demand.</p>
+
+<h2 id="enter-the-planr-package">Enter the <p><span><span>planr</span></span></p><code>planr</code> Package</h2>
+
+<p>The </p><p><span><span>planr</span></span></p><p><code>planr</code> package <a href="https://github.com/nguyennico/planr" rel="nofollow" target="_blank">simplifies inventory management</a> by projecting future inventory levels based on supply, demand, and current stock levels.</p>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/087_planr_github.jpg?w=584&amp;ssl=1" alt="Planr Github" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/087_planr_github.jpg?w=584&amp;ssl=1"></p>
+
+<h2 id="supply-chain-analysis-with-planr">Supply Chain Analysis with <p><span><span>planr</span></span></p><code>planr</code></h2>
+
+<p>Let’s take a look at how to use </p><p><span><span>planr</span></span></p><p><code>planr</code> to optimize your supply chain. We’ll go through a quick tutorial to get you started using </p><p><span><span>planr</span></span></p><p><code>planr</code> to project and manage inventories.</p>
+
+<h2 id="step-1-load-libraries-and-data">Step 1: Load Libraries and Data</h2>
+
+<p>First, you need to install the required packages and load the libraries. Run this code:</p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/087_libraries_data.jpg?w=584&amp;ssl=1" alt="Libraries" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/087_libraries_data.jpg?w=584&amp;ssl=1"></p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/087_data.jpg?w=584&amp;ssl=1" alt="Data" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/087_data.jpg?w=584&amp;ssl=1"></p>
+
+<p><a href="https://learn.business-science.io/r-tips-newsletter?el=website" rel="nofollow" target="_blank">Get the Code (In the R-Tip 087 Folder)</a></p>
+
+<p>This data contains <strong>supply and demand information</strong> for various demand fulfillment units (DFUs) over a period of time.</p>
+
+<ul>
+  <li><strong>Demand Fullfillment Unit (DFU):</strong> A product identifier, here labeled as “Item 000001” (there are 10 items total).</li>
+  <li><strong>Period:</strong> Monthly periods corresponding to supply and demand.</li>
+  <li><strong>Demand:</strong> Customers purchase and reduce on-hand inventory.</li>
+  <li><strong>Opening:</strong> An initial inventory of 6570 units in the first period for Item 000001.</li>
+  <li><strong>Supply:</strong> New supplies arriving in subsequent months.</li>
+</ul>
+
+<h2 id="step-2-visualizing-demand-over-time">Step 2: Visualizing Demand Over Time</h2>
+
+<p>The first step in understanding supply chain performance is visualizing demand trends. We can use </p><p><span><span>timetk::</span><span>plot_time_series</span><span>()</span></span></p><p><code>timetk::plot_time_series()</code> to get a clear view of the demand fluctuations. Run this code:</p>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/087_plot_code.jpg?w=584&amp;ssl=1" alt="timetk::plot_time_series() code" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/087_plot_code.jpg?w=584&amp;ssl=1"></p>
+
+<p><a href="https://learn.business-science.io/r-tips-newsletter?el=website" rel="nofollow" target="_blank">Get the Code (In the R-Tip 087 Folder)</a></p>
+
+<p>This code will produce a set of <strong>time series plots</strong> that show how demand changes over time for each DFU. By visualizing these trends, you can identify patterns and outliers that may impact your projections.</p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/087_demand_time_plot.jpg?w=584&amp;ssl=1" alt="timetk plot time series plot" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/087_demand_time_plot.jpg?w=584&amp;ssl=1"></p>
+
+<h2 id="step-3-projecting-inventory-levels">Step 3: Projecting Inventory Levels</h2>
+
+<p>Once you have a good understanding of demand, the next step is to project your future inventory levels. The </p><p><span><span>planr::</span><span>light_proj_inv</span><span>()</span></span></p><p><code>planr::light_proj_inv()</code> function helps you do this. Run this code:</p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/assets/087_light_proj_inv.jpg?w=584&amp;ssl=1" alt="Light Inventory Projection" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/assets/087_light_proj_inv.jpg?w=584&amp;ssl=1"></p>
+
+<p><a href="https://learn.business-science.io/r-tips-newsletter?el=website" rel="nofollow" target="_blank">Get the Code (In the R-Tip 087 Folder)</a></p>
+
+<p>This function takes in the DFU, Period, Demand, Opening stock, and Supply as inputs to <strong>project inventory levels over time by item</strong>. The output is a data frame that contains the projected inventories for each period and DFU.</p>
+
+<h2 id="step-4-creating-an-interactive-table-for-projected-inventories">Step 4: Creating an Interactive Table for Projected Inventories</h2>
+
+<p>To make your projections more interactive and accessible, you can create an interactive table using </p><p><span><span>reactable</span></span></p><p><code>reactable</code> and </p><p><span><span>reactablefmtr</span></span></p><p><code>reactablefmtr</code>. I’ve made a function to automate the process for you based on the </p><p><span><span>planr</span></span></p><p><code>planr</code>’s awesome documentation. Run this code:</p>
+
+<p><img src="https://i1.wp.com/www.business-science.io/assets/087_interactive_table_code.jpg?w=584&amp;ssl=1" alt="Interactive Table Code" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/www.business-science.io/assets/087_interactive_table_code.jpg?w=584&amp;ssl=1"></p>
+
+<p><img src="https://i2.wp.com/www.business-science.io/assets/087_projected_inventory_table.jpg?w=584&amp;ssl=1" alt="Projected Inventory Table" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/www.business-science.io/assets/087_projected_inventory_table.jpg?w=584&amp;ssl=1"></p>
+
+<p><a href="https://learn.business-science.io/r-tips-newsletter?el=website" rel="nofollow" target="_blank">Get the Code (In the R-Tip 087 Folder)</a></p>
+
+<p>This generates a <strong>beautiful interactive table</strong> where you can filter and sort the projected inventories. Interactive tables make it easier to analyze your data and share insights with your team.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>By using the </p><p><span><span>planr</span></span></p><p><code>planr</code> package, you can <strong>project inventory levels</strong> with ease, helping you manage your supply chain more effectively. This leads to better decision-making, reduced stockouts, and lower carrying costs.</p>
+
+<p><strong>But there’s more to mastering supply chain analysis in R.</strong></p>
+
+<p>If you would like to <strong>grow your Business Data Science skills with R</strong>, then please read on…</p>
+
+<h2 id="need-to-advance-your-business-data-science-skills">Need to advance your business data science skills?</h2>
+
+<p>I’ve helped 6,107+ students learn data science for business from an elite business consultant’s perspective.</p>
+
+<p>I’ve worked with Fortune 500 companies like S&amp;P Global, Apple, MRM McCann, and more.</p>
+
+<p>And I built a training program that gets my students life-changing data science careers (don’t believe me? <a href="https://university.business-science.io/p/5-course-bundle-machine-learning-web-apps-time-series/" rel="nofollow" target="_blank">see my testimonials here</a>):</p>
+
+<h4>
+6-Figure Data Science Job at CVS Health ($125K)<br>
+Senior VP Of Analytics At JP Morgan ($200K)<br>
+50%+ Raises &amp; Promotions ($150K)<br>
+Lead Data Scientist at Northwestern Mutual ($175K)<br>
+2X-ed Salary (From $60K to $120K)<br>
+2 Competing ML Job Offers ($150K)<br>
+Promotion to Lead Data Scientist ($175K)<br>
+Data Scientist Job at Verizon ($125K+)<br>
+Data Scientist Job at CitiBank ($100K + Bonus)<br>
+</h4>
+
+<h2 id="whenever-you-are-ready-heres-the-system-they-are-taking">Whenever you are ready, here’s the system they are taking:</h2>
+
+<p><a href="https://university.business-science.io/p/5-course-bundle-machine-learning-web-apps-time-series" rel="nofollow" target="_blank">Here’s the system</a> that has gotten aspiring data scientists, career transitioners, and life long learners data science jobs and promotions…</p>
+
+<p><img src="https://i2.wp.com/www.business-science.io/assets/rtrack_what_theyre_doing_2.jpg?w=584&amp;ssl=1" alt="What They're Doing - 5 Course R-Track" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/www.business-science.io/assets/rtrack_what_theyre_doing_2.jpg?w=584&amp;ssl=1"></p>
+
+<p>
+<a href="https://university.business-science.io/p/5-course-bundle-machine-learning-web-apps-time-series" rel="nofollow" target="_blank">
+<strong>Join My 5-Course R-Track Program Now!</strong><br><small>(And Become The Data Scientist You Were Meant To Be…)</small>
+</a>
+</p>
+
+<p>P.S. – Samantha landed her NEW Data Science R Developer job at CVS Health (Fortune 500). <a href="https://university.business-science.io/p/5-course-bundle-machine-learning-web-apps-time-series" rel="nofollow" target="_blank">This could be you.</a></p>
+
+<p><img src="https://i0.wp.com/www.business-science.io/img/success_samantha_got_job.jpg?w=584&amp;ssl=1" alt="Success Samantha Got The Job" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/www.business-science.io/img/success_samantha_got_job.jpg?w=584&amp;ssl=1"></p>
+
+
+
+            <!-- Share buttons by mashshare.net - Version: 4.0.47-->
+							</div></div>
+  </div>
+</body>
+</html>

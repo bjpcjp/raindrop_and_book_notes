@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A Few Things About the Anchor Element’s href You Might Not Have Known</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A Few Things About the Anchor Element’s href You Might Not Have Known</h1>
+    <p><strong>URL:</strong> <a href="https://blog.jim-nielsen.com/2025/href-value-possibilities/">https://blog.jim-nielsen.com/2025/href-value-possibilities/</a></p>
+    <p><strong>Tags:</strong> html, browsers</p>
+    <p><strong>Bookmark ID:</strong> 1300652635</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>I’ve written previously about <a href="https://blog.jim-nielsen.com/2023/reloading-document-in-html-and-preserve-query-params/">reloading a document using only HTML</a> but that got me thinking: What are all the values you can put in an anchor tag’s <code>href</code> attribute?</p><p>Well, <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#href">I looked around</a>. I found some things I already knew about, e.g.</p><ul><li>Link protocols like <code>mailto:</code>, <code>tel:</code>, <code>sms:</code> and <code>javascript:</code> which deal with specific ways of handling links.</li><li>Protocol-relative links, e.g. <code>href="//"</code></li><li><a href="https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Text_fragments">Text fragments</a> for linking to specific pieces of text on a page, e.g. <code>href="#:~:text=foo"</code></li></ul><p>But I also found some things I didn’t know about (or only vaguely knew about) so I wrote them down in an attempt to remember them.</p><h2 id="href">href="#"</h2><p>Scrolls to the top of a document. I knew that.</p><p>But I’m writing because <code>#top</code> will also scroll to the top <em>if</em> there isn’t another element with <code>id="top"</code> in the document. I didn’t know that.</p><p>(<a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#scrolling-to-a-fragment">Spec</a>: “If <em>decodedFragment</em> is an ASCII case-insensitive match for the string <code>top</code>, then return the top of the document.”)</p><p><strong>Update:</strong> <a href="https://mastodon.social/@HTeuMeuLeu/114971342411854119">HTeuMeuLeu pointed out to me on Mastodon</a> that you can use <code>#page=</code> to deep-link to a specific page in a PDF, e.g. <code>my-file.pdf#page42</code> would like to page 42 in the file.</p><h2 id="href-1">href=""</h2><p>Reloads the current page, preserving the search string but removing the hash string (if present).</p><table><thead><tr><th>URL</th><th>Resolves to</th></tr></thead><tbody><tr><td><code>/path/</code></td><td><code>/path/</code></td></tr><tr><td><code>/path/#foo</code></td><td><code>/path/</code></td></tr><tr><td><code>/path/?id=foo</code></td><td><code>/path/?id=foo</code></td></tr><tr><td><code>/path/?id=foo#bar</code></td><td><code>/path/?id=foo</code></td></tr></tbody></table><h2 id="href-2">href="."</h2><p>Reloads the current page, removing both the search and hash strings (if present).</p><p><strong>Note</strong>: If you’re using <code>href="."</code> as a link to the current page, ensure your URLs have a trailing slash or you may get surprising navigation behavior. The path is interpreted as a file, so <code>"."</code> resolves to the parent directory of the current location.</p><table><thead><tr><th>URL</th><th>Resolves to</th></tr></thead><tbody><tr><td><code>/path</code></td><td><code>/</code></td></tr><tr><td><code>/path#foo</code></td><td><code>/</code></td></tr><tr><td><code>/path?id=foo</code></td><td><code>/</code></td></tr><tr><td><code>/path/</code></td><td><code>/path/</code></td></tr><tr><td><code>/path/#foo</code></td><td><code>/path/</code></td></tr><tr><td><code>/path/?id=foo</code></td><td><code>/path/</code></td></tr><tr><td><code>/path/index.html</code></td><td><code>/path/</code></td></tr></tbody></table><p><strong>Update 2025-08-15</strong>: as <a href="https://front-end.social/@AmeliaBR/114971821114512797">pointed out by @AmeliaBR on Mastodon</a>, “reloads the current page” probably isn’t the best terminology for this. It’s more like “loads the default index page for the current directory, based on the URL structure” which might be a reload, but might be something else based on the current URL (see my note and table above).</p><h2 id="href-3">href="?"</h2><p>Reloads the current page, removing both the search and hash strings (if present). <em>However</em>, it preserves the <code>?</code> character.</p><p><strong>Note</strong>: Unlike <code>href="."</code>, trailing slashes don’t matter. The search parameters will be removed but the path will be preserved as-is.</p><table><thead><tr><th>URL</th><th>Resolves to</th></tr></thead><tbody><tr><td><code>/path</code></td><td><code>/path?</code></td></tr><tr><td><code>/path#foo</code></td><td><code>/path?</code></td></tr><tr><td><code>/path?id=foo</code></td><td><code>/path?</code></td></tr><tr><td><code>/path?id=foo#bar</code></td><td><code>/path?</code></td></tr><tr><td><code>/index.html</code></td><td><code>/index.html?</code></td></tr></tbody></table><h2 id="hrefdata">href="data:"</h2><p>You can make links that navigate to <a href="https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data">data URLs</a>. The super-readable version of this would be:</p><pre><code><span>&lt;<span>a</span> <span>href</span>=<span>"data:text/plain,hello world"</span>&gt;</span>
+  View plain text data URL
+<span>&lt;/<span>a</span>&gt;</span>
+</code></pre><p>But you probably want <code>data:</code> URLs to be encoded so you don’t get unexpected behavior, e.g.</p><pre><code><span>&lt;<span>a</span> <span>href</span>=<span>"data:text/plain,hello%20world"</span>&gt;</span>
+  View plain text data URL
+<span>&lt;/<span>a</span>&gt;</span>
+</code></pre><p>Go ahead and try it (FYI: may not work in your user agent). Here’s a <a href="data:text/plain,hello%20world" target="_blank">plain-text file</a> and an <a href="data:text/html,%3Ch1%3Ehello%20world%3C/h1%3E" target="_blank">HTML file</a>.</p><h2 id="hrefvideomp4t1020">href="video.mp4#t=10,20"</h2><p><a href="https://www.w3.org/TR/media-frags/">Media fragments</a> allow linking to specific parts of a media file, like audio or video.</p><p><a href="https://indieweb.org/media_fragment">For example</a>, <code>video.mp4#t=10,20</code> links to a video. It starts play at 10 seconds, and stops it at 20 seconds.</p><p>(<a href="https://caniuse.com/media-fragments">Support</a> is limited at the time of this writing.)</p><h2 id="see-for-yourself">See For Yourself</h2><p>I tested a lot of this stuff in the browser and via JS. I think I got all these right.</p><p>Thanks to <a href="https://developer.mozilla.org/en-US/docs/Web/API/URL/URL">JavaScript’s URL constructor</a> (and the ability to pass a <code>base</code> URL), I could programmatically explore how a lot of these href’s would resolve.</p><p>Here’s a snippet of the test code I wrote. You can copy/paste this in your console and they should all pass 🤞</p><pre><code><span>const</span> assertions = [
+  <span>// Preserves search string but strips hash</span>
+  <span>// x -&gt; { search: '?...', hash: '' }</span>
+  { <span>href</span>: <span>''</span>, <span>location</span>: <span>'/path'</span>,               <span>resolves_to</span>: <span>'/path'</span> },
+  { <span>href</span>: <span>''</span>, <span>location</span>: <span>'/path/'</span>,              <span>resolves_to</span>: <span>'/path/'</span> },
+  { <span>href</span>: <span>''</span>, <span>location</span>: <span>'/path/#foo'</span>,          <span>resolves_to</span>: <span>'/path/'</span> },
+  { <span>href</span>: <span>''</span>, <span>location</span>: <span>'/path/?id=foo'</span>,       <span>resolves_to</span>: <span>'/path/?id=foo'</span> },
+  { <span>href</span>: <span>''</span>, <span>location</span>: <span>'/path/?id=foo#bar'</span>,   <span>resolves_to</span>: <span>'/path/?id=foo'</span> },
+  
+  <span>// Strips search and hash strings</span>
+  <span>// x -&gt; { search: '', hash: '' }</span>
+  { <span>href</span>: <span>'.'</span>, <span>location</span>: <span>'/path'</span>,              <span>resolves_to</span>: <span>'/'</span> },
+  { <span>href</span>: <span>'.'</span>, <span>location</span>: <span>`/path#foo`</span>,          <span>resolves_to</span>: <span>`/`</span> },
+  { <span>href</span>: <span>'.'</span>, <span>location</span>: <span>`/path?id=foo`</span>,       <span>resolves_to</span>: <span>`/`</span> },
+  { <span>href</span>: <span>'.'</span>, <span>location</span>: <span>`/path/`</span>,             <span>resolves_to</span>: <span>`/path/`</span> },
+  { <span>href</span>: <span>'.'</span>, <span>location</span>: <span>`/path/#foo`</span>,         <span>resolves_to</span>: <span>`/path/`</span> },
+  { <span>href</span>: <span>'.'</span>, <span>location</span>: <span>`/path/?id=foo`</span>,      <span>resolves_to</span>: <span>`/path/`</span> },
+  { <span>href</span>: <span>'.'</span>, <span>location</span>: <span>`/path/index.html`</span>,   <span>resolves_to</span>: <span>`/path/`</span> },
+  
+  <span>// Strips search parameters and hash string,</span>
+  <span>// but preserves search delimeter (`?`)</span>
+  <span>// x -&gt; { search: '?', hash: '' }</span>
+  { <span>href</span>: <span>'?'</span>, <span>location</span>: <span>'/path'</span>,              <span>resolves_to</span>: <span>'/path?'</span> },
+  { <span>href</span>: <span>'?'</span>, <span>location</span>: <span>'/path#foo'</span>,          <span>resolves_to</span>: <span>'/path?'</span> },
+  { <span>href</span>: <span>'?'</span>, <span>location</span>: <span>'/path?id=foo'</span>,       <span>resolves_to</span>: <span>'/path?'</span> },
+  { <span>href</span>: <span>'?'</span>, <span>location</span>: <span>'/path/'</span>,             <span>resolves_to</span>: <span>'/path/?'</span> },
+  { <span>href</span>: <span>'?'</span>, <span>location</span>: <span>'/path/?id=foo#bar'</span>,  <span>resolves_to</span>: <span>'/path/?'</span> },
+  { <span>href</span>: <span>'?'</span>, <span>location</span>: <span>'/index.html#foo'</span>,    <span>resolves_to</span>: <span>'/index.html?'</span>}
+];
+
+<span>const</span> assertions_evaluated = assertions.<span>map</span>(<span>(<span>{ href, location, resolves_to }</span>) =&gt;</span> {
+  <span>const</span> domain = <span>'https://example.com'</span>;
+  <span>const</span> expected = <span>new</span> <span>URL</span>(href, domain + location).<span>toString</span>();
+  <span>const</span> received = <span>new</span> <span>URL</span>(domain + resolves_to).<span>toString</span>();
+  <span>return</span> {
+    href,
+    location,
+    <span>expected</span>: expected.<span>replace</span>(domain, <span>''</span>),
+    <span>received</span>: received.<span>replace</span>(domain, <span>''</span>),
+    <span>passed</span>: expected === received
+  };
+});
+
+<span>console</span>.<span>table</span>(assertions_evaluated);
+</code></pre></div></div>
+  </div>
+</body>
+</html>

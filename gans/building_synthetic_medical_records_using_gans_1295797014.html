@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Building Synthetic Medical Records using GANs</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Building Synthetic Medical Records using GANs</h1>
+    <p><strong>URL:</strong> <a href="https://amanxai.com/2025/08/12/building-synthetic-medical-records-using-gans/">https://amanxai.com/2025/08/12/building-synthetic-medical-records-using-gans/</a></p>
+    <p><strong>Tags:</strong> gans, synthetic-data</p>
+    <p><strong>Bookmark ID:</strong> 1295797014</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+			
+<p>If you’ve been following the Generative AI wave, you’ve probably seen AI generate images, text, and even code. You can use the same technology to <strong>create realistic synthetic datasets</strong> for healthcare, finance, and more. So, in this article, I’ll walk you through building GANs (Generative Adversarial Networks) from scratch to generate synthetic medical records using Python.</p>
+
+
+
+
+
+
+
+
+<p>For building synthetic medical records using GANs, we’ll break it down into the following steps:</p>
+
+
+
+<ol>
+<li><strong>Data Preprocessing</strong></li>
+
+
+
+<li><strong>GAN Architecture</strong></li>
+
+
+
+<li><strong>Training Loop</strong></li>
+
+
+
+<li><strong>Evaluating Model Performance</strong></li>
+
+
+
+<li><strong>Generating Synthetic Medical Records</strong></li>
+</ol>
+
+
+
+<p><strong>Make sure to download the dataset from <a href="https://amanxai.com/wp-content/uploads/2025/08/Follow-up_Records.csv">here</a>.</strong></p>
+
+
+
+<h4>Data Preprocessing: Where most GAN projects fail before they start</h4>
+
+
+
+<p>GANs understand <strong>numbers,</strong> not text, not categorical labels. So our first job is to:</p>
+
+
+
+<ol>
+<li>Convert <strong>categorical features</strong> into one-hot encoded vectors</li>
+
+
+
+<li>Scale numerical values between <strong>-1 and 1</strong> (because our Generator uses Tanh activation)</li>
+</ol>
+
+
+
+
+
+
+
+<pre><strong>   patient_id  visit_date  age_years  weight_kg   bmi  systolic_bp_mmHg  \<br>0  P-2025-001  2024-02-15         52       83.7  28.3               138   <br>1  P-2025-001  2024-03-15         52       83.4  28.2               147   <br>2  P-2025-001  2024-04-15         52       83.1  28.1               140   <br>3  P-2025-001  2024-05-15         52       83.0  28.1               136   <br>4  P-2025-001  2024-06-15         52       82.6  27.9               133   <p>   diastolic_bp_mmHg  heart_rate_bpm  body_temp_C  fasting_glucose_mg_dL  ...  \<br>0                 86              80         36.8                    137  ...   <br>1                 89              80         37.0                    140  ...   <br>2                 84              76         36.8                    122  ...   <br>3                 88              77         36.8                    112  ...   <br>4                 88              78         36.8                    101  ...   </p><p>   diet_quality_score_0_100  sleep_hours  exercise_sessions_per_week  \<br>0                        62          6.6                           3   <br>1                        61          6.8                           2   <br>2                        65          7.0                           3   <br>3                        66          7.8                           1   <br>4                        54          7.0                           2   </p><p>   alcohol_units_per_week  smoking_cigs_per_day  \<br>0                       0                     0   <br>1                       1                     0   <br>2                       3                     0   <br>3                       0                     0   <br>4                       3                     0   </p><p>                                      clinical_notes  neuropathy  retinopathy  \<br>0  Baseline visit: poor glycemic control; lifesty...           0            0   <br>1                                 Routine follow-up.           0            0   <br>2  Reports tingling in feet at night; B12 checked...           0            0   <br>3                                 Routine follow-up.           0            0   <br>4  SGLT2 inhibitor added due to persistent hyperg...           0            0   </p><p>   hypoglycemia  uti  <br>0             0    0  <br>1             0    0  <br>2             0    1  <br>3             0    0  <br>4             0    0  </p><p>[5 rows x 34 columns]</p></strong></pre>
+
+
+
+
+
+
+
+<p>If you skip proper preprocessing, your GAN will either:</p>
+
+
+
+
+<ul>
+<li>Fail to learn patterns (mode collapse)</li>
+
+
+
+<li>Generate nonsensical outputs</li>
+
+
+
+<li>Scaling is significant because Tanh outputs range from <strong>-1 to 1</strong>.</li>
+</ul>
+
+
+
+<h4>GAN Architecture: Two networks playing a game</h4>
+
+
+
+<p>A GAN has a:</p>
+
+
+
+<ol>
+<li><strong>Generator</strong>: Starts with random noise, learns to produce realistic samples</li>
+
+
+
+<li><strong>Discriminator</strong>: Tries to tell real from fake data</li>
+</ol>
+
+
+
+<p>Here’s how to build the architecture of GANs:</p>
+
+
+
+
+
+
+
+<p>While building GANs, always make sure to:</p>
+
+
+
+<ol>
+<li>Use <strong>LeakyReLU</strong> in hidden layers to avoid “dead” neurons.</li>
+
+
+
+<li>Match Generator’s output range (Tanh) with your data scaling.</li>
+
+
+
+<li>Keep the architecture small at first; big models overfit small datasets quickly.</li>
+</ol>
+
+
+
+<h4>Training Loop: Where the Model Learns</h4>
+
+
+
+<p>Now, we will train both networks in turns:</p>
+
+
+
+
+<ol>
+<li><strong>Discriminator</strong>: Learns to classify real vs fake correctly</li>
+
+
+
+<li><strong>Generator</strong>: Learns to fool the Discriminator</li>
+</ol>
+
+
+
+
+
+
+
+<pre><strong>Epoch [0/2000]  D_loss: 0.6956  G_loss: 0.6612<br>Epoch [200/2000]  D_loss: 0.1672  G_loss: 2.9219<br>Epoch [400/2000]  D_loss: 0.6135  G_loss: 1.5207<br>Epoch [600/2000]  D_loss: 0.3837  G_loss: 2.6847<br>Epoch [800/2000]  D_loss: 0.8646  G_loss: 1.4029<br>Epoch [1000/2000]  D_loss: 0.3813  G_loss: 1.6410<br>Epoch [1200/2000]  D_loss: 0.3263  G_loss: 2.6179<br>Epoch [1400/2000]  D_loss: 0.0688  G_loss: 3.0163<br>Epoch [1600/2000]  D_loss: 0.2220  G_loss: 1.4931<br>Epoch [1800/2000]  D_loss: 0.0581  G_loss: 3.5975</strong></pre>
+
+
+
+<p>Here are some common mistakes that beginners make in this step:</p>
+
+
+
+<ol>
+<li><strong>Training the Generator more than the Discriminator</strong> (can destabilize training)</li>
+
+
+
+<li><strong>Using the wrong activation</strong> (e.g., ReLU in the last Generator layer without scaling data)</li>
+
+
+
+<li><strong>Batch size too large</strong> (small datasets train better with small batches)</li>
+</ol>
+
+
+
+<h4>Generating Synthetic Medical Records</h4>
+
+
+
+<p>Once trained, we can sample new patient records from random noise:</p>
+
+
+
+
+
+
+
+<pre><strong>   age_years  weight_kg        bmi  systolic_bp_mmHg  diastolic_bp_mmHg  \<br>0  52.017231  81.608612  27.656334        128.573212          83.058716   <br>1  52.049911  81.312317  27.621420        127.594505          82.952423   <br>2  52.004284  82.087952  27.929657        132.905823          86.329712   <br>3  52.999413  81.105415  27.438124        130.629898          73.565216   <br>4  52.921329  81.529053  27.588375        131.838181          75.753464   <br>5  52.000004  81.658142  27.952627        126.800835          90.225380   <br>6  52.001060  81.389557  27.754536        126.812881          86.642319   <br>7  52.949970  81.282715  27.489239        130.044556          75.864662   <br>8  52.994469  81.226418  27.434101        128.948669          74.581017   <br>9  52.999737  80.793098  27.320147        122.675903          73.543121   <p>   heart_rate_bpm  body_temp_C  fasting_glucose_mg_dL  \<br>0       76.080704    36.872677              89.162071   <br>1       76.967606    36.932449              90.351837   <br>2       76.076080    36.841934              86.890717   <br>3       74.126099    36.732826             105.403008   <br>4       74.325439    36.778103              96.714897   <br>5       79.380981    36.918476              85.431534   <br>6       78.033195    36.897865              85.991028   <br>7       74.698959    36.814651             102.886810   <br>8       74.389000    36.800858             102.727158   <br>9       74.411812    36.774315             107.315430   </p><p>   postprandial_glucose_mg_dL  hba1c_percent  ...  alcohol_units_per_week  \<br>0                  129.606934       7.381011  ...                1.700157   <br>1                  136.598312       7.326695  ...                1.963187   <br>2                  124.384651       7.747846  ...                1.313976   <br>3                  171.038132       6.749748  ...                0.067310   <br>4                  142.759796       6.931028  ...                0.275825   <br>5                  122.884781       7.793033  ...                1.902780   <br>6                  124.722404       7.453174  ...                2.455485   <br>7                  158.861588       6.892792  ...                0.434503   <br>8                  164.242416       6.800313  ...                0.281971   <br>9                  180.745453       6.673672  ...                0.202333   </p><p>   smoking_cigs_per_day  neuropathy  retinopathy  hypoglycemia       uti  \<br>0              0.001285    0.000759     0.001573      0.100375  0.017240   <br>1              0.005959    0.004435     0.005770      0.477865  0.020934   <br>2              0.000674    0.000674     0.001165      0.017366  0.011973   <br>3              0.000537    0.000106     0.000128      0.001489  0.000276   <br>4              0.001492    0.000539     0.000662      0.005973  0.003403   <br>5              0.000028    0.000010     0.000051      0.146468  0.001701   <br>6              0.000439    0.000241     0.000527      0.302272  0.009886   <br>7              0.005161    0.001687     0.001972      0.061553  0.005250   <br>8              0.002669    0.000815     0.001331      0.019851  0.003891   <br>9              0.000336    0.000034     0.000046      0.151734  0.000156   </p><p>   patient_id  visit_date                                        medications  \<br>0  P-2025-001  2024-06-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   <br>1  P-2025-001  2024-06-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   <br>2  P-2025-001  2024-10-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   <br>3  P-2025-001  2025-02-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   <br>4  P-2025-001  2025-02-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   <br>5  P-2025-001  2024-08-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   <br>6  P-2025-001  2024-06-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   <br>7  P-2025-001  2025-02-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   <br>8  P-2025-001  2025-02-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   <br>9  P-2025-001  2025-02-15  Metformin 1000 mg BID, Ramipril 5 mg QD, Atorv...   </p><p>                                      clinical_notes  <br>0                                 Routine follow-up.  <br>1                                 Routine follow-up.  <br>2                                 Routine follow-up.  <br>3                                 Routine follow-up.  <br>4                                 Routine follow-up.  <br>5                                 Routine follow-up.  <br>6                                 Routine follow-up.  <br>7                                 Routine follow-up.  <br>8                                 Routine follow-up.  <br>9  Mild symptomatic hypoglycemia post-exercise; s...  </p><p>[10 rows x 34 columns]</p></strong></pre>
+
+
+
+<p>You now have privacy-safe, realistic-looking data for experiments. It can also be used to <strong>augment training datasets</strong> for better ML model performance.</p>
+
+
+
+<h3>Final Words</h3>
+
+
+
+<p>Building GANs for real-world datasets like medical records is more about:</p>
+
+
+
+<ol>
+<li>Data preprocessing discipline</li>
+
+
+
+<li>Matching architecture to data</li>
+
+
+
+<li>Careful training to avoid collapse</li>
+
+
+
+<li>Post-processing to make data usable</li>
+</ol>
+
+
+
+<p>If you master this workflow, you’re not just building Generative AI models; you’re building <strong>production-ready Generative AI solutions</strong>. I hope you liked this article on building synthetic medical records using GANs. Feel free to ask valuable questions in the comments section below. You can follow me on <strong><a href="https://www.instagram.com/amankharwal.official/" target="_blank" rel="noreferrer noopener">Instagram</a></strong> for many more resources.</p>
+<!-- CONTENT END 1 -->
+		</div></div>
+  </div>
+</body>
+</html>

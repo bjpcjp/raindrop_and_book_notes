@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using R in Inventory Management and Demand Forecasting</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using R in Inventory Management and Demand Forecasting</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/2022/10/using-r-in-inventory-management-and-demand-forecasting">https://www.r-bloggers.com/2022/10/using-r-in-inventory-management-and-demand-forecasting</a></p>
+    <p><strong>Tags:</strong> sales-ops-planning, _r_</p>
+    <p><strong>Bookmark ID:</strong> 876791697</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p><br>
+<em>Nicolas Nguyen works in the Supply Chain industry, in the area of Demand and Supply Planning, S&amp;OP and Analytics, where he enjoys developing solutions using R and Shiny. Outside his job, he teaches data visualization in R at the Engineering School EIGSI and Business School Excelia in the city of La Rochelle, France.</em></p><div id="introduction">
+<h2>Introduction</h2>
+<p>Demand &amp; Supply Planning requires forecasting techniques to determine the inventory needed to fulfill future orders. With R, we can build end-to-end supply chain monitoring processes to identify potential issues and run scenario testing.</p>
+<p>In a 3-part series, I will walk through a Demand &amp; Supply Planning workflow:</p>
+<ol>
+<li>Using R in Inventory Management and Demand Forecasting: an introduction of projected inventory and coverage methodology (this post)</li>
+<li>Analyzing Projected Inventory Calculations Using R: an analysis of a demo dataset using the <code>planr</code> package</li>
+<li>Visualizing Projected Calculations with <code>reactable</code> and <code>shiny</code>: once the analysis is done, how would you present your results to your boss?</li>
+</ol>
+<p>By the end of the series, you will understand how and why to use R for Demand &amp; Supply Planning calculations. Let’s begin!</p>
+</div><div id="the-problem-we-aim-to-solve">
+<h2>The “problem” we aim to solve</h2>
+<p>When we work in Demand &amp; Supply Planning, it’s pretty common that we need to calculate <strong>projected inventories</strong> (and related <strong>projected coverages</strong>). We often have three options to perform this calculation, using:</p>
+<ol>
+<li>an APS (Advanced Planning System) software</li>
+<li>an ERP, such as SAP or JDE</li>
+<li>and of course…Excel!</li>
+</ol>
+<p>All are fine and have different pros and cons. For example, we simply sometimes don’t have all the data in our ERP either APS, like when we work with third-party distributors or we want to model a supply chain network that relies on different systems with unconnected data.</p>
+<p><strong>How about using R to perform these calculations?</strong> How simple and fast could they be? And, could we do more than just the calculations?</p>
+<p>For example, could we get an analysis of the projected situation of a portfolio (as an output of a function), so we don’t have to look at each product one by one and can instead:</p>
+<ul>
+<li>Easily get a summary view of the portfolio?</li>
+<li>Then zoom on the products with risks of shortages or overstocks?</li>
+</ul>
+<!-- I added this little intro paragraph about the series of posts -->
+<p>In a series of posts, I will demonstrate how R can help us in Demand &amp; Supply planning. This first post introduces the <code>proj_inv()</code> and <code>light_proj_inv()</code> functions for projected inventory and coverage calculations.</p>
+<ul>
+<li><code>proj_inv():</code> to calculate projected inventories and coverages with some analysis features</li>
+<li><code>light_proj_inv():</code> to calculate projected inventories and coverages (only)
+<ul>
+<li>Runs faster than the previous function (as it’s lighter and doesn’t provide any analysis features)</li>
+</ul></li>
+</ul>
+<p>With R, we have an efficient way to run end-to-end supply chain monitoring processes.</p>
+</div><div id="methodology">
+<h2>Methodology</h2>
+<div id="how-to-calculate-projected-inventories">
+<h3>How to calculate projected inventories</h3>
+<p>First, let’s have a look at an example of how to calculate projected inventories. Consider that the field Demand = Sales Forecasts.</p>
+<ol>
+<li>We start with some <strong>Opening Inventory</strong> of 1000 units.</li>
+<li>During month M, we sell 100 units (the Demand). At the end of the 1st period (Month M), the inventory is 900 units.</li>
+<li>Then, there’s a demand of 800 units at the end of the following period (Month M+1).</li>
+<li>During the period (Month M+2), we get a Supply of 400 units, and sell 100: it is now 1100 units in stock.</li>
+</ol>
+<p>That’s all, this is how we calculate projected inventories ☺</p>
+<p><img src="https://i0.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/how%20to%20calculate%20a%20projected%20inventories.PNG?w=450&amp;ssl=1" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/how%20to%20calculate%20a%20projected%20inventories.PNG?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>
+<p><span><strong>Figure 1:</strong> Describes the mechanism of the calculation of projected inventories based on Opening Inventories, Demand and Supply</span></p>
+</div>
+<div id="how-to-calculate-projected-coverages">
+<h3>How to calculate projected coverages</h3>
+<p>Now, let’s have a look at how to calculate projected coverages. The idea: we look forward.</p>
+<p>We consider the projected inventories at the end of a period and evaluate the related coverage based on the <strong>Upcoming Demand</strong>. See the example below:</p>
+<p><img src="https://i2.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/how%20to%20calculate%20projected%20coverages.PNG?w=450&amp;ssl=1" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/how%20to%20calculate%20projected%20coverages.PNG?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>
+<p><span><strong>Figure 2:</strong> Description of the calculation of projected coverages, considering the inventories at a point in time and the Upcoming Demand</span></p>
+<p>If we use Excel, we often see a “shortcut” to estimate the related coverages, like considering an average of the Demand over the next 3 or 6 months. This can lead to incorrect results if the Demand is not constant (if we have some seasonality or a strong trend, for example). <strong>However, these calculations become very easy through the <code>proj_inv()</code> and <code>light_proj_inv()</code> functions.</strong></p>
+</div>
+</div><div id="projected-inventory-calculations-in-r">
+<h2>Projected inventory calculations in R</h2>
+<p>Now, let’s see how the above is done using two functions from the <strong>planr package</strong>. First, let’s create a tibble of data for the example shown above (we will cover <code>Min.Stocks.Coverage</code> and <code>Max.Stocks.Coverage</code> more thoroughly in another post):</p>
+<pre># Install the planr package
+# remotes::install_github("nguyennico/planr")
+
+library(planr)
+library(dplyr)
+
+Planr_Example &lt;-
+  tibble::tribble(
+          ~DFU,      ~Period, ~Demand, ~Opening.Inventories, ~Supply.Plan, ~Min.Stocks.Coverage, ~Max.Stocks.Coverage,
+    "Item0001", "2022-01-01",    100L,                1000L,           0L,                   0L,                   0L,
+    "Item0001", "2022-02-01",    100L,                   0L,           0L,                   0L,                   0L,
+    "Item0001", "2022-03-01",    100L,                   0L,         400L,                   0L,                   0L,
+    "Item0001", "2022-04-01",    800L,                   0L,           0L,                   0L,                   0L,
+    "Item0001", "2022-05-01",    100L,                   0L,           0L,                   0L,                   0L,
+    "Item0001", "2022-06-01",    300L,                   0L,           0L,                   0L,                   0L,
+    "Item0001", "2022-07-01",    100L,                   0L,         400L,                   0L,                   0L
+    )</pre>
+<p>Now apply the <code>proj_inv()</code> function:</p>
+<pre>Calculated_Inv &lt;- proj_inv(
+  data = Planr_Example,
+  DFU = DFU,
+  Period = Period,
+  Demand = Demand,
+  Opening.Inventories = Opening.Inventories,
+  Supply.Plan = Supply.Plan,
+  Min.Stocks.Coverage = Min.Stocks.Coverage,
+  Max.Stocks.Coverage = Max.Stocks.Coverage
+)</pre>
+<p>We can look at the output, which provides a lot of useful information including projected inventories and coverages:</p>
+<pre>glimpse(Calculated_Inv)
+## Rows: 7
+## Columns: 14
+## Groups: DFU [1]
+## $ DFU                            &lt;chr&gt; "Item0001", "Item0001", "Item0001", "It…
+## $ Period                         &lt;chr&gt; "2022-01-01", "2022-02-01", "2022-03-01…
+## $ Demand                         &lt;dbl&gt; 100, 100, 100, 800, 100, 300, 100
+## $ Opening.Inventories            &lt;int&gt; 1000, 0, 0, 0, 0, 0, 0
+## $ Calculated.Coverage.in.Periods &lt;dbl&gt; 2.9, 1.9, 2.7, 1.7, 0.7, 0.0, 99.0
+## $ Projected.Inventories.Qty      &lt;dbl&gt; 900, 800, 1100, 300, 200, -100, 200
+## $ Supply.Plan                    &lt;int&gt; 0, 0, 400, 0, 0, 0, 400
+## $ Min.Stocks.Coverage            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0
+## $ Max.Stocks.Coverage            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0
+## $ Safety.Stocks                  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, NA
+## $ Maximum.Stocks                 &lt;dbl&gt; 0, 0, 0, 0, 0, 0, NA
+## $ PI.Index                       &lt;chr&gt; "OverStock", "OverStock", "OverStock", …
+## $ Ratio.PI.vs.min                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, NA
+## $ Ratio.PI.vs.Max                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, NA</pre>
+<p>Focusing on the <code>Projected.Inventories.Qty</code> column, we see that it matches our example calculation in Figure 1.</p>
+<pre>Calculated_Inv %&gt;% 
+  select(Projected.Inventories.Qty)
+## # A tibble: 7 × 2
+## # Groups:   DFU [1]
+##   DFU      Projected.Inventories.Qty
+##   &lt;chr&gt;                        &lt;dbl&gt;
+## 1 Item0001                       900
+## 2 Item0001                       800
+## 3 Item0001                      1100
+## 4 Item0001                       300
+## 5 Item0001                       200
+## 6 Item0001                      -100
+## 7 Item0001                       200</pre>
+<p>We can also take a look at projected coverage. It matches our example calculation in Figure 2: the opening coverage is 2.9 months.</p>
+<pre>Calculated_Inv %&gt;% 
+  select(Calculated.Coverage.in.Periods)
+## # A tibble: 7 × 2
+## # Groups:   DFU [1]
+##   DFU      Calculated.Coverage.in.Periods
+##   &lt;chr&gt;                             &lt;dbl&gt;
+## 1 Item0001                            2.9
+## 2 Item0001                            1.9
+## 3 Item0001                            2.7
+## 4 Item0001                            1.7
+## 5 Item0001                            0.7
+## 6 Item0001                            0  
+## 7 Item0001                           99</pre>
+<p>Very easy to calculate!</p>
+<!-- I removed the examples of complex task and linked to the appendix  -->
+<p>The <code>proj_inv()</code> and <code>light_proj_inv()</code> functions can also be used and combined to perform more complex tasks. I’ve described several use cases in the <a href="https://rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/#appendix" rel="nofollow" target="_blank">appendix</a>.</p>
+<p>Moving forward, these functions form the basis for the classic <strong>DRP (Distribution Requirement Planning)</strong> calculation, where, based on some parameters (usually minimum and maximum levels of stock, a reorder quantity, and a frozen horizon), we calculate a Replenishment Plan.</p>
+</div><div id="conclusion">
+<h2>Conclusion</h2>
+<p>Thank you for reading this introduction of projected inventories and coverages in Demand &amp; Supply Planning! I hope that you enjoyed reading how this methodology translate into R.</p>
+<div id="ascm-formerly-apics-guidelines">
+<h3>ASCM (formerly APICS) guidelines</h3>
+<p>In the beginning of 2019, the Association for Supply Chain Management (ASCM) published <a href="https://www.ascm.org/ascm-insights/sop-and-the-digital-supply-chain/" rel="nofollow" target="_blank">an article about the usage of R (and Python) in Supply Chain Planning</a>, and more precisely for the Sales &amp; Operations Planning (S&amp;OP) process, which is related to Demand and Supply Planning.</p>
+<p><img src="https://i2.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/make%20jump.PNG?w=450&amp;ssl=1" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/make%20jump.PNG?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>
+<p><span><strong>Figure 3:</strong> An extract from the ASCM article regarding the S&amp;OP and Digital Supply Chain. It shows how R and Python are becoming more and more used for demand &amp; supply planning and are great tools to run a S&amp;OP process.</span></p>
+<p>In the example above, we can see how R helps build the digital environment useful to run the S&amp;OP process, which involves a lot of data processing. The <strong>planr package</strong> aims to support this process by providing functions that calculate projected inventories.</p>
+</div>
+<div id="stay-tuned-for-more-on-projected-calculations-using-r">
+<h3>Stay tuned for more on projected calculations using R</h3>
+<p>Thank you for reading the introduction on how to use R for projected inventory calculations in Demand &amp; Supply Planning! I hope you enjoyed this introduction to the <strong>planr package</strong>.</p>
+<p>My series of posts will continue with:</p>
+<ul>
+<li>Analyzing Projected Calculations Using R (using a demo dataset)</li>
+<li>Visualizing Projected Calculations with reactable and Shiny (or, what your boss wants to see)</li>
+</ul>
+<p>In the meantime, check out these useful links:</p>
+<ul>
+<li>planr package GitHub repository: <a href="https://github.com/nguyennico/planr" rel="nofollow" target="_blank">https://github.com/nguyennico/planr</a></li>
+<li>URL for a Shiny app showing a demo of the <code>proj_inv()</code> and <code>light_proj_inv()</code> functions: <a href="https://niconguyen.shinyapps.io/Projected_Inventories/" rel="nofollow" target="_blank">Demo: app proj_inv() function (shinyapps.io)</a></li>
+</ul>
+<!-- Here is the appendix -->
+</div>
+</div><div id="appendix">
+<h2>Appendix: Use cases and examples</h2>
+<p>The <code>proj_inv()</code> and <code>light_proj_inv()</code> functions can easily be used and combined to perform more complex tasks, such as:</p>
+<ul>
+<li>Modeling of a Supply Chain Network</li>
+<li>Calculation of projected inventories from Raw Materials to Finished Goods</li>
+<li>A multi-echelon distribution network: from a National Distribution Center to Regional Wholesalers to Retailers</li>
+</ul>
+<p>Becoming a useful tool:</p>
+<ul>
+<li>To build an End-to-End Supply Chain monitoring process</li>
+<li>To support the S&amp;OP (Sales and Operations Planning) process, allowing us to run some scenarios quickly:
+<ul>
+<li>Change of Sales plan</li>
+<li>Change of Supply (Production) plan</li>
+<li>Change of stock level parameters</li>
+<li>Change of Transit Time</li>
+<li>Etc.</li>
+</ul></li>
+</ul>
+<p>Here are some detailed use cases for the functions.</p>
+<div id="third-party-distributors">
+<h3>Third-party distributors</h3>
+<p>We sometimes work with third-party distributors to distribute our products. A common question is: how much stock do our partners hold?</p>
+<p>If we have access to their opening inventories and Sales IN &amp; OUT Forecasts, we can quickly calculate the projected inventories by applying the <code>proj_inv()</code> or <code>light_proj_inv()</code> functions. Then, we anticipate any risks of shortages or overstocks, and create a collaborative workflow.</p>
+<p><img src="https://i1.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/sales%20IN%20sales%20OUT.PNG?w=450&amp;ssl=1" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i1.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/sales%20IN%20sales%20OUT.PNG?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>
+<p><span><strong>Figure 4:</strong> Illustration of a SiSo (Sales IN Sales OUT) situation. We have some stocks held at a storage location, for example, a third-party distributor, and know what will be sold out of this location (the sales out) and what will be replenished to it (the sales in), as well as the opening inventory. The aim is to calculate the projected inventories and coverages at this location.</span></p>
+</div>
+<div id="from-raw-materials-to-finished-goods">
+<h3>From raw materials to finished goods</h3>
+<p>In the example below, we produce olive oil (but it could be shampoo, liquor, etc.).</p>
+<p>We start with a raw material, the olive oil, that we use to fill up different sizes of bottles (35cl, 50cl, etc…), on which we then apply (stick) a label (and back label). There are different labels, depending on the languages (markets where the products are sold).</p>
+<p>Once we have a labelled bottle, we put it inside an outer box, ready to be shipped and sold. There are different dimensions of outer boxes, where we can put, for examplem 4, 6 or 12 bottles. <strong>They are the Finished Goods.</strong></p>
+<p>We have two groups of products here:</p>
+<ul>
+<li>Finished Goods</li>
+<li>Semi-Finished: at different steps, filled bottle (not yet labelled) or labelled bottle</li>
+</ul>
+<p>We might be interested in <strong>looking at the projected inventories at different levels / steps of the manufacturing process:</strong></p>
+<ul>
+<li>Finished Goods</li>
+<li>Raw Materials: naked bottles, labels, or liquid (olive oil)</li>
+<li>Semi-Finished Products</li>
+</ul>
+<p>For this, we can apply the <code>proj_inv()</code> or <code>light_proj_inv()</code> functions on each level of analysis.</p>
+<p><img src="https://i2.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/from%20raw%20materials%20to%20FG.PNG?w=450&amp;ssl=1" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/from%20raw%20materials%20to%20FG.PNG?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>
+<p><span><strong>Figure 5:</strong> Illustration of a production flow, starting from raw material (liquid of olive oil) which fills bottles (of different countenances) and then labelled with different stickers. The labelled bottles are placed inside different outer boxes, which are the finished goods (called SKU -Stock Keeping Unit - ) .</span></p>
+</div>
+<div id="multi-echelon-networks">
+<h3>Multi-echelon networks</h3>
+<p>In the example below, we are looking at the distribution network within a country.</p>
+<p>The products are stored at different locations:</p>
+<ul>
+<li>At a Central Stock: managed by the company selling the products, for example, a National Distribution Center.</li>
+<li>At some third parties:
+<ul>
+<li>Who buy those products to distribute and sell them in more specific areas or regions</li>
+<li>A network of Wholesalers and Sub-Wholesalers</li>
+</ul></li>
+</ul>
+<p>If we have access to the data of the 3rd parties, such as [Opening Inventories] and [Sales IN &amp; OUT Forecasts], we could apply the <code>proj_inv()</code> or <code>light_proj_inv()</code> functions on each level and visualize the complete projected inventories within the Distribution Network.</p>
+<p><img src="https://i2.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/multi%20echelons%20network.PNG?w=450&amp;ssl=1" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/multi%20echelons%20network.PNG?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>
+<p><span><strong>Figure 6:</strong> Illustration of a distribution network, within a country, with different levels. The first level (level 1) is the main storage location, from which the products are shipped to the wholesalers (level 2), which then supply their local partners, identified here as Sub-Wholesalers (level 3). The aim is to visualize (and manage) the inventories (also Demand &amp; Supply) throughout the whole network.</span></p>
+</div>
+<div id="from-production-capacity-to-sales">
+<h3>From production capacity to sales</h3>
+<p>In the example below, we have one or several Factories (within the box “Production Capacities”) which supply a [Global Stocks], which is then used to supply markets and a [Regional Stocks] directly. The [Regional Stocks] is then supplying other markets and a Third Party Distributor.</p>
+<p><strong>We want to manage the Monthly S&amp;OP process:</strong></p>
+<ul>
+<li>Linking Sales &amp; Manufacturing Operations through simple modeling.</li>
+<li>To balance Demand &amp; Supply over the medium-long term horizon.</li>
+<li>Visualizing some impacts through the whole distribution network</li>
+</ul>
+<p><strong>And make some simulations and drive some decisions:</strong></p>
+<ul>
+<li>Change of Sales Plan</li>
+<li>Change of Supply Plan</li>
+<li>Change of Inventories Level</li>
+<li>Change of Transit Lead Time</li>
+<li>Change of Product Mix</li>
+<li>Etc.</li>
+</ul>
+<p>We could apply the <code>proj_inv()</code> or <code>light_proj_inv()</code> functions on each level and visualize the complete projected inventories within the Distribution Network.</p>
+<p><img src="https://i0.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/from%20production%20capacities%20to%20sales.PNG?w=450&amp;ssl=1" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/rviews.rstudio.com/2022/10/20/projected-inventory-calculations-using-r-1/from%20production%20capacities%20to%20sales.PNG?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></p>
+<p><span><strong>Figure 7:</strong> Illustration of a distribution network with a wider geographical presence. The first level (level 1) is the global storage location; it receives products from some factories and holds stocks that are used to supply several markets in the world, and also a regional stock, which is level 2. Then the regional stock is used to supply other markets, usually closer geographically, which is level 3. As described in the picture, the markets can be affiliates (where the stocks belong to the company) and third-party distributors.</span></p>
+</div>
+</div></div>
+  </div>
+</body>
+</html>

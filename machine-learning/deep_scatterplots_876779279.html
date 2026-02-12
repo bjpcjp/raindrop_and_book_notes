@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Deep Scatterplots</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Deep Scatterplots</h1>
+    <p><strong>URL:</strong> <a href="http://creatingdata.us/techne/deep_scatterplots">http://creatingdata.us/techne/deep_scatterplots</a></p>
+    <p><strong>Tags:</strong> machine-learning, visualization</p>
+    <p><strong>Bookmark ID:</strong> 876779279</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+  <div>
+  <h2 id="example">Example</h2>
+  <p>Here’s a basic example of the chart: it shows 13.7 million books from the Hathi Trust.</p>
+  <p>Currently they are colorized by language; the features use an approximation of word counts using a method based on random projection I recently described. If you want to know more about this particular set, you should read <a href="http://creatingdata.us/datasets/hathi-features/">the page that discusses the data.</a></p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+  "base_dir": "/data/scatter/hathi",
+  "colors": {"language":"","Classification":"","Subclassification":"","date":"","Principal Author":""},
+  "lab": ["Classification", "Subclassification","id","title","date","Principal Author"],
+  "point_size": 2,
+  "point_threshold": 10,
+  "label_threshold": 0,
+  "variable_point_size": false,
+  "filters": null,
+  "zoom": [1, 0, 0, 1000],
+  "colorize_by": "language",
+  "label_field": "title",
+  "scheme": "dark",
+  "keys": {"Subclassification": "LCC.txt", "Classification": "LCC.txt"}
+  }</code></pre>
+  </div>
+  <div>
+  <p>Interactivity brings three fundamental things to a dataset like this.</p>
+  <p>The first is the ability to zoom in on segments of interest. Here, for instance, is the section of the chart where most works of literature are clustered.</p>
+  <p>As you zoom in, more points are loaded dynamically–more on that <a href="#tiling">below</a>.</p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+  "zoom":[8.28,23.117,12.69]
+  }</code></pre>
+  </div>
+  <p>The second is the ability to get arbitrary information about the points. If you’re on a computer, you should be able to directly mouse over the left side of the screen to see information. If you’re on a tablet or phone, you may need to click the ‘interact’ button on the top bar, and then on any points once. That will bring up the full metadata profile for any point; you can then click on the point to see it in the Hathi trust.</p>
+  
+  <div>
+  <h2 id="rendering">Rendering</h2>
+  <p>To draw, I use an HTML canvas element, which can comfortable support betwen 1,000 and 20,000 points. (“Comfortably” means, technically, that it can draw them within about 35 milliseconds, allowing basically seamless panning and zooming. I’ve erred too much, probably, in trying to include data at the expense of performance; in some places, especially on phones, you’ll see skips between frames.)</p>
+  <p>It would be possible to cram perhaps ten times as many points on the screen using WebGL to render instead. Canvas is somewhat easier to use (though not nearly as easy as svg, at least with D3.) Things would probably be prettier with more points. But since zooming allows ultimate access to any of the points, it’s not completely necessary. And even advanced technologies couldn’t display literally everything; past a million points or so, the key bottleneck become data, not rendering.</p>
+  </div>
+  <div>
+  <h2 id="tiling">Tiling</h2>
+  <p>So–how do you serve 14 million data points on demand?</p>
+  <p>The core principal here is <em>tiling.</em> Just as with online maps, I partition the space into equally sized quadrants and load data for each quadrant only when the window is zoomed far in on a point.</p>
+  <p>The idea for map tiling is to display points at any given resolution.</p>
+  <p>Here you can see what a basic tiling arrangement looks like. The principal I use is that each tile should have 1,000 points in it. So at the base zoom level, there are 1,000 points on screen; if you fully load a second set of tiles, there should be 4,000 points on screen; and so forth.</p>
+  <p>The code to build the tiles is part of the repo: <code>scatterTiler.py</code>. It only runs under python2 right now. To run it, you need an input file and and output directory to which tiles will be writter.</p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+  "debug": "theoretical",
+  "point_size": 0.8,
+  "point_threshold": 3,
+  "zoom": [0.8, 0, 0, 0]
+  }</code></pre>
+  </div>
+  <div>
+  <p>I actually implemented this naive version of tiling, and it works fairly well; but there’s a problem. If you want to zoom into the chart at any depth, you start needing to load an extraordinary number of files; and many of them are in areas where there are very few points. If we want to display 35,000 points on the screen, for example, I can set the zoom level to 35 (which is animated here). But that requires loading 341 tiles, many of which (like in the upper left) have basically no items in them. You can see them here, numbered by the conventional ‘x, y, z’ map tiling numbers.</p>
+  <p><smaller>(There’s another problem, too: it doesn’t correctly account for duplicates well. In ordinary map rendering, you don’t show high-resolution and low resolution tiles at the same time; but with points like this, we want to display the root information as well. I said that zoom level ‘2’ should have 4,000 points in it; but if you allow 1,000 points per tile, it will actually have 5,000; one for each of the four level-2 quadrants, and one for the root tile.) </smaller></p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+  "debug": "theoretical",
+  "point_size": 1,
+  "point_threshold": 3,
+  "zoom": [0.5, 0, 0, 0],
+  "slowly":[{"field":"point_threshold", "value": 35,"duration": 7000}]
+  }</code></pre>
+  </div>
+  <div>
+  <p>The solution is: use the conventional tile structuring for storing on the network, but make sure that each tile has exactly 1,000 points in it. This gives us a set of manageable CSV files for serving over the web, which go much further than the z index we store them with.</p>
+  <p>Here I show the tiles that actually need to be loaded. You can see in the upper right that what used to be a z-index of 4 is now over 11,000; that means we’ll have to zoom in several orders of magnification before it will have to load a new tile.</p>
+  <p>Then, at the time of rendering, the program can simply traverse the quadtree from the top:<a href="#fn2" id="fnref2"><sup>2</sup></a> as soon as it hits a point in a tile that’s lower than the current level of magnification, it knows to stop.</p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{ "debug": "actual", "point_size": 1,
+  "point_threshold": 3,
+  "slowly":[{"field":"point_threshold", "value": 35,"duration": 7000}] }</code></pre>
+  </div>
+  <div>
+  <p>As you zoom in, more and more tiles will be loaded; the more points there are in a region, the greater density of tiles will be pulled from the server.</p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+  "point_threshold": 22,
+  "zoom": [3.3496259500337113, 20.275442124173697, 13.369927671071395],
+  "debug": "actual",
+  "label_threshold": 0,
+  "filters": {}
+  }</code></pre>
+  </div>
+  <div>
+  <h2 id="mouse-interactions">Mouse interactions</h2>
+  <p>These tiles also serve as the basis of mouse interactions. Each tile keeps track of its own d3.quadtree object; when you hover over the canvas, the quadtrees for every visible tile are scanned to find the nearest point. Now that the quadtree numbers have been limited, this rarely requires searching more than five quadtrees, which is perfectly fast.</p>
+  <p>The other problem with using quadtree for an interactive graphic is that a single static quadtree instance can’t find missing items. <a href="https://github.com/d3/d3-quadtree/issues/19">I’ve made a patch to D3-quadtree</a> that allows a filter on search.</p>
+  </div>
+  <div>
+  <h2 id="filters">Filters</h2>
+  <p>To make exploring these easier, I made the JSON based API support filtering based on arbitrary functions.</p>
+  <p>Here’s an API call, for instance, that only shows works with single-word titles less than 8 letters. Regular expressions are useful enough that there’s a special syntax for them that can be entered by the user in ‘interactive mode’ above; more complicated queries have to be written by hand. This can be accessed through the filter panel.</p>
+  <pre><code>{
+  "filters": {"title": "d.title.search(/^[^ ]{0,8}$/) == 0"}
+  }</code></pre>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">
+  {
+    "label_field":"title",
+    "label_threshold": 1,"debug":"false",
+    "filters": {"title": "d.title.search(/^[^ ]{0,8}$/) == 0"}
+  }
+  </code></pre>
+  </div>
+  <div>
+  <p>Controlling the main plot through a narrative is done through the general purpose code I’ve written for this project. The nice thing about having a JSON API to control is that it’s easy to dispatch new events to update the state of the plot. This is how I’m writing all visualizations nowadays.</p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+  "zoom":[272.1,22.051,13.427]
+  }</code></pre>
+  </div>
+  <div>
+  <h2 id="transitions">Transitions</h2>
+  <p>Some phenomena can be changed slowly.</p>
+  <p>One of the beauties of defining functions as text as then using D3’s interpolate function is that numeric values in functions can be automatically interpolated.</p>
+  <p>Here’s an example from the Hathi visualization, with the JSON schema code below. Initially, this says, start with only books published before 1800; and then, over the course of 10 seconds, change to a filter of only books published before 2020, while over <em>5</em> seconds making the points half as large.</p>
+  <p>D3’s interpolate function neatly redraws as quickly as possible with every intermediate possibility of years.</p>
+  
+  <p>The next portion of the narrative will run the code.</p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+  "debug": false,
+  "point_threshold": 25,
+  "label_threshold": 0,
+  "filters": {},
+  "zoom": [1, 0, 0],
+  "colorize_by":"date"
+  }</code></pre>
+  </div>
+  <div>
+  <p>Here’s what that looks like. In the case of library books, it highlights something quite interesting. Different genres begin out around the margins of the plot; more recent ones fill in the middle, as if all genres are converging together. This replicates one of the interesting things I found in the paper, which is that it’s <em>harder</em> to classify library books today than in the past.</p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+  "point_size": 5,
+  "filters": {
+    "year": "d.date &lt;= 1800"
+   },
+  "slowly": [
+   {"field": "point_size", "value":2.5, "duration": 5e03}, 
+   {"field": "filters",
+   "value": {"year": "d.date &lt;= 2020"},
+   "duration": 10e03}
+  ]
+  }</code></pre>
+  </div>
+  <div>
+  <p>But you can do arbitrarily complex functions into the transition, which can yield visually cool results. I only really know enough trigonometry to make a spinning wheel: but if you’re better at it than I, you might able to create something cool by editing the api below to include a variety of spirals.</p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+    "point_size": 5,
+    "filters": {
+      "year": "Math.atan2(d.x, d.y) &lt;= -3.14"
+     },
+    "slowly": [
+     {"field": "point_size", "value":1, "duration": 10e03}, 
+     {"field": "filters",
+     "value": {    "year": "Math.atan2(d.x, d.y) &lt;= 3.24"
+  },
+     "duration": 10e03}
+    ]
+    }</code></pre>
+  </div>
+  <div>
+  <h3 id="fast-canvas-tricks.">Fast canvas tricks.</h3>
+  <p>Initially, I wanted to use circles for points, because circles are prettier. But I believe that in csertain browser settings, circles can be a bit more time-consuming to render on a canvas element. So I use rectangles instead, shaped (approximately) like books.</p>
+  <p>This isn’t a general feature–in fact, we’re talking about putting up an abstracted version of this on one of the walls in Snell Library at Northeastern as part of our campus renovations. For that one, we’ll use SVG circles instead of canvas rectangles.</p>
+  <div><p><span>⚙</span></p><p><span>▶</span></p></div><pre><code contenteditable="true">{
+    "filters": {}
+  }</code></pre>
+  </div>
+  </div></div>
+  </div>
+</body>
+</html>

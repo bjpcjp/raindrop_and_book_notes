@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Performance Tuning - Tips & Tricks - NGINX</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Performance Tuning - Tips & Tricks - NGINX</h1>
+    <p><strong>URL:</strong> <a href="https://www.nginx.com/blog/performance-tuning-tips-tricks?mkt_tok=eyJpIjoiT0dVNU9URXdNVGczTVRsaSIsInQiOiI1NjFtQlZMV2VPRkEzZVpqeDAzYmlQSmFNblc3XC9VaUdFVXlcL05WOHRleVFMMGZwVXBRK3RKTHdsNWlSYitFODkrUUZwbkZCeWllS0thSGFXVElsakxJblE3bFdZNktYNlp4MnJmNGhnaHZGRVNsTmhhNyttbHAwOUlCVXM3MGNVIn0=">https://www.nginx.com/blog/performance-tuning-tips-tricks?mkt_tok=eyJpIjoiT0dVNU9URXdNVGczTVRsaSIsInQiOiI1NjFtQlZMV2VPRkEzZVpqeDAzYmlQSmFNblc3XC9VaUdFVXlcL05WOHRleVFMMGZwVXBRK3RKTHdsNWlSYitFODkrUUZwbkZCeWllS0thSGFXVElsakxJblE3bFdZNktYNlp4MnJmNGhnaHZGRVNsTmhhNyttbHAwOUlCVXM3MGNVIn0=</a></p>
+    <p><strong>Tags:</strong> devops, web-servers, webdev</p>
+    <p><strong>Bookmark ID:</strong> 876770780</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><em>This blog post includes contributions from several NGINX team members, including Valentin&nbsp;Bartenev and Nick&nbsp;Shadrin.</em></p>
+<p>Over the past few years, I’ve worked with a handful of partners for whom NGINX&nbsp;Plus performance was the primary concern. The conversation typically starts with their difficulty matching our published <a href="https://www.nginx.com/blog/nginx-plus-sizing-guide-how-we-tested/">performance benchmarks</a>. The challenge usually results from the partner jumping straight to a fixed use case, such as using existing SSL keys or targeting very large file payloads, and then seeing sub‑par performance from NGINX&nbsp;Plus. </p>
+<p>To a certain degree, this is expected behavior. I always like to explain to partners that as a software component, NGINX&nbsp;Plus can run at near line‑rate speeds on any hardware that’s available to it when dealing with the most basic HTTP use case. In order to hit our published numbers with specific use cases, though, often NGINX&nbsp;Plus benefits from changes to its configuration as well as tweaks to low‑level OS and hardware settings. </p>
+<p>In every case to date, our partners have been able to achieve the theoretical performance numbers with very unique use cases simply by focusing on the components of the OS and hardware settings which need to be configured to match their use case and with how NGINX&nbsp;Plus interacts with those components. </p>
+<p>Over the years, I’ve compiled this list of NGINX configuration, OS, and hardware tips, tricks, and tweaks. It’s intended to help our partners and customers achieve higher performance of both NGINX Open Source and NGINX&nbsp;Plus for their specific use cases. </p>
+<p>This document is only a guide to a subset of configuration settings that can impact performance; it’s not an exhaustive list, nor it is necessarily appropriate to change every setting discussed below in your environment.</p>
+<p><strong>Note</strong>: We have revised this blog post since its original publication, and are reviewing it further to make it as strong as possible. Please add your own suggested changes and additions in the Comments below; we’ll incorporate what we can into the blog post.</p>
+<h2>The Tuning Workflow</h2>
+<p>I generally recommend the following workflow when tackling performance‑tuning issues:</p>
+<ol>
+<li>
+<p>Test NGINX&nbsp;Plus performance in the most generic HTTP use case possible. This allows you to set the correct benchmarking baseline for your particular environment.</p>
+</li>
+<li>
+<p>Identify your specific use case. If, for instance, your application requires large file uploads, or if you’re dealing with high‑security large SSL key sizes, define the end‑goal use case first.</p>
+</li>
+<li>
+<p>Configure NGINX&nbsp;Plus for your use case and retest to determine the delta between theoretical performance in your environment and real‑world performance with your use case.</p>
+</li>
+<li>
+<p>Tweak one setting at a time by focusing on the settings that most apply to your use case. In other words, don’t change a bunch of <code>systemctl</code> settings at the same time you add new NGINX directives. Start small, with the features that are most applicable to your use case. For example, if high security is critical for your environment change SSL key types and sizes first.</p>
+</li>
+<li>
+<p>If the change doesn’t impact performance, revert the setting back to the default. As you progress through each individual change, you’ll start to see a pattern where related settings tend to affect performance together. This allows you to home in on the groups of settings that you can later tweak together as needed.</p>
+</li>
+</ol>
+<p>It’s important to note that every deployment environment is unique and comes with its own networking and application performance requirements. It might not be advisable to change some of these values in production. Results of any configuration tweaks outlined below can result in dramatically different results based on the application type and networking topology.  </p>
+<p>With NGINX having such strong roots in the open source community, many people over the years have contributed back to the performance conversations. Where applicable, I’ve included links to external resources for specific performance‑tuning suggestions from people who have already battle‑tested many of these solutions in production.</p>
+<h2>Tuning NGINX Configuration</h2>
+<p>Please refer to the <a target="_blank" href="http://nginx.org/en/docs/" rel="noopener noreferrer">NGINX reference documentation</a> for details about supported values, default settings, and the scope within which each setting is supported. </p>
+<h3>SSL</h3>
+<p>This section describes how to <a target="_blank" href="https://unhandledexpression.com/development/general/security/2013/01/25/5-easy-tips-to-accelerate-ssl.html" rel="noopener noreferrer">remove slow and unnecessary ciphers</a><!-- 30-Jul-2018: tmauro updated link by inserting 'development/general/security/' elements between 'com' and '2013' and adding final '.html' --> from OpenSSL and NGINX. </p>
+<p>When SSL performance is paramount, it’s always a good idea to try different key sizes and types in your environment, finding the correct balance for your specific security needs between longer keys for increased security and shorter keys for faster performance. An easy test is to move from more traditional RSA keys to Elliptical Curve Cryptography (ECC), which uses smaller key sizes and is therefore computationally faster for the same level of security. </p>
+<p>To generate quick, self‑signed ECC P‑256 keys for testing, run these commands: </p>
+<pre><code># <strong>openssl ecparam -out ./nginx-ecc-p256.key -name prime256v1 -genkey</strong><br>
+# <strong>openssl req -new -key ./nginx-ecc-p256.key -out ./nginx-ecc-p256-csr.pem -subj ‘/CN=localhost’</strong><br>
+# <strong>openssl req -x509 -nodes -days 30 -key ./nginx-ecc-p256.key -in ./nginx-ecc-p256-csr.pem -out ./nginx-ecc-p256.pem</strong></code></pre>
+<h3>Compression</h3>
+<p>Gzip parameters provide granular control over how NGINX delivers content, so setting them incorrectly can decrease NGINX performance. Enabling gzip can save bandwidth, improving page load time on slow connections. (In local, synthetic benchmarks, enabling gzip might not show the same benefits as in the real world.) Try these settings for optimum performance:</p>
+<ol>
+<li>Enable gzip only for relevant content, such as text, JavaScript, and CSS files</li>
+<li>Do not increase the compression level, as this costs CPU effort without a commensurate increase in throughput</li>
+<li>Evaluate the effect of enabling compression by enabling and disabling gzip for different types and sizes of content</li>
+</ol>
+<p>More information on granular gzip control can be found in the reference documentation for the <a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_gzip_module.html" rel="noopener noreferrer">NGINX gzip module</a>. </p>
+<h3>Connection Handling</h3>
+<p>There are several tuning options related to connection handling. Please refer to the linked reference documentation for details on proper syntax, applicable configuration blocks (<code>http</code>, <code>server</code>, <code>location</code>), and so on.</p>
+<ul>
+<li><a target="_blank" href="http://nginx.org/en/docs/ngx_core_module.html#accept_mutex" rel="noopener noreferrer"><code>accept_mutex</code></a> <code>off</code>&nbsp;– All worker processes are notified about new connections (the default in NGINX&nbsp;1.11.3 and later, and NGINX&nbsp;Plus&nbsp;R10 and later). If enabled, worker processes accept new connections by turns.
+<p>We recommend keeping the default value (<code>off</code>) unless you have extensive knowledge of your app’s performance and the opportunity to test under a variety of conditions, but it can lead to inefficient use of system resources if the volume of new connections is low. Changing the value to <code>on</code> might be beneficial under some high loads.</p>
+
+</li>
+<li>
+<p><a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive" rel="noopener noreferrer"><code>keepalive</code></a> <code>128</code>&nbsp;– Enables keepalive connections from NGINX&nbsp;Plus to upstream servers, defining the maximum number of idle keepalive connections  preserved in the cache of each worker process. When this number is exceeded, the least recently used connections are closed. Without keepalives, there is more overhead and both connections and ephemeral ports are not used efficiently.</p>
+<p>For HTTP traffic, when you include this directive in an <a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_upstream_module.html#upstream" rel="noopener noreferrer"><code>upstream</code></a> block you must also include the following directives in the configuration so that they apply to all <a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#location" rel="noopener noreferrer"><code>location</code></a> blocks that proxy traffic to that upstream group (you can place them in individual such <code>location</code> blocks, in the parent <a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#server" rel="noopener noreferrer"><code>server</code></a> blocks, or at the <code>http</code> level):</p>
+<ul>
+<li><a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_http_version" rel="noopener noreferrer"><code>proxy_http_version</code></a> <code>1.1</code>&nbsp;– NGINX&nbsp;Plus uses HTTP/1.1 for proxied requests</li>
+<li><a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_set_header" rel="noopener noreferrer"><code>proxy_set_header</code></a> <code>Connection</code> <code>""</code>&nbsp;– NGINX&nbsp;Plus strips any <code>Connection</code> headers from the proxied request</li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" href="http://nginx.org/en/docs/ngx_core_module.html#multi_accept" rel="noopener noreferrer"><code>multi_accept</code></a> <code>off</code>&nbsp;– A worker process accepts one new connection at a time (the default). If enabled, a worker process accepts all new connections at once.</p>
+<p>We recommend keeping the default value (<code>off</code>), unless you’re sure there’s a benefit to changing it. Start performance testing with the default value to better measure predictable scale.</p>
+</li>
+<li>
+<p><a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering" rel="noopener noreferrer"><code>proxy_buffering</code></a> <code>on</code>&nbsp;– NGINX&nbsp;Plus receives a response from the proxied server as soon as possible, and buffers it (the default). If disabled, NGINX&nbsp;Plus passes the response to the client synchronously, as soon as it is received, which increases the load on NGINX&nbsp;Plus.</p>
+<p>Disabling response buffering is necessary only for applications that need immediate access to the data stream.</p>
+</li>
+<li>
+<p><code>listen</code> <code>80</code> <a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#reuseport" rel="noopener noreferrer"><code>reuseport</code></a>&nbsp;– Enables port sharding, which means an individual listening socket is created for each worker process (using the <code>SO_REUSEPORT</code> socket option), which allows the kernel to distribute incoming connections among worker processes. For details, see <a href="https://www.nginx.com/blog/socket-sharding-nginx-release-1-9-1/">Socket Sharding in NGINX Release&nbsp;1.9.1</a> on our blog.</p></li>
+</ul>
+<h3>Logging</h3>
+<p>Logging is an important tool for managing and auditing your system. Logging large amounts of data, and storing large logs, can strain system resources, but we recommend that you disable logging only in very specific cases or for performance troubleshooting. </p>
+<ul>
+<li><a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_log_module.html#access_log" rel="noopener noreferrer"><code>access_log</code></a> <code>off</code>&nbsp;– Disables access logging.</li>
+<li><code>access_log</code> <code>/path/to/access.log</code> <code>main</code> <code>buffer=16k</code>&nbsp;– Enables buffering to access logs.</li>
+</ul>
+<p>You may benefit from a centralized logging system based on the <a target="_blank" href="http://nginx.org/en/docs/syslog.html" rel="noopener noreferrer">syslog protocol</a>, available from many open source projects and commercial vendors. If you need metrics (which aggregate information initially recorded in logs) for NGINX and NGINX&nbsp;Plus servers, you can use <a href="https://www.nginx.com/products/nginx-amplify/">NGINX&nbsp;Amplify</a>. </p>
+<h3>Thread Pooling</h3>
+<p>Thread pooling consists of a task queue and a number of threads that handle the queue. When a worker process needs to do a potentially long operation, instead of processing the operation by itself, it puts a task in the pool’s queue, from which it can be taken and processed by any free thread. </p>
+<p>To enabling thread pooling, include the <a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#aio" rel="noopener noreferrer"><code>aio</code></a> <code>threads</code> directive. Note that the way thread pools are managed can be affected by other buffer‑related configuration settings. For complete information on tweaking other settings to support thread pooling, see <a href="https://www.nginx.com/blog/thread-pools-boost-performance-9x/">our blog</a>. </p>
+<h3>CPU Affinity</h3>
+<p>CPU affinity is used to control which CPUs NGINX&nbsp;Plus utilizes for individual worker processes (for background information, see the reference documentation for <a target="_blank" href="http://nginx.org/en/docs/ngx_core_module.html#worker_cpu_affinity" rel="noopener noreferrer"><code>worker_cpu_affinity</code></a>).</p>
+<p>In most cases, we recommend the default <code>auto</code> parameter <a target="_blank" href="http://nginx.org/en/docs/ngx_core_module.html#worker_processes" rel="noopener noreferrer"><code>worker_processes</code></a> directive; it sets the number of worker processes to match the number of available CPU cores. </p>
+<p>However, when NGINX&nbsp;Plus is running in a containerized environment such as Docker, a system admin might chose to assign fewer cores to the container that are available on the host machine. In this case, NGINX&nbsp;Plus detects the number available on the host, and rotates workers among the cores that are actually available within that container. In that case, reduce the number of workers by setting <code>worker_processes</code> to the number of cores available in the container. </p>
+<h4>Testing CPU Affinity</h4>
+<p>It’s always best to load NGINX&nbsp;Plus with traffic similar to your production traffic. However, for basic testing, you can use a load generator such as <code>wrk</code>, as described here. </p>
+<p>Load NGINX&nbsp;Plus with a quick <code>wrk</code> session:</p>
+<pre><code># <strong>wrk -t 1 -c 50 -d 20s http://localhost/1k.bin</strong></code></pre>
+<p>If necessary, you can create a simple <strong>1k.bin</strong> file for testing with: </p>
+<pre><code># <strong>dd if=/dev/zero of=1kb.bin bs=1024 count=1</strong></code></pre>
+<p>Run <code>top</code> in CPU view mode (by pressing <strong><code>1</code></strong> after <code>top</code> starts).</p>
+<p>You can repeat the test with different numbers of processes and affinity bindings to see the linear scale. That’s an effective way to set the access limit to the appropriate subset of available cores.</p>
+<h2>Sizing Recommendations</h2>
+<p>Here’s a very rough sizing approximation for general web serving and load balancing. The values might not be as approriate for VOD streaming or CDNs.</p>
+<h3>CPU</h3>
+<p>Allocate 1 CPU core per 1–2 Gbps of unencrypted traffic.</p>
+<p>Small (1–2&nbsp;KB) responses and 1&nbsp;response per connection increase CPU load.</p>
+<h3>RAM</h3>
+<p>Allocate 1&nbsp;GB for OS and other general needs.</p>
+<p>The rest is divided among NGINX&nbsp;Plus buffers, socket buffers, and virtual memory cache, with a rough estimate of 1&nbsp;MB per connection.</p>
+<h3>Details</h3>
+<ul>
+<li><code>proxy_buffers</code> (per connection)</li>
+<li><code>proxy_buffers</code> size should be chosen to avoid disk i/o. If response size is larger than (<code>proxy_buffers</code> size + <code>proxy_buffer_size</code>) the response may be written to disk, thus increasing I/O, response time, etc.</li>
+</ul>
+<h3>Shared Memory Zones</h3>
+<p>On the surface, zones are used to store data shared by multiple upstream servers, such as status, metrics, cookies, healthchecks, etc.</p>
+<p>Zones can also affect how NGINX&nbsp;Plus distributes load between various components such as worker processes, however. For full documentation on what components a zone stores and effects, please refer to the <a href="https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/#sharing-data-with-multiple-worker-processes">NGINX&nbsp;Plus Admin&nbsp;Guide</a>.</p>
+<p>It’s not possible to prescribe exact settings because usage patterns differso widely. Each feature, such as session persistence with the <a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_upstream_module.html#sticky" rel="noopener noreferrer"><code>sticky</code></a> directive, health checks, or DNS re‑resolving affects the zone size. As an example, with the <code>sticky</code> <code>route</code> session‑persistence method and a single health check enabled, a 256‑KB zone can accommodate information about the indicated number of upstream servers:</p>
+<ul>
+<li>128 servers (each defined as an IP‑address:port pair)</li>
+<li>88 servers (each defined as hostname:port pair where the hostname resolves to a single IP address)</li>
+<li>12 servers (each defined as hostname:port pair where the hostname resolves to multiple IP addresses)
+</li>
+</ul>
+<p>When creating zones, it’s important to note that the shared memory area is controlled by the name of the zone. If you use the same name for all zones, then all data from all upstreams will be stored in that zone. In this case, the size may be exceeded.</p>
+<h3>Disk I/O</h3>
+<p>The limiting factor for disk I/O is a number of I/O operations per second (iops).</p>
+<p>NGINX&nbsp;Plus depends on disk I/O and iops for a number of functions, including logging and caching.</p>
+</div></div>
+  </div>
+</body>
+</html>

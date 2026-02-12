@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using CSS Grid the right way</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using CSS Grid the right way</h1>
+    <p><strong>URL:</strong> <a href="https://vgpena.github.io/using-css-grid-the-right-way">https://vgpena.github.io/using-css-grid-the-right-way</a></p>
+    <p><strong>Tags:</strong> css</p>
+    <p><strong>Bookmark ID:</strong> 876770832</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div> <p>CSS Grid is robust, flexible, and a refreshing paradigm shift from other CSS layout systems. While these are selling points for Grid, they also make it hard to learn.</p> <p>“Learning” CSS Grid requires developing working knowledge of many new properties that don’t just describe <em>one</em> aspect of appearance or behavior, but feed into a completely new layout system. This system includes <a href="https://css-tricks.com/snippets/css/complete-guide-grid/">around 18</a> properties which use paradigms and syntax rarely (or never) seen anywhere else in the CSS spec.</p> <p>This means that CSS Grid has a pretty high <a href="https://us.battle.net/forums/en/overwatch/topic/20759355930#post-2">skill floor</a> — a developer needs to learn and internalize lots of new information in order to be effective with it. Once you’re above that skill floor, Grid is an amazing ally in layout creation. Below that skill floor, Grid is an encumbrance. You wonder why you’re bothering to use it at all, since it seems to require lots of additional work for little reward.</p> <p>In this post, I want to help you overcome that skill floor by showing you the most effective ways to leverage the Grid spec. While I’m not covering the spec in its entirety — for something like that, see <a href="https://css-tricks.com/snippets/css/complete-guide-grid/">this CSS Tricks post</a> — but what I cover here are, for me, the helpful aspects of this layout system.</p> <h2 id="use-names-not-numbers"><a href="#use-names-not-numbers">Use names, not numbers</a></h2> <p>Grid columns and rows, at their most basic, are referred to by number. For example, this CSS sets up a grid with two columns and puts the page’s main content into the second column:</p> <div><pre><code><span>.container</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>1</span><span>fr</span> <span>2</span><span>fr</span><span>;</span>
+<span>}</span>
+
+<span>.content</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>2</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>This works, but it misses an amazing feature of Grid: you can give your rows and columns specific names. You should take advantage of this whenever possible.</p> <p>Here’s the same CSS, adjusted to use names:</p> <div><pre><code><span>.container</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>sidebar</span><span>]</span> <span>1</span><span>fr</span> <span>[</span><span>content</span><span>]</span> <span>2</span><span>fr</span><span>;</span>
+<span>}</span>
+
+<span>.content</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>content</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>Even in lightweight cases like this, it's to your advantage to name grid areas.</p> <h3 tabindex="0">Benefits</h3> <p>Adding names to your grid brings a couple of major benefits.</p> <p><strong>Readability —</strong> Right off the bat, your code is easier to understand. Line 3 now <em>describes</em> everything going on inside of the Grid container. You’re not just listing out columns; you’re outlining the <em>intent</em> of each column.</p> <p>Line 7 has also become more descriptive. Previously, we only knew that <code>.content</code> lived in the second column, which doesn’t mean much without more context — column 2 out of 3? 2 of 200? Assigning a column name, however, signals that this element has specifically been accounted for within the larger system. Naming also makes it easier to find the original column declaration, should we need to.</p> <p><strong>Future-proofing —</strong> Adding names makes your CSS more flexible. Specifically, you can iterate on <code>.container</code> without having to edit <code>.content</code>.</p> <p>Want to swap the visual order of the content and the sidebar? Easy.</p> <div><pre><code><span>.container</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>content</span><span>]</span> <span>2</span><span>fr</span> <span>[</span><span>sidebar</span><span>]</span> <span>1</span><span>fr</span><span>;</span>
+<span>}</span>
+
+<span>.content</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>content</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>Want to add another column? No prob.</p> <div><pre><code><span>.container</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>related-posts</span><span>]</span> <span>1</span><span>fr</span> <span>[</span><span>sidebar</span><span>]</span> <span>1</span><span>fr</span> <span>[</span><span>content</span><span>]</span> <span>2</span><span>fr</span><span>;</span>
+<span>}</span>
+
+<span>.content</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>content</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>Without using named columns, you would have to update the column number in line 7 to reflect the changes made in line 3. Named columns give <code>.content</code> consistent behavior that’s independent of the column count or order.</p> <h2 id="use-codefrcode-as-your-flexible-unit"><a href="#use-codefrcode-as-your-flexible-unit">Use <code>fr</code> as your flexible unit</a></h2> <p>CSS Grid introduces the <code>fr</code> unit, which tells an area to occupy some fraction of the total available space. While <code>fr</code> might seem like a sidenote within the Grid spec, it's actually indispensible.</p> <p>The <code>fr</code> unit is different from <code>%</code> or <code>vw</code> because while the latter units describe portions of a 100-unit whole, <code>fr</code>s are defined by the space not already used by something else. <code>fr</code>s split up this space relative to each other.</p> <p>Here, the <code>content</code> column is twice as wide as the <code>sidebar</code> column.</p> <div><pre><code><span>.container</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>sidebar</span><span>]</span> <span>1</span><span>fr</span> <span>[</span><span>content</span><span>]</span> <span>2</span><span>fr</span><span>;</span>
+<span>}</span>
+
+<span>.content</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>content</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>Since there are no non-<code>fr</code> units and three <code>fr</code>s in total, 1fr = ~33% of the width of the grid.</p> <h3 tabindex="0">Benefits</h3> <p>The <code>fr</code> unit offers a couple of things that other flexible units lack.</p> <p><strong>Readability and clearer intent —</strong> Using <code>fr</code>s, unlike using percents, lets us stick with whole numbers that are sized relative to each other, not relative to a whole. This keeps the intended behavior clear. For example, line 3 is straightforward to translate into English: “The content is twice as wide as the sidebar”.</p> <p><code>fr</code>s also let you divvy up space in ways that would be hard to calculate (and read) using percentages.</p> <div><pre><code><span>.container</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>sidebar</span><span>]</span> <span>3</span><span>fr</span> <span>[</span><span>content</span><span>]</span> <span>4</span><span>fr</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p><strong>Less math —</strong> The biggest benefit of the <code>fr</code> is that it takes the responsibility for doing exact arithmetic away from the developer and hands it off to the browser’s layout engine. For example, <a href="https://codepen.io/vvviolet/pen/VgVExq">here’s a CodePen</a> showing two ways to make the same layout using CSS Grid.</p> <p>These lines are the crux of the demo:</p> <div><pre><code><span>.percents</span><span>,</span> <span>.frs</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-column-gap</span><span>:</span> <span>20px</span><span>;</span>
+<span>}</span>
+
+<span>.percents</span> <span>{</span>
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span><span>3</span><span>,</span> <span>calc</span><span>((</span><span>100%</span> <span>-</span> <span>40px</span><span>)/</span><span>3</span><span>))</span>
+<span>}</span>
+
+<span>.frs</span> <span>{</span>
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span><span>3</span><span>,</span> <span>1</span><span>fr</span><span>);</span>
+<span>}</span>
+</code></pre></div> <p>The code on line 7 is hard to write, hard to read, and brittle. Any change to <code>grid-column-gap</code> or to our column count will break the layout, unless we manually update the column width to match.</p> <p>Line 11 can ignore the gap size and won’t require new math if we update the column count. It’s easy to read and future-proof.</p> <h2 id="dont-use-a-grid-system"><a href="#dont-use-a-grid-system">Don’t use a grid system</a></h2> <p>This contradictory-sounding recommendation extends beyond the CSS Grid spec and bleeds into how web design works and how developers interface with designers and their work.</p> <p>Layouts are often understood as elements aligned along a grid system.</p> <p><img src="data:application/octet-stream;base64," alt="" title="A 14-column grid system." width="2147px" height="1249px"> </p> <p>Typically, development strives for exact parity with design. If designs are based on a 14-column grid, development will set up some kind of 14-column grid in code and write helper classes to make items span 1, 2, 3, 6, etc. columns. Most frontend frameworks, like <a href="https://getbootstrap.com/docs/4.3/layout/grid/">Bootstrap</a>, work this way.</p> <p>In the above example, we have a 14-column grid, with these elements to place and size:</p> <ol> <li>The header, which starts at column 2 and spans 12 columns</li> <li>The sidebar, which starts at column 2 and spans 4 columns</li> <li>The main content, which starts at column 6 and spans 8 columns</li> </ol> <p>In CSS Grid, it’s easy to set up a system that mimics the design:</p> <div><pre><code><span>.main</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-column-gap</span><span>:</span> <span>2rem</span><span>;</span>
+    <span>grid-row-gap</span><span>:</span> <span>1rem</span><span>;</span>
+    <span>grid-template-rows</span><span>:</span> <span>[</span><span>header</span><span>]</span> <span>100px</span> <span>[</span><span>body</span><span>]</span> <span>auto</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>repeat</span><span>(</span><span>14</span><span>,</span> <span>1</span><span>fr</span><span>);</span>
+<span>}</span>
+
+<span>.header</span> <span>{</span>
+    <span>grid-row</span><span>:</span> <span>header</span><span>;</span>
+    <span>grid-column</span><span>:</span> <span>2</span> <span>/</span> <span>span</span> <span>12</span><span>;</span>
+<span>}</span>
+
+<span>.sidebar</span> <span>{</span>
+    <span>grid-row</span><span>:</span> <span>body</span><span>;</span>
+    <span>grid-column</span><span>:</span> <span>2</span> <span>/</span> <span>span</span> <span>4</span><span>;</span>
+<span>}</span>
+
+<span>.content</span> <span>{</span>
+    <span>grid-row</span><span>:</span> <span>body</span><span>;</span>
+    <span>grid-column</span><span>:</span> <span>6</span> <span>/</span> <span>span</span> <span>8</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>But is this actually a good plan? Our attempt at 1:1 reproduction has two drawbacks.</p> <p>First, it foils our plan to name columns. Additionally, out of our 14 columns, we are only “using” columns 2, 5, 6, and 13. This <em>technically</em> works, but it suggests a bad signal-to-noise ratio.</p> <p>Both of these problems are solved if we can take a couple of steps away from the original design:</p> <div><pre><code><span>.main</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-column-gap</span><span>:</span> <span>2rem</span><span>;</span>
+    <span>grid-row-gap</span><span>:</span> <span>1rem</span><span>;</span>
+    <span>grid-template-rows</span><span>:</span> <span>[</span><span>header</span><span>]</span> <span>100px</span> <span>[</span><span>body</span><span>]</span> <span>auto</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>left-gutter</span><span>]</span> <span>1</span><span>fr</span> <span>[</span><span>sidebar</span><span>]</span> <span>4</span><span>fr</span> <span>[</span><span>content</span><span>]</span> <span>8</span><span>fr</span> <span>[</span><span>right-gutter</span><span>]</span> <span>1</span><span>fr</span><span>;</span>
+<span>}</span>
+
+<span>.header</span> <span>{</span>
+    <span>grid-row</span><span>:</span> <span>header</span><span>;</span>
+    <span>grid-column</span><span>:</span> <span>sidebar</span> <span>/</span> <span>right-gutter</span><span>;</span>
+<span>}</span>
+
+<span>.sidebar</span> <span>{</span>
+    <span>grid-row</span><span>:</span> <span>body</span><span>;</span>
+    <span>grid-column</span><span>:</span> <span>sidebar</span><span>;</span>
+<span>}</span>
+
+<span>.content</span> <span>{</span>
+    <span>grid-row</span><span>:</span> <span>body</span><span>;</span>
+    <span>grid-column</span><span>:</span> <span>content</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>Now instead of having fourteen columns, we only have four, but they still divide up the lateral space into fourteen parts. We have the exact same visual effect as in the first iteration, but our code is less noisy and directly reflects how it’s used.</p> <p>We can continue this paradigm throughout the layout. Say that within the <code>.content</code> element, we have a need for auxiliary information (an author bio, a blurb, etc.) next to the main article.</p> <p><img src="data:application/octet-stream;base64," alt="" title="A 14-column grid system with additional nested elements." width="2132x" height="1248px"> </p> <p>If we have adhered tightly to the 14-column grid, it appears that we need something like this:</p> <div><pre><code><span>.content</span> <span>{</span>
+    <span>grid-row</span><span>:</span> <span>body</span><span>;</span>
+    <span>grid-column</span><span>:</span> <span>6</span> <span>/</span> <span>span</span> <span>8</span><span>;</span>
+<span>}</span>
+
+<span>.article</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>7</span> <span>/</span> <span>span</span> <span>4</span><span>;</span>
+<span>}</span>
+
+<span>.info</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>11</span> <span>/</span> <span>span</span> <span>2</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>Which will be tricky, since CSS Grid has no concept of inheritance. <code>.info</code> doesn’t know anything about the grid set up on <code>.main</code>, its grandparent element.</p> <p>If we have let go of the literal 14-column grid, however, we may notice that <code>.article</code> and <code>.info</code> don’t <em>need</em> to know anything about the top-level grid — they’re part of a new grid inside of <code>.content</code>.</p> <div><pre><code><span>.content</span> <span>{</span>
+    <span>grid-row</span><span>:</span> <span>body</span><span>;</span>
+    <span>grid-column</span><span>:</span> <span>content</span><span>;</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>left-gutter</span><span>]</span> <span>1</span><span>fr</span> <span>[</span><span>article</span><span>]</span> <span>4</span><span>fr</span> <span>[</span><span>info</span><span>]</span> <span>2</span><span>fr</span> <span>[</span><span>right-gutter</span><span>]</span> <span>1</span><span>fr</span><span>;</span>
+    <span>grid-column-gap</span><span>:</span> <span>2rem</span><span>;</span>
+<span>}</span>
+
+<span>.article</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>article</span><span>;</span>
+<span>}</span>
+
+<span>.info</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>info</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>Using this setup, <code>.content</code> is simple and internally consistent, but also aligns perfectly with our outer columns set up on <code>.main</code>.</p> <h3 tabindex="0">Benefits</h3> <p>In addition to what I’ve already outlined, looser adherence to the original design system sets us up as developers to leverage our expertise and our tools — the browser — more effectively. Pixels and columns are less salient than relationships and proportional space.</p> <p>It’s not significant that <code>.article</code> starts at column 7 and <code>.info</code> at column 11. It <em>is</em> significant that <code>.article</code> is twice as wide as <code>.info</code>. Thinking about elements proportionally and questioning how they interact with each other helps us treat layouts as dynamic systems.</p> <h3 tabindex="0">Sidenote: Nesting Markup</h3> <p>One thing you may have noticed about the code samples in this section is the usage of <code>left-gutter</code> and <code>right-gutter</code> columns. This CSS assumes the most flat HTML possible.</p> <div><pre><code><span>&lt;div</span> <span>class=</span><span>"main"</span><span>&gt;</span>
+    <span>&lt;div</span> <span>class=</span><span>"header"</span><span>&gt;&lt;/div&gt;</span>
+    <span>&lt;div</span> <span>class=</span><span>"sidebar"</span><span>&gt;&lt;/div&gt;</span>
+    <span>&lt;div</span> <span>class=</span><span>"content"</span><span>&gt;&lt;/div&gt;</span>
+<span>&lt;/div&gt;</span>
+</code></pre></div><div><pre><code><span>.main</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>left-gutter</span><span>]</span> <span>1</span><span>fr</span> <span>[</span><span>sidebar</span><span>]</span> <span>4</span><span>fr</span> <span>[</span><span>content</span><span>]</span> <span>8</span><span>fr</span> <span>[</span><span>right-gutter</span><span>]</span> <span>1</span><span>fr</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>If we are willing to put a wrapper div into the markup, we can write more direct CSS with fewer columns per element.</p> <div><pre><code><span>&lt;div</span> <span>class=</span><span>"main"</span><span>&gt;</span>
+    <span>&lt;div</span> <span>class=</span><span>"wrapper"</span><span>&gt;</span>
+    <span>&lt;div</span> <span>class=</span><span>"header"</span><span>&gt;&lt;/div&gt;</span>
+    <span>&lt;div</span> <span>class=</span><span>"sidebar"</span><span>&gt;&lt;/div&gt;</span>
+    <span>&lt;div</span> <span>class=</span><span>"content"</span><span>&gt;&lt;/div&gt;</span>
+    <span>&lt;/div&gt;</span>
+<span>&lt;/div&gt;</span>
+</code></pre></div><div><pre><code><span>.main</span> <span>{</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>left-gutter</span><span>]</span> <span>1</span><span>fr</span> <span>[</span><span>wrapper</span><span>]</span> <span>12</span><span>fr</span> <span>[</span><span>right-gutter</span><span>]</span> <span>1</span><span>fr</span><span>;</span>
+<span>}</span>
+
+<span>.wrapper</span> <span>{</span>
+    <span>grid-column</span><span>:</span> <span>wrapper</span><span>;</span>
+    <span>display</span><span>:</span> <span>grid</span><span>;</span>
+    <span>grid-template-columns</span><span>:</span> <span>[</span><span>sidebar</span><span>]</span> <span>1</span><span>fr</span> <span>[</span><span>content</span><span>]</span> <span>2</span><span>fr</span><span>;</span>
+<span>}</span>
+</code></pre></div> <p>The second approach feels inherently better because the math is simpler — you get to stop worrying as soon as possible about numbers that add to 14 and just think about a 1:2 ratio. This feels true to the spirit of CSS Grid.</p> <p>What doesn’t feel true to CSS Grid, though, is adding the <code>.wrapper</code> div. Grid works hard to help us separate presentation from content — i.e., we don’t need to add extra elements to make the styling work or “behave nicely”. So, at least for today, I encourage you <em>not</em> to add or change markup for the sole purpose of cleaner CSS Grid styling.</p> <h2 id="coda"><a href="#coda">Coda</a></h2> <p>Thanks for coming on this CSS Grid journey with me! I’ve been using and loving it over the past couple of months, and I hope this helps you understand and use it on your end 💐</p> <p>To reiterate my points from the intro, CSS Grid is easy to use but difficult to learn. It’s a more intuitive paradigm than any other CSS layout technique, but it’s completely different from its predecessors.</p> <p>All this to say: take Grid as slowly as you need to. Don’t try to understand it all just from reading the spec. Set up simple examples, pop open that web inspector (especially in Firefox!), and be kind to yourself.</p> <p>It’ll be worth it.</p> <h2 id="changelog"><a href="#changelog">Changelog</a></h2> <ul> <li>3/1/2020: Fixed column typo (<a href="https://github.com/vgpena/vgpena.github.io/issues/5">#5</a>)</li> </ul> </div></div>
+  </div>
+</body>
+</html>

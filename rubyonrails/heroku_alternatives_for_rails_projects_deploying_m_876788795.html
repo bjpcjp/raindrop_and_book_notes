@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Heroku alternatives for Rails projects: Deploying my shit to fly.io</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Heroku alternatives for Rails projects: Deploying my shit to fly.io</h1>
+    <p><strong>URL:</strong> <a href="https://richstone.io/heroku-alternatives-for-rails-projects-deploying-my-shit-on-fly-io">https://richstone.io/heroku-alternatives-for-rails-projects-deploying-my-shit-on-fly-io</a></p>
+    <p><strong>Tags:</strong> heroku, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876788795</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+      <p>I like to develop production projects <strong>and</strong> side projects as deployment-driven as possible. Over the years I had tons of projects on Heroku and I'm grateful for the experience 🙏 But if tons of projects are to come again, I don't see a point in paying 7$ bucks per side-project.</p><p>Luckily Heroku <a href="https://blog.heroku.com/new-low-cost-plans?ref=richstone.io">seems to be coming up with a 5$ bucks plan</a> that gives you 1000 hours across multiple Dynos, so I won't migrate my existing projects away for now and pay the 5 bucks, no questions asked.</p><p>But for my new side projects, I'm checking out alternatives cause after the 1k hours I would need to pay 7$ per project monthly just for my own enjoyment...</p><h2 id="enter-new-project">Enter new project</h2><p>So I had a very simple app set up locally in a state that was workable for me as an admin and for my 0.5 users, it's now online here:</p><figure><a href="https://developer-pursuit.fly.dev/?ref=richstone.io"><div><p>Developer Pursuit</p><p><img src="data:application/octet-stream;base64," alt=""></p></div><p><img src="data:application/octet-stream;base64," alt=""></p></a></figure><p>It had 1 public controller, and 2 resources with admin controllers hidden behind basic auth, so just an app for someone to manage some data.</p><p>It was time to deploy (actually it was already pretty late, I would have deployed earlier, but I knew that this would be the project where I'll play around with an alternative).</p><p>I already heard colleagues mentioning <a href="https://fly.io/?ref=richstone.io">fly.io</a> and when deploy was due for my new shiny app I did another round of Reddit research. And again, lots of fly.io so here we are.</p><h2 id="things-i-wasnt-sure-about-initially">Things I wasn't sure about initially:</h2><p><strong>how much time will this be?</strong></p><p>I ran into a couple of issues, all in all it took me around an hour. Overall, it's just a couple of commands for a really fresh Rails app, all configuration is taken care of.</p><p><strong>"shit I need to dive into Docker"</strong></p><p><code>$ fly launch</code> sets up a Docker file, so no additional digging needed here. Not sure if that stays like this in the longterm when your app is growing...</p><p>The command creates:</p><pre><code>Dockerfile
+fly.toml
+.dockerignore</code></pre><p>So I guess you can configure your own freestyle from there.</p><h2 id="things-im-still-not-sure-about">Things I'm still not sure about:</h2><p><strong>how free is it really?</strong></p><p>Didn't find it anywhere, but someone on Reddit mentioned a 5$ cap, which should be plenty for hobby apps. fly.io says, "you can keep it free as long as you want", whatever that means.</p><p><strong>automating CI and CD?</strong></p><p>For Continous Deployment/Delivery: Heroku was built with just that in mind, you change your mainline in the heroku repo, i. e. push your code, which updates the code and the project package on your production machine automatically. So sweet.</p><p>Heroku had also "pipelines" for Continuous Integration stuff.</p><p>For fly.io this will need additional configuration, like configuring GitHub actions with the fly.io CLI (which is really nice to work with by the way).</p><p><strong>monitoring capabilities?</strong></p><p>In Heroku, if you want to know anything about your app (apart from logs) you need to Pay for a higher plan than the free plan. </p><p>The fly.io dashboard has monitoring, metrics, and logging, all in one place. You'll also get some advanced Grafana metrics out-of-the-box</p><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy" width="1917" height="1039"></figure><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy" width="1602" height="828"></figure><h2 id="issues-i-ran-into-with-the-first-deploy"><strong>Issues I ran into with the first deploy</strong></h2><p>I think it's natural for every new PaaS tool to have a bit of a learning curve. Here are a couple of things I needed to understand to get my newest goo code to fly.</p><h3 id="error-1error-failed-attaching-db-to-the-postgres-clusterno-such-host">Error 1 - Error Failed attaching db to the Postgres cluster - no such host</h3><p>When setting up the app, I got an error at the end:</p><pre><code>$ fly launch
+
+... lots of output ...
+
+Error Failed attaching developer-pursuit-db to the Postgres cluster developer-pursuit: Get "http://developer-pursuit-db.internal:5500/commands/databases/developer_pursuit": dial: lookup developer-pursuit-db.internal. on fdaa:0:c09a::3: no such host.\nTry attaching manually with 'fly postgres attach --app developer-pursuit developer-pursuit-db'
+</code></pre><p>This seems to be a transient fly.io issue from what I've read on their forum. It can be fixed with the terminal command that's suggested in the error message:</p><pre><code>$ fly postgres attach --app developer-pursuit developer-pursuit-db
+</code></pre><h3 id="error-2failed-due-to-unhealthy-allocations">Error 2 - Failed due to unhealthy allocations</h3><pre><code>$ fly deploy
+
+... lots of output ...
+
+--&gt; v1 failed - Failed due to unhealthy allocations - no stable job version to auto revert to and deploying as v2 
+</code></pre><p>That was a nasty one. There's a bit of a cryptic error when your app fails after booting.</p><p>The fly.io docs first point to PORT issues, but checking the env configs, port looked just fine:</p><figure><pre><code>$ fly configs
+
+Environment variables
+NAME VALUE 
+PORT 8080  
+</code></pre><figcaption>fly.io expects port 8080 to be configured within your app, and Rails makes use of <code>ENV.fetch("PORT") { 3000 }</code> to set the port.</figcaption></figure><p>After a bit of despair, I reached for the <code>$ fly logs</code> command and saw the actual stack trace of the Rails app which pointed to an unset <code>ENV</code> variables that I was using for... 🥁 ... Basic auth 🎉</p><p>I've set the variables with the <code>$ fly secrets</code> utility and the app ran just fine.</p><h2 id="conclusion">Conclusion</h2><p>The overall experience is very good. It sucks to run into cryptic errors when you first try things out, but this was all reasonable and solvable with a bit of thinking and research.</p><p>The command line feels very nice and similar to heroku so far.</p><p>Configs are served for you automagically and you are in full control of the deploy, but if you don't automate it via GitHub actions or similar, you will mess things up eventually. But that's additional work...</p><p>I'll probably stick for my old projects with Heroku for the 5$ bucks per 1k hours and generally fallback to fly.io for new projects.</p><hr><p>If you have any comments or questions:</p><figure>
+    <blockquote>
+      <a href="https://www.reddit.com/r/ruby/comments/ybftgn/heroku_alternatives_for_rails_projects_deploying/?ref_source=embed&amp;ref=share">Heroku alternatives for Rails projects: Deploying my shit on fly.io</a> from
+      <a href="https://www.reddit.com/r/ruby/?ref=richstone.io">ruby</a>
+    </blockquote>
+    
+<figcaption>-</figcaption></figure><hr><p>Other stuff? Just tweet it out to me!</p><!--kg-card-begin: html--><a href="https://twitter.com/intent/tweet?screen_name=RichStoneIO&amp;ref_src=twsrc%5Etfw&amp;ref=richstone.io" data-show-count="false">Tweet to @RichStoneIO</a><!--kg-card-end: html--><hr>
+    </article></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Faster and simpler with the command line: deep-comparing two 5GB JSON files 3X faster by ditching the code</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Faster and simpler with the command line: deep-comparing two 5GB JSON files 3X faster by ditching the code</h1>
+    <p><strong>URL:</strong> <a href="https://genius.engineering/faster-and-simpler-with-the-command-line-deep-comparing-two-5gb-json-files-3x-faster-by-ditching-the-code">https://genius.engineering/faster-and-simpler-with-the-command-line-deep-comparing-two-5gb-json-files-3x-faster-by-ditching-the-code</a></p>
+    <p><strong>Tags:</strong> json</p>
+    <p><strong>Bookmark ID:</strong> 876782459</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+		<section>
+				<!--kg-card-begin: markdown--><p>As part of our <a href="https://genius.com/a/genius-gets-smart-with-apple-music?ref=genius.engineering">recently announced deal with Apple Music</a>, you can now view Genius lyrics for your favorite music within the Apple Music app.</p>
+<p>We deliver our lyrics to Apple via a nightly export of newline-delimited JSON objects. With millions of songs in our catalog, these dumps can easily get as big as 5 GB. It’s not quite “big data”, but it’s also not something you can easily open in vim.</p>
+<p>Our first iteration of the code that generated these nightly exports was slow and failure-prone. So, we recently did a ground up rewrite focused on speed and reliability, which yielded significant improvements on both axes—stay tuned for a future blog post on that subject. But other than spot-checking with small data sets, how could we make sure that the new export process wasn’t introducing regressions? We decided to run both export processes concurrently and compare the generated exports from each method to make sure the new version was a comprehensive replacement.</p>
+<p>What’s the best way to compare these two 5GB files? A good first check is whether the new and old exports have the same number of lines; we can do this on the command line by dividing <code>wc -l</code> (line count) of the old export by <code>wc -l</code> of the new export using <code>bc</code>. If you haven’t seen <code>bc</code> before, don't worry: I hadn't either! It’s a tool to do simple arithmetic in the console.</p>
+<pre><code>$ <span>echo</span> <span>"scale=3; <span>$(wc -l &lt; old_export.json)</span> / <span>$(wc -l &lt; new_export.json)</span>"</span> | bc
+.<span>999</span>
+</code><p><span>1</span><span>2</span></p></pre>
+<p>Ok great! The old export has 99.9% of the line count of the new export, meaning the new version actually has <em>more</em> lines than the old export, so off to a good start.</p>
+<p>Next, we can use <code>diff</code> to get the percentage of lines that are different between the new and old export. We'll use the <code>--side-by-side</code> and <code>--suppress-common-lines</code> flags so that we can pipe the output from <code>diff</code> directly to <code>wc</code> to get a count of total lines that differ between the two exports.</p>
+<pre><code>$ <span>echo</span> <span>"scale=3; <span>$(diff --side-by-side --suppress-common-lines old_export.json new_export.json | wc -l)</span> / <span>$(wc -l &lt; new_export.json)</span>"</span> | bc
+<span>1.000</span>
+</code><p><span>1</span><span>2</span></p></pre>
+<p>OOPS! Our diff is showing 100% of the lines differing.. either we seriously screwed up with this new export or our diff methodology is flawed.</p>
+<p>Let's take a look at how these objects are structured (payload slightly modified for simplicity):</p>
+<pre><code><span>$ </span>head -n2 old_export.json
+{<span>"genius_id"</span><span>:</span><span>1</span>,<span>"title"</span><span>:<span>"Killa Cam"</span></span>,<span>"artist"</span><span>:<span>"Cam’ron"</span></span>,<span>"featured_artists"</span><span>:</span>[<span>"Opera Steve"</span>],<span>"producers"</span><span>:</span>[<span>"The Heatmakerz"</span>],<span>"url"</span><span>:<span>"https://genius.com/Camron-killa-cam-lyrics"</span></span>,<span>"lyrics"</span><span>:<span>"..."</span></span>}
+{<span>"genius_id"</span><span>:</span><span>3</span>,<span>"title"</span><span>:<span>"Can I Live"</span></span>,<span>"artist"</span><span>:<span>"JAY-Z"</span></span>,<span>"featured_artists"</span><span>:[]</span>,<span>"producers"</span><span>:</span>[<span>"Irv Gotti"</span>], <span>"url"</span><span>:<span>"https://genius.com/Jay-z-can-i-live-lyrics"</span></span>,<span>"lyrics"</span><span>:<span>"..."</span></span>}
+</code><p><span>1</span><span>2</span><span>3</span></p></pre>
+<p>Fairly standard newline-delimited JSON. Let's look at the new export:</p>
+<pre><code><span>$ </span>head -n2 new_export.json
+{<span>"url"</span><span>:</span> <span>"https://genius.com/Lil-wayne-fly-out-lyrics"</span>, <span>"title"</span><span>:</span> <span>"Fly Out"</span>, <span>"artist"</span><span>:</span> <span>"Lil Wayne"</span>, <span>"lyrics"</span><span>:</span> <span>"..."</span>, <span>"genius_id"</span><span>:</span> <span>23</span>, <span>"producers"</span><span>:</span> [<span>"Marques Houston"</span>, <span>"T-Mix"</span>], <span>"featured_artists"</span><span>:</span> []}
+{<span>"url"</span><span>:</span> <span>"https://genius.com/Wu-tang-clan-cream-lyrics"</span>, <span>"title"</span><span>:</span> <span>"C.R.E.A.M."</span>, <span>"artist"</span><span>:</span> <span>"Wu-Tang Clan"</span>, <span>"lyrics"</span><span>:</span> <span>"..."</span>, <span>"genius_id"</span><span>:</span> <span>28</span>, <span>"producers"</span><span>:</span> [<span>"RZA"</span>],<span>"featured_artists"</span><span>:</span> []}
+</code><p><span>1</span><span>2</span><span>3</span></p></pre>
+<p>Yikes, it appears that not only does the new export methodology not order songs in the same way, it doesn't have the same order of keys within each JSON object. This means that even if the actual JSON content of the files was 100% the same, it would look 100% different with our naive <code>diff</code> strategy.</p>
+<h3 id="enterjq">Enter <code>jq</code></h3>
+<p>My first thought was to write a ruby script to parse and compare the two exports, but after spending a little time coding something up I had a program that was starting to get fairly complicated, didn't work correctly, <em>and</em> was too slow—my first cut took well over an hour. Then I thought: is this one of those situations where a simple series of shell commands can replace a complex purpose-built script?</p>
+<p>Enter <code>jq</code>, <a href="https://stedolan.github.io/jq/?ref=genius.engineering">a powerful command-line tool for processing JSON objects</a>. Note: <code>jq</code> is not related to jQuery, but its name does make googling for examples a little tricky! Up until this point I had mostly used <code>jq</code> for pretty-printing JSON, a feature it is quite good at. For example, you can do:</p>
+<pre><code>$ curl <span>-s</span> https://api.cdnjs.com/libraries/jquery | jq
+</code><p><span>1</span></p></pre>
+<p>And see a nice pretty-printed version of the CDNJS response for jQuery.</p>
+<p><code>jq</code> also allows you to dig out specific fields from some JSON, e.g. going back to our exports, to get the list of ids from each export:</p>
+<pre><code><span>$ </span>head -n2 old_export.json | jq <span>'.genius_id'</span>
+<span>1</span>
+<span>3</span>
+<span>$ </span>head -n2 new_export.json | jq <span>'.genius_id'</span>
+<span>23</span>
+<span>28</span>
+</code><p><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></p></pre>
+<p>That's pretty much all I had used <code>jq</code> for before looking through these exports. But it turns out that <code>jq</code> is incredibly powerful as a tool for processing JSON (check out <a href="https://github.com/stedolan/jq/wiki/Cookbook?ref=genius.engineering">the <code>jq</code> cookbook</a> to see some of the neat things that are possible). You can run entire programs, or “filters” as <code>jq</code> calls them (“filter” because it takes an input and produces an output), to iterate over, modify, and transform JSON objects.</p>
+<p>How can we use it to solve the problem at hand, diffing these two large JSON files?</p>
+<p>Well first we need to sort these files so that tools like <code>diff</code> can easily compare them. But we can't just use <code>sort</code>; we need to sort them by the value of the <code>genius_id</code>s in their payload.</p>
+<p>It turns out this is quite easy with <code>jq</code>. To sort the exports by <code>genius_id</code> we can run:</p>
+<pre><code><span>$ </span>cat old_export.json | jq -csMS <span>'sort_by(.genius_id)[]'</span> &gt; sorted_old_export.json
+<span>$ </span>cat new_export.json | jq -csMS <span>'sort_by(.genius_id)[]'</span> &gt; sorted_new_export.json
+</code><p><span>1</span><span>2</span></p></pre>
+<p>Running through these options:</p>
+<ul>
+<li><code>-c / --compact-output</code> makes sure the JSON objects remain compact and not pretty printed</li>
+<li><code>-s / --slurp</code> reads each object into an in-memory array instead of processing one object at a time, which we need in order to sort the file</li>
+<li><code>-M / --monochrome-output</code> prevents the JSON from being colorized in the terminal</li>
+<li><code>-S / --sort-keys</code> makes sure that each JSON object's keys are sorted, ensuring that the order of keys within each object payload is consistent between exports when we compare them</li>
+</ul>
+<p>And, of course, the <code>jq</code> expression to sort the file itself is quite terse! It's just <code>sort_by(.genius_id)</code>, which sorts the slurped in array by id, and then there's a little <code>[]</code> on the end which basically splays the sorted array back out into newline-delimited JSON.</p>
+<p>This takes a little while, but once it's done we've got two sorted files ready to be compared!</p>
+<p>But wait.. not so fast. There are still a few keys in our export, specifically <code>featured_artists</code> and <code>producers</code> that are arrays of string values, and it's not guaranteed that each export will generate those in the same order.</p>
+<p>Not to worry: <code>jq</code> has a solution to that problem too! We want to sort each of those keys in the output as well, which we can do by complicating our expression just a little more:</p>
+<pre><code><span>$ </span>cat old_export.json | jq -csMS <span>'map(.featured_artists |= sort | .producers |= sort) | sort_by(.genius_id)[]'</span> &gt; sorted_old_export.json
+</code><p><span>1</span></p></pre>
+<p>So now the expression is a little more tricky. Let's break it down.</p>
+<ul>
+<li><code>map</code> does what you expect and maps over each object, much as <code>sort_by</code> operates on each object.</li>
+<li>Within that <code>map</code> operation we're first calling <code>.featured_artists |= sort</code>, which uses the <a href="https://stedolan.github.io/jq/manual/?ref=genius.engineering#Update-assignment:%7C="><code>|=</code> update operator</a> to do an in-place alphabetic sort on the <code>featured_artists</code> array. This is a bit confusing, but all it's doing is running the value of <code>featured_artists</code> through a <code>sort</code> "filter", sorting it, then assigning that sorted value back to the <code>featured_artists</code> key of the object, and passing on the the entire object that <code>featured_artists</code> key is in. It would be equivalent to <code>map(.featured_artists = (.featured_artists | sort))</code>. If you don't know what that <code>|</code> does, don't worry.. read on!</li>
+<li>Next up we use <a href="https://stedolan.github.io/jq/manual/?ref=genius.engineering#Pipe:%7C"><code>|</code> operator</a> to pipe the previous step to our next step which just sorts the <code>producers</code> array exactly as we did the <code>featured_artists</code> array. The pipe operator works exactly like the unix-style pipe on the command line, so we're essentially sorting the <code>featured_artists</code> array, returning the full object it resides in, and then running that same operation for <code>producers</code> on the result.</li>
+<li>And then we just feed that object with its sorted arrays into our sort operator from before using another pipe.</li>
+</ul>
+<p>And voila! We've got two normalized 5 GB JSON blobs, all that's left is to feed them back into our <code>diff</code> operation just like before to see how similar they are:</p>
+<pre><code>$ <span>echo</span> <span>"scale=3; <span>$(diff --side-by-side --suppress-common-lines sorted_old_export.json sorted_new_export.json | wc -l)</span> / <span>$(wc -l &lt; sorted_new_export.json)</span>"</span> | bc
+.<span>002</span>
+</code><p><span>1</span><span>2</span></p></pre>
+<p>So after all that normalizing we find that only 0.2% of the lines differ between the exports! That's an incredible start for a complete rewrite of fairly complicated export process. Plus this whole thing takes about 10 minutes to generate each normalized file on my macbook pro and then less than a minute to compare them, already much faster than my naive ruby script.</p>
+<p>The final step was looking through specific differing examples to figure out why the logic produced slightly different export outputs, but getting into the details of that is application logic and not what this post is about.</p>
+<p>Hopefully now you'll reach for <code>jq</code> the next time you want to manipulate JSON files on the command line.. or at least if you want to pretty print an API response.</p>
+<h2 id="additionaldiscussion">Additional discussion</h2>
+<p>One thing that bugged me about this solution was the explicit sorting of each key. What if we later added more arrays, or if we had deeply nested objects! Since we were just comparing two specific export results with an unchanging schema over the course of a couple of weeks, this didn't really matter, but it was bugging me so I poked around looking for a more generic way of normalizing JSON objects.</p>
+<p>If you check out the <a href="https://github.com/stedolan/jq/wiki/FAQ?ref=genius.engineering#general-questions"><code>jq</code> FAQ</a> you'll find that there was a function called <code>walk</code> introduced as a built-in after 1.5, which allows you deeply iterate through JSON objects and modify them. It wasn't in the version I was using but it was simple enough to copy it into my program, which it turns out made the code much simpler:</p>
+<pre><code><span># from https://github.com/stedolan/jq/wiki/FAQ#general-questions</span>
+
+<span><span>def</span> <span>walk</span><span>(f)</span>:</span>
+  . <span>as</span> $<span>in</span>
+    | <span>if</span> type == <span>"object"</span> then
+    reduce keys_unsorted[] <span>as</span> $key
+    ( {}; . + { ($key):  ($<span>in</span>[$key] | walk(f)) } ) | f
+    <span>elif</span> type == <span>"array"</span> then map( walk(f) ) | f
+    <span>else</span> f
+    end;
+
+<span># actual custom jq program</span>
+walk( <span>if</span> type == <span>"array"</span> then sort <span>else</span> . end ) | sort_by(.genius_id)[]
+</code><p><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span></p></pre>
+<p>It turned out that this also made it significantly slower to normalize each file, so I ended up just using the more verbose and brittle version, but the <code>walk</code> version is a lot cleaner!</p>
+<p>Also, you might be curious how you can run the above file.. you can also run <code>jq</code> program files using the <code>-f</code> option, so:</p>
+<pre><code>$ cat my_file.json | jq -csMS <span>-f</span> normalize.jq
+</code><p><span>1</span></p></pre>
+<!--kg-card-end: markdown-->
+        <p>
+          <span>
+            Share on:
+            <a href="https://twitter.com/share?text=Faster%20and%20simpler%20with%20the%20command%20line:%20deep-comparing%20two%205GB%20JSON%20files%203X%20faster%20by%20ditching%20the%20code&amp;url=https://genius.engineering/faster-and-simpler-with-the-command-line-deep-comparing-two-5gb-json-files-3x-faster-by-ditching-the-code/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">Twitter</a>, 
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://genius.engineering/faster-and-simpler-with-the-command-line-deep-comparing-two-5gb-json-files-3x-faster-by-ditching-the-code/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">Facebook</a>
+          </span>
+        </p>
+			</section>
+	</article></div>
+  </div>
+</body>
+</html>

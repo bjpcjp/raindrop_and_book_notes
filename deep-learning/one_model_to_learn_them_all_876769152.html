@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>One model to learn them all</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>One model to learn them all</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2018/01/12/one-model-to-learn-them-all">https://blog.acolyer.org/2018/01/12/one-model-to-learn-them-all</a></p>
+    <p><strong>Tags:</strong> deep-learning</p>
+    <p><strong>Bookmark ID:</strong> 876769152</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-6296">
+	<!-- .entry-header -->
+
+	<div>
+		<p><a href="https://arxiv.org/abs/1706.05137">One model to learn them all</a> Kaiser et al., <em>arXiv 2017</em></p>
+<p>You almost certainly have an abstract conception of a banana in your head.</p>
+<p>Suppose you ask me if I’d like anything to eat. I can <em>say</em> the word ‘banana’ (such that you <em>hear</em> it spoken), send you a text message whereby you <em>see</em> (and read) the word ‘banana,’ show you a <em>picture</em> of a banana, and so on. All of these different modalities (the sound waves, the written word, the visual image) tie back to the same concept – they are different ways of ‘inputting’ the banana concept. Your conception of bananas is independent of the way the thought popped into your head. Likewise, as an ‘output’ I could ask you to <em>say</em> the word banana, <em>write</em> the word banana, draw a <em>picture</em> of a banana, and so on. We are able to reason about such concepts independently of the input and output modalities. And we seem able to reuse our conceptual knowledge of bananas in many different contexts (i.e., across many different tasks).</p>
+<p>Deep neural networks are typically designed and tuned for the problem at hand. <em>Generalisation</em> helps such a network to do well on new instances of the same problem not seen before, and <em>transfer learning</em> sometimes gives us a leg up by reusing e.g., learned feature representations from within the same domain. There do exist multi-task models, “<em>but all these models are trained on other tasks from the same domain: translation tasks are trained with other translation tasks, vision tasks with other vision tasks, speech tasks with other speech tasks</em>.”  It’s as if we had one concept for the written word ‘banana’, another concept for pictures of bananas,  and another concept for the spoken word ‘banana’ – but these weren’t linked in any way. The central question in today’s paper choice is this:</p>
+<blockquote><p>
+  Can we create a unified deep learning model to solve tasks across multiple domains?
+</p></blockquote>
+<p>What would we need in order to be able to do that? We’d need to be able to support different input and output modalities (as required by the task in hand), we’d need a common representation of the learned knowledge that was shared across all of these modalities, and we’d need sufficient ‘apparatus’ such that tasks which need a particular capability (e.g. attention) are able to exploit it. ‘One model to rule them all’ introduces a <em>MultiModel</em> architecture with exactly these features, and it performs impressively well.</p>
+<p>A <em>single instance</em> of the MultiModel architecture is trained <em>simultaneously</em> on eight different different tasks based on the following datasets:</p>
+<ol>
+<li>WSJ speech corpus</li>
+<li>ImageNet</li>
+<li>COCO image captioning dataset</li>
+<li>WJS parsing dataset</li>
+<li>WMT English-German translation corpus</li>
+<li>The reverse of the above, German-English</li>
+<li>WMT English-French translation corpus</li>
+<li>The reverse of the above, French-English (the paper says ‘German-French’ here, but that’s not the reverse, and looks to be a cut-and-paste error?)</li>
+</ol>
+<p>Here are some examples of the single trained model performing a variety of different tasks:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/01/one-model-fig-1.jpeg?w=640" alt=""></p>
+<blockquote><p>
+  … it is clear that it can caption images, categorize them, translate to French and German and construct parse trees.
+</p></blockquote>
+<p>It may not achieve state-of-the-art results on all of these tasks, but it does beat many recently studied task-specific models.</p>
+<h3>MultiModel under the hood</h3>
+<p>At a high level, the MultiModel architecture looks like this:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/01/one-model-fig-2.jpeg?w=640" alt=""></p>
+<p>There are small, <em>modality-specific</em> sub-networks that convert into a unified representation and back from it.</p>
+<blockquote><p>
+  We call these sub-networks modality nets as they are specific to each modality (images, speech, text) and define transformations between these external domains and a unified representation. We design modality nets to be computationally minimal, promoting heavy feature extraction and ensuring that the majority of computation is performed within the domain-agnostic body of the model.
+</p></blockquote>
+<p>Different tasks from the some domain (e.g., different speech tasks) <em>share the same modality nets</em>. We do not have one modality net per task, merely one modality net per modality. Another important design decision was to allow the unified representation to be variable in size (as opposed to a fixed-size representation which ended up creating a bottleneck and limiting performance).</p>
+<p>The outputs of the modality nets become the inputs to a shared <strong>encoder</strong> which creates the unified representation. An <strong>I/O mixer</strong> combines the encoded inputs with the previous outputs (the MultiModel is <em>autoregressive</em>, i.e., it uses past output values to help predict the next output), and a <strong>decoder</strong> processes the inputs and the mixture to generate new outputs.</p>
+<blockquote><p>
+  To allow the decoder to produce outputs for different tasks even with the same modality, we always start decoding with a command-token, such as ‘To-English’ or ‘To-Parse-Tree.’ We learn an embedding vector corresponding to each of the tokens during training.
+</p></blockquote>
+<p>As we observed previously, to ensure good performance across a variety of tasks, the MultiModel needs the right apparatus at its disposal. To this end, the MultiModel incorporates building blocks from multiple domains including separable convolutions (first introduced in the context of image problems), an attention mechanism, and sparsely-gated mixture-of-experts layers (first introduced for language processing).</p>
+<blockquote><p>
+  We find that each of these mechanisms is indeed crucial for the domain it was introduced, e.g., attention is far more important for language-related tasks than for image-related ones. But, interestingly, adding these computational blocks never hurts performance, even on tasks they were not designed for. In fact, we find that both attention and mixture-of-experts layers slightly improve performance of MultiModel on ImageNet, the task that needs them least.
+</p></blockquote>
+<p>Putting all these pieces together we end up with an architecture that looks like this:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/01/one-model-fig-3.jpeg?w=640" alt=""><br>
+(<a href="https://blog.acolyer.org/wp-content/uploads/2018/01/one-model-fig-3.jpeg">Enlarge</a>).</p>
+<p>The encoder, mixer and decoder are structurally similar to previous fully convolutional sequence models, but use different computational blocks. The encoder has 6 repeated convolutional blocks with a mixture-of-experts layer in the middle. The mixer has an attention block and 4 convolutional blocks. The decoder has 4 blocks of convolution and attention, with a mixture-of-experts layer in the middle.</p>
+<h3>MultiModel in action</h3>
+<p>After being simultaneously trained on the eight tasks, the authors set out to determine:</p>
+<ol>
+<li>How close the MultiModel gets to state-of-the-art results in each task</li>
+<li>How training on 8 tasks simultaneously compares to training on each task separately, and</li>
+<li>How the different computational blocks influence different tasks.</li>
+</ol>
+<p>The results achieved by MultiModel are similar to the ones that task-specific models get without heavy tuning (‘<em>E.g., on English-French translation we improve on the Extended Neural GPU results reported last year</em>’). Since there wasn’t much tuning done on the MultiModel, it is reasonable to expect the gap to close further.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/01/one-model-table-1.jpeg?w=480" alt=""></p>
+<p>The jointly trained model turns out to perform similarly to individually trained models on tasks where large amounts of data are available. But most interestingly, <em>it performs better, sometimes significantly, on tasks where less data is available, such as parsing</em>.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/01/one-model-table-2.jpeg?w=480" alt=""></p>
+<p>Further investigation reveals that…</p>
+<blockquote><p>
+  …it seems there are computational primitives shared between different tasks that allow for some transfer learning even between such seemingly unrelated tasks as ImageNet and parsing.
+</p></blockquote>
+<p>This ability to learn from domains with large amounts of data available and give a boost in performance in domains where less data is available feels like it has a lot of potential.</p>
+<p>Regarding the third question, by including or excluding different block types it is possible to understand their effect. Both attention and mixture-of-experts mechanisms were designed with machine translation in mind, and in theory ImageNet is the problem that should benefit the least from these blocks. But the results show that even on the ImageNet task, the presence of such blocks does not detract from performance, and may even slightly improve it.</p>
+<blockquote><p>
+  This leads us to conclude that mixing different computation blocks is in fact a good way to improve performance on many various tasks.
+</p></blockquote>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/01/one-model-table-4.jpeg?w=480" alt=""></p>
+<h3>The last word</h3>
+<blockquote><p>
+  We demonstrate, for the first time, that a single deep learning model can jointly learn a number of large-scale tasks from multiple domains. The key to success comes from designing a multi-modal architecture in which as many parameters as possible are shared and from using computational blocks from different domains together. We believe that this treads a path towards interesting future work on more general deep learning architectures, especially since our model shows transfer learning from tasks with a large amount of available data to ones where data is limited.
+</p></blockquote>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+
+	</article></div>
+  </div>
+</body>
+</html>

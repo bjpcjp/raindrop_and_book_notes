@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Creating a Node app with React, Webpack 4, Babel 7, Express and Sass</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Creating a Node app with React, Webpack 4, Babel 7, Express and Sass</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/kedar9/creating-a-node-app-with-react-webpack-4-babel-7-express-and-sass-3mae">https://dev.to/kedar9/creating-a-node-app-with-react-webpack-4-babel-7-express-and-sass-3mae</a></p>
+    <p><strong>Tags:</strong> javascript, nodejs, reactjs, webpacker</p>
+    <p><strong>Bookmark ID:</strong> 876781906</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="107629" id="article-body">
+                <p><a href="https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fthepracticaldev.s3.amazonaws.com%2Fi%2Fjrcn8xq3e7h2cmx54qjq.jpg"><img src="https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fthepracticaldev.s3.amazonaws.com%2Fi%2Fjrcn8xq3e7h2cmx54qjq.jpg" alt="By your powers combined..." loading="lazy"></a></p>
+
+<h2>
+  <a name="prologue" href="#prologue">
+  </a>
+  🏁 Prologue
+</h2>
+
+<p>🆕 Make a new directory. Let's call it react-boilerplate.<br>
+<code>mkdir react-boilerplate</code></p>
+
+<p>And <em>cd</em> into it.<br>
+<code>cd react-boilerplate</code></p>
+
+<p>Make sure you have node and npm installed. Run these commands to make sure:<br>
+<code>node -v</code><br>
+<code>npm -v</code><br>
+If you don't have either of it, click <a href="https://www.npmjs.com/get-npm" target="_blank" rel="noopener noreferrer">here</a> and install them first.</p>
+
+<p>🎬 Now, initialize the node project.<br>
+<code>npm init</code></p>
+
+<p>✨ You will be prompted to enter some basic information. Once that is entered and done, you should have a <strong>package.json</strong> file in your folder.</p>
+<h2>
+  <a name="chapter-1-tree-of%C2%A0life" href="#chapter-1-tree-of%C2%A0life">
+  </a>
+  🌲 Chapter 1: Tree of&nbsp;Life
+</h2>
+<h3>
+  <a name="11-express" href="#11-express">
+  </a>
+  1.1 Express
+</h3>
+
+<p>First things first: we make a server. We're using <strong>Express.js</strong> framework so that we can architect our server, handle our routes and build RESTful APIs.</p>
+
+<p>If handling routes and APIs is not your requirement, you can still use Express or to keep things simpler, you can look into <a href="https://github.com/webpack/webpack-dev-server" target="_blank" rel="noopener noreferrer"><em>webpack-dev-server</em></a>.</p>
+
+<p>📦 Install Express.js:<br>
+<code>npm install --save express</code></p>
+
+<p>✨ A folder called <strong>node_modules</strong> should automatically be created. Anything we install in our project will reside in that folder.</p>
+
+<p>🆕 Time to write the server. Create a new folder called <strong>server</strong>. In that new folder, create a file <strong>index.js</strong>. Add this basic minimal code to that file:<br>
+</p>
+
+<div>
+<pre><code>const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
+const mockResponse = {
+  foo: 'bar',
+  bar: 'foo'
+};
+app.get('/api', (req, res) =&gt; {
+  res.send(mockResponse);
+});
+app.get('/', (req, res) =&gt; {
+ res.status(200).send('Hello World!');
+});
+app.listen(port, function () {
+ console.log('App listening on port: ' + port);
+});
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This allows the app to run on the specified port.<br>
+The code also tells the app that home route: "/" should return a status of 200 (success) and send the text: Hello World. Basic enough!<br>
+It also has a route "/api" that returns a dummy JSON object. It shows how fetching data would work.</p>
+
+<p>⭐️ Remember that the order of the routes matters. When a request comes through, Express starts matching routes from the top. When it matches a route, the response is returned and further routes are not checked.</p>
+
+<p>✏️ Now that the server is set up, in the package.json file, under <code>"scripts"</code>, add a <code>start</code> command like so:<br>
+</p>
+
+<div>
+<pre><code>"scripts": {
+  "start": "node server/index.js",
+  "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Here, we're telling Node, that to start the project, start with server/index.js.</p>
+
+<p>🏃🏻‍♂️If you run the <code>npm run start</code> command now, you should get a message:<br>
+"App listening on port: 3000" on the terminal.</p>
+
+<p>🎉 Now go to <a href="http://localhost:3000/" target="_blank" rel="noopener noreferrer">http://localhost:3000</a> on your browser and the <strong>"Hello World"</strong> message should be showing up there. Go to <a href="http://localhost:3000/api" target="_blank" rel="noopener noreferrer">http://localhost:3000/api</a> and the dummy JSON should show up.</p>
+<h3>
+  <a name="12-webpack" href="#12-webpack">
+  </a>
+  1.2 Webpack
+</h3>
+
+<p>📦 Time to install&nbsp;</p>
+
+<ul>
+<li>webpack (The bundler)</li>
+<li>webpack-cli (Command Line Interface to be able to run webpack commands)</li>
+</ul>
+
+<p><code>npm install --save-dev webpack webpack-cli</code></p>
+
+<p>In the <strong>package.json</strong> file, under <code>"scripts"</code>, add a <code>build</code> command:<br>
+</p>
+
+<div>
+<pre><code>"scripts": {
+  "start": "node server/index.js",
+  "build": "webpack --mode production",
+  "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>🆕 Now, create a folder called <strong>src</strong>. This is where most of our project's source code will exist. In that new folder src, create a file <strong>index.js</strong>.<br>
+Leave the file empty for now.</p>
+
+<p>🏃🏻‍♂️If you run the <code>npm run build</code> command, it will create a <strong>dist</strong> folder with a bundled <strong>main.js</strong> file in it. The code in it will be minified for production use.</p>
+<h2>
+  <a name="chapter-2-twilight%C2%A0ozone" href="#chapter-2-twilight%C2%A0ozone">
+  </a>
+  🛰️ Chapter 2: Twilight&nbsp;Ozone
+</h2>
+<h3>
+  <a name="21-babel" href="#21-babel">
+  </a>
+  2.1 Babel
+</h3>
+
+<p>🤗 React embraces <a href="https://reactjs.org/docs/introducing-jsx.html" target="_blank" rel="noopener noreferrer">JSX</a>. (Although JS would work perfectly fine too).<br>
+Babel helps compile JSX syntax to JS.<br>
+♻️ Not just that, but for regular&nbsp;.js files, we can now use the ES6 syntax and Babel will compile that to its equivalent ES5 form.</p>
+
+<p>📦 Install</p>
+
+<ul>
+<li>
+<a href="https://dev.to/babel">@babel</a>/core (To transform ES6+ code to ES5)</li>
+<li>
+<a href="https://dev.to/babel">@babel</a>/preset-env (Preset to allow polyfills)</li>
+<li>
+<a href="https://dev.to/babel">@babel</a>/preset-react (Preset for React and JSX)</li>
+<li>babel-loader (Webpack helper)</li>
+</ul>
+
+<p><code>npm install --save-dev @babel/core @babel/preset-env @babel/preset-react babel-loader</code></p>
+
+<p>Among these 4 new packages, 2 of them are <em>presets</em>. Babel core needs to know that it has these plugins. They need to be specified.</p>
+
+<p>🆕 On the project's root level, create a&nbsp;<strong>.babelrc</strong> file. And specify the presets as an array like so:<br>
+</p>
+
+<div>
+<pre><code>{
+  "presets": ["@babel/preset-env", "@babel/preset-react"]
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>If your code needs to be polyfilled, you will also need these Node packages: <code>core-js</code> and <code>regenerator-runtime</code>. More about that <a href="https://github.com/zloirock/core-js/blob/master/docs/2019-03-19-core-js-3-babel-and-a-look-into-the-future.md" target="_blank" rel="noopener noreferrer">here</a>.</p>
+
+<h3>
+  <a name="22-babel-%C2%A0webpack" href="#22-babel-%C2%A0webpack">
+  </a>
+  2.2 Babel +&nbsp;Webpack
+</h3>
+
+<p>Based on Babel's functionality, Webpack needs to know that&nbsp;.js and&nbsp;.jsx files need to go through Babel before being bundled.<br>
+So, we need to configure Webpack for that rule.</p>
+
+<p>🆕 On the project's root level, create a <strong>webpack.config.js</strong> file. This will be the file for all webpack configs. Add the rule to it like so:<br>
+</p>
+
+<div>
+<pre><code>module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      }
+    ]
+  }
+};
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>⭐️ Remember: Since webpack bundles everything and creates a simple browser-readable code, all packages, presets and plugins you install will need to be configured in webpack.</p>
+
+<h2>
+  <a name="chapter-3%C2%A0utopia" href="#chapter-3%C2%A0utopia">
+  </a>
+  🏖️ Chapter 3:&nbsp;Utopia
+</h2>
+
+<h3>
+  <a name="31-react" href="#31-react">
+  </a>
+  3.1 React
+</h3>
+
+<p>Time to install react and react-dom.<br>
+<code>npm install --save react react-dom</code></p>
+
+<p>🆕 In the folder <strong>src/</strong>, create a new file <strong>index.html</strong>. This will be the main and the only HTML file in our project.<br>
+It would be like any regular HTML file you've made, with one difference: It needs a <code>&lt;div&gt;</code> in the <code>&lt;body&gt;</code> that React can <em>populate</em>.&nbsp;<br>
+🔍 And it needs some form of identifier that React can lookup for.<br>
+We set <code>id="root"</code> on the <code>div</code>. You can set the id to anything you want.<br>
+Here's what a simple index.html with <code>&lt;div id="root"&gt;&lt;/div&gt;</code> looks like:<br>
+</p>
+
+<div>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"&gt;
+  &lt;meta http-equiv="X-UA-Compatible" content="ie=edge"&gt;
+  &lt;title&gt;React Boilerplate&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id="root"&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>✏️ Remember that empty <strong>src/index.js</strong> file we created in Section 1.2?<br>
+Time to add code to it:<br>
+</p>
+
+<div>
+<pre><code>import React from 'react';
+import ReactDOM from 'react-dom';
+const Index = () =&gt; {
+  return &lt;div&gt;Welcome to React!&lt;/div&gt;;
+};
+ReactDOM.render(&lt;Index /&gt;, document.getElementById('root'));
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>⚡️Here, <code>Index</code> is a functional component that returns a React element. And ReactDOM renders it inside the <code>&lt;div id="root"&gt;&lt;/div&gt;</code> from <strong>index.html</strong>.</p>
+
+<h3>
+  <a name="32-react-%C2%A0webpack" href="#32-react-%C2%A0webpack">
+  </a>
+  3.2 React +&nbsp;Webpack
+</h3>
+
+<p>Similar to what we did for&nbsp;.js and&nbsp;.jsx files, we need to tell Webpack what to do with the new&nbsp;.html file. Webpack needs to bundle it to the <strong>dist</strong> folder.</p>
+
+<p>📦 For that we install html-webpack-plugin.<br>
+<code>npm install --save-dev html-webpack-plugin</code></p>
+
+<p>✏️ The webpack config file needs to be updated to handle this plugin. We also tell webpack that the now-coded <strong>src/index.js</strong> is the entry point.<br>
+Here's what the config file looks like after adding that:<br>
+</p>
+
+<div>
+<pre><code>const HtmlWebPackPlugin = require("html-webpack-plugin");
+const path = require('path');
+const htmlPlugin = new HtmlWebPackPlugin({
+  template: "./src/index.html", 
+  filename: "./index.html"
+});
+module.exports = {
+  entry: "./src/index.js",
+  output: { // NEW
+    path: path.join(__dirname, 'dist'),
+    filename: "[name].js"
+  }, // NEW Ends
+  plugins: [htmlPlugin],
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      }
+    ]
+  }
+};
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>When instantiating <code>htmlPlugin</code>, the <code>template</code> option tells webpack what file to pick and the <code>filename</code> option tells what to name the bundled&nbsp;.html file in the dist folder.</p>
+
+<h3>
+  <a name="33-react-%C2%A0express" href="#33-react-%C2%A0express">
+  </a>
+  3.3 React +&nbsp;Express
+</h3>
+
+<p>🏃🏻‍♂️ If you run <code>npm run start</code> now, we would still get the <strong>"Hello World"</strong> message on localhost. That is because the Express server does not know of these new files.</p>
+
+<p>✏️ In package.json, the <code>start</code> script simply starts the server.<br>
+We now need the webpack to bundle up our files and then start the server.&nbsp;<br>
+Under <code>"scripts"</code>, add a new <code>dev</code> command.<br>
+</p>
+
+<div>
+<pre><code>"scripts": {
+  "start": "node server/index.js",
+  "dev": "webpack --mode development &amp;&amp; node server/index.js",
+  "build": "webpack --mode production",
+  "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>We should now update Express and change what the route "/" returns.<br>
+It should return the <strong>dist/index.html</strong> file.</p>
+
+<p>✏️ In server/index.js, make the updates (New parts of code end with a comment: <code>// NEW</code>):<br>
+</p>
+
+<div>
+<pre><code>const express = require('express');
+const path = require('path'); // NEW
+
+const app = express();
+const port = process.env.PORT || 3000;
+const DIST_DIR = path.join(__dirname, '../dist'); // NEW
+const HTML_FILE = path.join(DIST_DIR, 'index.html'); // NEW
+const mockResponse = {
+  foo: 'bar',
+  bar: 'foo'
+};
+app.use(express.static(DIST_DIR)); // NEW
+app.get('/api', (req, res) =&gt; {
+  res.send(mockResponse);
+});
+app.get('/', (req, res) =&gt; {
+ res.sendFile(HTML_FILE); // EDIT
+});
+app.listen(port, function () {
+ console.log('App listening on port: ' + port);
+});
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>🎉 Now run <code>npm run dev</code> and go to <a href="http://localhost:3000/" target="_blank" rel="noopener noreferrer">http://localhost:3000</a> on your browser. The <strong>"Welcome to React!"</strong> message from <strong>src/index.js</strong> should be showing up there. The "/api" route still works as before.</p>
+
+<h2>
+  <a name="chapter-4-bottom-line%C2%A0green" href="#chapter-4-bottom-line%C2%A0green">
+  </a>
+  🍵 Chapter 4: Bottom Line&nbsp;Green
+</h2>
+
+<h3>
+  <a name="41-sass" href="#41-sass">
+  </a>
+  4.1 Sass
+</h3>
+
+<p>Time to make stuff look good. Time to install node-sass and the required loaders: style-loader, css-loader and sass-loader.</p>
+
+<p><code>npm install --save-dev node-sass style-loader css-loader sass-loader</code></p>
+
+<p>🆕 Create a new file <strong>styles.scss</strong> in the folder <strong>src/</strong>. Add some styles to that file.</p>
+
+<p>Here's a basic (and popular) code to use system fonts on your page.<br>
+We also set its color property.<br>
+</p>
+
+<div>
+<pre><code>body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+  Helvetica, Roboto, Arial, sans-serif;
+  color: brown;
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This would be a good file to add top-level and/or global styles.</p>
+
+<p>✏️ Import the new <strong>styles.scss</strong> file. You can add it either to the <strong>index.html</strong> or to the index.js file. To plan for consistency, we import it in <strong>index.js</strong> file:<br>
+</p>
+
+<div>
+<pre><code>import React from 'react';
+import ReactDOM from 'react-dom';
+import './styles.scss';
+const Index = () =&gt; {
+  return &lt;div&gt;Welcome to React!&lt;/div&gt;;
+};
+ReactDOM.render(&lt;Index /&gt;, document.getElementById('app'));
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="42-sass-%C2%A0webpack" href="#42-sass-%C2%A0webpack">
+  </a>
+  4.2 Sass +&nbsp;Webpack
+</h3>
+
+<p>Like everything else, Webpack needs to know what to do with&nbsp;<strong>.scss</strong> files to correctly bundle them to a browser-understandable code.</p>
+
+<p>✏️ In <strong>webpack.config.js</strong>, add the new rule just like the rule we added for babel-loader. So, in the <code>rules</code> array in the <code>module</code> object in <code>module.exports</code>, add:<br>
+</p>
+
+<div>
+<pre><code>{
+  test: /\.s?css$/,
+  use: ['style-loader', 'css-loader', 'sass-loader']
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>🎉 Now run <code>npm run dev</code> and go to <a href="http://localhost:3000/" target="_blank" rel="noopener noreferrer">http://localhost:3000</a> on your browser. The <strong>"Welcome to React! message"</strong> should show up in the system font in brown.</p>
+
+<h2>
+  <a name="epilogue" href="#epilogue">
+  </a>
+  ⌛ Epilogue
+</h2>
+
+<h3>
+  <a name="react-components" href="#react-components">
+  </a>
+  🖇️ React Components
+</h3>
+
+<p>React projects are made up of a number of smaller components. The <code>Index</code> in <strong>src/index.js</strong> is one such component. You will be creating more such components and importing them (into one another 🤨).</p>
+
+<p>📂 I would suggest creating a folder called <strong>components/</strong> inside the <strong>src/</strong> folder. And store all the other components in that folder.</p>
+
+<p>Ideally, inside of <strong>components/</strong>, create a sub-folder for every component.&nbsp;<br>
+But it's up to the individual preference!</p>
+
+<p>💡 Don't forget that: React component files should export the component <code>Class</code> or <code>function</code>.<br>
+Once you add some components to the <strong>src/index.js</strong>, it would look something like this:<br>
+</p>
+
+<div>
+<pre><code>import React from 'react';
+import ReactDOM from 'react-dom';
+import Header from './components/Header/index.jsx';
+import Content from './components/Content/index.jsx';
+const Index = () =&gt; {
+  return (
+    &lt;div className="container"&gt;
+      &lt;Header /&gt;
+      &lt;Content /&gt;
+    &lt;/div&gt;
+  );
+};
+ReactDOM.render(&lt;Index /&gt;, document.getElementById('app'));
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="additional-webpack-configuration" href="#additional-webpack-configuration">
+  </a>
+  🔧 Additional Webpack Configuration
+</h3>
+
+<p>Like other files, images or any other static files also need to be bundled. Webpack needs to know of that.<br>
+📦 Install <code>file-loader</code> as a devDependency (<code>--save-dev</code>) for all of such files.<br>
+And add the following rule in <strong>webpack.config.js</strong>:<br>
+</p>
+
+<div>
+<pre><code>{
+  test: /\.(png|svg|jpg|gif)$/,
+  loader: "file-loader",
+  options: { name: '/static/[name].[ext]' }
+}
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In the above code, the test regex only specifies general image extensions. But, you can add any extensions for other files too (in the same rule object). </p>
+
+<p>✏️ To use an image or any other assets in the components, it needs to be imported in that.js/.jsx file first. So, Webpack can bundle it right and make it available in the bundled folder. You could use the actual <code>[name]</code> of the file or <code>[hash]</code> it up. With or without the file <code>[ext]</code>.<br>
+</p>
+
+<div>
+<pre><code>// Import
+import LOGO from '&lt;path-to-file&gt;/logo.png';
+
+...
+
+// Usage
+&lt;img src={LOGO} alt="Page Logo" /&gt;
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="git%C2%A0ignore" href="#git%C2%A0ignore">
+  </a>
+  🙅🏼‍♂️ Git,&nbsp;ignore!
+</h3>
+
+<p>For deployment, a Node-compatible platform like Heroku or Netlify, runs the <code>build</code> command in your app. That installs all the <strong>node_modules</strong> and generates the <strong>dist</strong> folder and its contents.<br>
+So, we don't need to push the local folders: <strong>node_modules</strong> and <strong>dist</strong> to remote.</p>
+
+<p>🆕 To let Git know this, create a new file&nbsp;<strong>.gitignore</strong> on the project root level.<br>
+Anything you want Git to ignore can be added here. Here's a basic version:<br>
+</p>
+
+<div>
+<pre><code># Deployment directories
+node_modules
+dist
+# Optional npm cache directory
+.npm
+# Mac
+.DS_Store
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>🍺 That concludes the setup. This project can act as a great boilerplate for any future React w/ server apps or even for stand-alone Express projects.</p>
+
+<p>👍🏼 Thanks for making it all the way through the long article. Setting up an error-free Node app with Webpack and Babel and Express is definitely not a cakewalk. But I hope this article helped you.&nbsp;</p>
+
+<p>🌏 Go Planet!</p>
+
+
+            </div></div>
+  </div>
+</body>
+</html>

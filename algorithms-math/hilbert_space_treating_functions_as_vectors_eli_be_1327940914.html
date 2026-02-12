@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hilbert space: treating functions as vectors - Eli Bendersky's website</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Hilbert space: treating functions as vectors - Eli Bendersky's website</h1>
+    <p><strong>URL:</strong> <a href="https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/">https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/</a></p>
+    <p><strong>Tags:</strong> algorithms-math, linear-algebra</p>
+    <p><strong>Bookmark ID:</strong> 1327940914</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+                
+                <p>The tools of linear algebra are extremely useful when working in
+Euclidean space (e.g. ). Wouldn’t it be great if we
+could apply these tools to additional mathematical constructs, such as
+functions and sequences? <em>Hilbert space</em> allows us to do exactly this -
+apply linear algebra to functions.</p>
+<div id="intuition-functions-as-infinite-dimensional-vectors">
+<h2>Intuition - functions as infinite-dimensional vectors</h2>
+<p>There are several ways to view vectors; a standard interpretation is an
+ordered list of numbers. Let’s take a vector in  as
+an example:</p>
+<p>This is a list of three numbers, where each number has an index.
+ is 1.4,  is 4.2 and so on. Another way to think
+of a vector is a <em>function</em>, in the strict <a href="https://en.wikipedia.org/wiki/Function_(mathematics)">mathematical
+sense</a>. A
+vector in  is a function with the domain
+ (the indices) and codomain <img alt="\mathbb{R}" src="https://eli.thegreenplace.net/images/math/0ed839b111fe0e3ca2b2f618b940893eaea88a57.png">, or:</p>
+<p>Now imagine that our vector is N-dimensional: .
+Using the function notation we can write
+. This works for any N, and in
+fact it also works for an <em>infinite</em> N. Our vector then simply becomes a
+function from the natural numbers to the reals:
+.</p>
+<p>But we can take it even further; what if we allow any real number as an
+index? Our vector is then , or we may
+just change its name to be more familiar:
+. This "vector" is just a function from
+the reals to the reals.</p>
+<p>While we
+can’t write all the elements down explicitly (there’s an infinite number
+of them, and most of the indices are irrational which don’t even have a
+finite representation), we can instead come up with a rule that maps an
+index to the element. For example:  is such a rule. For
+any given index <em>x</em>, it assigns the value . We’re not used to
+thinking of functions as vectors, but if we carefully extend some
+definitions, it’s entirely possible!</p>
+<p>So, functions can be seen as vectors with infinite dimensions. The next
+step is to see how we can define a <em>vector space</em> for functions.</p>
+</div>
+<div id="functions-form-a-vector-space">
+<h2>Functions form a vector space</h2>
+<p>Functions, together with the standard addition and scalar multiplication
+operations form a <a href="https://en.wikipedia.org/wiki/Vector_space">vector
+space</a>.</p>
+<p>For full generality, let <img alt="X" src="https://eli.thegreenplace.net/images/math/c032adc1ff629c9b66f22749ad667e6beadf144b.png"> be any set and
+ (either reals or complex
+numbers). Let <img alt="V" src="https://eli.thegreenplace.net/images/math/c9ee5681d3c59f7541c27a38b67edf46259e187b.png"> be the set of all functions mapping
+. For  and a number
+, we define function addition and scalar
+multiplication as follows:</p>
+<p>Then <img alt="V" src="https://eli.thegreenplace.net/images/math/c9ee5681d3c59f7541c27a38b67edf46259e187b.png"> along with these operations forms a vector space over
+. For a proof, see Appendix A.</p>
+</div>
+<div id="square-integrable-functions">
+<h2>Square integrable functions</h2>
+<p>A vector space is useful, but to get to Hilbert space and be able to do
+more interesting operations on functions, we need some additional
+structure.</p>
+<p>From here on, we’ll switch to functions with complex values (functions
+with real values are just a special case). A function
+ is said to be <em>square integrable</em> if:</p>
+<p>The set of such functions is commonly denoted , and it forms
+a <em>subspace</em> of the vector space we discussed in the previous section
+(for a proof, see Appendix B).</p>
+<p>The integral over the square of the function is equivalent to the
+Euclidean norm for vectors; intuitively, it acts as a measure of
+<em>length</em>, which is the term used in vectors. For functions, it’s
+typically referred to as <em>energy</em>  <a href="#footnote-1" id="footnote-reference-1">[1]</a>.</p>
+</div>
+<div id="inner-product-and-norm">
+<h2>Inner product and norm</h2>
+<p>To add more tools from the linear algebra toolbox, let’s define an inner
+product on :</p>
+<p>Why is it defined in this way? Here’s the definition of inner product
+between two N-dimensional vectors with complex values:</p>
+<p>Looks familiar? The function version is just the generalization of this
+sum over an infinite range (the entire x-axis, if you will), using an
+integral.</p>
+<p>As the next step, we want to show that  is an <em>inner product
+space</em>, when taken with the inner product operation as defined above.
+For this to be true, first and foremost we have to show that the inner
+product is finite for every pair of functions in  (if the
+integral doesn’t converge, it’s not something we can work with). This
+can be done using the integral form of the <a href="https://en.wikipedia.org/wiki/Cauchy%E2%80%93Schwarz_inequality">Cauchy-Schwarz
+inequality</a>:</p>
+<p>Since , the right hand side is finite, and therefore
+the inner product is finite as well. This is where the square
+integrability of functions in  comes into play - without
+being square integrable, the inner product would be impossible to
+define.</p>
+<p>The other properties of inner products can also be demonstrated readily,
+and there are plenty of resources online that show how <a href="#footnote-2" id="footnote-reference-2">[2]</a>.</p>
+<p>Therefore , coupled with the inner product operation shown
+here forms an <a href="https://en.wikipedia.org/wiki/Inner_product_space">inner product
+space</a>.</p>
+<p>This inner product can be used to define a <em>norm</em> for our space:</p>
+<p>Once again, because our functions in  are square integrable,
+the norm exists and it’s easy to show it satisfies all the usual
+requirements for a norm.</p>
+</div>
+<div id="are-we-hilbert-yet">
+<h2>Are we Hilbert yet?</h2>
+<p>We’ve seen that the set of square integrable functions  forms
+a proper vector space and also an inner product space when coupled with
+an inner product operation; it also has a norm. So does it have all
+that’s needed for linear algebra?</p>
+<p>Almost. This space should also be <em>complete</em>. The term "complete" is
+severely overloaded in math, so it’s important to say what it means in
+this context: put simply, it means the set has no "holes" - no sequence
+of elements in the set converges to an element outside the set <a href="#footnote-3" id="footnote-reference-3">[3]</a>. To
+put it less simply, a space is complete if all <a href="https://en.wikipedia.org/wiki/Cauchy_sequence">Cauchy
+sequences</a> of elements
+of this space converge.</p>
+<p>This gets us deep into the large and advanced topic of real analysis.
+The <a href="https://en.wikipedia.org/wiki/Riesz%E2%80%93Fischer_theorem">Riesz-Fischer
+theorem</a>
+shows that  is complete.</p>
+<p>Once we add completeness to the set of properties of , it
+becomes a <em>Hilbert space</em>.</p>
+<p><img alt="Mugshot of David Hilbert saying &quot;yay&quot;" src="https://eli.thegreenplace.net/images/2025/hilbertyay.png"></p><p>You may also hear the term <a href="https://en.wikipedia.org/wiki/Banach_space">Banach
+space</a> mentioned in this
+context. Banach spaces are more general than Hilbert spaces: a complete
+space with a norm is a Banach space (this norm doesn’t have to come from
+an inner product). A complete inner-product space is a Hilbert space -
+the norm of a Hilbert space is defined using its inner product, as we’ve
+seen above.</p>
+</div>
+<div id="application-generalized-fourier-series">
+<h2>Application: generalized Fourier series</h2>
+<p>The Fourier series is one of the most brilliant and consequential ideas
+in mathematics. I would really like to dive deeper into this topic, but
+that would require a post (or a book) of its own.</p>
+<p>In short, Fourier series can be defined for functions in 
+because these form a Hilbert space. Specifically, the inner product for
+functions lets us define <em>orthogonality</em> and the concept of <em>basis
+vectors</em> in . These are then used to express any function as
+a weighted sum of a series of basis functions that span the space.
+Moreover, the completeness of the space guarantees that Fourier series
+actually converge to functions within the space.</p>
+<p>Interestingly, Fourier put forward his ideas decades before the field of
+analysis matured and Hilbert space was defined. This is why many
+mathematicians of the day (most notably Lagrange) objected to Fourier
+theory as not sufficiently rigorous. The theory worked brilliantly for
+many useful scenarios, however, and later developments in functional
+analysis helped put it on a more solid theoretical footing.</p>
+<p>Another related example which I find very cool: I’ve mentioned how this
+theory helps us apply the tools of linear algebra to functions, and
+generalized Fourier series provides an excellent illustration.</p>
+<p>Most people are familiar with the trigonometric Fourier series, but the
+theory is more general and applies to any set of mutually orthogonal
+functions that form a basis for the vector space. Is there a polynomial
+Fourier series? Yes, and it can be derived using one of the classical
+tools of linear algebra - the <a href="https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process">Gram-Schmidt
+process</a>.
+The result is <a href="https://en.wikipedia.org/wiki/Legendre_polynomials">Legendre
+polynomials</a>.</p>
+<p>Again, all of this is fascinating and I hope to be able to write more on
+this topic in the future.</p>
+</div>
+<div id="application-quantum-mechanics">
+<h2>Application: Quantum mechanics</h2>
+<p>In QM, states of particles are described by wavefunctions in a Hilbert
+space. The inner product can be interpreted as a probability. QM
+operators can be seen as linear maps on that space. This lets us apply
+linear algebra in infinite dimensions and unlocks a treasure chest of
+useful mathematical tools.</p>
+</div>
+<div id="appendix-a-proof-of-vector-space-axioms-for-functions">
+<h2>Appendix A: proof of vector space axioms for functions</h2>
+<p>As a reminder, we’re dealing with the set of functions
+, where <img alt="X" src="https://eli.thegreenplace.net/images/math/c032adc1ff629c9b66f22749ad667e6beadf144b.png"> is any set and
+ can be either <img alt="\mathbb{R}" src="https://eli.thegreenplace.net/images/math/0ed839b111fe0e3ca2b2f618b940893eaea88a57.png"> or
+. This set <img alt="V" src="https://eli.thegreenplace.net/images/math/c9ee5681d3c59f7541c27a38b67edf46259e187b.png">, along with addition between set
+members and scalar multiplication form a vector space. To prove this, we
+prove all the vector space axioms:</p>
+<p><strong>Associativity of vector addition</strong>:</p>
+<p>This proceeds very smoothly because addition on either reals or complex
+numbers is associative, commutative, etc.</p>
+<p><strong>Commutativity of vector addition</strong>:</p>
+<p><strong>Identity element of vector addition</strong>:</p>
+<p>The function  serves as an additive identity element:</p>
+<p><strong>Inverse elements of vector addition</strong>:</p>
+<p>We’ll define  as the additive inverse, and
+ as before:</p>
+<p><strong>Associativity of scalar multiplication</strong>:</p>
+<p>For a scalar :</p>
+<p><strong>Identity element of scalar multiplication</strong>:</p>
+<p>We’ll use the scalar 1 as the identity element of scalar multiplication.
+Since the result of <img alt="f(x)" src="https://eli.thegreenplace.net/images/math/3e03f4706048fbc6c5a252a85d066adf107fcc1f.png"> is a real or complex scalar, it’s
+trivially true that:</p>
+<p><strong>Distributivity of scalar multiplication over vector addition</strong>:</p>
+<p><strong>Distributivity of scalar multiplication over scalar addition</strong>:</p>
+<p>For scalars  and :</p>
+</div>
+<div id="appendix-b-proof-that-square-integrable-functions-form-a-subspace">
+<h2>Appendix B: proof that square integrable functions form a subspace</h2>
+<p>To show that  is a subspace of the function vector space, we
+have to prove the following properties:</p>
+<p><strong>Zero element</strong></p>
+<p>The zero element  is in :</p>
+<p><strong>Closure under addition</strong></p>
+<p>Recall that our functions  are complex-valued. For any
+two complex numbers (see <a href="https://eli.thegreenplace.net/2024/calculating-the-norm-of-a-complex-number/">this
+post</a>):</p>
+<p>It’s very easy to show that , and also that
+. Therefore:</p>
+<p>Armed with this, let’s check if the sum of <img alt="f(x)" src="https://eli.thegreenplace.net/images/math/3e03f4706048fbc6c5a252a85d066adf107fcc1f.png"> and 
+is square integrable:</p>
+<p>Since the values <img alt="f(x)" src="https://eli.thegreenplace.net/images/math/3e03f4706048fbc6c5a252a85d066adf107fcc1f.png"> and  are just complex numbers,
+we’ll use the inequality shown above to write:</p>
+<p>Both integrals on the right hand side are finite, so the one on the left
+is finite as well.</p>
+<p><strong>Closure under scalar multiplication</strong></p>
+<p>Given  and a scalar :</p>
+<hr>
+<table id="footnote-1">
+<colgroup><col><col></colgroup>
+<tbody>
+<tr><td><a href="#footnote-reference-1">[1]</a></td><td>We want to work with functions that have finite total energy. Note
+that this is a pretty strong restriction! In Fourier analysis, we
+typically modify the square integrability requirement to be on a
+finite interval - all the tools still work - and talk about periodic
+functions.</td></tr>
+</tbody>
+</table>
+<table id="footnote-2">
+<colgroup><col><col></colgroup>
+<tbody>
+<tr><td><a href="#footnote-reference-2">[2]</a></td><td>I’m not including the proofs here, because some of them are a bit
+technical and require terminology from real analysis.</td></tr>
+</tbody>
+</table>
+<table id="footnote-3">
+<colgroup><col><col></colgroup>
+<tbody>
+<tr><td><a href="#footnote-reference-3">[3]</a></td><td>A classical example of a set not satisfying this condition is
+ - the rational numbers; an infinite sum of
+rational numbers can end up being irrational:
+. Infinite sums are tricky!</td></tr>
+</tbody>
+</table>
+</div>
+
+            </div></div>
+  </div>
+</body>
+</html>

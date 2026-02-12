@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tutorial: How to set up a Twitter bot using R</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Tutorial: How to set up a Twitter bot using R</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/tutorial-how-to-set-up-a-twitter-bot-using-r">https://www.r-bloggers.com/tutorial-how-to-set-up-a-twitter-bot-using-r</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876794077</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					<div><p>
+[This article was first published on  <strong><a href="https://blog.eoda.de/2017/02/02/tutorial-how-to-set-up-a-twitter-bot-using-r/"> eoda english R news</a></strong>, and kindly contributed to <a href="https://www.r-bloggers.com/" rel="nofollow">R-bloggers</a>].  (You can report issue about the content on this page <a href="https://www.r-bloggers.com/contact-us/">here</a>)
+</p><hr><p>Want to share your content on R-bloggers?<a href="https://www.r-bloggers.com/add-your-blog/" rel="nofollow"> click here</a> if you have a blog, or <a href="http://r-posts.com/" rel="nofollow"> here</a> if you don't.
+</p></div>
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+
+	<p>On occasion of the 10,000<sup>th</sup> R package on CRAN, <a href="http://www.eoda.de/en/news.html" rel="nofollow" target="_blank">eoda</a> operated an automated Twitter account which regularly posted the current number of packages available on CRAN until the 10,000-package milestone has been passed on January 28, 2017.</p>
+<blockquote data-lang="de">
+<p dir="ltr" lang="en"><a href="https://twitter.com/hashtag/Rstatsgoes10k?src=hash" rel="nofollow" target="_blank">#Rstatsgoes10k</a> – Hello World, it’s 2017-01-28 01:59:03 and currently there are 10000 packages on CRAN.</p>
+<p>— eodacelebratesR (@Rstatsgoes10k) <a href="https://twitter.com/Rstatsgoes10k/status/825146132691111938" rel="nofollow" target="_blank">28. Januar 2017</a></p></blockquote>
+
+<p>To operate this account, we wrote an R script for reading the current number of R packages on CRAN every hour and automatically sending a Tweet with the status quo. All we needed to make this work was the Twitter API as well as the <a href="https://cran.r-project.org/web/packages/twitteR/index.html" rel="nofollow" target="_blank">twitteR package</a>.</p>
+
+<p>For using the Twitter API, it is necessary to create a corresponding app for the Twitter account.</p>
+<p>For this, log in with the respective account on <a href="https://apps.twitter.com/" rel="nofollow" target="_blank">apps.twitter.com</a> and fill out the form under Create New App.</p>
+<figure id="attachment_4005"><img loading="lazy" src="https://i0.wp.com/blog.eoda.de/wp-content/uploads/2017/02/Create-an-application.png?w=450&amp;ssl=1" alt="Einrichten einer Twitter App auf apps.twitter.com" srcset_temp="https://i0.wp.com/blog.eoda.de/wp-content/uploads/2017/02/Create-an-application.png?w=450&amp;ssl=1 969w, https://blog.eoda.de/wp-content/uploads/2017/02/Create-an-application-300x262.png 300w, https://blog.eoda.de/wp-content/uploads/2017/02/Create-an-application-768x671.png 768w" sizes="(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 984px) 61vw, (max-width: 1362px) 45vw, 600px" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i0.wp.com/blog.eoda.de/wp-content/uploads/2017/02/Create-an-application.png?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><figcaption>Creating a Twitter app on&nbsp;apps.twitter.com</figcaption></figure>
+<p>In the next window, you can set among other things the permissions of the app, “read only”, “read and write” or “read, write and access direct messages”. To operate the app, you also need the Consumer Key and Consumer Secret as well as the Access Token and Access Token Secret you can find in the tab Key and Access Tokens.</p>
+<figure id="attachment_4008"><img loading="lazy" src="https://i2.wp.com/blog.eoda.de/wp-content/uploads/2017/02/Appclication-Settings.png?w=450&amp;ssl=1" alt="Application Settings" srcset_temp="https://i2.wp.com/blog.eoda.de/wp-content/uploads/2017/02/Appclication-Settings.png?w=450&amp;ssl=1 983w, https://blog.eoda.de/wp-content/uploads/2017/02/Appclication-Settings-300x167.png 300w, https://blog.eoda.de/wp-content/uploads/2017/02/Appclication-Settings-768x427.png 768w" sizes="(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 984px) 61vw, (max-width: 1362px) 45vw, 600px" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i2.wp.com/blog.eoda.de/wp-content/uploads/2017/02/Appclication-Settings.png?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><figcaption>Application Settings</figcaption></figure>
+<figure id="attachment_4020"><img loading="lazy" src="https://i1.wp.com/blog.eoda.de/wp-content/uploads/2017/02/Access-Token-1024x511.png?w=450&amp;ssl=1" alt="Access Token" srcset_temp="https://i1.wp.com/blog.eoda.de/wp-content/uploads/2017/02/Access-Token-1024x511.png?w=450&amp;ssl=1 1024w, https://blog.eoda.de/wp-content/uploads/2017/02/Access-Token-300x150.png 300w, https://blog.eoda.de/wp-content/uploads/2017/02/Access-Token-768x383.png 768w, https://blog.eoda.de/wp-content/uploads/2017/02/Access-Token-1200x598.png 1200w, https://blog.eoda.de/wp-content/uploads/2017/02/Access-Token.png 1454w" sizes="(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 984px) 61vw, (max-width: 1362px) 45vw, 600px" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i1.wp.com/blog.eoda.de/wp-content/uploads/2017/02/Access-Token-1024x511.png?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><figcaption>Access Token</figcaption></figure>
+<p>We transferred this information into an extra file in order to be able to load them into the R script later on. Now the app is ready for use.</p>
+<p>For sending Tweets out of R, you need the functions setup_twitter_oauth and tweet from the twitter package. The function setup_twitter_oauth manages the authentication and tweet finally sends the appropriate Tweet.</p>
+<p>The following R script demonstrates how we applied this to our Rstatsgoes10k account:</p>
+<pre># Packages ----------------------------------------------------------------
+
+library(rvest)
+library(stringr)
+library(dplyr)
+library(twitteR)
+
+
+# get number of packages --------------------------------------------------
+
+url &lt; - "https://cran.r-project.org/web/packages/"
+
+
+page &lt;- read_html(url)
+
+n_packages &lt;- page %&gt;%
+  html_text() %&gt;% 
+  str_extract("[[:digit:]]* available packages") %&gt;% 
+  str_extract("[[:digit:]]*") %&gt;% 
+  as.numeric()
+
+n_packages_last_time &lt; - read.table(file = "n_packages.csv",stringsAsFactors = F, sep = ";")
+
+n_packages_last_time &lt;- n_packages_last_time$V2[nrow(n_packages_last_time)]
+
+## check if news packages are published, new tweet only when number of packages changed
+if(n_packages &gt; n_packages_last_time) {
+  
+  # Twitter -----------------------------------------------------------------
+  
+  # set up twitter api
+  api_keys &lt; - read.csv2("twitter_access.csv", stringsAsFactors = FALSE)
+  
+  setup_twitter_oauth(consumer_key = api_keys$consumer_key,
+                      consumer_secret = api_keys$consumer_secret,
+                      access_token = api_keys$access_token,
+                      access_secret = api_keys$access_secret)
+  
+  
+  
+  time &lt;- Sys.time()
+  
+  # create tweet
+  tweet_text &lt;- paste0("#Rstatsgoes10k - Hello World, it's ", time, " and currently there are ", n_packages, " packages on CRAN. ")
+  
+  # send tweet
+  tweet(tweet_text)
+  
+  
+  # write n to file ---------------------------------------------------------
+  
+  n_packages_df &lt;- data.frame(time = Sys.time(), n = n_packages)
+  
+  write.table(n_packages_df, file = "n_packages.csv", row.names = FALSE,col.names = FALSE,
+              append = TRUE, sep = ";")
+  
+}
+
+</pre>
+
+
+		
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+							</div></div>
+  </div>
+</body>
+</html>

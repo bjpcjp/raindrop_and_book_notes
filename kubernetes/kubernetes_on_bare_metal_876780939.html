@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Kubernetes On Bare Metal</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Kubernetes On Bare Metal</h1>
+    <p><strong>URL:</strong> <a href="https://joshrendek.com/2018/04/kubernetes-on-bare-metal">https://joshrendek.com/2018/04/kubernetes-on-bare-metal</a></p>
+    <p><strong>Tags:</strong> kubernetes</p>
+    <p><strong>Bookmark ID:</strong> 876780939</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div> 
+<p>If you’ve been following kubernetes, you’ll understand theres a myriad of options available… I’ll cover a few of them briefly and why I didn’t choose them. Don’t know what Kubernetes is? Minikube is the best way to get going locally.</p>
+<p>This guide will take you from nothing to a 2 node cluster, automatic SSL for deployed apps, a custom PVC/PV storage class using NFS, and a private docker registry. Helpful tips and bugs I ran into are sprinkled throughout their respective sections.</p>
+
+<h5 id="but-first-the-goals-for-this-cluster">But first the goals for this cluster:</h5>
+<ul>
+<li>First-class SSL support with LetsEncrypt so we can easily deploy new apps with SSL using just annotations.</li>
+<li>Bare metal for this conversation means a regular VM/VPS provider or a regular private provider like Proxmox with no special services - or actual hardware.</li>
+<li>Not require anything <em>fancy</em> (like BIOS control)</li>
+<li>Be reasonably priced (&lt;$50/month)</li>
+<li>Be reasonably production-y (<em>this is for side projects, not a huge business critical app</em>). Production-y for this case means a single master with backups being taken of the node.</li>
+<li>Works with Ubuntu 16.04</li>
+<li>Works on Vultr (and others like Digital Ocean - providers that are (mostly) generic VM hosts and don’t have specialized APIs and services like AWS/GCE)</li>
+<li>I also reccomend making sure your VM provider supports a software defined firewall and a private network - however this is not a hard requirement.</li>
+</ul>
+
+<h5 id="overview-of-options">Overview of Options</h5>
+<ul>
+<li>OpenShift: Owned by RedHat - uses its own special tooling around <code>oc</code>. Minimum requirements were to high for a small cluster. Pretty high vendor lockin.</li>
+<li>KubeSpray: unstable. It used to work pretty consistently around 1.6 but when trying to spin up a 1.9 cluster and 1.10 cluster it was unable to finish. I am a fan of Ansible, and if you are as well, this is the project to follow I think.</li>
+<li>Google Kubernetes Engine: Attempting to stay away from cloud-y providers so outside of the scope of this. If you want a managed offering and are okay with GKE pricing, this is the way to go.</li>
+<li>AWS: Staying away from cloud-y providers. Cost is also a big factor here since this is a side-project cluster.</li>
+<li>Tectonic: Requirements are to much for a small cloud provider/installation ( PXE boot setup, Matchbox, F5 LB ).</li>
+<li>&lt;a href"https://github.com/kubernetes/kops" rel=“nofollow”&gt;Kops: Only supports AWS and GCE.</li>
+<li>Canonical Juju: Requires MAAS, attempted to use but kept getting errors around lxc. Seems to favor cloud provider deploys (AWS/GCE/Azure).</li>
+<li>Kubicorn: No bare metal support, needs cloud provider APIs to work.</li>
+<li>Rancher: Rancher is pretty awesome, unfortunately it’s <em>incredibly</em> easy to break the cluster and break things inside Rancher that make the cluster unstable. It does provide a very simple way to play with kubernetes on whatever platform you want.</li>
+</ul>
+<p>… And the <em>winner</em> is… Kubeadm. It’s not in any incubator stages and is documented as one of the official ways to get a cluster setup.</p>
+
+<h5 id="servers-well-need">Servers we’ll need:</h5>
+<ul>
+<li>$5 (+$5 for 50G block storage) - NFS Pod storage server ( 1 CPU / 1GB RAM / block storage )</li>
+<li>$5 - 1 Master node ( 1 CPU / 1G RAM )</li>
+<li>$20 - 1 Worker node ( 2 CPU / 4G RAM - you can choose what you want for this )</li>
+<li>$5 - <em>(optional)</em> DB server - due to bugs I’ve ran into in production environments with docker, and various smart people saying not do it, and issues you can run into with file system consistency, I run a seperate DB server for my apps to connect to if they need it.</li>
+</ul>
+<p><strong>Total cost:</strong> $40.00</p>
+
+<h5 id="base-worker--master-init-script">Base Worker + Master init-script</h5>
+<div><pre tabindex="0"><code data-lang="bash"><span><span> 1</span><span><span>#!/bin/sh
+</span></span></span><span><span> 2</span><span><span></span>apt-get update
+</span></span><span><span> 3</span><span>apt-get upgrade -y
+</span></span><span><span> 4</span><span>apt-get -y install python
+</span></span><span><span> 5</span><span><span>IP_ADDR</span><span>=</span><span>$(</span><span>echo</span> 10.99.0.<span>$(</span>ip route get 8.8.8.8 <span>|</span> awk <span>'{print $NF; exit}'</span> <span>|</span> cut -d. -f4<span>))</span>
+</span></span><span><span> 6</span><span>cat <span>&lt;&lt;- EOF &gt;&gt; /etc/network/interfaces
+</span></span></span><span><span> 7</span><span><span>auto ens7
+</span></span></span><span><span> 8</span><span><span>iface ens7 inet static
+</span></span></span><span><span> 9</span><span><span>    address $IP_ADDR
+</span></span></span><span><span>10</span><span><span>    netmask 255.255.0.0
+</span></span></span><span><span>11</span><span><span>    mtu 1450
+</span></span></span><span><span>12</span><span><span>EOF</span>
+</span></span><span><span>13</span><span>ifup ens7
+</span></span><span><span>14</span><span>
+</span></span><span><span>15</span><span>apt-get install -y apt-transport-https
+</span></span><span><span>16</span><span>apt -y install docker.io
+</span></span><span><span>17</span><span>systemctl start docker
+</span></span><span><span>18</span><span>systemctl <span>enable</span> docker
+</span></span><span><span>19</span><span>curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg <span>|</span> apt-key add
+</span></span><span><span>20</span><span><span>echo</span> <span>"deb http://apt.kubernetes.io/ kubernetes-xenial main"</span> &gt;/etc/apt/sources.list.d/kubernetes.list
+</span></span><span><span>21</span><span>apt-get update
+</span></span><span><span>22</span><span>apt-get install -y kubelet kubeadm kubectl kubernetes-cni nfs-common
+</span></span><span><span>23</span><span>
+</span></span><span><span>24</span><span>reboot</span></span></code></pre></div>
+<p>Lines 2-13 will run on server boot up, install python (used so Ansible can connect and do things later), update and upgrade everything, and then add the private network address. Since Vultr gives you a
+true private network I’m cheating a bit and just using the last octect of the
+public IP to define my internal LAN IP.</p>
+<p>Line 16 we’re installing the Ubuntu packaged version of docker – this is important. There are a lot of tools that don’t bundle the proper docker version to go along with their k8s installation and that can cause all kinds of issues, including everything not working due to version mismatches.</p>
+<p>Lines 15-22 we’re installing the kubernetes repo tools for kubeadm and kubernetes itself.</p>
+
+<h5 id="setting-up-the-nfs-server">Setting up the NFS Server</h5>
+<p>I’m not going to go in depth on setting an NFS server, there’s a million guides. I will however mention the exports section which I’ve kobbled together after a few experiments and reading OpenShift docs. There’s also a good amount of documentation if you want to go the CEPH storage route as well, however NFS was the simplest solution to get setup.</p>
+<p>Remember to lock down your server with a firewall so everything is locked down except internal network traffic to your VMs.</p>
+<p><strong>/etc/exports</strong>
+</p><div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>/srv/kubestorage 10.99.0.0/255.255.255.0<span>(</span>rw,no_root_squash,no_wdelay,no_subtree_check<span>)</span></span></span></code></pre></div>
+
+<p>Export options:</p>
+<ul>
+<li><em>no_root_squash</em> - this shouldn’t be used for shared services, but if its for your own use and not accessed anywhere else this is fine. This lets the docker containers work with whatever user they’re booting as without conflicting with permissions on the NFS server.</li>
+<li><em>no_subtree_check</em> - prevents issues with files being open and renamed at the same time</li>
+<li><em>no_wdelay</em> - generally prevents NFS from trying to be smart about when to write, and forces it to write to the disk ASAP.</li>
+</ul>
+
+<h4 id="setting-up-the-master-node">Setting up the master node</h4>
+<p>On the master node run <code>kubeadm</code> to init the cluster and start kubernetes services:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubeadm init --allocate-node-cidrs<span>=</span><span>true</span> --cluster-cidr<span>=</span>10.244.0.0/16</span></span></code></pre></div>
+<p>This will start the cluster and setup a pod network on <code>10.244.0.0/16</code> for internal pods to use.</p>
+<p>Next you’ll notice that the node is in a <code>NotReady</code> state when you do a <code>kubectl get nodes</code>. We need to setup our worker node next.</p>
+<p>You can either continue using <code>kubectl</code> on the master node or copy the config to your workstation (depending on how your network permissions are setup):</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>mkdir -p <span>$HOME</span>/.kube
+</span></span><span><span>2</span><span>cp -i /etc/kubernetes/admin.conf <span>$HOME</span>/.kube/config
+</span></span><span><span>3</span><span>chown <span>$(</span>id -u<span>)</span>:<span>$(</span>id -g<span>)</span> <span>$HOME</span>/.kube/config</span></span></code></pre></div>
+
+<h4 id="setting-up-the-worker-node">Setting up the worker node</h4>
+<p>You’ll get a token command to run on workers from the previous step. However if you need to generate new tokens later on when you’re expanding your cluster, you can use <code>kubeadm token list</code> and <code>kubeadm token create</code> to get a new token.</p>
+<p><strong>Important Note:</strong> Your worker nodes <strong>Must</strong> have a unique hostname otherwise they will join the cluster and over-write each other (1st node will disappear and things will get rebalanced to the node you just joined). If this happens to you and you want to reset a node, you can run <code>kubeadm reset</code> to wipe that worker node.</p>
+
+<h4 id="setting-up-pod-networking-flannel">Setting up pod networking (Flannel)</h4>
+<p>Back on the <strong>master</strong> node we can add our Flannel network overlay. This will let the pods reside on different worker nodes and communicate with eachother over internal DNS and IPs.</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+</span></span><span><span>2</span><span>kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml</span></span></code></pre></div>
+<p>After a few seconds you should see output from <code>kubectl get nodes</code> similar to this (depending on hostnames):</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>root@k8s-master:~# kubectl get nodes
+</span></span><span><span>2</span><span>NAME           STATUS    ROLES     AGE       VERSION
+</span></span><span><span>3</span><span>k8s-master     Ready     master    4d        v1.10.0
+</span></span><span><span>4</span><span>k8s-worker     Ready     &lt;none&gt;    4d        v1.10.0</span></span></code></pre></div>
+
+<h4 id="deploying-the-kubernetes-dashboard">Deploying the Kubernetes Dashboard</h4>
+<p>If you need more thorough documentation, head on over to the <a href="https://github.com/kubernetes/dashboard#getting-started">dashboard repo</a>. We’re going to follow a vanilla installation:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml</span></span></code></pre></div>
+<p>Once that is installed you need to setup a <code>ServiceAccount</code> that can request tokens and use the dashboard, so save this to <code>dashboard-user.yaml</code>:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span> 1</span><span><span>apiVersion</span><span>:</span><span> </span><span>v1</span><span>
+</span></span></span><span><span> 2</span><span><span></span><span>kind</span><span>:</span><span> </span><span>ServiceAccount</span><span>
+</span></span></span><span><span> 3</span><span><span></span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span> 4</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>admin-user</span><span>
+</span></span></span><span><span> 5</span><span><span>  </span><span>namespace</span><span>:</span><span> </span><span>kube-system</span><span>
+</span></span></span><span><span> 6</span><span><span></span><span>---</span><span>
+</span></span></span><span><span> 7</span><span><span></span><span>apiVersion</span><span>:</span><span> </span><span>rbac.authorization.k8s.io/v1beta1</span><span>
+</span></span></span><span><span> 8</span><span><span></span><span>kind</span><span>:</span><span> </span><span>ClusterRoleBinding</span><span>
+</span></span></span><span><span> 9</span><span><span></span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span>10</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>admin-user</span><span>
+</span></span></span><span><span>11</span><span><span></span><span>roleRef</span><span>:</span><span>
+</span></span></span><span><span>12</span><span><span>  </span><span>apiGroup</span><span>:</span><span> </span><span>rbac.authorization.k8s.io</span><span>
+</span></span></span><span><span>13</span><span><span>  </span><span>kind</span><span>:</span><span> </span><span>ClusterRole</span><span>
+</span></span></span><span><span>14</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>cluster-admin</span><span>
+</span></span></span><span><span>15</span><span><span></span><span>subjects</span><span>:</span><span>
+</span></span></span><span><span>16</span><span><span></span>- <span>kind</span><span>:</span><span> </span><span>ServiceAccount</span><span>
+</span></span></span><span><span>17</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>admin-user</span><span>
+</span></span></span><span><span>18</span><span><span>  </span><span>namespace</span><span>:</span><span> </span><span>kube-system</span></span></span></code></pre></div>
+<p>and then apply it</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubectl apply -f dashboard-user.yaml</span></span></code></pre></div>
+<p>Next you’ll need to grab the service token for the dashbord authentication and fire up <code>kube proxy</code>:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubectl -n kube-system describe secret <span>$(</span>kubectl -n kube-system get secret <span>|</span> grep admin-user <span>|</span> cut -f1 -d <span>' '</span><span>)</span> <span>|</span> grep -E <span>'^token'</span> <span>|</span> cut -f2 -d<span>':'</span> <span>|</span> tr -d <span>'\t'</span>
+</span></span><span><span>2</span><span>kube proxy</span></span></code></pre></div>
+<p>Now you can access the dashboard at <a href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login">http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login</a>.</p>
+
+<h4 id="setting-up-our-nfs-storage-class">Setting up our NFS storage class</h4>
+<p>When using a cloud provider you normally get a default storage class provided for you (like on GKE). With our bare metal installation if we want <code>PersistentVolumes</code> (PVs)
+and <code>PersistentVolumeClaims</code> (PVCs) to work, we need to set up our own private storage class.</p>
+<p>We’ll be using <a href="https://github.com/kubernetes-incubator/external-storage/tree/master/nfs-client">nfs-client</a> from the incubator for this.</p>
+<p>The best way to do this is to clone the repo and go to the <code>nfs-client</code> directory and edit the following files:</p>
+<ul>
+<li><code>deploy/class.yaml</code>: This is what your storage will be called in when setting up storage and from <code>kubectl get sc</code>:</li>
+</ul>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span>1</span><span><span>apiVersion</span><span>:</span><span> </span><span>storage.k8s.io/v1</span><span>
+</span></span></span><span><span>2</span><span><span></span><span>kind</span><span>:</span><span> </span><span>StorageClass</span><span>
+</span></span></span><span><span>3</span><span><span></span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span>4</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>managed-nfs-storage</span><span>
+</span></span></span><span><span>5</span><span><span></span><span>provisioner</span><span>:</span><span> </span><span>joshrendek.com/nfs</span><span> </span><span># or choose another name, must match deployment's env PROVISIONER_NAME'</span></span></span></code></pre></div>
+<ul>
+<li><code>deploy/deployment.yaml</code>: you <strong>must</strong> make sure your provisioner name matches here and that you have your NFS server IP set properly and the mount your exporting set properly.</li>
+</ul>
+<p>Create a file called <code>nfs-test.yaml</code>:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span> 1</span><span><span>kind</span><span>:</span><span> </span><span>PersistentVolumeClaim</span><span>
+</span></span></span><span><span> 2</span><span><span></span><span>apiVersion</span><span>:</span><span> </span><span>v1</span><span>
+</span></span></span><span><span> 3</span><span><span></span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span> 4</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>test-claim</span><span>
+</span></span></span><span><span> 5</span><span><span>  </span><span>annotations</span><span>:</span><span>
+</span></span></span><span><span> 6</span><span><span>    </span><span>volume.beta.kubernetes.io/storage-class</span><span>:</span><span> </span><span>"managed-nfs-storage"</span><span>
+</span></span></span><span><span> 7</span><span><span></span><span>spec</span><span>:</span><span>
+</span></span></span><span><span> 8</span><span><span>  </span><span>accessModes</span><span>:</span><span>
+</span></span></span><span><span> 9</span><span><span>    </span>- <span>ReadWriteMany</span><span>
+</span></span></span><span><span>10</span><span><span>  </span><span>resources</span><span>:</span><span>
+</span></span></span><span><span>11</span><span><span>    </span><span>requests</span><span>:</span><span>
+</span></span></span><span><span>12</span><span><span>      </span><span>storage</span><span>:</span><span> </span><span>1Mi</span><span>
+</span></span></span><span><span>13</span><span><span></span><span>---</span><span>
+</span></span></span><span><span>14</span><span><span></span><span>kind</span><span>:</span><span> </span><span>Pod</span><span>
+</span></span></span><span><span>15</span><span><span></span><span>apiVersion</span><span>:</span><span> </span><span>v1</span><span>
+</span></span></span><span><span>16</span><span><span></span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span>17</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>test-pod</span><span>
+</span></span></span><span><span>18</span><span><span></span><span>spec</span><span>:</span><span>
+</span></span></span><span><span>19</span><span><span>  </span><span>containers</span><span>:</span><span>
+</span></span></span><span><span>20</span><span><span>  </span>- <span>name</span><span>:</span><span> </span><span>test-pod</span><span>
+</span></span></span><span><span>21</span><span><span>    </span><span>image</span><span>:</span><span> </span><span>gcr.io/google_containers/busybox:1.24</span><span>
+</span></span></span><span><span>22</span><span><span>    </span><span>command</span><span>:</span><span>
+</span></span></span><span><span>23</span><span><span>      </span>- <span>"/bin/sh"</span><span>
+</span></span></span><span><span>24</span><span><span>    </span><span>args</span><span>:</span><span>
+</span></span></span><span><span>25</span><span><span>      </span>- <span>"-c"</span><span>
+</span></span></span><span><span>26</span><span><span>      </span>- <span>"touch /mnt/SUCCESS &amp;&amp; exit 0 || exit 1"</span><span>
+</span></span></span><span><span>27</span><span><span>    </span><span>volumeMounts</span><span>:</span><span>
+</span></span></span><span><span>28</span><span><span>      </span>- <span>name</span><span>:</span><span> </span><span>nfs-pvc</span><span>
+</span></span></span><span><span>29</span><span><span>        </span><span>mountPath</span><span>:</span><span> </span><span>"/mnt"</span><span>
+</span></span></span><span><span>30</span><span><span>  </span><span>restartPolicy</span><span>:</span><span> </span><span>"Never"</span><span>
+</span></span></span><span><span>31</span><span><span>  </span><span>volumes</span><span>:</span><span>
+</span></span></span><span><span>32</span><span><span>    </span>- <span>name</span><span>:</span><span> </span><span>nfs-pvc</span><span>
+</span></span></span><span><span>33</span><span><span>      </span><span>persistentVolumeClaim</span><span>:</span><span>
+</span></span></span><span><span>34</span><span><span>        </span><span>claimName</span><span>:</span><span> </span><span>test-claim</span></span></span></code></pre></div>
+<p>Next just follow the repository instructions:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubectl apply -f deploy/deployment.yaml
+</span></span><span><span>2</span><span>kubectl apply -f deploy/class.yaml
+</span></span><span><span>3</span><span>kubectl create -f deploy/auth/serviceaccount.yaml
+</span></span><span><span>4</span><span>kubectl create -f deploy/auth/clusterrole.yaml
+</span></span><span><span>5</span><span>kubectl create -f deploy/auth/clusterrolebinding.yaml
+</span></span><span><span>6</span><span>kubectl patch deployment nfs-client-provisioner -p <span>'{"spec":{"template":{"spec":{"serviceAccount":"nfs-client-provisioner"}}}}'</span>
+</span></span><span><span>7</span><span>kubectl patch storageclass managed-nfs-storage -p <span>'{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'</span></span></span></code></pre></div>
+<p>This creates all the RBAC permissions, adds them to the deployment, and then sets the default storage class provider in your cluster. You should see something similar when running <code>kubectl get sc</code> now:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>NAME                            PROVISIONER           AGE
+</span></span><span><span>2</span><span>managed-nfs-storage <span>(</span>default<span>)</span>   joshrendek.com/nfs   4d</span></span></code></pre></div>
+<p>Now lets test our deployment and check the NFS share for the SUCCESS file:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubectl apply -f nfs-test.yaml</span></span></code></pre></div>
+<p>If everything is working, move on to the next sections, you’ve gotten NFS working! The only problem I ran into at this point was mis-typing my NFS Server IP.
+You can figure this out by doing a <code>kubectl get events -w</code> and watching the mount command output and trying to replicate it on the command line from a worker node.</p>
+
+<h4 id="installing-helm">Installing Helm</h4>
+<p>Up until this point we’ve just been using <code>kubectl apply</code> and <code>kubectl create</code> to install apps. We’ll be using helm to manage our applications and install things going forward for the most part.</p>
+<p>If you don’t already have helm installed (and are on OSX): <code>brew install kubernetes-helm</code>, otherwise hop on over to the <a href="https://docs.helm.sh/using_helm/#installing-helm">helm website</a> for installation instructions.</p>
+<p>First we’re going to create a <code>helm-rbac.yaml</code>:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span> 1</span><span><span>apiVersion</span><span>:</span><span> </span><span>v1</span><span>
+</span></span></span><span><span> 2</span><span><span></span><span>kind</span><span>:</span><span> </span><span>ServiceAccount</span><span>
+</span></span></span><span><span> 3</span><span><span></span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span> 4</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>tiller</span><span>
+</span></span></span><span><span> 5</span><span><span>  </span><span>namespace</span><span>:</span><span> </span><span>kube-system</span><span>
+</span></span></span><span><span> 6</span><span><span></span><span>---</span><span>
+</span></span></span><span><span> 7</span><span><span></span><span>kind</span><span>:</span><span> </span><span>ClusterRoleBinding</span><span>
+</span></span></span><span><span> 8</span><span><span></span><span>apiVersion</span><span>:</span><span> </span><span>rbac.authorization.k8s.io/v1beta1</span><span>
+</span></span></span><span><span> 9</span><span><span></span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span>10</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>tiller-clusterrolebinding</span><span>
+</span></span></span><span><span>11</span><span><span></span><span>subjects</span><span>:</span><span>
+</span></span></span><span><span>12</span><span><span></span>- <span>kind</span><span>:</span><span> </span><span>ServiceAccount</span><span>
+</span></span></span><span><span>13</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>tiller</span><span>
+</span></span></span><span><span>14</span><span><span>  </span><span>namespace</span><span>:</span><span> </span><span>kube-system</span><span>
+</span></span></span><span><span>15</span><span><span></span><span>roleRef</span><span>:</span><span>
+</span></span></span><span><span>16</span><span><span>  </span><span>kind</span><span>:</span><span> </span><span>ClusterRole</span><span>
+</span></span></span><span><span>17</span><span><span>  </span><span>name</span><span>:</span><span> </span><span>cluster-admin</span><span>
+</span></span></span><span><span>18</span><span><span>  </span><span>apiGroup</span><span>:</span><span> </span><span>""</span></span></span></code></pre></div>
+<p>Now we can apply everything:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubectl create -f helm-rbac.yaml
+</span></span><span><span>2</span><span>kubectl create serviceaccount --namespace kube-system tiller
+</span></span><span><span>3</span><span>kubectl create clusterrolebinding tiller-cluster-rule --clusterrole<span>=</span>cluster-admin --serviceaccount<span>=</span>kube-system:tiller
+</span></span><span><span>4</span><span>helm init --upgrade
+</span></span><span><span>5</span><span>kubectl patch deploy --namespace kube-system tiller-deploy -p <span>'{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'</span></span></span></code></pre></div>
+<p>First we install the RBAC permissions, service accounts, and role bindings. Next we install helm and initalize tiller on the server. Tiller keeps track of which apps are deployed where and when they need updates. Finally we tell the tiller deployment about its new <code>ServiceAccount</code>.</p>
+<p>You can verify things are working with a <code>helm ls</code>. Next we can install our first application, <code>Heapster</code>.</p>
+<p><strong>Important Helm Note</strong>: Helm is great, but sometimes it breaks. If your deployments/upgrades/deletes are hanging, try bouncing the tiller pod:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubectl delete po -n kube-system -l <span>name</span><span>=</span>tiller</span></span></code></pre></div>
+
+<h4 id="installing-heapster">Installing Heapster</h4>
+<p>Heapster provides in cluster metrics and health information:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>helm install stable/heapster --name heapster --set rbac.create<span>=</span>true</span></span></code></pre></div>
+<p>You should see it installed with a <code>helm ls</code>.</p>
+
+<h4 id="installing-traefik-loadbalancer">Installing Traefik (LoadBalancer)</h4>
+<p>First lets create a <code>traefik.yaml</code> values file:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span> 1</span><span><span>serviceType</span><span>:</span><span> </span><span>NodePort</span><span>
+</span></span></span><span><span> 2</span><span><span></span><span>externalTrafficPolicy</span><span>:</span><span> </span><span>Cluster</span><span>
+</span></span></span><span><span> 3</span><span><span></span><span>replicas</span><span>:</span><span> </span><span>2</span><span>
+</span></span></span><span><span> 4</span><span><span></span><span>cpuRequest</span><span>:</span><span> </span><span>10m</span><span>
+</span></span></span><span><span> 5</span><span><span></span><span>memoryRequest</span><span>:</span><span> </span><span>20Mi</span><span>
+</span></span></span><span><span> 6</span><span><span></span><span>cpuLimit</span><span>:</span><span> </span><span>100m</span><span>
+</span></span></span><span><span> 7</span><span><span></span><span>memoryLimit</span><span>:</span><span> </span><span>30Mi</span><span>
+</span></span></span><span><span> 8</span><span><span></span><span>debug</span><span>:</span><span>
+</span></span></span><span><span> 9</span><span><span>  </span><span>enabled</span><span>:</span><span> </span><span>false</span><span>
+</span></span></span><span><span>10</span><span><span></span><span>ssl</span><span>:</span><span>
+</span></span></span><span><span>11</span><span><span>  </span><span>enabled</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span>12</span><span><span></span><span>acme</span><span>:</span><span>
+</span></span></span><span><span>13</span><span><span>  </span><span>enabled</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span>14</span><span><span>  </span><span>email</span><span>:</span><span> </span><span>your_email@example.com</span><span>
+</span></span></span><span><span>15</span><span><span>  </span><span>staging</span><span>:</span><span> </span><span>false</span><span>
+</span></span></span><span><span>16</span><span><span>  </span><span>logging</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span>17</span><span><span>  </span><span>challengeType</span><span>:</span><span> </span><span>http-01</span><span>
+</span></span></span><span><span>18</span><span><span>  </span><span>persistence</span><span>:</span><span>
+</span></span></span><span><span>19</span><span><span>    </span><span>enabled</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span>20</span><span><span>    </span><span>annotations</span><span>:</span><span> </span>{}<span>
+</span></span></span><span><span>21</span><span><span>    </span><span>accessMode</span><span>:</span><span> </span><span>ReadWriteOnce</span><span>
+</span></span></span><span><span>22</span><span><span>    </span><span>size</span><span>:</span><span> </span><span>1Gi</span><span>
+</span></span></span><span><span>23</span><span><span></span><span>dashboard</span><span>:</span><span>
+</span></span></span><span><span>24</span><span><span>  </span><span>enabled</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span>25</span><span><span>  </span><span>domain</span><span>:</span><span> </span><span># YOUR DOMAIN HERE</span><span>
+</span></span></span><span><span>26</span><span><span>  </span><span>service</span><span>:</span><span>
+</span></span></span><span><span>27</span><span><span>    </span><span>annotations</span><span>:</span><span>
+</span></span></span><span><span>28</span><span><span>      </span><span>kubernetes.io/ingress.class</span><span>:</span><span> </span><span>traefik</span><span>
+</span></span></span><span><span>29</span><span><span>  </span><span>auth</span><span>:</span><span>
+</span></span></span><span><span>30</span><span><span>    </span><span>basic</span><span>:</span><span>
+</span></span></span><span><span>31</span><span><span>      </span><span>admin</span><span>:</span><span> </span><span># FILL THIS IN WITH A HTPASSWD VALUE</span><span>
+</span></span></span><span><span>32</span><span><span></span><span>gzip</span><span>:</span><span>
+</span></span></span><span><span>33</span><span><span>  </span><span>enabled</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span>34</span><span><span></span><span>accessLogs</span><span>:</span><span>
+</span></span></span><span><span>35</span><span><span>  </span><span>enabled</span><span>:</span><span> </span><span>false</span><span>
+</span></span></span><span><span>36</span><span><span>  </span><span>## Path to the access logs file. If not provided, Traefik defaults it to stdout.</span><span>
+</span></span></span><span><span>37</span><span><span>  </span><span># filePath: ""</span><span>
+</span></span></span><span><span>38</span><span><span>  </span><span>format: common  # choices are</span><span>:</span><span> </span><span>common, json</span><span>
+</span></span></span><span><span>39</span><span><span></span><span>rbac</span><span>:</span><span>
+</span></span></span><span><span>40</span><span><span>  </span><span>enabled</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span>41</span><span><span></span><span>## Enable the /metrics endpoint, for now only supports prometheus</span><span>
+</span></span></span><span><span>42</span><span><span></span><span>## set to true to enable metric collection by prometheus</span><span>
+</span></span></span><span><span>43</span><span><span>
+</span></span></span><span><span>44</span><span><span></span><span>deployment</span><span>:</span><span>
+</span></span></span><span><span>45</span><span><span>  </span><span>hostPort</span><span>:</span><span>
+</span></span></span><span><span>46</span><span><span>    </span><span>httpEnabled</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span>47</span><span><span>    </span><span>httpsEnabled</span><span>:</span><span> </span><span>true</span></span></span></code></pre></div>
+<p>Important things to note here are the <code>hostPort</code> setting - with multiple worker nodes this lets us specify multiple A records for some level of redundancy and binds them to the <strong>host</strong> ports of 80 and 443 so they can receive HTTP and HTTPS traffic. The other important setting is to use <code>NodePort</code> so we use the worker nodes IP to expose ourselves (normally in something like GKE or AWS we would be registering with an ELB, and that ELB would talk to our k8s cluster).</p>
+<p>Now lets install <code>traefik</code> and the dashboard:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>helm install stable/traefik --name traefik -f traefik.yaml --namespace kube-system</span></span></code></pre></div>
+<p>You can check the progress of this with <code>kubectl get po -n kube-system -w</code>. Once everything is registered you should be able to go <code>https://traefik.sub.yourdomain.com</code> and login to the dashboard with the basic auth you configured.</p>
+
+<h4 id="private-docker-registry">Private Docker Registry</h4>
+<p>Provided you got everything working in the previous step (HTTPS works and LetsEncrypt got automatically setup for your traefik dashboard) you can continue on.</p>
+<p>First we’ll be making a <code>registry.yaml</code> file with our custom values and enable trefik for our ingress:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span> 1</span><span><span>replicaCount</span><span>:</span><span> </span><span>1</span><span>
+</span></span></span><span><span> 2</span><span><span></span><span>ingress</span><span>:</span><span>
+</span></span></span><span><span> 3</span><span><span>  </span><span>enabled</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span> 4</span><span><span>  </span><span># Used to create an Ingress record.</span><span>
+</span></span></span><span><span> 5</span><span><span>  </span><span>hosts</span><span>:</span><span>
+</span></span></span><span><span> 6</span><span><span>    </span>- <span>registry.svc.bluescripts.net</span><span>
+</span></span></span><span><span> 7</span><span><span>  </span><span>annotations</span><span>:</span><span>
+</span></span></span><span><span> 8</span><span><span>    </span><span>kubernetes.io/ingress.class</span><span>:</span><span> </span><span>traefik</span><span>
+</span></span></span><span><span> 9</span><span><span></span><span>persistence</span><span>:</span><span>
+</span></span></span><span><span>10</span><span><span>  </span><span>accessMode</span><span>:</span><span> </span><span>'ReadWriteOnce'</span><span>
+</span></span></span><span><span>11</span><span><span>  </span><span>enabled</span><span>:</span><span> </span><span>true</span><span>
+</span></span></span><span><span>12</span><span><span>  </span><span>size</span><span>:</span><span> </span><span>10Gi</span><span>
+</span></span></span><span><span>13</span><span><span>  </span><span># storageClass: '-'</span><span>
+</span></span></span><span><span>14</span><span><span></span><span># set the type of filesystem to use: filesystem, s3</span><span>
+</span></span></span><span><span>15</span><span><span></span><span>storage</span><span>:</span><span> </span><span>filesystem</span><span>
+</span></span></span><span><span>16</span><span><span></span><span>secrets</span><span>:</span><span>
+</span></span></span><span><span>17</span><span><span>  </span><span>haSharedSecret</span><span>:</span><span> </span><span>""</span><span>
+</span></span></span><span><span>18</span><span><span>  </span><span>htpasswd</span><span>:</span><span> </span><span>"YOUR_DOCKER_USERNAME:GENERATE_YOUR_OWN_HTPASSWD_FOR_HERE"</span></span></span></code></pre></div>
+<p>And putting it all together:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>helm install -f registry.yaml --name registry stable/docker-registry</span></span></code></pre></div>
+<p>Provided all that worked, you should now be able to push and pull images and login to your registry at <code>registry.sub.yourdomain.com</code></p>
+
+<h4 id="configuring-docker-credentials-per-namespace">Configuring docker credentials (per namespace)</h4>
+<p>There are several ways you can set up docker auth (like <code>ServiceAccounts</code>) or <code>ImagePullSecrets</code> - I’m going to show the latter.</p>
+<p>Take your docker config that should look something like this:</p>
+<div><pre tabindex="0"><code data-lang="json"><span><span>1</span><span><span>{</span>
+</span></span><span><span>2</span><span>        <span>"auths"</span><span>:</span> <span>{</span>
+</span></span><span><span>3</span><span>                <span>"registry.sub.yourdomain.com"</span><span>:</span> <span>{</span>
+</span></span><span><span>4</span><span>                        <span>"auth"</span><span>:</span> <span>"BASE64 ENCODED user:pass"</span>
+</span></span><span><span>5</span><span>                <span>}</span>
+</span></span><span><span>6</span><span>        <span>}</span>
+</span></span><span><span>7</span><span><span>}</span></span></span></code></pre></div>
+<p>and base64 encode that whole file/string. Make it all one line and then create a <code>registry-creds.yaml</code> file:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span>1</span><span><span>apiVersion</span><span>:</span><span> </span><span>v1</span><span>
+</span></span></span><span><span>2</span><span><span></span><span>kind</span><span>:</span><span> </span><span>Secret</span><span>
+</span></span></span><span><span>3</span><span><span></span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span>4</span><span><span> </span><span>name</span><span>:</span><span> </span><span>regcred</span><span>
+</span></span></span><span><span>5</span><span><span> </span><span>namespace</span><span>:</span><span> </span><span>your_app_namespace</span><span>
+</span></span></span><span><span>6</span><span><span></span><span>data</span><span>:</span><span>
+</span></span></span><span><span>7</span><span><span> </span><span>.dockerconfigjson</span><span>:</span><span> </span><span>BASE64_ENCODED_CREDENTIALS</span><span>
+</span></span></span><span><span>8</span><span><span></span><span>type</span><span>:</span><span> </span><span>kubernetes.io/dockerconfigjson</span></span></span></code></pre></div>
+<p>Create your app namespace: <code>kubectl create namespace your_app_namespace</code> and apply it.</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>kubectl apply -f registry-creds.yaml</span></span></code></pre></div>
+<p>You can now delete this file (or encrypt it with GPG, etc) - just don’t commit it anywhere. Base64 encoding a string won’t protect your credentials.</p>
+<p>You would then specify it in your helm <code>delpoyment.yaml</code> like:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span>1</span><span><span>spec</span><span>:</span><span>
+</span></span></span><span><span>2</span><span><span>  </span><span>replicas</span><span>:</span><span> </span>{{<span> </span><span>.Values.replicaCount }}</span><span>
+</span></span></span><span><span>3</span><span><span>  </span><span>template</span><span>:</span><span>
+</span></span></span><span><span>4</span><span><span>    </span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span>5</span><span><span>      </span><span>labels</span><span>:</span><span>
+</span></span></span><span><span>6</span><span><span>        </span><span>app</span><span>:</span><span> </span>{{<span> </span><span>template "fullname" . }}</span><span>
+</span></span></span><span><span>7</span><span><span>    </span><span>spec</span><span>:</span><span>
+</span></span></span><span><span>8</span><span><span>      </span><span>imagePullSecrets</span><span>:</span><span>
+</span></span></span><span><span>9</span><span><span>        </span>- <span>name</span><span>:</span><span> </span><span>regcred</span></span></span></code></pre></div>
+
+<h4 id="deploying-your-own-applications">Deploying your own applications</h4>
+<p>I generally make a <code>deployments</code> folder then do a <code>helm create app_name</code> in there. You’ll want to edit the <code>values.yaml</code> file to match your docker image names and vars.</p>
+<p>You’ll need to edit the templates/ingress.yaml file and make sure you have a traefik annotation:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span>1</span><span><span>  </span><span>annotations</span><span>:</span><span>
+</span></span></span><span><span>2</span><span><span>    </span><span>kubernetes.io/ingress.class</span><span>:</span><span> </span><span>traefik</span></span></span></code></pre></div>
+<p>And finally here is an example <code>deployment.yaml</code> that has a few extra things from the default:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span> 1</span><span><span>apiVersion</span><span>:</span><span> </span><span>extensions/v1beta1</span><span>
+</span></span></span><span><span> 2</span><span><span></span><span>kind</span><span>:</span><span> </span><span>Deployment</span><span>
+</span></span></span><span><span> 3</span><span><span></span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span> 4</span><span><span>  </span><span>name</span><span>:</span><span> </span>{{<span> </span><span>template "fullname" . }}</span><span>
+</span></span></span><span><span> 5</span><span><span>  </span><span>labels</span><span>:</span><span>
+</span></span></span><span><span> 6</span><span><span>    </span><span>chart</span><span>:</span><span> </span><span>"{{ .Chart.Name }}-{{ .Chart.Version | replace "</span><span>+" "_" }}"</span><span>
+</span></span></span><span><span> 7</span><span><span></span><span>spec</span><span>:</span><span>
+</span></span></span><span><span> 8</span><span><span>  </span><span>replicas</span><span>:</span><span> </span>{{<span> </span><span>.Values.replicaCount }}</span><span>
+</span></span></span><span><span> 9</span><span><span>  </span><span>template</span><span>:</span><span>
+</span></span></span><span><span>10</span><span><span>    </span><span>metadata</span><span>:</span><span>
+</span></span></span><span><span>11</span><span><span>      </span><span>labels</span><span>:</span><span>
+</span></span></span><span><span>12</span><span><span>        </span><span>app</span><span>:</span><span> </span>{{<span> </span><span>template "fullname" . }}</span><span>
+</span></span></span><span><span>13</span><span><span>    </span><span>spec</span><span>:</span><span>
+</span></span></span><span><span>14</span><span><span>      </span><span>imagePullSecrets</span><span>:</span><span>
+</span></span></span><span><span>15</span><span><span>        </span>- <span>name</span><span>:</span><span> </span><span>regcred</span><span>
+</span></span></span><span><span>16</span><span><span>      </span><span>affinity</span><span>:</span><span>
+</span></span></span><span><span>17</span><span><span>        </span><span>podAntiAffinity</span><span>:</span><span>
+</span></span></span><span><span>18</span><span><span>          </span><span>requiredDuringSchedulingIgnoredDuringExecution</span><span>:</span><span>
+</span></span></span><span><span>19</span><span><span>          </span>- <span>topologyKey</span><span>:</span><span> </span><span>"kubernetes.io/hostname"</span><span>
+</span></span></span><span><span>20</span><span><span>            </span><span>labelSelector</span><span>:</span><span>
+</span></span></span><span><span>21</span><span><span>              </span><span>matchLabels</span><span>:</span><span>
+</span></span></span><span><span>22</span><span><span>                </span><span>app</span><span>:</span><span>  </span>{{<span> </span><span>template "fullname" . }}</span><span>
+</span></span></span><span><span>23</span><span><span>      </span><span>containers</span><span>:</span><span>
+</span></span></span><span><span>24</span><span><span>      </span>- <span>name</span><span>:</span><span> </span>{{<span> </span><span>.Chart.Name }}</span><span>
+</span></span></span><span><span>25</span><span><span>        </span><span>image</span><span>:</span><span> </span><span>"{{ .Values.image.repository }}:{{ .Values.image.tag }}"</span><span>
+</span></span></span><span><span>26</span><span><span>        </span><span>imagePullPolicy</span><span>:</span><span> </span>{{<span> </span><span>.Values.image.pullPolicy }}</span><span>
+</span></span></span><span><span>27</span><span><span>        </span><span>ports</span><span>:</span><span>
+</span></span></span><span><span>28</span><span><span>        </span>- <span>containerPort</span><span>:</span><span> </span>{{<span> </span><span>.Values.service.internalPort }}</span><span>
+</span></span></span><span><span>29</span><span><span>        </span><span>livenessProbe</span><span>:</span><span>
+</span></span></span><span><span>30</span><span><span>          </span><span>httpGet</span><span>:</span><span>
+</span></span></span><span><span>31</span><span><span>            </span><span>path</span><span>:</span><span> </span><span>/</span><span>
+</span></span></span><span><span>32</span><span><span>            </span><span>port</span><span>:</span><span> </span>{{<span> </span><span>.Values.service.internalPort }}</span><span>
+</span></span></span><span><span>33</span><span><span>          </span><span>initialDelaySeconds</span><span>:</span><span> </span><span>5</span><span>
+</span></span></span><span><span>34</span><span><span>          </span><span>periodSeconds</span><span>:</span><span> </span><span>30</span><span>
+</span></span></span><span><span>35</span><span><span>          </span><span>timeoutSeconds</span><span>:</span><span> </span><span>5</span><span>
+</span></span></span><span><span>36</span><span><span>        </span><span>readinessProbe</span><span>:</span><span>
+</span></span></span><span><span>37</span><span><span>          </span><span>httpGet</span><span>:</span><span>
+</span></span></span><span><span>38</span><span><span>            </span><span>path</span><span>:</span><span> </span><span>/</span><span>
+</span></span></span><span><span>39</span><span><span>            </span><span>port</span><span>:</span><span> </span>{{<span> </span><span>.Values.service.internalPort }}</span><span>
+</span></span></span><span><span>40</span><span><span>          </span><span>initialDelaySeconds</span><span>:</span><span> </span><span>5</span><span>
+</span></span></span><span><span>41</span><span><span>          </span><span>timeoutSeconds</span><span>:</span><span> </span><span>5</span><span>
+</span></span></span><span><span>42</span><span><span>        </span><span>resources</span><span>:</span><span>
+</span></span></span><span><span>43</span><span><span></span>{{<span> </span><span>toYaml .Values.resources | indent 10 }}</span></span></span></code></pre></div>
+<p>On line 14-15 we’re specifying our registry credentials we created in the previous step.</p>
+<p>Assuming a replica count &gt;= 2, Lines 16-22 are telling kubernetes to schedule the pods on different worker nodes. This will prevent both web servers (for instance) from being put on the same node incase one of them crashes.</p>
+<p>Lines 29-41 are going to depend on your app - if your server is slow to start up these values may not make sense and can cause your app to constantly go into a <code>Running</code>/ <code>Error</code> state and getting its containers reaped by the liveness checks.</p>
+<p>And provided you just have configuration changes to try out (container is already built and in a registry), you can iterate locally:</p>
+<div><pre tabindex="0"><code data-lang="bash"><span><span>1</span><span>helm upgrade your_app_name . -i --namespace your_app_name --wait --debug</span></span></code></pre></div>
+
+<h4 id="integrating-with-gitlab--cicd-pipelines">Integrating with GitLab / CICD Pipelines</h4>
+<p>Here is a sample <code>.gitlab-ci.yaml</code> that you can use for deploying - this is building a small go binary for <a href="http://ifcfg.net/">ifcfg.net</a>:</p>
+<div><pre tabindex="0"><code data-lang="yaml"><span><span> 1</span><span><span>stages</span><span>:</span><span>
+</span></span></span><span><span> 2</span><span><span>    </span>- <span>build</span><span>
+</span></span></span><span><span> 3</span><span><span>    </span>- <span>deploy</span><span>
+</span></span></span><span><span> 4</span><span><span>
+</span></span></span><span><span> 5</span><span><span></span><span>variables</span><span>:</span><span>
+</span></span></span><span><span> 6</span><span><span>  </span><span>DOCKER_DRIVER</span><span>:</span><span> </span><span>overlay2</span><span>
+</span></span></span><span><span> 7</span><span><span>  </span><span>IMAGE</span><span>:</span><span> </span><span>registry.sub.yourdomain.com/project/web</span><span>
+</span></span></span><span><span> 8</span><span><span>
+</span></span></span><span><span> 9</span><span><span></span><span>services</span><span>:</span><span>
+</span></span></span><span><span>10</span><span><span></span>- <span>docker:dind</span><span>
+</span></span></span><span><span>11</span><span><span>
+</span></span></span><span><span>12</span><span><span></span><span>build</span><span>:</span><span>
+</span></span></span><span><span>13</span><span><span>  </span><span>image</span><span>:</span><span> </span><span>docker:latest</span><span>
+</span></span></span><span><span>14</span><span><span>  </span><span>stage</span><span>:</span><span> </span><span>build</span><span>
+</span></span></span><span><span>15</span><span><span>  </span><span>script</span><span>:</span><span>
+</span></span></span><span><span>16</span><span><span>    </span>- <span>docker build -t $IMAGE:$CI_COMMIT_SHA .</span><span>
+</span></span></span><span><span>17</span><span><span>    </span>- <span>docker tag $IMAGE:$CI_COMMIT_SHA $IMAGE:latest</span><span>
+</span></span></span><span><span>18</span><span><span>    </span>- <span>docker push $IMAGE:$CI_COMMIT_SHA</span><span>
+</span></span></span><span><span>19</span><span><span>    </span>- <span>docker push $IMAGE:latest</span><span>
+</span></span></span><span><span>20</span><span><span>
+</span></span></span><span><span>21</span><span><span></span><span>deploy</span><span>:</span><span>
+</span></span></span><span><span>22</span><span><span>  </span><span>image</span><span>:</span><span> </span><span>ubuntu</span><span>
+</span></span></span><span><span>23</span><span><span>  </span><span>stage</span><span>:</span><span> </span><span>deploy</span><span>
+</span></span></span><span><span>24</span><span><span>  </span><span>before_script</span><span>:</span><span>
+</span></span></span><span><span>25</span><span><span>    </span>- <span>apt-get update &amp;&amp; apt-get install -y curl</span><span>
+</span></span></span><span><span>26</span><span><span>    </span>- <span>curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash</span><span>
+</span></span></span><span><span>27</span><span><span>  </span><span>script</span><span>:</span><span>
+</span></span></span><span><span>28</span><span><span>    </span>- <span>cd deployment/ifcfg</span><span>
+</span></span></span><span><span>29</span><span><span>    </span>- <span>KUBECONFIG=&lt;(echo "$KUBECONFIG") helm upgrade ifcfg . -i --namespace ifcfg --wait --debug --set "image.tag=$CI_COMMIT_SHA"</span></span></span></code></pre></div>
+<p>Lines 16-19 are where we tag latest and our commited SHA and push both to our registry we made in the previous steps.</p>
+<p>Line 26 is installing helm.</p>
+<p>Line 29 is doing a few things. First thing to note is we have our <code>~/.kube/config</code> file set as a environment variable in gitlab. The <code>&lt;(echo)...</code> stuff
+is a little shell trick that makes it look like a file on the file system (that way we don’t have to write it
+out in a separate step). <code>upgrade -i</code> says to upgrade our app, and if it doesn’t exist yet,
+to install it. The last important bit is <code>image.tag=$CI_COMMIT_SHA</code> - this helps you setup
+for deploying tagged releases instead of always deploying the <code>latest</code> from your repository.</p>
+<p>Thats it, you should now have an automated build pipeline setup for a project on your working kubernetes cluster.</p>
+</div></div>
+  </div>
+</body>
+</html>

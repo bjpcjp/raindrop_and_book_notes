@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How "Exit Traps" Can Make Your Bash Scripts Way More Robust And Reliable</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How "Exit Traps" Can Make Your Bash Scripts Way More Robust And Reliable</h1>
+    <p><strong>URL:</strong> <a href="http://redsymbol.net/articles/bash-exit-traps">http://redsymbol.net/articles/bash-exit-traps</a></p>
+    <p><strong>Tags:</strong> bash, linux</p>
+    <p><strong>Bookmark ID:</strong> 876792595</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="content">
+        
+   
+ 
+    <p>There is a simple, useful idiom to make your bash scripts more
+    robust - ensuring they always perform necessary cleanup
+    operations, even when something unexpected goes wrong.  The secret
+    sauce is a pseudo-signal provided by bash, called EXIT, that you
+    can <a href="http://www.gnu.org/software/bash/manual/bashref.html#index-trap">trap</a>;
+    commands or functions trapped on it will execute when the script
+    exits for any reason. Let's see how this works.
+    </p>
+
+    <p>The basic code structure is like this:</p>
+
+
+<div><pre><ol><li><p><span>#!/bin/bash</span>
+</p></li><li><p><span>function </span>finish <span>{</span>
+</p></li><li><p><span># Your cleanup code here</span>
+</p></li><li><p><span>}</span>
+</p></li><li><p><span>trap </span>finish EXIT
+</p></li></ol></pre></div>
+
+
+
+    <p>You place any code that you want to be certain to run in this
+    "finish" function.  A good common example: creating a temporary
+    scratch directory, then deleting it after.</p>
+
+
+<div><pre><ol><li><p><span>#!/bin/bash</span>
+</p></li><li><p><span>scratch</span><span>=</span><span>$(</span>mktemp -d -t tmp.XXXXXXXXXX<span>)</span>
+</p></li><li><p><span>function </span>finish <span>{</span>
+</p></li><li><p>  rm -rf <span>"$scratch"</span>
+</p></li><li><p><span>}</span>
+</p></li><li><p><span>trap </span>finish EXIT
+</p></li></ol></pre></div>
+
+
+    <p>You can then download, generate, slice and dice intermediate or
+    temporary files to the <code>$scratch</code> directory to your heart's
+    content. <a href="#footnote-1">[1]</a>
+    </p>
+
+
+<div><pre><ol><li><p><span># Download every linux kernel ever.... FOR SCIENCE!</span>
+</p></li><li><p><span>for </span>major in <span>{</span>1..4<span>}</span>; <span>do</span>
+</p></li><li><p><span>  for </span>minor in <span>{</span>0..99<span>}</span>; <span>do</span>
+</p></li><li><p><span>    for </span>patchlevel in <span>{</span>0..99<span>}</span>; <span>do</span>
+</p></li><li><p><span>      </span><span>tarball</span><span>=</span><span>"linux-${major}-${minor}-${patchlevel}.tar.bz2"</span>
+</p></li><li><p>      curl -q <span>"http://kernel.org/path/to/$tarball"</span> -o <span>"$scratch/$tarball"</span> <span>||</span> <span>true</span>
+</p></li><li><p><span>      </span><span>if</span> <span>[</span> -f <span>"$scratch/$tarball"</span> <span>]</span>; <span>then</span>
+</p></li><li><p><span>        </span>tar jxf <span>"$scratch/$tarball"</span>
+</p></li><li><p><span>fi</span>
+</p></li><li><p><span>    done</span>
+</p></li><li><p><span>  done</span>
+</p></li><li><p><span>done</span>
+</p></li><li><p><span># magically merge them into some frankenstein kernel ...</span>
+</p></li><li><p><span># That done, copy it to a destination</span>
+</p></li><li><p>cp <span>"$scratch/frankenstein-linux.tar.bz2"</span> <span>"$1"</span>
+</p></li><li><p><span># Here at script end, the scratch directory is erased automatically</span>
+</p></li></ol></pre></div>
+
+
+
+
+    <p>Compare this to how you'd remove the scratch directory without
+    the trap:</p>
+
+
+<div><pre><ol><li><p><span>#!/bin/bash</span>
+</p></li><li><p><span># DON'T DO THIS!</span>
+</p></li><li><p><span>scratch</span><span>=</span><span>$(</span>mktemp -d -t tmp.XXXXXXXXXX<span>)</span>
+</p></li><li></li><li><p><span># Insert dozens or hundreds of lines of code here...</span>
+</p></li><li></li><li><p><span># All done, now remove the directory before we exit</span>
+</p></li><li><p>rm -rf <span>"$scratch"</span>
+</p></li></ol></pre></div>
+
+
+
+    <p>What's wrong with this? Plenty:</p>
+    <ul>
+      <li>If some error causes the script to exit prematurely, the
+      scratch directory and its contents don't get deleted.  This is
+      a resource leak, and may have security
+      implications too.</li>
+      <li>If the script is designed to exit before the end, you must
+      manually copy 'n paste the rm command at each exit point.</li>
+      <li>There are maintainability problems as well.  If you later
+      add a new in-script exit, it's easy to forget to include the
+      removal - potentially creating mysterious heisenleaks.</li>
+    </ul>
+
+    <h2>Keeping Services Up, No Matter What</h2>
+
+    <p>Another scenario: Imagine you are automating some system
+    administration task, requiring you to temporarily stop a
+    server... and you want to be dead certain it starts again at the
+    end, even if there is some runtime error.  Then the pattern is:
+    </p>
+
+
+<div><pre><ol><li><p><span>function </span>finish <span>{</span>
+</p></li><li><p><span># re-start service</span>
+</p></li><li><p>    sudo /etc/init.d/something start
+</p></li><li><p><span>}</span>
+</p></li><li><p><span>trap </span>finish EXIT
+</p></li><li><p>sudo /etc/init.d/something stop
+</p></li><li><p><span># Do the work...</span>
+</p></li><li></li><li><p><span># Allow the script to end and the trapped finish function to start the</span>
+</p></li><li><p><span># daemon back up.</span>
+</p></li></ol></pre></div>
+
+
+
+    <p>A concrete example: suppose you have MongoDB running on an
+    Ubuntu server, and want a cronned script to temporarily stop the
+    process for some regular maintenance task.  The way to handle it
+    is:</p>
+
+
+<div><pre><ol><li><p><span>function </span>finish <span>{</span>
+</p></li><li><p><span># re-start service</span>
+</p></li><li><p>    sudo service mongdb start
+</p></li><li><p><span>}</span>
+</p></li><li><p><span>trap </span>finish EXIT
+</p></li><li><p><span># Stop the mongod instance</span>
+</p></li><li><p>sudo service mongdb stop
+</p></li><li><p><span># (If mongod is configured to fork, e.g. as part of a replica set, you</span>
+</p></li><li><p><span># may instead need to do "sudo killall --wait /usr/bin/mongod".)</span>
+</p></li></ol></pre></div>
+
+
+
+<h2>Capping Expensive Resources</h2>
+<p>
+  There is another situation where the exit trap is very useful: if
+  your script initiates an expensive resource, needed only while the
+  script is executing, and you want to make certain it releases that
+  resource once it's done.  For example, suppose you are working with
+  Amazon Web Services (AWS), and want a script that creates a new
+  image.</p>
+
+  <p>(If you're not familar with this: Servers running on the Amazon
+  cloud are called "<a href="http://aws.amazon.com/ec2/">instances</a>".  Instances are
+  launched from Amazon Machine Images, a.k.a. "AMIs" or "images". AMIs
+  are kind of like a snapshot of a server at a specific moment
+  in time.)
+  </p>
+
+  <p>
+  A common pattern for creating custom AMIs looks like:
+</p>
+
+  <ol>
+    <li>Run an instance (i.e. start a server) from some base AMI.</li>
+    <li>Make some modifications to it, perhaps by copying a script
+    over and then executing it.</li>
+    <li>Create a new image from this now-modified instance.</li>
+    <li>Terminate the running instance, which you no longer need.</li>
+  </ol>
+
+  <p>That last step is <strong>really important</strong>.  If your script fails to
+  terminate the instance, it will keep running and accruing charges to
+  your account.  (In the worst case, you won't notice until the end of
+  the month, when your bill is way higher than you expect.  Believe
+  me, that's no fun!)</p>
+
+  <p>If our AMI-creation is encapsulated in a script, we can set an
+  exit trap to destroy the instance.  Let's rely on the EC2 command
+  line tools:</p>
+
+
+<div><pre><ol><li><p><span>#!/bin/bash</span>
+</p></li><li><p><span># define the base AMI ID somehow</span>
+</p></li><li><p><span>ami</span><span>=</span><span>$1</span>
+</p></li><li><p><span># Store the temporary instance ID here</span>
+</p></li><li><p><span>instance</span><span>=</span><span>''</span>
+</p></li><li><p><span># While we are at it, let me show you another use for a scratch directory.</span>
+</p></li><li><p><span>scratch</span><span>=</span><span>$(</span>mktemp -d -t tmp.XXXXXXXXXX<span>)</span>
+</p></li><li><p><span>function </span>finish <span>{</span>
+</p></li><li><p><span>if</span> <span>[</span> -n <span>"$instance"</span> <span>]</span>; <span>then</span>
+</p></li><li><p><span>        </span>ec2-terminate-instances <span>"$instance"</span>
+</p></li><li><p><span>fi</span>
+</p></li><li><p><span>    </span>rm -rf <span>"$scratch"</span>
+</p></li><li><p><span>}</span>
+</p></li><li><p><span>trap </span>finish EXIT
+</p></li><li><p><span># This line runs the instance, and stores the program output (which</span>
+</p></li><li><p><span># shows the instance ID) in a file in the scratch directory.</span>
+</p></li><li><p>ec2-run-instances <span>"$ami"</span> &gt; <span>"$scratch/run-instance"</span>
+</p></li><li><p><span># Now extract the instance ID.</span>
+</p></li><li><p><span>instance</span><span>=</span><span>$(</span>grep <span>'^INSTANCE'</span> <span>"$scratch/run-instance"</span> | cut -f 2<span>)</span>
+</p></li></ol></pre></div>
+
+
+
+  <p>At this point in the script, the instance (EC2 server) is running
+  <a href="#footnote-2">[2]</a>.  You can do
+  whatever you like: install software on the instance, modify its
+  configuration programatically, et cetera, finally creating an image
+  from the final version. The instance will be terminated for you when
+  the script exits - even if some uncaught error causes it to exit
+  early. (Just make sure to block until the image creation process finishes.)
+  </p>
+  
+<h2>Plenty Of Uses</h2>
+
+<p>I believe what I've covered in this article only scratches the
+surface; having used this bash pattern for years, I still find new
+interesting and fun ways to apply it. You will probably discover your
+own situations where it will help make your bash scripts more reliable.</p>
+
+<h2>Footnotes</h2>
+
+<ol id="footnotes">
+  <li id="footnote-1">The -t option to mktemp is optional on Linux,
+  but needed on OS X.  Make your scripts using this idiom more
+  portable by including this option.
+  </li>
+<li id="footnote-2">
+<p>When getting the instance ID, instead of using the scratch file, we
+could just say: <code>instance=$(ec2-run-instances "$ami" | grep
+'^INSTANCE' | cut -f 2)</code>. But using the scratch file makes the
+code a bit more readable, leaves us with better logging for debugging,
+and makes it easy to capture other info from ec2-run-instances's
+output if we wish.</p>
+</li>
+
+</ol>
+
+ 
+      </div></div>
+  </div>
+</body>
+</html>

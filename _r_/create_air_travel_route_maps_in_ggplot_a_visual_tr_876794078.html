@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Create Air Travel Route Maps in ggplot: A Visual Travel Diary</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Create Air Travel Route Maps in ggplot: A Visual Travel Diary</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/create-air-travel-route-maps-in-ggplot-a-visual-travel-diary">https://www.r-bloggers.com/create-air-travel-route-maps-in-ggplot-a-visual-travel-diary</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876794078</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+
+	<p><img src="https://i0.wp.com/travelersunited.org/wp-content/uploads/Emirates-routemap.jpg?resize=300%2C201&amp;ssl=1" alt="Create Air Travel Route Maps: Emirates Route Map" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/travelersunited.org/wp-content/uploads/Emirates-routemap.jpg?resize=300%2C201&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">I have been lucky to fly to a few countries around the world.&nbsp;Like any other bored traveller, I thumb through the airline magazines and look at the <a href="http://www.airlineroutemaps.com/" rel="nofollow" target="_blank">air travel route maps</a>. These maps are beautifully stylised depictions of the world with gently curved lines between the many destinations. I always wanted such a map for my own travel adventures.</p>
+<h2>Create Air Travel Route Maps using ggplot2</h2>
+<p>The first step was to create a list of all the places I have flown between at least once. Paging through my travel photos and diaries, I managed to create a pretty complete list. The structure of this document&nbsp;is simply a <a href="https://docs.google.com/spreadsheets/d/1R8Bn6qvvvxH-rSl3lIC3UhSD3iQPOFtQ9JlcLqHhDDk/edit?usp=sharing" rel="nofollow" target="_blank">list of all routes</a> (From, To) and every flight only gets counted once. The next step&nbsp;finds the spatial coordinates for each airport by searching Google Maps using the geocode function from the <a href="https://cran.r-project.org/web/packages/ggmap/index.html" rel="nofollow" target="_blank">ggmap</a> package. In some instances, I had to add the country name to avoid confusion between places.</p>
+<pre># Read flight list
+flights &lt;- read.csv("flights.csv", stringsAsFactors = FALSE)
+
+# Lookup coordinates
+library(ggmap)
+airports &lt;- unique(c(flights$From, flights$To))
+coords &lt;- geocode(airports)
+airports &lt;- data.frame(airport=airports, coords)
+</pre>
+<p>We now we have a data frame of airports with their coordinates and can create air travel route maps. The data frames are merged so that we can create air travel route maps using the <a href="http://docs.ggplot2.org/current/geom_segment.html" rel="nofollow" target="_blank">curve geom</a>. The <a href="http://docs.ggplot2.org/current/borders.html" rel="nofollow" target="_blank">borders</a> function of ggplot2 creates the map data. The <a href="https://github.com/slowkow/ggrepel/blob/master/vignettes/ggrepel.md" rel="nofollow" target="_blank">ggrepel</a> package helps to prevent overplotting of text.</p>
+<pre># Add coordinates to flight list
+flights &lt;- merge(flights, airports, by.x="To", by.y="airport")
+flights &lt;- merge(flights, airports, by.x="From", by.y="airport")
+
+# Plot flight routes
+library(ggplot2)
+library(ggrepel)
+worldmap &lt;- borders("world", colour="#efede1", fill="#efede1") # create a layer of borders
+ggplot() + worldmap + 
+ geom_curve(data=flights, aes(x = lon.x, y = lat.x, xend = lon.y, yend = lat.y), col = "#b29e7d", size = 1, curvature = .2) + 
+ geom_point(data=airports, aes(x = lon, y = lat), col = "#970027") + 
+ geom_text_repel(data=airports, aes(x = lon, y = lat, label = airport), col = "black", size = 2, segment.color = NA) + 
+ theme(panel.background = element_rect(fill="white"), 
+ axis.line = element_blank(),
+ axis.text.x = element_blank(),
+ axis.text.y = element_blank(),
+ axis.ticks = element_blank(),
+ axis.title.x = element_blank(),
+ axis.title.y = element_blank()
+ )
+</pre>
+<p>I also tried to use ggmap package to display the maps to get a satellite image background. This did not work because the curve geom struggles with the map projection methods used in ggmap. Another problem is that the flight from Auckland to Los Angeles is drawn the wrong way. I hope no <a href="https://www.theflatearthsociety.org/home/" rel="nofollow" target="_blank">flat-earthers</a> will see this map because they might use it as prove that the world is flat.</p>
+<p><a href="http://r.prevos.net/create-air-travel-route-maps/flights/" rel="nofollow" target="_blank"><img data-attachment-id="466" data-permalink="http://r.prevos.net/create-air-travel-route-maps/flights/" data-orig-file="https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?fit=2178%2C1287" data-orig-size="2178,1287" data-comments-opened="1" data-image-meta="{" aperture":"0","credit":"","camera":"","caption":"","created_timestamp":"0","copyright":"","focal_length":"0","iso":"0","shutter_speed":"0","title":"","orientation":"0"}"="" data-image-title="flights" data-image-description="" data-medium-file="https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?fit=300%2C177" data-large-file="https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?fit=584%2C345" src="https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?resize=584%2C345" alt="" srcset_temp="https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?w=2178 2178w, https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?resize=300%2C177 300w, https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?resize=768%2C454 768w, https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?resize=1024%2C605 1024w, https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?resize=500%2C295 500w, https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?w=1168 1168w, https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?w=1752 1752w" sizes="(max-width: 584px) 100vw, 584px" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i0.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flights.png?resize=584%2C345&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></a></p>
+<h2>Alternative&nbsp;Visualisation</h2>
+<p>Another way of visualising this type of data is using a network diagram provided by the <a href="http://igraph.org/r/" rel="nofollow" target="_blank">igraph</a> package. This visualisation shows the logic between the locations and not their spatial locations.</p>
+<pre># Network visualisation
+library(igraph)
+edgelist &lt;- as.matrix(flights[c("From", "To")])
+g &lt;- graph_from_edgelist(edgelist, directed = TRUE)
+g &lt;- simplify(g)
+par(mar=rep(0,4))
+plot.igraph(g, 
+ edge.arrow.size=0,
+ edge.color="black",
+ edge.curved=TRUE,
+ edge.width=2,
+ vertex.size=3,
+ vertex.color=NA, 
+ vertex.frame.color=NA, 
+ vertex.label=V(g)$name,
+ vertex.label.cex=3,
+ layout=layout.fruchterman.reingold
+)
+</pre>
+<p><a href="http://r.prevos.net/create-air-travel-route-maps/flight_network/" rel="nofollow" target="_blank"><img data-attachment-id="462" data-permalink="http://r.prevos.net/create-air-travel-route-maps/flight_network/" data-orig-file="https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?fit=2048%2C2048" data-orig-size="2048,2048" data-comments-opened="1" data-image-meta="{" aperture":"0","credit":"","camera":"","caption":"","created_timestamp":"0","copyright":"","focal_length":"0","iso":"0","shutter_speed":"0","title":"","orientation":"0"}"="" data-image-title="flight_network" data-image-description="" data-medium-file="https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?fit=300%2C300" data-large-file="https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?fit=584%2C584" src="https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?resize=584%2C584" alt="" srcset_temp="https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?w=2048 2048w, https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?resize=150%2C150 150w, https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?resize=300%2C300 300w, https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?resize=768%2C768 768w, https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?resize=1024%2C1024 1024w, https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?w=1168 1168w, https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?w=1752 1752w" sizes="(max-width: 584px) 100vw, 584px" data-recalc-dims="1" data-old-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i2.wp.com/r.prevos.net/wp-content/uploads/sites/11/2017/03/flight_network.png?resize=584%2C584&amp;is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></a></p>
+<p>The post <a rel="nofollow" href="http://r.prevos.net/create-air-travel-route-maps/" target="_blank">Create Air Travel Route Maps in ggplot: A Visual Travel Diary</a> appeared first on <a rel="nofollow" href="http://r.prevos.net/" target="_blank">The Devil is in the Data</a>.</p>
+
+
+		
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+							</div></div>
+  </div>
+</body>
+</html>

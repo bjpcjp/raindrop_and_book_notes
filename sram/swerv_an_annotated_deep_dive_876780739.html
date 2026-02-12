@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SweRV - An Annotated Deep Dive</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>SweRV - An Annotated Deep Dive</h1>
+    <p><strong>URL:</strong> <a href="https://tomverbeure.github.io/2019/03/13/SweRV.html">https://tomverbeure.github.io/2019/03/13/SweRV.html</a></p>
+    <p><strong>Tags:</strong> riscv, sram</p>
+    <p><strong>Bookmark ID:</strong> 876780739</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div aria-label="Content">
+        <article itemscope="" itemtype="http://schema.org/BlogPosting">
+
+  
+
+  <div itemprop="articleBody">
+    <ul id="markdown-toc">
+  <li><a href="#introduction" id="markdown-toc-introduction">Introduction</a></li>
+  <li><a href="#swerv-deep-dive-during-bay-area-risc-v-group-meetup" id="markdown-toc-swerv-deep-dive-during-bay-area-risc-v-group-meetup">SweRV Deep Dive during Bay Area RISC-V Group Meetup</a></li>
+  <li><a href="#swerv-core-complex" id="markdown-toc-swerv-core-complex">SweRV Core Complex</a></li>
+  <li><a href="#swerv-core-microarchitecture" id="markdown-toc-swerv-core-microarchitecture">SweRV Core Microarchitecture</a></li>
+  <li><a href="#swerv-pipeline-diagram" id="markdown-toc-swerv-pipeline-diagram">SweRV Pipeline Diagram</a></li>
+  <li><a href="#swerv-core-branch-prediction-and-handling" id="markdown-toc-swerv-core-branch-prediction-and-handling">SweRV Core Branch Prediction and Handling</a></li>
+  <li><a href="#swerv-instruction-set-simulator" id="markdown-toc-swerv-instruction-set-simulator">SweRV Instruction Set Simulator</a></li>
+  <li><a href="#swerv-physical-design" id="markdown-toc-swerv-physical-design">SweRV Physical Design</a></li>
+  <li><a href="#swerv-core-performance" id="markdown-toc-swerv-core-performance">SweRV Core Performance</a></li>
+  <li><a href="#risc-v-code-density-and-optimization" id="markdown-toc-risc-v-code-density-and-optimization">RISC-V Code Density and Optimization</a></li>
+  <li><a href="#various" id="markdown-toc-various">Various</a></li>
+  <li><a href="#swerv-for-hobby-use" id="markdown-toc-swerv-for-hobby-use">SweRV for Hobby Use?</a></li>
+  <li><a href="#formal-verification" id="markdown-toc-formal-verification">Formal Verification</a></li>
+  <li><a href="#parting-thought-about-performance" id="markdown-toc-parting-thought-about-performance">Parting Thought about Performance</a></li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Every 6 months, the RISC-V consortium organizes a two day workshop where various companies and research
+entities present work that is one way or the other related to RISC-V.</p>
+
+<p>At the <a href="https://riscv.org/2017/12/7th-risc-v-workshop-proceedings/">November 2017 workshop</a>, storage
+company Western Digital <a href="https://content.riscv.org/wp-content/uploads/2017/12/Tue1048-Keynote-Martin-Fink-RISC-V.pdf">announced</a> 
+their intention to become a major contributor to the RISC-V ecosystem and set a goal to 
+sell more than a billion RISC-V capable CPU cores to the market every year. At the time, it was one of the first major 
+technology companies to put their full weight behind RISC-V.</p>
+
+<p>They committed to accelerating the ecosystem as follows:</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/0%20-%20RISC-V%20Nov%202017%20Workshop.png" alt="Accelerating the Ecosystem"></p>
+
+<p>Open source IP building blocks? A promising tease indeed!</p>
+
+<p>At the <a href="https://riscv.org/2018/05/risc-v-workshop-in-barcelona-proceedings/">May 2018 workshop</a>, the 
+<a href="https://content.riscv.org/wp-content/uploads/2018/05/11.50-12.15pm-Martin-Fink-RISC-V-Presentation-Barcelona-FINAL.pdf">first specifics</a>
+of their RISC-V IP were disclosed:</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/0%20-%20RISC-V%20May%202018%20Workshop.png" alt="Western Digital RISC-V Core"></p>
+
+<p>A performance of <em>at least</em> 3 CoreMark/MHz isn’t bad, but if the real number is close to that lower bound, it’s
+not stellar either when compared to, say, the Boom v2 which <a href="https://content.riscv.org/wp-content/uploads/2017/12/Wed0936-BOOM-v2-An-Open-Source-Out-of-Order-RISC-V-Core-Celio.pdf">promises</a>
+a score of 3.92 CM/MHz and 4.70 CM/MHz for resp. a dual or quad issue core:</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/Boom2%20Stats.png" alt="Boom v2 Stats"></p>
+
+<p>Meanwhile, the <a href="https://www.sifive.com/cores/e76">SiFive E76 core</a> promises 4.9 CM/MHz using
+a two-way superscalar in-order 8 stage pipeline.</p>
+
+<p>The <a href="https://riscv.org/2018/12/inaugural-risc-v-summit-proceedings/">December 2018 workshop</a> finally saw the 
+unveiling of <a href="https://content.riscv.org/wp-content/uploads/2018/12/Unleashing-Innovation-from-Core-to-Edge-Martin-Fink.pdf">Western Digital’s SweRV core</a>, 
+announcing an excellent 4.9 CM/MHz, just like the SiFive E76 core, with target clock speed up to 1.8GHz on an unspecified 
+TSMC 28nm process.</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/14%20-%20SweRV%20-%20SweRV%20Core%20Performance.png" alt="SweRV Core Performance"></p>
+
+<p>Keeping their promise of a year earlier, Western Digital also announced that the core would be available as open source
+under the liberal Apache 2.0 open source license, with instruction set simulator (ISS) and testbenches included as well!</p>
+
+<p>In a separate session at the same workshop, <a href="https://content.riscv.org/wp-content/uploads/2018/12/13.10-Bandic-Golla-Vucinic-CPU-Project-in-Western-Digital-From-Embedded-Cores-for-Flash-Controllers-to-Vision-of-Datacenter-Processors-with-Open-Interf.pdf">lower level architectural details</a> 
+were provided, as well as a detailed schedule of the public release of the code.</p>
+
+<p>All of this culminated with the Febrary 15 release of the full source code on 
+<a href="https://github.com/westerndigitalcorporation/swerv_eh1">Western Digital’s GitHub</a> page.</p>
+
+<p>After implementing <a href="https://tomverbeure.github.io/risc-v/2018/11/19/A-Bug-Free-RISC-V-Core-without-Simulation.html">a very low performance RISC-V core</a> 
+myself, and after <a href="https://tomverbeure.github.io/rtl/2018/12/06/The-VexRiscV-CPU-A-New-Way-To-Design.html">reviewing the internals of the VexRiscv</a>, it
+was time to look at the other end of the RISC-V performance spectrum!</p>
+
+<h2 id="swerv-deep-dive-during-bay-area-risc-v-group-meetup">SweRV Deep Dive during Bay Area RISC-V Group Meetup</h2>
+
+<p>To satisfy the true geeks, Western Digital organized a <a href="https://www.meetup.com/Bay-Area-RISC-V-Meetup/events/258482969/">Swerv Deep Dive</a>
+at the <a href="https://www.meetup.com/Bay-Area-RISC-V-Meetup/">Bay Area RISC-V Meetup</a>. The meetup was well organized
+(free food!) and attended by roughly 100 people.</p>
+
+<p>A Webex recording of this meetup is currently still available 
+<a href="https://wdc.webex.com/wdc/lsr.php?RCID=221a4a6d8d1e4d9c89ba1c501c972502">here</a>. (The first 53 minutes are empty. The meat of the
+presentation starts at the 53min30 mark.)</p>
+
+<p>Zvonimir Bandic, Senior Director of Next Generation Platform Technologies Department at Western Digital, gave an 
+excellent presentation, well paced, little marketing fluff, with sufficient technical detail to pique my interest to dive deeper
+in the specifics of the core. I highly recommend watching the whole thing. There was also a second presentation about
+instruction tracing which I won’t talk about in this post.</p>
+
+<p>In this blog post, I’ll go through the presentation and add some extra details that I noted down at the meetup or that
+were gathered while going through the SweRV source code on GitHub or while going through the
+<a href="https://github.com/westerndigitalcorporation/swerv_eh1/blob/master/docs/RISC-V_SweRV_EH1_PRM.pdf">RISC-V SweRV EH1 Programmer’s Reference </a>.</p>
+
+<p>The full set of slides, as copied from the WebEx stream, can be found 
+<a href="https://github.com/tomverbeure/tomverbeure.github.io/tree/master/assets/swerv/slides">here</a>.</p>
+
+<h2 id="swerv-core-complex">SweRV Core Complex</h2>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/6%20-%20SweRV%20-%20Core%20Complex.png" alt="SweRV Core Complex"></p>
+
+<p>The core complex has most of the features you’d expect from a modern embedded CPU:</p>
+
+<ul>
+  <li>the core itself</li>
+  <li>
+    <p>instruction and data closely coupled memory (ICCM &amp; DCCM)</p>
+
+    <p>These on-chip memories are very popular for embedded SOCs. They are often used for those cases
+  where predictable access performance is essential. A typical use
+  case would be hard real time interrupt routines.</p>
+  </li>
+  <li>instruction cache (Icache) with optional ECC support</li>
+  <li>programmable interrupt controller (PIC)</li>
+  <li>JTAG on-chip debug facilities</li>
+  <li>instruction fetch unit (IFU) bus master</li>
+  <li>load/store unit (LSU) bus master</li>
+  <li>
+    <p>system (debug) bus master</p>
+
+    <p>The system bus can be used to fetch instructions or data, connect to memory mapped IO registers etc.
+  Core local memories and system bus attached memories must be mapped to different address regions.</p>
+  </li>
+  <li>
+    <p>DMA slave port</p>
+
+    <p>The DMA slave port can be used by an external master to read or write from and to the ICCM or DCCM.</p>
+  </li>
+</ul>
+
+<p>Not mentioned, but also present:</p>
+
+<ul>
+  <li>instruction trace port</li>
+</ul>
+
+<p>Surprisingly absent is a data cache.</p>
+
+<h2 id="swerv-core-microarchitecture">SweRV Core Microarchitecture</h2>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/7%20-%20SweRV%20-%20Core%20Microarchitecture.png" alt="SweRV Core Microarchitecture"></p>
+
+<ul>
+  <li>
+    <p>Superscalar Design</p>
+
+    <p>The SweRV was designed to replace existing CPU cores in Western Digital SOCs. For their uses cases, single
+  threaded performance is critical. That’s why they chose a 2-way superscalar pipeline, even if
+  2 separate CPUs with a traditional 5 stage RISC pipeline would require less resources, less
+  power, and higher aggregate performance.</p>
+
+    <p>They also have a lot of code where some of the code is Western Digital proprietary while others is written
+  by customers, with no easy way to separate things into concurrent threads.</p>
+
+    <p>The superscalar architecture provides a purely theoretical performance increase of 100%, but real world 
+  workloads show a boost between 25% and 30%.</p>
+  </li>
+  <li>
+    <p>Second set of ALUs</p>
+
+    <p>When both operands are already available, ALU operations are executed during the <code>EX1</code> stage. 
+  However, if this ALU instruction is dependent on a register load instruction before, the ALU 
+  operation is <em>not</em> executed during <code>EX1</code> but passed along to <code>EX4</code> where it has a second chance to be executed.</p>
+
+    <p>Western Digital uses pipelined RAMs with a 2-cycle access latency. When the core
+  issues a register read in the <code>DC1</code> stage of the load/store pipeline, the result will arrive 2 cycles
+  later, just in time to be used by the ALU in the <code>EX4</code> stage.</p>
+
+    <p>The net result is that the core was able execute an dependent instruction without the need to insert
+  a bubble.</p>
+
+    <p>According to the presenter, this second set of ALUs increases the performance of the core by a
+  whopping 50%. I think this number is stunning. So much so that I still can’t quite believe
+  it to be true. It’d be very interesting to put this claim to the test and modify the RTL to disable
+  this retry-ALU.</p>
+  </li>
+  <li>
+    <p>Load/Store Unit</p>
+
+    <p>There’s only one LSU. Two LSUs were considered, but the additional complexity, resources and power where
+  not an appealing trade-off for an embedded core.</p>
+  </li>
+  <li>
+    <p>Minor Out-of-Order Capability</p>
+
+    <p>The slide show at the May 2018 workshop mentions “mostly in-order core”. The reason for this is that loads
+  do not block the core until the point where the register value is needed in the pipeline. This can give
+  a nice additional boost but support from the C compiler is necessary to really exploit the potential.</p>
+  </li>
+  <li>
+    <p>Multiplier</p>
+
+    <p>As can be seen: spread over 3 cycles in a parallel pipeline.</p>
+  </li>
+  <li>
+    <p>Divider</p>
+
+    <p>An iterative out-of-pipeline divider that has a worst-case performance of 34 clock cycles. In practice, 
+  due to various optimizations and depending on the operands, the average division takes around 15 to 17 cycles.</p>
+  </li>
+  <li>
+    <p>No Support for Instruction Fusion or Macro-Op Fusion</p>
+
+    <p>In <a href="https://riscv.org/wp-content/uploads/2016/07/Tue1130celio-fusion-finalV2.pdf">his presentation</a> at the
+  <a href="https://riscv.org/2016/07/4th-risc-v-workshop-proceedings/">July 2016 RISC-V workshop</a>, David Patterson
+  made the case of macro-op fusion as a way to avoid ISA bloat. Macro-op fusion is a feature of the micro-
+  architecture of a CPU where multiple standard ISA instruction are merged by the decoder into one single 
+  instruction.</p>
+
+    <p>For example, <code>CMP, BNE</code> is merged into a single instruction.</p>
+
+    <p>Macro-op fusion is implemented in some of the Berkeley RISC-V cores (such a BOOM), but not implemented 
+  in the SweRV <em>“because it doesn’t fit the SweRV ideology.”</em></p>
+  </li>
+</ul>
+
+<h2 id="swerv-pipeline-diagram">SweRV Pipeline Diagram</h2>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/8%20-%20SweRV%20-%20Pipeline%20Diagram.png" alt="SweRV Pipeline Diagram"></p>
+
+<p>The presentation had an example with a traditional pipeline diagram to clarify how certain instruction 
+combinations are issued and stalled in the pipeline.</p>
+
+<p>In the diagram above, green indicates a successful execution of an instruction.</p>
+
+<p>To get a better idea about what’s going on per instruction, I have edited the pipeline diagram with some 
+additional annotations.</p>
+
+<p>Let’s first look at instruction <code>A4</code>:</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/8%20-%20SweRV%20-%20Pipeline%20Diagram%20-%20A4.png" alt="SweRV Pipeline Diagram - A4"></p>
+
+<p><code>A4</code> is dependent on <code>x13</code>, the result of load <code>L2</code>. At cycle 4, the first chance for <code>A4</code> to execute in stage
+<code>EX1</code>, <code>L2</code> is still 2 cycles away from having the contents of <code>x13</code> available.</p>
+
+<p>Instead of stalling the pipeline, <code>A4</code> travels further down the pipeline until it reaches stage <code>EX4</code> where it
+gets its second chance at executing. At that point, the result of <code>L2</code> is present in stage <code>EX5</code>, ready to be
+written to the register file.</p>
+
+<p>If the pipeline diagram correctly reflects that architecture of the SweRV core, there’s a forwarding path
+from <code>EX5</code> to <code>EX4</code>, which allows <code>A4</code> to use the result of the <code>L2</code> instruction.</p>
+
+<p>We can see in the diagram that no bubbles were inserted between <code>L2</code> and <code>A4</code>, something that would have been 
+impossible without the <code>EX4</code> retry stage: a hypothethical SweRV core without retry ALU units would have
+required a bubble of 1 clock cycle: sufficient to line up <code>L2</code> at the <code>EX1</code> stage on cycle 5, when the result
+of <code>L2</code> is first available.</p>
+
+<p>The situation for <code>A5</code> is easier:</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/8%20-%20SweRV%20-%20Pipeline%20Diagram%20-%20A5.png" alt="SweRV Pipeline Diagram - A5"></p>
+
+<p><code>A5</code> depends on the results of <code>L2</code> and <code>L3</code>. According to the diagram, the CPU stalls <code>A5</code> until the results of
+<code>L2</code> and <code>L3</code> are available in <code>EX4</code> and <code>EX5</code> respectively. Thanks to forwarding paths from <code>EX4</code> and <code>EX5</code>
+to <code>EX1</code>, the CPU can execute <code>A5</code> during cycle 7.</p>
+
+<p>After that, <code>A5</code> execution is complete and it can sail through the remainder of the pipeline until the 
+result gets written into the register file one cycle 11.</p>
+
+<p>Note that with a forwarding path from <code>DC3</code> to <code>EX1</code>, <code>A5</code> could have launched into the pipe one cycle earlier,
+thus reducing the number of bubbles from 2 to 1 cycle. Based on this diagram, such a forwarding path does
+not exist. The delay from clock to output of RAMs can be notoriously bad, and it’s often in the critical path
+of a design. However, that should have been mitigated by having a 2 cycle latency for a RAM access. The 
+decision to forgo this forwarding path was probably another trade-off between logic, power and performance.</p>
+
+<p>Finally, <code>A7</code> presents another case where the ALU of <code>EX4</code> saves the day:</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/8%20-%20SweRV%20-%20Pipeline%20Diagram%20-%20A7.png" alt="SweRV Pipeline Diagram - A7"></p>
+
+<p>Contrary to <code>A5</code>, <code>A7</code> depends on the result of the load instruction that comes right before it. As a result,
+<code>A7</code> reaches <code>EX4</code> right at the same time as the result of <code>L6</code>. There is no forwarding path necessary: <code>A7</code>
+can simply grab the result of <code>L6</code> as operand from the same pipeline stage and execute.</p>
+
+<h2 id="swerv-core-branch-prediction-and-handling">SweRV Core Branch Prediction and Handling</h2>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/9%20-%20SweRV%20-%20Core%20Branch%20Prediction%20and%20Handling%20I.png" alt="SweRV Core Branch Prediction and Handling 1"></p>
+
+<p>The SweRV uses the GSHARE branch prediction algorithm. According to the presenter, the architects didn’t
+have a lot of choices: the majority of open source cores such as those from Berkeley and ETH Zurich, as well as
+commerical cores all use GSHARE. Doing anything less complicated would cripple the performance compared to 
+those cores, and more complicated algorithms are unreasonably expensive to implement.</p>
+
+<p>A Google search for the GSHARE algorithm gives tons of links with information.</p>
+
+<p>As is the case for many other SweRV parameters, the number of entries in the branch prediction table can
+be sized based on performance needs.</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/10%20-%20SweRV%20-%20Core%20Branch%20Prediction%20and%20Handling%20II.png" alt="SweRV Core Branch Prediction and Handling 2"></p>
+
+<p>The biggest negative consequence of the retry ALU is the fact that mispredictions that are only apparent after <code>EX4</code> result
+in a 7 cycle branch penalty!</p>
+
+<h2 id="swerv-instruction-set-simulator">SweRV Instruction Set Simulator</h2>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/11%20-%20SweRV%20-%20SweRV%20Instruction%20Set%20Simulator%20I.png" alt="SweRV Instruction Set Simulator 1"></p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/12%20-%20SweRV%20-%20SweRV%20Instruction%20Set%20Simulator%20II.png" alt="SweRV Instruction Set Simulator 2"></p>
+
+<p>In addition to the SweRV RTL, Western Digital also open sourced their instruction set simulator. Not too much 
+additional detail was given than what was on the slides.</p>
+
+<p>They decided to write their own ISS instead of using Spike because Spike didn’t exactly fit their needs. They have
+many man-years of experience doing ISS. Getting this one up and running only took about a week.</p>
+
+<p>The ISS can easily be modified for different cores.</p>
+
+<p>The source code is <a href="https://github.com/westerndigitalcorporation/swerv-ISS">here</a>.</p>
+
+<p>Since the ISS is used to generate traces that are used to verify the RTL, I was wondering if the ISS also has all the
+microarchitectural details (the superscalar nature etc.) So far, I’ve not been able to identify where this is
+specified.</p>
+
+<h2 id="swerv-physical-design">SweRV Physical Design</h2>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/13%20-%20SweRV%20-%20SweRV%20Core%20Phyiscal%20Design.png" alt="SweRV Core Physical Design"></p>
+
+<p>According to the presenter, legal told him to remove the labels on the individual regions, but the same
+slide was presented, with labels, at the RISC-V workshop, so I think it’s all good. :-)</p>
+
+<p>The initial budget was 0.180 mm2 for the core (without RAMs). The final result is well below that.</p>
+
+<h2 id="swerv-core-performance">SweRV Core Performance</h2>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/14%20-%20SweRV%20-%20SweRV%20Core%20Performance.png" alt="SweRV Core Performance"></p>
+
+<p>A CoreMark score of 4.9 CM/MHz is excellent, but already stale: with additional optimizations, their number now stands
+at 5.0.</p>
+
+<p>Going higher than that would require a significant investment in terms of logic and branch prediction.</p>
+
+<p>As mentioned earlier, the SiFive E76 core claims a score of 4.9 CM/MHz as well with an 2-way superscalar 8-deep pipeline.
+The Core Complex Manuals of various SiFive cores can be found <a href="https://www.sifive.com/documentation">here</a>.</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/E76%20Pipeline.png" alt="E76 Pipeline"></p>
+
+<p>Like the SweRV, the E76 also gives arithmetic instructions a retry opportunity, since they can be executed either
+in the <code>AG</code> stage or the <code>M2</code> stage.</p>
+
+<p>Correctly predicted branches and direct jumps result in no penalty, provided the target is 8 byte aligned, while 
+the SweRv has a 1 cycle penalty for correctly predicted jumps.</p>
+
+<p>All in all, the E76 and the SweRV are very similar, with very similar performance as a result.</p>
+
+<h2 id="risc-v-code-density-and-optimization">RISC-V Code Density and Optimization</h2>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/15%20-%20SweRV%20-%20RISC-V%20code%20density%20and%20optimization%20I.png" alt="RISC-V Code Density and Optimization 1"></p>
+
+<p>Because of the inefficient way in which GCC currently generates compressed instructions, code density isn’t as good as
+it should be, with binaries that are between 8 and 12% larger than their previous CPUs.</p>
+
+<p>They are working with the RISC-V consortium to improve GCC’s compressed instruction generation. 
+Code will be upstreamed, of course.</p>
+
+<p>Meanwhile, they are using compiler flags to reduce code size:</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/16%20-%20SweRV%20-%20RISC-V%20code%20density%20and%20optimization%20II.png" alt="RISC-V Code Density and Optimization 2"></p>
+
+<p>In the numbers above, the original RISC-V code size is 64KB, compared to 51KB for their older chips with commercial CPU.
+(They don’t use GCC for that CPU.)</p>
+
+<p>With additional compiler options, they can recoup most of the code size:</p>
+
+<ul>
+  <li>
+    <p><code>-msave-restore</code></p>
+
+    <p>This options replaces the entry and exit code of a function where registers are saved and restored by a function
+  call. My personal experience is that compared to ARM, which has LDM and STM load/store multiple operations, RISC-V
+  wastes a lot of code space on this.</p>
+  </li>
+  <li>
+    <p><code>-fno-unroll-loops</code></p>
+
+    <p>Self-explanatory…</p>
+  </li>
+  <li>
+    <p><code>-lto</code></p>
+
+    <p>Link Time Optimization takes in a higher level view of the code as opposed to assembler instruction when linking.
+  This allows it to make some additional optimizations that would otherwise not be possible.</p>
+
+    <p>According to the presenter, a negative of LTO is that there were issues getting the debugger to deal with it
+  correctly.</p>
+  </li>
+</ul>
+
+<h2 id="various">Various</h2>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/5%20-%20SweRV%20-%20open%20source%20RTL%20RISC-V.png" alt="SweRV on GitHub"></p>
+
+<p>They saw a lot of interest after the public release. One question is how to deal with pull request and how
+to integrate that with their internal design flow.</p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/17%20-%20SweRV%20-%20NAND%20Controller%20SoC%20applications.png" alt="NAND Controller SoC applications"></p>
+
+<p><img src="https://tomverbeure.github.io/assets/swerv/slides/18%20-%20SweRV%20-%20Driving%20Momentum.png" alt="Driving Momentum"></p>
+
+<h2 id="swerv-for-hobby-use">SweRV for Hobby Use?</h2>
+
+<p>I’m still in the early stages of going through the SweRV RTL and ISS, but it’s clear that SweRV is not a good fit
+to stick in an FPGA for hobby projects:</p>
+
+<ul>
+  <li>The register file has 4 read ports and 2 write ports. This makes it necessary to use FFs instead of RAMs, and it’s
+very wasteful on an FPGA.</li>
+  <li>During their demo of the SweRV on an Artix 7 FPGA, they were able to reach a clock speed of around 40MHz, with 
+the critical path being in the decoder. This is not really a surpise: FPGAs are not very good a large blobs of
+combinatorial gates, and superscalar architectures add additional complexity.
+A VexRiscV, which was designed for FPGA, would run circles around a SweRV in terms of clock speed, probably
+enough to outweigh the better IPC fo the SweRV.</li>
+  <li>The RTL is written in SystemVerilog, using some constructs like port assignment wildcards that are not (yet)
+supported by Yosys. This eliminates open source flows as a potential candidate.</li>
+  <li>Finally, the SweRV core is big: it’d probably fill up 50% of a relatively large Artix 7 FPGA, though that needs 
+to be tested in practice.</li>
+</ul>
+
+<h2 id="formal-verification">Formal Verification</h2>
+
+<p>After the presentation, I asked about formal verification of the core. Zvonimir confirmed that they used formal
+methods at a later stage and that “they found some nasty bugs”. The code that was released on GitHub has no signs
+of Clifford Wolf’s <code>RVFI</code> interface that is defined in the <a href="https://github.com/SymbioticEDA/riscv-formal">riscv-formal</a>
+project, so it’s not clear what kind of test suite was used to verify the correctness.</p>
+
+<h2 id="parting-thought-about-performance">Parting Thought about Performance</h2>
+
+<p>When you have a look at the SweRV architecture and implementation, it is not incredibly complex, especially compared to, 
+an out-of-order triple-issue A-15 core. And yet it achieves similar or higher CoreMark/MHz scores. Is this because of the 
+memory system, where most CoreMark measurements are done with a DRAM system instead of fixed latency on-chip SRAM? 
+But even if we stay within the RISC-V family and compare against the Boom v2, with the similar scores, but also
+a much more complex OOO architecture (requiring, for example, a 9 read port/3 write port register file), the score is remarkable.</p>
+
+<p>I’d love to learn more about that!</p>
+
+<p>I would like to thank the Bay Area RISC-V Group for organizing this deep dive, and Western Digital for hosting the
+meeting, providing the content, and releasing the source code on GitHub!</p>
+
+
+  </div>
+</article>
+
+      </div></div>
+  </div>
+</body>
+</html>

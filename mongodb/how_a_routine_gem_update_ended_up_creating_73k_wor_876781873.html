@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How a routine gem update ended up creating $73k worth of subscriptions</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How a routine gem update ended up creating $73k worth of subscriptions</h1>
+    <p><strong>URL:</strong> <a href="https://serpapi.com/blog/how-a-routine-gem-update-ended-up-charging">https://serpapi.com/blog/how-a-routine-gem-update-ended-up-charging</a></p>
+    <p><strong>Tags:</strong> mongodb, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876781873</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section>
+            <div><p>On November 5, 2021 (a Friday of course), we've deployed innocent-looking gem updates. Minor versions of Ruby on Rails, Ruby Sentry client, Ruby Slack client, http libraries, Puma, Devise, OmniAuth Ruby client, Mongoid, and a few test gems. </p><p>However, something went very wrong. </p><p>We saw odd Stripe errors on Airbrake. Then, on our Stripe account, we saw this:</p></div><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy" width="1252" height="426" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1252w" sizes="(min-width: 720px) 720px"></figure><div><p>In less than 1h, we've created 474 new subscriptions for a total of $73,271.36.</p><p>We weren't expecting that much business.</p><p>Our app for some reason was creating new subscriptions from old accounts that were canceled or disabled a long time ago. We had no idea why but we decided to react proactively as fast as we could, as the issue was still very ongoing.</p><p>We immediately rolled back the gem updates to their safe older versions, disabled our Stripe API keys to lock our own application out, and refunded everyone impacted:</p></div><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy" width="2000" height="1227" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1600w, data:application/octet-stream;base64, 2400w" sizes="(min-width: 720px) 720px"></figure><div><p>After refunding everyone, we manually double-checked the billing state of each account one by one and sent emails to apologize to each customer one by one; all 474 of them.</p><p>We still didn't know why.</p><p>Most of the updates seemed inoffensive. And after deeper inspection, it was indeed minor gem updates on several small things. We worked on several hypotheses: caching issues, odd race conditions, or some thread safety issues as Puma changed their threading model in that update.</p><p>However, we finally found it. One method of our billing logic particularly seemed a code smell (Obligatory disclaimer: I personally wrote this.):</p></div><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy" width="1596" height="502" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1596w" sizes="(min-width: 720px) 720px"></figure><div><p>This is part of a feature that seems good on paper: We offer to automatically renew your plan if you run out of searches on our service. </p><p>The goal of <code>renew_early_protected</code> is to avoid the case of someone submitting multiple searches at the exact same time, subsequently getting their subscription renewed then their credit card charged several times.</p><p>Notice the <code>or()</code> method at line 47.</p><p>In Mongoid (The MongoDB driver for Ruby) <code>7.0.8</code> , <code>or()</code> meant filter documents that contain any of the argument conditions. In our case, filter users that have a specific ID AND that have either never had a <code>renewing_early_lock</code> or their <code>renewing_early_lock</code> is less than 1 hour ago.</p><p>Here's what it got computed to for a specific user:</p></div><pre><code>computed_selector_in_mongoid_7_0_8 = {
+  "_id" =&gt; BSON::ObjectId('59af54094-----------64'), "$or" =&gt; [{
+    "renewing_early_lock_at" =&gt; {
+      "$lte" =&gt; 2022-01-07 20:14:53.44744 UTC
+    }
+  }, {
+    "renewing_early_lock_at" =&gt; nil
+  }]
+}</code></pre><div><p>In Mongoid <code>7.3.3</code> , <code>or()</code> now means filter documents that contain any of the argument conditions OR any of previous method conditions! In our case, filter users that have either a specific id OR that have never had a <code>renewing_early_lock</code> OR their <code>renewing_early_lock</code> is less than 1 hour ago.</p><p>Here's what it looks like for the same user:</p></div><pre><code>computed_selector_in_mongoid_7_3_3 = {
+  "$or" =&gt; [{
+    "_id" =&gt; BSON::ObjectId('59af54094-----------64')
+  }, {
+    "renewing_early_lock_at" =&gt; {
+      "$lte" =&gt; 2022-01-07 19:00:09.571034 UTC
+    }
+  }, {
+    "renewing_early_lock_at" =&gt; nil
+  }]
+}</code></pre><div><p>Notice that the user ID selector got moved into an optional <code>or()</code>! </p><p>This ultimately means we were charging random customers new subscriptions instead of the actual customer who wanted to renew early:</p></div><figure><img src="data:application/octet-stream;base64," alt="" loading="lazy" width="1398" height="1050" srcset="data:application/octet-stream;base64, 600w, data:application/octet-stream;base64, 1000w, data:application/octet-stream;base64, 1398w" sizes="(min-width: 720px) 720px"></figure><div><p>Which is obviously awful.</p><p>We are deeply sorry if you were impacted by this issue. This is not acceptable.</p><p>Even if that Mongoid shouldn't have changed existing methods behaviors between minor versions, my implementation was a true code smell as it was unclear what it did. This code should never have been deployed to production. But also and more importantly, the feature itself was a bad idea. Using our API to scrape search engine results shouldn't trigger a renewal of a credit card subscription in the first place. And we'll be removing that feature as soon as possible.</p><p>Sorry again to all of our users.</p></div>
+        </section></div>
+  </div>
+</body>
+</html>

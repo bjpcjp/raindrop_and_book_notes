@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>We need to talk about fixtures</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>We need to talk about fixtures</h1>
+    <p><strong>URL:</strong> <a href="https://thoughtbot.com/blog/we-need-to-talk-about-fixtures">https://thoughtbot.com/blog/we-need-to-talk-about-fixtures</a></p>
+    <p><strong>Tags:</strong> ruby, rubyonrails, testing</p>
+    <p><strong>Bookmark ID:</strong> 876786367</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <p>The use of <a href="https://api.rubyonrails.org/v7.0.3/classes/ActiveRecord/FixtureSet.html">Fixtures</a> is a typical pattern in Rails applications because it is the framework’s
+default way of setting up test data. Fixtures seem harmless and helpful in the beginning, just like the <a href="https://en.wikipedia.org/wiki/We_Need_to_Talk_About_Kevin_(film)">Kevin</a>,
+but as our codebase grows, the coupling introduced by fixtures makes our 
+application increasingly challenging to maintain and extend. Let’s see how <a href="https://connascence.io/">connascence</a> as a coupling
+metric can build us arguments to avoid/remove Fixtures from our application.</p>
+<h2 id="brief-introduction-to-connascence">
+  <a href="#brief-introduction-to-connascence">
+    Brief introduction to connascence
+  </a>
+</h2>
+
+<p>Connascence is a software metric and taxonomy for coupling. It introduces different types of coupling
+and metrics to give developers a vocabulary to talk about coupling. <strong>Strength</strong>, <strong>Locality</strong>, and <strong>Degree</strong>
+are used to estimate the impact of connascence.</p>
+
+
+<h2 id="common-use-of-fixtures">
+  <a href="#common-use-of-fixtures">
+    Common use of Fixtures
+  </a>
+</h2>
+
+<p>Let’s take a look at these two fixtures files in isolation and see how much coupled they’re
+using connascence.</p>
+<div><pre><code><span># spec/fixtures/users.yml</span>
+
+<span>matheus:
+  id: </span><span>1</span>
+  <span>first_name: </span><span>Matheus</span>
+  <span>last_name: </span><span>Sales</span>
+  <span>role_id: </span><span>2</span>
+  <span>type: </span><span>2</span>
+
+<span># spec/fixtures/roles.yml</span>
+
+<span>admin:
+  id: </span><span>1</span>
+  <span>name: </span><span>admin</span>
+<span>user:
+  id: </span><span>2</span>
+  <span>name: </span><span>user</span>
+</code></pre></div>
+<p>In this case, these simple files contain at least three types of connascence listed bellow 
+from weakest to strongest.</p>
+
+<ol>
+<li>Connascence of Name: We will need to reference our user by the name <code>matheus</code>, that’s not so bad
+because connascence of name it’s the weakest form of connascence.</li>
+<li>Connascence of Position: The user <code>matheus</code> role depends on the position
+of the <code>Role</code> fixtures because it specifies the <code>role_id</code>.</li>
+<li>Connascence of Meaning: We do not know what the <a href="https://stackoverflow.com/questions/47882/what-is-a-magic-number-and-why-is-it-bad">magic value</a> of <code>type: 2</code> means. </li>
+</ol>
+<div><pre><code><span># spec/fixtures/users.yml</span>
+
+<span>matheus</span><span>:</span>
+  <span>first_name</span><span>:</span> <span>Matheus</span>
+  <span>last_name</span><span>:</span> <span>Sales</span>
+  <span>role</span><span>:</span> <span>admin</span>
+  <span>type</span><span>:</span> <span>&lt;%= User::B2C_TYPE %&gt;</span>
+
+<span># spec/fixtures/roles.yml</span>
+
+<span>admin</span><span>:</span>
+  <span>name</span><span>:</span> <span>admin</span>
+<span>user</span><span>:</span>
+  <span>name</span><span>:</span> <span>user</span>
+</code></pre></div>
+<p>We’ve refactored our <code>users</code> fixture to be dependent on the name instead of depending on the <code>id</code>
+of a specific <code>role</code>. That’s a nice refactor because we’ve weakened our connascence
+by moving from a connascence of position to name. And changing the <code>type</code> field to use a constant,
+we move from connascence of meaning to name. But how will this help us move away from fixtures?</p>
+<h2 id="look-at-the-big-picture">
+  <a href="#look-at-the-big-picture">
+    Look at the big picture
+  </a>
+</h2>
+
+<p>Zero duplication is often a goal, and fixtures help on that side, but tests are one
+area where this is not ideal. We need to focus on treating our <a href="https://thoughtbot.com/upcase/videos/testing-antipatterns#tests-as-documentation">tests as documentation</a>.
+And that’s where we need to think about why we are using fixtures.
+One of the biggest problems with this approach is sharing global data across all
+our test suite making the tests not <a href="https://thoughtbot.com/blog/the-self-contained-test">self-contained</a> and introducing the <a href="https://thoughtbot.com/blog/mystery-guest">mystery
+guest</a> testing antipattern.</p>
+
+<p>Fixtures subtly affect the connascence of our tests, often without us realizing it. Let’s talk through an example:</p>
+<div><pre><code><span>def</span> <span>test_a_very_complicated_scope</span>
+  <span>users</span> <span>=</span> <span>User</span><span>.</span><span>filter_by_very_complicated_scope</span>
+
+  <span>assert_equal</span> <span>2</span><span>,</span> <span>users</span><span>.</span><span>size</span>
+<span>end</span>
+</code></pre></div>
+<p>We have some problems with this test:</p>
+
+<ol>
+<li>Fragile test: any change on the fixture file may break this test and multiple ones.</li>
+<li>We have a nebulous test that doesn’t tell us a story and helps us understand what
+the object under testing means (connascence of meaning).</li>
+<li>We need to rely on our knowledge of the current fixtures to understand this test because
+the <a href="https://thoughtbot.com/upcase/videos/telling-a-story-with-your-tests#four-phases-of-testing">setup</a> part of our test is implicit (connascence of meaning).</li>
+<li>The places where the test data is specified, and used are distant from each other.
+This is a locality problem (connascence of position).</li>
+</ol>
+<div><pre><code><span>def</span> <span>test_a_very_complicated_scope</span>
+  <span>## Setup</span>
+  <span>admin</span> <span>=</span> <span>Role</span><span>.</span><span>create</span><span>(</span><span>name: </span><span>"admin"</span><span>)</span>
+  <span>user_role</span> <span>=</span> <span>Role</span><span>.</span><span>create</span><span>(</span><span>name: </span><span>"user"</span><span>)</span>
+  <span>user_admin_with_last_name</span> <span>=</span> <span>User</span><span>.</span><span>create</span><span>(</span><span>role: </span><span>admin</span><span>,</span> <span>first_name: </span><span>'Matheus'</span><span>,</span> <span>last_name: </span><span>'Sales'</span><span>)</span>
+  <span>user_admin_without_last_name</span> <span>=</span> <span>User</span><span>.</span><span>create</span><span>(</span><span>role: </span><span>admin</span><span>,</span> <span>first_name: </span><span>'Matheus'</span><span>,</span> <span>last_name: </span><span>''</span><span>)</span>
+  <span>user_without_last_name</span> <span>=</span> <span>User</span><span>.</span><span>create</span><span>(</span><span>role: </span><span>user_role</span><span>,</span> <span>first_name: </span><span>'Matheus'</span><span>,</span> <span>last_name: </span><span>''</span><span>)</span>
+  <span>user_with_last_name</span> <span>=</span> <span>User</span><span>.</span><span>create</span><span>(</span><span>role: </span><span>user_role</span><span>,</span> <span>first_name: </span><span>'Matheus'</span><span>,</span> <span>last_name: </span><span>'Sales'</span><span>)</span>
+
+  <span>## Exercise</span>
+  <span>users</span> <span>=</span> <span>User</span><span>.</span><span>filter_by_very_complicated_scope</span>
+
+  <span>## Verify</span>
+  <span>assert_equal</span> <span>[</span><span>user_admin_without_last_name</span><span>],</span> <span>users</span>
+<span>end</span>
+</code></pre></div>
+<p>The refactored version of our test does not use any pattern and makes our setup test phase explicit, 
+creating just enough data needed, and telling us a story that the <code>filter_by_a_very_complicated_scope</code>
+is related in some way to a user being of <code>admin role</code> and not having a <code>last_name</code>. This test is isolated from our test suite,
+and does not depend on any shared global data. </p>
+
+<p>But this approach might make our test challenging to read and more inconvenient to write. When dealing with
+objects that have multiple validations on different attributes, we need to pass multiple attributes just
+to make the object valid, most of these attributes may not be directly related to our test case.</p>
+
+<p>Most of the problems introduced by the usage of fixtures will be spread into our entire test suite. 
+Fortunately, they can be fixed using a design pattern called <a href="https://refactoring.guru/design-patterns/factory-method">Factory</a> to generate the bare minimum
+data needed for that specific test —and <a href="https://thoughtbot.com/blog/speed-up-tests-by-selectively-avoiding-factory-bot">sometimes</a> factories aren’t even required to achieve this.
+Making each test independent and more straightforward is an excellent way to increase the maintainability
+of our codebases. This approach is quite common and many languages have libraries
+for writing tests with factories (for example, in <a href="https://github.com/thoughtbot/fishery">JavaScript</a>, <a href="https://factoryboy.readthedocs.io/en/latest/">Python</a>, or <a href="https://github.com/thoughtbot/ex_machina">Elixir</a>).</p>
+
+
+<h2 id="summary">
+  <a href="#summary">
+    Summary
+  </a>
+</h2>
+
+<p>Connascence is a way to measure coupling. Coupling makes code harder to be readable by
+humans, and without a human to read it, the code can’t be maintained, extended, or re-used. It
+can’t even be finished: the developer has to <a href="https://thoughtbot.com/blog/write-code-to-be-read">read the code to write it</a>. A good test/suite needs
+to tell a story, and the usage of fixtures will make this a pretty hard thing to achieve and maintain.
+Factories will make your tests easier to read, better document your code, remove globally shared data, and
+reduce coupling and connascence.</p>
+
+    </div></div>
+  </div>
+</body>
+</html>

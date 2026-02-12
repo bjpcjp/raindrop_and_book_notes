@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Understanding Attributes, Dicts and Slots in Python</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Understanding Attributes, Dicts and Slots in Python</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/bascodes/understanding-attributes-dicts-and-slots-in-python-e04">https://dev.to/bascodes/understanding-attributes-dicts-and-slots-in-python-e04</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876782721</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="984875" id="article-body">
+            <h2>
+  <a name="understanding-attributes-in-python" href="#understanding-attributes-in-python">
+  </a>
+  Understanding Attributes in Python
+</h2>
+
+<p>Python is a very dynamic language by nature. Variables do not need to be declared and can be added as attributes almost everywhere. Consider an empty class like this:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>MyClass</span><span>:</span>
+    <span>pass</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This is a complete definition of a class in Python. Granted, it does nothing, but it's still valid.</p>
+
+<p>At any later point in time, we can "patch" attributes to our class like this:<br>
+</p>
+
+<div>
+<pre><code><span>MyClass</span><span>.</span><span>class_attribute</span> <span>=</span> <span>42</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The class has this new <code>class_attribute</code> value from that point on.</p>
+
+<p>If we instantiate this class with <code>my_object = MyClass()</code> we can verify that the <code>class_attribute</code> value is 42:<br>
+</p>
+
+<div>
+<pre><code><span>&gt;&gt;&gt;</span> <span>my_object</span><span>.</span><span>class_attribute</span>
+<span>42</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Of course, we can add attributes to our instances as well:<br>
+</p>
+
+<div>
+<pre><code><span>&gt;&gt;&gt;</span> <span>my_object</span><span>.</span><span>instance_attribute</span> <span>=</span> <span>21</span>
+<span>&gt;&gt;&gt;</span> <span>my_object</span><span>.</span><span>instance_attribute</span>
+<span>21</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h3>
+  <a name="have-you-ever-wondered-where-these-attributes-are-stored" href="#have-you-ever-wondered-where-these-attributes-are-stored">
+  </a>
+  Have you ever wondered where these attributes are stored?
+</h3>
+
+<blockquote>
+<p>Explicit is better than implicit.<br>
+(from the Zen of Python)</p>
+</blockquote>
+
+<p>Python wouldn't be Python without a well-defined and customizable behaviour for attributes. The attributes of a "thing" in Python are stored in a magic attribute called <code>__dict__</code>. We can access it like so:<br>
+</p>
+
+<div>
+<pre><code>class MyClass:
+    class_attribute = "Class"
+
+    def __init__(self):
+        self.instance_attribute = "Instance"
+
+my_object = MyClass()
+
+print(my_object.__dict__)
+print(MyClass.__dict__)
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>As you can see, the <code>class_attribute</code> is stored in the <code>__dict__</code> of <code>MyClass</code> itself, whereas the <code>instance_attribute</code> is stored within the <code>__dict__</code> of <code>my_object</code>.</p>
+
+<p><strong>That means, whenever you access <code>my_object.instance_attribute</code> Python will first look in <code>my_object.__dict__</code>, and then in <code>MyClass.__dict__</code>.</strong> If the attribute <code>instance_attribute</code> is found in neither dictionary, an <code>AttributeError</code> is raised.</p>
+
+<h4>
+  <a name="side-note" href="#side-note">
+  </a>
+  Side Note
+</h4>
+
+<p><strong>What is a "thing" in Python?</strong> You see that every "thing" in Python has a <code>__dict__</code> attribute, even a class itself. Logically, a class like <code>MyClass</code> is of type <code>class</code>, meaning that the class itself is an object of type <code>class</code>. Since this might sound confusing, I use the colloquial term "thing" instead.</p>
+
+<h3>
+  <a name="hacking-the-raw-dict-endraw-attribute" href="#hacking-the-raw-dict-endraw-attribute">
+  </a>
+  "Hacking" the <code>__dict__</code> attribute
+</h3>
+
+<p>Like always in Python, the <code>__dict__</code> attribute behaves like any other attribute in Python. Since Python is a language that prefers passing by reference, we can look at a bug that occurs quite frequently by accident. Consider a class <code>AddressBook</code>:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>AddressBook</span><span>:</span>
+    <span>addresses</span> <span>=</span> <span>[]</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Now, let's create some address books and create some addresses:<br>
+</p>
+
+<div>
+<pre><code><span>alices_address_book</span> <span>=</span> <span>AddressBook</span><span>()</span>
+<span>alices_address_book</span><span>.</span><span>addresses</span><span>.</span><span>append</span><span>((</span><span>"Sherlock Holmes"</span><span>,</span> <span>"221B Baker St., London"</span><span>))</span>
+<span>alices_address_book</span><span>.</span><span>addresses</span><span>.</span><span>append</span><span>((</span><span>"Al Bundy"</span><span>,</span> <span>"9764 Jeopardy Lane, Chicago, Illinois"</span><span>))</span>
+
+
+<span>bobs_address_book</span> <span>=</span> <span>AddressBook</span><span>()</span>
+<span>bobs_address_book</span><span>.</span><span>addresses</span><span>.</span><span>append</span><span>((</span><span>"Bart Simpson"</span><span>,</span> <span>"742 Evergreen Terrace, Springfield, USA"</span><span>))</span>
+<span>bobs_address_book</span><span>.</span><span>addresses</span><span>.</span><span>append</span><span>((</span><span>"Hercule Poirot"</span><span>,</span> <span>"Apt. 56B, Whitehaven Mansions, Sandhurst Square, London W1"</span><span>))</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Interestingly, <em>Alice</em> and <em>Bob</em> now share one address book:<br>
+</p>
+
+<div>
+<pre><code><span>&gt;&gt;&gt;</span> <span>alices_address_book</span><span>.</span><span>addresses</span>
+<span>[(</span><span>'Sherlock Holmes'</span><span>,</span> <span>'221B Baker St., London'</span><span>),</span>
+ <span>(</span><span>'Al Bundy'</span><span>,</span> <span>'9764 Jeopardy Lane, Chicago, Illinois'</span><span>),</span>
+ <span>(</span><span>'Bart Simpson'</span><span>,</span> <span>'742 Evergreen Terrace, Springfield, USA'</span><span>),</span>
+ <span>(</span><span>'Hercule Poirot'</span><span>,</span> <span>'Apt. 56B, Whitehaven Mansions, Sandhurst Square, London W1'</span><span>)]</span>
+<span>&gt;&gt;&gt;</span> <span>bobs_address_book</span><span>.</span><span>addresses</span>
+<span>[(</span><span>'Sherlock Holmes'</span><span>,</span> <span>'221B Baker St., London'</span><span>),</span>
+ <span>(</span><span>'Al Bundy'</span><span>,</span> <span>'9764 Jeopardy Lane, Chicago, Illinois'</span><span>),</span>
+ <span>(</span><span>'Bart Simpson'</span><span>,</span> <span>'742 Evergreen Terrace, Springfield, USA'</span><span>),</span>
+ <span>(</span><span>'Hercule Poirot'</span><span>,</span> <span>'Apt. 56B, Whitehaven Mansions, Sandhurst Square, London W1'</span><span>)]</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This is because the <code>addresses</code> attribute is defined at the <code>class</code> level. The empty list is created only once (<code>addresses = []</code>), namely, when the Python interpreter creates the class. Thus, for any subsequent instance of the <code>AddressBook</code> class, the same <code>list</code> is referenced by <code>addresses</code>. We can fix this bug by moving the creation of the empty <code>list</code> to the instance level like so:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>AddressBook</span><span>:</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>):</span>
+        <span>self</span><span>.</span><span>addresses</span> <span>=</span> <span>[]</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>By moving the creation of the empty list to the constructor (<code>__init__</code> method), a new list is created whenever a new instance of <code>AddressBook</code> is created. Therefore, the instances do not unintentionally share the same <code>list</code> anymore.</p>
+
+<h4>
+  <a name="introducing-the-borg" href="#introducing-the-borg">
+  </a>
+  Introducing the Borg
+</h4>
+
+<p>Can we leverage this behaviour somehow intentionally? Is there a use case where we <em>want</em> all instances to share the same storage? Turns out there is! There is a <em><a href="https://en.wikipedia.org/wiki/Software_design_pattern">Design Pattern</a></em> called <em><a href="https://en.wikipedia.org/wiki/Singleton_pattern">Singleton</a></em>. This ensures that there is only one instance of the class during the program's runtime. For example, it can be useful if this is used for a database connection class or a configuration store. </p>
+
+<p><em>Note</em> that you should use singleton classes only occasionally because they introduce some global state in your program, which makes it hard to test individual components of your program in isolation.</p>
+
+<p><strong>What would be a Pythonic way to implement a singleton-<em>ish</em> pattern?</strong></p>
+
+<p>Consider this class:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>Borg</span><span>:</span>
+    <span>_shared_</span> <span>=</span> <span>{}</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>):</span>
+        <span>self</span><span>.</span><span>__dict__</span> <span>=</span> <span>self</span><span>.</span><span>_shared</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This class has a <code>_shared</code> attribute initialized as an empty array. We know from the previous paragraphs that the <code>dict</code> instance is the same object for the <strong>class</strong>. <br>
+Inside the constructor (<code>__init__</code>) then, we set the <code>__dict__</code> of the instance to this shared dictionary. As a result, all dynamically added attributes are shared amongst each <strong>instance</strong> of that class.</p>
+
+<p>Let's check:<br>
+</p>
+
+<div>
+<pre><code><span>&gt;&gt;&gt;</span> <span>borg_1</span> <span>=</span> <span>Borg</span><span>()</span>
+<span>&gt;&gt;&gt;</span> <span>borg_2</span> <span>=</span> <span>Borg</span><span>()</span>
+<span>&gt;&gt;&gt;</span> 
+<span>&gt;&gt;&gt;</span> <span>borg_1</span><span>.</span><span>value</span> <span>=</span> <span>42</span>
+<span>&gt;&gt;&gt;</span> <span>borg_2</span><span>.</span><span>value</span> 
+<span>42</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p><strong>Why can't we set the <code>__dict__ = {}</code> to the class directly like so</strong><br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>Borg</span><span>:</span>
+    <span>__dict__</span> <span>=</span> <span>{}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+
+
+<div>
+<pre><code><span>&gt;&gt;&gt;</span> <span>borg_1</span> <span>=</span> <span>Borg</span><span>()</span>
+<span>&gt;&gt;&gt;</span> <span>borg_2</span> <span>=</span> <span>Borg</span><span>()</span>
+<span>&gt;&gt;&gt;</span> 
+<span>&gt;&gt;&gt;</span> <span>borg_1</span><span>.</span><span>value</span> <span>=</span> <span>42</span>
+<span>&gt;&gt;&gt;</span> <span>borg_2</span><span>.</span><span>value</span> 
+<span>Traceback</span> <span>(</span><span>most</span> <span>recent</span> <span>call</span> <span>last</span><span>):</span>
+  <span>File</span> <span>"&lt;stdin&gt;"</span><span>,</span> <span>line</span> <span>1</span><span>,</span> <span>in</span> <span>&lt;</span><span>module</span><span>&gt;</span>
+<span>AttributeError</span><span>:</span> <span>'Borg'</span> <span>object</span> <span>has</span> <span>no</span> <span>attribute</span> <span>'value'</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This is because in the latter case, we set the <code>__dict__</code> attribute to the <strong>class</strong> itself. However, we access the attribute of the <strong>instance</strong> by typing <code>borg_2.value</code>. Only when the <code>__dict__</code> attribute is set on the <em>instance</em> level we can make use of our Borg pattern. The way to achieve this is by using the constructor to change the <code>__dict__</code> attribute on the instance level.</p>
+
+<h2>
+  <a name="memory-usage-of-attributes" href="#memory-usage-of-attributes">
+  </a>
+  Memory usage of Attributes
+</h2>
+
+<p>Dynamically adding attributes at runtime on instance level or class level comes with a cost. The dictionary structure is quite memory intensive in Python's internals. In situations where you instantiate a lot (thousands) of instances, this might become a bottleneck.</p>
+
+<p>However, first things first: <strong>What are slots?</strong> While you can dynamically add attributes to "things" in Python, <em>slots</em> restrict this functionality. When you add a <code>__slots__</code> attribute to a <code>class</code>, you pre-define which <em>member attributes</em> you allow. Let's have a look:<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>SlottedClass</span><span>:</span>
+    <span>__slots__</span> <span>=</span> <span>[</span><span>'value'</span><span>]</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>i</span><span>):</span>
+        <span>self</span><span>.</span><span>value</span> <span>=</span> <span>i</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>With this definition, any instance of <code>SlottedClass</code> can only access the attribute <code>value</code>. Accessing other (<em>dynamic</em>) attributes will raise an <code>AttributeError</code>:<br>
+</p>
+
+<div>
+<pre><code><span>&gt;&gt;&gt;</span> <span>slotted</span> <span>=</span> <span>SlottedClass</span><span>(</span><span>42</span><span>)</span>
+<span>&gt;&gt;&gt;</span> <span>slotted</span><span>.</span><span>value</span>
+<span>42</span>
+<span>&gt;&gt;&gt;</span> <span>slotted</span><span>.</span><span>forbidden_value</span> <span>=</span> <span>21</span>
+<span>AttributeError</span><span>:</span> <span>'SlottedClass'</span> <span>object</span> <span>has</span> <span>no</span> <span>attribute</span> <span>'forbidden_value'</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Restricting the ability to add attributes dynamically is useful for reducing runtime errors that might occur because of typos in attribute names. Still, more importantly, this restriction will reduce the memory usage of your code – in some cases significantly. Let's try to check this.</p>
+
+<p>We create two classes, one slotted and one unslotted one. Both classes access an attribute called <code>value</code> inside their <code>__init__</code> method, and in the case of the slotted class, that is the only attribute in <code>__slots__</code>.</p>
+
+<p>We create a million instances for each class and store these instances in a list. After that, we look at the list's size. The list of slotted class instances should be smaller.<br>
+</p>
+
+<div>
+<pre><code><span>import</span> <span>sys</span>
+
+<span>class</span> <span>SlottedClass</span><span>:</span>
+    <span>__slots__</span> <span>=</span> <span>[</span><span>'value'</span><span>]</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>i</span><span>):</span>
+        <span>self</span><span>.</span><span>value</span> <span>=</span> <span>i</span>
+
+<span>class</span> <span>UnSlottedClass</span><span>:</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>i</span><span>):</span>
+        <span>self</span><span>.</span><span>value</span> <span>=</span> <span>i</span>
+
+<span>slotted</span> <span>=</span> <span>[]</span>
+<span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>1_000_000</span><span>):</span>
+    <span>slotted</span><span>.</span><span>append</span><span>(</span><span>SlottedClass</span><span>(</span><span>i</span><span>))</span>
+<span>print</span><span>(</span><span>sys</span><span>.</span><span>getsizeof</span><span>(</span><span>slotted</span><span>))</span>
+
+<span>unslotted</span> <span>=</span> <span>[]</span>
+<span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>1_000_000</span><span>):</span>
+    <span>unslotted</span><span>.</span><span>append</span><span>(</span><span>UnSlottedClass</span><span>(</span><span>i</span><span>))</span>
+<span>print</span><span>(</span><span>sys</span><span>.</span><span>getsizeof</span><span>(</span><span>unslotted</span><span>))</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>However, we get back a value of <code>8448728</code> for each list. So how do we save memory then using slots?</p>
+
+<p>Let's use the <a href="https://pypi.org/project/ipython-memory-usage/">ipython-memory-usage</a> module to check how much memory is consumed during the runtime of our test programme.<br>
+</p>
+
+<div>
+<pre><code>
+<span>In</span> <span>[</span><span>1</span><span>]:</span> <span>def</span> <span>slotted_fn</span><span>():</span>
+   <span>...:</span>     <span>class</span> <span>SlottedClass</span><span>:</span>
+   <span>...:</span>         <span>__slots__</span> <span>=</span> <span>[</span><span>"value"</span><span>]</span>
+   <span>...:</span>
+   <span>...:</span>         <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>i</span><span>):</span>
+   <span>...:</span>             <span>self</span><span>.</span><span>value</span> <span>=</span> <span>i</span>
+   <span>...:</span>
+   <span>...:</span>     <span>slotted</span> <span>=</span> <span>[]</span>
+   <span>...:</span>     <span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>1_000_000</span><span>):</span>
+   <span>...:</span>         <span>slotted</span><span>.</span><span>append</span><span>(</span><span>SlottedClass</span><span>(</span><span>i</span><span>))</span>
+   <span>...:</span>     <span>return</span> <span>slotted</span>
+   <span>...:</span>
+   <span>...:</span>
+   <span>...:</span> <span>def</span> <span>unslotted_fn</span><span>():</span>
+   <span>...:</span>     <span>class</span> <span>UnSlottedClass</span><span>:</span>
+   <span>...:</span>         <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>i</span><span>):</span>
+   <span>...:</span>             <span>self</span><span>.</span><span>value</span> <span>=</span> <span>i</span>
+   <span>...:</span>
+   <span>...:</span>     <span>unslotted</span> <span>=</span> <span>[]</span>
+   <span>...:</span>     <span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>1_000_000</span><span>):</span>
+   <span>...:</span>         <span>unslotted</span><span>.</span><span>append</span><span>(</span><span>UnSlottedClass</span><span>(</span><span>i</span><span>))</span>
+   <span>...:</span>     <span>return</span> <span>unslotted</span>
+   <span>...:</span>
+   <span>...:</span>
+   <span>...:</span> <span>import</span> <span>ipython_memory_usage.ipython_memory_usage</span> <span>as</span> <span>imu</span>
+   <span>...:</span>
+   <span>...:</span> <span>imu</span><span>.</span><span>start_watching_memory</span><span>()</span>
+<span>In</span> <span>[</span><span>1</span><span>]</span> <span>used</span> <span>0.0000</span> <span>MiB</span> <span>RAM</span> <span>in</span> <span>0.11</span><span>s</span><span>,</span> <span>peaked</span> <span>0.00</span> <span>MiB</span> <span>above</span> <span>current</span><span>,</span> <span>total</span> <span>RAM</span> <span>usage</span> <span>52.48</span> <span>MiB</span>
+
+<span>In</span> <span>[</span><span>2</span><span>]:</span> <span>slotted_fn</span><span>()</span>
+<span>Out</span><span>[</span><span>2</span><span>]:</span> <span>...</span>
+<span>In</span> <span>[</span><span>2</span><span>]</span> <span>used</span> <span>84.9766</span> <span>MiB</span> <span>RAM</span> <span>in</span> <span>0.73</span><span>s</span><span>,</span> <span>peaked</span> <span>0.00</span> <span>MiB</span> <span>above</span> <span>current</span><span>,</span> <span>total</span> <span>RAM</span> <span>usage</span> <span>139.00</span> <span>MiB</span>
+
+<span>In</span> <span>[</span><span>3</span><span>]:</span> <span>unslotted_fn</span><span>()</span>
+<span>Out</span><span>[</span><span>3</span><span>]:</span> <span>...</span>
+<span>In</span> <span>[</span><span>3</span><span>]</span> <span>used</span> <span>200.1562</span> <span>MiB</span> <span>RAM</span> <span>in</span> <span>0.84</span><span>s</span><span>,</span> <span>peaked</span> <span>0.00</span> <span>MiB</span> <span>above</span> <span>current</span><span>,</span> <span>total</span> <span>RAM</span> <span>usage</span> <span>339.16</span> <span>MiB</span>
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>As you can see, the slotted version took only roughly 85 MiB of RAM, while the unslotted version needed more than 200 MiB, although the resulting size of the lists is the same.</p>
+
+<p>The reason for this is the way Python handles <code>dict</code>s internally. When not specifying <code>__slots__</code>, Python uses a dictionary by default to store attributes. This dictionary is dynamic in nature, can be resized, needs to be organized by keys, etc. That's why Python needs a lot of memory to manage the dictionary.</p>
+
+<p>In the slotted version of the class, the key features of a <code>dict</code> are no longer needed as there is no dynamic resizing allowed anymore. Thus, Python allocates memory upfront for the attributes mentioned in the <code>__slots__</code>.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A step-by-step guide to building a Ruby gem from scratch</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A step-by-step guide to building a Ruby gem from scratch</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/honeybadger/a-step-by-step-guide-to-building-a-ruby-gem-from-scratch-35">https://dev.to/honeybadger/a-step-by-step-guide-to-building-a-ruby-gem-from-scratch-35</a></p>
+    <p><strong>Tags:</strong> rubygems</p>
+    <p><strong>Bookmark ID:</strong> 876795481</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1762485" id="article-body">
+            <p><em>This article was originally written by <a href="https://www.honeybadger.io/blog/authors/juliekent/">Julie Kent</a> on the <a href="https://www.honeybadger.io/blog/create-ruby-gem/">Honeybadger Developer Blog</a>.</em></p>
+
+<p>If you have worked with Ruby or Rails, you have probably heard of or used gems. Gems are libraries that can be used across code bases to provide useful functionality. While seemingly <em>mystical</em>, you can easily create your own gems and publish them for others to use. This article will de-mystify gems and show you how to build your own.</p>
+
+<h2>
+  <a name="tldr" href="#tldr">
+  </a>
+  tl;dr
+</h2>
+
+<p>This article discusses how to create a Ruby gem from scratch, without third-party tooling; keep reading to learn the minimum information that Ruby needs to create a new gem. Or—to generate a complete boilerplate Ruby gem fast—<a href="#what-about-bundler">you can use Bundler</a>.</p>
+
+<h2>
+  <a name="what-are-ruby-gems" href="#what-are-ruby-gems">
+  </a>
+  What are Ruby gems?
+</h2>
+
+<p>To put it simply, a Ruby "gem" is a self contained Ruby library. The code within these libraries often does something helpful that can easily be integrated into other projects. For example, there are Ruby gems for various purposes, including the following:</p>
+
+<ol>
+<li>Authentication</li>
+<li>Debugging</li>
+<li>Styling</li>
+<li>Integrating with databases</li>
+<li>Logging and error handling</li>
+</ol>
+
+<p>Personally, I think whoever came up with the term "gem" deserves a marketing award. It makes gems seem so magical, but don't worry, we will demystify how simple it is to publish your own.</p>
+
+<h2>
+  <a name="the-difference-between-a-ruby-gem-and-rubygems" href="#the-difference-between-a-ruby-gem-and-rubygems">
+  </a>
+  The difference between a Ruby gem and RubyGems
+</h2>
+
+<p>Before we get started with our tutorial on how to create and publish your own gem, I thought it'd be helpful to clarify one thing first. While there are Ruby gems, there is also something called RubyGems; notice the capitalization and lack of a space in the second term. RubyGems is a package manager for Ruby, essentially a tool designed to easily manage the installation of gems, and a server for distributing them. You may not have realized the difference because, since Ruby v1.9, RubyGems has been bundled with the standard Ruby package. However, if you've ever used the command <code>gem</code> in your CLI, then surprise! You have been utilizing RubyGems.</p>
+
+<h2>
+  <a name="what-our-gem-will-do" href="#what-our-gem-will-do">
+  </a>
+  What our gem will do
+</h2>
+
+<p>We'll build a gem to convert a temperature from Celsius to Fahrenheit. Of course, this is simple functionality, but it's also not <em>useless</em> and has enough complexity that you'll gain a solid understanding of the basic building blocks involved in creating a gem.</p>
+
+<h2>
+  <a name="set-up" href="#set-up">
+  </a>
+  Set up
+</h2>
+
+<p>First, open your shell of choice and create a new directory with the name of your gem. I'll name mine "julies_temperature_check_gem":<br>
+</p>
+
+<div>
+<pre><code><span>mkdir </span>julies_temperature_check_gem
+<span>cd </span>julies_temperature_check_gem
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Next, create a subdirectory called "lib"; this is where the code for your package will be installed. The convention is to have one Ruby file with the <em>same</em> name as your gem:<br>
+</p>
+
+<div>
+<pre><code><span>mkdir </span>lib
+<span>touch </span>lib/julies_temperature_check_gem.rb
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>We will also need to create a ".gemspec" file (we'll discuss this in the next section):<br>
+</p>
+
+<div>
+<pre><code><span>touch </span>julies_temperature_check_gem.gemspec
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="understanding-the-gemspec-file" href="#understanding-the-gemspec-file">
+  </a>
+  Understanding the .gemspec file
+</h2>
+
+<p>Every gem needs to have a .gemspec file. This file serves as the interface to RubyGems.org, and it houses important information, such as what's in the gem, who made it, and the version. Certain fields are <em>required</em> in every .gemspec file:</p>
+
+<ul>
+<li>authors</li>
+<li>files</li>
+<li>name</li>
+<li>summary</li>
+<li>version</li>
+</ul>
+
+<p>There are also a number of <em>optional</em> fields that you can include in your .gemspec file. The following fields are recommended by RubyGems:</p>
+
+<ul>
+<li>description</li>
+<li>email</li>
+<li>homepage</li>
+<li>license</li>
+<li>licenses</li>
+<li>metadata</li>
+<li>required Ruby version</li>
+</ul>
+
+<p>I believe most of these fields are self-explanatory, but if you'd like to learn more about any of the fields above or the additional optional fields that aren't part of the recommended set, you can check them out <a href="https://guides.rubygems.org/specification-reference/">here</a>.</p>
+
+<p>Let's open our gemspec file in the editor and add the required fields (of course, edit the obvious ones with your name, version, etc.)<br>
+</p>
+
+<div>
+<pre><code><span>Gem</span><span>::</span><span>Specification</span><span>.</span><span>new</span> <span>do</span> <span>|</span><span>s</span><span>|</span>
+  <span>s</span><span>.</span><span>name</span>        <span>=</span> <span>"julies_temperature_check_gem"</span>
+  <span>s</span><span>.</span><span>version</span>     <span>=</span> <span>"0.0.0"</span>
+  <span>s</span><span>.</span><span>summary</span>     <span>=</span> <span>"Converts Celsius to Fahrenheit"</span>
+  <span>s</span><span>.</span><span>authors</span>     <span>=</span> <span>[</span><span>"Julie Kent"</span><span>]</span>
+  <span>s</span><span>.</span><span>files</span>       <span>=</span> <span>[</span><span>"lib/julies_temperature_check_gem.rb"</span><span>]</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="writing-our-code" href="#writing-our-code">
+  </a>
+  Writing our code
+</h2>
+
+<p>Let's write the code for our gem! Open the Ruby file you created during the set-up process. We'll create a simple class and our method to perform the conversion.<br>
+</p>
+
+<div>
+<pre><code><span>class</span> <span>JuliesTemperatureCheckGem</span>
+  <span>def</span> <span>self</span><span>.</span><span>convert_temperature</span><span>(</span><span>input</span><span>)</span>
+    <span>puts</span> <span>"</span><span>#{</span><span>input</span><span>.</span><span>to_f</span> <span>*</span> <span>9</span> <span>/</span> <span>5</span> <span>+</span> <span>32</span><span>}</span><span>"</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="build-and-install" href="#build-and-install">
+  </a>
+  Build and install
+</h2>
+
+<p>Because we have created our gemspec file, we can build a gem from it! All we need to do is run the following:<br>
+</p>
+
+<div>
+<pre><code>gem build julies_temperature_check_gem.gemspec
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>You should see the following output:<br>
+</p>
+
+<div>
+<pre><code>gem build julies_temperature_check_gem.gemspec
+  Successfully built RubyGem
+  Name: julies_temperature_check_gem
+  Version: 0.0.0
+  File: julies_temperature_check_gem-0.0.0.gem
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Cool! Now let's install it! To do so, run the following:<br>
+</p>
+
+<div>
+<pre><code>gem <span>install</span> ./julies_temperature_check_gem-0.0.0.gem
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>You should see the following output:<br>
+</p>
+
+<div>
+<pre><code>Successfully installed julies_temperature_check_gem-0.0.0
+Parsing documentation for julies_temperature_check_gem-0.0.0
+Installing ri documentation for julies_temperature_check_gem-0.0.0
+Done installing documentation for julies_temperature_check_gem after 0 seconds
+1 gem installed
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<h2>
+  <a name="testing-and-publishing" href="#testing-and-publishing">
+  </a>
+  Testing and publishing
+</h2>
+
+<p>This is the moment of truth! We need to open IRB and see if it works!<br>
+</p>
+
+<div>
+<pre><code>irb
+3.1.2 :001 &gt; require "julies_temperature_check_gem"
+=&gt; true
+3.1.2 :002 &gt; JuliesTemperatureCheckGem.convert_temperature(5)
+41.0
+=&gt; nil
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Amazing! We have created our very own gem. If we wanted to, we could publish our gem to RubyGems.org so that others in the Ruby community could use it if desired. Since this is such a simple example, we won't actually this, but the steps are very simple.</p>
+
+<ol>
+<li>First, you need to sign up for a RubyGems account. You can do so <a href="https://rubygems.org/sign_up">here</a>.</li>
+<li>Then, from your console, run the following:
+<code>gem signin</code> You'll be asked to enter your credentials.</li>
+<li>Once you are signed in, you just need to push the gem up to RubyGems.org by running <code>gem push julies_temperature_check_gem-0.0.0.gem</code>.</li>
+</ol>
+
+<h2>
+  <a name="what-about-bundler" href="#what-about-bundler">
+  </a>
+  What about Bundler?
+</h2>
+
+<p>One question that might be on your mind is, "What about Bundler?" For those who aren't familiar, Bundler is a tool that helps manage RubyGems dependencies in Ruby libraries. If you've ever worked on a Rails project, chances are you're familiar with Bundler and running commands like <code>bundle install</code>.</p>
+
+<p>You can also use Bundler to write your own gems. It helps speed up the process, as it creates a scaffold directory and initializes a Git repository automatically. To start, all you need to do is run the following:<br>
+</p>
+
+<div>
+<pre><code>bundle gem &lt;name of gem&gt;
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>I highly recommend using Bundler if you want to build your own gem. You can read more about how to use Bundler <a href="https://bundler.io/guides/creating_gem.html">here</a>.</p>
+
+<h2>
+  <a name="wrapup" href="#wrapup">
+  </a>
+  Wrap-up
+</h2>
+
+<p>Congratulations! You now know what it takes to create a gem and better understand why gems (and RubyGems) are important in the Ruby ecosystem. If you are excited about gems, there are a lot of opportunities to help with open source gems. Here's a <a href="https://guides.rubygems.org/contributing/">good place</a> to get started!</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

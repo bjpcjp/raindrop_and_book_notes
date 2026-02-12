@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>custom rake task in rails | codedecoder</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>custom rake task in rails | codedecoder</h1>
+    <p><strong>URL:</strong> <a href="http://codedecoder.wordpress.com/2013/05/03/custom-rake-task-in-rails">http://codedecoder.wordpress.com/2013/05/03/custom-rake-task-in-rails</a></p>
+    <p><strong>Tags:</strong> rake, ruby</p>
+    <p><strong>Bookmark ID:</strong> 876777211</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="wrap">
+
+		
+			
+<article id="post-1405">
+
+	
+	<!-- end single-entry-header -->
+
+	<div>
+
+					<p>rake command is explained in <a title="what is rake in rails" href="https://codedecoder.wordpress.com/2013/04/25/what-is-rake-in-rails/" target="_blank">this</a> post. rails provide a number of inbuilt tasks, but you can create your own task also as explained here.</p>
+<p><span><strong>=&gt; Understanding the basics :</strong></span></p>
+<p>When you create any new rails project(example: <span><strong>rails new my_finance</strong></span>), you will find a file called Rakefile in your project root directory. It has below content in it</p>
+<pre><span>#!/usr/bin/env rake
+# Add your own tasks in files placed in lib/tasks ending in .rake,
+# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
+
+require File.expand_path('../config/application', __FILE__)
+
+MyFinance::Application.load_tasks</span> # load_tasks method will make all your task available to rake</pre>
+<p>You can see that, it has self explanatory message at top. <strong>So to create, any custom task, we will create a file with .rake extension in lib/tasks folder of our application.</strong></p>
+<p><strong><span>=&gt; Examples of rake tasks.</span></strong></p>
+<p>I will create here different rake task, demonstrating how to write a simple rake task, rake task with arguments and rake task with dependency. let us create a demoexamples.rake file in lib/tasks folder. We will add our custom tasks to this file. Below is the code examples.</p>
+<pre><span>namespace :demotask do
+
+  desc "display the current environment of rake"
+  task :current_environment do
+    puts "You are running rake task in #{Rails.env} environment"
+  end
+
+  desc "You are going to meet a person"
+  task :meet_a_person do
+    puts "I meet a person on the way to my house"
+  end
+
+  desc "I will say hello to the person"
+  task :say_hello =&gt; :meet_a_person do </span># It means meet_a_person is dependency of say_hello task<span>
+    puts "I said HELLO to the person"
+  end
+
+  desc "I will say hello to the person after meeting and check environment"
+  task :hello_env =&gt; [:current_environment, :meet_a_person] do </span># multiple dependency can be 
+                                                               #passed as array<span>
+    puts "I said HELLO to the person"
+  end
+
+  desc "going to call two of my friend"
+  task :call_friend, [:friend1, :friend2] do |t, args| </span># task with two arguments<span>
+    args.with_defaults(:friend1 =&gt; "John", :friend2 =&gt; "Dough")
+    puts t </span># print t to see what it contain<span>
+    puts args </span># print args to see what it contain and in which format<span>
+    puts "Hello #{args.friend1}"
+    puts "Hello  #{args.friend2}"
+  end
+
+  desc "see what happen when you call a modal method without loading environment"
+  task :without_environment do
+    puts User.first.full_name
+  end
+
+  desc "load environment before operating on any model object"
+  task :with_environment =&gt; :environment do
+    puts User.first.full_name
+  end
+
+  desc "count number of records in given model table"
+  task :count_records, [:model] =&gt; :environment do |t, args| </span># task with both arguments and dependency<span>
+    args.with_defaults(:model =&gt; "User" )
+    model_calss_name = Object.const_get(args.model) </span># this is very important as when you#pass argument it come as a string, so you must convert it to model class<span>
+    puts "No of records is #{model_calss_name.count}"
+  end
+
+end</span></pre>
+<p>The point to note above is the use of below concept:</p>
+<p><strong>namespace</strong> : It will group your task in a namespace, thus avoiding any conflict if task with same name already exists. You can skip it if you want, but use it as good convention</p>
+<p><strong>desc</strong> : It describe the function your task is going to perform. You can skip it if you want, but use it as good convention</p>
+<p><strong>task</strong>: it contain the code which perform your desire action. I have just printed simple messages but you can do anything in the do end block</p>
+<p><strong>name of the task</strong> : task is followed by name of the task as symbol like :meet_a_person,&nbsp; :say_hello etc</p>
+<p><strong>arguments</strong> : arguments are passed as array, following the name</p>
+<p><strong>dependency</strong> : the dependent task to be performed before performing a task is passed as array after =&gt;</p>
+<p><span><strong>=&gt; Listing the custom task</strong></span></p>
+<p>As usual, now when you run rake -vT. It will list the task name with description of what you can do with that task</p>
+<p><strong><span>$ rake -vT</span></strong></p>
+<p><span>rake demotask:call_friend[friend1,friend2]&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # going to call two of my friend<br>
+<span>rake demotask:count_records[model]&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # count number of records in given model table<br>
+<span>rake demotask:current_environment</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # display the current environment of rake<br>
+<span>rake demotask:hello_env&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # I will say hello to the person after meeting and check environment<br>
+<span>rake demotask:meet_a_person&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # You are going to meet a person<br>
+<span>rake demotask:say_hello</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # I will say hello to the person<br>
+<span>rake demotask:with_environment&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # load environment before operating on any model object<br>
+<span>rake demotask:without_environment</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # see what happen when you call a modal method without loading</p>
+<p><span><strong>=&gt; Running the rake task from terminal</strong></span></p>
+<p>I will show you how to run these task from terminal, with small description where ever needed.</p>
+<p><span><strong>$ rake demotask:current_environment</strong></span> # below is the output , as no environment is passed default development is taken<br>
+<span>You are running rake task in development environment</span></p>
+<p><strong><span>$ rake demotask:current_environment RAILS_ENV=staging</span></strong> # here see how we are passing the environment in which task need to be run<br>
+<span>You are running rake task in staging environment</span></p>
+<p><strong><span>$ rake demotask:current_environment RAILS_ENV=production</span></strong> # this time passing production environment<br>
+<span>You are running rake task in production environment</span></p>
+<p><strong><span>$ rake demotask:meet_a_person</span></strong> # this will just print the message<br>
+<span>I meet a person on the way to my house</span></p>
+<p><span><strong>$ rake demotask:say_hello</strong></span> # see that since meet_a_person is dependency of say_hello, its code is executed first<br>
+<span>I meet a person on the way to my house</span> # this message coming from&nbsp; meet_a_person task, executed first as being a dependency<br>
+<span>I said HELLO to the person</span> # hello is printed now, if dependency fail, this task will also fail</p>
+<p><strong><span>$ rake demotask:hello_env</span></strong> #this task have multiple dependency, each called in order they are specified in the task<br>
+<span>You are running rake task in development environment</span><br>
+<span>I meet a person on the way to my house</span><br>
+<span>I said HELLO to the person</span></p>
+<p><strong><span>$ rake demotask:call_friend</span></strong> # you have not passed any argument so default will be printed, also see the value stored in t and args variable<br>
+<span>demotask:call_friend</span> # coming from t variable, thus it contain the task name<br>
+<span>{:friend1=&gt;”John”, :friend2=&gt;”Dough”}</span> # see that args is generated as a hash<br>
+<span>Hello John</span><br>
+<span>Hello&nbsp; Dough</span></p>
+<p><strong>passing arguments to rake command in rails 3</strong> .<strong> when you define any task with argument, while passing it from console, do not use space between different argument otherwise will throw error as below.</strong><br>
+<strong><span>$ rake demotask:call_friend[“arun”, “sanjay”]</span></strong><br>
+<span>rake aborted!</span><br>
+<span>Don’t know how to build task ‘demotask:call_friend[arun,’</span> # see that task name is choped when space encountered , so do not use space between argument<br>
+<span>/home/arun/.rvm/gems/ruby-1.9.3-p194@threepiller/gems/rake-10.0.4/lib/rake/task_manager.rb:49:in `[]’</span><br>
+<span>/home/arun/.rvm/gems/ruby-1.9.3-p194@threepiller/gems/rake-10.0.4/lib/rake/application.rb:142:in `invoke_task’</span><br>
+<span>/home/arun/.rvm/gems/ruby-1.9.3-p194@threepiller/gems/rake-10.0.4/lib/rake/application.rb:70:in `run’</span><br>
+<span>(See full trace by running task with –trace)</span></p>
+<p><strong><span>$ rake demotask:call_friend[“arun”,”sanjay”]</span> # passing argument to rake task</strong><br>
+<span>demotask:call_friend</span><br>
+<span>{:friend1=&gt;”arun”, :friend2=&gt;”sanjay”}</span><br>
+<span>Hello arun</span><br>
+<span>Hello&nbsp; sanjay</span></p>
+<p><strong><span>$ rake demotask:without_environment </span></strong># task fail as environment is not loaded so, model, gems, library function etc is not available to rake<br>
+<span>rake aborted!</span><br>
+<span>uninitialized constant User</span></p>
+<p><strong><span>$ rake demotask:with_environment</span></strong> # this will work as this task load environment as its dependency<br>
+<span>Jeff Smith</span></p>
+<p><span><strong>NOTE : for a rake task to use all the methods in your gems, you library, your models i,e available anywhere in your application, you must load environment as its dependency. see with_environment task written above</strong></span></p>
+<p><strong><span>$ rake demotask:count_records</span></strong> # will count the number of records from User model table<br>
+<span>No of records is 13 </span>#my user table have 13 records</p>
+<p><strong><span>$ rake demotask:count_records[Role]</span></strong> # will count the number of records from Role model table, passed here as argument<br>
+<span>No of records is 7 </span>#my role table have 7 records<span><br>
+</span></p>
+
+			
+						
+					
+		<!-- end entry-meta -->
+
+					<div>
+				<p><img alt="" src="data:application/octet-stream;base64," srcset="data:application/octet-stream;base64, 1x, data:application/octet-stream;base64, 1.5x, data:application/octet-stream;base64, 2x, data:application/octet-stream;base64, 3x, data:application/octet-stream;base64, 4x" height="70" width="70" loading="lazy" decoding="async"></p><div>
+					<h3>Author: <a href="https://codedecoder.wordpress.com/author/arunyadav4u/" title="arunyadav4u" rel="me">arunyadav4u</a></h3>
+					<p>over 10 years experience in web development with Ruby on Rails.Involved in all stage of development lifecycle : requirement gathering, planing, coding, deployment &amp; Knowledge transfer.
+
+I can adept to any situation, mixup very easily with people &amp; can be a great friend.</p>
+				</div><!-- end author-description -->
+			</div><!-- end author-info -->
+		
+	</div><!-- end single-entry-content -->
+
+</article>
+			
+<!-- end comments -->
+		
+			<!-- #nav-below -->
+	
+	</div></div>
+  </div>
+</body>
+</html>

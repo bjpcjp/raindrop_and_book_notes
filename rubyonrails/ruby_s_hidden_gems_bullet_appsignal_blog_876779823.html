@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ruby's Hidden Gems: Bullet | AppSignal Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Ruby's Hidden Gems: Bullet | AppSignal Blog</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2021/08/11/ruby-hidden-gems-bullet-and-how-it-integrates-with-appsignal.html">https://blog.appsignal.com/2021/08/11/ruby-hidden-gems-bullet-and-how-it-integrates-with-appsignal.html</a></p>
+    <p><strong>Tags:</strong> rubygems, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876779823</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>A database is the heart of many applications, and having problems with it may result in serious performance issues.</p>
+<p>ORMs such as ActiveRecord and Mongoid help us abstract implementation and deliver code faster, but sometimes, we forget to check what queries are running under the hood.</p>
+<p>The <a href="https://github.com/flyerhzm/bullet">bullet</a> gem helps us identify some well-known database-related problems:</p>
+<ol>
+<li>"N+1 Queries": when the application runs a query to load each item of a list</li>
+<li>"Unused Eager Loading": when the application loads data, usually to avoid N+1 queries, but doesn't use it</li>
+<li>"Missing Counter Cache": when the application needs to execute count queries to get the number of associated items</li>
+</ol>
+<p>In this post, I'm going to show:</p>
+<ul>
+<li>how to configure the <code>bullet</code> gem in a Ruby project,</li>
+<li>examples of each problem mentioned before,</li>
+<li>how <code>bullet</code> detects each,</li>
+<li>how to fix each problem, and</li>
+<li>how to integrate <code>bullet</code> with AppSignal.</li>
+</ul>
+<p>I will use some examples from <a href="https://github.com/fabioperrella/bullet-test">a project that I created for this post</a>.</p>
+<h2 id="how-to-configure-bullet-in-a-ruby-project">How to Configure Bullet in a Ruby Project</h2>
+<p>First, add the gem to <code>Gemfile</code>.</p>
+<p>We can add it to all environments given, we can enable or disable it and use a different approach on each one:</p>
+
+<p>Next, it's necessary to configure it.</p>
+<p>If you are in a Rails project, you can run the following command to generate the configuration code automatically:</p>
+
+<p>If you are in a non Rails project, you can add it manually, for example, by adding the following code in <code>spec_helper.rb</code> after loading the application's code:</p>
+
+<p>And adding the following code in the main file after loading the application's code:</p>
+
+<p>I'm going to share more details on configurations in this post. If you want to see them all, go to <a href="https://github.com/flyerhzm/bullet#configuration">bullet's README page</a>.</p>
+<h2 id="using-bullet-in-tests">Using bullet In Tests</h2>
+<p>With the previously suggested configuration, Bullet will detect bad queries executed in tests and raise exceptions for them.</p>
+<p>Now, let's see some examples.</p>
+<h3 id="detecting-n1-queries">Detecting N+1 Queries</h3>
+<p>Given an <code>index</code> action as follows:</p>
+
+<p>And a view like this:</p>
+
+<p><code>bullet</code> will raise an error detecting an "N+1" when running an integrated test that executes code from the view and the controller, for example, using a request spec as follows:</p>
+
+
+<p>In this case, it will raise this exception:</p>
+
+<p>This happens because the view is executing one query to load each comment name in <code>post.comments.map(&amp;:name)</code>:</p>
+
+<p>To fix it, we can simply follow the instruction in the error message and add <code>.includes([:comments])</code> to the query:</p>
+
+<p>This will instruct ActiveRecord to load all the comments with only 1 query.</p>
+
+<p>However, <code>bullet</code> will not raise an exception in a controller test like the following, because controller tests don't render views by default, so the N+1 query will not be triggered.</p>
+<p>Note: <a href="https://rspec.info/blog/2016/07/rspec-3-5-has-been-released/#rails-support-for-rails-5">controller tests are discouraged</a> since Rails 5:</p>
+
+<p>Another example of a test that Bullet will not detect an "N+1" is a view test because, in this case, it will not run the N+1 queries in the database:</p>
+
+<h3 id="a-tip-to-have-more-chances-to-detect-an-n1-in-tests">A Tip to Have More Chances to Detect an N+1 in Tests</h3>
+<p>I recommend creating at least 1 request spec for each controller action, just to test if it returns the correct HTTP status, then <code>bullet</code> will be watching the queries when rendering these views.</p>
+<h3 id="detecting-unused-eager-loading">Detecting Unused Eager Loading</h3>
+<p>Given the following <code>basic_index</code> action:</p>
+
+<p>And the following <code>basic_index</code> view:</p>
+
+<p>When we run the following test:</p>
+
+<p>Bullet will raise the following error:</p>
+
+<p>This happens because it's not necessary to load the list of comments for this view.</p>
+<p>To fix the problem, we can simply follow the instruction in the error above and remove the query <code>.includes([:comments])</code>:</p>
+
+<p>It's worth saying that it will not raise the same error if we run only a controller test, without <code>render_views</code>, as shown before.</p>
+<h3 id="detecting-missing-counter-cache">Detecting Missing Counter Cache</h3>
+<p>Given a controller like this:</p>
+
+<p>And a view like this:</p>
+
+<p>If we run the following request spec:</p>
+
+<p><code>bullet</code> will raise the following error:</p>
+
+<p>This happens because this view is executing 1 query to count the number of comments in <code>post.comments.size</code> for each post.</p>
+
+<p>To fix this, we can create a counter cache, which can be a bit complex, especially if there is data in the production database.</p>
+<p>A counter cache is a column that we can add to a table, that ActiveRecord will update automatically when we insert and delete associated models. There are more details in <a href="https://blog.appsignal.com/2018/06/19/activerecords-counter-cache.html">this post</a>. I suggest reading it to know how to create and sync the counter cache.</p>
+<h2 id="using-bullet-in-development">Using Bullet in Development</h2>
+<p>Sometimes, tests might not detect the problems previously mentioned, for example, if test coverage is low, so it's possible to enable <code>bullet</code> in other environments using different approaches.</p>
+<p>In the development environment, we can enable the following configurations:</p>
+
+<p>Then, it will show alerts like this in the browser:</p>
+<figure><p><img alt="bullet adding an alert in the browser" loading="lazy" width="1566" height="1048" decoding="async" data-nimg="1" srcset="data:application/octet-stream;base64, 1x, data:application/octet-stream;base64, 2x" src="data:application/octet-stream;base64,"></p></figure>
+
+<p>It will add a footer on the page with the error:</p>
+<figure><p><img alt="bullet adding a footer to the page" loading="lazy" width="2072" height="874" decoding="async" data-nimg="1" srcset="data:application/octet-stream;base64, 1x" src="data:application/octet-stream;base64,"></p></figure>
+<p>It's also possible to enable errors to be logged in the browser's console:</p>
+
+<p>It will add an error like this:</p>
+<figure><p><img alt="bullet adding a message in the console" loading="lazy" width="1206" height="672" decoding="async" data-nimg="1" srcset="data:application/octet-stream;base64, 1x, data:application/octet-stream;base64, 2x" src="data:application/octet-stream;base64,"></p></figure>
+<h2 id="using-bullet-in-staging-with-appsignal">Using Bullet in Staging with Appsignal</h2>
+<p>In the <em>staging</em> environment, we don't want these error messages to be shown to end-users, but it would be great to know if the application starts to have one of the problems mentioned previously.</p>
+<p>At the same time, <code>bullet</code> may degrade performance and increase memory consumption in the application, so it's better to enable it only temporarily in <em>staging</em>, but don't enable it in <em>production</em>.</p>
+<p>Assuming the <em>staging</em> environment is using the same configuration file as the <em>production</em> environment, which is a good practice to reduce the difference between them, we can use an environment variable to enable or disable <code>bullet</code> as follows:</p>
+
+<p>To receive notifications about issues Bullet has found in your staging environment, you can use AppSignal to report those notifications as errors. You'll need to have the <code>appsignal</code> gem installed and configured in your project. You can see more details in the <a href="https://docs.appsignal.com/ruby/installation/">Ruby gem docs</a>.</p>
+<p>Then, if a problem is detected by <code>bullet</code>, it will create an error incident like this:</p>
+<figure><p><img alt="bullet error on Appsignal" loading="lazy" width="2244" height="1154" decoding="async" data-nimg="1" srcset="data:application/octet-stream;base64, 1x" src="data:application/octet-stream;base64,"></p></figure>
+<p>This error is raised by the <a href="https://github.com/flyerhzm/uniform_notifier">uniform_notifier gem</a> which was extracted from <code>bullet</code>.</p>
+<p>Unfortunately, the error message doesn't show enough information, but I sent in <a href="https://github.com/flyerhzm/uniform_notifier/pull/69">a Pull Request to improve this</a>!</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>The <code>bullet</code> gem is a great tool that can help us detect problems that will degrade performance in applications.</p>
+<p>Try to keep good test coverage, as previously mentioned, to have greater chances of detecting these problems before going to production.</p>
+<p>As an extra tip, if you want to be even more protected against performance problems related to the database, take a look at the <a href="https://github.com/WeTransfer/wt-activerecord-index-spy">wt-activerecord-index-spy</a> gem, which helps to detect queries that are not using proper indexes.</p>
+<p><strong>P.S. If you'd like to read Ruby Magic posts as soon as they get off the press, <a href="https://blog.appsignal.com/ruby-magic">subscribe to our Ruby Magic newsletter and never miss a single post</a>!</strong></p></div></div>
+  </div>
+</body>
+</html>

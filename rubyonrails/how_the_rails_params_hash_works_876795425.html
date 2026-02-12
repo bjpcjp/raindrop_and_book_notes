@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How the Rails params hash works</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How the Rails params hash works</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/honeybadger/how-the-rails-params-hash-works-3on2">https://dev.to/honeybadger/how-the-rails-params-hash-works-3on2</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876795425</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="1762469" id="article-body">
+            <p><em>This article was originally written by <a href="https://www.honeybadger.io/blog/authors/jefferymorhous/">Jeffery Morhous</a> on the <a href="https://www.honeybadger.io/blog/how-the-rails-params-hash-works/">Honeybadger Developer Blog</a>.</em></p>
+
+<p>In Ruby on Rails development, understanding the functionality and role of the params hash is imperative. It serves as a conduit for incoming HTTP request data, connecting user interface elements to the underlying application logic.</p>
+
+<p>In this article, we'll explore the params hash, including its inner workings and practical applications within Rails projects. Additionally, we will discuss the advent of strong parameters, a security measure integrated into Rails to safeguard against<br>
+malicious user input.</p>
+<h2>
+  <a name="http-requests-parameters-and-introduction-to-the-params-hash-in-rails" href="#http-requests-parameters-and-introduction-to-the-params-hash-in-rails">
+  </a>
+  HTTP requests, parameters, and introduction to the params hash in Rails
+</h2>
+
+<p>Applications send and receive a wealth of information each time a user visits a webpage or submits a form. How does this information travel, and where does it end up once it reaches our Rails application? The answer is through Hypertext Transfer Protocol (HTTP) requests and, more specifically, through parameters embedded within these requests.</p>
+
+<p>HTTP is the backbone of data communication on the internet. It defines the format for sending and receiving messages between clients and servers. When you fill out a form on a webpage and hit 'Submit', your browser sends an HTTP request to the server, complete with parameters that contain the data you entered into the form.</p>
+
+<p>In Rails, these <strong>incoming parameters</strong> find a tidy home in the <a href="https://api.rubyonrails.org/v7.0.4.2/classes/ActionController/Parameters.html">params hash</a>. This hash is automatically made available in your Rails controllers, giving you easy access to all the parameters that came with the request. It doesn't matter whether the<br>
+parameters were tucked into the URL, came as part of a form submission, or even if they were sent as part of a JSON request body; Rails bundles them all into the params hash.</p>
+
+<p>Controller methods can take advantage of the params hash to get user-provided values in a clean format:<br>
+</p>
+
+<div>
+<pre><code><span>def</span> <span>create</span>
+  <span>@user</span> <span>=</span> <span>User</span><span>.</span><span>new</span><span>(</span><span>params</span><span>[</span><span>:user</span><span>])</span>
+  <span># Rest of the controller action...</span>
+<span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The params hash is a versatile tool that Rails developers should be comfortable using. Next, let's dive a little deeper into the params hash and see how we can make the most of it.</p>
+
+<h2>
+  <a name="structure-of-the-params-hash" href="#structure-of-the-params-hash">
+  </a>
+  Structure of the params hash
+</h2>
+
+<p>To fully wield the power of the params hash, we first need to understand its structure. In Rails, the params hash is not just a plain old Ruby hash. Instead, it's an instance of ActionController::Parameters, a subclass of HashWithIndifferentAccess. This special kind of hash allows you to access its values using either symbols or strings as keys.</p>
+
+<p>Both of the following accesses are valid:<br>
+</p>
+
+<div>
+<pre><code><span>params</span><span>[</span><span>:id</span><span>]</span>
+<span>params</span><span>[</span><span>'id'</span><span>]</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The params hash usually contains several key-value pairs. Some of these are added by Rails itself, such as :controller and :action, which tell you which controller and action are processing the request. Any other parameters sent with the request, whether<br>
+in the URL or the request body, also find their way into the params hash.</p>
+
+<p>When dealing with nested parameters, as you often will when working with forms, the params hash can get a little more complex. For instance, consider a form submission for creating a new user. The form might include fields for a nested profile object. The parameters for this request could look something like this:<br>
+</p>
+
+<div>
+<pre><code>
+<span>{</span> <span>"controller"</span> <span>=&gt;</span> <span>"users"</span><span>,</span> 
+  <span>"action"</span> <span>=&gt;</span> <span>"create"</span><span>,</span>
+  <span>"user"</span> <span>=&gt;</span> <span>{</span>
+    <span>"username"</span> <span>=&gt;</span> <span>"jeffmorhous"</span><span>,</span> 
+    <span>"email"</span> <span>=&gt;</span> <span>"jeff@example.com"</span><span>,</span>
+    <span>"attributes"</span> <span>=&gt;</span> <span>{</span>
+      <span>"location"</span> <span>=&gt;</span> <span>"San Francisco"</span>
+    <span>}</span>
+  <span>}</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>However, we can still pull out the specific data needed:<br>
+</p>
+
+<div>
+<pre><code><span>params</span><span>[</span><span>:user</span><span>][</span><span>:username</span><span>]</span>
+<span>params</span><span>[</span><span>:user</span><span>][</span><span>:attributes</span><span>][</span><span>:location</span><span>]</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Having a good handle on the structure of the params hash will make your work in Rails controllers smoother and more efficient. In the next section, we'll look at how Rails treats different kinds of parameters.</p>
+
+<h2>
+  <a name="url-params-vs-query-params" href="#url-params-vs-query-params">
+  </a>
+  URL params vs. query params
+</h2>
+
+<p>It's important to understand the two main types of parameters we'll encounter: URL parameters and query parameters. Although Rails combines both types into the params hash, they originate from different parts of an incoming HTTP request.</p>
+
+<p>URL parameters, also known as path parameters, are embedded directly into the URL. In Rails, you often use these to specify the ID of a resource with which you want to interact. Take the following URL for example: <code>http://www.example.com/users/25</code>. The '25'<br>
+here is a URL parameter, representing the ID of the user we want to show.</p>
+
+<p>However, query parameters are included after a question mark (?) in the URL and formatted as key-value pairs. These are often used for filtering or sorting data. For instance, <code>http://www.example.com/users?location=San+Francisco</code> includes a<br>
+query parameter of <code>location</code>, which has the value <code>San+Francisco</code>.</p>
+
+<p>Regardless of whether a parameter comes from the URL or the query string, Rails puts it in the params hash for you to access in your controller. No matter the origin, all parameters end up<br>
+in the same destination: the Rails params hash. The type of parameter simply changes where the data comes from in the HTTP request and how the data is formatted in the request.</p>
+<h2>
+  <a name="accessing-data-in-the-params-hash" href="#accessing-data-in-the-params-hash">
+  </a>
+  Accessing data in the params hash
+</h2>
+
+<p>One of the main tasks you'll perform with params is extracting data to use within your controller actions. We've already looked at a few examples, so let's recap.</p>
+
+<p>Accessing data from the params hash is as simple as treating it like any other Ruby hash. You can use either string or symbol keys to get the value you want. Let's say we have a params hash like the following: <code>{ "controller" =&gt; "users", "action" =&gt; "show", "id" =&gt; "2" }</code>. We could get the 'id' parameter with either of the following lines:<br>
+</p>
+
+<div>
+<pre><code><span>params</span><span>[</span><span>:id</span><span>]</span>       <span># =&gt; '2'</span>
+<span>params</span><span>[</span><span>'id'</span><span>]</span>      <span># =&gt; '2'</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Remember the nested parameters example from earlier? Extracting data from a nested structure is a little more involved but follows the same principles. You can chain keys to drill down into the hash:<br>
+</p>
+
+<div>
+<pre><code><span>params</span><span>[</span><span>:user</span><span>][</span><span>:username</span><span>]</span>
+<span>params</span><span>[</span><span>:user</span><span>][</span><span>:attributes</span><span>][</span><span>:location</span><span>]</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>It's important to remember that if you try to access a key that doesn't exist in <code>params</code>, Rails will return nil rather than raising an error. In the next section, we'll talk about strong parameters, a feature that can help protect your application from malicious user input.</p>
+
+<h2>
+  <a name="strong-parameters" href="#strong-parameters">
+  </a>
+  Strong parameters
+</h2>
+
+<p>When we're dealing with user input, there's always a risk of malicious activity. The introduction of <a href="https://edgeapi.rubyonrails.org/classes/ActionController/StrongParameters.html">strong parameters</a> in Rails 4 provided a way to secure our applications by controlling which parameters are permitted in our controllers.</p>
+
+<p>In the past, Rails used a feature called 'attribute protection' to guard against unwanted parameters. However, this feature was model-based, which could lead to bloated models and a lack of flexibility. Strong parameters shifted this protection to the<br>
+controller, where it makes the most sense. This way, we can handle user input at the point of contact, before it reaches our models.</p>
+
+<p>The key method introduced by strong parameters is <code>require</code>. This method ensures that a specific parameter is present, or an ActionController::ParameterMissing error is raised. We can chain another method, <code>permit</code>, on a <code>require</code> to specify which nested parameters are allowed:<br>
+</p>
+
+<div>
+<pre><code><span>params</span><span>.</span><span>require</span><span>(</span><span>:user</span><span>).</span><span>permit</span><span>(</span><span>:username</span><span>,</span> <span>:email</span><span>,</span> <span>attributes: </span><span>[</span><span>:location</span><span>])</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In this example, we're saying that the :user parameter must be present. Within :user, only the <code>:username</code>, <code>:email</code>, and <code>:attributes</code> keys are allowed. Furthermore, within<br>
+<code>:attributes</code>, only <code>:location</code> is permitted.</p>
+
+<p>It's common practice to put this <code>params.require</code> call into a private method, and then use the result of calling this method to access params. The method might look like this:<br>
+</p>
+
+<div>
+<pre><code><span>private</span>
+
+  <span>def</span> <span>user_params</span>
+    <span>params</span><span>.</span><span>require</span><span>(</span><span>:user</span><span>).</span><span>permit</span><span>(</span><span>:username</span><span>,</span> <span>:email</span><span>,</span> <span>attributes: </span><span>[</span><span>:location</span><span>])</span>
+  <span>end</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Meanwhile, instead of using <code>params</code> to access the params hash, you could instead use <code>user_params</code>:<br>
+</p>
+
+<div>
+<pre><code><span>user_params</span><span>[</span><span>:user</span><span>][</span><span>:username</span><span>]</span>
+<span>user_params</span><span>[</span><span>:user</span><span>][</span><span>:attributes</span><span>][</span><span>:location</span><span>]</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Strong parameters give us the ability to define what's allowed and what's not in a clear and concise way. This makes it an essential part of managing the params hash in a secure Rails application.</p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>As we've seen throughout this exploration, the params hash is a powerful and flexible feature in Rails. It provides a simple interface for accessing data from incoming HTTP requests, whether it's URL parameters, form data, or even API request bodies. By understanding how parameters work, you can handle user input in a secure and efficient manner.</p>
+
+<p>The advent of strong parameters added a layer of security to this process, ensuring that Rails applications are protected from unwanted data manipulation. Through the appropriate use of require and permit methods, we can filter out unwanted parameters and maintain the integrity of our data.</p>
+
+<p>While the params hash might seem like just another part of Rails,<br>
+it plays a key role in making your application functional and secure. Deepening your understanding of it empowers you to make full use of its capabilities in your Rails applications.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

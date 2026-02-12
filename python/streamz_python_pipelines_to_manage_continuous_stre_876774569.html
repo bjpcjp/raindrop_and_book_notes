@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Streamz: Python pipelines to manage continuous streams of data</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Streamz: Python pipelines to manage continuous streams of data</h1>
+    <p><strong>URL:</strong> <a href="https://streamz.readthedocs.io/en/latest/index.html">https://streamz.readthedocs.io/en/latest/index.html</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876774569</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section id="streamz" role="main">
+
+<p>Streamz helps you build pipelines to manage continuous streams of data.  It is
+simple to use in simple cases, but also supports complex pipelines that involve
+branching, joining, flow control, feedback, back pressure, and so on.</p>
+<p>Optionally, Streamz can also work with both <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html">Pandas</a> and <a href="https://docs.rapids.ai/api/cudf/stable/">cuDF</a> dataframes, to provide sensible streaming operations on continuous tabular data.</p>
+<p>To learn more about how to use streams, visit <a href="https://streamz.readthedocs.io/en/latest/core.html"><span>Core documentation</span></a>.</p>
+<section id="motivation">
+<h2>Motivation<a href="#motivation" title="Link to this heading">¶</a></h2>
+<p>Continuous data streams arise in many applications like the following:</p>
+<ol>
+<li><p>Log processing from web servers</p></li>
+<li><p>Scientific instrument data like telemetry or image processing pipelines</p></li>
+<li><p>Financial time series</p></li>
+<li><p>Machine learning pipelines for real-time and on-line learning</p></li>
+<li><p>…</p></li>
+</ol>
+<p>Sometimes these pipelines are very simple, with a linear sequence of processing
+steps:</p>
+<img alt="a simple streamz pipeline" src="https://streamz.readthedocs.io/en/latest/_images/simple.svg">
+<p>And sometimes these pipelines are more complex, involving branching, look-back
+periods, feedback into earlier stages, and more.</p>
+<img alt="a more complex streamz pipeline" src="https://streamz.readthedocs.io/en/latest/_images/complex.svg">
+<p>Streamz endeavors to be simple in simple cases, while also being powerful
+enough to let you define custom and powerful pipelines for your application.</p>
+<section id="why-not-python-generator-expressions">
+<h3>Why not Python generator expressions?<a href="#why-not-python-generator-expressions" title="Link to this heading">¶</a></h3>
+<p>Python users often manage continuous sequences of data with iterators or
+generator expressions.</p>
+<div><pre><span></span><span>def</span><span> </span><span>fib</span><span>():</span>
+    <span>a</span><span>,</span> <span>b</span> <span>=</span> <span>0</span><span>,</span> <span>1</span>
+    <span>while</span> <span>True</span><span>:</span>
+        <span>yield</span> <span>a</span>
+        <span>a</span><span>,</span> <span>b</span> <span>=</span> <span>b</span><span>,</span> <span>a</span> <span>+</span> <span>b</span>
+
+<span>sequence</span> <span>=</span> <span>(</span><span>f</span><span>(</span><span>n</span><span>)</span> <span>for</span> <span>n</span> <span>in</span> <span>fib</span><span>())</span>
+</pre></div>
+<p>However iterators become challenging when you want to fork them or control the
+flow of data.  Typically people rely on tools like <code><span>itertools.tee</span></code>, and
+<code><span>zip</span></code>.</p>
+<div><pre><span></span><span>x1</span><span>,</span> <span>x2</span> <span>=</span> <span>itertools</span><span>.</span><span>tee</span><span>(</span><span>x</span><span>,</span> <span>2</span><span>)</span>
+<span>y1</span> <span>=</span> <span>map</span><span>(</span><span>f</span><span>,</span> <span>x1</span><span>)</span>
+<span>y2</span> <span>=</span> <span>map</span><span>(</span><span>g</span><span>,</span> <span>x2</span><span>)</span>
+</pre></div>
+<p>However this quickly become cumbersome, especially when building complex
+pipelines.</p>
+</section>
+</section>
+<section id="installation">
+<h2>Installation<a href="#installation" title="Link to this heading">¶</a></h2>
+<p>To install either use:</p>
+<ul>
+<li><p>conda-forge: <code><span>conda</span> <span>install</span> <span>streamz</span> <span>-c</span> <span>conda-forge</span></code></p></li>
+<li><p>pip: <code><span>pip</span> <span>install</span> <span>streamz</span></code></p></li>
+<li><p>dev: <code><span>git</span> <span>clone</span> <span>https://github.com/python-streamz/streamz</span></code> followed by <code><span>pip</span> <span>install</span> <span>-e</span> <span>streamz/</span></code></p></li>
+</ul>
+</section>
+<section id="quickstart">
+<h2>Quickstart<a href="#quickstart" title="Link to this heading">¶</a></h2>
+<p>The streamz project offers a Docker image for the convenience of quickly trying out streamz and its features.
+The purpose of the Dockerfile at this time is not to be used in a production
+environment but rather for experimentation, learning, or new feature development.</p>
+<p>Its most common use would be to interact with the streamz example jupyter notebooks. Lets walk through the steps needed for this.</p>
+<ul>
+<li><p>Build the Docker container</p>
+<div><pre><span></span>$<span> </span>docker/build.sh
+</pre></div>
+</li>
+<li><p>Run the Docker container</p>
+<div><pre><span></span>$<span> </span>docker/run.sh
+</pre></div>
+</li>
+<li><p>Interact with Jupyter Lab on the container in your browser at <a href="http://localhost:8888/">http://localhost:8888/</a>.</p></li>
+</ul>
+</section>
+
+</section></div>
+  </div>
+</body>
+</html>

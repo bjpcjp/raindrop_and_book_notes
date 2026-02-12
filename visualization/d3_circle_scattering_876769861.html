@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>D3 circle scattering</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>D3 circle scattering</h1>
+    <p><strong>URL:</strong> <a href="https://codepen.io/davidrogers/pen/oPeWMp">https://codepen.io/davidrogers/pen/oPeWMp</a></p>
+    <p><strong>Tags:</strong> css, d3, visualization</p>
+    <p><strong>Bookmark ID:</strong> 876769861</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div translate="no">
+            <pre id="js" aria-labelledby="js-editor-title">              <code>
+                var width = 960,
+    height = 500;
+
+var nodes = d3.range(50).map(function() { return {radius: Math.random() * 35 + 4}; }),
+    root = nodes[0],
+    color = d3.scale.category10();
+
+root.radius = 0;
+root.fixed = true;
+
+var force = d3.layout.force()
+    .gravity(-0.005)
+    .charge(function(d, i) { return i ? 0 : 1000; })
+    .nodes(nodes)
+    .size([width, height]);
+
+force.start();
+
+
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+svg.selectAll("circle")
+    .data(nodes.slice(1))
+  .enter().append("circle")
+    .attr("r", function(d) { return d.radius; })
+    .style("fill", function(d, i) { return color(i % 5); });
+
+svg.selectAll("text")
+	.data(nodes.slice())
+  .enter().append("text")
+	.text("Click to swap forces")
+	.attr("x", 50)
+	.attr("y", 40)
+	.attr("font-family", "sans-serif")
+	.attr("font-size", "20px")
+	.style("fill", "#777777");
+
+force.on("tick", function(e) {
+  var q = d3.geom.quadtree(nodes),
+      i = 50,
+      n = nodes.length;
+
+  while (++i &lt; n) q.visit(collide(nodes[i]));
+
+  svg.selectAll("circle")
+      .attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; });
+});
+
+svg.on("mousemove", function() {
+  var p1 = d3.mouse(this);
+  root.px = p1[0];
+  root.py = p1[1];
+  force.resume();
+});
+
+var clicked = 0;
+svg.on("click", function() {
+	if(clicked != 1){
+		force.gravity(0.01)
+    .charge(function(d, i) { return i ? 0 : -800; });
+		clicked = 1;
+	}
+	else 
+	{
+    force.gravity(-0.009)
+    .charge(function(d, i) { return i ? 0 : 1000; });
+		clicked = 0;
+	}
+	force.start();
+});
+
+function collide(node) {
+  var r = node.radius + 16,
+      nx1 = node.x - r,
+      nx2 = node.x + r,
+      ny1 = node.y - r,
+      ny2 = node.y + r;
+  return function(quad, x1, y1, x2, y2) {
+    if (quad.point &amp;&amp; (quad.point !== node)) {
+      var x = node.x - quad.point.x,
+          y = node.y - quad.point.y,
+          l = Math.sqrt(x * x + y * y),
+          r = node.radius + quad.point.radius;
+      if (l &lt; r) {
+        l = (l - r) / l * .5;
+        node.x -= x *= l;
+        node.y -= y *= l;
+        quad.point.x += x;
+        quad.point.y += y;
+      }
+    }
+    return x1 &gt; nx2 || x2 &lt; nx1 || y1 &gt; ny2 || y2 &lt; ny1;
+  };
+}
+              </code>
+            </pre>
+            <p><span data-type="js">
+                !
+              </span>
+            </p>
+            </div></div>
+  </div>
+</body>
+</html>

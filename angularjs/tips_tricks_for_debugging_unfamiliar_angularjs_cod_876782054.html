@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tips & Tricks for debugging unfamiliar AngularJS code</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Tips & Tricks for debugging unfamiliar AngularJS code</h1>
+    <p><strong>URL:</strong> <a href="http://eng.localytics.com/tips-and-tricks-for-debugging-unfamiliar-angularjs-code">http://eng.localytics.com/tips-and-tricks-for-debugging-unfamiliar-angularjs-code</a></p>
+    <p><strong>Tags:</strong> angularjs</p>
+    <p><strong>Bookmark ID:</strong> 876782054</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+  <!--kg-card-begin: markdown--><p>You've been given an Angular code base. How do you figure out where everything is? Where scope variables are coming from? What controller does what?</p>
+<p>Angular doesn't make it easy, but there are few tips and tricks that can make your life easier. Tools like Angular Batarang can help, but they're not always installed when you need them. Take some time to understand the underlying concepts, and your life will be easier in the long run.</p>
+<blockquote>
+<p>Angular Batarang is not a great way to do this kind of work. I would not recommend trying it out until you've attempted these techniques...</p>
+</blockquote>
+<p>Here are a few tips that will save you a couple of hours next time you are thrown in the deep end of an Angular code base.</p>
+<blockquote>
+<p>Most of these tips require that <a href="https://docs.angularjs.org/guide/production?ref=eng.localytics.com">debugging info</a> be available. If they don't work for you, open up the console and type <code>angular.reloadWithDebugInfo();</code></p>
+</blockquote>
+<h2 id="whatisthescopeforthiselement">What is the scope for this element?</h2>
+<p>Almost everything in Angular revolves around the <a href="https://docs.angularjs.org/guide/scope?ref=eng.localytics.com">scope</a>. Angular creates a scope hierarchy with controllers and directives . Directives can sometimes have their own <em>isolate</em> scope. Being able to know the value of the scope at a given place in our page is valuable to debugging, and easy to do. Angular lets you access the scope available to an element via the <code>.scope</code> method.</p>
+<blockquote>
+<p>An isolate scope is one that is unique to the directive and is not affected by anything outside of it (aside from bindings)</p>
+</blockquote>
+<ul>
+<li>In Chrome, right click an element in the page you're interested</li>
+<li>Select inspect element</li>
+<li>The element is now highlighted in the inspector</li>
+<li>In the console, enter <code>$($0)</code> to get the element. If not using jQuery, you can use <code>angular.element($0)</code></li>
+<li><code>$($0).scope()</code> will return the scope associated with the element. You can see its properties right away.</li>
+<li>Properties inherited from parent scopes won't show up, but you can still type their name. So even if you don't see a property <code>foo</code> on your scope, you can run <code>$($0).scope().foo</code> and see its value if it is available from a parent.</li>
+<li>You can look at the properties of the parent scope with <code>$($0).scope().$parent</code>. You can chain this too: <code>$($0).scope().$parent.$parent</code></li>
+<li>You can look at the root scope: <code>$($0).scope().$root</code></li>
+<li>If you highlighted a directive with isolate scope, you can look at it with <code>$($0).isolateScope()</code></li>
+<li>If you highlighted an element inside of a directive with isolate scope, <code>$($0).scope()</code> will show what is available to it (ie: the isolate scope)</li>
+</ul>
+<figure>
+![Inspect your scopes](/content/images/2015/07/Screenshot_072615_115503_AM.jpg)
+</figure>
+<p>It can be a bit confusing, but try it out! It can be a lot faster than setting breakpoints and inspecting variables. If you're not sure which of the above commands to run, just try them all. They're perfectly safe, and you'll eventually find the data you're looking for.</p>
+<blockquote>
+<p>For more information on the angular scope, refer to <a href="https://docs.angularjs.org/guide/scope?ref=eng.localytics.com">the angular documentation</a></p>
+</blockquote>
+<h2 id="wheredoesthisvariablecomefrom">Where does this variable come from?</h2>
+<p>Once your Angular application grows in size it can become challenging to figure out where variables used in our templates come from. For a single directive with isolate scope, it's easy. In a hierarchy of controllers and directives, try some of these methods for tracking them down:</p>
+<ul>
+<li>Using the method in the previous section, find the element using the variable and look at its scope.</li>
+<li>Try to inspect the value: <code>$($0).scope().foo</code> if the property is called foo.</li>
+<li>If the value is defined, you have your answer, the property came from the controller or directive at that level.</li>
+<li>Otherwise, go up one level in the DOM, and try again.</li>
+<li>Repeat until you find it.</li>
+</ul>
+<p>There is one small details that make things more complicated however: scope inheritance. A controller up in the hierarchy could be providing values available on the child scopes. There's a few ways you can go about figuring it out:</p>
+<blockquote>
+<p>You may have noticed elements with a class "ng-scope" when looking through the inspector. They represent the elements where new scopes got created</p>
+</blockquote>
+<ul>
+<li>You can use <code>$($0).scope()</code> directly: the inspector will only show the direct scope's properties, not the ones defined on parents. So you can go up the hierarchy until you see your property listed.</li>
+<li>Use <code>$($0).scope().hasOwnProperty('foo')</code> to see if the property is set directly on the scope you're looking at, and go up the hierarchy until it returns true.</li>
+<li>Keep going up until you no longer see your property. Just add .parent() to the element to do it from the console: <code>$($0).parent().scope().hasOwnProperty('foo')</code></li>
+<li>Look on the last element where you saw it: your property was defined in a controller or directive defined on that element, or a close parent. It could also be defined in the markup (like in the case of an ng-repeat). You can do this by outputting the element directly in the console.</li>
+</ul>
+<figure>
+![Finding where the property is defined](/content/images/2015/07/Screenshot_072615_122143_PM.jpg)
+</figure>
+<p>Using the above techniques, you'll be able to find at what point in the document the property is being set. It's definitely a lot of work, but is usually faster than trying to guess, unless you wrote the code yourself!</p>
+<h2 id="whydoesprototypalinheritancematterhere">Why does Prototypal Inheritance matter here?</h2>
+<p>Inheritance in JavaScript is different from inheritance in languages like Java or C#. JavaScript uses prototypal inheritance. Accessing a value that doesn't exist on a given object gets delegated to one higher up in the chain, if available.</p>
+<p>Prototypal inheritance is amazingly useful when debugging Angular applications (see link below). The techniques above use it to analyze scopes to find where values come from. If you've ever had issues getting your two-way data bindings to behave the way you expect, the culprit may be prototypal inheritance.</p>
+<blockquote>
+<p>There are many tutorials on how inheritance work in JavaScript on the net. You may want to start <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain?ref=eng.localytics.com">here</a>. A good understanding of these concepts will make your Angular experience a lot smoother. It's a good foundation for any JavaScript developer.</p>
+</blockquote>
+<h2 id="whatcontrollerhandlesthissectionofthepage">What controller handles this section of the page?</h2>
+<p>This may seem obvious, but we often forget about it. If you need to figure out which controller is responsible for a section of the page, just look for the <code>ng-controller</code> attribute in the DOM. If you don't see one, go up one level and look again.</p>
+<p>If you're like me, you may have trouble finding an attribute in a ton of HTML. To find find it, click on an element, run <code>$($0).attr('ng-controller')</code>, and if nothing comes up, click on its parent (using the bread crumbs).epeat until you get a controller name back.</p>
+<p>With a big of jQuery magic, we can also find the controller that is nearest to our selection in one step: <code>$($0).closest('[ng-controller]').attr('ng-controller')</code></p>
+<figure>
+![Finding the controller](/content/images/2015/07/Screenshot_072615_122619_PM.jpg)
+</figure>
+<h2 id="whydontsomeelementsshowup">Why don't some elements show up?</h2>
+<p>If you use <code>ng-if</code>, <code>ng-switch</code>, or <code>ng-views</code>, you may have wondered why your elements didn't show up when searching for them in the inspector. Unlike <code>ng-show</code> which shows and hide elements by changing their visibility, these directives add and remove their content from the DOM completely based on conditions or routes.</p>
+<p>Angular leaves a comment, such as <code>&lt;!-- ngIf: isFoo --&gt;</code> where the element would have been if <code>isFoo</code> had been true.</p>
+<p>If the condition is more complicated, you can use the techniques we described earlier to understand why an element isn't being shown. In For this example, you would run <code>$($0).scope().isFoo</code>, and you would get a falsy value. That's why the element didn't get added to the DOM, and was replaced by a comment instead.</p>
+<blockquote>
+<p>The comment will be in the DOM when the element has been added, not just when it is absent. Look right below it for an element with the same condition. If there isn't one, then you can assume the condition was not met.</p>
+</blockquote>
+<h2 id="howdoiseetheeffectsofavaluechanging">How do I see the effects of a value changing?</h2>
+<p>What if we want to force the element from the previous section to show without going through the scenario that would set <code>isFoo</code> to <code>true</code>? We can do it from the console!</p>
+<ul>
+<li>Select the element in the inspector.</li>
+<li>run <code>$($0).scope().isFoo = true</code> to set <code>isFoo</code></li>
+<li>run <code>$($0).scope().$digest()</code> to force Angular to reevaluate the value</li>
+<li>The DOM should change to reflect the new value</li>
+</ul>
+<figure>
+![Changing the scope directly](/content/images/2015/08/angulardigest.gif)
+</figure>
+<blockquote>
+<p>The first step, selecting the element, is very important. If you don't select the right element, you may or may not get the results you expect because of how prototypal inheritance delegation work. Your value may not always get propagated up or down the chain.</p>
+</blockquote>
+<h2 id="whatisthedigestcycle">What is the digest cycle?</h2>
+<p>In the previous section, we used the $digest method to trigger changes. You may wonder why we had to do that. Why didn't the DOM change the moment we set <code>isFoo</code> to true?</p>
+<p>Objects can't notify Angular that their properties have changed without proxies or custom setters. One Angular's goals is to let us use plain old JavaScript objects. Angular solves this using the digest cycle to inspect expressions and watchers for changes. Digest is run by Angular when an event it is aware of happens. This could be a an <code>$http</code> request or an ng-click event.</p>
+<blockquote>
+<p>Proxies are a new feature of ES2015 <a href="http://babeljs.io/docs/learn-es2015/?ref=eng.localytics.com#proxies">http://babeljs.io/docs/learn-es2015/#proxies</a></p>
+</blockquote>
+<p>When something happens outside of Angular's known world about (maybe a jquery plugin, or a console command), it doesn't automatically run <code>$digest</code> and nothing happens. In this case we'll need to execute <code>$digest</code> ourselves. As soon as the digest executes, things will get updated.</p>
+<blockquote>
+<p>ES2015 is the next version of JavaScript, also known as ES6. It contains features that can be used by Angular in the future to improve performance by simplifying how object changes are detected, such as proxies. While it is possible to use most of ES2015's features using <a href="http://babeljs.io/?ref=eng.localytics.com">Babel</a>, a javascript compiler, fast proxies <a href="https://babeljs.io/docs/learn-es2015/?ref=eng.localytics.com#proxies">must be implemented natively</a>, so the current version of Angular uses dirty checking instead.</p>
+</blockquote>
+<h2 id="howdoesangulardiwork">How does Angular DI work?</h2>
+<p>Angular is built on top of the concept of <a href="https://docs.angularjs.org/guide/di?ref=eng.localytics.com">dependency injection</a>. It can feel a little bit magical. While a full explanation of Angular's DI is out of the scope of this blog post, here's a few things to keep in mind as you wrap your head around it.</p>
+<blockquote>
+<p>Note that the following is a big oversimplification!</p>
+</blockquote>
+<ul>
+<li>There's no magic behind Angular's DI. Under the hood, Angular keeps a cache/map of keys to objects. When a key is in your component's dependency (such as $scope, $http, or one of your own services), Angular looks it up in the cache and passes the value to your method when creating your component.</li>
+<li>Angular services, factories and providers, values and constants are almost all the same thing. They just differ in what kind of control they give you when they are created, and if they can be used in config blocks or not.</li>
+<li>Under the hood, directives append "Directive" to their name. That is why they don't conflict with other services of the same name.</li>
+<li>A provider will have the suffix "Provider" when injected in a config block, but won't when injected elsewhere (where the result of its <code>$get</code> method is injected instead)</li>
+<li>All of those objects are <a href="https://docs.angularjs.org/guide/services?ref=eng.localytics.com">singletons</a>, so you're using the same instance everywhere (within one page load). That is even true of factories and providers. The function they provide gets called once per page load and the result is reused everywhere it is injected.</li>
+</ul>
+<blockquote>
+<p>I strongly recommend learning the different types of angular services. They are a significant source of confusion when trying to wrap your head around an AngularJS code base.</p>
+</blockquote>
+<h2 id="breakpointsareyourfriends">Breakpoints are your friends.</h2>
+<p>You don't have to debug through your JavaScript code by adding <code>console.log</code> or <code>debugger</code> statements everywhere, though it can be useful. Consider familiarizing yourself with <a href="https://developer.chrome.com/devtools/docs/javascript-debugging?ref=eng.localytics.com#breakpoints">breakpoints</a>, available in the inspector of all major browsers.</p>
+<blockquote>
+<p>Chrome even supports conditional breakpoints, where the breakpoint will only stop execution if a certain JavaScript expression returns true. This is useful when debugging repetitive code where only a specific iteration is interesting (such as nested loops). You don't have to go through the entire loop to get where you want.</p>
+</blockquote>
+<figure>
+![Conditional breakpoint](/content/images/2015/07/Screenshot_072615_124243_PM.jpg)
+</figure>
+<h2 id="itsalljavascript">It's all JavaScript.</h2>
+<p>At the end of the day, the most important thing to understand about AngularJS, is that <strong>It's just JavaScript</strong>. There's no magic, and it is bound by the same rules as any other JavaScript applications. Dependency injection is just a big list of key value pairs from which objects are pulled from and passed to your components. The way scopes work is based on prototypal inheritance. The <code>$digest</code> loop is just a task that iterates over expressions and watchers when Angular-related events occur. You can force it to happen.</p>
+<p>By understanding the good old JavaScript under Angular's hood, you can reduce the time it takes to debug your code base. It is worth the time to take a look at how Angular implements its own methods, including the directives for basic form elements from the Angular repository. It takes a bit of time, but gives a lot of background on how things end up working.</p>
+<p><a href="https://creativecommons.org/licenses/by-sa/2.0/?ref=eng.localytics.com">CC</a> background photo by flickr user <a href="https://www.flickr.com/photos/joncandy/3755718285?ref=eng.localytics.com">Jon Candy</a>, "Longleat Maze"</p>
+<!--kg-card-end: markdown-->
+
+  
+  
+</div></div>
+  </div>
+</body>
+</html>

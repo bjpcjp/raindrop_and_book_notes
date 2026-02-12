@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lazy Loading your images in Jekyll blog Improving page speed</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Lazy Loading your images in Jekyll blog Improving page speed</h1>
+    <p><strong>URL:</strong> <a href="https://ranvir.xyz/blog/lazy-loading-your-images-in-jekyll-blog-improving-page-speed">https://ranvir.xyz/blog/lazy-loading-your-images-in-jekyll-blog-improving-page-speed</a></p>
+    <p><strong>Tags:</strong> jekyll</p>
+    <p><strong>Bookmark ID:</strong> 876782167</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><img data-src="https://i.imgur.com/aNRVHsK.png" alt="Lazy load images in Jekyll blog" title="Lazy load images in Jekyll blog" src="https://i.imgur.com/aNRVHsK.png">
+</p><p>
+Images are the heaviest part of your blog and often are the most interesting once without which your post can’t be complete.</p><p>
+Most of the people in a Jekyll blog tend to upload the images onto the directory on which the blog is hosted. At least such is the case with the people hosting it using GitHub pages.</p>
+<div id="table-of-content">
+<p><a href="#introduction-to-the-problem-defer-off-screen-images">1. Introduction to the problem: Defer off-screen images</a>
+<br>
+<a href="#using-lazysizes">2. Using Lazysizes</a>
+<br>
+<a href="#get-the-lazysizes-min-file">3. Get the Lazysizes min file.</a>
+<br>
+<a href="#giving-a-class-to-images-in-jekyll">4. Giving a class to images in Jekyll</a>
+<br>
+<a href="#creating-an-image-creation-script-using-the-variables-passed">5. Creating an image creation script using the variables passed.</a>
+<br>
+<a href="#include-lazy-loading-in-the-posts">6. Include lazy loading in the posts.</a>
+<br>
+<a href="#changing-the-old-images-to-follow-the-new-script">7. Changing the old images to follow the new script</a>
+<br>
+</p></div>
+<p>
+If you check the page speed of your page on the <a href="https://developers.google.com/speed/pagespeed/insights/">Google’s pagespeed</a>, you might have seen Google giving some suggestions related to images if your page contain a good number of images.</p><p>
+One of the major one is to <strong>Defer Off-screen Images</strong>, that is what we are going to do in this post.</p>
+<h2 id="introduction-to-the-problem-defer-off-screen-images">Introduction to the problem: Defer off-screen images</h2><p>
+When your blog post has a lot of content and the people have to scroll to see the images of the content, then Google suggest loading the images after the whole <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction">DOM</a> is loaded first.</p>
+<blockquote>
+Deferring off screen images means delaying loading of images that appear below-the-fold on the page.
+</blockquote><p>
+There are a lot of ways of doing <a href="https://www.tezify.com/how-to/defer-offscreen-images/">this</a>.</p>
+<h2 id="using-lazysizes">Using Lazysizes</h2><p>
+Before jumping into the tutorial, I want to state that if you follow this tutorial, you will have to change the way you define images in your Jekyll blog post, you won’t be able to use the old <code>liquid</code> tags.</p><p>
+We are going to use <a href="https://github.com/aFarkas/lazysizes">Lazysizes</a> to help us with the deferring of the off-screen images from the blog posts.</p>
+<h2 id="get-the-lazysizes-min-file">Get the Lazysizes min file.</h2><p>
+Lazysizes JavaScript <code>min</code> file can be found <a href="http://afarkas.github.io/lazysizes/lazysizes.min.js">here</a>. Just copy the content to a file named <code>lazysizes.min.js</code> and import it into the base file of your blog.</p><p>
+The best place to include it, would be in the <code>default.html</code>.</p>
+<div><pre><code>&lt;script src="/blog/lazysizes.min.js" async=""&gt;&lt;/script&gt;
+</code></pre></div>
+<h2 id="giving-a-class-to-images-in-jekyll">Giving a class to images in Jekyll</h2><p>
+You can give the <code>lazyload</code> class to your images and get started with the library.</p><p>
+You can use the following code to add class to images in Jekyll</p>
+<div><pre><code><span>![</span><span>alt text</span><span>](</span><span>https:image/source.png</span> <span>"title text"</span><span>)</span>{:class="lazyload"}
+</code></pre></div><p>
+This is the first step to get started, but we won’t be using it. We will directly be adding this <code>class</code> to every image of all the posts on its own with new style.</p>
+<h2 id="creating-an-image-creation-script-using-the-variables-passed">Creating an image creation script using the variables passed.</h2><p>
+Write the following script and add it to the <code>_includes</code> directory so that you can include them from posts.</p>
+<p><code>_includes/lazyload.html</code></p><p>
+
+This script is checking if the <code>image_src</code> and JavaScript is enabled by the given client.</p><p>
+If yes, it uses the passed variables and renders an <code>image</code> with <code>data-src</code>( required by lazysizes to defer off-screen images). Otherwise, it will render a normal image.</p>
+<h2 id="include-lazy-loading-in-the-posts">Include lazy loading in the posts.</h2><p>
+While writing the posts you can include the newly created <code>lazyload.html</code>.</p><p>
+
+That’s it. After this you will not see the Google pagespeed’s suggestion to defer your off-screen images.</p>
+<h2 id="changing-the-old-images-to-follow-the-new-script">Changing the old images to follow the new script</h2><p>
+I know changing the images in your earlier posts can be a pain, so I created this <code>python</code> script that can help you with that.</p>
+<div><pre><code><span>ff</span> <span>=</span> <span>open</span><span>(</span><span>'_posts/your_post.md'</span><span>)</span>
+
+<span>for</span> <span>a</span> <span>in</span> <span>ff</span><span>:</span>
+    <span># Check if the line contains markdown image tag.
+</span>    <span>if</span> <span>a</span><span>[</span><span>0</span><span>:</span><span>2</span><span>]</span> <span>==</span> <span>'!['</span><span>:</span>
+        <span>alt</span> <span>=</span> <span>a</span><span>[</span><span>2</span><span>:].</span><span>split</span><span>(</span><span>']'</span><span>)[</span><span>0</span><span>]</span>
+        <span>src</span> <span>=</span> <span>a</span><span>.</span><span>split</span><span>(</span><span>'('</span><span>)[</span><span>1</span><span>].</span><span>split</span><span>(</span><span>' '</span><span>)[</span><span>0</span><span>]</span>
+        <span>title</span> <span>=</span> <span>a</span><span>.</span><span>split</span><span>(</span><span>'"'</span><span>)[</span><span>1</span><span>].</span><span>split</span><span>(</span><span>'"'</span><span>)[</span><span>0</span><span>]</span>
+        <span>print</span><span>(</span><span>'{}{} include lazyload.html image_src="{}" image_alt="{}" image_title="{}" {}{}'</span><span>.</span><span>format</span><span>(</span><span>'{'</span><span>,</span> <span>'%'</span><span>,</span> <span>src</span><span>,</span> <span>alt</span><span>,</span> <span>title</span><span>,</span> <span>'%'</span><span>,</span> <span>'}'</span><span>))</span>
+</code></pre></div><p>
+This will print the images tag following the new include statement. You can then copy them to the post.</p><p>
+If you directly want to update the old images with the new tags then you will write to the post file as well.</p><p>
+You can check the network’s tab in the <code>inspect elements</code> of the browser. The images are only queried when they are in the frame.</p>
+<p><img data-src="https://i.ibb.co/RYRBpBq/images.gif" alt="Images are queried when they are required" title="Images are queried when they are required">
+</p><p>
+Thanks for reading the post. Do share your views.</p>
+</div></div>
+  </div>
+</body>
+</html>

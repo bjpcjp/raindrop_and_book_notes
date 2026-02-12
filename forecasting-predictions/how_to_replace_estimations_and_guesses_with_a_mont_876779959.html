@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to replace estimations and guesses with a Monte Carlo simulation</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to replace estimations and guesses with a Monte Carlo simulation</h1>
+    <p><strong>URL:</strong> <a href="https://lucasfcosta.com/2021/09/20/monte-carlo-forecasts.html">https://lucasfcosta.com/2021/09/20/monte-carlo-forecasts.html</a></p>
+    <p><strong>Tags:</strong> forecasting-predictions, monte-carlo</p>
+    <p><strong>Bookmark ID:</strong> 876779959</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+        <p>There are many ways of estimating how long a software project will take. All of them are a waste of time.</p>
+
+<p>Some prefer to spend days analysing and planning their changes so that they can estimate more accurately — others <a href="https://news.ycombinator.com/item?id=28667174">choose to multiply by N whatever estimations they make</a>. I wouldn’t recommend any of these approaches.</p>
+
+<p>The problem with the first approach is that it considers software development to be a deterministic process when, in fact, it’s <a href="https://en.wikipedia.org/wiki/Stochastic_process">stochastic</a>. In other words, you can’t accurately determine how long it will take to write a particular piece of code unless you have already written it.</p>
+
+<p>The problem with multiplying estimations by N is that you’re simply exchanging cycle time for predictability. Instead of actually trying to be accurate, you’re merely adding a buffer to your estimations. That buffer wouldn’t be a problem if it weren’t for the fact that engineers determine it by licking the tip of their finger and putting it up in the air.</p>
+
+<p>Unfortunately, <strong>the only way to win at the estimation game is not to play it.</strong></p>
+
+
+
+<blockquote>
+  <p>“Estimation is a waste of time. Don’t do it.”</p>
+
+  <p>— VACANTI, Daniel.</p>
+</blockquote>
+
+<p>Instead of making “informed” guesses or multiplying estimations by N, we can embrace the randomness and variability involved in writing software and use more suitable statical methods, in this case, stochastic modeling techniques, to devise better forecasts. One of these techniques is the <a href="https://en.wikipedia.org/wiki/Monte_Carlo_method">Monte Carlo method</a>, which I’ll use to make projections in the rest of this post.</p>
+
+<p><strong>This post will teach you how to replace estimations and guesses with a Monte Carlo simulation</strong>.</p>
+
+<p>First, I’ll explain what is the Monte Carlo method and show how it works. Then, I will demonstrate how you could use it to forecast when a project is likely to be finished.</p>
+
+<p>In the third section of this blog post, I’ll show you how to attach a probability value to your projections, turning them into actual forecasts¹. In this section, you’ll understand how to generate more or less optimistic forecasts depending on your risk appetite.</p>
+
+<p>After those first three sections, I’ll explain a few caveats and factors to which you should pay attention when running your Monte Carlo simulations to generate projections.</p>
+
+<p>At last, explain where we’ll go in the next blog posts and recommend further reading material.</p>
+
+
+
+<h2 id="what-is-the-monte-carlo-method">What is the Monte Carlo method?</h2>
+
+<p>The Monte Carlo method consists of repeatedly simulating random individual events to understand the likelihood of possible outcomes.</p>
+
+<p>Imagine, for example, that you’d like to calculate the likelihood of rolling two dice and obtaining a sum of seven.</p>
+
+<p>One of the ways of doing it is to enumerate all the 36 possible result combinations and count how many of those results yield a sum of seven. Considering 6 of those 36 results produce a sum of 7, the probability of rolling a seven is 16.67%.</p>
+
+<p>Alternatively, you could roll two dices for the next couple of months, take notes of all the results, and check how often you rolled a seven. The more rolls you’ve made, the more precise your final probability estimation will be.</p>
+
+<p>Now, rolling dice for days isn’t very exciting (and takes too long). Instead, we could get the computer to roll the dice for us. Thanks to the machines, we can roll two dice a million times quite quickly.</p>
+
+<p>Now, let’s write a simple Rust program to roll two dice a million times and tell us how often it rolls a seven.</p>
+
+<div><pre><code><span>extern</span> <span>crate</span> <span>rand</span><span>;</span>
+
+<span>use</span> <span>rand</span><span>::</span><span>distributions</span><span>::{</span><span>Distribution</span><span>,</span> <span>Uniform</span><span>};</span>
+<span>use</span> <span>rand</span><span>::</span><span>thread_rng</span><span>;</span>
+
+<span>const</span> <span>TOTAL_ROLLS</span><span>:</span> <span>i32</span> <span>=</span> <span>1_000_000</span><span>;</span>
+
+<span>fn</span> <span>main</span><span>()</span> <span>{</span>
+    <span>let</span> <span>mut</span> <span>rng</span> <span>=</span> <span>thread_rng</span><span>();</span>
+    <span>let</span> <span>die</span> <span>=</span> <span>Uniform</span><span>::</span><span>from</span><span>(</span><span>1</span><span>..</span><span>7</span><span>);</span>
+
+    <span>let</span> <span>mut</span> <span>sevens</span> <span>=</span> <span>0</span><span>;</span>
+    <span>for</span> <span>_</span> <span>in</span> <span>0</span><span>..</span><span>TOTAL_ROLLS</span> <span>{</span>
+        <span>let</span> <span>first_die</span> <span>=</span> <span>die</span><span>.sample</span><span>(</span><span>&amp;</span><span>mut</span> <span>rng</span><span>);</span>
+        <span>let</span> <span>second_die</span> <span>=</span> <span>die</span><span>.sample</span><span>(</span><span>&amp;</span><span>mut</span> <span>rng</span><span>);</span>
+        <span>if</span> <span>first_die</span> <span>+</span> <span>second_die</span> <span>==</span> <span>7</span> <span>{</span>
+            <span>sevens</span> <span>+=</span> <span>1</span>
+        <span>}</span>
+    <span>}</span>
+
+    <span>let</span> <span>p</span><span>:</span> <span>f64</span> <span>=</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>sevens</span><span>)</span> <span>/</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>TOTAL_ROLLS</span><span>)</span> <span>*</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>100</span><span>);</span>
+
+    <span>println!</span><span>(</span><span>"Total Rolls: {}"</span><span>,</span> <span>TOTAL_ROLLS</span><span>);</span>
+    <span>println!</span><span>(</span><span>"Total Sevens: {}"</span><span>,</span> <span>sevens</span><span>);</span>
+    <span>println!</span><span>(</span><span>"Probability of rolling a seven: {:.2}%"</span><span>,</span> <span>p</span><span>);</span>
+<span>}</span>
+</code></pre></div>
+
+<p>When running this program, it’ll simulate a million dice rolls, divide the number of sevens rolled by the total number of simulations, and output the empirical probability of rolling a seven. This probability will be close to 16.67%, which is the actual probability of rolling a seven.</p>
+
+<div><pre><code><span>Total Rolls: 1000000
+Total Sevens: 166446
+Probability of rolling a seven: 16.64%
+</span></code></pre></div>
+
+<p>Congratulations, you just did your first Monte Carlo simulation.</p>
+
+
+
+<h2 id="simulating-when-a-project-will-be-complete">Simulating when a project will be complete</h2>
+
+<p>Now that you’ve done a Monte Carlo simulation, I’ll teach you how to apply the same principles to a software project so that you can estimate when you’ll complete it.</p>
+
+<p>Let’s imagine you’ve read a <a href="https://en.wikipedia.org/wiki/Tim_Ferriss">Tim Ferris</a> blog post saying that the optimal number of blog posts a year is 60 or more. Because it’s Tim Ferriss, you’re convinced he’s right, and you’d like to follow his advice.</p>
+
+<p>However, before you commit to this time-consuming endeavour, you want to know how likely you are to be able to write 60 or more posts in 365 days and, if not, what changes you could make to hit that mark. How can we do that?</p>
+
+
+
+<h2 id="a-naive-approach-uniformly-distributed-cycle-times">A naive approach: uniformly distributed cycle-times</h2>
+
+<p>First, we’ll take a naive approach: we’ll assume you know how long it took to write each of the blog posts you published in the past three months. For the sake of this example, let’s say that the shortest post took two days to complete, and the longest took ten.</p>
+
+<p>Then, we’ll <em>pretend</em> that you’re equally likely to complete posts in any number of days between two and ten. To put it another way, <strong>we’ll consider your posts’ cycle-time distribution to be <a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda3662.htm">uniform</a></strong> (just like a die).</p>
+
+<p>Considering these assumptions would hold, you could write a program to repeatedly simulate how long it would take to write 60 blog posts.</p>
+
+<p>In this simulation, for each blog post, your program would randomly pick a number between two and ten as if that were the number of days you took to write it.</p>
+
+<p>After simulating how long each post took to write, your program would sum each post’s turnaround and check whether all 60 posts took less than 365 days.</p>
+
+<p>Finally, once it has run all the simulations, your program would calculate the probability of success by dividing the number of times you “succeeded” by the total number of simulations.</p>
+
+<div><pre><code><span>extern</span> <span>crate</span> <span>rand</span><span>;</span>
+
+<span>use</span> <span>rand</span><span>::</span><span>distributions</span><span>::{</span><span>Distribution</span><span>,</span> <span>Uniform</span><span>};</span>
+<span>use</span> <span>rand</span><span>::</span><span>thread_rng</span><span>;</span>
+
+<span>const</span> <span>TOTAL_RUNS</span><span>:</span> <span>i32</span> <span>=</span> <span>1_000_000</span><span>;</span>
+<span>const</span> <span>TOTAL_BLOG_POSTS</span><span>:</span> <span>i32</span> <span>=</span> <span>60</span><span>;</span>
+
+<span>fn</span> <span>main</span><span>()</span> <span>{</span>
+    <span>let</span> <span>mut</span> <span>rng</span> <span>=</span> <span>thread_rng</span><span>();</span>
+    <span>let</span> <span>time_to_completion</span> <span>=</span> <span>Uniform</span><span>::</span><span>from</span><span>(</span><span>2</span><span>..</span><span>11</span><span>);</span>
+
+    <span>let</span> <span>mut</span> <span>successes</span> <span>=</span> <span>0</span><span>;</span>
+
+    <span>for</span> <span>_</span> <span>in</span> <span>0</span><span>..</span><span>TOTAL_RUNS</span> <span>{</span>
+        <span>let</span> <span>mut</span> <span>current_duration</span> <span>=</span> <span>0</span><span>;</span>
+
+        <span>for</span> <span>_</span> <span>in</span> <span>0</span><span>..</span><span>TOTAL_BLOG_POSTS</span> <span>{</span>
+            <span>current_duration</span> <span>+=</span> <span>time_to_completion</span><span>.sample</span><span>(</span><span>&amp;</span><span>mut</span> <span>rng</span><span>);</span>
+        <span>}</span>
+
+        <span>if</span> <span>current_duration</span> <span>&lt;=</span> <span>365</span> <span>{</span>
+            <span>successes</span> <span>+=</span> <span>1</span>
+        <span>}</span>
+    <span>}</span>
+
+    <span>let</span> <span>p</span> <span>=</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>successes</span><span>)</span> <span>/</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>TOTAL_RUNS</span><span>)</span> <span>*</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>100</span><span>);</span>
+
+    <span>println!</span><span>(</span><span>"Total Simulations: {}"</span><span>,</span> <span>TOTAL_RUNS</span><span>);</span>
+    <span>println!</span><span>(</span><span>"Successes: {}"</span><span>,</span> <span>successes</span><span>);</span>
+    <span>println!</span><span>(</span><span>"Probability of succeeding: {:.2}%"</span><span>,</span> <span>p</span><span>);</span>
+<span>}</span>
+</code></pre></div>
+
+<p>After running this program, you should see an output similar to this:</p>
+
+<div><pre><code><span>Total Simulations: 1000000
+Successes: 608671
+Probability of succeeding: 60.87%
+</span></code></pre></div>
+
+<p>That’s a great first attempt, but let’s say it doesn’t feel quite right to you. What could you do to make your simulation more accurate?</p>
+
+
+
+<h2 id="an-okay-approach-weighted-probabilities">An okay approach: weighted probabilities</h2>
+
+<p>Now, assume that, even though the shortest story took two days and the longest took ten, you remembered that the time for <em>most</em> posts skews towards the ten-day mark.</p>
+
+<p>In other words, you don’t think that the posts cycle times are uniformly distributed: most posts take a long time, and only a few take two or three days.</p>
+
+<p>In an attempt to make the model more accurate and get a more realistic forecast, you then gather the start and end date of each post and calculate each post’s cycle time.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>N</th>
+      <th>Title</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Time Taken</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Why Your Software Never Works Out the Way You Plan</td>
+      <td>12/01/2022</td>
+      <td>19/01/2022</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Ways Your Mother Lied to You About Software</td>
+      <td>21/01/2022</td>
+      <td>29/01/2022</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>A Software Success Story You’ll Never Believe</td>
+      <td>02/02/2022</td>
+      <td>03/02/2022</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Darth Vader’s Guide to Software</td>
+      <td>18/02/2022</td>
+      <td>23/02/2022</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>How to Win Big in the Software Industry</td>
+      <td>24/02/2022</td>
+      <td>29/02/2022</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Why Do People Think Software is a Good Idea?</td>
+      <td>01/03/2022</td>
+      <td>08/03/2022</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Shocking Ways Software Will Make You a Better Dancer</td>
+      <td>09/03/2022</td>
+      <td>12/03/2022</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>What The Beatles Could Learn from Software</td>
+      <td>14/03/2022</td>
+      <td>23/03/2022</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>What Your Parents Never Told You About Software</td>
+      <td>23/03/2022</td>
+      <td>28/03/2022</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>How To Create The Worst Blog Post Titles</td>
+      <td>28/03/2022</td>
+      <td>31/03/2022</td>
+      <td>4</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>With this data, you can now calculate the probability of each duration occurring and build a table like the one below.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Duration</th>
+      <th>Frequency</th>
+      <th>Probability</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>10</td>
+      <td>1</td>
+      <td>10%</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>1</td>
+      <td>10%</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>2</td>
+      <td>20%</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>3</td>
+      <td>30%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>1</td>
+      <td>10%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>1</td>
+      <td>10%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>1</td>
+      <td>10%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Knowing how likely each duration is to occur will make your simulation much more accurate.</p>
+
+<p>In the naive approach you’ve just seen, an issue was equally likely to last two, six, or eight days, which doesn’t reflect reality.</p>
+
+<p>By looking at the table above, you can easily see that tasks are three times more likely to take six days than two days. In fact, only 30% of stories take four days or fewer.</p>
+
+<p>Now, let’s update our simulation so that it will obey the probability of each duration occurring.</p>
+
+<div><pre><code><span>extern</span> <span>crate</span> <span>rand</span><span>;</span>
+
+<span>use</span> <span>rand</span><span>::</span><span>distributions</span><span>::{</span><span>Distribution</span><span>,</span> <span>Uniform</span><span>};</span>
+<span>use</span> <span>rand</span><span>::</span><span>thread_rng</span><span>;</span>
+
+<span>const</span> <span>TOTAL_RUNS</span><span>:</span> <span>i32</span> <span>=</span> <span>1_000_000</span><span>;</span>
+<span>const</span> <span>TOTAL_BLOG_POSTS</span><span>:</span> <span>i32</span> <span>=</span> <span>60</span><span>;</span>
+
+<span>const</span> <span>DURATIONS</span><span>:</span> <span>[</span><span>i32</span><span>;</span> <span>10</span><span>]</span> <span>=</span> <span>[</span><span>2</span><span>,</span> <span>3</span><span>,</span> <span>4</span><span>,</span> <span>6</span><span>,</span> <span>6</span><span>,</span> <span>6</span><span>,</span> <span>8</span><span>,</span> <span>8</span><span>,</span> <span>9</span><span>,</span> <span>10</span><span>];</span>
+
+<span>fn</span> <span>main</span><span>()</span> <span>{</span>
+    <span>let</span> <span>mut</span> <span>rng</span> <span>=</span> <span>thread_rng</span><span>();</span>
+    <span>let</span> <span>time_to_completion</span> <span>=</span> <span>Uniform</span><span>::</span><span>from</span><span>(</span><span>0</span><span>..</span><span>DURATIONS</span><span>.len</span><span>());</span>
+
+    <span>let</span> <span>mut</span> <span>successes</span> <span>=</span> <span>0</span><span>;</span>
+
+    <span>for</span> <span>_</span> <span>in</span> <span>0</span><span>..</span><span>TOTAL_RUNS</span> <span>{</span>
+        <span>let</span> <span>mut</span> <span>current_duration</span> <span>=</span> <span>0</span><span>;</span>
+
+        <span>for</span> <span>_</span> <span>in</span> <span>0</span><span>..</span><span>TOTAL_BLOG_POSTS</span> <span>{</span>
+            <span>let</span> <span>random_index</span> <span>=</span> <span>time_to_completion</span><span>.sample</span><span>(</span><span>&amp;</span><span>mut</span> <span>rng</span><span>);</span>
+            <span>current_duration</span> <span>+=</span> <span>DURATIONS</span><span>[</span><span>random_index</span><span>];</span>
+        <span>}</span>
+
+        <span>if</span> <span>current_duration</span> <span>&lt;=</span> <span>365</span> <span>{</span>
+            <span>successes</span> <span>+=</span> <span>1</span>
+        <span>}</span>
+    <span>}</span>
+
+    <span>let</span> <span>p</span> <span>=</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>successes</span><span>)</span> <span>/</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>TOTAL_RUNS</span><span>)</span> <span>*</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>100</span><span>);</span>
+
+    <span>println!</span><span>(</span><span>"Total Simulations: {}"</span><span>,</span> <span>TOTAL_RUNS</span><span>);</span>
+    <span>println!</span><span>(</span><span>"Successes: {}"</span><span>,</span> <span>successes</span><span>);</span>
+    <span>println!</span><span>(</span><span>"Probability of succeeding: {:.2}%"</span><span>,</span> <span>p</span><span>);</span>
+<span>}</span>
+</code></pre></div>
+
+<p>After running this simulation, which is much more accurate, it’ll tell you that you’re actually 36.69% likely to succeed. That’s almost half of the previous estimation!</p>
+
+<div><pre><code><span>Total Simulations: 1000000
+Successes: 366944
+Probability of succeeding: 36.69%
+</span></code></pre></div>
+
+<p>This estimation is probably good enough for a single person, but it won’t work for a team. At least not without adjustments².</p>
+
+<p>The problem with this simulation is that it assumes that blog posts will be written in series, not in parallel.</p>
+
+<p>If you had two or more people working in parallel, you’d have to record their individual cycle times, simulate how many blog posts <em>each</em> one could write in 365 days, and sum each person’s output.</p>
+
+<p>Not too difficult, but there is an easier way.</p>
+
+
+
+<h2 id="sampling-throughput">Sampling throughput</h2>
+
+<p>An easier way of simulating a team’s performance without using individuals’ cycle times is to sample the team’s throughput for each day in the simulation.</p>
+
+<p>To perform such a simulation, you need to record the daily number of completed items for a determined length of time. With that data, you’d then have the probability of having a throughput of 0, 1, 2, 3, or more items on any given day, which you’d use when sampling.</p>
+
+<p>If you were to write a program that did exactly that, you’d have a piece of code like the one below.</p>
+
+<div><pre><code><span>extern</span> <span>crate</span> <span>rand</span><span>;</span>
+
+<span>use</span> <span>rand</span><span>::</span><span>distributions</span><span>::{</span><span>Distribution</span><span>,</span> <span>Uniform</span><span>};</span>
+<span>use</span> <span>rand</span><span>::</span><span>thread_rng</span><span>;</span>
+
+<span>const</span> <span>TOTAL_RUNS</span><span>:</span> <span>i32</span> <span>=</span> <span>1_000_000</span><span>;</span>
+<span>const</span> <span>TOTAL_STORIES</span><span>:</span> <span>i32</span> <span>=</span> <span>500</span><span>;</span>
+
+<span>const</span> <span>TEN_DAY_THROUGHPUTS</span><span>:</span> <span>[</span><span>i32</span><span>;</span> <span>10</span><span>]</span> <span>=</span> <span>[</span><span>1</span><span>,</span> <span>2</span><span>,</span> <span>0</span><span>,</span> <span>1</span><span>,</span> <span>1</span><span>,</span> <span>2</span><span>,</span> <span>3</span><span>,</span> <span>1</span><span>,</span> <span>2</span><span>,</span> <span>1</span><span>];</span>
+
+<span>fn</span> <span>main</span><span>()</span> <span>{</span>
+    <span>let</span> <span>mut</span> <span>rng</span> <span>=</span> <span>thread_rng</span><span>();</span>
+    <span>let</span> <span>throughput</span> <span>=</span> <span>Uniform</span><span>::</span><span>from</span><span>(</span><span>0</span><span>..</span><span>TEN_DAY_THROUGHPUTS</span><span>.len</span><span>());</span>
+
+    <span>let</span> <span>mut</span> <span>successes</span> <span>=</span> <span>0</span><span>;</span>
+
+    <span>for</span> <span>_</span> <span>in</span> <span>0</span><span>..</span><span>TOTAL_RUNS</span> <span>{</span>
+        <span>let</span> <span>mut</span> <span>stories_completed</span> <span>=</span> <span>0</span><span>;</span>
+
+        <span>for</span> <span>_</span> <span>in</span> <span>0</span><span>..</span><span>366</span> <span>{</span>
+            <span>let</span> <span>random_index</span> <span>=</span> <span>throughput</span><span>.sample</span><span>(</span><span>&amp;</span><span>mut</span> <span>rng</span><span>);</span>
+            <span>stories_completed</span> <span>+=</span> <span>TEN_DAY_THROUGHPUTS</span><span>[</span><span>random_index</span><span>];</span>
+        <span>}</span>
+
+        <span>if</span> <span>stories_completed</span> <span>&gt;</span> <span>TOTAL_STORIES</span> <span>{</span>
+            <span>successes</span> <span>+=</span> <span>1</span>
+        <span>}</span>
+    <span>}</span>
+
+    <span>let</span> <span>p</span> <span>=</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>successes</span><span>)</span> <span>/</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>TOTAL_RUNS</span><span>)</span> <span>*</span> <span>f64</span><span>::</span><span>from</span><span>(</span><span>100</span><span>);</span>
+
+    <span>println!</span><span>(</span><span>"Total Simulations: {}"</span><span>,</span> <span>TOTAL_RUNS</span><span>);</span>
+    <span>println!</span><span>(</span><span>"Successes: {}"</span><span>,</span> <span>successes</span><span>);</span>
+    <span>println!</span><span>(</span><span>"Probability of succeeding: {:.2}%"</span><span>,</span> <span>p</span><span>);</span>
+<span>}</span>
+</code></pre></div>
+
+<p>You could use this approach to determine whether a software development team could finish a particular number of items within a specific period.</p>
+
+
+
+<h2 id="caveats-to-pay-attention-to-when-building-monte-carlo-simulations">Caveats to pay attention to when building Monte Carlo simulations</h2>
+
+<p>Before claiming that the simulation above is reliable, I must expose a few things you’ll need to pay attention to when using a Monte Carlo Simulation to make forecasts:</p>
+
+<ul>
+  <li>The quality of the inputs upon which your simulations depend.</li>
+  <li>The consistency and predictability of your team.</li>
+  <li>The need to re-forecast.</li>
+  <li>The size of your work packages.</li>
+</ul>
+
+
+
+<h2 id="quality-of-the-inputs">Quality of the inputs</h2>
+
+<p>Assume you had a team of ten engineers last year, but half of them quit the company three months ago. If you were to simulate how long this team would take to complete a project, you should <em>not</em> use throughput data from more than three months ago.</p>
+
+<p>If you use a 10-engineer team’s throughput data to forecast the performance of a 5-engineer team, you will get over-optimistic results.</p>
+
+<p>Similarly, if your team doubles in size, your simulation should not use historical data from when you had half the number of people. In this case, you also can’t just assume projects will take half the time because <a href="https://en.wikipedia.org/wiki/Brooks%27s_law">it’s extremely unlikely that productivity will scale linearly as you hire more developers</a>.</p>
+
+<p>Additionally, other factors like holidays or a massive rewrite can impact your input data.</p>
+
+<p>Your team’s throughput between Christmas and New Year’s Eve, for example, will probably not be the same as the team’s throughput in February. Similarly, a massive rewrite that drastically increases how easy it is to change and extend your software will have an equally dramatic impact on your cycle times.</p>
+
+<p>As Daniel Vacanti explains in <a href="https://www.amazon.co.uk/When-Will-Done-Lean-Agile-Forecasting-ebook/dp/B084WVMKLC">When Will It Be Done?</a>, _ “the fundamental assumption that the Monte Carlo Simulation is making is that the future you’re trying to predict looks roughly like the past you have data for “_.</p>
+
+
+
+<h2 id="consistency-and-predictability">Consistency and predictability</h2>
+
+<p>Our simulation will work just fine for the circumstances above because I came up with more predictable throughput values.</p>
+
+<p>The range of throughputs used in that code is small, and, most of the days, the team is highly consistent: it gets one or two items done. In other words, the <a href="https://en.wikipedia.org/wiki/Standard_deviation">standard deviation</a> for this cycle-time distribution is <em>small</em>.</p>
+
+<p>In another blog post, I’ll explain what would have happened if I had used more erratic throughput values in the previous section. For now, keep in mind that as long as you have a team with consistent throughput, this simulation will be reliable.</p>
+
+<p>Quantifying “predictability” and “consistency” is also a topic for another blog post.</p>
+
+
+
+<h2 id="re-forecast">Re-forecast!</h2>
+
+<p>As your project advances, you will encounter delays, and, sometimes, you’ll get to be ahead of schedule. Therefore, re-forecasting as you progress will make your forecast more accurate because there will be fewer items and more data and, consequently, less room for error.</p>
+
+<p><strong>The more information and fewer items to simulate you have, the more your forecast will converge to reality</strong>.</p>
+
+<p>Guessing who’ll win the Premier League before it starts is much more difficult than guessing the winner halfway in, for example.</p>
+
+<p>When the league starts, you have many games to simulate, so you have more room for error.</p>
+
+<p>At that time, you also don’t have data that reflects the current lineup performance. Imagine forecasting Barcelona’s performance in 2021 using last year’s lineup, for example. It certainly won’t be the same without Messi.</p>
+
+<p>Re-forecasting is also important to remain agile.</p>
+
+<p>Suppose you forecast only once at the beginning of your project and create a Gantt chart based on those estimations. In that case, you’ll simply be running a waterfall process with statistically accurate dates.</p>
+
+<p>In an agile context, as you re-run these simulations, you will be able to adapt your plan and processes based on results that will be increasingly more accurate as reality converges with the estimated results.</p>
+
+<p>To summarise: the fewer days and items you have to simulate, the smaller the error margin.</p>
+
+
+
+<h2 id="sizing-work">Sizing work</h2>
+
+<p>At the beginning of this blog post, I claimed that a statistical approach could do away with all estimations.</p>
+
+<p>Even though that is <em>technically</em> true given you won’t have to assign story points to anything anymore (nor make informed guesses), throughput-based simulations assume that work items are roughly the same size. Therefore, <strong>one could claim that making work packages approximately the same size is another form of estimation</strong>.</p>
+
+<p>Despite that claim, these statistical approaches still yield much better results because outliers won’t significantly impact your simulation.</p>
+
+<p>Additionally, you won’t need to waste time discussing whether something is worth two or three story points. Instead, you can always try to make stories as small as you can so that you have more revealing data.</p>
+
+
+
+<h2 id="using-monte-carlo-simulations-in-practice-confidence-intervals">Using Monte Carlo Simulations in practice: confidence intervals</h2>
+
+<p>In the real world, we’re seldom looking for the probability of a project succeeding within a particular time frame. Instead, we’re looking to understand the possible scenarios in which we could end up and how likely those scenarios are to happen. In other words, <strong>we want to know how our simulation’s outcomes are distributed</strong> and <strong>attach “confidence” values to our forecasts</strong>.</p>
+
+<p>When it comes to visualising an outcome distribution, a histogram is an excellent visual tool. Furthermore, the histogram’s underlying data will allow us to attach confidence values to our forecasts.</p>
+
+<p>To demonstrate how you could use histograms in practice, let’s imagine your company needs to deliver a project of about 50 stories³. For the project to succeed, your company wants you to forecast an end date so that the marketing and sales teams can prepare for the launch. Considering how critical marketing is for this important product to succeed, executives want you to be pretty sure of whatever forecast you make.</p>
+
+<p>Now, let’s try to solve this problem and come up with a precise forecast.</p>
+
+<p>Given you want to play on the safe side, let’s define a “precise” forecast as a forecast in which you’re at least 95% confident.</p>
+
+<p>First, we’ll adapt our code to generate histograms that show the dates on which the project is likely to finish.</p>
+
+<p>Go ahead and update the code to store the number of times each date appeared in your simulations.</p>
+
+<div><pre><code><span>extern</span> <span>crate</span> <span>rand</span><span>;</span>
+
+<span>use</span> <span>rand</span><span>::</span><span>distributions</span><span>::{</span><span>Distribution</span><span>,</span> <span>Uniform</span><span>};</span>
+<span>use</span> <span>rand</span><span>::</span><span>thread_rng</span><span>;</span>
+<span>use</span> <span>std</span><span>::</span><span>collections</span><span>::</span><span>HashMap</span><span>;</span>
+
+<span>const</span> <span>TOTAL_RUNS</span><span>:</span> <span>i32</span> <span>=</span> <span>1_000_000</span><span>;</span>
+<span>const</span> <span>STORIES_TARGET</span><span>:</span> <span>i32</span> <span>=</span> <span>50</span><span>;</span>
+<span>const</span> <span>TEN_DAY_THROUGHPUTS</span><span>:</span> <span>[</span><span>i32</span><span>;</span> <span>10</span><span>]</span> <span>=</span> <span>[</span><span>1</span><span>,</span> <span>2</span><span>,</span> <span>0</span><span>,</span> <span>1</span><span>,</span> <span>1</span><span>,</span> <span>2</span><span>,</span> <span>3</span><span>,</span> <span>1</span><span>,</span> <span>2</span><span>,</span> <span>1</span><span>];</span>
+
+<span>fn</span> <span>main</span><span>()</span> <span>{</span>
+    <span>let</span> <span>mut</span> <span>rng</span> <span>=</span> <span>thread_rng</span><span>();</span>
+    <span>let</span> <span>throughput</span> <span>=</span> <span>Uniform</span><span>::</span><span>from</span><span>(</span><span>0</span><span>..</span><span>TEN_DAY_THROUGHPUTS</span><span>.len</span><span>());</span>
+
+    <span>let</span> <span>mut</span> <span>outcomes</span><span>:</span> <span>HashMap</span><span>&lt;</span><span>i64</span><span>,</span> <span>i32</span><span>&gt;</span> <span>=</span> <span>HashMap</span><span>::</span><span>new</span><span>();</span>
+
+    <span>let</span> <span>one_day</span> <span>=</span> <span>Duration</span><span>::</span><span>days</span><span>(</span><span>1</span><span>);</span>
+
+    <span>let</span> <span>start_date</span><span>:</span> <span>DateTime</span><span>&lt;</span><span>Local</span><span>&gt;</span> <span>=</span> <span>Local</span><span>::</span><span>now</span><span>();</span>
+
+    <span>for</span> <span>_</span> <span>in</span> <span>0</span><span>..</span><span>TOTAL_RUNS</span> <span>{</span>
+        <span>let</span> <span>mut</span> <span>current_date</span> <span>=</span> <span>start_date</span><span>;</span>
+        <span>let</span> <span>mut</span> <span>stories_completed</span> <span>=</span> <span>0</span><span>;</span>
+
+        <span>while</span> <span>stories_completed</span> <span>&lt;</span> <span>STORIES_TARGET</span> <span>{</span>
+            <span>let</span> <span>random_index</span> <span>=</span> <span>throughput</span><span>.sample</span><span>(</span><span>&amp;</span><span>mut</span> <span>rng</span><span>);</span>
+            <span>stories_completed</span> <span>+=</span> <span>TEN_DAY_THROUGHPUTS</span><span>[</span><span>random_index</span><span>];</span>
+            <span>current_date</span> <span>=</span> <span>current_date</span> <span>+</span> <span>one_day</span><span>;</span>
+        <span>}</span>
+
+        <span>let</span> <span>count</span> <span>=</span> <span>outcomes</span><span>.entry</span><span>(</span><span>current_date</span><span>.timestamp</span><span>())</span><span>.or_insert</span><span>(</span><span>0</span><span>);</span>
+        <span>*</span><span>count</span> <span>+=</span> <span>1</span><span>;</span>
+    <span>}</span>
+
+    <span>println!</span><span>(</span><span>"Total Simulations: {}"</span><span>,</span> <span>TOTAL_RUNS</span><span>);</span>
+<span>}</span>
+</code></pre></div>
+
+<p>As you can see in the code above, we are not targeting a particular outcome anymore. Instead, we are keeping track of how often the project ended on a specific date.</p>
+
+<p>Remember: we want to understand how likely each delivery date is to come true so that we can make a forecast in which we’re 95% confident.</p>
+
+<p>After this change, we’ll write a function that uses <a href="https://crates.io/crates/plotters">the <code>plotters</code> crate</a> to generate a histogram and save it to disk. This histogram will display possible delivery dates on its X-axis and the number of times each delivery date came out in the simulations.</p>
+
+<p>The plotting function is reasonably long, and not really interesting for what we're doing here, so I'll omit it from this post. If you still wanna see it, have a look at <a href="https://github.com/lucasfcosta/agile-monte-carlo-demo">this post's related GitHub repository</a>.</p>
+
+<p>After running the simulation, your program should yield a histogram similar to the one below.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="A histogram showing that in most of the simulations the project took X days to deliver."></p>
+<center><i>Our project's estimated delivery dates follow a normal distribution, as the histogram shows.</i></center>
+
+<p>Looking at this histogram, you can clearly see that if we start working on the project’s 50 stories today (29th of September of 2021), the most likely date on which we’d finish it would be the 4th of November of 2021.</p>
+
+<p>If this weren’t an important project for which the company needs a precise forecast, you could tell executives that the 4th of November of 2021 is your best guess for the project’s end date.</p>
+
+<p>Unfortunately, you were asked to offer a <em>precise</em> forecast, so you can’t simply provide the most likely end date. Instead, you’ll need to deliver a forecast in which you’re at least 95% confident.</p>
+
+<p>To generate a forecast in which you’re at least 95% confident, you need to define what “95% confidence” means in terms of our Monte Carlo simulation. In this case, <strong>you could say that you’d be 95% confident in a particular end date if, in 95% of all the simulations, you finished the project on or before that date</strong>.</p>
+
+<p>If, for example, you simulated a particular project a hundred times and in 95 of those simulations you finished the project on or before the 1st of April, then you’d be 95% confident that you could complete the project on or before that date.</p>
+
+<p>For those more familiar with statistics, these are merely <a href="https://en.wikipedia.org/wiki/Percentile">percentiles</a>. A percentile is a value at or below which a particular percentage of the distribution’s values falls (considering an <em>inclusive</em> definition).</p>
+
+<p>Let’s go ahead and create a function to calculate the 95th percentile for our simulation. This percentile will indicate the date at or before 95% of the simulations have finished. Therefore, we can say we’re “95% confident” that this will be the project’s end date.</p>
+
+<div><pre><code><span>fn</span> <span>calculate_percentile</span><span>(</span><span>data</span><span>:</span> <span>&amp;</span><span>HashMap</span><span>&lt;</span><span>i64</span><span>,</span> <span>i32</span><span>&gt;</span><span>,</span> <span>percentile</span><span>:</span> <span>i32</span><span>)</span> <span>{</span>
+    <span>let</span> <span>total_sims</span><span>:</span> <span>i32</span> <span>=</span> <span>data</span><span>.values</span><span>()</span><span>.sum</span><span>();</span>
+
+    <span>let</span> <span>p_qtd</span><span>:</span> <span>i32</span> <span>=</span> <span>total_sims</span> <span>-</span> <span>(</span><span>total_sims</span> <span>as</span> <span>f64</span> <span>/</span> <span>(</span><span>100_f64</span> <span>/</span> <span>percentile</span> <span>as</span> <span>f64</span><span>))</span><span>.ceil</span><span>()</span> <span>as</span> <span>i32</span><span>;</span>
+
+    <span>let</span> <span>mut</span> <span>hash_vec</span><span>:</span> <span>Vec</span><span>&lt;</span><span>(</span><span>&amp;</span><span>i64</span><span>,</span> <span>&amp;</span><span>i32</span><span>)</span><span>&gt;</span> <span>=</span> <span>data</span><span>.iter</span><span>()</span><span>.collect</span><span>();</span>
+    <span>hash_vec</span><span>.sort_by</span><span>(|</span><span>a</span><span>,</span> <span>b</span><span>|</span> <span>b</span><span>.0</span><span>.cmp</span><span>(</span><span>a</span><span>.0</span><span>));</span>
+
+    <span>let</span> <span>mut</span> <span>sum</span> <span>=</span> <span>0</span><span>;</span>
+    <span>let</span> <span>mut</span> <span>percentile_timestamp</span><span>:</span> <span>i64</span> <span>=</span> <span>0</span><span>;</span>
+
+    <span>for</span> <span>(</span><span>timestamp</span><span>,</span> <span>freq</span><span>)</span> <span>in</span> <span>hash_vec</span> <span>{</span>
+        <span>sum</span> <span>+=</span> <span>freq</span><span>;</span>
+
+        <span>if</span> <span>sum</span> <span>&gt;=</span> <span>p_qtd</span> <span>{</span>
+            <span>percentile_timestamp</span> <span>=</span> <span>*</span><span>timestamp</span><span>;</span>
+            <span>break</span><span>;</span>
+        <span>}</span>
+    <span>}</span>
+
+    <span>println!</span><span>(</span>
+        <span>"Percentile {}: {} ({}/{})"</span><span>,</span>
+        <span>percentile</span><span>,</span>
+        <span>Local</span>
+            <span>.timestamp</span><span>(</span><span>percentile_timestamp</span><span>,</span> <span>0</span><span>)</span>
+            <span>.format</span><span>(</span><span>"%Y/%m/%d"</span><span>)</span>
+            <span>.to_string</span><span>(),</span>
+        <span>sum</span><span>,</span>
+        <span>total_sims</span>
+    <span>);</span>
+<span>}</span>
+</code></pre></div>
+
+<p>Once you’ve created this function, update your program so that it calls <code>calculate_percentile</code> passing the histogram’s data and <code>95</code> as the percentile in which you’re interested. Doing this change and re-running will yield results similar to the following:</p>
+
+<div><pre><code><span>Total Simulations: 1000000
+Percentile 95: 2021/11/13 (60032/1000000)
+</span></code></pre></div>
+
+<p>After seeing the program’s output, you know that 95% of your simulations finished on or before the 13th of November. Consequently, you can go back to the company’s executives and tell them that you’re 95% confident that the project will finish on or before that date.</p>
+
+<p>Now, imagine that your company’s executives told you that they’d like to understand the likelihood of your project finishing on other dates. With that data, they could decide whether to hire more marketing professionals to prevent the product from being held up in case you finish writing the code earlier.</p>
+
+<p>To provide your executives with that data, you can simply add a few more calls to <code>calculate_percentile</code> to calculate the 25th, 50th, 75th, 85th percentiles. These would be the dates on which or before 25%, 50%, 75%, and 85% of the simulations fall, respectively. Therefore, these are the final dates in which you could say you’re 25%, 50%, 75% and 85% confident.</p>
+
+<div><pre><code><span>Total Simulations: 1000000
+Percentile 25: 2021/11/05 (765267/1000000)
+Percentile 50: 2021/11/07 (546177/1000000)
+Percentile 75: 2021/11/09 (320170/1000000)
+Percentile 85: 2021/11/11 (152931/1000000)
+Percentile 95: 2021/11/13 (59527/1000000)
+</span></code></pre></div>
+
+<p>As an exercise, I’d also recommend the reader to plot these percentiles in their histograms. This author would be interested in seeing your solution as he’s given up on doing that after an arduous battle with Plotters and the Rust compiler.</p>
+
+
+
+<h2 id="on-forecasting-based-on-your-risk-appetite">On forecasting based on your risk appetite</h2>
+
+<p><strong>Once you know how likely it is for an event to happen, you can gauge or risk appetite and decide how precise your forecast needs to be</strong>.</p>
+
+<p>Imagine, Alice, your best friend, wants to make a bet. She’s got two dice to roll, and she’s eager to bet $10 you won’t get a sum of seven in a single roll.</p>
+
+<p>Furthermore, she’s willing to allow you more rolls in exchange for part of her bet. If you roll twice, she’ll bet $5 instead of $10. If you want to roll four times, she’ll bet $2.50.</p>
+
+<p>With some quick statistics, you figure out your chance of rolling a seven in a single throw is about 17%. In two throws, it goes up to 34%. In four throws, you’ll have a 68% chance of winning.</p>
+
+<p>Now, because you know the possible payouts and the likelihood of the desired outcome, you can gauge how many rolls you’re willing to pay for.</p>
+
+<p>If, for example, you desperately need an extra $2.50 to get the bus back home, you will probably want to bet $2.50 and roll four times so that you have a higher likelihood of winning. On the other hand, if you think it could be nice to make $10 and spoil yourself with great pizza, you may want to roll only once.</p>
+
+
+
+<h2 id="where-do-we-go-from-here">Where do we go from here?</h2>
+
+<p>I did my best to keep this blog post simple and give actionable advice. I intentionally and avoided too much classical statistics, but, in a further blog post, I do intend to answer questions like:</p>
+
+<ul>
+  <li>How many simulations do you need to obtain “accurate” results?</li>
+  <li>How do you define what “accurate” means or, in other words, how do you quantify accuracy?</li>
+  <li>How to quantify how predictable your team is?</li>
+</ul>
+
+<p>These are all questions that could be answered with simple statistics. For those interested in skipping ahead, I’d recommend <a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-0002-introduction-to-computational-thinking-and-data-science-fall-2016/lecture-videos/lecture-7-confidence-intervals/">this MIT lesson about Confidence Intervals</a>.</p>
+
+<p>Furthermore, I also plan to write a blog post about how Markov Chain Monte Carlo simulations could help make forecasts, especially for more unpredictable teams.</p>
+
+
+
+<h2 id="references">References</h2>
+
+<p>[1] I use <a href="https://twitter.com/danvacanti">Daniel Vacanti</a> ’s definition of a forecast. In his words, <em>” a forecast is a calculation about the future that includes both a range and a probability of that range occurring “</em>. This definition is important because, as Daniel himself explains in his book <em>Actionable Agile Metrics For Predictability</em>, <em>” a forecast without an associated probability is deterministic, and, as you know, the future is anything but deterministic.”</em>.</p>
+
+<p>[2] Alternatively, a team could work serially to reduce cycle times. If that’s the case, you don’t need to change the simulation; you only need to update the data used to determine which cycle-time gets sampled. The problem with this approach is that it’s often impossible: I can’t imagine more than ten people simultaneously writing a blog post, for example. If anything, it would take ten times as long.</p>
+
+<p>[3] I would typically <em>not</em> recommend using stories at this stage of a project, especially if you’re dealing with many of them. Doing so would require you to go into a massive effort to specify all requirements up-front, which isn’t agile at all. Instead, I’d break down scope into epics, and focus on releasing early and often, and re-forecasting as you progress. Remember: I’m not saying you should use Monte Carlo simulations to attach more accurate dates to waterfall projects.</p>
+
+
+
+<h2 id="related-recommended-content">Related Recommended Content</h2>
+
+<ul>
+  <li><a href="https://ggcarvalho.dev/posts/montecarlo/">GUIMARÃES CARVALHO, Gabriel. The art of solving problems with Monte Carlo simulations</a></li>
+  <li><a href="https://www.amazon.co.uk/dp/B013ZQ5TUQ">VACANTI, Daniel. Actionable Agile Metrics For Predictability: An Introduction. ActionableAgile Press.</a></li>
+  <li><a href="https://www.amazon.co.uk/When-Will-Done-Lean-Agile-Forecasting-ebook/dp/B084WVMKLC">VACANTI, Daniel. When Will It Be Done?: Lean-Agile Forecasting to Answer Your Customers’ Most Important Question. ActionableAgile Press.</a></li>
+</ul>
+
+    </article></div>
+  </div>
+</body>
+</html>

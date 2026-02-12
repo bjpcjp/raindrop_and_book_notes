@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>dorking (how to find anything on the Internet)</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>dorking (how to find anything on the Internet)</h1>
+    <p><strong>URL:</strong> <a href="https://www.alec.fyi/dorking-how-to-find-anything-on-the-internet.html">https://www.alec.fyi/dorking-how-to-find-anything-on-the-internet.html</a></p>
+    <p><strong>Tags:</strong> search</p>
+    <p><strong>Bookmark ID:</strong> 876776501</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+		
+		
+		
+		
+		<p>tl;dr: Use advanced Google Search to find any webpage, emails, info, or secrets</p>
+<p>cost: $0</p>
+<p>time: 2 minutes</p>
+
+<p>Software engineers have long joked about how much of their job is <a href="https://localghost.dev/2019/09/everything-i-googled-in-a-week-as-a-professional-software-engineer/">simply Googling things</a></p>
+<p>Now you can do the same, but for free</p>
+<p>Below, I'll cover <code>dorking</code>, the use of search engines to find very specific data</p>
+<p><em>For each example, you can paste it directly into Google to see the result</em></p>
+<h2>table of contents:</h2>
+<ul>
+<li><a href="#webpages">webpages</a></li>
+<li><a href="#emails">emails</a></li>
+<li><a href="#files">files</a></li>
+<li><a href="#seo">SEO</a></li>
+<li><a href="#coupons">coupons!</a></li>
+<li><a href="#secrets">secrets</a></li>
+<li><a href="#review">operator review</a></li>
+</ul>
+
+<h3 id="webpages">webpages</h3>
+
+<p>Inspired by <a href="https://twitter.com/Contextify1/status/1255202725551202304">this Twitter exchange</a> with Gumroad CEO Sahil Lavingia, the next few examples will cover Gumroad and Sahil.</p>
+<p>find specific pages within a website (ex: for DynamoDB e-books)</p>
+<div><pre><span></span><code>site:gumroad.com dynamodb
+</code></pre></div>
+
+<p>find specific pages that must include a phrase in the Title text</p>
+<div><pre><span></span><code>allintitle:"support this" site:gumroad.com
+</code></pre></div>
+
+<p>find similar sites (Google only)</p>
+<div><pre><span></span><code>related:gumroad.com
+</code></pre></div>
+
+<p>you can chain operators together (ex: looking for bug bounties with either security or bug-bounty in the URL)</p>
+<div><pre><span></span><code>(inurl:security OR inurl:bug-bounty OR site:hackerone.com) + "gumroad"
+</code></pre></div>
+
+<p>you can restrict to certain top-level domains (ex: lists of teachers)</p>
+<div><pre><span></span><code>site:.edu filetype:xls inurl:"email.xls"
+</code></pre></div>
+
+
+<h3 id="emails">emails</h3>
+
+<p>find Gmail accounts</p>
+<div><pre><span></span><code>alec barrett-wilsdon "@gmail.com"
+</code></pre></div>
+
+<p>find work accounts (you'll need to find their domain first)</p>
+<div><pre><span></span><code>alec "@contextify.io"
+</code></pre></div>
+
+<p>not finding what you're looking for with either of those? Try to guess the format of the email (try going to <a href="https://www.email-format.com/d/shopify.com/#">this site</a>, search the domain, and click <code>Identified Name Formats</code>))</p>
+<div><pre><span></span><code>"abarrett.wilsdon@"
+</code></pre></div>
+
+<p>you can always find every page with emails on it (and then use the next snippet below)</p>
+<div><pre><span></span><code>site:alec.fyi intext:"@"
+</code></pre></div>
+
+<p>find every email on a web page that you're on - inject it into a site with Chrome DevTools (<a href="https://www.alec.fyi/how-to-scrape">more here</a>)</p>
+<div><pre><span></span><code><span>var</span><span> </span><span>elems</span><span> </span><span>=</span><span> </span><span>document</span><span>.</span><span>body</span><span>.</span><span>getElementsByTagName</span><span>(</span><span>"*"</span><span>);</span><span></span>
+<span>var</span><span> </span><span>re</span><span> </span><span>=</span><span> </span><span>new</span><span> </span><span>RegExp</span><span>(</span><span>"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"</span><span>);</span><span></span>
+<span>for</span><span> </span><span>(</span><span>var</span><span> </span><span>i</span><span> </span><span>=</span><span> </span><span>0</span><span>;</span><span> </span><span>i</span><span> </span><span>&lt;</span><span> </span><span>elems</span><span>.</span><span>length</span><span>;</span><span> </span><span>i</span><span>++</span><span>)</span><span> </span><span>{</span><span></span>
+<span>    </span><span>if</span><span> </span><span>(</span><span>re</span><span>.</span><span>test</span><span>(</span><span>elems</span><span>[</span><span>i</span><span>].</span><span>innerHTML</span><span>))</span><span> </span><span>{</span><span></span>
+<span>        </span><span>console</span><span>.</span><span>log</span><span>(</span><span>elems</span><span>[</span><span>i</span><span>].</span><span>innerHTML</span><span>);</span><span></span>
+<span>    </span><span>}</span><span></span>
+<span>}</span><span></span>
+</code></pre></div>
+
+<p>this will log every email found, without you having to scan through the whole page.</p>
+<p>finally, you can validate if an email that you found or guessed is real by hovering over it in a new compose window in Gmail:</p>
+<p><img alt="" src="data:application/octet-stream;base64," title="Using Gmail to validate email deliverability">
+<img alt="" src="data:application/octet-stream;base64," title="Using Gmail to validate email deliverability - unsuccessful lookup"></p>
+<p>if you look carefully, you'll notice the chat and video call options are greyed out on an invalid email.</p>
+
+<h3 id="files">files</h3>
+
+<p>find spreadsheets</p>
+<div><pre><span></span><code>filetype:csv OR filetype:xlsx OR filetype:xls OR filetype:xltx OR filetype:xlt OR inurl:airtable.com/universe/
+</code></pre></div>
+
+<p>find Google Docs and Google Sheets</p>
+<div><pre><span></span><code>site:docs.google.com "gumroad"
+</code></pre></div>
+
+<p>find where your competitor's logo is (ex: partners or customers' websites)</p>
+<div><pre><span></span><code>"Gumroad Logo.png"
+</code></pre></div>
+
+<p>find your competitors' sales pitches and whitepapers</p>
+<div><pre><span></span><code>site:intercom.com (filetype:pdf OR filetype:ppt)
+</code></pre></div>
+
+<p>find case studies written about competitors</p>
+<div><pre><span></span><code>inurl:hubspot-case-study -site:http://hubspot.com
+</code></pre></div>
+
+
+<h3 id="seo">SEO</h3>
+
+<p>find sites with specific keywords in the anchor text</p>
+<div><pre><span></span><code>inanchor:"cyber security"
+</code></pre></div>
+
+<p>research blog posts with specific keywords in their title</p>
+<div><pre><span></span><code>inposttitle:"diy slime"
+</code></pre></div>
+
+<p>find backlinks (ex: other sites that link to a particular blog post). note: the <code>link</code> operator is now deprecated</p>
+<div><pre><span></span><code>intext:intercom.com/intercom-api-reference/reference
+</code></pre></div>
+
+<p>find keyword permutations with the <code>wildcard</code> operator</p>
+<div><pre><span></span><code>* design tools
+</code></pre></div>
+
+<p>find companies using a given widget</p>
+<div><pre><span></span><code>intext:"Powered by Intercom" -site:intercom.com
+</code></pre></div>
+
+
+<h3 id="coupons">coupons!</h3>
+
+<p>search the site itself for codes</p>
+<div><pre><span></span><code>site:curology.com ("coupon" | "referral code" | "affiliate code" | "discount code" | "VIP")
+</code></pre></div>
+
+<p>next, try twitter</p>
+<div><pre><span></span><code>site:twitter.com + "meundies" + ("coupon" | "referral code" | "affiliate code" | "discount code" | "VIP")
+</code></pre></div>
+
+<p>next, try Mailchimp emails</p>
+<div><pre><span></span><code>site:campaign-archive.com + "blueapron" + ("coupon" | "referral code" | "affiliate code" | "discount code" | "VIP")
+</code></pre></div>
+
+
+<h3 id="secrets">secrets</h3>
+
+<p>cybersecurity experts use dorking, as one tool among many, to find potential vulnerabilities in a company. I will not be covering any such queries, out of concern for their potential for misuse.</p>
+
+<h3 id="review">operator review</h3>
+
+<p><code>operators</code> are components of a search query that narrow the results down. You can combine as many as you want in one query. The most useful ones you'll want to know are:</p>
+<table>
+<thead>
+<tr>
+<th>operator</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"phrase"</td>
+<td>results must include "phrase"</td>
+</tr>
+<tr>
+<td>-phrase</td>
+<td>exclude results with phrase</td>
+</tr>
+<tr>
+<td>phrase1 AND phrase2 &nbsp; &nbsp;</td>
+<td>phrase1 and phrase2 must both be included</td>
+</tr>
+<tr>
+<td>phrase1 OR phrase2</td>
+<td>one of phrase1 and phrase2 must be included (or both)</td>
+</tr>
+<tr>
+<td>site:example.com</td>
+<td>results must be on domain example.com</td>
+</tr>
+<tr>
+<td>filetype:jpg</td>
+<td>results must be of type <code>.jpg</code></td>
+</tr>
+</tbody>
+</table>
+<p>AND/OR logic can be used to combine distinct queries</p>
+<div><pre><span></span><code>"phrase1" OR "phrase 2" AND "phrase3"
+# equivalent to these two searches
+&gt;&gt; "phrase1"
+&gt;&gt; "phrase 2" AND "phrase3"
+</code></pre></div>
+
+
+<p>Thank you to Tejas, Chris, Ian, and Brandon for contributing edits!</p>
+<p>Thanks for reading. Questions or comments?  👉🏻 <a href="mailto:alec@contextify.io">alec@contextify.io</a></p>	
+
+	</article></div>
+  </div>
+</body>
+</html>

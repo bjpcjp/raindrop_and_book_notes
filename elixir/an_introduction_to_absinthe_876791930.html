@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>An Introduction to Absinthe</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>An Introduction to Absinthe</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2023/05/16/an-introduction-to-absinthe-for-elixir.html">https://blog.appsignal.com/2023/05/16/an-introduction-to-absinthe-for-elixir.html</a></p>
+    <p><strong>Tags:</strong> elixir, graphql</p>
+    <p><strong>Bookmark ID:</strong> 876791930</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Absinthe is a toolkit for building a GraphQL API with Elixir.
+It has a declarative syntax that fits really well with Elixir’s idiomatic style.</p>
+<p>In today’s post — the first of a series on Absinthe — we will explore how you can use Absinthe to create a GraphQL API.</p>
+<p>But before we jump into Absinthe, let’s take a brief look at GraphQL.</p>
+<h2 id="graphql">GraphQL</h2>
+<p>GraphQL is a query language that allows declarative data fetching.
+A client can ask for exactly what they want, and only that data is returned.</p>
+<p>Instead of having multiple endpoints like a REST API, a GraphQL API usually provides a single endpoint that can perform different operations based on the request body.</p>
+<h3 id="graphql-schema">GraphQL Schema</h3>
+<p><code>Schema</code> forms the core of a GraphQL API.
+In GraphQL, everything is strongly typed, and the schema contains information about the API's capabilities.</p>
+<p>Let's take an example of a blog application. The schema can contain a <code>Post</code> type like this:</p>
+
+<p>The above type specifies that a post will have an <code>id</code>, <code>title</code>, <code>body</code>, <code>author</code> (all non-null because of <code>!</code> in the type), and an optional (nullable) list of <code>comments</code>.</p>
+<p>Check out <a href="https://graphql.org/learn/schema/">Schema</a> to learn about advanced concepts like <code>input</code>, <code>Enum</code>, and <code>Interface</code>
+in the type system.</p>
+<h3 id="graphql-query-and-mutation">GraphQL Query and Mutation</h3>
+<p>A type system is at the heart of the GraphQL schema.
+GraphQL has two special types:</p>
+<ol>
+<li>A <code>query</code> type that serves as an entry point for all read operations on the API.</li>
+<li>A <code>mutation</code> type that exposes an API to mutate data on the server.</li>
+</ol>
+<p>Each schema, therefore, has something like this:</p>
+
+<p>Then the <code>Query</code> and <code>Mutation</code> types provide the real API on the schema:</p>
+
+<p>We will get back to these types when we start creating our schema with Absinthe.</p>
+<p><a href="https://graphql.org/learn/queries/">Read more about GraphQL's queries and mutations</a>.</p>
+<h3 id="graphql-api">GraphQL API</h3>
+<p>Clients can read the schema to know exactly what an API provides.
+To perform queries (or mutations) on the API, you send a <code>document</code> describing the operation to be performed. The server handles the rest and returns a result.
+Let’s check out an example:</p>
+
+<p>The response contains exactly what we've asked for:</p>
+
+<p>This allows for a more efficient data exchange compared to a REST API.
+It's especially useful for rarely used complex fields in a result that takes time to compute.</p>
+
+<p>In a REST API, such cases are usually handled by providing different endpoints for fetching that field or having special attributes like <code>include=complex_field</code> in the query param.
+On the other hand, a GraphQL API can offer native support by delaying the computation of that field unless it is explicitly asked for in the query.</p>
+<h2 id="setting-up-your-elixir-app-with-graphql-and-absinthe">Setting Up Your Elixir App with GraphQL and Absinthe</h2>
+<p>Let’s now turn to Absinthe and start building our API.
+The installation is simple:</p>
+<ol>
+<li>
+<p>Add Absinthe, <code>Absinthe.Plug</code>, and a JSON codec (like Jason) into your <code>mix.exs</code>:</p>
+
+</li>
+<li>
+<p>Add an entry in your router to forward requests to a specific path (e.g., <code>/api</code>) to <code>Absinthe.Plug</code>:</p>
+
+<p>The <code>Absinthe.Plug</code> will now handle all incoming requests to the <code>/api</code> endpoint and forward them to <code>MyAppWeb.Schema</code> (we will see how to write the schema below).</p>
+</li>
+</ol>
+<p>The installation steps might vary for different apps, so follow the <a href="https://hexdocs.pm/absinthe/installation.html">official Absinthe installation guide</a> if you need more help.</p>
+<h2 id="define-the-absinthe-schema-and-query">Define the Absinthe Schema and Query</h2>
+<p>Notice that we've passed <code>MyAppWeb.Schema</code> as the schema to <code>Absinthe.Plug</code>.
+This is the entry point of our GraphQL API.
+To build it, we will use <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.html"><code>Absinthe.Schema</code></a> behaviour which provides macros for writing schema.
+Let’s build the schema to support fetching a post by its id.</p>
+
+<p>There are a lot of things happening in the small snippet above.
+Let’s break it down:</p>
+<ul>
+<li>We first define a <code>query</code> block inside our schema.
+This defines the special query type that we discussed in the GraphQL section.</li>
+<li>That <code>query</code> type has only one field, named <code>post</code>.
+This is the first argument to the <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#field/4"><code>field</code> macro</a>.</li>
+<li>The return type of the <code>post</code> field is <code>post</code> — this is the second argument to the macro.
+We will get back to that later on.</li>
+<li>This field also has an argument named <code>id</code>, defined using the <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#arg/3"><code>arg</code> macro</a>.
+The type of that argument is <code>non_null(:id)</code>, which is the Absinthe way of saying <code>ID!</code> — a required value of type <code>ID</code>.</li>
+<li>Finally, the <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#resolve/1"><code>resolve</code> macro</a> defines how that field is resolved.
+It accepts a 2-arity or 3-arity function that receives the parent entity (not passed for the 2-arity function), arguments map, and an <a href="https://hexdocs.pm/absinthe/Absinthe.Resolution.html">Absinthe.Resolution</a> struct.
+The function's return value should be <code>{:ok, value}</code> or <code>{:error, reason}</code>.</li>
+</ul>
+<h2 id="define-the-type-in-absinthe">Define the Type In Absinthe</h2>
+<p>In Absinthe, <code>object</code> refers to any type that has sub-fields.
+In the above query, we saw the type <code>post</code>.
+To create that type, we will use the <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#object/3"><code>object</code> macro</a>.</p>
+
+<p>The first argument to the object macro is the identifier of the type.
+This must be unique across the whole schema.
+Each object can have many fields. Each field can use the full power of the <code>field</code> macro that we saved above when defining the query. So we can define nested fields that accept arguments and return other <code>object</code>s.</p>
+<p>As we discussed earlier, the <code>query</code> itself is an object, just a special one that serves as an entry point to the API.</p>
+<h3 id="using-scalar-types">Using Scalar Types</h3>
+<p>In addition to objects, you can also get <code>scalar</code> types.
+A scalar is a special type with no sub-fields and serializes to native values in the result (e.g.,
+to a string).
+A good example of a scalar is <a href="https://hexdocs.pm/elixir/1.13/DateTime.html">Elixir’s <code>DateTime</code></a>.</p>
+<p>To support a <code>DateTime</code> that we'll use in the schema, we need to use the <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#scalar/3"><code>scalar</code> macro</a>. This tells Absinthe how to serialize and parse a <code>DateTime</code>.</p>
+<p>Here is an example from the <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#scalar/3-examples">Absinthe docs</a>:</p>
+
+<p>We can then use this scalar anywhere in our schema by using <code>:isoz_datetime</code> as the type:</p>
+
+<p>Absinthe already provides several <a href="https://hexdocs.pm/absinthe/1.1.5/Absinthe.Type.BuiltIns.html">built-in scalars</a> — <code>boolean</code>, <code>float</code>, <code>id</code>, <code>integer</code>, and <code>string</code> — as well as some <a href="https://hexdocs.pm/absinthe/Absinthe.Type.Custom.html">custom scalars</a>: <code>datetime</code>, <code>naive_datetime</code>, <code>date</code>, <code>time</code>, and <code>decimal</code>.</p>
+<h3 id="type-modifiers-and-more">Type Modifiers and More</h3>
+<p>We can also modify each type to mark some additional constraints or properties.
+For example, to mark a type as non-null, we use the <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#non_null/1"><code>non_null/1</code></a> macro.
+To define a list of a specific type, we can use <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#list_of/1"><code>list_of/1</code></a>.</p>
+<p>Advanced types like <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#union/3">union</a> and <a href="https://hexdocs.pm/absinthe/Absinthe.Schema.Notation.html#interface/3">interface</a> are also supported.</p>
+<h2 id="wrap-up">Wrap Up</h2>
+<p>In this post, we covered the basics of GraphQL and Absinthe for an Elixir application. We discussed the use of GraphQL and Absinthe schema, and touched on types in Absinthe.</p>
+<p>In the next part of this series, we'll see how we can apply Absinthe and GraphQL to large Elixir applications.</p>
+<p>Happy coding!</p>
+<p><strong>P.S. If you'd like to read Elixir Alchemy posts as soon as they get off the press, <a href="https://blog.appsignal.com/elixir-alchemy">subscribe to our Elixir Alchemy newsletter and never miss a single post</a>!</strong></p></div></div>
+  </div>
+</body>
+</html>

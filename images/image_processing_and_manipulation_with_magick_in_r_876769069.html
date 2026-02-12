@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Image Processing and Manipulation with magick in R</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Image Processing and Manipulation with magick in R</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/image-processing-and-manipulation-with-magick-in-r">https://www.r-bloggers.com/image-processing-and-manipulation-with-magick-in-r</a></p>
+    <p><strong>Tags:</strong> images, _r_</p>
+    <p><strong>Bookmark ID:</strong> 876769069</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+
+	<p><strong>‘ImageMagick’</strong> is one of the famous open source libraries available for editing and manipulating Images of different types (Raster &amp; Vector Images). <strong><code>magick</code></strong> is an R-package binding to ‘ImageMagick’ for Advanced Image-Processing in R, authored by Jeroen Ooms.</p>
+<p><strong>magick</strong> supports many common image formats like png, jpeg, tiff and manipulations like rotate, scale, crop, trim, blur, flip, annotate and much more.</p>
+<p>This post is to help you get started with <code>magick</code> to process, edit and manipulate images in R that could be anything from just file format conversion (eg. png to jpeg) or annotating R graphics output. </p>
+<p><code>magick</code> is available on <a href="https://cran.r-project.org/web/packages/magick/magick.pdf" rel="nofollow" target="_blank">CRAN</a> and also on <a href="https://github.com/ropensci/magick" rel="nofollow" target="_blank">ropensci’s github</a>.  </p>
+<pre>#installing magick package from CRAN
+install.packages('magick') 
+#from Github ropensci library - note: requires RTools
+devtools::install_github('ropensci/magick')
+</pre>
+<p>Let us load the library and read our first image or images from the internet with <code>image_read()</code></p>
+<pre>#Loading magick package
+library(magick)
+
+#reading a png image frink image
+frink &lt;- image_read("https://jeroen.github.io/images/frink.png")
+#reading a jpg image ex-President Barack Obama from Wikipedia
+obama &lt;- image_read('https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/800px-President_Barack_Obama.jpg')
+</pre>
+<p>Make sure you have got an updated version of <code>curl</code> package installed for the successfully reading image as mentioned above. </p>
+<p>We can get basic details of the read images with <code>image_info()</code></p>
+<pre>#image details
+image_info(obama)
+image_info(frink)
+image_info(obama)
+  format width height colorspace filesize
+1   JPEG   800    999       sRGB   151770
+
+image_info(frink)
+format width height colorspace filesize
+1    PNG   220    445       sRGB    73494
+</pre>
+<p>Communicating with RStudio, <code>magick</code> lets you print/display image in RStudio Viewer pane. </p>
+<pre>#displaying the image
+print(obama)
+</pre>
+<p>Whether you are a web developer or you are putting together a powerpoint deck, Image File Format Conversion is one of the operations that we would end up doing and this is literally an one-liner using <code>magick</code>‘s <code>image_write()</code>.</p>
+<pre>#Rendering JPG image into SVG
+image_write(obama, path = 'obama.svg', format = 'svg')
+</pre>
+<p>Below is the PNG format of Obama Image that we read in from Wikipedia:<br>
+<a href="https://i0.wp.com/datascienceplus.com/wp-content/uploads/2017/11/obama.png?ssl=1" rel="nofollow" target="_blank"><img loading="lazy" src="https://i1.wp.com/datascienceplus.com/wp-content/uploads/2017/11/obama-392x490.png?resize=392%2C490&amp;ssl=1" alt="" width="392" height="490" srcset_temp="https://i1.wp.com/datascienceplus.com/wp-content/uploads/2017/11/obama-392x490.png?resize=392%2C490&amp;ssl=1 392w, https://datascienceplus.com/wp-content/uploads/2017/11/obama-768x959.png 768w, https://datascienceplus.com/wp-content/uploads/2017/11/obama-300x375.png 300w, https://datascienceplus.com/wp-content/uploads/2017/11/obama.png 800w" sizes="(max-width: 392px) 100vw, 392px" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i1.wp.com/datascienceplus.com/wp-content/uploads/2017/11/obama-392x490.png?resize=392%2C490&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></a></p>
+<p>But you might be wondering, “Hey! This is just basic Image processing. Didn’t you tell this is advanced?” And Yes, Here comes the advanced stuff along with a good news that <code>magick</code> supports pipe <code>%&gt;%</code> operator. </p>
+<p>This is what we are going to do:</p>
+<ul>
+1. Take the Original Obama Image and Apply Charcoal Effect to it<br>
+2. Composite Frink Image along with it<br>
+3. Annotate some text – considering Obama would’ve dealt with Confidential data – Let it be CONFIDENTIAL stamped on the image<br>
+4. Finally, Rotate the image slightly and write/save it. </ul>
+<pre>#Applying Charcoal effect to Obama's image 
+#and compositing it with frink's image
+#and finally annotating it with a text
+image_charcoal(obama) %&gt;% 
+  image_composite(frink)  %&gt;%
+  image_annotate("CONFIDENTIAL", size = 50, color = "red", boxcolor = "pink",
+                 degrees = 30, location = "+100+100") %&gt;%
+  image_rotate(30) %&gt;%
+  image_write('obama_with_frink.png','png')
+</pre>
+<p>Gives this output:<br>
+<a href="https://i1.wp.com/datascienceplus.com/wp-content/uploads/2017/11/obama_with_frink.png?ssl=1" rel="nofollow" target="_blank"><img loading="lazy" src="https://i2.wp.com/datascienceplus.com/wp-content/uploads/2017/11/obama_with_frink-462x490.png?w=450&amp;ssl=1" alt="" srcset_temp="https://i2.wp.com/datascienceplus.com/wp-content/uploads/2017/11/obama_with_frink-462x490.png?w=450&amp;ssl=1 462w, https://datascienceplus.com/wp-content/uploads/2017/11/obama_with_frink-768x815.png 768w, https://datascienceplus.com/wp-content/uploads/2017/11/obama_with_frink-965x1024.png 965w, https://datascienceplus.com/wp-content/uploads/2017/11/obama_with_frink-300x318.png 300w, https://datascienceplus.com/wp-content/uploads/2017/11/obama_with_frink.png 1194w" sizes="(max-width: 462px) 100vw, 462px" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i2.wp.com/datascienceplus.com/wp-content/uploads/2017/11/obama_with_frink-462x490.png?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></a></p>
+<p>How does the output image look? Artistic isn’t it ;)!</p>
+<p>But this is not Data Scientists want to do every day, instead, we play with Plots and most of the time want to annotate the R Graphics output and here’s how you can do that with <code>magick</code>‘s <code>image_annotate()</code></p>
+<pre>library(ggplot2)
+img &lt;- image_graph(600, 400, res = 96)
+p &lt;- ggplot(iris) + geom_point(aes(Sepal.Length,Petal.Length))
+print(p)
+dev.off()
+img %&gt;% image_annotate("CONFIDENTIAL", size = 50, color = "red", boxcolor = "pink",
+                       degrees = 30, location = "+100+100")  %&gt;%
+  image_write('conf_ggplot.png','png')
+</pre>
+<p>Gives this output image:<br>
+<a href="https://i0.wp.com/datascienceplus.com/wp-content/uploads/2017/11/conf_ggplot.png?ssl=1" rel="nofollow" target="_blank"><img loading="lazy" src="https://i2.wp.com/datascienceplus.com/wp-content/uploads/2017/11/conf_ggplot-490x327.png?w=450&amp;ssl=1" alt="" srcset_temp="https://i2.wp.com/datascienceplus.com/wp-content/uploads/2017/11/conf_ggplot-490x327.png?w=450&amp;ssl=1 490w, https://datascienceplus.com/wp-content/uploads/2017/11/conf_ggplot-300x200.png 300w, https://datascienceplus.com/wp-content/uploads/2017/11/conf_ggplot.png 600w" sizes="(max-width: 490px) 100vw, 490px" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i2.wp.com/datascienceplus.com/wp-content/uploads/2017/11/conf_ggplot-490x327.png?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></a></p>
+<p>This is nothing but a glimpse of what <code>magick</code> can do. Literally, there is a lot of <i>magic</i> left in magick. Try it out yourself and share your thoughts in comments. The code used here can be found on <a href="https://github.com/amrrs/datascienceplus_codes/blob/master/magick_r.R" rel="nofollow" target="_blank">my github</a>. </p>
+<p>References:</p>
+<ul>
+1. <a href="https://github.com/ropensci/magick" rel="nofollow" target="_blank">Magick Ropensci</a><br>
+2. <a href="https://cran.r-project.org/web/packages/magick/magick.pdf" rel="nofollow" target="_blank">Magick CRAN Documentation</a><br>
+3. <a href="https://en.wikipedia.org/wiki/Barack_Obama#/media/File:President_Barack_Obama.jpg" rel="nofollow" target="_blank">Obama Image Credit</a><br>
+4. <a href="https://jeroen.github.io/images/frink.png" rel="nofollow" target="_blank">Frink Image Credit</a>
+</ul>
+<ul></ul><p><strong><p>Related Post</p></strong></p><ol><li><a href="https://datascienceplus.com/analyzing-the-bible-and-the-quran-using-spark/" rel="nofollow" title="Permanent Link toAnalyzing the Bible and the Quran using Spark" target="_blank">Analyzing the Bible and the Quran using Spark</a></li><li><a href="https://datascienceplus.com/predict-customer-churn-logistic-regression-decision-tree-and-random-forest/" rel="nofollow" title="Permanent Link toPredict Customer Churn – Logistic Regression, Decision Tree and Random Forest" target="_blank">Predict Customer Churn – Logistic Regression, Decision Tree and Random Forest</a></li><li><a href="https://datascienceplus.com/find-your-best-customers-with-customer-segmentation-in-python/" rel="nofollow" title="Permanent Link toFind Your Best Customers with Customer Segmentation in Python" target="_blank">Find Your Best Customers with Customer Segmentation in Python</a></li><li><a href="https://datascienceplus.com/principal-component-analysis-unsupervised-learning/" rel="nofollow" title="Permanent Link toPrincipal Component Analysis – Unsupervised Learning" target="_blank">Principal Component Analysis – Unsupervised Learning</a></li><li><a href="https://datascienceplus.com/arima-models-and-intervention-analysis/" rel="nofollow" title="Permanent Link toARIMA models and Intervention Analysis" target="_blank">ARIMA models and Intervention Analysis</a></li></ol>
+
+		
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+							</div></div>
+  </div>
+</body>
+</html>

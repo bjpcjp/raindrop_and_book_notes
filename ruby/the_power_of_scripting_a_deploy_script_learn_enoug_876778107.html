@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Power of Scripting: A Deploy Script | Learn Enough News & Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The Power of Scripting: A Deploy Script | Learn Enough News & Blog</h1>
+    <p><strong>URL:</strong> <a href="https://news.learnenough.com/power-of-scripting-deploy-script">https://news.learnenough.com/power-of-scripting-deploy-script</a></p>
+    <p><strong>Tags:</strong> devops, ruby</p>
+    <p><strong>Bookmark ID:</strong> 876778107</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div class="page">
+  <article>
+    <header>
+      
+      <h5>
+        Feb 22, 2021 • posted by Michael Hartl
+        
+      </h5>
+      
+    </header>
+
+    <main>
+      <p>Michael Hartl here from the <a href="https://www.railstutorial.org/" target="_blank" rel="noopener">Rails Tutorial</a> and <a href="https://www.learnenough.com/" target="_blank" rel="noopener">Learn Enough</a>.<span></span> This post is about the power of <em>scripting</em>, which refers to the creation of programs (known as <em>scripts</em>) that are generally shorter and simpler than full-size applications while still being highly useful.<span></span> The most common kind of script is a <em>shell script</em>, which is typically run at the <a href="https://www.learnenough.com/command-line" target="_blank" rel="noopener">command line</a>.</p>
+<p>The specific example we’ll be looking at is an only slightly simplified version of a script that I use all the time, often multiple times per day.<span></span> It’s called <code>deploy</code>, and its purpose is to deploy a wide variety of different project types using a method appropriate to each type.<span></span> For example, <code>deploy</code> can be used to deploy books, static websites, Ruby gems, and Rails apps, all using the same command.</p>
+<p>The language we’ll be using is <em>Ruby</em>, an elegant object-oriented programming language that’s excellent for writing shell scripts (among many other things).<span></span> Because Ruby is generally easy to read, there’s a good chance you’ll be able to follow this post even if you don’t have much (or any) experience with the language.<span></span> (If you’re interested in learning Ruby, check out <a href="https://www.learnenough.com/ruby" target="_blank" rel="noopener"><em>Learn Enough Ruby to Be Dangerous</em></a> and the <a href="https://www.railstutorial.org/" target="_blank" rel="noopener"><em>Ruby on Rails Tutorial</em></a>.)<span></span> This is a useful aspect of <a href="https://www.learnenough.com/command-line-tutorial/basics#aside-technical_sophistication" target="_blank" rel="noopener">technical sophistication</a>: being able to read and generally understand a computer language you don’t necessarily know.</p>
+<p><em>Note</em>: In a post of this sort, it’s impossible to anticipate the exact background of every possible reader.<span></span> Many clarifying links are provided, but some googling may be required; for a systematic introduction to <em>all</em> the relevant topics in a carefully designed order, see the <a href="https://www.learnenough.com/all-access" target="_blank" rel="noopener">Learn Enough All Access subscription</a> (7-day free trial, 60-day money-back guarantee).</p>
+<div id="sec-different_projects" data-tralics-id="cid1" data-number="1"><h2><a href="#sec-different_projects"><span>1 </span>A bunch of different projects</a></h2>
+<p>Like many developers and other tech-savvy people, I maintain several different kinds of projects:</p>
+<ul>
+<li>Static websites (<a href="https://news.learnenough.com/" target="_blank" rel="noopener">news.learnenough.com</a> (i.e., this site), <a href="https://www.michaelhartl.com/" target="_blank" rel="noopener">michaelhartl.com</a>)
+</li>
+<li>Dynamic web apps (<a href="https://www.learnenough.com/" target="_blank" rel="noopener">learnenough.com</a>, <a href="https://www.railstutorial.org/" target="_blank" rel="noopener">railstutorial.org</a>, <a href="https://tauday.com/" target="_blank" rel="noopener">tauday.com</a>)
+</li>
+<li>Ruby gems (<a href="https://github.com/softcover/softcover" target="_blank" rel="noopener">softcover</a>, <a href="https://github.com/softcover/polytexnic" target="_blank" rel="noopener">polytexnic</a>, <a href="https://github.com/mhartl/jekyll-latex" target="_blank" rel="noopener">jekyll-latex</a>, <a href="https://github.com/mhartl/git-utils" target="_blank" rel="noopener">git-utils</a>)
+</li>
+<li>Books, essays, and articles (<a href="https://www.learnenough.com/command-line" target="_blank" rel="noopener"><em>Learn Enough Command Line to Be Dangerous</em></a>, <a href="https://www.learnenough.com/text-editor" target="_blank" rel="noopener"><em>Learn Enough Text Editor to Be Dangerous</em></a>, et al.; the <a href="https://www.railstutorial.org/" target="_blank" rel="noopener"><em>Ruby on Rails Tutorial</em></a>; <a href="https://tauday.com/tau-manifesto" target="_blank" rel="noopener"><em>The Tau Manifesto</em></a>)
+</li>
+<li>Various directories versioned as Git repositories (<code>txt</code> directory, personal <code>bin</code> directory, etc.)<span></span>
+</li></ul>
+<p>A frequent task common to all these projects is <em>deploying</em> them, defined loosely as moving them from a local development machine to some remote server.<span></span> Because I typically deploy things in this generalized sense multiple times a day, it can be cognitively costly to have to remember which deployment method to use.<span></span> In order to lower the resulting <a href="https://en.wikipedia.org/wiki/Cognitive_load" target="_blank" rel="noopener">cognitive load</a>, some years ago I began developing a custom <code>deploy</code> script, which I’ve been refining ever since.</p>
+<p>The basic idea is that, no matter which kind of project directory I’m working in, I can just type</p>
+<div><pre><span></span><span>$ </span>deploy
+</pre></div>
+<p>and the deploy script will do the right thing for the corresponding project type.<span></span> If it’s a book, <code>deploy</code> publishes the book; if it’s a Rails app, <code>deploy</code> updates the app on the live server; and so on.<span></span> Let’s see how it works!</p>
+</div>
+<div id="sec-a_git_deploy_script" data-tralics-id="cid2" data-number="2"><h2><a href="#sec-a_git_deploy_script"><span>2 </span>A Git deploy script</a></h2>
+<p>We’ll get started with the simplest version of <code>deploy</code>, a script to deploy a Git repository.<span></span> For the purposes of a plain Git repo (as opposed to one that’s also a Rails app, a Ruby gem, etc.), we’ll define “deploy” as “push to a remote server like GitHub, GitLab, or Bitbucket.”<span></span> As discussed in <a href="https://www.learnenough.com/git" target="_blank" rel="noopener"><em>Learn Enough Git to Be Dangerous</em></a>, this involves running the command <code>git push</code>, which pushes the changes in the repository to <code>origin</code>, i.e., the default place to push changes.</p>
+<p>To make an executable script, we’ll work in the local <code>bin</code> directory, which should be included on the <code>PATH</code> (as described in <a href="https://www.learnenough.com/text-editor" target="_blank" rel="noopener"><em>Learn Enough Text Editor to Be Dangerous</em></a>) so that it can be executed from anywhere:<sup id="cha-0_footnote-ref-1"><a href="#cha-0_footnote-1">1</a></sup></p>
+<div><pre><span></span><span>$ </span><span>cd</span> ~/bin             <span># Changes directory to bin relative to home dir ~</span>
+<span>$ </span>touch deploy         <span># Creates a new file called deploy</span>
+<span>$ </span>chmod +x deploy      <span># Changes the mode to make the script executable</span>
+</pre></div>
+<p>The final line here arranges for us to be able to run the deploy script as a regular command-line program, like this:</p>
+<div><pre><span></span><span>$ </span>deploy    <span># Doesn't do anything yet</span>
+</pre></div>
+<p>For the script itself, we’ll use a “shebang” line to identify it as a Ruby script (<a href="https://www.learnenough.com/ruby" target="_blank" rel="noopener"><em>Learn Enough Ruby</em></a>):</p>
+<div><pre><span></span><span>#!/usr/bin/env ruby</span>
+</pre></div>
+<p>Now we need to detect whether or not the current directory contains a Git repository.<span></span> Our repository-detection method is to look for the presence of a special hidden directory called <code>.git</code> (read “dot git”),<sup id="cha-0_footnote-ref-2"><a href="#cha-0_footnote-2">2</a></sup> which is where Git stores repository-specific information.<span></span> We can test for the presence of a <code>.git</code> directory using Ruby’s <code>File.directory?</code> method:</p>
+<div><pre><span></span><span>File</span><span>.</span><span>directory?</span><span>(</span><span>".git"</span><span>)</span>    <span># Returns true if .git is a directory</span>
+</pre></div>
+<p>The question mark&nbsp;<code>?</code><span></span> at the end of <code>directory?</code> is Ruby’s way of indicating a <em>boolean method</em>, that is, a method that returns <code>true</code> or <code>false</code>.</p>
+<p>If there is a <code>.git</code> directory, we’ll deploy the repository by “shelling out” to the underlying system using the <code>system</code> command in order to run <code>git push</code>.<span></span> Opening <code>~/bin/deploy</code> in a text editor and putting everything together gives the proto-script shown in <a href="#code-git_deploy">Listing&nbsp;<span>1</span></a>.</p>
+<div id="code-git_deploy" data-tralics-id="uid8" data-number="1"><p><span>Listing 1:</span> 
+
+<span>Deploying a Git repository.<span></span> <span></span> <code>~/bin/deploy</code></span>
+</p>
+
+<div><pre><span></span><span>#!/usr/bin/env ruby</span>
+
+<span># Deploys a Git repository.</span>
+<span>if</span> <span>File</span><span>.</span><span>directory?</span><span>(</span><span>".git"</span><span>)</span>
+  <span>system</span> <span>"git push"</span>
+<span>end</span>
+</pre></div></div>
+<div id="sec-refactoring_git_deploy" data-tralics-id="uid9" data-number="2.1"><h3><a href="#sec-refactoring_git_deploy"><span>2.1 </span>Refactoring Git deploy</a></h3>
+<p>We can make a small but important refinement to the script in <a href="#code-git_deploy">Listing&nbsp;<span>1</span></a> by introducing an <em>abstraction layer</em> between the repository detection—in this case, detecting the presence of a <code>.git</code> directory—and the rest of our program.<span></span> We can do this by defining a new method called <code>git_repo?</code>:</p>
+<div><pre><span></span><span>def</span> <span>git_repo?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>".git"</span><span>)</span>
+<span>end</span>
+</pre></div>
+<p>Here we’ve included a question mark&nbsp;<code>?</code><span></span> at the end of <code>git_repo?</code><span></span> to follow the Ruby convention discussed in <a href="#sec-a_git_deploy_script">Section&nbsp;<span>2</span></a>, in this case indicating that the method in question returns <code>true</code> if it is a Git repo and <code>false</code> if it isn’t.</p>
+<p><a href="https://en.wikipedia.org/wiki/Code_refactoring" target="_blank" rel="noopener">Refactoring</a> the code in <a href="#code-git_deploy">Listing&nbsp;<span>1</span></a> slightly then gives the equivalent script shown in <a href="#code-git_deploy_refactored">Listing&nbsp;<span>2</span></a>.</p>
+<div id="code-git_deploy_refactored" data-tralics-id="uid10" data-number="2"><p><span>Listing 2:</span> 
+
+<span>A refactored Git deploy script.<span></span> <span></span> <code>~/bin/deploy</code></span>
+</p>
+
+<div><pre><span></span><span>#!/usr/bin/env ruby</span>
+
+<span># Returns true for a Git repository.</span>
+<span>def</span> <span>git_repo?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>".git"</span><span>)</span>
+<span>end</span>
+
+<span># Deploys a Git repository.</span>
+<span>if</span> <span>git_repo?</span>
+  <span>system</span> <span>"git push"</span>
+<span>end</span>
+</pre></div></div><p>Note that the refactored script in <a href="#code-git_deploy_refactored">Listing&nbsp;<span>2</span></a> is actually longer than the script in <a href="#code-git_deploy">Listing&nbsp;<span>1</span></a>.<span></span> This is often the case when adding abstraction layers, but what we lose in brevity we gain in clarity.<span></span> The meaning of</p>
+<div><pre><span></span><span>if</span> <span>git_repo?</span>
+  <span>system</span> <span>"git push"</span>
+<span>end</span>
+</pre></div>
+<p>is immediately understandable in a way that</p>
+<div><pre><span></span><span>if</span> <span>File</span><span>.</span><span>directory?</span><span>(</span><span>".git"</span><span>)</span>
+  <span>system</span> <span>"git push"</span>
+<span>end</span>
+</pre></div>
+<p>is not.<span></span> Moreover, the benefit of adding abstraction layers compounds quickly, as we’ll see in <a href="#sec-completing_the_script">Section&nbsp;<span>3.2</span></a>.</p>
+</div></div>
+<div id="sec-extending_the_script" data-tralics-id="cid3" data-number="3"><h2><a href="#sec-extending_the_script"><span>3 </span>Extending the script</a></h2>
+<p>With the foundational work laid in <a href="#sec-a_git_deploy_script">Section&nbsp;<span>2</span></a>, we’re now in a position to extend <code>deploy</code> by adding support for other kinds of deployable projects.<span></span> Here’s a list of the most common projects I deploy, together with the methods of deployment:</p>
+<ul>
+<li>Static website using <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a>: <code>git push</code> to <code>origin</code> (typically <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a>)
+</li>
+<li>Rails or Sinatra app: <code>git push heroku</code>
+</li>
+<li>Ruby gem: run standard <code>rake release</code>
+</li>
+<li><a href="https://www.softcover.io/" target="_blank" rel="noopener">Softcover</a> book or article: <code>softcover deploy</code>
+</li>
+<li>Git repo: <code>git push</code>
+</li></ul>
+<p>For each project type, we simply need to define an analogue of <code>git_repo?</code> (<a href="#code-git_deploy_refactored">Listing&nbsp;<span>2</span></a>) for that project.<span></span> We can then auto-detect the project type of the current directory and use <code>system</code> to take the corresponding action.</p>
+<p>We can actually accomplish everything we need with just three different Ruby techniques:</p>
+<ul>
+<li><code>File.directory?("name")</code>: As discussed in <a href="#sec-a_git_deploy_script">Section&nbsp;<span>2</span></a>, this returns <code>true</code> if <code>name</code> is a directory and <code>false</code> otherwise.<span></span>
+</li>
+<li><code>File.exist?("name")</code>: Returns <code>true</code> if <code>name</code> exists and <code>false</code> otherwise.<sup id="cha-0_footnote-ref-3"><a href="#cha-0_footnote-3">3</a></sup>
+</li>
+<li><code>Dir["*.gemspec"].any?</code>: Combines <code>Dir</code> from the Ruby Standard Library <code>FileUtils</code> module and <code>any?</code> to return <code>true</code> if there are any files in the current directory matching the pattern <code>"*.gemspec"</code>, i.e., ending in the string <code>".gemspec"</code>.<span></span>
+</li></ul>
+<div id="sec-adding_jekyll_sites_and_softcover_books" data-tralics-id="uid20" data-number="3.1"><h3><a href="#sec-adding_jekyll_sites_and_softcover_books"><span>3.1 </span>Adding Jekyll sites and Softcover books</a></h3>
+<p>One of the easiest ways to determine a project type is looking for a directory characteristic of that project.<span></span> We saw this with the <code>.git</code> directory in <a href="#sec-a_git_deploy_script">Section&nbsp;<span>2</span></a>, and it works for other project types as well.</p>
+<p>For example, every site built using the Jekyll static-site generator (covered in <a href="https://www.learnenough.com/css-and-layout" target="_blank" rel="noopener"><em>Learn Enough CSS &amp; Layout to Be Dangerous</em></a> and used to build this blog) has a directory called <code>_site</code> where the static site is stored.<span></span> This means we can add a <code>jekyll_site?</code> method in analogy with <code>git_repo?</code><span></span> from <a href="#code-git_deploy_refactored">Listing&nbsp;<span>2</span></a>:</p>
+<div><pre><span></span><span>def</span> <span>jekyll_site?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>"_site"</span><span>)</span>
+<span>end</span>
+</pre></div>
+<p>Similarly, <a href="https://manual.softcover.io/book" target="_blank" rel="noopener">Softcover books</a> have a <code>latex_styles</code> directory, so we can define <code>softcover_book?</code> like this:</p>
+<div><pre><span></span><span>def</span> <span>softcover_book?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>"latex_styles"</span><span>)</span>
+<span>end</span>
+</pre></div>
+<p>This suggests an augmented <code>deploy</code> script as shown in <a href="#code-augmented_deploy">Listing&nbsp;<span>3</span></a>.<span></span> Note that services like <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> automatically build Jekyll sites, so in this case a simple <code>git push</code> is all that’s needed to deploy.<span></span> As a result, we can combine Jekyll sites and plain Git repos into one step using the <code>||</code> (“or”) operator.</p>
+<div id="code-augmented_deploy" data-tralics-id="uid21" data-number="3"><p><span>Listing 3:</span> 
+
+<span>An augmented deploy script.<span></span> <span></span> <code>~/bin/deploy</code></span>
+</p>
+
+<div><pre><span></span><span>#!/usr/bin/env ruby</span>
+
+<span># Deploys a project.</span>
+
+<span># Returns true for a Softcover book.</span>
+<span>def</span> <span>softcover_book?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>"latex_styles"</span><span>)</span>
+<span>end</span>
+
+<span># Returns true for a Jekyll site.</span>
+<span>def</span> <span>jekyll?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>"_site"</span><span>)</span>
+<span>end</span>
+
+<span># Returns true for a Git repository.</span>
+<span>def</span> <span>git_repo?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>".git"</span><span>)</span>
+<span>end</span>
+
+<span># The main script.</span>
+<span>if</span> <span>softcover_book?</span>
+  <span>system</span> <span>"softcover deploy"</span>
+<span>elsif</span> <span>jekyll?</span> <span>||</span> <span>git_repo?</span>
+  <span>system</span> <span>"git push"</span>
+<span>end</span>
+</pre></div></div></div>
+<div id="sec-completing_the_script" data-tralics-id="uid22" data-number="3.2"><h3><a href="#sec-completing_the_script"><span>3.2 </span>Completing the script</a></h3>
+<p>The final projects to support in our <code>deploy</code> script are Ruby gems and Ruby web apps (<a href="https://rubyonrails.org/" target="_blank" rel="noopener">Rails</a><sup id="cha-0_footnote-ref-4"><a href="#cha-0_footnote-4">4</a></sup> or <a href="http://sinatrarb.com/" target="_blank" rel="noopener">Sinatra</a><sup id="cha-0_footnote-ref-5"><a href="#cha-0_footnote-5">5</a></sup>).<span></span> For the first case, we’ll use the presence of the <code>gemspec</code> file needed by all Ruby gems, which we can test for as follows:</p>
+<div><pre><span></span><span>require</span> <span>"fileutils"</span>
+<span>Dir</span><span>[</span><span>"*.gemspec"</span><span>].</span><span>any?</span>    <span># Returns true if any files end in ".gemspec"</span>
+</pre></div>
+<p>The first line here is needed because, as noted briefly in <a href="#sec-extending_the_script">Section&nbsp;<span>3</span></a>, <code>Dir</code> is part of the <code>FileUtils</code> module in the Ruby Standard Library.<span></span> This allows us to define a <code>ruby_gem?</code> boolean like this:</p>
+<div><pre><span></span><span># Returns true for a Ruby gem.</span>
+<span>def</span> <span>ruby_gem?</span>
+  <span>Dir</span><span>[</span><span>"*.gemspec"</span><span>].</span><span>any?</span>
+<span>end</span>
+</pre></div>
+<p>Finally, the trickiest test is for a Ruby web app.<span></span> The complication is that most of the things characteristic of Ruby web apps are present in Jekyll projects and Ruby gems as well.<span></span> For example, we could test for the presence of a file called <code>Gemfile</code>, but both Jekyll and Ruby gems have that, too.<span></span> We could test for a <code>test</code> directory, but Ruby gems often have the same thing.<span></span> But what <em>does</em> work is checking for <em>both</em> a <code>Gemfile</code> <em>and</em>&nbsp;(<code>&amp;&amp;</code>) a <code>test</code> directory but <em>not</em>&nbsp;(<code>!</code>) a Ruby gem:</p>
+<div><pre><span></span><span># Returns true for a Ruby-based web app.</span>
+<span># Matches Rails and Sinatra apps.</span>
+<span>def</span> <span>ruby_web_app?</span>
+  <span>File</span><span>.</span><span>exist?</span><span>(</span><span>"Gemfile"</span><span>)</span> <span>&amp;&amp;</span> <span>File</span><span>.</span><span>directory?</span><span>(</span><span>"test"</span><span>)</span> <span>&amp;&amp;</span> <span>!</span><span>ruby_gem?</span>
+<span>end</span>
+</pre></div>
+<p>Putting everything together gives the final <code>deploy</code> script shown in <a href="#code-final_deploy">Listing&nbsp;<span>4</span></a>.<span></span> Making your way through this script is an excellent exercise in reading code (especially if you don’t already know Ruby!).<span></span> Note that the use of abstraction layers (<a href="#sec-refactoring_git_deploy">Section&nbsp;<span>2.1</span></a>) means the main part of the script (at the bottom of the file) is readable even if you don’t understand all the implementation details.</p>
+<div id="code-final_deploy" data-tralics-id="uid25" data-number="4"><p><span>Listing 4:</span> 
+
+<span>The final deploy script.<span></span> <span></span> <code>~/bin/deploy</code></span>
+</p>
+
+<div><pre><span></span><span>#!/usr/bin/env ruby</span>
+<span>require</span> <span>"fileutils"</span>
+
+<span># Deploys a project.</span>
+
+<span># Returns true for a Softcover book.</span>
+<span>def</span> <span>softcover_book?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>"latex_styles"</span><span>)</span>
+<span>end</span>
+
+<span># Returns true for a Ruby gem.</span>
+<span>def</span> <span>ruby_gem?</span>
+  <span>Dir</span><span>[</span><span>"*.gemspec"</span><span>].</span><span>any?</span>
+<span>end</span>
+
+<span># Returns true for a Ruby-based web app.</span>
+<span># Matches Rails and Sinatra apps.</span>
+<span>def</span> <span>ruby_web_app?</span>
+  <span>File</span><span>.</span><span>exist?</span><span>(</span><span>"Gemfile"</span><span>)</span> <span>&amp;&amp;</span> <span>File</span><span>.</span><span>directory?</span><span>(</span><span>"test"</span><span>)</span> <span>&amp;&amp;</span> <span>!</span><span>ruby_gem?</span>
+<span>end</span>
+
+<span># Returns true for a Jekyll site.</span>
+<span>def</span> <span>jekyll?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>"_site"</span><span>)</span>
+<span>end</span>
+
+<span># Returns true for a Git repository.</span>
+<span>def</span> <span>git_repo?</span>
+  <span>File</span><span>.</span><span>directory?</span><span>(</span><span>".git"</span><span>)</span>
+<span>end</span>
+
+<span># The main script.</span>
+<span>if</span> <span>softcover_book?</span>
+  <span>system</span> <span>"softcover deploy"</span>
+<span>elsif</span> <span>ruby_gem?</span>
+  <span>system</span> <span>"rake release"</span>
+<span>elsif</span> <span>ruby_web_app?</span>
+  <span>system</span> <span>"git push heroku"</span>
+<span>elsif</span> <span>jekyll?</span> <span>||</span> <span>git_repo?</span>
+  <span>system</span> <span>"git push"</span>
+<span>end</span>
+</pre></div></div><p>With the code in <a href="#code-final_deploy">Listing&nbsp;<span>4</span></a>, a simple</p>
+<div><pre><span></span><span>$ </span>deploy
+</pre></div>
+<p>is all that’s required to deploy any of the project types supported by the script.<sup id="cha-0_footnote-ref-6"><a href="#cha-0_footnote-6">6</a></sup></p>
+<p>The <code>deploy</code> script in <a href="#code-final_deploy">Listing&nbsp;<span>4</span></a> is already quite useful.<span></span> For my personal setup, I include a few refinements and extensions, including the following:</p>
+<ol>
+<li>Include Rails or Sinatra apps that use <a href="https://rspec.info/" target="_blank" rel="noopener">RSpec</a> for testing (which involves looking for a <code>spec</code> directory in addition to <code>test</code>).<span></span>
+</li>
+<li>Handle Jekyll sites that are built locally as well as those that are built on GitHub Pages (<a href="#aside-forgetting">Box&nbsp;<span>1</span></a>).<span></span>
+</li>
+<li>For all projects, automatically pull Git repos before pushing.<span></span>
+</li>
+<li>Automatically push Git repos for non-Git-only projects (e.g., do a <code>git push</code> before deploying a Rails app with <code>git push heroku</code>).<span></span>
+</li></ol>
+<p>To implement 3 &amp; 4, my standard <code>deploy</code> script includes a <code>ship</code> method as shown in <a href="#code-ship">Listing&nbsp;<span>5</span></a>, which replaces the <code>system</code> command from <a href="#code-final_deploy">Listing&nbsp;<span>4</span></a>.</p>
+<div id="code-ship" data-tralics-id="uid31" data-number="5"><p><span>Listing 5:</span> 
+
+<span>Defining a <code>ship</code> method to sync Git repos automatically.<span></span> <span></span> <code>~/bin/deploy</code></span>
+</p>
+
+<div><pre><span></span><span>#!/usr/bin/env ruby</span>
+<span>require</span> <span>"fileutils"</span>
+
+<span># Deploys a project.</span>
+<span>.</span>
+<span>.</span>
+<span>.</span>
+<span><span># Ships a product.</span>
+</span><span><span>def</span> <span>ship</span><span>(</span><span>command</span><span>)</span>
+</span>  <span>pull</span> <span>=</span> <span>"git pull"</span>
+  <span>push</span> <span>=</span> <span>"git push"</span>
+  <span>full_command</span> <span>=</span> <span>command</span> <span>==</span> <span>push</span> <span>?</span> <span>"</span><span>#{</span><span>pull</span><span>}</span><span> &amp;&amp; </span><span>#{</span><span>command</span><span>}</span><span>"</span> <span>:</span>
+                                   <span>"</span><span>#{</span><span>pull</span><span>}</span><span> &amp;&amp; </span><span>#{</span><span>push</span><span>}</span><span> &amp;&amp; </span><span>#{</span><span>command</span><span>}</span><span>"</span>
+  <span>puts</span>   <span>full_command</span>
+  <span>system</span> <span>full_command</span>
+<span>end</span>
+
+<span># The main script.</span>
+<span>if</span> <span>softcover_book?</span>
+<span>  <span>ship</span> <span>"softcover deploy"</span>
+</span><span>elsif</span> <span>ruby_gem?</span>
+<span>  <span>ship</span> <span>"rake release"</span>
+</span><span>elsif</span> <span>ruby_web_app?</span>
+<span>  <span>ship</span> <span>"git push heroku"</span>
+</span><span>elsif</span> <span>jekyll?</span> <span>||</span> <span>git_repo?</span>
+<span>  <span>ship</span> <span>"git push"</span>
+</span><span>end</span>
+</pre></div></div><p>With the ideas in this post (and maybe the <a href="https://www.learnenough.com/all-access" target="_blank" rel="noopener">Learn Enough All Access subscription</a>), you’ll be in a good position to add these enhancements to your own version, as well as to write and extend utility scripts of your own.<span></span> Good luck!</p>
+<div id="aside-forgetting" data-tralics-id="uid32" data-number="1"><p><span>Box 1.</span> 
+
+<span>The power of forgetting.</span></p>
+<p>The present site actually belongs to the final refinement discussed in the text: it’s a Jekyll site built locally and then uploaded in its entirety as static HTML.<span></span> The corresponding step in <code>deploy</code> involves detecting the presence of a <code>docs</code> directory, which is where GitHub Pages looks for a statically generated site.<span></span> If <code>File.directory?("docs")</code> is true, the <code>deploy</code> builds the site locally and then initiates the upload to GitHub Pages.</p>
+<p>The amazing thing is that <em>I had forgotten that I did this.</em><span></span> I didn’t remember if <a href="https://news.learnenough.com/" target="_blank" rel="noopener">news.learnenough.com</a> was built locally or on GitHub Pages.<span></span> Being able to forget such details is the entire purpose of the <code>deploy</code> script; rather than keeping track of the exact steps to deploy a particular project—in this case, a static site built using Jekyll—I can just type <code>deploy</code> and be confident that the script will take care of the details for me.</p>
+
+</div></div></div><div id="cha-0_footnotes">
+    
+    <p><a href="#cha-0_footnote-ref-2">2.</a> The leading dot in <code>.git</code> is what makes it hidden.<span></span> This is the general convention for Unix systems, including Linux and macOS.</p>
+    <p><a href="#cha-0_footnote-ref-3">3.</a> We could actually use <code>File.exist?(".git")</code> for the <code>.git</code> directory instead of <code>File.directory?(".git")</code>, but this would yield a false positive in the rare <a href="https://en.wikipedia.org/wiki/Edge_case" target="_blank" rel="noopener">edge case</a> of a project with a <em>file</em> (but not a directory) called <code>.git</code>.<span></span> In general, it’s a good idea to use the most specific criterion available in order to avoid such edge cases.</p>
+    
+    
+    
+  </div>
+    </main>
+
+  </article>
+</div></div>
+  </div>
+</body>
+</html>

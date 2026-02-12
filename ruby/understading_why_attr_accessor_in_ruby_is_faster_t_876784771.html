@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Understading why attr_accessor in Ruby is faster than a regular method</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Understading why attr_accessor in Ruby is faster than a regular method</h1>
+    <p><strong>URL:</strong> <a href="https://dmitrytsepelev.dev/attr-accessor-in-ruby">https://dmitrytsepelev.dev/attr-accessor-in-ruby</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876784771</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article itemscope="" itemtype="http://schema.org/BlogPosting">
+  
+
+  <div itemprop="articleBody">
+    <p><em>Setters</em> and <em>getters</em> (or <em>accessors</em>) are very common in various object–oriented programming languages. Some languages have shortcuts to define them, others require programmers to write them by hand (hi, Java!). Ruby does have these shortcuts: <code>attr_reader</code> generates getters, <code>attr_writer</code> generates setter, and, finally, <code>attr_accessor</code> generates both:</p>
+
+<div><pre><code><span>class</span> <span>User</span>
+  <span>attr_accessor</span> <span>:email</span>
+
+  <span># the same functionality:</span>
+  <span>def</span> <span>email</span>
+    <span>@email</span>
+  <span>end</span>
+
+  <span>def</span> <span>email</span><span>=</span><span>(</span><span>value</span><span>)</span>
+    <span>@email</span> <span>=</span> <span>value</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+      <h2 id="writing-attr_accessor-by-hand">
+        
+        
+          Writing attr_accessor by hand <a href="#writing-attr_accessor-by-hand"></a>
+        
+        
+      </h2>
+    
+
+<p>Sometimes people who explain metaprogramming use <code>attr_accessor</code> as the example. It’s a convenient way to explain the concept: <code>attr_accessor</code> is a method that sits in the <em>singleton class</em> and, when called, defines methods dynamically:</p>
+
+<div><pre><code><span>module</span> <span>MyAttrAccessor</span>
+  <span>def</span> <span>my_attr_accessor</span><span>(</span><span>attr_name</span><span>)</span>
+    <span>my_attr_reader</span><span>(</span><span>attr_name</span><span>)</span>
+    <span>my_attr_writer</span><span>(</span><span>attr_name</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>my_attr_reader</span><span>(</span><span>attr_name</span><span>)</span>
+    <span>instance_variable_name</span> <span>=</span> <span>attr_to_variable_name</span><span>(</span><span>attr_name</span><span>)</span>
+
+    <span>define_method</span><span>(</span><span>attr_name</span><span>)</span> <span>do</span>
+      <span>instance_variable_get</span><span>(</span><span>instance_variable_name</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>def</span> <span>my_attr_writer</span><span>(</span><span>attr_name</span><span>)</span>
+    <span>instance_variable_name</span> <span>=</span> <span>attr_to_variable_name</span><span>(</span><span>attr_name</span><span>)</span>
+
+    <span>define_method</span><span>(</span><span>"</span><span>#{</span><span>attr_name</span><span>}</span><span>="</span><span>)</span> <span>do</span> <span>|</span><span>value</span><span>|</span>
+      <span>instance_variable_set</span><span>(</span><span>instance_variable_name</span><span>,</span> <span>value</span><span>)</span>
+    <span>end</span>
+  <span>end</span>
+
+  <span>private</span>
+
+  <span>def</span> <span>attr_to_variable_name</span><span>(</span><span>attr_name</span><span>)</span>
+    <span>"@</span><span>#{</span><span>attr_name</span><span>}</span><span>"</span>
+  <span>end</span>
+<span>end</span>
+
+<span>Object</span><span>.</span><span>extend</span><span>(</span><span>MyAttrAccessor</span><span>)</span>
+</code></pre></div>
+      <h2 id="a-couple-of-benchmarks">
+        
+        
+          A couple of benchmarks <a href="#a-couple-of-benchmarks"></a>
+        
+        
+      </h2>
+    
+
+<p>One day I wondered if <code>attr_accessor</code> is <em>just a shortcut</em> or it has a different implementation from what we’ve seen above. Before digging into the Ruby source code, let’s write a benchmark to compare <code>attr_accessor</code> with methods written by hand:</p>
+
+<div><pre><code><span>require</span> <span>"benchmark"</span>
+
+<span>class</span> <span>NativeAccessor</span>
+  <span>attr_accessor</span> <span>:value</span>
+<span>end</span>
+
+<span>class</span> <span>CustomAccessor</span>
+  <span>def</span> <span>value</span>
+    <span>@value</span>
+  <span>end</span>
+
+  <span>def</span> <span>value</span><span>=</span><span>(</span><span>v</span><span>)</span>
+    <span>@value</span> <span>=</span> <span>v</span>
+  <span>end</span>
+<span>end</span>
+
+<span>n</span> <span>=</span> <span>10_000_000</span>
+
+<span>Benchmark</span><span>.</span><span>bm</span> <span>do</span> <span>|</span><span>x</span><span>|</span>
+  <span>na</span> <span>=</span> <span>NativeAccessor</span><span>.</span><span>new</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"attr_writer"</span><span>)</span> <span>do</span>
+    <span>n</span><span>.</span><span>times</span> <span>{</span> <span>|</span><span>i</span><span>|</span> <span>na</span><span>.</span><span>value</span> <span>=</span> <span>i</span> <span>}</span>
+  <span>end</span>
+
+  <span>ca</span> <span>=</span> <span>CustomAccessor</span><span>.</span><span>new</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"value="</span><span>)</span> <span>do</span>
+    <span>n</span><span>.</span><span>times</span> <span>{</span> <span>|</span><span>i</span><span>|</span> <span>ca</span><span>.</span><span>value</span> <span>=</span> <span>i</span> <span>}</span>
+  <span>end</span>
+<span>end</span>
+
+<span>Benchmark</span><span>.</span><span>bm</span> <span>do</span> <span>|</span><span>x</span><span>|</span>
+  <span>na</span> <span>=</span> <span>NativeAccessor</span><span>.</span><span>new</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"attr_reader"</span><span>)</span> <span>do</span>
+    <span>n</span><span>.</span><span>times</span> <span>{</span> <span>|</span><span>i</span><span>|</span> <span>na</span><span>.</span><span>value</span> <span>}</span>
+  <span>end</span>
+
+  <span>ca</span> <span>=</span> <span>CustomAccessor</span><span>.</span><span>new</span>
+  <span>x</span><span>.</span><span>report</span><span>(</span><span>"value"</span><span>)</span> <span>do</span>
+    <span>n</span><span>.</span><span>times</span> <span>{</span> <span>|</span><span>i</span><span>|</span> <span>ca</span><span>.</span><span>value</span> <span>}</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+<p>Here are the results:</p>
+
+<div><pre><code>                 user     system      total        real
+attr_writer  0.316426   0.002821   0.319247 <span>(</span>  0.319398<span>)</span>
+<span>value</span><span>=</span>       0.424947   0.004253   0.429200 <span>(</span>  0.429279<span>)</span>
+
+                 user     system      total        real
+attr_reader  0.292869   0.002937   0.295806 <span>(</span>  0.295810<span>)</span>
+value        0.349404   0.000952   0.350356 <span>(</span>  0.350363<span>)</span>
+</code></pre></div>
+
+<p>Writer is 34% faster, while reader shows 18% better performance. Why results are so different?</p>
+      <h2 id="going-down-to-the-bytecode">
+        
+        
+          Going down to the bytecode <a href="#going-down-to-the-bytecode"></a>
+        
+        
+      </h2>
+    
+
+<p>Let’s take a look at the bytecode for both implementations. Lets’ start with a <code>CustomAccessor</code> class:</p>
+
+<div><pre><code><span>code</span> <span>=</span> <span>&lt;&lt;~</span><span>RUBY</span><span>
+  class CustomAccessor
+    def value
+      @value
+    end
+
+    def value=(v)
+      @value = v
+    end
+  end
+
+  ca = CustomAccessor.new
+  ca.value = 1
+  ca.value
+</span><span>RUBY</span>
+
+<span>puts</span> <span>RubyVM</span><span>::</span><span>InstructionSequence</span><span>.</span><span>disasm</span><span>(</span><span>RubyVM</span><span>::</span><span>InstructionSequence</span><span>.</span><span>compile</span><span>(</span><span>code</span><span>))</span>
+</code></pre></div>
+
+<p>Here is the bytecode:</p>
+
+<div><pre><code>== disasm: #&lt;ISeq:&lt;compiled&gt;@&lt;compiled&gt;:1 (1,0)-(13,8)&gt; (catch: FALSE)
+local table (size: 1, argc: 0 [opts: 0, rest: -1, post: 0, block: -1, kw: -1@-1, kwrest: -1])
+[ 1] ca@0
+0000 putspecialobject                       3                         (   1)[Li]
+0002 putnil
+0003 defineclass                            :CustomAccessor, &lt;class:CustomAccessor&gt;, 0
+0007 pop
+0008 opt_getinlinecache                     17, &lt;is:0&gt;                (  11)[Li]
+0011 putobject                              true
+0013 getconstant                            :CustomAccessor
+0015 opt_setinlinecache                     &lt;is:0&gt;
+0017 opt_send_without_block                 &lt;calldata!mid:new, argc:0, ARGS_SIMPLE&gt;
+0019 setlocal_WC_0                          ca@0
+0021 getlocal_WC_0                          ca@0                      (  12)[Li]
+0023 putobject_INT2FIX_1_
+0024 opt_send_without_block                 &lt;calldata!mid:value=, argc:1, ARGS_SIMPLE&gt;
+0026 pop
+0027 getlocal_WC_0                          ca@0                      (  13)[Li]
+0029 opt_send_without_block                 &lt;calldata!mid:value, argc:0, ARGS_SIMPLE&gt;
+0031 leave
+
+== disasm: #&lt;ISeq:&lt;class:CustomAccessor&gt;@&lt;compiled&gt;:1 (1,0)-(9,3)&gt; (catch: FALSE)
+0000 definemethod                           :value, value             (   2)[LiCl]
+0003 definemethod                           :value=, value=           (   6)[Li]
+0006 putobject                              :value=
+0008 leave                                                            (   9)[En]
+
+== disasm: #&lt;ISeq:value@&lt;compiled&gt;:2 (2,2)-(4,5)&gt; (catch: FALSE)
+0000 getinstancevariable                    :@value, &lt;is:0&gt;           (   3)[LiCa]
+0003 leave                                                            (   4)[Re]
+
+== disasm: #&lt;ISeq:value=@&lt;compiled&gt;:6 (6,2)-(8,5)&gt; (catch: FALSE)
+local table (size: 1, argc: 1 [opts: 0, rest: -1, post: 0, block: -1, kw: -1@-1, kwrest: -1])
+[ 1] v@0&lt;Arg&gt;
+0000 getlocal_WC_0                          v@0                       (   7)[LiCa]
+0002 dup
+0003 setinstancevariable                    :@value, &lt;is:0&gt;
+0006 leave                                                            (   8)[Re]
+</code></pre></div>
+
+<p>The first section represents the top level program, and second one stands for the class body. Third and forth define the bytecode for our custom setter and getter. Let’s do the same for the <code>attr_accessor</code>:</p>
+
+<div><pre><code><span>code</span> <span>=</span> <span>&lt;&lt;~</span><span>RUBY</span><span>
+  class NativeAccessor
+    attr_accessor :value
+  end
+
+  na = NativeAccessor.new
+  na.value = 1
+  na.value
+</span><span>RUBY</span>
+
+<span>puts</span> <span>RubyVM</span><span>::</span><span>InstructionSequence</span><span>.</span><span>disasm</span><span>(</span><span>RubyVM</span><span>::</span><span>InstructionSequence</span><span>.</span><span>compile</span><span>(</span><span>code</span><span>))</span>
+</code></pre></div>
+
+<p>Here’s the result:</p>
+
+<div><pre><code>== disasm: #&lt;ISeq:&lt;compiled&gt;@&lt;compiled&gt;:1 (1,0)-(7,8)&gt; (catch: FALSE)
+local table (size: 1, argc: 0 [opts: 0, rest: -1, post: 0, block: -1, kw: -1@-1, kwrest: -1])
+[ 1] na@0
+0000 putspecialobject                       3                         (   1)[Li]
+0002 putnil
+0003 defineclass                            :NativeAccessor, &lt;class:NativeAccessor&gt;, 0
+0007 pop
+0008 opt_getinlinecache                     17, &lt;is:0&gt;                (   5)[Li]
+0011 putobject                              true
+0013 getconstant                            :NativeAccessor
+0015 opt_setinlinecache                     &lt;is:0&gt;
+0017 opt_send_without_block                 &lt;calldata!mid:new, argc:0, ARGS_SIMPLE&gt;
+0019 setlocal_WC_0                          na@0
+0021 getlocal_WC_0                          na@0                      (   6)[Li]
+0023 putobject_INT2FIX_1_
+0024 opt_send_without_block                 &lt;calldata!mid:value=, argc:1, ARGS_SIMPLE&gt;
+0026 pop
+0027 getlocal_WC_0                          na@0                      (   7)[Li]
+0029 opt_send_without_block                 &lt;calldata!mid:value, argc:0, ARGS_SIMPLE&gt;
+0031 leave
+
+== disasm: #&lt;ISeq:&lt;class:NativeAccessor&gt;@&lt;compiled&gt;:1 (1,0)-(3,3)&gt; (catch: FALSE)
+0000 putself                                                          (   2)[LiCl]
+0001 putobject                              :value
+0003 opt_send_without_block                 &lt;calldata!mid:attr_accessor, argc:1, FCALL|ARGS_SIMPLE&gt;
+0005 leave                                                            (   3)[En]
+</code></pre></div>
+
+<p>The only difference is that <code>attr_accessor</code> does not generate any bytecode! What does it mean? It means that we have to go to the Ruby source code!</p>
+      <h2 id="how-vm-executes-attr_reader-and-attr_writer">
+        
+        
+          How VM executes attr_reader and attr_writer <a href="#how-vm-executes-attr_reader-and-attr_writer"></a>
+        
+        
+      </h2>
+    
+
+<p>Let’s find out what happens when <code>attr_accessor</code> method is called. Turns out that this method is a C method that is added to the <code>Module</code> <a href="https://github.com/ruby/ruby/blob/ac75c710cccf7adc5b12edc8d18263fef9ab3207/object.c#L4388">here</a>:</p>
+
+<div><pre><code><span>rb_define_method</span><span>(</span><span>rb_cModule</span><span>,</span> <span>"attr_accessor"</span><span>,</span> <span>rb_mod_attr_accessor</span><span>,</span> <span>-</span><span>1</span><span>);</span>
+</code></pre></div>
+
+<p>The <code>rb_mod_attr_accessor</code> function is defined <a href="https://github.com/ruby/ruby/blob/ac75c710cccf7adc5b12edc8d18263fef9ab3207/object.c#L2210">here</a>:</p>
+
+<div><pre><code><span>static</span> <span>VALUE</span>
+<span>rb_mod_attr_accessor</span><span>(</span><span>int</span> <span>argc</span><span>,</span> <span>VALUE</span> <span>*</span><span>argv</span><span>,</span> <span>VALUE</span> <span>klass</span><span>)</span>
+<span>{</span>
+  <span>int</span> <span>i</span><span>;</span>
+  <span>VALUE</span> <span>names</span> <span>=</span> <span>rb_ary_new2</span><span>(</span><span>argc</span> <span>*</span> <span>2</span><span>);</span>
+
+  <span>for</span> <span>(</span><span>i</span><span>=</span><span>0</span><span>;</span> <span>i</span><span>&lt;</span><span>argc</span><span>;</span> <span>i</span><span>++</span><span>)</span> <span>{</span>
+    <span>ID</span> <span>id</span> <span>=</span> <span>id_for_attr</span><span>(</span><span>klass</span><span>,</span> <span>argv</span><span>[</span><span>i</span><span>]);</span>
+
+    <span>rb_attr</span><span>(</span><span>klass</span><span>,</span> <span>id</span><span>,</span> <span>TRUE</span><span>,</span> <span>TRUE</span><span>,</span> <span>TRUE</span><span>);</span>
+    <span>rb_ary_push</span><span>(</span><span>names</span><span>,</span> <span>ID2SYM</span><span>(</span><span>id</span><span>));</span>
+    <span>rb_ary_push</span><span>(</span><span>names</span><span>,</span> <span>ID2SYM</span><span>(</span><span>rb_id_attrset</span><span>(</span><span>id</span><span>)));</span>
+  <span>}</span>
+  <span>return</span> <span>names</span><span>;</span>
+<span>}</span>
+</code></pre></div>
+
+<p>It takes a list of names (in <code>argv</code>) and defines <code>rb_attr</code> in the specified class (<code>klass</code>) for each one. The function called <code>rb_attr</code> <a href="https://github.com/ruby/ruby/blob/80ad0e751f4c9aa13a581b61b348c34ede7f3956/vm_method.c#L1712">contains</a> the actual definition:</p>
+
+<div><pre><code><span>void</span>
+<span>rb_attr</span><span>(</span><span>VALUE</span> <span>klass</span><span>,</span> <span>ID</span> <span>id</span><span>,</span> <span>int</span> <span>read</span><span>,</span> <span>int</span> <span>write</span><span>,</span> <span>int</span> <span>ex</span><span>)</span>
+<span>{</span>
+  <span>ID</span> <span>attriv</span><span>;</span>
+  <span>rb_method_visibility_t</span> <span>visi</span><span>;</span>
+  <span>const</span> <span>rb_execution_context_t</span> <span>*</span><span>ec</span> <span>=</span> <span>GET_EC</span><span>();</span>
+  <span>const</span> <span>rb_cref_t</span> <span>*</span><span>cref</span> <span>=</span> <span>rb_vm_cref_in_context</span><span>(</span><span>klass</span><span>,</span> <span>klass</span><span>);</span>
+
+  <span>if</span> <span>(</span><span>!</span><span>ex</span> <span>||</span> <span>!</span><span>cref</span><span>)</span> <span>{</span>
+    <span>visi</span> <span>=</span> <span>METHOD_VISI_PUBLIC</span><span>;</span>
+  <span>}</span> <span>else</span> <span>{</span>
+    <span>switch</span> <span>(</span><span>vm_scope_visibility_get</span><span>(</span><span>ec</span><span>))</span> <span>{</span>
+    <span>case</span> <span>METHOD_VISI_PRIVATE</span><span>:</span>
+      <span>if</span> <span>(</span><span>vm_scope_module_func_check</span><span>(</span><span>ec</span><span>))</span> <span>{</span>
+        <span>rb_warning</span><span>(</span><span>"attribute accessor as module_function"</span><span>);</span>
+      <span>}</span>
+      <span>visi</span> <span>=</span> <span>METHOD_VISI_PRIVATE</span><span>;</span>
+      <span>break</span><span>;</span>
+    <span>case</span> <span>METHOD_VISI_PROTECTED</span><span>:</span>
+      <span>visi</span> <span>=</span> <span>METHOD_VISI_PROTECTED</span><span>;</span>
+      <span>break</span><span>;</span>
+    <span>default:</span>
+      <span>visi</span> <span>=</span> <span>METHOD_VISI_PUBLIC</span><span>;</span>
+      <span>break</span><span>;</span>
+    <span>}</span>
+  <span>}</span>
+
+  <span>attriv</span> <span>=</span> <span>rb_intern_str</span><span>(</span><span>rb_sprintf</span><span>(</span><span>"@%"</span><span>PRIsVALUE</span><span>,</span> <span>rb_id2str</span><span>(</span><span>id</span><span>)));</span>
+  <span>if</span> <span>(</span><span>read</span><span>)</span> <span>{</span>
+    <span>rb_add_method</span><span>(</span><span>klass</span><span>,</span> <span>id</span><span>,</span> <span>VM_METHOD_TYPE_IVAR</span><span>,</span> <span>(</span><span>void</span> <span>*</span><span>)</span><span>attriv</span><span>,</span> <span>visi</span><span>);</span>
+  <span>}</span>
+  <span>if</span> <span>(</span><span>write</span><span>)</span> <span>{</span>
+    <span>rb_add_method</span><span>(</span><span>klass</span><span>,</span> <span>rb_id_attrset</span><span>(</span><span>id</span><span>),</span> <span>VM_METHOD_TYPE_ATTRSET</span><span>,</span> <span>(</span><span>void</span> <span>*</span><span>)</span><span>attriv</span><span>,</span> <span>visi</span><span>);</span>
+  <span>}</span>
+<span>}</span>
+</code></pre></div>
+
+<p>This method does quite a lot: sets up visibility, remembers execution context and, most importantly, adds methods for setter and getter. This behaviour is controlled by <code>read</code> and <code>write</code> arguments, <code>attr_accessor</code> passes both while <code>attr_reader</code> and <code>attr_reader</code> set one of these flags to false.</p>
+
+<p>We are going to stop here, because <code>rb_add_method</code> (which is defined <a href="https://github.com/ruby/ruby/blob/80ad0e751f4c9aa13a581b61b348c34ede7f3956/vm_method.c#L1094">here</a>) is used for adding all methods to classes. However, let’s understand the meaning of the third argument (<code>VM_METHOD_TYPE_IVAR</code> and <code>VM_METHOD_TYPE_ATTRSET</code>) passed to it. Ruby has 12 method <a href="https://github.com/ruby/ruby/blob/e89d80702bd98a8276243a7fcaa2a158b3bfb659/method.h#L109">types</a> and turns out that setters and getters have their own type!</p>
+
+<p>This type is used when bytecode is <a href="https://github.com/ruby/ruby/blob/5f10bd634fb6ae8f74a4ea730176233b0ca96954/vm_eval.c#L211">executed</a>:</p>
+
+<div><pre><code><span>static</span> <span>VALUE</span>
+<span>vm_call0_body</span><span>(</span><span>rb_execution_context_t</span> <span>*</span><span>ec</span><span>,</span> <span>struct</span> <span>rb_calling_info</span> <span>*</span><span>calling</span><span>,</span> <span>const</span> <span>VALUE</span> <span>*</span><span>argv</span><span>)</span>
+<span>{</span>
+  <span>// ...</span>
+  <span>switch</span> <span>(</span><span>vm_cc_cme</span><span>(</span><span>cc</span><span>)</span><span>-&gt;</span><span>def</span><span>-&gt;</span><span>type</span><span>)</span> <span>{</span>
+    <span>// ...</span>
+    <span>case</span> <span>VM_METHOD_TYPE_ATTRSET</span><span>:</span>
+      <span>vm_call_check_arity</span><span>(</span><span>calling</span><span>,</span> <span>1</span><span>,</span> <span>argv</span><span>);</span>
+      <span>VM_CALL_METHOD_ATTR</span><span>(</span><span>ret</span><span>,</span>
+                          <span>rb_ivar_set</span><span>(</span><span>calling</span><span>-&gt;</span><span>recv</span><span>,</span> <span>vm_cc_cme</span><span>(</span><span>cc</span><span>)</span><span>-&gt;</span><span>def</span><span>-&gt;</span><span>body</span><span>.</span><span>attr</span><span>.</span><span>id</span><span>,</span> <span>argv</span><span>[</span><span>0</span><span>]),</span>
+                          <span>(</span><span>void</span><span>)</span><span>0</span><span>);</span>
+      <span>goto</span> <span>success</span><span>;</span>
+    <span>case</span> <span>VM_METHOD_TYPE_IVAR</span><span>:</span>
+      <span>vm_call_check_arity</span><span>(</span><span>calling</span><span>,</span> <span>0</span><span>,</span> <span>argv</span><span>);</span>
+      <span>VM_CALL_METHOD_ATTR</span><span>(</span><span>ret</span><span>,</span>
+                          <span>rb_attr_get</span><span>(</span><span>calling</span><span>-&gt;</span><span>recv</span><span>,</span> <span>vm_cc_cme</span><span>(</span><span>cc</span><span>)</span><span>-&gt;</span><span>def</span><span>-&gt;</span><span>body</span><span>.</span><span>attr</span><span>.</span><span>id</span><span>),</span>
+                          <span>(</span><span>void</span><span>)</span><span>0</span><span>);</span>
+      <span>goto</span> <span>success</span><span>;</span>
+  <span>}</span>
+<span>}</span>
+</code></pre></div>
+
+<p>This is the reason why native accessors are faster: they do not execute any bytecode so there is no overhead on setting a context for the execution, it’s just a plain C call. In opposite, when we define a regular method (using <code>def</code> or <code>define_method</code>), a bytecode will be generated and <code>VM_METHOD_TYPE_BMETHOD</code> will be used as the method type.</p>
+
+  </div>
+</article></div>
+  </div>
+</body>
+</html>

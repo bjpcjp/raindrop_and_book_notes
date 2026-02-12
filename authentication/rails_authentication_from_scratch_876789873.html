@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Rails Authentication From Scratch</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Rails Authentication From Scratch</h1>
+    <p><strong>URL:</strong> <a href="https://stevepolito.design/blog/rails-authentication-from-scratch">https://stevepolito.design/blog/rails-authentication-from-scratch</a></p>
+    <p><strong>Tags:</strong> authentication, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876789873</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+                
+                <p>If you’re like me then you probably take Devise for granted because you’re too intimidated to roll your own authentication system. As powerful as Devise is, it’s not perfect. There are plenty of cases where I’ve reached for it only to end up constrained by its features and design, and wished I could customize it exactly to my liking.</p>
+
+<p>Fortunately, Rails gives you all the tools you need to roll your own authentication system from scratch without needing to depend on a gem. The challenge is just knowing how to account for edge cases while being cognizant of security and best practices.</p>
+
+<h2 id="previous-versions">Previous Versions            <a href="#previous-versions" aria-label="Previous Versions">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<p>This guide is continuously updated to account for best practices. You can <a href="https://github.com/stevepolitodesign/rails-authentication-from-scratch/releases">view previous releases here</a>.</p>
+
+<h2 id="step-1-build-user-model">Step 1: Build User Model            <a href="#step-1-build-user-model" aria-label="Step 1: Build User Model">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Generate User model.</p>
+
+    <pre><code>rails g model User email:string
+</code></pre>
+
+    <pre><code># db/migrate/[timestamp]_create_users.rb
+class CreateUsers &lt; ActiveRecord::Migration[6.1]
+  def change
+    create_table :users do |t|
+      t.string :email, null: false
+
+      t.timestamps
+    end
+
+    add_index :users, :email, unique: true
+  end
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Run migrations.</p>
+
+    <pre><code>rails db:migrate
+</code></pre>
+  </li>
+  <li>
+    <p>Add validations and callbacks.</p>
+
+    <pre><code># app/models/user.rb
+class User &lt; ApplicationRecord
+  before_save :downcase_email
+
+  validates :email, format: {with: URI::MailTo::EMAIL_REGEXP}, presence: true, uniqueness: true
+
+  private
+
+  def downcase_email
+    self.email = email.downcase
+  end
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>We prevent empty values from being saved into the email column through a <code>null: false</code> constraint in addition to the <a href="https://guides.rubyonrails.org/active_record_validations.html#presence">presence</a> validation.</li>
+    <li>We enforce unique email addresses at the database level through <code>add_index :users, :email, unique: true</code> in addition to a <a href="https://guides.rubyonrails.org/active_record_validations.html#uniqueness">uniqueness</a> validation.</li>
+    <li>We ensure all emails are valid through a <a href="https://guides.rubyonrails.org/active_record_validations.html#format">format</a> validation.</li>
+    <li>We save all emails to the database in a downcase format via a <a href="https://api.rubyonrails.org/v6.1.4/classes/ActiveRecord/Callbacks/ClassMethods.html#method-i-before_save">before_save</a> callback such that the values are saved in a consistent format.</li>
+    <li>We use <a href="https://ruby-doc.org/stdlib-3.0.0/libdoc/uri/rdoc/URI/MailTo.html">URI::MailTo::EMAIL_REGEXP</a> that comes with Ruby to validate that the email address is properly formatted.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-2-add-confirmation-and-password-columns-to-users-table">Step 2: Add Confirmation and Password Columns to Users Table            <a href="#step-2-add-confirmation-and-password-columns-to-users-table" aria-label="Step 2: Add Confirmation and Password Columns to Users Table">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Create migration.</p>
+
+    <pre><code>rails g migration add_confirmation_and_password_columns_to_users confirmed_at:datetime password_digest:string
+</code></pre>
+  </li>
+  <li>
+    <p>Update the migration.</p>
+
+    <pre><code># db/migrate/[timestamp]_add_confirmation_and_password_columns_to_users.rb
+class AddConfirmationAndPasswordColumnsToUsers &lt; ActiveRecord::Migration[6.1]
+  def change
+    add_column :users, :confirmed_at, :datetime
+    add_column :users, :password_digest, :string, null: false
+  end
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>The <code>confirmed_at</code> column will be set when a user confirms their account. This will help us determine who has confirmed their account and who has not.</li>
+        <li>The <code>password_digest</code> column will store a hashed version of the user’s password. This is provided by the <a href="https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html#method-i-has_secure_password">has_secure_password</a> method.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Run migrations.</p>
+
+    <pre><code>rails db:migrate
+</code></pre>
+  </li>
+  <li>
+    <p>Enable and install BCrypt.</p>
+
+    <p>This is needed to use <code>has_secure_password</code>.</p>
+
+    <pre><code># Gemfile
+gem 'bcrypt', '~&gt; 3.1.7'
+</code></pre>
+
+    <pre><code>bundle install
+</code></pre>
+  </li>
+  <li>
+    <p>Update the User Model.</p>
+
+    <pre><code># app/models/user.rb
+class User &lt; ApplicationRecord
+  CONFIRMATION_TOKEN_EXPIRATION = 10.minutes
+
+  has_secure_password
+
+  before_save :downcase_email
+
+  validates :email, format: {with: URI::MailTo::EMAIL_REGEXP}, presence: true, uniqueness: true
+
+  def confirm!
+    update_columns(confirmed_at: Time.current)
+  end
+
+  def confirmed?
+    confirmed_at.present?
+  end
+
+  def generate_confirmation_token
+    signed_id expires_in: CONFIRMATION_TOKEN_EXPIRATION, purpose: :confirm_email
+  end
+
+  def unconfirmed?
+    !confirmed?
+  end
+
+  private
+
+  def downcase_email
+    self.email = email.downcase
+  end
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>The <code>has_secure_password</code> method is added to give us an <a href="https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html#method-i-has_secure_password">API</a> to work with the <code>password_digest</code> column.</li>
+        <li>The <code>confirm!</code> method will be called when a user confirms their email address. We still need to build this feature.</li>
+        <li>The <code>confirmed?</code> and <code>unconfirmed?</code> methods allow us to tell whether a user has confirmed their email address or not.</li>
+        <li>The <code>generate_confirmation_token</code> method creates a <a href="https://api.rubyonrails.org/classes/ActiveRecord/SignedId.html#method-i-signed_id">signed_id</a> that will be used to securely identify the user. For added security, we ensure that this ID will expire in 10 minutes (this can be controlled with the <code>CONFIRMATION_TOKEN_EXPIRATION</code> constant) and give it an explicit purpose of <code>:confirm_email</code>. This will be useful when we build the confirmation mailer.</li>
+      </ul>
+    </blockquote>
+  </li>
+</ol>
+
+<h2 id="step-3-create-sign-up-pages">Step 3: Create Sign Up Pages            <a href="#step-3-create-sign-up-pages" aria-label="Step 3: Create Sign Up Pages">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Create a simple home page since we’ll need a place to redirect users to after they sign up.</p>
+
+    <pre><code>rails g controller StaticPages home
+</code></pre>
+  </li>
+  <li>
+    <p>Create Users Controller.</p>
+
+    <pre><code>rails g controller Users
+</code></pre>
+
+    <pre><code># app/controllers/users_controller.rb
+class UsersController &lt; ApplicationController
+
+  def create
+    @user = User.new(user_params)
+    if @user.save
+      redirect_to root_path, notice: "Please check your email for confirmation instructions."
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def new
+    @user = User.new
+  end
+
+  private
+
+  def user_params
+    params.require(:user).permit(:email, :password, :password_confirmation)
+  end
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Build sign-up form.</p>
+
+    <pre><code>&lt;!-- app/views/shared/_form_errors.html.erb --&gt;
+&lt;% if object.errors.any? %&gt;
+  &lt;ul&gt;
+    &lt;% object.errors.full_messages.each do |message| %&gt;
+      &lt;li&gt;&lt;%= message %&gt;&lt;/li&gt;
+    &lt;% end %&gt;
+  &lt;/ul&gt;
+&lt;% end %&gt;
+</code></pre>
+
+    <pre><code>&lt;!-- app/views/users/new.html.erb --&gt;
+&lt;%= form_with model: @user, url: sign_up_path do |form| %&gt;
+  &lt;%= render partial: "shared/form_errors", locals: { object: form.object } %&gt;
+  &lt;div&gt;
+    &lt;%= form.label :email %&gt;
+    &lt;%= form.email_field :email, required: true %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= form.label :password %&gt;
+    &lt;%= form.password_field :password, required: true %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= form.label :password_confirmation %&gt;
+    &lt;%= form.password_field :password_confirmation, required: true %&gt;
+  &lt;/div&gt;
+  &lt;%= form.submit "Sign Up" %&gt;
+&lt;% end %&gt;
+</code></pre>
+  </li>
+  <li>
+    <p>Update routes.</p>
+
+    <pre><code># config/routes.rb
+Rails.application.routes.draw do
+  root "static_pages#home"
+  post "sign_up", to: "users#create"
+  get "sign_up", to: "users#new"
+end
+</code></pre>
+  </li>
+</ol>
+
+<h2 id="step-4-create-confirmation-pages">Step 4: Create Confirmation Pages            <a href="#step-4-create-confirmation-pages" aria-label="Step 4: Create Confirmation Pages">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<p>Users now have a way to sign up, but we need to verify their email address to prevent SPAM.</p>
+
+<ol>
+  <li>
+    <p>Create Confirmations Controller.</p>
+
+    <pre><code>rails g controller Confirmations
+</code></pre>
+
+    <pre><code># app/controllers/confirmations_controller.rb
+class ConfirmationsController &lt; ApplicationController
+
+  def create
+    @user = User.find_by(email: params[:user][:email].downcase)
+
+    if @user.present? &amp;&amp; @user.unconfirmed?
+      redirect_to root_path, notice: "Check your email for confirmation instructions."
+    else
+      redirect_to new_confirmation_path, alert: "We could not find a user with that email or that email has already been confirmed."
+    end
+  end
+
+  def edit
+    @user = User.find_signed(params[:confirmation_token], purpose: :confirm_email)
+
+    if @user.present?
+      @user.confirm!
+      redirect_to root_path, notice: "Your account has been confirmed."
+    else
+      redirect_to new_confirmation_path, alert: "Invalid token."
+    end
+  end
+
+  def new
+    @user = User.new
+  end
+
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Build confirmation pages.</p>
+
+    <p>This page will be used in the case where a user did not receive their confirmation instructions and needs to have them resent.</p>
+
+    <pre><code>&lt;!-- app/views/confirmations/new.html.erb --&gt;
+&lt;%= form_with model: @user, url: confirmations_path do |form| %&gt;
+  &lt;%= form.email_field :email, required: true %&gt;
+  &lt;%= form.submit "Confirm Email" %&gt;
+&lt;% end %&gt;
+</code></pre>
+  </li>
+  <li>
+    <p>Update routes.</p>
+
+    <pre><code># config/routes.rb
+Rails.application.routes.draw do
+  ...
+  resources :confirmations, only: [:create, :edit, :new], param: :confirmation_token
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>The <code>create</code> action will be used to resend confirmation instructions to an unconfirmed user. We still need to build this mailer, and we still need to send this mailer when a user initially signs up. This action will be requested via the form on <code>app/views/confirmations/new.html.erb</code>. Note that we call <code>downcase</code> on the email to account for case sensitivity when searching.</li>
+    <li>The <code>edit</code> action is used to confirm a user’s email. This will be the page that a user lands on when they click the confirmation link in their email. We still need to build this. Note that we’re looking up a user through the <a href="https://api.rubyonrails.org/classes/ActiveRecord/SignedId/ClassMethods.html#method-i-find_signed">find_signed</a> method and not their email or ID. This is because The <code>confirmation_token</code> is randomly generated and can’t be guessed or tampered with unlike an email or numeric ID. This is also why we added <code>param: :confirmation_token</code> as a <a href="https://guides.rubyonrails.org/routing.html#overriding-named-route-parameters">named route parameter</a>.</li>
+    <li>You’ll remember that the <code>confirmation_token</code> is a <a href="https://api.rubyonrails.org/classes/ActiveRecord/SignedId.html#method-i-signed_id">signed_id</a>, and is set to expire in 10 minutes. You’ll also note that we need to pass the method <code>purpose: :confirm_email</code> to be consistent with the purpose that was set in the <code>generate_confirmation_token</code> method.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-5-create-confirmation-mailer">Step 5: Create Confirmation Mailer            <a href="#step-5-create-confirmation-mailer" aria-label="Step 5: Create Confirmation Mailer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<p>Now we need a way to send a confirmation email to our users for them to actually confirm their accounts.</p>
+
+<ol>
+  <li>
+    <p>Create a confirmation mailer.</p>
+
+    <pre><code>rails g mailer User confirmation
+</code></pre>
+
+    <pre><code># app/mailers/user_mailer.rb
+class UserMailer &lt; ApplicationMailer
+  default from: User::MAILER_FROM_EMAIL
+
+  def confirmation(user, confirmation_token)
+    @user = user
+    @confirmation_token = confirmation_token
+
+    mail to: @user.email, subject: "Confirmation Instructions"
+  end
+end
+</code></pre>
+
+    <pre><code>&lt;!-- app/views/user_mailer/confirmation.html.erb --&gt;
+&lt;h1&gt;Confirmation Instructions&lt;/h1&gt;
+
+&lt;%= link_to "Click here to confirm your email.", edit_confirmation_url(@confirmation_token) %&gt;
+</code></pre>
+
+    <pre><code>&lt;!-- app/views/user_mailer/confirmation.text.erb --&gt;
+Confirmation Instructions
+
+&lt;%= edit_confirmation_url(@confirmation_token) %&gt;
+</code></pre>
+  </li>
+  <li>
+    <p>Update User Model.</p>
+
+    <pre><code># app/models/user.rb
+class User &lt; ApplicationRecord
+  ...
+  MAILER_FROM_EMAIL = "no-reply@example.com"
+  ...
+  def send_confirmation_email!
+    confirmation_token = generate_confirmation_token
+    UserMailer.confirmation(self, confirmation_token).deliver_now
+  end
+
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>The <code>MAILER_FROM_EMAIL</code> constant is a way for us to set the email used in the <code>UserMailer</code>. This is optional.</li>
+        <li>The <code>send_confirmation_email!</code> method will create a new <code>confirmation_token</code>. This is to ensure confirmation links expire and cannot be reused. It will also send the confirmation email to the user.</li>
+        <li>We call <a href="https://api.rubyonrails.org/classes/ActiveRecord/Persistence.html#method-i-update_columns">update_columns</a> so that the <code>updated_at/updated_on</code> columns are not updated. This is personal preference, but those columns should typically only be updated when the user updates their email or password.</li>
+        <li>The links in the mailer will take the user to <code>ConfirmationsController#edit</code> at which point they’ll be confirmed.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Configure Action Mailer so that links work locally.</p>
+
+    <p>Add a host to the test and development (and later the production) environments so that <a href="https://guides.rubyonrails.org/action_mailer_basics.html#generating-urls-in-action-mailer-views">urls will work in mailers</a>.</p>
+
+    <pre><code># config/environments/test.rb
+Rails.application.configure do
+  ...
+  config.action_mailer.default_url_options = { host: "example.com" }
+end
+</code></pre>
+
+    <pre><code># config/environments/development.rb
+Rails.application.configure do
+  ...
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Update Controllers.</p>
+
+    <p>Now we can send a confirmation email when a user signs up or if they need to have it resent.</p>
+
+    <pre><code># app/controllers/confirmations_controller.rb
+class ConfirmationsController &lt; ApplicationController
+
+  def create
+    @user = User.find_by(email: params[:user][:email].downcase)
+
+    if @user.present? &amp;&amp; @user.unconfirmed?
+      @user.send_confirmation_email!
+      ...
+    end
+  end
+
+end
+</code></pre>
+
+    <pre><code># app/controllers/users_controller.rb
+class UsersController &lt; ApplicationController
+
+  def create
+    @user = User.new(user_params)
+    if @user.save
+      @user.send_confirmation_email!
+      ...
+    end
+  end
+
+end
+</code></pre>
+  </li>
+</ol>
+
+<h2 id="step-6-create-current-model-and-authentication-concern">Step 6: Create Current Model and Authentication Concern            <a href="#step-6-create-current-model-and-authentication-concern" aria-label="Step 6: Create Current Model and Authentication Concern">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Create a model to store the current user.</p>
+
+    <pre><code># app/models/current.rb
+class Current &lt; ActiveSupport::CurrentAttributes
+  attribute :user
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Create a Concern to store helper methods that will be shared across the application.</p>
+
+    <pre><code># app/controllers/concerns/authentication.rb
+module Authentication
+  extend ActiveSupport::Concern
+
+  included do
+    before_action :current_user
+    helper_method :current_user
+    helper_method :user_signed_in?
+  end
+
+  def login(user)
+    reset_session
+    session[:current_user_id] = user.id
+  end
+
+  def logout
+    reset_session
+  end
+
+  def redirect_if_authenticated
+    redirect_to root_path, alert: "You are already logged in." if user_signed_in?
+  end
+
+  private
+
+  def current_user
+    Current.user ||= session[:current_user_id] &amp;&amp; User.find_by(id: session[:current_user_id])
+  end
+
+  def user_signed_in?
+    Current.user.present?
+  end
+
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Load the Authentication Concern into the Application Controller.</p>
+
+    <pre><code># app/controllers/application_controller.rb
+class ApplicationController &lt; ActionController::Base
+  include Authentication
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>The <code>Current</code> class inherits from <a href="https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html">ActiveSupport::CurrentAttributes</a> which allows us to keep all per-request attributes easily available to the whole system. In essence, this will allow us to set a current user and have access to that user during each request to the server.</li>
+    <li>The <code>Authentication</code> Concern provides an interface for logging the user in and out. We load it into the <code>ApplicationController</code> so that it will be used across the whole application.
+      <ul>
+        <li>The <code>login</code> method first <a href="https://api.rubyonrails.org/classes/ActionController/Metal.html#method-i-reset_session">resets the session</a> to account for <a href="https://guides.rubyonrails.org/security.html#session-fixation-countermeasures">session fixation</a>.</li>
+        <li>We set the user’s ID in the <a href="https://guides.rubyonrails.org/action_controller_overview.html#session">session</a> so that we can have access to the user across requests. The user’s ID won’t be stored in plain text. The cookie data is cryptographically signed to make it tamper-proof. And it is also encrypted so anyone with access to it can’t read its contents.</li>
+        <li>The <code>logout</code> method simply <a href="https://api.rubyonrails.org/classes/ActionController/Metal.html#method-i-reset_session">resets the session</a>.</li>
+        <li>The <code>redirect_if_authenticated</code> method checks to see if the user is logged in. If they are, they’ll be redirected to the <code>root_path</code>. This will be useful on pages an authenticated user should not be able to access, such as the login page.</li>
+        <li>The <code>current_user</code> method returns a <code>User</code> and sets it as the user on the <code>Current</code> class we created. We use <a href="https://www.honeybadger.io/blog/ruby-rails-memoization/">memoization</a> to avoid fetching the User each time we call the method. We call the <code>before_action</code> <a href="https://guides.rubyonrails.org/action_controller_overview.html#filters">filter</a> so that we have access to the current user before each request. We also add this as a <a href="https://api.rubyonrails.org/classes/AbstractController/Helpers/ClassMethods.html#method-i-helper_method">helper_method</a> so that we have access to <code>current_user</code> in the views.</li>
+        <li>The <code>user_signed_in?</code> method simply returns true or false depending on whether the user is signed in or not. This is helpful for conditionally rendering items in views.</li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+
+<h2 id="step-7-create-login-page">Step 7: Create Login Page            <a href="#step-7-create-login-page" aria-label="Step 7: Create Login Page">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Generate Sessions Controller.</p>
+
+    <pre><code>rails g controller Sessions
+</code></pre>
+
+    <pre><code># app/controllers/sessions_controller.rb
+class SessionsController &lt; ApplicationController
+  before_action :redirect_if_authenticated, only: [:create, :new]
+
+  def create
+    @user = User.find_by(email: params[:user][:email].downcase)
+    if @user
+      if @user.unconfirmed?
+        redirect_to new_confirmation_path, alert: "Incorrect email or password."
+      elsif @user.authenticate(params[:user][:password])
+        login @user
+        redirect_to root_path, notice: "Signed in."
+      else
+        flash.now[:alert] = "Incorrect email or password."
+        render :new, status: :unprocessable_entity
+      end
+    else
+      flash.now[:alert] = "Incorrect email or password."
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    logout
+    redirect_to root_path, notice: "Signed out."
+  end
+
+  def new
+  end
+
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Update routes.</p>
+
+    <pre><code># config/routes.rb
+Rails.application.routes.draw do
+  ...
+  post "login", to: "sessions#create"
+  delete "logout", to: "sessions#destroy"
+  get "login", to: "sessions#new"
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Add sign-in form.</p>
+
+    <pre><code>&lt;!-- app/views/sessions/new.html.erb --&gt;
+&lt;%= form_with url: login_path, scope: :user do |form| %&gt;
+  &lt;div&gt;
+    &lt;%= form.label :email %&gt;
+    &lt;%= form.email_field :email, required: true %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= form.label :password %&gt;
+    &lt;%= form.password_field :password, required: true %&gt;
+  &lt;/div&gt;
+  &lt;%= form.submit "Sign In" %&gt;
+&lt;% end %&gt;
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>The <code>create</code> method simply checks if the user exists and is confirmed. If they are, then we check their password. If the password is correct, we log them in via the <code>login</code> method we created in the <code>Authentication</code> Concern. Otherwise, we render an alert.
+      <ul>
+        <li>We’re able to call <code>user.authenticate</code> because of <a href="https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html#method-i-has_secure_password">has_secure_password</a>
+</li>
+        <li>Note that we call <code>downcase</code> on the email to account for case sensitivity when searching.</li>
+        <li>Note that we set the flash to “Incorrect email or password.” if the user is unconfirmed. This prevents leaking email addresses.</li>
+      </ul>
+    </li>
+    <li>The <code>destroy</code> method simply calls the <code>logout</code> method we created in the <code>Authentication</code> Concern.</li>
+    <li>The login form is passed a <code>scope: :user</code> option so that the params are namespaced as <code>params[:user][:some_value]</code>. This is not required, but it helps keep things organized.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-8-update-existing-controllers">Step 8: Update Existing Controllers            <a href="#step-8-update-existing-controllers" aria-label="Step 8: Update Existing Controllers">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>Update Controllers to prevent authenticated users from accessing pages intended for anonymous users.</li>
+</ol>
+
+<pre><code># app/controllers/confirmations_controller.rb
+class ConfirmationsController &lt; ApplicationController
+  before_action :redirect_if_authenticated, only: [:create, :new]
+
+  def edit
+    ...
+    if @user.present?
+      @user.confirm!
+      login @user
+      ...
+    else
+    end
+    ...
+  end
+end
+</code></pre>
+
+<p>Note that we also call <code>login @user</code> once a user is confirmed. That way they’ll be automatically logged in after confirming their email.</p>
+
+<pre><code># app/controllers/users_controller.rb
+class UsersController &lt; ApplicationController
+  before_action :redirect_if_authenticated, only: [:create, :new]
+  ...
+end
+</code></pre>
+
+<h2 id="step-9-add-password-reset-functionality">Step 9: Add Password Reset Functionality            <a href="#step-9-add-password-reset-functionality" aria-label="Step 9: Add Password Reset Functionality">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Update User Model.</p>
+
+    <pre><code># app/models/user.rb
+class User &lt; ApplicationRecord
+  ...
+  PASSWORD_RESET_TOKEN_EXPIRATION = 10.minutes
+  ...
+  def generate_password_reset_token
+    signed_id expires_in: PASSWORD_RESET_TOKEN_EXPIRATION, purpose: :reset_password
+  end
+  ...
+  def send_password_reset_email!
+    password_reset_token = generate_password_reset_token
+    UserMailer.password_reset(self, password_reset_token).deliver_now
+  end
+  ...
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Update User Mailer.</p>
+
+    <pre><code># app/mailers/user_mailer.rb
+class UserMailer &lt; ApplicationMailer
+  ...
+  def password_reset(user, password_reset_token)
+    @user = user
+    @password_reset_token = password_reset_token
+
+    mail to: @user.email, subject: "Password Reset Instructions"
+  end
+end
+</code></pre>
+
+    <pre><code>&lt;!-- app/views/user_mailer/password_reset.html.erb --&gt;
+&lt;h1&gt;Password Reset Instructions&lt;/h1&gt;
+
+&lt;%= link_to "Click here to reset your password.", edit_password_url(@password_reset_token) %&gt;
+</code></pre>
+
+    <pre><code>&lt;!-- app/views/user_mailer/password_reset.text.erb --&gt;
+Password Reset Instructions
+
+&lt;%= edit_password_url(@password_reset_token) %&gt;
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>The <code>generate_password_reset_token</code> method creates a <a href="https://api.rubyonrails.org/classes/ActiveRecord/SignedId.html#method-i-signed_id">signed_id</a> that will be used to securely identify the user. For added security, we ensure that this ID will expire in 10 minutes (this can be controlled with the <code>PASSWORD_RESET_TOKEN_EXPIRATION</code> constant) and give it an explicit purpose of <code>:reset_password</code>.</li>
+    <li>The <code>send_password_reset_email!</code> method will create a new <code>password_reset_token</code>. This is to ensure password reset links expire and cannot be reused. It will also send the password reset email to the user.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-10-build-password-reset-forms">Step 10: Build Password Reset Forms            <a href="#step-10-build-password-reset-forms" aria-label="Step 10: Build Password Reset Forms">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Create Passwords Controller.</p>
+
+    <pre><code>rails g controller Passwords
+</code></pre>
+
+    <pre><code># app/controllers/passwords_controller.rb
+class PasswordsController &lt; ApplicationController
+  before_action :redirect_if_authenticated
+
+  def create
+    @user = User.find_by(email: params[:user][:email].downcase)
+    if @user.present?
+      if @user.confirmed?
+        @user.send_password_reset_email!
+        redirect_to root_path, notice: "If that user exists we've sent instructions to their email."
+      else
+        redirect_to new_confirmation_path, alert: "Please confirm your email first."
+      end
+    else
+      redirect_to root_path, notice: "If that user exists we've sent instructions to their email."
+    end
+  end
+
+  def edit
+    @user = User.find_signed(params[:password_reset_token], purpose: :reset_password)
+    if @user.present? &amp;&amp; @user.unconfirmed?
+      redirect_to new_confirmation_path, alert: "You must confirm your email before you can sign in."
+    elsif @user.nil?
+      redirect_to new_password_path, alert: "Invalid or expired token."
+    end
+  end
+
+  def new
+  end
+
+  def update
+    @user = User.find_signed(params[:password_reset_token], purpose: :reset_password)
+    if @user
+      if @user.unconfirmed?
+        redirect_to new_confirmation_path, alert: "You must confirm your email before you can sign in."
+      elsif @user.update(password_params)
+        redirect_to login_path, notice: "Sign in."
+      else
+        flash.now[:alert] = @user.errors.full_messages.to_sentence
+        render :edit, status: :unprocessable_entity
+      end
+    else
+      flash.now[:alert] = "Invalid or expired token."
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def password_params
+    params.require(:user).permit(:password, :password_confirmation)
+  end
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>The <code>create</code> action will send an email to the user containing a link that will allow them to reset the password. The link will contain their <code>password_reset_token</code> which is unique and expires. Note that we call <code>downcase</code> on the email to account for case sensitivity when searching.
+          <ul>
+            <li>You’ll remember that the <code>password_reset_token</code> is a <a href="https://api.rubyonrails.org/classes/ActiveRecord/SignedId.html#method-i-signed_id">signed_id</a>, and is set to expire in 10 minutes. You’ll also note that we need to pass the method <code>purpose: :reset_password</code> to be consistent with the purpose that was set in the <code>generate_password_reset_token</code> method.</li>
+            <li>Note that we return <code>Invalid or expired token.</code> if the user is not found. This makes it difficult for a bad actor to use the reset form to see which email accounts exist on the application.</li>
+          </ul>
+        </li>
+        <li>The <code>edit</code> action simply renders the form for the user to update their password. It attempts to find a user by their <code>password_reset_token</code>. You can think of the <code>password_reset_token</code> as a way to identify the user much like how we normally identify records by their ID. However, the <code>password_reset_token</code> is randomly generated and will expire so it’s more secure.</li>
+        <li>The <code>new</code> action simply renders a form for the user to put their email address in to receive the password reset email.</li>
+        <li>The <code>update</code> also ensures the user is identified by their <code>password_reset_token</code>. It’s not enough to just do this on the <code>edit</code> action since a bad actor could make a <code>PUT</code> request to the server and bypass the form.
+          <ul>
+            <li>If the user exists and is confirmed we update their password to the one they will set in the form. Otherwise, we handle each failure case differently.</li>
+          </ul>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Update Routes.</p>
+
+    <pre><code># config/routes.rb
+Rails.application.routes.draw do
+  ...
+  resources :passwords, only: [:create, :edit, :new, :update], param: :password_reset_token
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We add <code>param: :password_reset_token</code> as a <a href="https://guides.rubyonrails.org/routing.html#overriding-named-route-parameters">named route parameter</a> so that we can identify users by their <code>password_reset_token</code> and not <code>id</code>. This is similar to what we did with the confirmations routes and ensures a user cannot be identified by their ID.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Build forms.</p>
+
+    <pre><code>&lt;!-- app/views/passwords/new.html.erb --&gt;
+&lt;%= form_with url: passwords_path, scope: :user do |form| %&gt;
+  &lt;%= form.email_field :email, required: true %&gt;
+  &lt;%= form.submit "Reset Password" %&gt;
+&lt;% end %&gt;
+</code></pre>
+
+    <pre><code>&lt;!-- app/views/passwords/edit.html.erb --&gt;
+&lt;%= form_with url: password_path(params[:password_reset_token]), scope: :user, method: :put do |form| %&gt;
+  &lt;div&gt;
+    &lt;%= form.label :password %&gt;
+    &lt;%= form.password_field :password, required: true %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= form.label :password_confirmation %&gt;
+    &lt;%= form.password_field :password_confirmation, required: true %&gt;
+  &lt;/div&gt;
+  &lt;%= form.submit "Update Password" %&gt;
+&lt;% end %&gt;
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>The password reset form is passed a <code>scope: :user</code> option so that the params are namespaced as <code>params[:user][:some_value]</code>. This is not required, but it helps keep things organized.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-11-add-unconfirmed-email-column-to-users-table">Step 11: Add Unconfirmed Email Column To Users Table            <a href="#step-11-add-unconfirmed-email-column-to-users-table" aria-label="Step 11: Add Unconfirmed Email Column To Users Table">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Create and run migration.</p>
+
+    <pre><code>rails g migration add_unconfirmed_email_to_users unconfirmed_email:string
+rails db:migrate
+</code></pre>
+  </li>
+  <li>
+    <p>Update User Model.</p>
+
+    <pre><code># app/models/user.rb
+class User &lt; ApplicationRecord
+  ...
+  attr_accessor :current_password
+  ...
+  before_save :downcase_unconfirmed_email
+  ...
+  validates :unconfirmed_email, format: {with: URI::MailTo::EMAIL_REGEXP, allow_blank: true}
+
+  def confirm!
+    if unconfirmed_or_reconfirming?
+      if unconfirmed_email.present?
+        return false unless update(email: unconfirmed_email, unconfirmed_email: nil)
+      end
+      update_columns(confirmed_at: Time.current)
+    else
+      false
+    end
+  end
+  ...
+  def confirmable_email
+    if unconfirmed_email.present?
+      unconfirmed_email
+    else
+      email
+    end
+  end
+  ...
+  def reconfirming?
+    unconfirmed_email.present?
+  end
+
+  def unconfirmed_or_reconfirming?
+    unconfirmed? || reconfirming?
+  end
+
+  private
+  ...
+  def downcase_unconfirmed_email
+    return if unconfirmed_email.nil?
+    self.unconfirmed_email = unconfirmed_email.downcase
+  end
+
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We add a <code>unconfirmed_email</code> column to the <code>users</code> table so that we have a place to store the email a user is trying to use after their account has been confirmed with their original email.</li>
+        <li>We add <code>attr_accessor :current_password</code> so that we’ll be able to use <code>f.password_field :current_password</code> in the user form (which doesn’t exist yet). This will allow us to require the user to submit their current password before they can update their account.</li>
+        <li>We ensure to format the <code>unconfirmed_email</code> before saving it to the database. This ensures all data is saved consistently.</li>
+        <li>We add validations to the <code>unconfirmed_email</code> column ensuring it’s a valid email address.</li>
+        <li>We update the <code>confirm!</code> method to set the <code>email</code> column to the value of the <code>unconfirmed_email</code> column, and then clear out the <code>unconfirmed_email</code> column. This will only happen if a user is trying to confirm a new email address. Note that we return <code>false</code> if updating the email address fails. This could happen if a user tries to confirm an email address that has already been confirmed.</li>
+        <li>We add the <code>confirmable_email</code> method so that we can call the correct email in the updated <code>UserMailer</code>.</li>
+        <li>We add <code>reconfirming?</code> and <code>unconfirmed_or_reconfirming?</code> to help us determine what state a user is in. This will come in handy later in our controllers.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Update User Mailer.</p>
+
+    <pre><code># app/mailers/user_mailer.rb
+class UserMailer &lt; ApplicationMailer
+
+  def confirmation(user, confirmation_token)
+    ...
+    mail to: @user.confirmable_email, subject: "Confirmation Instructions"
+  end
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Update Confirmations Controller.</p>
+
+    <pre><code># app/controllers/confirmations_controller.rb
+class ConfirmationsController &lt; ApplicationController
+  ...
+  def edit
+    ...
+    if @user.present?
+      if @user.confirm!
+        login @user
+        redirect_to root_path, notice: "Your account has been confirmed."
+      else
+        redirect_to new_confirmation_path, alert: "Something went wrong."
+      end
+    else
+      ...
+    end
+  end
+  ...
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>We update the <code>edit</code> method to account for the return value of <code>@user.confirm!</code>. If for some reason <code>@user.confirm!</code> returns <code>false</code> (which would most likely happen if the email has already been taken) then we render a generic error. This prevents leaking email addresses.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-12-update-users-controller">Step 12: Update Users Controller            <a href="#step-12-update-users-controller" aria-label="Step 12: Update Users Controller">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Update Authentication Concern.</p>
+
+    <pre><code># app/controllers/concerns/authentication.rb
+module Authentication
+  ...
+  def authenticate_user!
+    redirect_to login_path, alert: "You need to login to access that page." unless user_signed_in?
+  end
+  ...
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>The <code>authenticate_user!</code> method can be called to ensure an anonymous user cannot access a page that requires a user to be logged in. We’ll need this when we build the page allowing a user to edit or delete their profile.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Add destroy, edit and update methods. Modify create method and user_params.</p>
+
+    <pre><code># app/controllers/users_controller.rb
+class UsersController &lt; ApplicationController
+  before_action :authenticate_user!, only: [:edit, :destroy, :update]
+  ...
+  def create
+    @user = User.new(create_user_params)
+    ...
+  end
+
+  def destroy
+    current_user.destroy
+    reset_session
+    redirect_to root_path, notice: "Your account has been deleted."
+  end
+
+  def edit
+    @user = current_user
+  end
+  ...
+  def update
+    @user = current_user
+    if @user.authenticate(params[:user][:current_password])
+      if @user.update(update_user_params)
+        if params[:user][:unconfirmed_email].present?
+          @user.send_confirmation_email!
+          redirect_to root_path, notice: "Check your email for confirmation instructions."
+        else
+          redirect_to root_path, notice: "Account updated."
+        end
+      else
+        render :edit, status: :unprocessable_entity
+      end
+    else
+      flash.now[:error] = "Incorrect password"
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def create_user_params
+    params.require(:user).permit(:email, :password, :password_confirmation)
+  end
+
+  def update_user_params
+    params.require(:user).permit(:current_password, :password, :password_confirmation, :unconfirmed_email)
+  end
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We call <code>authenticate_user!</code> before editing, destroying, or updating a user since only an authenticated user should be able to do this.</li>
+        <li>We update the <code>create</code> method to accept <code>create_user_params</code> (formerly <code>user_params</code>). This is because we’re going to require different parameters for creating an account vs. editing an account.</li>
+        <li>The <code>destroy</code> action simply deletes the user and logs them out. Note that we’re calling <code>current_user</code>, so this action can only be scoped to the user who is logged in.</li>
+        <li>The <code>edit</code> action simply assigns <code>@user</code> to the <code>current_user</code> so that we have access to the user in the edit form.</li>
+        <li>The <code>update</code> action first checks if their password is correct. Note that we’re passing this in as <code>current_password</code> and not <code>password</code>. This is because we still want a user to be able to change their password and therefore we need another parameter to store this value. This is also why we have a private <code>update_user_params</code> method.
+          <ul>
+            <li>If the user is updating their email address (via <code>unconfirmed_email</code>) we send a confirmation email to that new email address before setting it as the <code>email</code> value.</li>
+            <li>We force a user to always put in their <code>current_password</code> as an extra security measure in case someone leaves their browser open on a public computer.</li>
+          </ul>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Update routes.</p>
+
+    <pre><code># config/routes.rb
+Rails.application.routes.draw do
+  ...
+  put "account", to: "users#update"
+  get "account", to: "users#edit"
+  delete "account", to: "users#destroy"
+  ...
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Create an edit form.</p>
+
+    <pre><code>&lt;!-- app/views/users/edit.html.erb --&gt;
+&lt;%= form_with model: @user, url: account_path, method: :put do |form| %&gt;
+  &lt;%= render partial: "shared/form_errors", locals: { object: form.object } %&gt;
+  &lt;div&gt;
+    &lt;%= form.label :email, "Current Email" %&gt;
+    &lt;%= form.email_field :email, disabled: true %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= form.label :unconfirmed_email, "New Email" %&gt;
+    &lt;%= form.text_field :unconfirmed_email %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= form.label :password, "Password (leave blank if you don't want to change it)" %&gt;
+    &lt;%= form.password_field :password %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= form.label :password_confirmation %&gt;
+    &lt;%= form.password_field :password_confirmation %&gt;
+  &lt;/div&gt;
+  &lt;hr/&gt;
+  &lt;div&gt;
+    &lt;%= form.label :current_password, "Current password (we need your current password to confirm your changes)" %&gt;
+    &lt;%= form.password_field :current_password, required: true %&gt;
+  &lt;/div&gt;
+  &lt;%= form.submit "Update Account" %&gt;
+&lt;% end %&gt;
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>We <code>disable</code> the <code>email</code> field to ensure we’re not passing that value back to the controller. This is just so the user can see what their current email is.</li>
+    <li>We <code>require</code> the <code>current_password</code> field since we’ll always want a user to confirm their password before making changes.</li>
+    <li>The <code>password</code> and <code>password_confirmation</code> fields are there if a user wants to update their current password.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-13-update-confirmations-controller">Step 13: Update Confirmations Controller            <a href="#step-13-update-confirmations-controller" aria-label="Step 13: Update Confirmations Controller">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Update edit action.</p>
+
+    <pre><code># app/controllers/confirmations_controller.rb
+class ConfirmationsController &lt; ApplicationController
+  ...
+  def edit
+    ...
+    if @user.present? &amp;&amp; @user.unconfirmed_or_reconfirming?
+      ...
+    end
+  end
+  ...
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>We add <code>@user.unconfirmed_or_reconfirming?</code> to the conditional to ensure only unconfirmed users or users who are reconfirming can access this page. This is necessary since we’re now allowing users to confirm new email addresses.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-14-add-remember-token-column-to-users-table">Step 14: Add Remember Token Column to Users Table            <a href="#step-14-add-remember-token-column-to-users-table" aria-label="Step 14: Add Remember Token Column to Users Table">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Create migration.</p>
+
+    <pre><code>rails g migration add_remember_token_to_users remember_token:string
+</code></pre>
+  </li>
+  <li>
+    <p>Update migration.</p>
+
+    <pre><code># db/migrate/[timestamp]_add_remember_token_to_users.rb
+class AddRememberTokenToUsers &lt; ActiveRecord::Migration[6.1]
+  def change
+    add_column :users, :remember_token, :string, null: false
+    add_index :users, :remember_token, unique: true
+  end
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We add <code>null: false</code> to ensure this column always has a value.</li>
+        <li>We add a <a href="https://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/Table.html#method-i-index">unique index</a> to ensure this column has unique data.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Run migrations.</p>
+
+    <pre><code>rails db:migrate
+</code></pre>
+  </li>
+  <li>
+    <p>Update the User model.</p>
+
+    <pre><code># app/models/user.rb
+class User &lt; ApplicationRecord
+  ...
+  has_secure_token :remember_token
+  ...
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>We call <a href="https://api.rubyonrails.org/classes/ActiveRecord/SecureToken/ClassMethods.html#method-i-has_secure_token">has_secure_token</a> on the <code>remember_token</code>. This ensures that the value for this column will be set when the record is created. This value will be used later to securely identify the user.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-15-update-authentication-concern">Step 15: Update Authentication Concern            <a href="#step-15-update-authentication-concern" aria-label="Step 15: Update Authentication Concern">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Add new helper methods.</p>
+
+    <pre><code># app/controllers/concerns/authentication.rb
+module Authentication
+  extend ActiveSupport::Concern
+  ...
+  def forget(user)
+    cookies.delete :remember_token
+    user.regenerate_remember_token
+  end
+  ...
+  def remember(user)
+    user.regenerate_remember_token
+    cookies.permanent.encrypted[:remember_token] = user.remember_token
+  end
+  ...
+  private
+
+  def current_user
+    Current.user ||= if session[:current_user_id].present?
+      User.find_by(id: session[:current_user_id])
+    elsif cookies.permanent.encrypted[:remember_token].present?
+      User.find_by(remember_token: cookies.permanent.encrypted[:remember_token])
+    end
+  end
+  ...
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>The <code>remember</code> method first regenerates a new <code>remember_token</code> to ensure these values are being rotated and can’t be used more than once. We get the <code>regenerate_remember_token</code> method from <a href="https://api.rubyonrails.org/classes/ActiveRecord/SecureToken/ClassMethods.html#method-i-has_secure_token">has_secure_token</a>. Next, we assign this value to a <a href="https://api.rubyonrails.org/classes/ActionDispatch/Cookies.html">cookie</a>. The call to <a href="https://api.rubyonrails.org/classes/ActionDispatch/Cookies/ChainedCookieJars.html#method-i-permanent">permanent</a> ensures the cookie won’t expire until 20 years from now. The call to <a href="https://api.rubyonrails.org/classes/ActionDispatch/Cookies/ChainedCookieJars.html#method-i-encrypted">encrypted</a> ensures the value will be encrypted. This is vital since this value is used to identify the user and is being set in the browser.</li>
+    <li>The <code>forget</code> method deletes the cookie and regenerates a new <code>remember_token</code> to ensure these values are being rotated and can’t be used more than once.</li>
+    <li>We update the <code>current_user</code> method by adding a conditional to first try and find the user by the session, and then fallback to finding the user by the cookie. This is the logic that allows a user to completely exit their browser and remain logged in when they return to the website since the cookie will still be set.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-16-update-sessions-controller">Step 16: Update Sessions Controller            <a href="#step-16-update-sessions-controller" aria-label="Step 16: Update Sessions Controller">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Update the <code>create</code> and <code>destroy</code> methods.</p>
+
+    <pre><code># app/controllers/sessions_controller.rb
+class SessionsController &lt; ApplicationController
+  ...
+  before_action :authenticate_user!, only: [:destroy]
+
+  def create
+    ...
+    if @user
+      if @user.unconfirmed?
+        ...
+      elsif @user.authenticate(params[:user][:password])
+        login @user
+        remember(@user) if params[:user][:remember_me] == "1"
+        ...
+      else
+        ...
+      end
+    else
+      ...
+    end
+  end
+
+  def destroy
+    forget(current_user)
+    ...
+  end
+  ...
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We conditionally call <code>remember(@user)</code> in the <code>create</code> method if the user has checked the “Remember me” checkbox. We still need to add this to our form.</li>
+        <li>We call <code>forget(current_user)</code> in the <code>destroy</code> method to ensure we delete the <code>remember_me</code> cookie and regenerate the user’s <code>remember_token</code> token.</li>
+        <li>We also add a <code>before_action</code> to ensure only authenticated users can access the <code>destroy</code> action.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Add the “Remember me” checkbox to the login form.</p>
+
+    <pre><code>&lt;!-- app/views/sessions/new.html.erb --&gt;
+&lt;%= form_with url: login_path, scope: :user do |form| %&gt;
+  ...
+  &lt;div&gt;
+    &lt;%= form.label :remember_me %&gt;
+    &lt;%= form.check_box :remember_me %&gt;
+  &lt;/div&gt;
+  &lt;%= form.submit "Sign In" %&gt;
+&lt;% end %&gt;
+</code></pre>
+  </li>
+</ol>
+
+<h2 id="step-17-add-friendly-redirects">Step 17: Add Friendly Redirects            <a href="#step-17-add-friendly-redirects" aria-label="Step 17: Add Friendly Redirects">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Update Authentication Concern.</p>
+
+    <pre><code># app/controllers/concerns/authentication.rb
+module Authentication
+  ...
+  def authenticate_user!
+    store_location
+    ...
+  end
+  ...
+  private
+  ...
+  def store_location
+    session[:user_return_to] = request.original_url if request.get? &amp;&amp; request.local?
+  end
+
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>The <code>store_location</code> method stores the <a href="https://api.rubyonrails.org/classes/ActionDispatch/Request.html#method-i-original_url">request.original_url</a> in the <a href="https://guides.rubyonrails.org/action_controller_overview.html#session">session</a> so it can be retrieved later. We only do this if the request made was a <code>get</code> request. We also call <code>request.local?</code> to ensure it was a local request. This prevents redirecting to an external application.</li>
+        <li>We call <code>store_location</code> in the <code>authenticate_user!</code> method so that we can save the path to the page the user was trying to visit before they were redirected to the login page. We need to do this before visiting the login page otherwise the call to <code>request.original_url</code> will always return the url to the login page.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Update Sessions Controller.</p>
+
+    <pre><code># app/controllers/sessions_controller.rb
+class SessionsController &lt; ApplicationController
+  ...
+  def create
+    ...
+    if @user
+      if @user.unconfirmed?
+        ...
+      elsif @user.authenticate(params[:user][:password])
+        after_login_path = session[:user_return_to] || root_path
+        login @user
+        remember(@user) if params[:user][:remember_me] == "1"
+        redirect_to after_login_path, notice: "Signed in."
+      else
+        ...
+      end
+    else
+      ...
+    end
+  end
+  ...
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>The <code>after_login_path</code> variable it set to be whatever is in the <code>session[:user_return_to]</code>. If there’s nothing in <code>session[:user_return_to]</code> then it defaults to the <code>root_path</code>.</li>
+    <li>Note that we call this method before calling <code>login</code>. This is because <code>login</code> calls <code>reset_session</code> which would deleted the <code>session[:user_return_to]</code>.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-17-account-for-timing-attacks">Step 17: Account for Timing Attacks            <a href="#step-17-account-for-timing-attacks" aria-label="Step 17: Account for Timing Attacks">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Update the User model.</p>
+
+    <p><strong><a href="https://edgeapi.rubyonrails.org/classes/ActiveRecord/SecurePassword/ClassMethods.html#method-i-authenticate_by">Note that this class method will be available in Rails 7.1</a></strong></p>
+
+    <pre><code># app/models/user.rb
+class User &lt; ApplicationRecord
+  ...
+  def self.authenticate_by(attributes)
+    passwords, identifiers = attributes.to_h.partition do |name, value|
+      !has_attribute?(name) &amp;&amp; has_attribute?("#{name}_digest")
+    end.map(&amp;:to_h)
+
+    raise ArgumentError, "One or more password arguments are required" if passwords.empty?
+    raise ArgumentError, "One or more finder arguments are required" if identifiers.empty?
+    if (record = find_by(identifiers))
+      record if passwords.count { |name, value| record.public_send(:"authenticate_#{name}", value) } == passwords.size
+    else
+      new(passwords)
+      nil
+    end
+  end
+  ...
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>This class method serves to find a user using the non-password attributes (such as email), and then authenticates that record using the password attributes. Regardless of whether a user is found or authentication succeeds, <code>authenticate_by</code> will take the same amount of time. This prevents <a href="https://en.wikipedia.org/wiki/Timing_attack">timing-based enumeration attacks</a>, wherein an attacker can determine if a password record exists even without knowing the password.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Update the Sessions Controller.</p>
+
+    <pre><code># app/controllers/sessions_controller.rb
+class SessionsController &lt; ApplicationController
+  ...
+  def create
+    @user = User.authenticate_by(email: params[:user][:email].downcase, password: params[:user][:password])
+    if @user
+      if @user.unconfirmed?
+        redirect_to new_confirmation_path, alert: "Incorrect email or password."
+      else
+        after_login_path = session[:user_return_to] || root_path
+        login @user
+        remember(@user) if params[:user][:remember_me] == "1"
+        redirect_to after_login_path, notice: "Signed in."
+      end
+    else
+      flash.now[:alert] = "Incorrect email or password."
+      render :new, status: :unprocessable_entity
+    end
+  end
+  ...
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>We refactor the <code>create</code> method to always start by finding and authenticating the user. Not only does this prevent timing attacks, but it also prevents accidentally leaking email addresses. This is because we were originally checking if a user was confirmed before authenticating them. That means a bad actor could try and sign in with an email address to see if it exists on the system without needing to know the password.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-18-store-session-in-the-database">Step 18: Store Session in the Database            <a href="#step-18-store-session-in-the-database" aria-label="Step 18: Store Session in the Database">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<p>We’re currently setting the user’s ID in the session. Even though that value is encrypted, the encrypted value doesn’t change since it’s based on the user id which doesn’t change. This means that if a bad actor were to get a copy of the session they would have access to a victim’s account in perpetuity. One solution is to <a href="https://guides.rubyonrails.org/security.html#rotating-encrypted-and-signed-cookies-configurations">rotate encrypted and signed cookie configurations</a>. Another option is to configure the <a href="https://guides.rubyonrails.org/configuring.html#config-session-store">Rails session store</a> to use <code>mem_cache_store</code> to store session data.</p>
+
+<p>The solution we will implement is to set a rotating value to identify the user and store that value in the database.</p>
+
+<ol>
+  <li>
+    <p>Generate ActiveSession model.</p>
+
+    <pre><code>rails g model active_session user:references
+</code></pre>
+  </li>
+  <li>
+    <p>Update the migration.</p>
+
+    <pre><code>class CreateActiveSessions &lt; ActiveRecord::Migration[6.1]
+  def change
+    create_table :active_sessions do |t|
+      t.references :user, null: false, foreign_key: {on_delete: :cascade}
+
+      t.timestamps
+    end
+  end
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We update the <code>foreign_key</code> option from <code>true</code> to <code>{on_delete: :cascade}</code>. The <a href="https://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/SchemaStatements.html#method-i-add_foreign_key-label-Creating+a+cascading+foreign+key">on_delete</a> option will delete any <code>active_session</code> record if its associated <code>user</code> is deleted from the database.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Run migration.</p>
+
+    <pre><code>rails db:migrate
+</code></pre>
+  </li>
+  <li>
+    <p>Update User model.</p>
+
+    <pre><code># app/models/user.rb
+class User &lt; ApplicationRecord
+  ...
+  has_many :active_sessions, dependent: :destroy
+  ...
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Update Authentication Concern</p>
+
+    <pre><code># app/controllers/concerns/authentication.rb
+module Authentication
+  ...
+  def login(user)
+    reset_session
+    active_session = user.active_sessions.create!
+    session[:current_active_session_id] = active_session.id
+  end
+  ...
+  def logout
+    active_session = ActiveSession.find_by(id: session[:current_active_session_id])
+    reset_session
+    active_session.destroy! if active_session.present?
+  end
+  ...
+  private
+
+  def current_user
+    Current.user = if session[:current_active_session_id].present?
+      ActiveSession.find_by(id: session[:current_active_session_id]).user
+    elsif cookies.permanent.encrypted[:remember_token].present?
+      User.find_by(remember_token: cookies.permanent.encrypted[:remember_token])
+    end
+  end
+  ...
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We update the <code>login</code> method by creating a new <code>active_session</code> record and then storing it’s ID in the <code>session</code>. Note that we replaced <code>session[:current_user_id]</code> with <code>session[:current_active_session_id]</code>.</li>
+        <li>We update the <code>logout</code> method by first finding the <code>active_session</code> record from the <code>session</code>. After we call <code>reset_session</code> we then delete the <code>active_session</code> record if it exists. We need to check if it exists because in a future section we will allow a user to log out all current active sessions.</li>
+        <li>We update the <code>current_user</code> method by finding the <code>active_session</code> record from the <code>session</code>, and then returning its associated <code>user</code>. Note that we’ve replaced all instances of <code>session[:current_user_id]</code> with <code>session[:current_active_session_id]</code>.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Force SSL.</p>
+
+    <pre><code># config/environments/production.rb
+Rails.application.configure do
+  ...
+  config.force_ssl = true
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>We force SSL in production to prevent <a href="https://guides.rubyonrails.org/security.html#session-hijacking">session hijacking</a>. Even though the session is encrypted we want to prevent the cookie from being exposed through an insecure network. If it were exposed, a bad actor could sign in as the victim.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-19-capture-request-details-for-each-new-session">Step 19: Capture Request Details for Each New Session            <a href="#step-19-capture-request-details-for-each-new-session" aria-label="Step 19: Capture Request Details for Each New Session">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Add new columns to the active_sessions table.</p>
+
+    <pre><code>rails g migration add_request_columns_to_active_sessions user_agent:string ip_address:string
+rails db:migrate
+</code></pre>
+  </li>
+  <li>
+    <p>Update login method to capture request details.</p>
+
+    <pre><code># app/controllers/concerns/authentication.rb
+module Authentication
+  ...
+  def login(user)
+    reset_session
+    active_session = user.active_sessions.create!(user_agent: request.user_agent, ip_address: request.ip)
+    session[:current_active_session_id] = active_session.id
+  end
+  ...
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We add columns to the <code>active_sessions</code> table to store data about when and where these sessions are being created. We are able to do this by tapping into the <a href="https://api.rubyonrails.org/classes/ActionDispatch/Request.html">request object</a> and returning the <a href="https://api.rubyonrails.org/classes/ActionDispatch/Request.html#method-i-ip">ip</a> and user agent. The user agent is simply the browser and device.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Update Users Controller.</p>
+
+    <pre><code># app/controllers/users_controller.rb
+class UsersController &lt; ApplicationController
+  ...
+  def edit
+    @user = current_user
+    @active_sessions = @user.active_sessions.order(created_at: :desc)
+  end
+  ...
+  def update
+    @user = current_user
+    @active_sessions = @user.active_sessions.order(created_at: :desc)
+    ...
+  end
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Create active session partial.</p>
+
+    <pre><code>&lt;!-- app/views/active_sessions/_active_session.html.erb --&gt;
+&lt;tr&gt;
+  &lt;td&gt;&lt;%= active_session.user_agent %&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;%= active_session.ip_address %&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;%= active_session.created_at %&gt;&lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+  </li>
+  <li>
+    <p>Update account page.</p>
+
+    <pre><code>&lt;!-- app/views/users/edit.html.erb --&gt;
+...
+&lt;h2&gt;Current Logins&lt;/h2&gt;
+&lt;% if @active_sessions.any? %&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;User Agent&lt;/th&gt;
+        &lt;th&gt;IP Address&lt;/th&gt;
+        &lt;th&gt;Signed In At&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;%= render @active_sessions %&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;% end %&gt;
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>We’re simply showing any <code>active_session</code> associated with the <code>current_user</code>. By rendering the <code>user_agent</code>, <code>ip_address</code>, and <code>created_at</code> values we’re giving the <code>current_user</code> all the information they need to know if there’s any suspicious activity happening with their account. For example, if there’s an <code>active_session</code> with a unfamiliar IP address or browser, this could indicate that the user’s account has been compromised.</li>
+    <li>Note that we also instantiate <code>@active_sessions</code> in the <code>update</code> method. This is because the <code>update</code> method renders the <code>edit</code> method during failure cases.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-20-allow-user-to-sign-out-specific-active-sessions">Step 20: Allow User to Sign Out Specific Active Sessions            <a href="#step-20-allow-user-to-sign-out-specific-active-sessions" aria-label="Step 20: Allow User to Sign Out Specific Active Sessions">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<ol>
+  <li>
+    <p>Generate the Active Sessions Controller and update routes.</p>
+
+    <pre><code>rails g controller active_sessions
+</code></pre>
+
+    <pre><code># app/controllers/active_sessions_controller.rb
+class ActiveSessionsController &lt; ApplicationController
+  before_action :authenticate_user!
+
+  def destroy
+    @active_session = current_user.active_sessions.find(params[:id])
+
+    @active_session.destroy
+
+    if current_user
+      redirect_to account_path, notice: "Session deleted."
+    else
+      reset_session
+      redirect_to root_path, notice: "Signed out."
+    end
+  end
+
+  def destroy_all
+    current_user.active_sessions.destroy_all
+    reset_session
+
+    redirect_to root_path, notice: "Signed out."
+  end
+end
+</code></pre>
+
+    <pre><code># config/routes.rb
+Rails.application.routes.draw do
+  ...
+  resources :active_sessions, only: [:destroy] do
+    collection do
+      delete "destroy_all"
+    end
+  end
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We ensure only users who are logged in can access these endpoints by calling <code>before_action :authenticate_user!</code>.</li>
+        <li>The <code>destroy</code> method simply looks for an <code>active_session</code> associated with the <code>current_user</code>. This ensures that a user can only delete sessions associated with their account.
+          <ul>
+            <li>Once we destroy the <code>active_session</code> we then redirect back to the account page or to the homepage. This is because a user may not be deleting a session for the device or browser they’re currently logged into. Note that we only call <a href="https://api.rubyonrails.org/classes/ActionDispatch/Request.html#method-i-reset_session">reset_session</a> if the user has deleted a session for the device or browser they’re currently logged into, as this is the same as logging out.</li>
+          </ul>
+        </li>
+        <li>The <code>destroy_all</code> method is a <a href="https://guides.rubyonrails.org/routing.html#adding-collection-routes">collection route</a> that will destroy all <code>active_session</code> records associated with the <code>current_user</code>. Note that we call <code>reset_session</code> because we will be logging out the <code>current_user</code> during this request.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Update views by adding buttons to destroy sessions.</p>
+
+    <pre><code>&lt;!-- app/views/users/edit.html.erb --&gt;
+...
+&lt;h2&gt;Current Logins&lt;/h2&gt;
+&lt;% if @active_sessions.any? %&gt;
+  &lt;%= button_to "Log out of all other sessions", destroy_all_active_sessions_path, method: :delete %&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;User Agent&lt;/th&gt;
+        &lt;th&gt;IP Address&lt;/th&gt;
+        &lt;th&gt;Signed In At&lt;/th&gt;
+        &lt;th&gt;Sign Out&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;%= render @active_sessions %&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;% end %&gt;
+</code></pre>
+
+    <pre><code>&lt;!-- app/views/active_sessions/_active_session.html.erb --&gt;
+&lt;tr&gt;
+  &lt;td&gt;&lt;%= active_session.user_agent %&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;%= active_session.ip_address %&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;%= active_session.created_at %&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;%= button_to "Sign Out", active_session_path(active_session), method: :delete %&gt;&lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+  </li>
+  <li>
+    <p>Update Authentication Concern.</p>
+
+    <pre><code># app/controllers/concerns/authentication.rb
+module Authentication
+  ...
+  private
+
+  def current_user
+    Current.user = if session[:current_active_session_id].present?
+      ActiveSession.find_by(id: session[:current_active_session_id])&amp;.user
+    elsif cookies.permanent.encrypted[:remember_token].present?
+      User.find_by(remember_token: cookies.permanent.encrypted[:remember_token])
+    end
+  end
+  ...
+end
+</code></pre>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>What’s Going On Here?</strong></p>
+
+  <ul>
+    <li>This is a very subtle change, but we’ve added a <a href="https://ruby-doc.org/core-2.6/doc/syntax/calling_methods_rdoc.html#label-Safe+navigation+operator">safe navigation operator</a> via the <code>&amp;.user</code> call. This is because <code>ActiveSession.find_by(id: session[:current_active_session_id])</code> can now return <code>nil</code> since we’re able to delete other <code>active_session</code> records.</li>
+  </ul>
+</blockquote>
+
+<h2 id="step-21-refactor-remember-logic">Step 21: Refactor Remember Logic            <a href="#step-21-refactor-remember-logic" aria-label="Step 21: Refactor Remember Logic">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"></path>
+              </svg>
+            </a>
+</h2>
+
+<p>Since we’re now associating our sessions with an <code>active_session</code> and not a <code>user</code>, we’ll want to remove the <code>remember_token</code> token from the <code>users</code> table and onto the <code>active_sessions</code>.</p>
+
+<ol>
+  <li>
+    <p>Move remember_token column from users to active_sessions table.</p>
+
+    <pre><code>rails g migration move_remember_token_from_users_to_active_sessions
+</code></pre>
+
+    <pre><code># db/migrate/[timestamp]_move_remember_token_from_users_to_active_sessions.rb
+class MoveRememberTokenFromUsersToActiveSessions &lt; ActiveRecord::Migration[6.1]
+  def change
+    remove_column :users, :remember_token
+    add_column :active_sessions, :remember_token, :string, null: false
+
+    add_index :active_sessions, :remember_token, unique: true
+  end
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Run migration.</p>
+
+    <pre><code>rails db:migrate
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We add <code>null: false</code> to ensure this column always has a value.</li>
+        <li>We add a <a href="https://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/Table.html#method-i-index">unique index</a> to ensure this column has unique data.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Update User Model.</p>
+
+    <pre><code>class User &lt; ApplicationRecord
+    ...
+-   has_secure_token :remember_token
+    ...
+end
+</code></pre>
+  </li>
+  <li>
+    <p>Update Active Session Model.</p>
+
+    <pre><code># app/models/active_session.rb
+class ActiveSession &lt; ApplicationRecord
+  ...
+  has_secure_token :remember_token
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>We call <a href="https://api.rubyonrails.org/classes/ActiveRecord/SecureToken/ClassMethods.html#method-i-has_secure_token">has_secure_token</a> on the <code>remember_token</code>. This ensures that the value for this column will be set when the record is created. This value will be used later to securely identify the user.</li>
+        <li>Note that we remove this from the <code>user</code> model.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Refactor the Authentication Concern.</p>
+
+    <pre><code># app/controllers/concerns/authentication.rb
+module Authentication
+  ...
+  def login(user)
+    reset_session
+    active_session = user.active_sessions.create!(user_agent: request.user_agent, ip_address: request.ip)
+    session[:current_active_session_id] = active_session.id
+
+    active_session
+  end
+
+  def forget_active_session
+    cookies.delete :remember_token
+  end
+  ...
+  def remember(active_session)
+    cookies.permanent.encrypted[:remember_token] = active_session.remember_token
+  end
+  ...
+  private
+
+  def current_user
+    Current.user = if session[:current_active_session_id].present?
+      ActiveSession.find_by(id: session[:current_active_session_id])&amp;.user
+    elsif cookies.permanent.encrypted[:remember_token].present?
+      ActiveSession.find_by(remember_token: cookies.permanent.encrypted[:remember_token])&amp;.user
+    end
+  end
+  ...
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>The <code>login</code> method now returns the <code>active_session</code>. This will be used later when calling <code>SessionsController#create</code>.</li>
+        <li>The <code>forget</code> method has been renamed to <code>forget_active_session</code> and no longer takes any arguments. This method simply deletes the <code>cookie</code>. We don’t need to call <code>active_session.regenerate_remember_token</code> since the <code>active_session</code> will be deleted, and therefor cannot be referenced again.</li>
+        <li>The <code>remember</code> method now accepts an <code>active_session</code> and not a <code>user</code>. We do not need to call <code>active_session.regenerate_remember_token</code> since a new <code>active_session</code> record will be created each time a user logs in. Note that we now save <code>active_session.remember_token</code> to the cookie.</li>
+        <li>The <code>current_user</code> method now finds the <code>active_session</code> record if the <code>remember_token</code> is present and returns the user via the <a href="https://ruby-doc.org/core-2.6/doc/syntax/calling_methods_rdoc.html#label-Safe+navigation+operator">safe navigation operator</a>.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Refactor the Sessions Controller.</p>
+
+    <pre><code># app/controllers/sessions_controller.rb
+class SessionsController &lt; ApplicationController
+  def create
+    ...
+    if @user
+      if @user.unconfirmed?
+        ...
+      else
+        ...
+        active_session = login @user
+        remember(active_session) if params[:user][:remember_me] == "1"
+      end
+    else
+    ...
+    end
+  end
+
+  def destroy
+    forget_active_session
+    ...
+  end
+end
+</code></pre>
+
+    <blockquote>
+      <p><strong>What’s Going On Here?</strong></p>
+
+      <ul>
+        <li>Since the <code>login</code> method now returns an <code>active_session</code>, we can take that value and pass it to <code>remember</code>.</li>
+        <li>We replace <code>forget(current_user)</code> with <code>forget_active_session</code> to reflect changes to the method name and structure.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li>
+    <p>Refactor Active Sessions Controller</p>
+
+    <pre><code># app/controllers/active_sessions_controller.rb
+class ActiveSessionsController &lt; ApplicationController
+  ...
+  def destroy
+    ...
+    if current_user
+    ...
+    else
+      forget_active_session
+      ...
+    end
+  end
+
+  def destroy_all
+    forget_active_session
+    current_user.active_sessions.destroy_all
+    ...
+  end
+end
+</code></pre>
+  </li>
+</ol>
+
+              </div></div>
+  </div>
+</body>
+</html>

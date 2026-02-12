@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hacker News</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Hacker News</h1>
+    <p><strong>URL:</strong> <a href="https://www.fastruby.io/blog/ruby/performance/why-wasnt-ruby-3-faster.html">https://www.fastruby.io/blog/ruby/performance/why-wasnt-ruby-3-faster.html</a></p>
+    <p><strong>Tags:</strong> ruby, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876778020</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section>
+      <p>I’m seeing a lot of disappointment about the speed of Ruby 3 out there. I think there are a lot of reasons for that, and I think they’re worth looking at.</p>
+
+<p>So: why wasn’t Ruby 3 faster? Did it break its promise? (Spoiler: <a href="http://codefol.io/posts/is-ruby-3-actually-three-times-faster/" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">I don’t think so <span>
+              opens a new window
+            </span></a>, but I understand why some people do.)</p>
+
+<!--more-->
+
+<h2 id="first-faster-than-what">First: Faster Than What?</h2>
+
+<p>I think some of the problem was misplaced expectations. People didn’t understand what <a href="https://blog.heroku.com/ruby-3-by-3" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">“three times faster” <span>
+              opens a new window
+            </span></a> was supposed to mean. I don’t think people thought it through, but I also don’t think it was communicated very clearly.</p>
+
+<p>So: some people understood what was promised, and some people didn’t.</p>
+
+<p>What was promised?</p>
+
+<p>Matz, Ruby’s creator and designer, has said many times “Ruby 3 will be three times faster compared to Ruby 2.” When he was talking to Ruby implementors, that was clarified as “compared to Ruby 2.0.0 on the day it was released.” But it would be easy for a random person to think that meant “compared to Ruby 2 right now.” By the time Matz declared that goal there were already a few minor releases of Ruby 2 out there, which increased the speed. And by the time most people had heard about it, Ruby 2.4 was already released.</p>
+
+<p>Ruby 2.4 is already a lot faster than Ruby 2.0. Most of the speed gain from Ruby 2.0 to 3.0 was already there by Ruby 2.4. Which means if you thought Ruby 3 was going to be three times faster than Ruby 2.4, you were pretty darn disappointed. Ruby 3 is maybe 15%-25% faster than Ruby 2.4? But clearly not even 1.5x the speed, except for certain very specific cases with JIT.</p>
+
+<p>If you thought Ruby 3 was going to be three times faster than Ruby 2.4, you were probably very disappointed indeed.</p>
+
+<h2 id="aspirational-goals">Aspirational Goals</h2>
+
+<p>Early on, when he was first declaring Ruby 3, Matz described it as an aspirational goal. It was intentionally a stretch. I’m pretty happy with how it came out, but… There’s a problem with loud, public stretch goals. They can annoy people who otherwise like you, and for good reason.</p>
+
+<p>I feel like I can <a href="http://codefol.io/posts/is-ruby-3-actually-three-times-faster/" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">argue with a straight face <span>
+              opens a new window
+            </span></a> that Ruby succeeded in that goal, within limits and with footnotes.</p>
+
+<p>But let’s be clear: nobody thought that literally every program written with Ruby would be three times faster. In fact, that’s completely impossible. Let’s talk about why.</p>
+
+<h2 id="making-ruby-faster-can-only-make-ruby-faster">Making Ruby Faster Can Only Make Ruby Faster</h2>
+
+<p>Making <strong><em>anything</em></strong> “X times faster” or “Y percent faster” is at best an oversimplification. That’s just not how software works. For an extreme case, think about a script that just sleeps for ten seconds. It’s kind of the canonical example where you literally <strong><em>cannot</em></strong> make it faster. At least, not without breaking it.</p>
+
+<p>When we say “make Ruby three times faster” we have to have a long list of caveats in mind, even if we don’t say them. A script that queries the database can only get so much faster because it’s waiting on the database. Ruby programs that use C extensions have to wait on the C extensions — speeding up Ruby won’t, generally speaking, speed up those C extensions.</p>
+
+<p>You can’t turn Ruby into magic fairy dust where having your Java program call out to a short Ruby script speeds up your Java by 10%. Ruby can only speed up the part that’s calculated in Ruby.</p>
+
+<p>That’s hard.</p>
+
+<p>There’s an old <a href="https://rubykaigi.org/2016/presentations/MattStudies.html" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">Matt Gaudet talk from RubyKaigi <span>
+              opens a new window
+            </span></a> where he talks about how we should measure 3x. We didn’t wind up with that full array of benchmarks, but all his ideas are basically good for measuring. And if we had built all of them, we’d discover that they didn’t all speed up by the same amount.</p>
+
+<p>How could they? “Three times faster” is, by its nature, a bit of an abstraction and kind of inexact. What workload <strong><em>exactly</em></strong> is going to be three times faster?</p>
+
+<h2 id="incremental-changes-disruptive-changes">Incremental Changes, Disruptive Changes</h2>
+
+<pre>    “How did you go bankrupt?” Bill asked. “Two ways,” Mike said. “Gradually and then suddenly.”
+    - Ernest Hemingway, The Sun Also Rises
+</pre>
+
+<p>Here’s a thing: a lot of speedups are incremental. They take some common operation and they make it a little bit faster. It’s often a tradeoff: one or more uncommon operations gets a little bit slower. By figuring out new tradeoffs or by carefully measuring which operations are common, you can slightly fine-tune and get a better result.</p>
+
+<p>Ruby has done a lot of this. The core Ruby VM has mostly worked the same way since Ruby 1.9, with a lot of great polish and fine-tuning.</p>
+
+<p>Here’s a different thing: many speedups are disruptive instead of incremental. Ruby 1.9 rewrote the VM completely, but took several versions to get stable enough to use. There’s a reason almost nobody deployed their production app on Ruby 1.9.1. Ruby 1.9 also made threading work better — and Ruby on Rails took ages to get to where that really worked for most people. We needed new app servers to take advantage of it. And most existing Rails apps needed to find out where they were doing thread-incompatible things and fix that.</p>
+
+<p>Disruptive changes tend to be bigger speedups. But they also require a lot more work.</p>
+
+<p>If you don’t change any of your code from Ruby 1.9.3, it will still run on Ruby 3. In fact, it will run significantly better than on Ruby 1.9.3. It’s faster, it crashes less often, it will catch more of your bugs. Those incremental changes will give you a significant speedup — say to around double the speed of 1.9.3 on the same hardware. That’s not bad.</p>
+
+<p>But you can do better than that. We have <a href="https://github.com/socketry/async" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">much better evented libraries <span>
+              opens a new window
+            </span></a> in Ruby than existed in 1.9.3. We have <a href="https://github.com/puma/puma" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">faster application servers <span>
+              opens a new window
+            </span></a>, and <a href="https://github.com/Shopify/bootsnap" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">faster Rails boot time <span>
+              opens a new window
+            </span></a> and <a href="https://guides.rubyonrails.org/security.html" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">better Rails security <span>
+              opens a new window
+            </span></a>. All of these require some amount of changing your code or your process around your application. They are <strong><em>disruptive</em></strong> changes, either a little bit disruptive (upgrade to Rails 6 from Rails 3) or very disruptive (switch to Async from non-evented code.)</p>
+
+<p>Ruby 3 has several interesting <strong><em>disruptive</em></strong> changes that will only help you if you use them. And using them may take some work.</p>
+
+<h2 id="ruby-3s-disruptive-changes">Ruby 3’s Disruptive Changes</h2>
+
+<p>One disruptive change is MJIT. You have to turn it on using the command line or an environment variable. It favours short methods and shallow call stacks. It works far better with plain Ruby code than with C extensions.</p>
+
+<p>All of these are changes in the code or the configuration.</p>
+
+<p>Over time I think you’ll see more gems adapt to MJIT. There will be cases where the authors say, “if you want maximum performance, use the no-C-extensions version of the gem and turn on MJIT or use JRuby/TruffleRuby.” JRuby and TruffleRuby already have JIT, you see, and so they have the same surprising property that Ruby code starts performing better <strong><em>without</em></strong> C extensions.</p>
+
+<p>But we don’t live in that world yet. Right now it’s easier to skip using JIT and ignore it. And then you don’t get the benefit of it, partly because you’re waiting on other people.</p>
+
+<p>And so MJIT is a change to speed up Ruby, but the benefits aren’t here yet. They need time and work before they arrive. Ruby’s MJIT was written incredibly quickly, and the stability was shockingly good. The flip side is that there are a lot of useful optimisations that got lost in the shuffle, and a lot of code that hasn’t yet been rewritten to use it.</p>
+
+<p><a href="https://www.fastruby.io/blog/ruby/performance/how-fast-are-ractors.html" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">Ractors <span>
+              opens a new window
+            </span></a> are the same. Eventually they’ll make highly-parallel Ruby code run a lot faster. But you’re going to need to learn them deeply, or wait for gem and framework authors to do it for you. Frankly they’re also going to need more work in Ruby core before they’re fast enough.</p>
+
+<p><a href="https://bugs.ruby-lang.org/issues/13618" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">Autofibers <span>
+              opens a new window
+            </span></a>? Yup, same thing. I think those may be the most extreme case of needing big supporting changes, so we’ll see if it happens. But they also have a <strong><em>lot</em></strong> of potential to improve Ruby concurrency, especially when combined with Ractors. They’ll also require a significant rewrite of a lot of your concurrency code to work well.</p>
+
+<p>I think we’ll also see type-based optimisations in at least some of Ruby. Now that we’re tracking places where, say, we know an integer will always be used, it becomes easier to do a few TruffleRuby-style optimisations to hardcode integer operations. But that’s going to take even longer.</p>
+
+<h2 id="did-it-basically-fail-then">Did It Basically Fail, Then?</h2>
+
+<p>I think we’ll see the public perception that it failed.</p>
+
+<p>More specifically: I can argue, <a href="http://codefol.io/posts/is-ruby-3-actually-three-times-faster/" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">and I have argued <span>
+              opens a new window
+            </span></a>, that Ruby 3 succeeded at being three times faster than Ruby 2.0.</p>
+
+<p>But people were thinking the promise meant “three times faster than Ruby 2.4” and that’s a significantly higher bar, one that Ruby 3 <strong><em>does not</em></strong> clear. It was never actually promised, but it’s clearly a common public perception.</p>
+
+<p>Most people want to know “will it run my code three times faster?” They not only mean “three times faster than what I’m using now,” they also mean with no code changes. And so for most people asking that question, the disruptive changes are probably not useful or relevant.</p>
+
+<p>Ruby 2.0.0 was about eight years ago. With the older and newer disruptive changes, it’s actually not hard for the Ruby app you run now to run three times faster than what you were running eight years ago. Puma is <strong><em>good</em></strong>. Bootsnap made bootup much faster. Ruby itself, of course, is significantly better. But a lot of these changes are going to be seen as “not really Ruby changes.” Disruptive improvements are like that.</p>
+
+<p>And the most recent disruptive changes are going to take years to bear fruit. Indeed, some of them never will — Autofibers and Ractors, for instance, both have a significant chance of failing, long-term. There may never be any significant type-aware optimisations (or there may be.) I think at least one of those features will do well, and I’m certain at least one of them will basically fail. I just don’t know which is which.</p>
+
+<h2 id="but-did-it-fail">But Did It Fail?</h2>
+
+<p>I don’t think it failed. As an aspirational goal, it was a challenge, a bar to try to reach. And I think Ruby <strong><em>did</em></strong> reach that bar. Ruby 3.0 is a lot faster than Ruby 2.0, with both incremental tuning and interesting new disruptive changes. “Three times faster” is hard to define, but <a href="http://codefol.io/posts/is-ruby-3-actually-three-times-faster/" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">I think it’s fair to say it did it <span>
+              opens a new window
+            </span></a>.</p>
+
+<p>I think that on its own terms, it succeeded.</p>
+
+<p>I also think that speed isn’t a major factor slowing down Ruby adoption. Most people who use Ruby don’t need it to be faster. They like the extra free speed, sure. But they weren’t avoiding Ruby for speed reasons.</p>
+
+<p>There are people who avoid Ruby because of the <em>reputation of slowness</em>, which isn’t really about the speed. I don’t think a change in actual speed will change their minds.</p>
+
+<p>But for those of us using already it, the question is, “do the implementors of Ruby care about speed?”</p>
+
+<p>I think Ruby 3 is a very clear answer: “yes, without question.” From Ruby 2, they built incremental changes, and kept it up where they could — Ruby 2.5 adds about a 10% speedup across the board. And from around Ruby 2.5, as all the incremental change had been harvested, they started adding disruptive changes (JIT! Ractors! Autofibers!).</p>
+
+<p>Yes, Ruby cares about speed. Yes, Ruby 3 makes that obvious. And that’s what we’re here for.</p>
+
+<p>(Hey, you read to the bottom! This blog is full of <a href="https://www.fastruby.io/blog/tags/performance" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">other Ruby performance posts <span>
+              opens a new window
+            </span></a>. Care to read a few?)</p>
+
+    </section></div>
+  </div>
+</body>
+</html>

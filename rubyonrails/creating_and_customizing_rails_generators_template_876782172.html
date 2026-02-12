@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Creating and Customizing Rails Generators & Templates — Ruby on Rails Guides</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Creating and Customizing Rails Generators & Templates — Ruby on Rails Guides</h1>
+    <p><strong>URL:</strong> <a href="https://guides.rubyonrails.org/generators.html#generators-lookup">https://guides.rubyonrails.org/generators.html#generators-lookup</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876782172</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="container">
+        <p>When you create an application using the <code>rails</code> command, you are in fact using
+a Rails generator. After that, you can get a list of all available generators by
+invoking <code>bin/rails generate</code>:</p><div>
+<pre><code><span>$</span><span> </span><span>rails </span>new myapp
+<span>$</span><span> </span><span>cd </span>myapp
+<span>$</span><span> </span><span>bin/rails </span>generate
+</code></pre>
+</div>
+<p>To create a Rails application we use the <code>rails</code> global command which uses
+the version of Rails installed via <code>gem install rails</code>. When inside the
+directory of your application, we use the <code>bin/rails</code> command which uses the
+version of Rails bundled with the application.</p><p>You will get a list of all generators that come with Rails. To see a detailed
+description of a particular generator, invoke the generator with the <code>--help</code>
+option. For example:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate scaffold <span>--help</span>
+</code></pre>
+</div>
+<h2 id="creating-your-first-generator"><a href="#creating-your-first-generator"><span>2</span> Creating Your First Generator</a></h2><p>Generators are built on top of <a href="https://github.com/rails/thor">Thor</a>, which
+provides powerful options for parsing and a great API for manipulating files.</p><p>Let's build a generator that creates an initializer file named <code>initializer.rb</code>
+inside <code>config/initializers</code>. The first step is to create a file at
+<code>lib/generators/initializer_generator.rb</code> with the following content:</p><div>
+<pre><code><span>class</span> <span>InitializerGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>Base</span>
+  <span>def</span> <span>create_initializer_file</span>
+    <span>create_file</span> <span>"config/initializers/initializer.rb"</span><span>,</span> <span>&lt;&lt;~</span><span>RUBY</span><span>
+      # Add initialization content here
+</span><span>    RUBY</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>Our new generator is quite simple: it inherits from <a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Base.html"><code>Rails::Generators::Base</code></a>
+and has one method definition. When a generator is invoked, each public method
+in the generator is executed sequentially in the order that it is defined. Our
+method invokes <a href="https://www.rubydoc.info/gems/thor/Thor/Actions#create_file-instance_method"><code>create_file</code></a>, which will create a file at the given
+destination with the given content.</p><p>To invoke our new generator, we run:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate initializer
+</code></pre>
+</div>
+<p>Before we go on, let's see the description of our new generator:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate initializer <span>--help</span>
+</code></pre>
+</div>
+<p>Rails is usually able to derive a good description if a generator is namespaced,
+such as <code>ActiveRecord::Generators::ModelGenerator</code>, but not in this case. We can
+solve this problem in two ways. The first way to add a description is by calling
+<a href="https://www.rubydoc.info/gems/thor/Thor#desc-class_method"><code>desc</code></a> inside our generator:</p><div>
+<pre><code><span>class</span> <span>InitializerGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>Base</span>
+  <span>desc</span> <span>"This generator creates an initializer file at config/initializers"</span>
+  <span>def</span> <span>create_initializer_file</span>
+    <span>create_file</span> <span>"config/initializers/initializer.rb"</span><span>,</span> <span>&lt;&lt;~</span><span>RUBY</span><span>
+      # Add initialization content here
+</span><span>    RUBY</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>Now we can see the new description by invoking <code>--help</code> on the new generator.</p><p>The second way to add a description is by creating a file named <code>USAGE</code> in the
+same directory as our generator. We are going to do that in the next step.</p><h2 id="creating-generators-with-generators"><a href="#creating-generators-with-generators"><span>3</span> Creating Generators with Generators</a></h2><p>Generators themselves have a generator. Let's remove our <code>InitializerGenerator</code>
+and use <code>bin/rails generate generator</code> to generate a new one:</p><div>
+<pre><code><span>$</span><span> </span><span>rm </span>lib/generators/initializer_generator.rb
+<span>
+</span><span>$</span><span> </span><span>bin/rails </span>generate generator initializer
+<span>      create  lib/generators/initializer
+      create  lib/generators/initializer/initializer_generator.rb
+      create  lib/generators/initializer/USAGE
+      create  lib/generators/initializer/templates
+      invoke  test_unit
+      create    test/lib/generators/initializer_generator_test.rb
+</span></code></pre>
+</div>
+<p>This is the generator just created:</p><div>
+<pre><code><span>class</span> <span>InitializerGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span>
+  <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>First, notice that the generator inherits from <a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/NamedBase.html"><code>Rails::Generators::NamedBase</code></a>
+instead of <code>Rails::Generators::Base</code>. This means that our generator expects at
+least one argument, which will be the name of the initializer and will be
+available to our code via <code>name</code>.</p><p>We can see that by checking the description of the new generator:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate initializer <span>--help</span>
+<span>Usage:
+  bin/rails generate initializer NAME [options]
+</span></code></pre>
+</div>
+<p>Also, notice that the generator has a class method called <a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Base.html#method-c-source_root"><code>source_root</code></a>.
+This method points to the location of our templates, if any. By default it
+points to the <code>lib/generators/initializer/templates</code> directory that was just
+created.</p><p>In order to understand how generator templates work, let's create the file
+<code>lib/generators/initializer/templates/initializer.rb</code> with the following
+content:</p><div>
+<pre><code><span># Add initialization content here</span>
+</code></pre>
+</div>
+<p>And let's change the generator to copy this template when invoked:</p><div>
+<pre><code><span>class</span> <span>InitializerGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span>
+  <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span>
+
+  <span>def</span> <span>copy_initializer_file</span>
+    <span>copy_file</span> <span>"initializer.rb"</span><span>,</span> <span>"config/initializers/</span><span>#{</span><span>file_name</span><span>}</span><span>.rb"</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>Now let's run our generator:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate initializer core_extensions
+<span>      create  config/initializers/core_extensions.rb
+
+</span><span>$</span><span> </span><span>cat </span>config/initializers/core_extensions.rb
+<span>#</span><span> </span>Add initialization content here
+</code></pre>
+</div>
+<p>We see that <a href="https://www.rubydoc.info/gems/thor/Thor/Actions#copy_file-instance_method"><code>copy_file</code></a> created <code>config/initializers/core_extensions.rb</code>
+with the contents of our template. (The <code>file_name</code> method used in the
+destination path is inherited from <code>Rails::Generators::NamedBase</code>.)</p><h2 id="generator-command-line-options"><a href="#generator-command-line-options"><span>4</span> Generator Command Line Options</a></h2><p>Generators can support command line options using <a href="https://www.rubydoc.info/gems/thor/Thor/Base/ClassMethods#class_option-instance_method"><code>class_option</code></a>. For
+example:</p><div>
+<pre><code><span>class</span> <span>InitializerGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span>
+  <span>class_option</span> <span>:scope</span><span>,</span> <span>type: :string</span><span>,</span> <span>default: </span><span>"app"</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>Now our generator can be invoked with a <code>--scope</code> option:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate initializer theme <span>--scope</span> dashboard
+</code></pre>
+</div>
+<p>Option values are accessible in generator methods via <a href="https://www.rubydoc.info/gems/thor/Thor/Base#options-instance_method"><code>options</code></a>:</p><div>
+<pre><code><span>def</span> <span>copy_initializer_file</span>
+  <span>@scope</span> <span>=</span> <span>options</span><span>[</span><span>"scope"</span><span>]</span>
+<span>end</span>
+</code></pre>
+</div>
+<h2 id="generator-resolution"><a href="#generator-resolution"><span>5</span> Generator Resolution</a></h2><p>When resolving a generator's name, Rails looks for the generator using multiple
+file names. For example, when you run <code>bin/rails generate initializer core_extensions</code>,
+Rails tries to load each of the following files, in order, until one is found:</p>
+<ul>
+<li><code>rails/generators/initializer/initializer_generator.rb</code></li>
+<li><code>generators/initializer/initializer_generator.rb</code></li>
+<li><code>rails/generators/initializer_generator.rb</code></li>
+<li><code>generators/initializer_generator.rb</code></li>
+</ul>
+<p>If none of these are found, an error will be raised.</p><p>We put our generator in the application's <code>lib/</code> directory because that
+directory is in <code>$LOAD_PATH</code>, thus allowing Rails to find and load the file.</p><h2 id="overriding-rails-generator-templates"><a href="#overriding-rails-generator-templates"><span>6</span> Overriding Rails Generator Templates</a></h2><p>Rails will also look in multiple places when resolving generator template files.
+One of those places is the application's <code>lib/templates/</code> directory. This
+behavior allows us to override the templates used by Rails' built-in generators.
+For example, we could override the <a href="https://github.com/rails/rails/blob/main/railties/lib/rails/generators/rails/scaffold_controller/templates/controller.rb.tt">scaffold controller template</a> or the
+<a href="https://github.com/rails/rails/tree/main/railties/lib/rails/generators/erb/scaffold/templates">scaffold view templates</a>.</p><p>To see this in action, let's create a <code>lib/templates/erb/scaffold/index.html.erb.tt</code>
+file with the following contents:</p><div>
+<pre><code><span>&lt;%%</span> <span>@</span><span>&lt;</span><span>%= plural_table_name </span><span>%&gt;</span>.count %&gt; <span>&lt;%=</span><span> human_name.pluralize </span><span>%&gt;</span>
+</code></pre>
+</div>
+<p>Note that the template is an ERB template that renders <em>another</em> ERB template.
+So any <code>&lt;%</code> that should appear in the <em>resulting</em> template must be escaped as
+<code>&lt;%%</code> in the <em>generator</em> template.</p><p>Now let's run Rails' built-in scaffold generator:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate scaffold Post title:string
+<span>      ...
+</span><span>      create      app/views/posts/index.html.erb
+</span><span>      ...
+</span></code></pre>
+</div>
+<p>The contents of <code>app/views/posts/index.html.erb</code> is:</p><div>
+<pre><code><span>&lt;%</span> <span>@posts</span><span>.</span><span>count</span> <span>%&gt;</span> Posts
+</code></pre>
+</div>
+<h2 id="overriding-rails-generators"><a href="#overriding-rails-generators"><span>7</span> Overriding Rails Generators</a></h2><p>Rails' built-in generators can be configured via <a href="https://guides.rubyonrails.org/configuring.html#configuring-generators"><code>config.generators</code></a>,
+including overriding some generators entirely.</p><p>First, let's take a closer look at how the scaffold generator works.</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate scaffold User name:string
+<span>      invoke  active_record
+      create    db/migrate/20230518000000_create_users.rb
+      create    app/models/user.rb
+      invoke    test_unit
+      create      test/models/user_test.rb
+      create      test/fixtures/users.yml
+      invoke  resource_route
+       route    resources :users
+      invoke  scaffold_controller
+      create    app/controllers/users_controller.rb
+      invoke    erb
+      create      app/views/users
+      create      app/views/users/index.html.erb
+      create      app/views/users/edit.html.erb
+      create      app/views/users/show.html.erb
+      create      app/views/users/new.html.erb
+      create      app/views/users/_form.html.erb
+      create      app/views/users/_user.html.erb
+      invoke    resource_route
+      invoke    test_unit
+      create      test/controllers/users_controller_test.rb
+      create      test/system/users_test.rb
+      invoke    helper
+      create      app/helpers/users_helper.rb
+      invoke      test_unit
+      invoke    jbuilder
+      create      app/views/users/index.json.jbuilder
+      create      app/views/users/show.json.jbuilder
+</span></code></pre>
+</div>
+<p>From the output, we can see that the scaffold generator invokes other
+generators, such as the <code>scaffold_controller</code> generator. And some of those
+generators invoke other generators too. In particular, the <code>scaffold_controller</code>
+generator invokes several other generators, including the <code>helper</code> generator.</p><p>Let's override the built-in <code>helper</code> generator with a new generator. We'll name
+the generator <code>my_helper</code>:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate generator <span>rails</span>/my_helper
+<span>      create  lib/generators/rails/my_helper
+      create  lib/generators/rails/my_helper/my_helper_generator.rb
+      create  lib/generators/rails/my_helper/USAGE
+      create  lib/generators/rails/my_helper/templates
+      invoke  test_unit
+      create    test/lib/generators/rails/my_helper_generator_test.rb
+</span></code></pre>
+</div>
+<p>And in <code>lib/generators/rails/my_helper/my_helper_generator.rb</code> we'll define
+the generator as:</p><div>
+<pre><code><span>class</span> <span>Rails::MyHelperGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span>
+  <span>def</span> <span>create_helper_file</span>
+    <span>create_file</span> <span>"app/helpers/</span><span>#{</span><span>file_name</span><span>}</span><span>_helper.rb"</span><span>,</span> <span>&lt;&lt;~</span><span>RUBY</span><span>
+      module </span><span>#{</span><span>class_name</span><span>}</span><span>Helper
+        # I'm helping!
+      end
+</span><span>    RUBY</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>Finally, we need to tell Rails to use the <code>my_helper</code> generator instead of the
+built-in <code>helper</code> generator. For that we use <code>config.generators</code>. In
+<code>config/application.rb</code>, let's add:</p><div>
+<pre><code><span>config</span><span>.</span><span>generators</span> <span>do</span> <span>|</span><span>g</span><span>|</span>
+  <span>g</span><span>.</span><span>helper</span> <span>:my_helper</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>Now if we run the scaffold generator again, we see the <code>my_helper</code> generator in
+action:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate scaffold Article body:text
+<span>      ...
+</span><span>      invoke  scaffold_controller
+</span><span>      ...
+</span><span>      invoke    my_helper
+      create      app/helpers/articles_helper.rb
+</span><span>      ...
+</span></code></pre>
+</div>
+<p>You may notice that the output for the built-in <code>helper</code> generator
+includes "invoke test_unit", whereas the output for <code>my_helper</code> does not.
+Although the <code>helper</code> generator does not generate tests by default, it does
+provide a hook to do so using <a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Base.html#method-c-hook_for"><code>hook_for</code></a>. We can do the same by including
+<code>hook_for :test_framework, as: :helper</code> in the <code>MyHelperGenerator</code> class. See
+the <code>hook_for</code> documentation for more information.</p><h3 id="generators-fallbacks"><a href="#generators-fallbacks"><span>7.1</span> Generators Fallbacks</a></h3><p>Another way to override specific generators is by using <em>fallbacks</em>. A fallback
+allows a generator namespace to delegate to another generator namespace.</p><p>For example, let's say we want to override the <code>test_unit:model</code> generator with
+our own <code>my_test_unit:model</code> generator, but we don't want to replace all of the
+other <code>test_unit:*</code> generators such as <code>test_unit:controller</code>.</p><p>First, we create the <code>my_test_unit:model</code> generator in
+<code>lib/generators/my_test_unit/model/model_generator.rb</code>:</p><div>
+<pre><code><span>module</span> <span>MyTestUnit</span>
+  <span>class</span> <span>ModelGenerator</span> <span>&lt;</span> <span>Rails</span><span>::</span><span>Generators</span><span>::</span><span>NamedBase</span>
+    <span>source_root</span> <span>File</span><span>.</span><span>expand_path</span><span>(</span><span>"templates"</span><span>,</span> <span>__dir__</span><span>)</span>
+
+    <span>def</span> <span>do_different_stuff</span>
+      <span>say</span> <span>"Doing different stuff..."</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>Next, we use <code>config.generators</code> to configure the <code>test_framework</code> generator as
+<code>my_test_unit</code>, but we also configure a fallback such that any missing
+<code>my_test_unit:*</code> generators resolve to <code>test_unit:*</code>:</p><div>
+<pre><code><span>config</span><span>.</span><span>generators</span> <span>do</span> <span>|</span><span>g</span><span>|</span>
+  <span>g</span><span>.</span><span>test_framework</span> <span>:my_test_unit</span><span>,</span> <span>fixture: </span><span>false</span>
+  <span>g</span><span>.</span><span>fallbacks</span><span>[</span><span>:my_test_unit</span><span>]</span> <span>=</span> <span>:test_unit</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>Now when we run the scaffold generator, we see that <code>my_test_unit</code> has replaced
+<code>test_unit</code>, but only the model tests have been affected:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>generate scaffold Comment body:text
+<span>      invoke  active_record
+      create    db/migrate/20230518000000_create_comments.rb
+      create    app/models/comment.rb
+      invoke    my_test_unit
+    Doing different stuff...
+      invoke  resource_route
+       route    resources :comments
+      invoke  scaffold_controller
+      create    app/controllers/comments_controller.rb
+      invoke    erb
+      create      app/views/comments
+      create      app/views/comments/index.html.erb
+      create      app/views/comments/edit.html.erb
+      create      app/views/comments/show.html.erb
+      create      app/views/comments/new.html.erb
+      create      app/views/comments/_form.html.erb
+      create      app/views/comments/_comment.html.erb
+      invoke    resource_route
+      invoke    my_test_unit
+      create      test/controllers/comments_controller_test.rb
+      create      test/system/comments_test.rb
+      invoke    helper
+      create      app/helpers/comments_helper.rb
+      invoke      my_test_unit
+      invoke    jbuilder
+      create      app/views/comments/index.json.jbuilder
+      create      app/views/comments/show.json.jbuilder
+</span></code></pre>
+</div>
+<h2 id="application-templates"><a href="#application-templates"><span>8</span> Application Templates</a></h2><p>Application templates are a special kind of generator. They can use all of the
+<a href="#generator-helper-methods">generator helper methods</a>, but are written as a Ruby
+script instead of a Ruby class. Here is an example:</p><div>
+<pre><code><span># template.rb</span>
+
+<span>if</span> <span>yes?</span><span>(</span><span>"Would you like to install Devise?"</span><span>)</span>
+  <span>gem</span> <span>"devise"</span>
+  <span>devise_model</span> <span>=</span> <span>ask</span><span>(</span><span>"What would you like the user model to be called?"</span><span>,</span> <span>default: </span><span>"User"</span><span>)</span>
+<span>end</span>
+
+<span>after_bundle</span> <span>do</span>
+  <span>if</span> <span>devise_model</span>
+    <span>generate</span> <span>"devise:install"</span>
+    <span>generate</span> <span>"devise"</span><span>,</span> <span>devise_model</span>
+    <span>rails_command</span> <span>"db:migrate"</span>
+  <span>end</span>
+
+  <span>git</span> <span>add: </span><span>"."</span><span>,</span> <span>commit: </span><span>%(-m 'Initial commit')</span>
+<span>end</span>
+</code></pre>
+</div>
+<p>First, the template asks the user whether they would like to install Devise.
+If the user replies "yes" (or "y"), the template adds Devise to the <code>Gemfile</code>,
+and asks the user for the name of the Devise user model (defaulting to <code>User</code>).
+Later, after <code>bundle install</code> has been run, the template will run the Devise
+generators and <code>rails db:migrate</code> if a Devise model was specified. Finally, the
+template will <code>git add</code> and <code>git commit</code> the entire app directory.</p><p>We can run our template when generating a new Rails application by passing the
+<code>-m</code> option to the <code>rails new</code> command:</p><div>
+<pre><code><span>$</span><span> </span><span>rails </span>new my_cool_app <span>-m</span> path/to/template.rb
+</code></pre>
+</div>
+<p>Alternatively, we can run our template inside an existing application with
+<code>bin/rails app:template</code>:</p><div>
+<pre><code><span>$</span><span> </span><span>bin/rails </span>app:template <span>LOCATION</span><span>=</span>path/to/template.rb
+</code></pre>
+</div>
+<p>Templates also don't need to be stored locally — you can specify a URL instead
+of a path:</p><div>
+<pre><code><span>$</span><span> </span><span>rails </span>new my_cool_app <span>-m</span> http://example.com/template.rb
+<span>$</span><span> </span><span>bin/rails </span>app:template <span>LOCATION</span><span>=</span>http://example.com/template.rb
+</code></pre>
+</div>
+<h2 id="generator-helper-methods"><a href="#generator-helper-methods"><span>9</span> Generator Helper Methods</a></h2><p>Thor provides many generator helper methods via <a href="https://www.rubydoc.info/gems/thor/Thor/Actions"><code>Thor::Actions</code></a>, such as:</p>
+<ul>
+<li><a href="https://www.rubydoc.info/gems/thor/Thor/Actions#copy_file-instance_method"><code>copy_file</code></a></li>
+<li><a href="https://www.rubydoc.info/gems/thor/Thor/Actions#create_file-instance_method"><code>create_file</code></a></li>
+<li><a href="https://www.rubydoc.info/gems/thor/Thor/Actions#gsub_file-instance_method"><code>gsub_file</code></a></li>
+<li><a href="https://www.rubydoc.info/gems/thor/Thor/Actions#insert_into_file-instance_method"><code>insert_into_file</code></a></li>
+<li><a href="https://www.rubydoc.info/gems/thor/Thor/Actions#inside-instance_method"><code>inside</code></a></li>
+</ul>
+<p>In addition to those, Rails also provides many helper methods via
+<a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html"><code>Rails::Generators::Actions</code></a>, such as:</p>
+<ul>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html#method-i-environment"><code>environment</code></a></li>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html#method-i-gem"><code>gem</code></a></li>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html#method-i-generate"><code>generate</code></a></li>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html#method-i-git"><code>git</code></a></li>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html#method-i-initializer"><code>initializer</code></a></li>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html#method-i-lib"><code>lib</code></a></li>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html#method-i-rails_command"><code>rails_command</code></a></li>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html#method-i-rake"><code>rake</code></a></li>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Actions.html#method-i-route"><code>route</code></a></li>
+</ul>
+<h2 id="testing-generators"><a href="#testing-generators"><span>10</span> Testing Generators</a></h2><p>Rails provides testing helper methods via
+<a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Testing/Behavior.html"><code>Rails::Generators::Testing::Behaviour</code></a>, such as:</p>
+<ul>
+<li><a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Testing/Behavior.html#method-i-run_generator"><code>run_generator</code></a></li>
+</ul>
+<p>If running tests against generators you will need to set
+<code>RAILS_LOG_TO_STDOUT=true</code> in order for debugging tools to work.</p><div>
+<pre><code><span>RAILS_LOG_TO_STDOUT</span><span>=</span><span>true</span> ./bin/test <span>test</span>/generators/actions_test.rb
+</code></pre>
+</div>
+<p>In addition to those, Rails also provides additional assertions via
+<a href="https://api.rubyonrails.org/v7.2.1.1/classes/Rails/Generators/Testing/Assertions.html"><code>Rails::Generators::Testing::Assertions</code></a>.</p>
+        <hr>
+        <h3>Feedback</h3>
+        <p>
+          You're encouraged to help improve the quality of this guide.
+        </p>
+        <p>
+          Please contribute if you see any typos or factual errors.
+          To get started, you can read our <a href="https://edgeguides.rubyonrails.org/contributing_to_ruby_on_rails.html#contributing-to-the-rails-documentation">documentation contributions</a> section.
+        </p>
+        <p>
+          You may also find incomplete content or stuff that is not up to date.
+          Please do add any missing documentation for main. Make sure to check
+          <a href="https://edgeguides.rubyonrails.org/">Edge Guides</a> first to verify
+          if the issues are already fixed or not on the main branch.
+          Check the <a href="https://guides.rubyonrails.org/ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a>
+          for style and conventions.
+        </p>
+        <p>
+          If for whatever reason you spot something to fix but cannot patch it yourself, please
+          <a href="https://github.com/rails/rails/issues">open an issue</a>.
+        </p>
+        <p>And last but not least, any kind of discussion regarding Ruby on Rails
+          documentation is very welcome on the <a href="https://discuss.rubyonrails.org/c/rubyonrails-docs">official Ruby on Rails Forum</a>.
+        </p>
+      </div></div>
+  </div>
+</body>
+</html>

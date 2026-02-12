@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How to Use C Functions in Python</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How to Use C Functions in Python</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/erikwhiting88/how-to-use-c-functions-in-python-7do">https://dev.to/erikwhiting88/how-to-use-c-functions-in-python-7do</a></p>
+    <p><strong>Tags:</strong> cpp, python</p>
+    <p><strong>Bookmark ID:</strong> 876771813</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-article-id="152135" id="article-body">
+            <p>Did you know you can write functions in C and then call them directly from Python? Isn't that cool? Let's skip all the background and the "why would I ever need to do this" for now and just dive on in to the code!</p>
+
+<h2>
+  <a name="first-the-c-function" href="#first-the-c-function">
+  </a>
+  First, the C Function
+</h2>
+
+<p>To demonstrate, we're going to write a program in C to find the factorial of a number. If you don't remember factorials from high school, here's an example:</p>
+
+<p>4! (read <em>four factorial</em>) = 4 * 3 * 2 * 1</p>
+
+<p>That is what our C program is going to do. Fire up a text editor and lets crank this function out:<br>
+</p>
+
+<div>
+<pre><code><span>long</span> <span>factorial</span><span>(</span><span>int</span> <span>user_input</span><span>)</span> <span>{</span>
+  <span>long</span> <span>return_val</span> <span>=</span> <span>1</span><span>;</span>
+  <span>if</span> <span>(</span><span>user_input</span> <span>&lt;=</span> <span>0</span><span>)</span> <span>{</span>
+    <span>return</span> <span>-</span><span>1</span><span>;</span>
+  <span>else</span> <span>{</span>
+    <span>for</span> <span>(</span><span>long</span> <span>i</span> <span>=</span> <span>1</span><span>;</span> <span>i</span> <span>&lt;=</span> <span>user_input</span><span>;</span> <span>i</span><span>++</span><span>)</span> <span>{</span>
+      <span>return_val</span> <span>*=</span> <span>i</span><span>;</span>
+    <span>}</span>
+  <span>}</span>
+  <span>return</span> <span>return_val</span><span>;</span>
+<span>}</span>
+
+<span>int</span> <span>main</span><span>()</span> <span>{</span>
+  <span>return</span> <span>0</span><span>;</span>
+<span>}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>We are defining a function called "factorial" which will return a "long." We're using long instead of int because factorial functions can return some pretty big numbers.</p>
+
+<p>Next, we're declaring and initializing <code>return_val</code> which we'll use to return the value of the calculation.</p>
+
+<p>Now, the <code>if</code> statement is ensuring the number passed in by the user is positive, and if not, to return the value of -1. We're returning -1 because later, when we wrap this function in Python, we're going to know that getting -1 back from the C function probably means there was bad input.</p>
+
+<p>If the number returned is greater than 0, we enter our loop in which we use an iterator, <code>i</code>, and multiply our <code>return_val</code> variable by it until <code>i</code> is equal to the number passed in by the user. Basically, this loop is saying:<br>
+<code>n! = 1 * 2 * 3 * 4 ... * n</code></p>
+
+<p>The final part, with the <code>int main()</code> is to appease the C compiler when we turn this into a .so file. I may be mistaken, but I'm pretty sure this part is necessary even though it doesn't do anything. If anyone knows any better, please feel free to mention so.</p>
+<h2>
+  <a name="the-prepython-part" href="#the-prepython-part">
+  </a>
+  The Pre-Python Part
+</h2>
+
+<p>Now that our C is written we have a couple things to do before we write the Python bit. First, save the .c file. I called mine <code>cfactorial.c</code>. Now, we have to turn this into a "shared object" file. In Linux, the command to do so is this:<br>
+</p>
+
+<div>
+<pre><code><span>$ </span>cc <span>-fPIC</span> <span>-shared</span> <span>-o</span> cfactorial.so cfactorial.c
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>This particular command will make a <code>cfactorial.so</code> out of my <code>cfactorial.c</code> file. Now, to the actual Python</p>
+
+<h2>
+  <a name="the-python-part" href="#the-python-part">
+  </a>
+  The Python Part
+</h2>
+
+<p>Almost done! Fire up that text editor again and lets script out some Python. First, we need to import the <code>ctypes</code> module. Then, if you're anything like me, you'll want to put the absolute path of the <code>.so</code> file into its own variable. So the top of my <code>pyfactorial.py</code> looks like this:<br>
+</p>
+
+<div>
+<pre><code><span>from</span> <span>ctypes</span> <span>import</span> <span>*</span>
+
+<span>so_file</span> <span>=</span> <span>'/home/ewhiting/cstuff/cfactorial.so'</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>The next thing we want to do is create our cdll object out of our previously created <code>.so</code> file. So, after the so_file variable assignment, put:<br>
+</p>
+
+<div>
+<pre><code><span>cfactorial</span> <span>=</span> <span>CDLL</span><span>(</span><span>so_file</span><span>)</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Now, technically at this point you can start messing with calling the C function in the Python script by running python in the command line but lets be a little responsible first. Before we play with it some more, lets wrap our C function in a Python function. After creating the <code>cfactorial</code> variable, create the following function:<br>
+</p>
+
+<div>
+<pre><code><span>def</span> <span>factorial</span><span>(</span><span>num</span><span>):</span>
+  <span>c_return</span> <span>=</span> <span>cfactorial</span><span>.</span><span>factorial</span><span>(</span><span>num</span><span>)</span>
+  <span>if</span> <span>(</span><span>c_return</span> <span>!=</span> <span>-</span><span>1</span><span>):</span>
+    <span>return</span> <span>c_return</span>
+  <span>else</span><span>:</span>
+    <span>return</span> <span>"C Function failed, check inputs"</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Save this file as pyfactorial.py. Altogether, it should look like this:<br>
+</p>
+
+<div>
+<pre><code><span>from</span> <span>ctypes</span> <span>import</span> <span>*</span>
+
+<span>so_file</span> <span>=</span> <span>'/home/ewhiting/cstuff/cfactorial.so'</span>
+<span>cfactorial</span> <span>=</span> <span>CDLL</span><span>(</span><span>so_file</span><span>)</span>
+
+<span>def</span> <span>factorial</span><span>(</span><span>num</span><span>):</span>
+  <span>c_return</span> <span>=</span> <span>cfactorial</span><span>.</span><span>factorial</span><span>(</span><span>num</span><span>)</span>
+  <span>if</span> <span>(</span><span>c_return</span> <span>!=</span> <span>-</span><span>1</span><span>):</span>
+    <span>return</span> <span>c_return</span>
+  <span>else</span><span>:</span>
+    <span>return</span> <span>"C Function failed, check inputs"</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Note, the way to call functions inside the imported C shared object file is by saying <code>&lt;CDLL Object&gt;.&lt;function name from C code&gt;(&lt;parameter&gt;)</code>. Easy!</p>
+
+<p>So basically, any time we want to use that C function within Python, we call the <code>factorial</code> function which will run the C function with the parameter passed in by the user and evaluate the result. If the C function returns -1 (remember we put that in there), the Python script knows that there was a problem. Otherwise, it will return the number. Lets try it out! Fire up your terminal and start <code>python</code><br>
+</p>
+
+<div>
+<pre><code><span>&gt;&gt;&gt;</span> <span>import</span> <span>pyfactorial</span> <span>as</span> <span>pf</span>
+<span>&gt;&gt;&gt;</span> <span>pf</span><span>.</span><span>factorial</span><span>(</span><span>5</span><span>)</span>
+<span>120</span>
+<span>&gt;&gt;&gt;</span> <span>pf</span><span>.</span><span>factorial</span><span>(</span><span>10</span><span>)</span>
+<span>3628800</span>
+<span>&gt;&gt;&gt;</span> <span>pf</span><span>.</span><span>factorial</span><span>(</span><span>-</span><span>4</span><span>)</span>
+<span>'C Function failed, check inputs'</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>Ta-da!! That's the basic idea behind using C functions in Python. This is definitely a tool worth having. Apply all your other programmerly knowledge to making awesome functions and features, and let me know if you have any questions.</p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

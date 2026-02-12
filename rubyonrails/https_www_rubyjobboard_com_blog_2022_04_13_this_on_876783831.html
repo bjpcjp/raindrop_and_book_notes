@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>https://www.rubyjobboard.com/blog/2022/04/13/this-one-rails-validation-trick-that-makes-your-code-more-awesome</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>https://www.rubyjobboard.com/blog/2022/04/13/this-one-rails-validation-trick-that-makes-your-code-more-awesome</h1>
+    <p><strong>URL:</strong> <a href="https://www.rubyjobboard.com/blog/2022/04/13/this-one-rails-validation-trick-that-makes-your-code-more-awesome">https://www.rubyjobboard.com/blog/2022/04/13/this-one-rails-validation-trick-that-makes-your-code-more-awesome</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876783831</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section>
+    <article>
+      <section>
+        
+        <p>
+          Matthew •
+          April 13, 2022
+        </p>
+      </section>
+        <img alt="Smiling emoji face points at a monitor with some Ruby code on it" src="http://web.archive.org/web/20221201061506im_/https://www.rubyjobboard.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBdVlIIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--17daa36a7c154d07fa63cecb4beaea9c469a1c41/smiling-guy-points-at-monitor.jpg">
+      <p>Rails is filled with small cool features that make life better once you know about them. One that we all know about but might not use that often is validation contexts.</p>
+
+<p>If you are in a situation where an object lives through some kind of workflow or several users are building up an object over time, this might be the tool to help.</p>
+
+<p>A follow-on effect is that validation contexts push you to find good names for states and actions in your application. I've always found that good names clarify concepts and make the code cleaner.</p>
+
+<h2>What are validation contexts?</h2>
+
+<p><a href="http://web.archive.org/web/20221201061506/https://guides.rubyonrails.org/active_record_validations.html">The documentation</a> has a good explanation, but here's a quick recap:</p>
+
+<p>Calls like <code>#save</code> and <code>#valid</code> let you pass in a symbol as a validation context.</p>
+<div><pre><code><span>post</span><span>.</span><span>valid?</span><span>(</span><span>:publish</span><span>)</span>
+</code></pre></div>
+<p>If we have validations set up like this in a class:</p>
+<div><pre><code><span>class</span> <span>Post</span>
+  <span>validates</span> <span>:title</span><span>,</span> <span>presence: </span><span>true</span><span>,</span> <span>on: </span><span>[</span> <span>:publish</span> <span>]</span>
+<span>end</span>
+</code></pre></div>
+<p>The system will only check for the presence of the title when you pass in the <code>:publish</code> context.</p>
+
+<p>By default, Rails will provide the context <code>:create</code> or <code>:update</code> when creating or updating an object. (But you can't pass in a context to <code>#create</code> or <code>#update</code>!)</p>
+
+<p>You can pass the <code>:on</code> value to most validation DSL commands.</p>
+
+<h2>How they can make your code more awesome</h2>
+
+<p>Validation contexts drive us to create clearer code with good names and let us show different users only the errors that are meaningful to them.</p>
+
+<p>Many entities evolve through a lifecycle on this website. <code>JobPost</code> is an example. Multiple people will work on a <code>JobPost</code> like a submitter (i.e., customer) and the publisher (me).</p>
+
+<p>This approach lets us, for example, save work in progress. Or it enables the customer to get through the flow with less friction because they don't need to fill in all fields.</p>
+
+<p>The code looks something like this:</p>
+<div><pre><code><span>class</span> <span>JobPost</span>
+
+  <span>with_options</span> <span>on: </span><span>[</span> <span>:submit</span> <span>]</span> <span>do</span>
+    <span># A minimal set of attributes</span>
+  <span>end</span>
+
+  <span>with_options</span> <span>on: </span><span>[</span> <span>:publish</span> <span>]</span>
+    <span># More attributes with stricter requirements</span>
+  <span>end</span>
+
+  <span>def</span> <span>submittable?</span>
+    <span>valid?</span><span>(</span><span>:submit</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>publishable?</span>
+    <span>valid?</span><span>(</span><span>:publish</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>save_as_submitter</span>
+    <span>save</span><span>(</span><span>context: :submit</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>save_as_publisher</span>
+    <span>save</span><span>(</span><span>context: :publish</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>The small but magical thing, at least for me, is wrapping the call to <code>#valid?</code> in its predicate method. (I'm a little crazy about predicates.)  My experience is that this makes for terse, understandable code.  It's subtle but impactful, I think.</p>
+
+<p>And once you do that to valid, it seems to make sense to do it for save, too.  So, <code>#save_as_publisher</code> reveals itself.</p>
+
+<p>That makes your code more readable, and it also lets you communicate to different errors to the user depending on, err, context. (I've also found that this makes code in controllers more intention revealing!)</p>
+
+<h2>Another example</h2>
+
+<p>I worked on a project where I had to ingest noisy legacy data. Lots of this data failed the validation rules for the new app, but I couldn't discard it. The solution here was validation contexts.</p>
+<div><pre><code><span>class</span> <span>Contact</span>
+  <span>with_options</span> <span>on: </span><span>[</span> <span>:ingest</span> <span>]</span> <span>do</span>
+    <span>validates</span> <span>:state</span><span>,</span> <span>format: </span><span>/regex/</span>
+    <span># More validations ...</span>
+  <span>end</span>
+
+  <span>with_options</span> <span>on: </span><span>[</span> <span>:create</span><span>,</span> <span>:update</span> <span>]</span> <span>do</span>
+    <span>validates</span> <span>:state</span><span>,</span> <span>included: </span><span>%w[ MA NH RI ]</span>
+    <span># More validations ...</span>
+  <span>end</span>
+
+  <span>def</span> <span>ingestable?</span>
+    <span>valid?</span><span>(</span><span>:ingest</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>save_as_ingester</span>
+    <span>save</span><span>(</span><span>context: :ingest</span><span>)</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+<p>This approach let me get most of the legacy data into the new system and let humans resolve problem cases over time. (Or it let them discard it with more confidence and transparency.)</p>
+
+<p>Once I got into the habit of using them, I started finding that I keep finding more places to use them.</p>
+
+<h2>In conclusion</h2>
+
+<p>Using validation contexts may seem like a slight change in the code, but I've found that it helps me think more clearly about objects. It also prompts me to find names for things, which always seems to clean up code (and feels like a triumph!)</p>
+
+<p>And I think it's neat! Let me know if you've used this feature and how it worked out for you!</p>
+
+    </article>
+  </section><section>
+  <h4>Get the latest sent to your inbox once a week!</h4>
+  <p>
+    Receive a weekly update of technical tips, Rails job market
+    analysis, Rails job listings and more!
+  </p>
+
+  
+
+  <p>
+    <small>
+      We'll never share your email address. See our
+      <a href="https://www.rubyjobboard.com/web/20221201061506/https://www.rubyjobboard.com/pages/privacy_and_data_policies">Privacy &amp; Data Policies</a>
+      for more details.
+    </small>
+  </p>
+</section><section>
+    <hr>
+    <p>
+  Matthew Bellantoni is a seasoned technology manager experienced
+  growing teams from 0 people to under 100 people, from $0 to
+  $100M in revenue, at companies in SaaS, eCommerce, marketplace,
+  and enterprise software. His time has typically been at
+  fast-growing VC-backed companies, mainly using Ruby on Rails,
+  where he's been senior management usually reporting to the CEO.
+  (He's also written a Ruby on Rails gem with over a million
+  downloads.)  You can contact him at
+  <a href="http://web.archive.org/web/20221201061506/mailto:matthew@rubyjobboard.com">matthew@rubyjobboard.com</a> or
+  at <a target="_blank" href="http://web.archive.org/web/20221201061506/https://twitter.com/mjbellantoni">@mjbellantoni</a>.
+</p>
+
+  </section></div>
+  </div>
+</body>
+</html>

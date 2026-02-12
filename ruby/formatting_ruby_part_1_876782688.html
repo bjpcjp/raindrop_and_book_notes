@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Formatting Ruby: Part 1</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Formatting Ruby: Part 1</h1>
+    <p><strong>URL:</strong> <a href="https://kddnewton.com/2022/02/14/formatting-ruby-part-1.html">https://kddnewton.com/2022/02/14/formatting-ruby-part-1.html</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876782688</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+      <div>
+        <h2>Formatting Ruby<small>: Part 1 - How ripper works</small></h2>
+
+<p><time>Feb 14, 2022</time></p><p>This post is part of a series about how <a href="https://github.com/ruby-syntax-tree/syntax_tree">ruby-syntax-tree/syntax_tree</a> works under the hood. It’s part of an ongoing effort to spread the word about this project, document how it works, and explain some of the internals for anyone interested. This post specifically focuses on ripper, the Ruby standard library used to parse Ruby files. For an overview of this series, see the <a href="https://kddnewton.com/2022/02/03/formatting-ruby-part-0">introduction post</a>.</p>
+
+<h2 id="history">History</h2>
+
+<p>On October 20th, 2001, <a href="https://i.loveruby.net/">Minero Aoki</a> released version 0.0.1 of ripper, a streaming Ruby parser. You can still go to his website and download the <a href="https://i.loveruby.net/archive/ripper/ripper-0.0.1.tar.gz">first version</a> he released.</p>
+
+<p>At the time, Ruby 1.7 had just come out. Ruby was still a tree-walk interpreter (it didn’t use an internal bytecode). There was work going on to create Ruby’s first bytecode, but it hadn’t yet landed on the master branch. Because Ruby’s tree was so central to how it functioned, there was a lot of interest in accessing, debugging, and manipulating it. Other projects at the time focused on taking the already parsed tree and returning it to the user, as in <a href="https://kddnewton.com/parsing-ruby/projects/ruth/readme.txt">ruth</a> and <a href="https://kddnewton.com/parsing-ruby/projects/nodeDump/README.txt">nodeDump</a>.</p>
+
+<p>Ripper took a different approach. Because Ruby’s parser was created through <a href="http://dinosaur.compilertools.net/yacc/">yacc</a>, there was a <code>parse.y</code> grammar file in the Ruby repository that encapsulated both how the parser was to be created and how the file should be lexically parsed. Ripper took that <code>parse.y</code> grammar file, forked it, and manipulated it to stream nodes and tokens as they were parsed. This is still how the project works today.</p>
+
+<p>Eventually, it became difficult to maintain a separate grammar file outside of the Ruby codebase, since it required keeping up with any relevant change in the upstream file. In Ruby 1.9, when YARV landed and Ruby became a bytecode interpreter, ripper was merged in as a standard library. Now instead of checking in the changes to the grammar file, the changes were moved into comments and a separate build step was added to replace the body of the production rule with the content of the comments. We’ll come back to this momentarily.</p>
+
+<p>Over time, ripper has continued to be one of the most frequently changed libraries in core (because it changes whenever Ruby syntax changes), but also one of the least understood. It’s no surprise that from 2001 to today, it still says it’s in <a href="https://github.com/ruby/ruby/blob/95aff214687a5e12c3eb57d056665741e734c188/ext/ripper/README#L9-L10">early-alpha</a>. Nevertheless, many projects have been built on top of the functionality that ripper provides, including some that you may have heard of like <a href="https://github.com/prettier/plugin-ruby">prettier</a>, <a href="https://github.com/penelopezone/rubyfmt">rubyfmt</a>, <a href="https://github.com/ruby-formatter/rufo">rufo</a>, and <a href="https://github.com/lsegal/yard">yard</a>.</p>
+
+<p>A lot more can be written about the history of ripper and what it has meant for the community, but this post is meant to focus on its technical aspectss. If you’re interested in more history like this, see my previous talk on the history of <a href="https://www.youtube.com/watch?v=lUIt2UWXW-I">parsing Ruby</a>.</p>
+
+<h2 id="how-it-works">How it works</h2>
+
+<p>At a high-level, ripper is a streaming bottom-up parser. It works by modifying the actions of each production of the Ruby grammar file to dispatch an event on the parser object. When it dispatches an event, it calls a method that can be overridden by the user. The result of the called method is then passed up the tree. Let’s break down what that actually means.</p>
+
+<h3 id="step-1-building">Step 1. Building</h3>
+
+<p>Ripper is shipped as a native extension to CRuby. This means it has its own <code>extconf.rb</code> and <code>depend</code> file for configuring how it’s built. Digging into the <code>depend</code> file, we can find the exact steps used to build ripper’s grammar file here: <a href="https://github.com/ruby/ruby/blob/v3_0_0/ext/ripper/depend#L20-L27">ext/ripper/depend</a>.  In these steps it is running a couple of file processing scripts written in Ruby to grab various data from around the Ruby codebase to create a new <code>parse.y</code> file that ripper can use. Below is the list of scripts that it runs.</p>
+
+<h4 id="toolsid2tokenrb">tools/id2token.rb</h4>
+
+<p><a href="https://github.com/ruby/ruby/blob/v3_0_0/tool/id2token.rb">id2token.rb</a> runs over the checked in <code>parse.y</code> file and replaces instances of the <code>RUBY_TOKEN(...)</code> pattern with their numeric equivalents. In this case a token represents a scanner token (e.g., the <code>==</code> operator, a symbol literal, the <code>-&gt;</code> lambda begin, etc.). To get a better sense of what it’s actually doing, you can run the file and diff its result with the original file, as in: <code>diff parse.y &lt;(tool/id2token.rb id.h parse.y)</code>. That results in the diff below.</p>
+
+<div><pre><code><span>1216,1238c1216,1238
+</span><span>&lt; %token tUPLUS		RUBY_TOKEN(UPLUS)  "unary+"
+&lt; %token tUMINUS		RUBY_TOKEN(UMINUS) "unary-"
+&lt; %token tPOW		RUBY_TOKEN(POW)    "**"
+&lt; %token tCMP		RUBY_TOKEN(CMP)    "&lt;=&gt;"
+&lt; %token tEQ		RUBY_TOKEN(EQ)     "=="
+&lt; %token tEQQ		RUBY_TOKEN(EQQ)    "==="
+&lt; %token tNEQ		RUBY_TOKEN(NEQ)    "!="
+&lt; %token tGEQ		RUBY_TOKEN(GEQ)    "&gt;="
+&lt; %token tLEQ		RUBY_TOKEN(LEQ)    "&lt;="
+&lt; %token tANDOP		RUBY_TOKEN(ANDOP)  "&amp;&amp;"
+&lt; %token tOROP		RUBY_TOKEN(OROP)   "||"
+&lt; %token tMATCH		RUBY_TOKEN(MATCH)  "=~"
+&lt; %token tNMATCH		RUBY_TOKEN(NMATCH) "!~"
+&lt; %token tDOT2		RUBY_TOKEN(DOT2)   ".."
+&lt; %token tDOT3		RUBY_TOKEN(DOT3)   "..."
+&lt; %token tBDOT2		RUBY_TOKEN(BDOT2)   "(.."
+&lt; %token tBDOT3		RUBY_TOKEN(BDOT3)   "(..."
+&lt; %token tAREF		RUBY_TOKEN(AREF)   "[]"
+&lt; %token tASET		RUBY_TOKEN(ASET)   "[]="
+&lt; %token tLSHFT		RUBY_TOKEN(LSHFT)  "&lt;&lt;"
+&lt; %token tRSHFT		RUBY_TOKEN(RSHFT)  "&gt;&gt;"
+&lt; %token &lt;id&gt; tANDDOT	RUBY_TOKEN(ANDDOT) "&amp;."
+&lt; %token &lt;id&gt; tCOLON2	RUBY_TOKEN(COLON2) "::"
+</span><span>---
+</span><span>&gt; %token tUPLUS		132 "unary+"
+&gt; %token tUMINUS		133 "unary-"
+&gt; %token tPOW		134 "**"
+&gt; %token tCMP		135 "&lt;=&gt;"
+&gt; %token tEQ		140 "=="
+&gt; %token tEQQ		141 "==="
+&gt; %token tNEQ		142 "!="
+&gt; %token tGEQ		139 "&gt;="
+&gt; %token tLEQ		138 "&lt;="
+&gt; %token tANDOP		148 "&amp;&amp;"
+&gt; %token tOROP		149 "||"
+&gt; %token tMATCH		143 "=~"
+&gt; %token tNMATCH		144 "!~"
+&gt; %token tDOT2		128 ".."
+&gt; %token tDOT3		129 "..."
+&gt; %token tBDOT2		130 "(.."
+&gt; %token tBDOT3		131 "(..."
+&gt; %token tAREF		145 "[]"
+&gt; %token tASET		146 "[]="
+&gt; %token tLSHFT		136 "&lt;&lt;"
+&gt; %token tRSHFT		137 "&gt;&gt;"
+&gt; %token &lt;id&gt; tANDDOT	150 "&amp;."
+&gt; %token &lt;id&gt; tCOLON2	147 "::"
+</span></code></pre></div>
+
+<h4 id="toolspure_parserrb">tools/pure_parser.rb</h4>
+
+<p><a href="https://github.com/ruby/ruby/blob/v3_0_0/tool/pure_parser.rb">pure_parser.rb</a> is a very simple script that replaces a couple of lines in the <code>parse.y</code> file in order to support Bison 3. The generated diff from running this file over the parser is below.</p>
+
+<div><pre><code><span>1085,1086c1085,1086
+</span><span>&lt; %define api.pure
+&lt; %define parse.error verbose
+</span><span>---
+</span><span>&gt; %pure-parser
+&gt; 
+</span></code></pre></div>
+
+<p>These first two scripts are the same scripts that are run to generate the main <code>parse.y</code> file that Ruby uses (as you can see in <a href="https://github.com/ruby/ruby/blob/v3_0_0/common.mk#L885-L886">common.mk</a>). So at this point, we have a temporary file that exactly matches the file that is going to be passed into <code>bison</code> to generate the Ruby parser.</p>
+
+<h4 id="extrippertoolspreprocrb">ext/ripper/tools/preproc.rb</h4>
+
+<p><a href="https://github.com/ruby/ruby/blob/v3_0_0/ext/ripper/tools/preproc.rb">preproc.rb</a> is responsible for transforming the default <code>parse.y</code> file that bison uses into a different <code>parse.y</code> file that bison will use to generate the ripper parser. It does 3 things while it’s parsing the file.</p>
+
+<ol>
+  <li>First, it copies over the entire prelude of the file before the grammar. The prelude contains all of the required includes, struct definitions, and helper function forward declarations necessary to make parsing work. While it’s copying, it also makes a list of each of the lexer states and their associated descriptions.</li>
+  <li>Next, it copies over the entire grammar section of the file. While it’s copying, it modifies the actions of each of the production rules. First, it finds the C comments within the action that match the pattern <code>%r&lt;/\*% *ripper(?:\[(.*?)\])?: *(.*?) *%\*/&gt;</code>. Then, it grabs up the rest of the action and puts it behind an <code>#if 0 ... #endif</code> macro call so that you can still see the original action. Then, it runs each of the comments through the <a href="https://github.com/ruby/ruby/blob/v3_0_0/ext/ripper/tools/dsl.rb">ext/ripper/tools/dsl.rb</a> file to get their C equivalent. We’ll come back to this in a second.</li>
+  <li>Finally, it copies over the user code section of the file. It runs <code>ERB</code> over that section in order to dump the lexer states into defined constants on the <code>Ripper</code> class so that they can be accessed in user code. These constants look something like the following code.</li>
+</ol>
+
+<div><pre><code><span>/* newline significant, +/- is an operator. */</span>
+<span>rb_define_const</span><span>(</span><span>Ripper</span><span>,</span> <span>"EXPR_END"</span><span>,</span> <span>INT2NUM</span><span>(</span><span>EXPR_END</span><span>));</span>
+</code></pre></div>
+
+<p>At this point, the file is ready to be fed into <code>bison</code> to generate the compiler.</p>
+
+<h4 id="extrippertoolsdslrb"><a href="https://github.com/ruby/ruby/blob/v3_0_0/ext/ripper/tools/dsl.rb">ext/ripper/tools/dsl.rb</a></h4>
+
+<p>It’s worth discussing quickly how the DSL within the ripper comments work. Effectively, they’re a quick way of describing the events that should be dispatched, as well as the values that should be passed up the tree. You can run the script yourself locally (<code>ruby -r./ext/ripper/tools/dsl -e 'p DSL.new("...", []).generate' </code>) to see how it works. Below are a couple of examples along with the code they generate (after macro expansion):</p>
+
+<ul>
+  <li><code>$1</code> - In a production rule with a single element, this passes the value directly up to the parent without dispatching a single event:</li>
+</ul>
+
+<div><pre><code><span>$$</span> <span>=</span> <span>$</span><span>1</span><span>;</span>
+</code></pre></div>
+
+<ul>
+  <li><code>foo!($1)</code> - In a production rule with a single element, this calls out to the <code>ripper_dispatch1</code> function with the ID <code>ripper_id_foo</code> (coming from <code>foo!</code>), then passes the result of that value directly up to the parent:</li>
+</ul>
+
+<div><pre><code><span>{</span>
+  <span>VALUE</span> <span>v1</span><span>,</span> <span>v2</span><span>;</span>
+  <span>v1</span> <span>=</span> <span>$</span><span>1</span><span>;</span>
+  <span>v2</span> <span>=</span> <span>ripper_dispatch1</span><span>(</span><span>p</span><span>,</span> <span>ripper_id_foo</span><span>,</span> <span>v1</span><span>);</span>
+  <span>$$</span> <span>=</span> <span>v2</span><span>;</span>
+<span>}</span>
+</code></pre></div>
+
+<p>The implementation of <code>ripper_dispatch1</code> is relatively simple in that it first validates and then makes a function call.</p>
+
+<div><pre><code><span>static</span> <span>VALUE</span>
+<span>ripper_dispatch1</span><span>(</span><span>struct</span> <span>parser_params</span> <span>*</span><span>p</span><span>,</span> <span>ID</span> <span>mid</span><span>,</span> <span>VALUE</span> <span>a</span><span>)</span>
+<span>{</span>
+    <span>validate</span><span>(</span><span>a</span><span>);</span>
+    <span>return</span> <span>rb_funcall</span><span>(</span><span>p</span><span>-&gt;</span><span>value</span><span>,</span> <span>mid</span><span>,</span> <span>1</span><span>,</span> <span>a</span><span>);</span>
+<span>}</span>
+</code></pre></div>
+
+<p>That function call ends up calling out to <code>Ripper#_dispatch_1</code> on whatever parser object ripper is currently using. That will be important later.</p>
+
+<ul>
+  <li><code>foo!($1, $2)</code> - In a production rule with two elements, this calls the <code>ripper_dispatch2</code> function, then passes the result of that value up to the parent:</li>
+</ul>
+
+<div><pre><code><span>{</span>
+  <span>VALUE</span> <span>v1</span><span>,</span> <span>v2</span><span>,</span> <span>v3</span><span>;</span>
+  <span>v1</span> <span>=</span> <span>$</span><span>1</span><span>;</span>
+  <span>v2</span> <span>=</span> <span>$</span><span>2</span><span>;</span>
+  <span>v3</span> <span>=</span> <span>ripper_dispatch2</span><span>(</span><span>p</span><span>,</span> <span>ripper_id_foo</span><span>,</span> <span>v1</span><span>,</span> <span>v2</span><span>);</span>
+  <span>$$</span> <span>=</span> <span>v3</span><span>;</span>
+<span>}</span>
+</code></pre></div>
+
+<ul>
+  <li><code>foo!($1, bar($2))</code> - In a production rule with two elements, this first calls the <code>bar</code> function but does not dispatch an event to ripper (notice the lack of a <code>!</code> on the function call). Then it calls the <code>ripper_dispatch2</code> function like the previous example and passes it up the tree.</li>
+</ul>
+
+<h3 id="step-2-parsing">Step 2. Parsing</h3>
+
+<p>Now that the parser is built, it can be used to parse Ruby source for whatever purpose. Instantiating a parser is pretty simple:</p>
+
+<div><pre><code><span>Ripper</span><span>.</span><span>parse</span><span>(</span><span>"1 + 2"</span><span>)</span> <span># =&gt; nil</span>
+</code></pre></div>
+
+<p>As we discussed in the previous section, each of the nodes in the tree as they’re being parsed are created through the <code>dispatchN</code> family of functions, which make it up to user-space through a set of <code>on_*</code> methods. So if you wanted to parse integers, you would define the <code>on_int</code> method. (Note this is because <code>on_int</code> is aliased to <code>_dispatch_1</code> <a href="https://github.com/ruby/ruby/blob/v3_0_0/ext/ripper/lib/ripper/core.rb#L49">here</a>.)</p>
+
+<div><pre><code><span>class</span> <span>Parser</span> <span>&lt;</span> <span>Ripper</span>
+  <span>def</span> <span>on_int</span><span>(</span><span>value</span><span>)</span>
+    <span>puts</span> <span>"Got an integer: </span><span>#{</span><span>value</span><span>}</span><span>"</span>
+  <span>end</span>
+<span>end</span>
+
+<span>Parser</span><span>.</span><span>new</span><span>(</span><span>"1 + 2"</span><span>).</span><span>parse</span> <span># =&gt; nil</span>
+<span># Got an integer: 1</span>
+<span># Got an integer: 2 </span>
+</code></pre></div>
+
+<p>Unfortunately, you still receive a <code>nil</code> for the result of the parse method. This is because by default the base <code>Ripper</code> class does not provide implementations of the various event handlers needed to produce a useful tree. Instead, it provides subclasses for that purpose. The actual abstract syntax tree that Ruby uses internally for <code>1 + 2</code> is akin to the following:</p>
+
+<p><img src="data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgZ3JhcGh2aXogdmVyc2lvbiAyLjUwLjAgKDIwMjExMjA0LjIwMDcpCiAtLT4KPCEtLSBQYWdlczogMSAtLT4KPHN2ZyB3aWR0aD0iMjU2cHQiIGhlaWdodD0iMjYwcHQiCiB2aWV3Qm94PSIwLjAwIDAuMDAgMjU1Ljc1IDI2MC4wMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CjxnIGlkPSJncmFwaDAiIGNsYXNzPSJncmFwaCIgdHJhbnNmb3JtPSJzY2FsZSgxIDEpIHJvdGF0ZSgwKSB0cmFuc2xhdGUoNCAyNTYpIj4KPHBvbHlnb24gZmlsbD0id2hpdGUiIHN0cm9rZT0idHJhbnNwYXJlbnQiIHBvaW50cz0iLTQsNCAtNCwtMjU2IDI1MS43NSwtMjU2IDI1MS43NSw0IC00LDQiLz4KPCEtLSBsZWZ0IC0tPgo8ZyBpZD0ibm9kZTEiIGNsYXNzPSJub2RlIj4KPHRpdGxlPmxlZnQ8L3RpdGxlPgo8cG9seWdvbiBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBwb2ludHM9IjEwMy43NSwtMzYgNDkuNzUsLTM2IDQ5Ljc1LDAgMTAzLjc1LDAgMTAzLjc1LC0zNiIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI3Ni43NSIgeT0iLTE0LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+aW50ICgxKTwvdGV4dD4KPC9nPgo8IS0tIG9wZXIgLS0+CjxnIGlkPSJub2RlMiIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+b3BlcjwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIGN4PSIxNDguNzUiIGN5PSItMTgiIHJ4PSIyNyIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE0OC43NSIgeT0iLTE0LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+KzwvdGV4dD4KPC9nPgo8IS0tIHJpZ2h0IC0tPgo8ZyBpZD0ibm9kZTMiIGNsYXNzPSJub2RlIj4KPHRpdGxlPnJpZ2h0PC90aXRsZT4KPHBvbHlnb24gZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgcG9pbnRzPSIyNDcuNzUsLTM2IDE5My43NSwtMzYgMTkzLjc1LDAgMjQ3Ljc1LDAgMjQ3Ljc1LC0zNiIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIyMjAuNzUiIHk9Ii0xNC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPmludCAoMik8L3RleHQ+CjwvZz4KPCEtLSBwcm9ncmFtIC0tPgo8ZyBpZD0ibm9kZTQiIGNsYXNzPSJub2RlIj4KPHRpdGxlPnByb2dyYW08L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBjeD0iOTguNzUiIGN5PSItMjM0IiByeD0iNDAuODkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI5OC43NSIgeT0iLTIzMC4zIiBmb250LWZhbWlseT0iVGltZXMsc2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPnByb2dyYW08L3RleHQ+CjwvZz4KPCEtLSBzdG10c19hZGQgLS0+CjxnIGlkPSJub2RlNSIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+c3RtdHNfYWRkPC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgY3g9Ijk4Ljc1IiBjeT0iLTE2MiIgcng9IjQ2LjU5IiByeT0iMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iOTguNzUiIHk9Ii0xNTguMyIgZm9udC1mYW1pbHk9IlRpbWVzLHNlcmlmIiBmb250LXNpemU9IjE0LjAwIj5zdG10c19hZGQ8L3RleHQ+CjwvZz4KPCEtLSBwcm9ncmFtJiM0NTsmZ3Q7c3RtdHNfYWRkIC0tPgo8ZyBpZD0iZWRnZTEiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPnByb2dyYW0mIzQ1OyZndDtzdG10c19hZGQ8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBkPSJNOTguNzUsLTIxNS43Qzk4Ljc1LC0yMDcuOTggOTguNzUsLTE5OC43MSA5OC43NSwtMTkwLjExIi8+Cjxwb2x5Z29uIGZpbGw9ImJsYWNrIiBzdHJva2U9ImJsYWNrIiBwb2ludHM9IjEwMi4yNSwtMTkwLjEgOTguNzUsLTE4MC4xIDk1LjI1LC0xOTAuMSAxMDIuMjUsLTE5MC4xIi8+CjwvZz4KPCEtLSBzdG10c19uZXcgLS0+CjxnIGlkPSJub2RlNiIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+c3RtdHNfbmV3PC90aXRsZT4KPGVsbGlwc2UgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgY3g9IjQ4Ljc1IiBjeT0iLTkwIiByeD0iNDguOTkiIHJ5PSIxOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0OC43NSIgeT0iLTg2LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+c3RtdHNfbmV3PC90ZXh0Pgo8L2c+CjwhLS0gc3RtdHNfYWRkJiM0NTsmZ3Q7c3RtdHNfbmV3IC0tPgo8ZyBpZD0iZWRnZTIiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPnN0bXRzX2FkZCYjNDU7Jmd0O3N0bXRzX25ldzwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIGQ9Ik04Ni45LC0xNDQuNDFDODAuNzksLTEzNS44NyA3My4yMywtMTI1LjI4IDY2LjQ1LC0xMTUuNzkiLz4KPHBvbHlnb24gZmlsbD0iYmxhY2siIHN0cm9rZT0iYmxhY2siIHBvaW50cz0iNjkuMTcsLTExMy41NyA2MC41MSwtMTA3LjQ3IDYzLjQ3LC0xMTcuNjQgNjkuMTcsLTExMy41NyIvPgo8L2c+CjwhLS0gYmluYXJ5IC0tPgo8ZyBpZD0ibm9kZTciIGNsYXNzPSJub2RlIj4KPHRpdGxlPmJpbmFyeTwvdGl0bGU+CjxlbGxpcHNlIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIGN4PSIxNDguNzUiIGN5PSItOTAiIHJ4PSIzMy4yOSIgcnk9IjE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE0OC43NSIgeT0iLTg2LjMiIGZvbnQtZmFtaWx5PSJUaW1lcyxzZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+YmluYXJ5PC90ZXh0Pgo8L2c+CjwhLS0gc3RtdHNfYWRkJiM0NTsmZ3Q7YmluYXJ5IC0tPgo8ZyBpZD0iZWRnZTMiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPnN0bXRzX2FkZCYjNDU7Jmd0O2JpbmFyeTwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIGQ9Ik0xMTAuNTksLTE0NC40MUMxMTYuNzksLTEzNS43NCAxMjQuNDgsLTEyNC45NyAxMzEuMzMsLTExNS4zOCIvPgo8cG9seWdvbiBmaWxsPSJibGFjayIgc3Ryb2tlPSJibGFjayIgcG9pbnRzPSIxMzQuMzYsLTExNy4xNiAxMzcuMzMsLTEwNi45OSAxMjguNjcsLTExMy4wOSAxMzQuMzYsLTExNy4xNiIvPgo8L2c+CjwhLS0gYmluYXJ5JiM0NTsmZ3Q7bGVmdCAtLT4KPGcgaWQ9ImVkZ2U0IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5iaW5hcnkmIzQ1OyZndDtsZWZ0PC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgZD0iTTEzMy4xMiwtNzMuODFDMTIzLjk0LC02NC44OCAxMTIuMTEsLTUzLjM4IDEwMS42NywtNDMuMjMiLz4KPHBvbHlnb24gZmlsbD0iYmxhY2siIHN0cm9rZT0iYmxhY2siIHBvaW50cz0iMTAzLjk3LC00MC41OSA5NC4zNiwtMzYuMTMgOTkuMDksLTQ1LjYxIDEwMy45NywtNDAuNTkiLz4KPC9nPgo8IS0tIGJpbmFyeSYjNDU7Jmd0O29wZXIgLS0+CjxnIGlkPSJlZGdlNSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+YmluYXJ5JiM0NTsmZ3Q7b3BlcjwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIGQ9Ik0xNDguNzUsLTcxLjdDMTQ4Ljc1LC02My45OCAxNDguNzUsLTU0LjcxIDE0OC43NSwtNDYuMTEiLz4KPHBvbHlnb24gZmlsbD0iYmxhY2siIHN0cm9rZT0iYmxhY2siIHBvaW50cz0iMTUyLjI1LC00Ni4xIDE0OC43NSwtMzYuMSAxNDUuMjUsLTQ2LjEgMTUyLjI1LC00Ni4xIi8+CjwvZz4KPCEtLSBiaW5hcnkmIzQ1OyZndDtyaWdodCAtLT4KPGcgaWQ9ImVkZ2U2IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5iaW5hcnkmIzQ1OyZndDtyaWdodDwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIGQ9Ik0xNjQuMzcsLTczLjgxQzE3My41NSwtNjQuODggMTg1LjM4LC01My4zOCAxOTUuODIsLTQzLjIzIi8+Cjxwb2x5Z29uIGZpbGw9ImJsYWNrIiBzdHJva2U9ImJsYWNrIiBwb2ludHM9IjE5OC40LC00NS42MSAyMDMuMTMsLTM2LjEzIDE5My41MiwtNDAuNTkgMTk4LjQsLTQ1LjYxIi8+CjwvZz4KPC9nPgo8L3N2Zz4K">
+</p>
+
+<p>So, in order to get a useful value out of your parser, you would need to implement <code>on_program</code>, <code>on_stmts_add</code>, <code>on_stmts_new</code>, <code>on_binary</code>, and <code>on_int</code>. If you do define those methods, you can get the parse tree out. Let’s do that quickly below as an example:</p>
+
+<div><pre><code><span>class</span> <span>Parser</span> <span>&lt;</span> <span>Ripper</span>
+  <span>def</span> <span>on_binary</span><span>(</span><span>left</span><span>,</span> <span>operator</span><span>,</span> <span>right</span><span>)</span> <span>=</span> <span>[</span><span>:binary</span><span>,</span> <span>left</span><span>,</span> <span>operator</span><span>,</span> <span>right</span><span>]</span>
+  <span>def</span> <span>on_int</span><span>(</span><span>value</span><span>)</span> <span>=</span> <span>value</span><span>.</span><span>to_i</span>
+  <span>def</span> <span>on_program</span><span>(</span><span>stmts</span><span>)</span> <span>=</span> <span>stmts</span>
+  <span>def</span> <span>on_stmts_add</span><span>(</span><span>stmts</span><span>,</span> <span>stmt</span><span>)</span> <span>=</span> <span>stmts</span> <span>&lt;&lt;</span> <span>stmt</span>
+  <span>def</span> <span>on_stmts_new</span> <span>=</span> <span>[]</span>
+<span>end</span>
+
+<span>Parser</span><span>.</span><span>parse</span><span>(</span><span>"1 + 2"</span><span>)</span> <span># =&gt; [[:binary, 1, :+, 2]]</span>
+</code></pre></div>
+
+<p>If you look at the tree that I drew above, you see how we arrive at this final product. The order that the methods are called in is left to right, bottom to top. So if we trace the execution, we get the following:</p>
+
+<ul>
+  <li><code>on_stmts_new</code> is called and we return an empty array.</li>
+  <li><code>on_int</code> is called with <code>"1"</code>. We convert that to an integer with <code>#to_i</code> and return it to move it up the tree.</li>
+  <li><code>on_int</code> is called with <code>"2"</code>. We do the same as the previous call.</li>
+  <li><code>on_binary</code> is called with the result of the two <code>on_int</code> calls and a symbol literal representing the operator. For that, we return an array containing all of the information present as well as a <code>:binary</code> symbol literal used to indicate the kind of node being represented.</li>
+  <li><code>on_stmts_add</code> is called with the result of the <code>on_stmts_new</code> and <code>on_binary</code> calls. We push the result of the righthand operand (the <code>on_binary</code>) onto the value of the lefthand operand (the <code>on_stmts_new</code>). This results in an array of a single value containing the result of the <code>on_binary</code> call.</li>
+  <li><code>on_program</code> is called with the result of the <code>on_stmts_add</code> call. We immediately return that value.</li>
+</ul>
+
+<h2 id="api">API</h2>
+
+<p>There are a number of APIs within ripper that you can use when processing dispatched events. First, it’s important to discuss a couple of helper APIs within ripper that represent a lot of important functionality. Then we’ll discuss the bigger APIs represented by the two subclasses that ripper ships with.</p>
+
+<h3 id="lineno-and-column"><code>#lineno</code> and <code>#column</code></h3>
+
+<p>These two methods represent the internal state of the parser when you are within a specific event handler. For example, if you’re handling an <code>on_int</code>, then <code>lineno</code> is the line in the source that the int was found on, and <code>column</code> is the offset (in <em>bytes</em>, not characters) on that line at which the int was found. It’s important to know that these APIs were designed to reflect the internal state of the parser only, and are not meant as definitive location information. For example, if you’re processing an <code>on_binary</code> event and there happens to be a comment after your righthand operand, the <code>column</code> method will return a value <em>after</em> the comment has been read. So, if you want specific location information you need to get it on a case-by-case basis for each event handler.</p>
+
+<h3 id="encoding"><code>#encoding</code></h3>
+
+<p>When Ruby first reads a source file, it assumes an encoding for that file. If it encounters an encoding magic comment, then it will change how its parsing the remainder of the file from that point on. <code>encoding</code> is an accessor method to retrieve the encoding it is currently using at any given time. This is very important if you’re parsing files that aren’t in an encoding you might expect like <code>UTF-8</code> or <code>ASCII</code>.</p>
+
+<h3 id="error"><code>#error?</code></h3>
+
+<p>Error handling is a massive subject in parser literature. Within parser generators like <code>bison</code>, you can use the <code>error</code> production to catch errors and perform some action when they are found. In the case that an error <em>has been</em> found, the <code>error?</code> method will return true. This is very important to note because Ruby might be able to generate a parse tree for you that contains errored nodes internally.</p>
+
+<h3 id="state"><code>#state</code></h3>
+
+<p>Because the lexical grammar of the Ruby language is not regular, CRuby maintains its own state machine within the lexer in order to accept different patterns at different locations. <code>state</code> is your access to that information. Previously, this information wasn’t available, but in Ruby 2.5 it got exposed as part of the <code>preproc.rb</code> script’s work.</p>
+
+<h3 id="sexp_raw"><code>::sexp_raw</code></h3>
+
+<p>Finally, we get to the big APIs. <code>Ripper::sexp_raw</code> is the same thing is <code>::parse</code> except that it uses the <code>Ripper::SexpBuilder</code> subclass of <code>Ripper</code> instead of the main class. The main’s classes implementation of every <code>dispatch*</code> method is to simply <a href="https://github.com/ruby/ruby/blob/v3_0_0/ext/ripper/lib/ripper/core.rb#L34-L41">return the first argument</a>. That doesn’t work for most use cases, so instead <code>SexpBuilder</code> ships with a <a href="https://github.com/ruby/ruby/blob/v3_0_0/ext/ripper/lib/ripper/sexp.rb#L115-L131">default implementation</a> for every node that returns an array representing an <a href="https://en.wikipedia.org/wiki/S-expression">s-expression</a> for each node. You can check this out yourself on the command line by running:</p>
+
+<div><pre><code><span>Ripper</span><span>.</span><span>sexp_raw</span><span>(</span><span>"1 + 2"</span><span>)</span>
+<span># =&gt; [:program, [:stmts_add, [:stmts_new], [:binary, [:@int, "1", [1, 0]], :+, [:@int, "2", [1, 4]]]]]</span>
+</code></pre></div>
+
+<p>You can see how this mirrors the AST structure we mentioned earlier. You can also see that scanner events (like <code>@int</code>, i.e. leaf nodes) contain their source location while parser events (like <code>binary</code>, i.e., inner nodes) do not.</p>
+
+<h3 id="sexp"><code>::sexp</code></h3>
+
+<p>Lastly, <code>Ripper::sexp</code> is like <code>Ripper::sexp_raw</code> except that it uses the <code>Ripper::SexpBuilderPP</code> subclass of <code>Ripper</code>. It can a couple of small differences, but the main one is that it treats arrays of elements differently. First, let’s take a look at the s-expressions it generates:</p>
+
+<div><pre><code><span>Ripper</span><span>.</span><span>sexp</span><span>(</span><span>"1 + 2"</span><span>)</span>
+<span># =&gt; [:program, [[:binary, [:@int, "1", [1, 0]], :+, [:@int, "2", [1, 4]]]]]</span>
+</code></pre></div>
+
+<p>You’ll notice there aren’t any <code>stmts_*</code> nodes contained in this output. That’s because <code>SexpBuilderPP</code> treats all of the various <code>add/new</code> pairs as just arrays that can be concatenated whenever a new element is added. You can see how that’s implemented <a href="https://github.com/ruby/ruby/blob/v3_0_0/ext/ripper/lib/ripper/sexp.rb#L178-L183">here</a>. Depending on your use case, this tree could be easier to work with. However, if you need specific information about exactly which nodes were used in the source, this is not the method for you. For more information about dealing with lists in ripper, see <a href="https://kddnewton.com/ripper-docs/lists">this page</a> in my <code>kddnewton/ripper-docs</code> repository for more information.</p>
+
+<h2 id="example-parser">Example parser</h2>
+
+<p>As a final note, let’s build an example parser to put a more practical look on what we’ve been talking about. It’s going to be relatively contrived in order to fit into a blog post, but it should give you a sense of what we’re talking about here.</p>
+
+<p>We’re going to build a small parser that will return to us the documentation for any module declarations within our code. When I say documentation I mean comments immediately preceeding the module. If there’s a newline between them, then we don’t want them. First, let’s start by just trying to get a list of the modules declared within the file.</p>
+
+<p>It’ll be easiest to tell which kinds of event handlers we need to define by using the <code>::sexp_raw</code> method. Let’s start by running that:</p>
+
+<div><pre><code><span>Ripper</span><span>.</span><span>sexp_raw</span><span>(</span><span>&lt;&lt;~</span><span>RUBY</span><span>)</span><span>
+module Foo::Bar
+end
+</span><span>RUBY</span>
+
+<span># =&gt;</span>
+<span># [:program,                                  </span>
+<span>#  [:stmts_add,                               </span>
+<span>#   [:stmts_new],                             </span>
+<span>#   [:module,                                 </span>
+<span>#    [:const_path_ref,                        </span>
+<span>#     [:var_ref, [:@const, "Foo", [1, 7]]],   </span>
+<span>#     [:@const, "Bar", [1, 12]]],             </span>
+<span>#    [:bodystmt,                              </span>
+<span>#     [:stmts_add, [:stmts_new], [:void_stmt]],</span>
+<span>#     nil,</span>
+<span>#     nil,</span>
+<span>#     nil]]]]</span>
+</code></pre></div>
+
+<p>Remember that any event dispatched that only takes one argument (the <code>dispatch1</code> family of nodes) we don’t <em>have</em> to define an event handler because it just passes up the first argument. For the rest of the nodes, we’ll need an explicit handler if we want its information. For our purposes, we want the names of the modules, which from the comment above we know we need <code>on_const</code>, <code>on_var_ref</code>, <code>on_const_path_ref</code>, and <code>on_module</code>. Let’s define those explicitly, as well as an <code>on_program</code> to return the module names at the end.</p>
+
+<div><pre><code><span>class</span> <span>Parser</span> <span>&lt;</span> <span>Ripper</span>
+  <span>def</span> <span>initialize</span><span>(</span><span>...</span><span>)</span>
+    <span>super</span>
+    <span>@modules</span> <span>=</span> <span>[]</span>
+  <span>end</span>
+
+  <span>def</span> <span>on_const</span><span>(</span><span>value</span><span>)</span> <span>=</span> <span>value</span>
+  <span>def</span> <span>on_const_path_ref</span><span>(</span><span>left</span><span>,</span> <span>right</span><span>)</span> <span>=</span> <span>"</span><span>#{</span><span>left</span><span>}</span><span>::</span><span>#{</span><span>right</span><span>}</span><span>"</span>
+  <span>def</span> <span>on_var_ref</span><span>(</span><span>value</span><span>)</span> <span>=</span> <span>value</span>
+
+  <span>def</span> <span>on_module</span><span>(</span><span>const</span><span>,</span> <span>bodystmt</span><span>)</span> <span>=</span> <span>@modules</span> <span>&lt;&lt;</span> <span>const</span>
+  <span>def</span> <span>on_program</span><span>(</span><span>...</span><span>)</span> <span>=</span> <span>@modules</span>
+<span>end</span>
+</code></pre></div>
+
+<p>We can test this out by running <code>Parser::parse</code> on a source string, as in:</p>
+
+<div><pre><code><span>p</span> <span>Parser</span><span>.</span><span>parse</span><span>(</span><span>&lt;&lt;~</span><span>RUBY</span><span>)</span><span>
+module Foo
+end
+
+module Foo::Bar
+end
+</span><span>RUBY</span>
+
+<span># =&gt; ["Foo", "Foo::Bar"]</span>
+</code></pre></div>
+
+<p>Now that we have the module names, we can change <code>@modules</code> to be a hash keyed off the names where the values should be the documentation. We’ll need to hook into the <code>on_comment</code> scanner event handler to get the value of the comments, and change our event handlers a bit to better handle line numbers. All told, this is what the new parser looks like:</p>
+
+<div><pre><code><span>class</span> <span>Parser</span> <span>&lt;</span> <span>Ripper</span>
+  <span>def</span> <span>initialize</span><span>(</span><span>...</span><span>)</span>
+    <span>super</span>
+    <span>@comments</span> <span>=</span> <span>[]</span>
+    <span>@modules</span> <span>=</span> <span>{}</span>
+  <span>end</span>
+
+  <span>def</span> <span>on_comment</span><span>(</span><span>value</span><span>)</span> <span>=</span> <span>@comments</span> <span>&lt;&lt;</span> <span>[</span><span>value</span><span>[</span><span>1</span><span>..-</span><span>1</span><span>].</span><span>strip</span><span>,</span> <span>lineno</span><span>]</span>
+
+  <span>def</span> <span>on_const</span><span>(</span><span>value</span><span>)</span> <span>=</span> <span>[</span><span>value</span><span>,</span> <span>lineno</span><span>]</span>
+  <span>def</span> <span>on_const_path_ref</span><span>(</span><span>left</span><span>,</span> <span>right</span><span>)</span> <span>=</span> <span>[</span><span>"</span><span>#{</span><span>left</span><span>[</span><span>0</span><span>]</span><span>}</span><span>::</span><span>#{</span><span>right</span><span>[</span><span>0</span><span>]</span><span>}</span><span>"</span><span>,</span> <span>left</span><span>[</span><span>1</span><span>]]</span>
+  <span>def</span> <span>on_var_ref</span><span>(</span><span>value</span><span>)</span> <span>=</span> <span>value</span>
+
+  <span>def</span> <span>on_module</span><span>(</span><span>const</span><span>,</span> <span>bodystmt</span><span>)</span>
+    <span>comments</span> <span>=</span> <span>[]</span>
+    <span>lineno</span> <span>=</span> <span>const</span><span>[</span><span>1</span><span>]</span>
+
+    <span>@comments</span><span>.</span><span>reverse_each</span> <span>do</span> <span>|</span><span>comment</span><span>|</span>
+      <span>break</span> <span>if</span> <span>(</span><span>lineno</span> <span>-</span> <span>comment</span><span>[</span><span>1</span><span>])</span> <span>&gt;</span> <span>1</span>
+
+      <span>comments</span><span>.</span><span>unshift</span><span>(</span><span>comment</span><span>[</span><span>0</span><span>])</span>
+      <span>lineno</span> <span>=</span> <span>comment</span><span>[</span><span>1</span><span>]</span>
+    <span>end</span>
+
+    <span>@modules</span><span>[</span><span>const</span><span>[</span><span>0</span><span>]]</span> <span>=</span> <span>comments</span><span>.</span><span>join</span><span>(</span><span>"</span><span>\n</span><span>"</span><span>)</span>
+  <span>end</span>
+
+  <span>def</span> <span>on_program</span><span>(</span><span>...</span><span>)</span> <span>=</span> <span>@modules</span>
+<span>end</span>
+</code></pre></div>
+
+<p>Again, we can test this out by running against our previous example, with some additional comments:</p>
+
+<div><pre><code><span>p</span> <span>Parser</span><span>.</span><span>parse</span><span>(</span><span>&lt;&lt;~</span><span>RUBY</span><span>)</span><span>
+# This is the first module.
+module Foo
+end
+
+# This is an unassociated comment.
+
+# This is the second module.
+# This is definitely the second module.
+module Foo::Bar
+end
+</span><span>RUBY</span>
+
+<span># =&gt; {</span>
+<span>#   "Foo"=&gt;"This is the first module.",</span>
+<span>#   "Foo::Bar"=&gt;"This is the second module.\nThis is definitely the second module."</span>
+<span># }</span>
+</code></pre></div>
+
+<p>Now we’ve got something that’s actually working. It still has some definite limitations (for example it doesn’t properly handle nested modules), but it’s good enough for a small example.</p>
+
+<h2 id="wrapping-up">Wrapping up</h2>
+
+<p>If you’re interested in learning more about ripper, here are a couple of other things you can read:</p>
+
+<ul>
+  <li><a href="https://kddnewton.com/parsing-ruby/#2001-10-20">Parsing Ruby</a></li>
+  <li><a href="https://kddnewton.com/ripper-docs">Ripper docs</a></li>
+  <li><a href="https://ruby-hacking-guide.github.io/">Ruby hacking guide</a></li>
+  <li><a href="https://github.com/ruby-formatter/rufo/blob/v0.13.0/lib/rufo/parser.rb">Rufo’s parser</a></li>
+  <li><a href="https://github.com/ruby-syntax-tree/syntax_tree/tree/v1.2.0/lib/syntax_tree.rb">Syntax Tree’s parser</a></li>
+  <li><a href="https://github.com/lsegal/yard/blob/v0.9.27/lib/yard/parser/ruby/ruby_parser.rb">YARD’s parser</a></li>
+</ul>
+
+<p>In the next post in this series I’ll show how <a href="https://github.com/ruby-syntax-tree/syntax_tree">ruby-syntax-tree/syntax_tree</a> uses ripper under the hood to build its own syntax tree representing Ruby source. So if you’re looking for a more practical application of the knowledge you got from this blog post, stay tuned.</p>
+
+
+<p><a href="https://kddnewton.com/">← Back to home</a>
+
+
+      </p></div>
+    </article></div>
+  </div>
+</body>
+</html>

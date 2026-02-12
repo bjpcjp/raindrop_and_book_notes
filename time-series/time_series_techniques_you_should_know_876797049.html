@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Time Series Techniques You Should Know</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Time Series Techniques You Should Know</h1>
+    <p><strong>URL:</strong> <a href="https://thecleverprogrammer.com/2024/05/28/time-series-techniques-you-should-know">https://thecleverprogrammer.com/2024/05/28/time-series-techniques-you-should-know</a></p>
+    <p><strong>Tags:</strong> time-series</p>
+    <p><strong>Bookmark ID:</strong> 876797049</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+			
+<p>Time series analysis is a crucial aspect of data science, particularly&nbsp;when dealing with&nbsp;datasets that are collected or recorded&nbsp;over time.&nbsp;Understanding time series data allows data scientists to identify trends, seasonal patterns, and potential anomalies to make predictions. So, if you want to improve your skills in working with time series problems, this article is for you. In this article, I’ll take you through some essential time series techniques you should know as a Data Scientist.</p>
+
+
+
+
+
+
+
+
+<p>Below are some essential time series techniques you should know as a Data Scientist:</p>
+
+
+
+<ol>
+<li>Understanding and preparing time series data</li>
+
+
+
+<li>Time series decomposition</li>
+
+
+
+<li>Moving Averages and Smoothing</li>
+
+
+
+<li>Stationarity and Differencing</li>
+
+
+
+<li>Autocorrelation and Partial Autocorrelation</li>
+
+
+
+<li>Extracting Days Data from dates</li>
+
+
+
+<li>ARIMA and SARIMA</li>
+</ol>
+
+
+
+<p>Let’s go through all these techniques in detail with implementation using Python.&nbsp;To implement all these techniques,&nbsp;I’ll use time series data based on Netflix subscription growth.&nbsp;<strong>You can download the dataset from <a href="https://statso.io/forecasting-subscriptions-case-study/">here</a>.</strong></p>
+
+
+
+<h4>Understanding and Preparing Time Series Data</h4>
+
+
+
+<p>Time series data consists of sequences of data points collected at consistent time intervals. Examples include daily stock prices, monthly sales data, and annual rainfall records. Understanding and preparing time series data involves identifying the time-related variables and converting them into an appropriate format for analysis.</p>
+
+
+
+
+<p>Here’s how to convert a time series data into an appropriate format for analysis:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">import pandas as pd
+
+netflix_data = pd.read_csv('/content/Netflix-Subscriptions.csv')
+
+# convert 'Time Period' to datetime
+netflix_data['Time Period'] = pd.to_datetime(netflix_data['Time Period'])
+
+# set 'Time Period' as the index
+netflix_data.set_index('Time Period', inplace=True)
+
+# display the first few rows to confirm changes
+print(netflix_data.head())</pre></div>
+
+
+
+<pre><strong>             Subscribers<br>Time Period             <br>2013-01-04      34240000<br>2013-01-07      35640000<br>2013-01-10      38010000<br>2014-01-01      41430000<br>2014-01-04      46130000</strong></pre>
+
+
+
+<h4>Time Series Decomposition</h4>
+
+
+
+<p>Decomposing a time series into its components (trend, seasonality, and residual) helps in understanding the underlying patterns, which helps in selecting the&nbsp;right&nbsp;algorithm for forecasting a time series.</p>
+
+
+
+<p>Here’s how to decompose a time series:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">import statsmodels.api as sm
+import matplotlib.pyplot as plt
+
+# decomposing the time series
+decomposition = sm.tsa.seasonal_decompose(netflix_data['Subscribers'], model='additive', period=4)
+decomposition.plot()
+plt.show()</pre></div>
+
+
+
+<figure><img data-recalc-dims="1" decoding="async" width="629" height="470" data-attachment-id="23642" data-permalink="https://thecleverprogrammer.com/2024/05/28/time-series-techniques-you-should-know/time-series-tech-1/" data-orig-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-1.png?fit=629%2C470&amp;ssl=1" data-orig-size="629,470" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="time-series-tech-1" data-image-description="" data-image-caption="" data-medium-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-1.png?fit=300%2C224&amp;ssl=1" data-large-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-1.png?fit=629%2C470&amp;ssl=1" tabindex="0" role="button" alt="Time Series Techniques You Should Know: Seasonal Decomposition" srcset="data:application/octet-stream;base64, 629w, data:application/octet-stream;base64, 300w, data:application/octet-stream;base64, 400w, data:application/octet-stream;base64, 200w" sizes="(max-width: 629px) 100vw, 629px"></figure>
+
+
+
+<h4>Moving Averages and Smoothing</h4>
+
+
+
+<p>Moving averages help in smoothing out short-term fluctuations and highlighting longer-term trends. By calculating the average of the data points over a specified number of periods, moving averages reduce the noise and variability inherent in the raw data, which makes it easier to identify underlying patterns and trends.</p>
+
+
+
+
+<p>Here’s how to calculate moving averages:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}"># calculating moving averages
+netflix_data['MA4'] = netflix_data['Subscribers'].rolling(window=4).mean()
+
+# plotting original data and moving average
+netflix_data[['Subscribers', 'MA4']].plot()
+plt.title('Netflix Subscribers with 4-Period Moving Average')
+plt.show()</pre></div>
+
+
+
+<figure><img data-recalc-dims="1" decoding="async" width="556" height="427" data-attachment-id="23645" data-permalink="https://thecleverprogrammer.com/2024/05/28/time-series-techniques-you-should-know/time-series-tech-2/" data-orig-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-2.png?fit=556%2C427&amp;ssl=1" data-orig-size="556,427" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="time-series-tech-2" data-image-description="" data-image-caption="" data-medium-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-2.png?fit=300%2C230&amp;ssl=1" data-large-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-2.png?fit=556%2C427&amp;ssl=1" tabindex="0" role="button" alt="Netflix Subscribers with 4-Period Moving Average" srcset="data:application/octet-stream;base64, 556w, data:application/octet-stream;base64, 300w" sizes="(max-width: 556px) 100vw, 556px"></figure>
+
+
+
+<h4>Stationarity and Differencing</h4>
+
+
+
+<p>A stationary time series has properties that do not depend on the time&nbsp;at which&nbsp;the series&nbsp;is observed. Checking for stationarity is crucial for many time series forecasting models.</p>
+
+
+
+<p>Although,&nbsp;the data we are using is&nbsp;quite&nbsp;stationary, still here’s how to check stationarity and perform differencing to achieve stationarity:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">from statsmodels.tsa.stattools import adfuller
+
+# perform augmented dickey-fuller test
+result = adfuller(netflix_data['Subscribers'].dropna())
+print('ADF Statistic:', result[0])
+print('p-value:', result[1])
+
+# differencing to achieve stationarity
+netflix_data['Subscribers_diff'] = netflix_data['Subscribers'].diff().dropna()
+
+# re-perform ADF test on differenced data
+result_diff = adfuller(netflix_data['Subscribers_diff'].dropna())
+print('ADF Statistic (Differenced):', result_diff[0])
+print('p-value (Differenced):', result_diff[1])</pre></div>
+
+
+
+<pre><strong>ADF Statistic: 0.20591078338329172<br>p-value: 0.972591170013349<br>ADF Statistic (Differenced): -4.523088428253382<br>p-value (Differenced): 0.00017858926729786176</strong></pre>
+
+
+
+<h4>Autocorrelation and Partial Autocorrelation</h4>
+
+
+
+<p>Autocorrelation (ACF) and partial autocorrelation (PACF) are tools to identify the correlation of the time series with its own past values. ACF measures the correlation between the time series and its lagged values, which provides insights into repeating patterns, such as seasonality or cyclic behaviour, across the entire series. PACF, on the other hand, isolates the direct effect of a lag on the series by removing the influence of intermediate lags, which makes it&nbsp;useful for&nbsp;identifying the actual order of autoregressive terms in a time series model.</p>
+
+
+
+<p>Here’s how to plot the ACF and PACF plots using Python:</p>
+
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}">from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+
+# plotting ACF and PACF
+plot_acf(netflix_data['Subscribers_diff'].dropna(), lags=20)
+plt.show()
+
+plot_pacf(netflix_data['Subscribers_diff'].dropna(), lags=20)
+plt.show()</pre></div>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="568" height="435" data-attachment-id="23648" data-permalink="https://thecleverprogrammer.com/2024/05/28/time-series-techniques-you-should-know/time-series-tech-3/" data-orig-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-3.png?fit=568%2C435&amp;ssl=1" data-orig-size="568,435" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="time-series-tech-3" data-image-description="" data-image-caption="" data-medium-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-3.png?fit=300%2C230&amp;ssl=1" data-large-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-3.png?fit=568%2C435&amp;ssl=1" tabindex="0" role="button" alt="Time Series Techniques You Should Know: ACF" srcset="data:application/octet-stream;base64, 568w, data:application/octet-stream;base64, 300w" sizes="(max-width: 568px) 100vw, 568px"></figure>
+
+
+
+<figure><img data-recalc-dims="1" loading="lazy" decoding="async" width="568" height="435" data-attachment-id="23649" data-permalink="https://thecleverprogrammer.com/2024/05/28/time-series-techniques-you-should-know/time-series-tech-4/" data-orig-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-4.png?fit=568%2C435&amp;ssl=1" data-orig-size="568,435" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="time-series-tech-4" data-image-description="" data-image-caption="" data-medium-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-4.png?fit=300%2C230&amp;ssl=1" data-large-file="https://i0.wp.com/thecleverprogrammer.com/wp-content/uploads/2024/05/time-series-tech-4.png?fit=568%2C435&amp;ssl=1" tabindex="0" role="button" alt="PACF" srcset="data:application/octet-stream;base64, 568w, data:application/octet-stream;base64, 300w" sizes="(max-width: 568px) 100vw, 568px"></figure>
+
+
+
+<h4>Extracting Days Data from Dates</h4>
+
+
+
+<p>Extracting days data from the dates helps in a detailed analysis of the underlying patterns in a time series. Here’s how to extract day information from the dates:</p>
+
+
+
+<div><pre data-setting="{&quot;showPanel&quot;:false,&quot;languageLabel&quot;:false,&quot;fullScreenButton&quot;:false,&quot;copyButton&quot;:false,&quot;mode&quot;:&quot;python&quot;,&quot;mime&quot;:&quot;text/x-python&quot;,&quot;theme&quot;:&quot;neo&quot;,&quot;lineNumbers&quot;:true,&quot;styleActiveLine&quot;:false,&quot;lineWrapping&quot;:false,&quot;readOnly&quot;:true,&quot;fileName&quot;:&quot;&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;maxHeight&quot;:&quot;400px&quot;,&quot;modeName&quot;:&quot;python&quot;}"># extract day of the month
+netflix_data['DayOfMonth'] = netflix_data.index.day
+
+# extract day of the week (Monday=0, Sunday=6)
+netflix_data['DayOfWeek'] = netflix_data.index.dayofweek
+
+# extract day name (e.g., Monday, Tuesday)
+netflix_data['DayName'] = netflix_data.index.day_name()
+
+# display the dataset with extracted day information
+print(netflix_data.head())</pre></div>
+
+
+
+<pre><strong>             Subscribers         MA4  Subscribers_diff  DayOfMonth  DayOfWeek  \<br>Time Period                                                                     <br>2013-01-04      34240000         NaN               NaN           4          4   <br>2013-01-07      35640000         NaN         1400000.0           7          0   <br>2013-01-10      38010000         NaN         2370000.0          10          3   <br>2014-01-01      41430000  37330000.0         3420000.0           1          2   <br>2014-01-04      46130000  40302500.0         4700000.0           4          5   <p>               DayName  <br>Time Period             <br>2013-01-04      Friday  <br>2013-01-07      Monday  <br>2013-01-10    Thursday  <br>2014-01-01   Wednesday  <br>2014-01-04    Saturday  </p></strong></pre>
+
+
+
+<h4>ARIMA and SARIMA</h4>
+
+
+
+<p>ARIMA (AutoRegressive Integrated Moving Average) and SARIMA (Seasonal ARIMA) are powerful time series forecasting models. ARIMA combines three components:&nbsp;autoregression (AR), differencing (I), and moving average (MA), to model temporal dependencies and trends in non-stationary time series data. It is effective for capturing linear relationships and patterns over time. SARIMA extends ARIMA by incorporating seasonal components, making it suitable for time series data with repeating seasonal patterns.</p>
+
+
+
+<p>You can learn about ARIMA and SARIMA in detail with implementation using Python <strong><a href="https://thecleverprogrammer.com/2023/10/18/arima-and-sarima-for-time-series-forecasting/">here</a></strong>.</p>
+
+
+
+<h3>Summary</h3>
+
+
+
+<p>So, here are some essential time series techniques you should know as a Data Scientist:</p>
+
+
+
+<ol>
+<li>Understanding and preparing time series data</li>
+
+
+
+<li>Time series decomposition</li>
+
+
+
+<li>Moving Averages and Smoothing</li>
+
+
+
+<li>Stationarity and Differencing</li>
+
+
+
+<li>Autocorrelation and Partial Autocorrelation</li>
+
+
+
+<li>Extracting Days Data from dates</li>
+
+
+
+<li>ARIMA and SARIMA</li>
+</ol>
+
+
+
+<p>I hope you liked this article on time series techniques you should know as a Data Scientist. Feel free to ask valuable questions in the comments section below. You can follow me on <strong><a href="https://www.instagram.com/amankharwal.official/" target="_blank" rel="noreferrer noopener">Instagram</a></strong> for many more resources.</p>
+<!-- CONTENT END 1 -->
+		</div></div>
+  </div>
+</body>
+</html>

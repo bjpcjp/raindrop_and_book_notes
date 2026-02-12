@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Techniques for Working with Ruby Collections ?</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Advanced Techniques for Working with Ruby Collections ?</h1>
+    <p><strong>URL:</strong> <a href="https://dev.to/eakmotion/advanced-techniques-for-working-with-ruby-collections-4l08">https://dev.to/eakmotion/advanced-techniques-for-working-with-ruby-collections-4l08</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876790789</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="main-title">
+            <a href="https://media.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fm8f4s61v6nwykhpxwrsc.png">
+              <img src="data:application/octet-stream;base64," width="1000" height="420" alt="Cover image for Advanced Techniques for Working with Ruby Collections 🎯">
+            </a>
+
+          
+        </div><div data-article-id="1377560" id="article-body">
+            <p>Working with collections, such as <strong>arrays</strong> and <strong>hashes</strong>, is a fundamental part of programming in Ruby. </p>
+
+<p>While basic operations like iteration, filtering, and mapping are essential, there are many advanced techniques that can help you write <strong>more efficient</strong>, <strong>expressive</strong>, and <strong>maintainable code</strong>.</p>
+
+<p>In this article, we'll explore some of these techniques and show you how to take your collection-based programming skills in Ruby to the next level.</p>
+
+
+<hr>
+
+<h2>
+  <a name="method-chaining" href="#method-chaining">
+  </a>
+  ⛓️ Method Chaining
+</h2>
+
+<p>Method chaining is a technique that allows you to <strong>apply multiple operations</strong> to a collection in a single line of code. </p>
+
+<p>For example, suppose you have an array of numbers and want to filter out the even ones, square the remaining values, and then sum them up. </p>
+
+<p>Here's how you can do it using method chaining:<br>
+</p>
+
+<div>
+<pre><code><span>numbers</span> <span>=</span> <span>[</span><span>1</span><span>,</span> <span>2</span><span>,</span> <span>3</span><span>,</span> <span>4</span><span>,</span> <span>5</span><span>,</span> <span>6</span><span>]</span>
+<span>result</span> <span>=</span> <span>numbers</span><span>.</span><span>select</span><span>(</span><span>&amp;</span><span>:even?</span><span>).</span><span>map</span> <span>{</span> <span>|</span><span>n</span><span>|</span> <span>n</span> <span>**</span> <span>2</span> <span>}.</span><span>sum</span>
+<span>puts</span> <span>result</span> <span># output: 56</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In this code, we're using the <code>select</code> method to filter out the even numbers, the <code>map</code> method to square the remaining values, and the <code>sum</code> method to add them up. </p>
+
+<p>Combining these methods allows us to express our intent more clearly and concisely.</p>
+
+
+<hr>
+
+<h2>
+  <a name="laziness" href="#laziness">
+  </a>
+  🛋️ Laziness
+</h2>
+
+<p>Ruby collections are generally eager, which means that they evaluate all their elements immediately. </p>
+
+<p>However, you can use <code>lazy</code> evaluation to delay the evaluation of some or all of the elements in a collection until they're actually needed. </p>
+
+<p>This can be useful when working with <strong>large collections or when you want to avoid unnecessary computations</strong>.</p>
+
+<p>Here's an example of how you can use laziness to speed up the processing of a large array:<br>
+</p>
+
+<div>
+<pre><code><span>numbers</span> <span>=</span> <span>(</span><span>1</span><span>..</span><span>1_000_000</span><span>).</span><span>to_a</span>
+<span>result</span> <span>=</span> <span>numbers</span><span>.</span><span>lazy</span><span>.</span><span>select</span><span>(</span><span>&amp;</span><span>:even?</span><span>).</span><span>map</span> <span>{</span> <span>|</span><span>n</span><span>|</span> <span>n</span> <span>**</span> <span>2</span> <span>}.</span><span>take</span><span>(</span><span>10</span><span>).</span><span>to_a</span>
+<span>puts</span> <span>result</span> <span># output: [4, 16, 36, 64, 100, 144, 196, 256, 324, 400]</span>
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In this code, we're using the lazy method to make the array lazy, which means that the <code>select</code> and <code>map</code> operations are only evaluated on the elements that are actually needed (in this case, the <strong>first 10 even numbers</strong>). </p>
+
+<p>This can significantly speed up the processing of large arrays by reducing the amount of unnecessary computation.</p>
+
+
+<hr>
+
+<h2>
+  <a name="grouping" href="#grouping">
+  </a>
+  🎯 Grouping
+</h2>
+
+<p>Sometimes, you may want to group elements in a collection by a certain property or condition. </p>
+
+<p>Ruby provides the <code>group_by</code> method for this purpose, which returns a hash where the keys are the grouping values, and the values are arrays of elements that belong to that group.</p>
+
+<p>Here's an example of how you can use group_by to group an array of strings by their lengths:<br>
+</p>
+
+<div>
+<pre><code><span>words</span> <span>=</span> <span>[</span><span>"apple"</span><span>,</span> <span>"banana"</span><span>,</span> <span>"pear"</span><span>,</span> <span>"orange"</span><span>,</span> <span>"grape"</span><span>]</span>
+<span>result</span> <span>=</span> <span>words</span><span>.</span><span>group_by</span><span>(</span><span>&amp;</span><span>:length</span><span>)</span>
+<span>puts</span> <span>result</span> <span># output: {5=&gt;["apple", "grape"], 6=&gt;["banana"], 4=&gt;["pear"], 6=&gt;["orange"]}</span>
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In this code, we use the <code>group_by</code> method to <strong>group the words in the array by length</strong>. </p>
+
+<p>The result is a hash where the keys are the lengths of the words, and the values are arrays of words with the same length.</p>
+
+
+<hr>
+
+<h2>
+  <a name="memoization" href="#memoization">
+  </a>
+  🧠 Memoization
+</h2>
+
+<p>Memoization is a technique for <strong>caching the results</strong> of a computation so that it can be <strong>reused later</strong> without recalculating the result. </p>
+
+<p>In Ruby, you can use memoization to <strong>cache the result</strong> of a method or a <strong>block of code</strong>, which can be useful when you're performing expensive computations or when you need to calculate a value multiple times.</p>
+
+<p>Here's an example of how you can use memoization to cache the result of a Fibonacci sequence calculation:<br>
+</p>
+
+<div>
+<pre><code><span>def</span> <span>fibonacci</span><span>(</span><span>n</span><span>)</span>
+  <span># Use an instance variable to store the cached results</span>
+  <span># of the Fibonacci sequence calculation</span>
+  <span>@fib</span> <span>||=</span> <span>[]</span>
+
+  <span># If the value is already in the cache, return it</span>
+  <span>return</span> <span>@fib</span><span>[</span><span>n</span><span>]</span> <span>if</span> <span>@fib</span><span>[</span><span>n</span><span>]</span>
+
+  <span># Calculate the Fibonacci value and store it in the cache</span>
+  <span>if</span> <span>n</span> <span>&lt;</span> <span>2</span>
+    <span>@fib</span><span>[</span><span>n</span><span>]</span> <span>=</span> <span>n</span>
+  <span>else</span>
+    <span>@fib</span><span>[</span><span>n</span><span>]</span> <span>=</span> <span>fibonacci</span><span>(</span><span>n</span> <span>-</span> <span>1</span><span>)</span> <span>+</span> <span>fibonacci</span><span>(</span><span>n</span> <span>-</span> <span>2</span><span>)</span>
+  <span>end</span>
+
+  <span># Return the Fibonacci value</span>
+  <span>@fib</span><span>[</span><span>n</span><span>]</span>
+<span>end</span>
+
+</code></pre>
+<div>
+<p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</p>
+</div>
+</div>
+
+
+
+<p>In this code, we're using an <strong>instance variable</strong> <code>@fib</code> <strong>to store the cached results</strong> of the Fibonacci sequence calculation. </p>
+
+<p>We first check if the value is already in the cache, and if it is, we return it. If not, we calculate the value and store it in the cache for later use. </p>
+
+<p>This can <strong>significantly speed up the processing of large or complex computations</strong> and also reduce the amount of memory needed to store the results.</p>
+
+<p>You can use memoization in any situation where you need to <strong>calculate a value multiple times</strong> or <strong>perform an expensive computation</strong>. </p>
+
+<p>Just be sure to keep in mind the potential trade-offs of memoization, such as increased memory usage or potential issues with stale cache values.</p>
+
+
+<hr>
+
+<p><a href="https://media.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Flubo20ds4cttl0dwc1cv.png"><img src="data:application/octet-stream;base64," alt="Ruby congrat!" loading="lazy"></a></p>
+
+<h2>
+  <a name="conclusion" href="#conclusion">
+  </a>
+  Conclusion
+</h2>
+
+<p>Working with collections is an important part of programming in Ruby, and mastering advanced techniques like method <strong>chaining</strong>, <strong>laziness</strong>, <strong>grouping</strong> and <strong>Memoization</strong> can help you take your code to the next level.</p>
+
+<p>So don't be afraid to experiment with new ways of working with collections, try out different methods and techniques, and see what works best for you. </p>
+
+<p>You might just discover a new favorite tool or technique that transforms how you think about Ruby programming.</p>
+
+<p><strong>So go forth, explore, and have fun with collections in Ruby!</strong></p>
+
+
+          </div></div>
+  </div>
+</body>
+</html>

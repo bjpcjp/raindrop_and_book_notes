@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Creating animations with uikit ca</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Creating animations with uikit ca</h1>
+    <p><strong>URL:</strong> <a href="https://ordinarycoding.com/articles/creating-animations-with-uikit-ca">https://ordinarycoding.com/articles/creating-animations-with-uikit-ca</a></p>
+    <p><strong>Tags:</strong> ui-ux</p>
+    <p><strong>Bookmark ID:</strong> 876782613</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><span>18 Mar 2020</span><span>8 min read</span></p><p>We, developers, have a lot of options when it comes to animations nowadays. There is plenty of libraries that can be used to easily integrate an animation prepared by a designer into our applications. The most popular (probably) is a Lottie which is available for both iOS and Android. It's also possible to use Lottie for many multi-platform solutions like Flutter or React Native which makes it super convenient. There is also Rive, a great web-based tool for animations that has a plugin for Flutter as well as an iOS framework (it hasn't been updated for a while but should still work as far as I know). Those tools are great but most developers are not designers and do not know or do not want to play with graphics outside the code.</p><p>We have also libraries like Hero or Spring that can help you make simple transitions and animations without using any external tools for designers. However, it is pretty often that we have to implement something completely custom and can't use any already created framework. Or maybe you are like me and do not like to add too many dependencies to your projects and rather want to implement such things yourself. Either the reason is, as I said in my previous article about iOS Interview Questions, no matter what it is good to know such things as you might ie. be asked about this during the interview.</p><p>There are a few methods that we can use while working with animations. Let's take a closer look at 3 of then: <code>Core Animation</code>, widely known <code>UIView.animate</code> and <code>UIView</code>'s keyframes.</p><h2>Core Animation</h2><p>Core Animation is a framework designed by Apple and is available on all the platforms supported by the company. That means you can only learn it once and take advantage of it on either iOS, macOS, tvOS and watchOS. You might not be aware of it but even if you have never heard about this framework before, you are still using CoreAnimation for all your applications you create.</p><p>Core Animation framework is quite powerful, sadly it's not that convenient to use. It's not that hard either though, all you have to do is to configure a few animation parameters and attach it to the view's layer.</p><p>Here is an example of an animating view's <code>cornerRadius</code> that auto reserves and repeats infinitely. Those two parameters are optional and if not set, the animation will just play once.</p><pre><code><span>let</span> animation = <span>CABasicAnimation</span>(keyPath: #keyPath(<span>CAShapeLayer</span>.<span>cornerRadius</span>))
+animation.<span>fromValue</span> = <span>0</span>
+animation.<span>toValue</span> = <span>16</span>
+animation.<span>duration</span> = <span>1</span>
+animation.<span>autoreverses</span> = <span>true</span>
+animation.<span>repeatCount</span> = .<span>infinity</span>
+animation.<span>timingFunction</span> = <span>CAMediaTimingFunction</span>(name: .<span>easeInEaseOut</span>)
+
+squareView.<span>layer</span>.<span>add</span>(animation, forKey: <span>"squareView.cornerRadius"</span>)
+</code></pre><p>There is a small trick when playing animation only once though. The layer will reset to its initial value which might be confusing. When googling for an answer you might find a solution that suggests using those 2 properties to make it <em>not</em> reset it's value to the initial one.</p><pre><code>animation.<span>fillMode</span> = <span>CAMediaTimingFillMode</span>.<span>forwards</span>
+animation.<span>isRemovedOnCompletion</span> = <span>false</span>
+</code></pre><p>There is another trick with this solution though. The animation is never removed, as well as the actual value of <code>cornerRadius</code> is never set to the expected one. So we can either set the <code>cornerRadius</code> to the desired value right before playing the animation and thanks to the <code>animation.fromValue = 0</code> it will animate just fine. Or, we can use a delegate <code>animation.delegate = self</code> and implement <code>func animationDidStart(_ anim: CAAnimation)</code> method where we will set it to correct value, like this:</p><pre><code><span>extension</span> <span>MyViewController</span>: <span>CAAnimationDelegate</span> {
+&nbsp; &nbsp; <span>func</span> animationDidStop(<span>_</span> anim: <span>CAAnimation</span>, finished flag: <span>Bool</span>) {
+&nbsp; &nbsp; &nbsp; &nbsp; <span>print</span>(<span>"</span>\(squareView.<span>layer</span>.<span>cornerRadius</span>)<span>"</span>)
+&nbsp; &nbsp; }
+}
+</code></pre><p>It is also fairly easy to set multiple values and animate between them.</p><pre><code><span>let</span> animation = <span>CAKeyframeAnimation</span>(keyPath: #keyPath(<span>CAShapeLayer</span>.<span>cornerRadius</span>)
+animation.<span>values</span> = [<span>0</span>, <span>50</span>, <span>16</span>, <span>50</span>, <span>0</span>]
+animation.<span>keyTimes</span> = [<span>0</span>, <span>0.25</span>, <span>0.5</span>, <span>0.75</span>, <span>1</span>]
+animation.<span>duration</span> = <span>3</span>
+animation.<span>isAdditive</span> = <span>true</span>
+
+squareView.<span>layer</span>.<span>add</span>(animation, forKey: <span>"squareView.cornerRadius"</span>)
+</code></pre><p>The <code>values</code> and <code>keyTimes</code> elements count must match each other and the <code>keyTimes</code> contains a value between 0 and 1, where 0 is the beginning of the animation and 1 is its end.</p><p>There is also one cool class that might be handy - <code>CASpringAnimation</code> - it inherits from the <code>CABasicAnimation</code> and makes the spring animations way easier to achieve. Give it a try! You can achieve a lot of great effects using it together with UIViews or Core Graphics framework.</p><h2>UIView.animate</h2><p>You might never have a chance to use Core Animation directly but I am pretty sure - if you are not a complete beginner as iOS developer - you have heard of this animation method.</p><p>The Core Animation method I described above has one big disadvantage though... you can only animate a single property with it. You can animate multiple by creating a group...</p><pre><code><span>let</span> group = <span>CAAnimationGroup</span>()
+group.<span>animations</span> = [...]
+</code></pre><p>... but it's still a lot of code to write for such a simple thing. That's why we have a more convenient method which everyone is familiar with.</p><pre><code><span>animate</span>(withDuration duration: <span>TimeInterval</span>, animations: <span>@escaping</span> () -&gt; <span>Void</span>)
+</code></pre><p>as well as a few more <code>animate</code> methods on UIView class that have some more arguments and are more configurable. With those methods, we can easily animate any animatable property from within the same animation block (closure). Also, we do not have to worry about layer/view resetting to its initial value as we directly change the actual value.</p><p>To achieve the first example all we need to do is call one simple method:</p><pre><code><span>UIView</span>.<span>animate</span>(withDuration: <span>1</span>) {
+    <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>16</span>
+}
+</code></pre><p>It gets "funnier" when we want to make several steps in our animation since it can quickly become a messy and unreadable, just take a look:</p><pre><code><span>UIView</span>.<span>animate</span>(withDuration: <span>0.5</span>, animations: {
+    <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>16</span>
+}) { <span>_ in</span>
+    <span>UIView</span>.<span>animate</span>(withDuration: <span>0.5</span>, animations: {
+        <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>50</span>
+    }) { <span>_ in</span>
+        <span>UIView</span>.<span>animate</span>(withDuration: <span>0.5</span>, animations: {
+            <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>16</span>
+        }) { <span>_ in</span>
+            <span>UIView</span>.<span>animate</span>(withDuration: <span>0.5</span>, animations: {
+                <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>50</span>
+            }) { <span>_ in</span>
+                <span>UIView</span>.<span>animate</span>(withDuration: <span>0.5</span>, animations: {
+                    <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>0</span>
+                })
+            }
+        }
+    }
+}
+</code></pre><p>Also, it's way harder to manage the duration of the whole animation as we could have to calculate ourselves the fraction of duration for each step.</p><h2>UIView Keyframes</h2><p>And finally, the latest and least known addition to the UIKit framework - keyframes. It's been added a really long time ago (iOS 7) but still, I rarely see this in any project I have been involved in.</p><p>So let's take a look at a similar example:</p><pre><code><span>UIView</span>.<span>animateKeyframes</span>(withDuration: <span>3</span>, delay: <span>0</span>, options: [], animations: {
+    <span>UIView</span>.<span>addKeyframe</span>(withRelativeStartTime: <span>0.0</span>, relativeDuration: <span>0.25</span>) {
+        <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>50</span>
+    }
+
+    <span>UIView</span>.<span>addKeyframe</span>(withRelativeStartTime: <span>0.25</span>, relativeDuration: <span>0.25</span>) {
+        <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>16</span>
+    }    
+
+    <span>UIView</span>.<span>addKeyframe</span>(withRelativeStartTime: <span>0.5</span>, relativeDuration: <span>0.25</span>) {
+        <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>50</span>
+    }
+
+    <span>UIView</span>.<span>addKeyframe</span>(withRelativeStartTime: <span>0.75</span>, relativeDuration: <span>0.25</span>) {
+        <span>self</span>.<span>squareView</span>.<span>layer</span>.<span>cornerRadius</span> = <span>0</span>
+    }
+})
+</code></pre><p>It's way cleaner and readable than the previous solution although it has its disadvantages. Not everyone likes to work with relative duration and there is no easy way to create Spring Animation using this method.</p><h2>Conclusion</h2><p>When it comes to animations, we have quite a lot of ways to integrate them into our applications. Which one to choose you might ask? It all depends on your experience and the requirements since not all methods are good for some outcomes. Also, each solution has its own advantages and disadvantages.</p><p>Going with a 3rd party framework might be the easiest to implement but ie. Lottie or Rive might require some design skills or a designer friend that has experience with animations and can help us out. Thankfully there is a lot of free Lottie and Rive animations that we could use. Those libraries might be good for really complex animations but if we need something simpler or we simply do not want to add an additional framework to our project, we might want to go with the native method.</p><p>When to choose <code>Core Animation</code> and when the well known <code>UIView.animate</code>? Let's be honest, most of the time you will want to implement your animation with the 2nd option or use UIView Keyframes for something a little bit more complex (although not too complex 🙈) since it's really convenient to use and it's just not worth over complicating it with<code> Core Animation</code>. CA might be still useful though if we run into troubles with UIKit method and if something seems impossible with <code>UIView.animate</code> it might be actually possible with <code>Core Animation</code>.</p><p>Thank you for reading! Got any questions? Feel free to poke me on <a href="http://web.archive.org/web/20220924045734/https://twitter.com/artrmzx">Twitter</a>.</p><h3>Useful Links</h3><ul><li><a href="http://web.archive.org/web/20220924045734/https://ordinarycoding.com/articles/ios-developer-interview-questions-2020/">iOS Developer Interview Questions</a></li><li><a href="http://web.archive.org/web/20220924045734/https://github.com/airbnb/lottie-ios">Lottie</a> - an iOS library to natively render After Effects vector animations</li><li><a href="http://web.archive.org/web/20220924045734/https://rive.app/">Rive</a> - a real-time interactive design tool that allows you to design, animate, and immediately integrate your assets into any platform</li><li><a href="http://web.archive.org/web/20220924045734/https://github.com/HeroTransitions/Hero">Hero</a> - a library for building iOS view controller transitions</li><li><a href="http://web.archive.org/web/20220924045734/https://github.com/MengTo/Spring">Spring</a> - a library to simplify iOS animations in Swift</li></ul><ul><li><a href="https://ordinarycoding.com/web/20220924045734/https://ordinarycoding.com/topics/ios">ios</a></li><li><a href="https://ordinarycoding.com/web/20220924045734/https://ordinarycoding.com/topics/swift">swift</a></li><li><a href="https://ordinarycoding.com/web/20220924045734/https://ordinarycoding.com/topics/ui">ui</a></li></ul></div></div>
+  </div>
+</body>
+</html>

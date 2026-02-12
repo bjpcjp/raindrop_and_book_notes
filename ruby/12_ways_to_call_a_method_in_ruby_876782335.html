@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>12 ways to call a method in Ruby</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>12 ways to call a method in Ruby</h1>
+    <p><strong>URL:</strong> <a href="https://www.notonlycode.org/12-ways-to-call-a-method-in-ruby">https://www.notonlycode.org/12-ways-to-call-a-method-in-ruby</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876782335</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section>
+        <p>Today during a chat with one of my colleagues we discussed agreeing on certain ways to write our Python code. We joked about how Python follows this idea of having exactly one way to do each thing (which is usually followed by the language, but not necessarily by libraries). It made me think about Ruby, which has opposite philosophy - everything can be done in many different ways.</p><p>This led me to a random idea of checking in how many different ways I can call a single method in Ruby. I ended up with 12 different ways (a couple are a bit of cheating). Prepare for some surprises below - especially the last one is mind blowing!</p><p><strong>Warning</strong> the code below is not meant for use in production (especially the last 3 examples). It is just my exploration of the language capabilities. Some of the techniques shown are useful in a bunch of cases, but make sure to proceed with caution. Simplicity, security and readability are more important than fancy stuff.</p><h2 id="setup">Setup</h2><p>For the sake of this experiment, I'm setting up a single class with one method that I'll be calling in many different ways. For the sake of simplicity, the method takes no arguments (although I believe each exaple would work with arguments as well).</p><p>The class is called <code>User</code>, it has 1 attribute, <code>name</code>, and the method to be called is <code>hello</code>, which prints a welcome message, including user name.</p><pre><code>class User
+  def initialize(name)
+    @name = name
+  end
+
+  def hello
+    puts "Hello, #{@name}!"
+  end
+
+  def method_missing(_)
+    hello
+  end
+end
+
+user = User.new('Gregory')</code></pre><h2 id="1-the-obvious-way">1: the obvious way</h2><pre><code>user.hello()</code></pre><p>Not much to see here - this is how you call methods in plenty of languages. Interesting fact: you can put spaces around the dot: <code>user &nbsp;. &nbsp;hello()</code> will work as well.</p><h2 id="2-skip-the-brackets">2: skip the brackets</h2><pre><code>user.hello</code></pre><p>Technically it works the same as one before, it just skips brackets, which are optional in Ruby (as long as the code is unambiguous, sometimes they are required due multiple ways in which the code could be parsed)</p><h2 id="3-4-using-send-and-public_send">3-4: using send and public_send</h2><pre><code>user.send(:hello)
+user.public_send(:hello)</code></pre><p>In this case we pass the name of the function to be called as an argument to either <code>send</code> or <code>public_send</code> methods that are defined in every class. The difference between <code>send</code> and <code>public_send</code> is that the latter respects the privacy of methods - if you try to call private method, it will raise an error, while <code>send</code> will still call it.</p><p>I'm passing the name of the function using symbol type (<code>:hello</code>), but you can use string as well &nbsp;(<code>"hello"</code>).</p><h2 id="5-7-using-method-and-call">5-7: using "method" and "call"</h2><pre><code>user.method(:hello).call
+user.method(:hello).()
+user.method(:hello)[]</code></pre><p>3 examples, with the 2nd and 3rd being just a syntax sugar, so I put them together. This one is quite interesting. Calling <code>user.method(:hello)</code> returns an instance of <code>Method</code> class. This object can be passed around as any value and can be called any time - it also stores the reference to the object to which it belongs, so if I change the user's name, the new one will be used:</p><pre><code>method = user.method(:hello)
+user.set_instance_variable(:@name, "Not Only Code")
+method.call() # prints "Hello, Not Only Code!"</code></pre><p>The <code>.()</code> and <code>[]</code> are equivalent of <code>.call()</code> and can also take arguments - <code>proc.call(1,2,3)</code>, <code>proc.(1,2,3)</code> and <code>proc[1,2,3]</code> will all work the same way (the last one won't support named arguments though).</p><h2 id="8-using-tap">8: using "tap"</h2><pre><code>user.tap(&amp;:hello)</code></pre><p><code>tap</code> is a funny little method that takes a block, passes itself as an argument there and executes the block, and then finally returns itself. I rarely use it, but there are cases where it might be helpful (like side effects when chaining methods).</p><p>The <code>&amp;:hello</code> syntax turns the <code>:hello</code> symbol into a <code>Proc</code> instance. You can read more about this syntax on <a href="https://www.honeybadger.io/blog/how-ruby-ampersand-colon-works/?ref=notonlycode.org">Honeybadger blog</a> - it's really well explained there. <code>Proc</code> is a callable object, just like <code>Method</code> from previous examples.</p><h2 id="9-using-to_proc-on-function-name">9: using "to_proc" on function name</h2><pre><code>:hello.to_proc.call(user)</code></pre><p>I like this one because it reverses the order - <code>user</code> becomes the argument of the function. What happens under the hood here is very similar to the previous one - the <code>call</code> function of <code>Proc</code> passes the initial symbol to the argument received. Something similar to this:</p><pre><code>class Proc
+  def call(obj)
+    obj.send(@symbol_used_to_create_proc)
+  end
+end</code></pre><h2 id="10-using-method_missing">10: using "method_missing"</h2><pre><code>class User
+  def method_missing(_)
+    hello
+  end
+end
+
+user.i_am_a_lizard_king # prints "Hello, Gregory!"
+user.i_can_do_everything # prints "Hello, Gregory!"</code></pre><p>This one is a bit of cheating, since still under the hood I use the standard way of calling a method, but I think it's worth putting it here.</p><p><code>method_missing</code> is a method that will be executed when object receives a call to a method that is not defined. It's a powerful function that is one of fundaments of Ruby's flexibility, however it might lead to bugs that take ages to find (and to some perfomance issues), so use it with caution.</p><h2 id="11-using-eval">11: using "eval"</h2><pre><code>eval("user.hello")</code></pre><p>Again, a bit of cheating, since I still use the standard method call syntax, but how it works under the hood is obviously very different. <code>eval</code> passes the string to Ruby parser and interpreter just as if it was a part of my code, and then executes the code. You should definitely, absolutely avoid using it in your code, especially if you allow users to pass some values to your application.</p><h2 id="12-using-source-and-instance_eval">12: using "source" and "instance_eval"</h2><pre><code>require 'method_source' # external gem
+
+method_source = user.method(:hello).source
+method_body = method_source.split("\n")[1...-1].join(";")
+user.instance_eval(method_source)</code></pre><p>Ok, the last one - and it's quite crazy, so explantion is a bit longer. It relies on external gem, called <a href="https://github.com/banister/method_source?ref=notonlycode.org">method_source</a>, but that's because it would take me too much time and space to write this code here (it's all just Ruby though, no magic!). Let me explain how it works:</p><p><code>user.method(:hello).source</code> returns the source of the method as a string. The output of this is the whole body (including the spaces):</p><pre><code>  def hello
+    puts "Hello, #{@name}!"
+  end</code></pre><p>How does <code>method_source</code> gem do it? The <code>Method</code> class in Ruby has a <code>source_location</code> function that returns the location of the method's source code - file and line number where the method starts. Then <code>method_source</code> essentially opens that file, finds the respective line, looks for <code>end</code> that will end the method and returns the code in between.</p><p>Now that I have the full code of the method, I want to remove the method definition and the <code>end</code>. In my case I just remove the first and last line, but if the method was a one-liner, it would require some changes. The output of the 2nd line is a string with value: <code>puts "Hello, #{@name}!"</code> .</p><p>Finally, I take this string and I pass it to <code>instance_eval</code> of my <code>user</code> object. <code>instance_eval</code> works kind of like <code>eval</code> except that it executes code in different scope. If I call <code>eval</code> it would execute code in scope of my whole file, where the <code>@name</code> variable is not defined. By passing it to <code>instance_eval</code> I ensure it uses the correct values.</p><h2 id="is-there-more">Is there more?</h2><p>That was a fun little experiment. I'm pretty sure there are some more ways to call methods in Ruby - it's a large and very flexible language. If you know some other ways, let me know, I'm very curious!</p><p>And if you enjoy my content, check out my <a href="https://www.youtube.com/channel/UCj3PDQ-4n9sO0j3t2j608WQ?ref=notonlycode.org">YouTube channel, Not Only Code</a>, where I'm talking about different aspects of working as a software developer.</p><p>Discussion about this blog post (and a few other additions to the list) can be found on <a href="https://www.reddit.com/r/ruby/comments/i9hvjj/12_ways_to_call_a_method_in_ruby/?utm_source=share&amp;utm_medium=web2x&amp;context=3">Ruby Subreddit</a>.</p>
+    </section></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>eon01/kubernetes-workshop: ⚙️ A Gentle introduction to Kubernetes with more than just the basics. 🌟 Give it a star if you like it.</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>eon01/kubernetes-workshop: ⚙️ A Gentle introduction to Kubernetes with more than just the basics. 🌟 Give it a star if you like it.</h1>
+    <p><strong>URL:</strong> <a href="https://github.com/eon01/kubernetes-workshop">https://github.com/eon01/kubernetes-workshop</a></p>
+    <p><strong>Tags:</strong> kubernetes</p>
+    <p><strong>Bookmark ID:</strong> 876782075</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-hpc="true"><article itemprop="text"><p dir="auto"><h2 tabindex="-1" dir="auto">Brought to you by <a href="https://faun.dev/?utm_source=faun&amp;utm_medium=github&amp;utm_campaign=kubernetes-workshop" rel="nofollow">FAUN</a></h2><a id="user-content-brought-to-you-by-faun" aria-label="Permalink: Brought to you by FAUN" href="#brought-to-you-by-faun"></a></p>
+<p dir="auto"><a href="https://faun.dev/join?utm_source=faun&amp;utm_medium=github&amp;utm_campaign=kubernetes-workshop" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Join us"></a></p>
+<ul dir="auto">
+<li>Slides available <a href="https://slides.com/eon01/kubernetes-workshop#/" rel="nofollow">here</a>.</li>
+<li>Original article posted <a href="https://medium.com/faun/a-gentle-introduction-to-kubernetes-4961e443ba26" rel="nofollow">here</a>.</li>
+<li>Source code <a href="https://github.com/eon01/kubernetes-workshop">here</a>.</li>
+<li>Inspired from my course: <a href="https://learn.faun.dev/" rel="nofollow">Learn Kubernetes by building 10 projects</a></li>
+<li><a href="https://www.buymeacoffee.com/joinFAUN" rel="nofollow">Buy Me A Coffee</a></li>
+</ul>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Table of Contents</h2><a id="user-content-table-of-contents" aria-label="Permalink: Table of Contents" href="#table-of-contents"></a></p>
+<ul dir="auto">
+<li><a href="#brought-to-you-by-faun">Brought to you by FAUN</a></li>
+<li><a href="#table-of-contents">Table of Contents</a></li>
+<li><a href="#introduction">Introduction</a>
+<ul dir="auto">
+<li><a href="#development-environment">Development Environment</a></li>
+<li><a href="#developing-a-trending-git-repositories-api-flask">Developing a Trending Git Repositories API (Flask)</a></li>
+</ul>
+</li>
+<li><a href="#pushing-the-image-to-a-remote-registry">Pushing the Image to a Remote Registry</a>
+<ul dir="auto">
+<li><a href="#a-security-notice">A Security Notice</a></li>
+</ul>
+</li>
+<li><a href="#installing-minikube">Installing Minikube</a></li>
+<li><a href="#deploying-to-kubernetes">Deploying to Kubernetes</a>
+<ul dir="auto">
+<li><a href="#services">Services</a></li>
+<li><a href="#inconvenience-of-load-balancer-service">Inconvenience of Load Balancer Service</a></li>
+</ul>
+</li>
+<li><a href="#an-api-gateway">An API Gateway</a>
+<ul dir="auto">
+<li><a href="#edge-proxy-vs-service-mesh">Edge Proxy vs Service Mesh</a></li>
+</ul>
+</li>
+<li><a href="#accessing-the-kubernetes-api">Accessing the Kubernetes API</a>
+<ul dir="auto">
+<li><a href="#using-an-api-client">Using an API Client</a></li>
+<li><a href="#accessing-the-api-from-inside-a-pod">Accessing the API from inside a POD</a></li>
+</ul>
+</li>
+<li><a href="#star-history">Star History</a></li>
+<li><a href="#thanks-to-all-the-contributors">Thanks to all the contributors!</a></li>
+</ul>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Introduction</h2><a id="user-content-introduction" aria-label="Permalink: Introduction" href="#introduction"></a></p>
+<p dir="auto">In this workshop, we're going to:</p>
+<ul dir="auto">
+<li>Deploy Kubernetes services and an Ambassador API gateway.</li>
+<li>Examine the difference between Kubernetes proxies and service mesh like Istio.</li>
+<li>Access the Kubernetes API from the outside and from a Pod.</li>
+<li>Understand what API to choose.</li>
+<li>See how Service Accounts and RBAC works</li>
+<li>Discover some security pitfalls when building Docker images and many interesting things.</li>
+<li>Other things :-)</li>
+</ul>
+<p dir="auto">We will start by developing then deploying a simple Python application (a Flask API that returns the list of trending repositories by programming language).</p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Development Environment</h2><a id="user-content-development-environment" aria-label="Permalink: Development Environment" href="#development-environment"></a></p>
+<p dir="auto">We are going to use Python 3.6.7</p>
+<p dir="auto">We are using Ubuntu 18.04 that comes with Python 3.6 by default. You should be able to invoke it with the command python3. (Ubuntu 17.10 and above also come with Python 3.6.7)</p>
+<p dir="auto">If you use Ubuntu 16.10 and 17.04, you should be able to install it with the following commands:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="sudo apt-get update
+sudo apt-get install python3.6"><pre>sudo apt-get update
+sudo apt-get install python3.6</pre></div>
+<p dir="auto">If you are using Ubuntu 14.04 or 16.04, you need to get Python 3 from a Personal Package Archive (PPA):</p>
+<div dir="auto" data-snippet-clipboard-copy-content="sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt-get install python3.6"><pre>sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt-get install python3.6</pre></div>
+<p dir="auto">For the other operating systems, visit <a href="https://realpython.com/installing-python/" rel="nofollow">this guide</a>, follow the instructions and install Python3.</p>
+<p dir="auto">Now install PIP, the package manager:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="sudo apt-get install python3-pip"><pre>sudo apt-get install python3-pip</pre></div>
+<p dir="auto">Follow this by the installation of Virtualenvwrapper, which is a virtual environment manager:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="sudo pip3 install virtualenvwrapper"><pre>sudo pip3 install virtualenvwrapper</pre></div>
+<p dir="auto">Create a folder for your virtualenvs (I use ~/dev/PYTHON_ENVS) and set it as WORKON_HOME:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="mkdir  ~/dev/PYTHON_ENVS
+export WORKON_HOME=~/dev/PYTHON_ENVS"><pre>mkdir  <span>~</span>/dev/PYTHON_ENVS
+<span>export</span> WORKON_HOME=<span>~</span>/dev/PYTHON_ENVS</pre></div>
+<p dir="auto">In order to source the environment details when the user login, add the following lines to ~/.bashrc:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="source &quot;/usr/local/bin/virtualenvwrapper.sh&quot;
+export WORKON_HOME=&quot;~/dev/PYTHON_ENVS&quot;"><pre><span>source</span> <span><span>"</span>/usr/local/bin/virtualenvwrapper.sh<span>"</span></span>
+<span>export</span> WORKON_HOME=<span><span>"</span>~/dev/PYTHON_ENVS<span>"</span></span></pre></div>
+<p dir="auto">Make sure to adapt the WORKON_HOME to your real WORKON_HOME.
+Now we need to create then activate the new environment:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="mkvirtualenv --python=/usr/bin/python3 trendinggitrepositories
+workon trendinggitrepositories"><pre>mkvirtualenv --python=/usr/bin/python3 trendinggitrepositories
+workon trendinggitrepositories</pre></div>
+<p dir="auto">Let's create the application directories:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="mkdir trendinggitrepositories
+cd trendinggitrepositories
+mkdir api
+cd api"><pre>mkdir trendinggitrepositories
+<span>cd</span> trendinggitrepositories
+mkdir api
+<span>cd</span> api</pre></div>
+<p dir="auto">Once the virtual environment is activated, we can install Flask:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="pip install flask"><pre>pip install flask</pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Developing a Trending Git Repositories API (Flask)</h2><a id="user-content-developing-a-trending-git-repositories-api-flask" aria-label="Permalink: Developing a Trending Git Repositories API (Flask)" href="#developing-a-trending-git-repositories-api-flask"></a></p>
+<p dir="auto">Inside the API folder <code>api</code>, create a file called <code>app.py</code> and add the following code:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return &quot;Hello, World!&quot;
+
+if __name__ == '__main__':
+    app.run(debug=True)"><pre><span>from</span> <span>flask</span> <span>import</span> <span>Flask</span>
+
+<span>app</span> <span>=</span> <span>Flask</span>(<span>__name__</span>)
+
+<span>@<span>app</span>.<span>route</span>(<span>'/'</span>)</span>
+<span>def</span> <span>index</span>():
+    <span>return</span> <span>"Hello, World!"</span>
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>'__main__'</span>:
+    <span>app</span>.<span>run</span>(<span>debug</span><span>=</span><span>True</span>)</pre></div>
+<p dir="auto">This will return a hello world message when a user requests the "/" route.</p>
+<p dir="auto">Now run it using: <code>python app.py</code> and you will see a similar output to the following one:</p>
+<div data-snippet-clipboard-copy-content="* Serving Flask app &quot;api&quot; (lazy loading)
+* Environment: production
+  WARNING: This is a development server. Do not use it in a production deployment.
+  Use a production WSGI server instead.
+* Debug mode: on
+* Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+* Restarting with stat
+* Debugger is active!
+* Debugger PIN: 465-052-587"><pre><code>* Serving Flask app "api" (lazy loading)
+* Environment: production
+  WARNING: This is a development server. Do not use it in a production deployment.
+  Use a production WSGI server instead.
+* Debug mode: on
+* Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+* Restarting with stat
+* Debugger is active!
+* Debugger PIN: 465-052-587
+</code></pre></div>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="https://github.com/eon01/kubernetes-workshop/blob/master/images/ghtokens.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<p dir="auto">We now need to install PyGithub since we need it to communicate with Github API v3.</p>
+<div dir="auto" data-snippet-clipboard-copy-content="pip install PyGithub"><pre>pip install PyGithub</pre></div>
+<p dir="auto">Go to Github and <a href="https://github.com/settings/applications/new">create a new app</a>. We will need the application "Client ID" and "Client Secret":</p>
+<div dir="auto" data-snippet-clipboard-copy-content="from github import Github
+g = Github(&quot;xxxxxxxxxxxxx&quot;, &quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;)"><pre><span>from</span> <span>github</span> <span>import</span> <span>Github</span>
+<span>g</span> <span>=</span> <span>Github</span>(<span>"xxxxxxxxxxxxx"</span>, <span>"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span>)</pre></div>
+<p dir="auto">This is how the mini API looks like:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="from flask import Flask, jsonify, abort
+import urllib.request, json
+from flask import request
+
+app = Flask(__name__)
+
+from github import Github
+g = Github(&quot;xxxxxx&quot;, &quot;xxxxxxxxxxxxx&quot;)
+
+@app.route('/')
+def get_repos():
+    r = []
+
+    try:
+        args = request.args
+        n = int(args['n'])
+    except (ValueError, LookupError) as e:
+        abort(jsonify(error=&quot;No integer provided for argument 'n' in the URL&quot;))
+
+    repositories = g.search_repositories(query='language:python')[:n]
+
+    for repo in repositories:
+        with urllib.request.urlopen(repo.url) as url:
+            data = json.loads(url.read().decode())
+        r.append(data)
+
+    return jsonify({'repos':r })
+
+if __name__ == '__main__':
+    app.run(debug=True)"><pre><span>from</span> <span>flask</span> <span>import</span> <span>Flask</span>, <span>jsonify</span>, <span>abort</span>
+<span>import</span> <span>urllib</span>.<span>request</span>, <span>json</span>
+<span>from</span> <span>flask</span> <span>import</span> <span>request</span>
+
+<span>app</span> <span>=</span> <span>Flask</span>(<span>__name__</span>)
+
+<span>from</span> <span>github</span> <span>import</span> <span>Github</span>
+<span>g</span> <span>=</span> <span>Github</span>(<span>"xxxxxx"</span>, <span>"xxxxxxxxxxxxx"</span>)
+
+<span>@<span>app</span>.<span>route</span>(<span>'/'</span>)</span>
+<span>def</span> <span>get_repos</span>():
+    <span>r</span> <span>=</span> []
+
+    <span>try</span>:
+        <span>args</span> <span>=</span> <span>request</span>.<span>args</span>
+        <span>n</span> <span>=</span> <span>int</span>(<span>args</span>[<span>'n'</span>])
+    <span>except</span> (<span>ValueError</span>, <span>LookupError</span>) <span>as</span> <span>e</span>:
+        <span>abort</span>(<span>jsonify</span>(<span>error</span><span>=</span><span>"No integer provided for argument 'n' in the URL"</span>))
+
+    <span>repositories</span> <span>=</span> <span>g</span>.<span>search_repositories</span>(<span>query</span><span>=</span><span>'language:python'</span>)[:<span>n</span>]
+
+    <span>for</span> <span>repo</span> <span>in</span> <span>repositories</span>:
+        <span>with</span> <span>urllib</span>.<span>request</span>.<span>urlopen</span>(<span>repo</span>.<span>url</span>) <span>as</span> <span>url</span>:
+            <span>data</span> <span>=</span> <span>json</span>.<span>loads</span>(<span>url</span>.<span>read</span>().<span>decode</span>())
+        <span>r</span>.<span>append</span>(<span>data</span>)
+
+    <span>return</span> <span>jsonify</span>({<span>'repos'</span>:<span>r</span> })
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>'__main__'</span>:
+    <span>app</span>.<span>run</span>(<span>debug</span><span>=</span><span>True</span>)</pre></div>
+<p dir="auto">Let's hide the Github token and secret as well as other variables in the environment.</p>
+<div dir="auto" data-snippet-clipboard-copy-content="from flask import Flask, jsonify, abort, request
+import urllib.request, json, os
+from github import Github
+
+app = Flask(__name__)
+
+CLIENT_ID = os.environ['CLIENT_ID']
+CLIENT_SECRET = os.environ['CLIENT_SECRET']
+DEBUG = os.environ['DEBUG']
+
+g = Github(CLIENT_ID, CLIENT_SECRET)
+
+
+@app.route('/')
+def get_repos():
+    r = []
+
+    try:
+        args = request.args
+        n = int(args['n'])
+    except (ValueError, LookupError) as e:
+        abort(jsonify(error=&quot;No integer provided for argument 'n' in the URL&quot;))
+
+    repositories = g.search_repositories(query='language:python')[:n]
+
+    for repo in repositories:
+        with urllib.request.urlopen(repo.url) as url:
+            data = json.loads(url.read().decode())
+        r.append(data)
+
+    return jsonify({'repos':r })
+
+if __name__ == '__main__':
+    app.run(debug=DEBUG)"><pre><span>from</span> <span>flask</span> <span>import</span> <span>Flask</span>, <span>jsonify</span>, <span>abort</span>, <span>request</span>
+<span>import</span> <span>urllib</span>.<span>request</span>, <span>json</span>, <span>os</span>
+<span>from</span> <span>github</span> <span>import</span> <span>Github</span>
+
+<span>app</span> <span>=</span> <span>Flask</span>(<span>__name__</span>)
+
+<span>CLIENT_ID</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'CLIENT_ID'</span>]
+<span>CLIENT_SECRET</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'CLIENT_SECRET'</span>]
+<span>DEBUG</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'DEBUG'</span>]
+
+<span>g</span> <span>=</span> <span>Github</span>(<span>CLIENT_ID</span>, <span>CLIENT_SECRET</span>)
+
+
+<span>@<span>app</span>.<span>route</span>(<span>'/'</span>)</span>
+<span>def</span> <span>get_repos</span>():
+    <span>r</span> <span>=</span> []
+
+    <span>try</span>:
+        <span>args</span> <span>=</span> <span>request</span>.<span>args</span>
+        <span>n</span> <span>=</span> <span>int</span>(<span>args</span>[<span>'n'</span>])
+    <span>except</span> (<span>ValueError</span>, <span>LookupError</span>) <span>as</span> <span>e</span>:
+        <span>abort</span>(<span>jsonify</span>(<span>error</span><span>=</span><span>"No integer provided for argument 'n' in the URL"</span>))
+
+    <span>repositories</span> <span>=</span> <span>g</span>.<span>search_repositories</span>(<span>query</span><span>=</span><span>'language:python'</span>)[:<span>n</span>]
+
+    <span>for</span> <span>repo</span> <span>in</span> <span>repositories</span>:
+        <span>with</span> <span>urllib</span>.<span>request</span>.<span>urlopen</span>(<span>repo</span>.<span>url</span>) <span>as</span> <span>url</span>:
+            <span>data</span> <span>=</span> <span>json</span>.<span>loads</span>(<span>url</span>.<span>read</span>().<span>decode</span>())
+        <span>r</span>.<span>append</span>(<span>data</span>)
+
+    <span>return</span> <span>jsonify</span>({<span>'repos'</span>:<span>r</span> })
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>'__main__'</span>:
+    <span>app</span>.<span>run</span>(<span>debug</span><span>=</span><span>DEBUG</span>)</pre></div>
+<p dir="auto">The code above will return the top "n" repositories using Python as a programming language. We can use other languages too:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="from flask import Flask, jsonify, abort, request
+import urllib.request, json, os
+from github import Github
+
+app = Flask(__name__)
+
+CLIENT_ID = os.environ['CLIENT_ID']
+CLIENT_SECRET = os.environ['CLIENT_SECRET']
+DEBUG = os.environ['DEBUG']
+
+g = Github(CLIENT_ID, CLIENT_SECRET)
+
+
+@app.route('/')
+def get_repos():
+    r = []
+
+    try:
+        args = request.args
+        n = int(args['n'])
+        l = args['l']
+    except (ValueError, LookupError) as e:
+        abort(jsonify(error=&quot;Please provide 'n' and 'l' parameters&quot;))
+
+    repositories = g.search_repositories(query='language:' + l)[:n]
+
+
+    try:
+        for repo in repositories:
+            with urllib.request.urlopen(repo.url) as url:
+                data = json.loads(url.read().decode())
+            r.append(data)
+        return jsonify({
+            'repos':r,
+            'status': 'ok'
+            })
+    except IndexError as e:
+        return jsonify({
+            'repos':r,
+            'status': 'ko'
+            })
+
+if __name__ == '__main__':
+    app.run(debug=DEBUG)"><pre><span>from</span> <span>flask</span> <span>import</span> <span>Flask</span>, <span>jsonify</span>, <span>abort</span>, <span>request</span>
+<span>import</span> <span>urllib</span>.<span>request</span>, <span>json</span>, <span>os</span>
+<span>from</span> <span>github</span> <span>import</span> <span>Github</span>
+
+<span>app</span> <span>=</span> <span>Flask</span>(<span>__name__</span>)
+
+<span>CLIENT_ID</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'CLIENT_ID'</span>]
+<span>CLIENT_SECRET</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'CLIENT_SECRET'</span>]
+<span>DEBUG</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'DEBUG'</span>]
+
+<span>g</span> <span>=</span> <span>Github</span>(<span>CLIENT_ID</span>, <span>CLIENT_SECRET</span>)
+
+
+<span>@<span>app</span>.<span>route</span>(<span>'/'</span>)</span>
+<span>def</span> <span>get_repos</span>():
+    <span>r</span> <span>=</span> []
+
+    <span>try</span>:
+        <span>args</span> <span>=</span> <span>request</span>.<span>args</span>
+        <span>n</span> <span>=</span> <span>int</span>(<span>args</span>[<span>'n'</span>])
+        <span>l</span> <span>=</span> <span>args</span>[<span>'l'</span>]
+    <span>except</span> (<span>ValueError</span>, <span>LookupError</span>) <span>as</span> <span>e</span>:
+        <span>abort</span>(<span>jsonify</span>(<span>error</span><span>=</span><span>"Please provide 'n' and 'l' parameters"</span>))
+
+    <span>repositories</span> <span>=</span> <span>g</span>.<span>search_repositories</span>(<span>query</span><span>=</span><span>'language:'</span> <span>+</span> <span>l</span>)[:<span>n</span>]
+
+
+    <span>try</span>:
+        <span>for</span> <span>repo</span> <span>in</span> <span>repositories</span>:
+            <span>with</span> <span>urllib</span>.<span>request</span>.<span>urlopen</span>(<span>repo</span>.<span>url</span>) <span>as</span> <span>url</span>:
+                <span>data</span> <span>=</span> <span>json</span>.<span>loads</span>(<span>url</span>.<span>read</span>().<span>decode</span>())
+            <span>r</span>.<span>append</span>(<span>data</span>)
+        <span>return</span> <span>jsonify</span>({
+            <span>'repos'</span>:<span>r</span>,
+            <span>'status'</span>: <span>'ok'</span>
+            })
+    <span>except</span> <span>IndexError</span> <span>as</span> <span>e</span>:
+        <span>return</span> <span>jsonify</span>({
+            <span>'repos'</span>:<span>r</span>,
+            <span>'status'</span>: <span>'ko'</span>
+            })
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>'__main__'</span>:
+    <span>app</span>.<span>run</span>(<span>debug</span><span>=</span><span>DEBUG</span>)</pre></div>
+<p dir="auto">In a .env file, add the variables you want to use:</p>
+<div data-snippet-clipboard-copy-content="CLIENT_ID=&quot;xxxxx&quot;
+CLIENT_SECRET=&quot;xxxxxx&quot;
+ENV=&quot;dev&quot;
+DEBUG=&quot;True&quot;"><pre><code>CLIENT_ID="xxxxx"
+CLIENT_SECRET="xxxxxx"
+ENV="dev"
+DEBUG="True"
+</code></pre></div>
+<p dir="auto">Before running the Flask application, you need to source these variables:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="source .env"><pre><span>source</span> .env</pre></div>
+<p dir="auto">Now, you can go to <code>http://0.0.0.0:5000/?n=1&amp;l=python</code> to get the trendiest Python repository or <code>http://0.0.0.0:5000/?n=1&amp;l=c</code> for C programming language.
+Here is a list of other programming languages you can test your code with:</p>
+<div data-snippet-clipboard-copy-content="C++
+Assembly
+Objective
+Makefile
+Shell
+Perl
+Python
+Roff
+Yacc
+Lex
+Awk
+UnrealScript
+Gherkin
+M4
+Clojure
+XS
+Perl
+sed"><pre><code>C++
+Assembly
+Objective
+Makefile
+Shell
+Perl
+Python
+Roff
+Yacc
+Lex
+Awk
+UnrealScript
+Gherkin
+M4
+Clojure
+XS
+Perl
+sed
+</code></pre></div>
+<p dir="auto">The list is long, but our mini API is working fine.
+Now, let's freeze the dependencies:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="pip freeze > requirements.txt"><pre>pip freeze <span>&gt;</span> requirements.txt</pre></div>
+<p dir="auto">Before running the API on Kubernetes, let's create a Dockerfile. This is a typical Dockerfile for a Python app:</p>
+<div data-snippet-clipboard-copy-content="FROM python:3
+ENV PYTHONUNBUFFERED 1
+RUN mkdir /app
+WORKDIR /app
+COPY requirements.txt /app
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+COPY . /app
+EXPOSE 5000
+CMD [ &quot;python&quot;, &quot;app.py&quot; ]"><pre><code>FROM python:3
+ENV PYTHONUNBUFFERED 1
+RUN mkdir /app
+WORKDIR /app
+COPY requirements.txt /app
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+COPY . /app
+EXPOSE 5000
+CMD [ "python", "app.py" ]
+</code></pre></div>
+<p dir="auto">Now you can build it:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker build --no-cache -t tgr ."><pre>docker build --no-cache -t tgr <span>.</span></pre></div>
+<p dir="auto">Then run it:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker rm -f tgr
+docker run -it  --name tgr -p 5000:5000 -e CLIENT_ID=&quot;xxxxxxx&quot; -e CLIENT_SECRET=&quot;xxxxxxxxxxxxxxx&quot; -e DEBUG=&quot;True&quot; tgr"><pre>docker rm -f tgr
+docker run -it  --name tgr -p 5000:5000 -e CLIENT_ID=<span><span>"</span>xxxxxxx<span>"</span></span> -e CLIENT_SECRET=<span><span>"</span>xxxxxxxxxxxxxxx<span>"</span></span> -e DEBUG=<span><span>"</span>True<span>"</span></span> tgr</pre></div>
+<p dir="auto">Let's include some other variables as environment variables:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="from flask import Flask, jsonify, abort, request
+import urllib.request, json, os
+from github import Github
+
+app = Flask(__name__)
+
+CLIENT_ID = os.environ['CLIENT_ID']
+CLIENT_SECRET = os.environ['CLIENT_SECRET']
+DEBUG = os.environ['DEBUG']
+HOST = os.environ['HOST']
+PORT = os.environ['PORT']
+
+g = Github(CLIENT_ID, CLIENT_SECRET)
+
+
+@app.route('/')
+def get_repos():
+    r = []
+
+    try:
+        args = request.args
+        n = int(args['n'])
+        l = args['l']
+    except (ValueError, LookupError) as e:
+        abort(jsonify(error=&quot;Please provide 'n' and 'l' parameters&quot;))
+
+    repositories = g.search_repositories(query='language:' + l)[:n]
+
+
+    try:
+        for repo in repositories:
+            with urllib.request.urlopen(repo.url) as url:
+                data = json.loads(url.read().decode())
+            r.append(data)
+        return jsonify({
+            'repos':r,
+            'status': 'ok'
+            })
+    except IndexError as e:
+        return jsonify({
+            'repos':r,
+            'status': 'ko'
+            })
+
+if __name__ == '__main__':
+    app.run(debug=DEBUG, host=HOST, port=PORT)"><pre><span>from</span> <span>flask</span> <span>import</span> <span>Flask</span>, <span>jsonify</span>, <span>abort</span>, <span>request</span>
+<span>import</span> <span>urllib</span>.<span>request</span>, <span>json</span>, <span>os</span>
+<span>from</span> <span>github</span> <span>import</span> <span>Github</span>
+
+<span>app</span> <span>=</span> <span>Flask</span>(<span>__name__</span>)
+
+<span>CLIENT_ID</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'CLIENT_ID'</span>]
+<span>CLIENT_SECRET</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'CLIENT_SECRET'</span>]
+<span>DEBUG</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'DEBUG'</span>]
+<span>HOST</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'HOST'</span>]
+<span>PORT</span> <span>=</span> <span>os</span>.<span>environ</span>[<span>'PORT'</span>]
+
+<span>g</span> <span>=</span> <span>Github</span>(<span>CLIENT_ID</span>, <span>CLIENT_SECRET</span>)
+
+
+<span>@<span>app</span>.<span>route</span>(<span>'/'</span>)</span>
+<span>def</span> <span>get_repos</span>():
+    <span>r</span> <span>=</span> []
+
+    <span>try</span>:
+        <span>args</span> <span>=</span> <span>request</span>.<span>args</span>
+        <span>n</span> <span>=</span> <span>int</span>(<span>args</span>[<span>'n'</span>])
+        <span>l</span> <span>=</span> <span>args</span>[<span>'l'</span>]
+    <span>except</span> (<span>ValueError</span>, <span>LookupError</span>) <span>as</span> <span>e</span>:
+        <span>abort</span>(<span>jsonify</span>(<span>error</span><span>=</span><span>"Please provide 'n' and 'l' parameters"</span>))
+
+    <span>repositories</span> <span>=</span> <span>g</span>.<span>search_repositories</span>(<span>query</span><span>=</span><span>'language:'</span> <span>+</span> <span>l</span>)[:<span>n</span>]
+
+
+    <span>try</span>:
+        <span>for</span> <span>repo</span> <span>in</span> <span>repositories</span>:
+            <span>with</span> <span>urllib</span>.<span>request</span>.<span>urlopen</span>(<span>repo</span>.<span>url</span>) <span>as</span> <span>url</span>:
+                <span>data</span> <span>=</span> <span>json</span>.<span>loads</span>(<span>url</span>.<span>read</span>().<span>decode</span>())
+            <span>r</span>.<span>append</span>(<span>data</span>)
+        <span>return</span> <span>jsonify</span>({
+            <span>'repos'</span>:<span>r</span>,
+            <span>'status'</span>: <span>'ok'</span>
+            })
+    <span>except</span> <span>IndexError</span> <span>as</span> <span>e</span>:
+        <span>return</span> <span>jsonify</span>({
+            <span>'repos'</span>:<span>r</span>,
+            <span>'status'</span>: <span>'ko'</span>
+            })
+
+<span>if</span> <span>__name__</span> <span>==</span> <span>'__main__'</span>:
+    <span>app</span>.<span>run</span>(<span>debug</span><span>=</span><span>DEBUG</span>, <span>host</span><span>=</span><span>HOST</span>, <span>port</span><span>=</span><span>PORT</span>)</pre></div>
+<p dir="auto">For security reasons, let's change the user inside the container from root to a user with less rights that we create:</p>
+<div data-snippet-clipboard-copy-content="FROM python:3
+ENV PYTHONUNBUFFERED 1
+RUN adduser pyuser
+
+RUN mkdir /app
+WORKDIR /app
+COPY requirements.txt /app
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+COPY . .
+RUN chmod +x app.py
+
+RUN chown -R pyuser:pyuser /app
+USER pyuser
+
+
+EXPOSE 5000
+CMD [&quot;python&quot;,&quot;./app.py&quot;]"><pre><code>FROM python:3
+ENV PYTHONUNBUFFERED 1
+RUN adduser pyuser
+
+RUN mkdir /app
+WORKDIR /app
+COPY requirements.txt /app
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+COPY . .
+RUN chmod +x app.py
+
+RUN chown -R pyuser:pyuser /app
+USER pyuser
+
+
+EXPOSE 5000
+CMD ["python","./app.py"]
+</code></pre></div>
+<p dir="auto">Now if we want to run the container, we need to add many environment variables to the docker run command. An easier solution is using <code>--env-file    </code> with Docker run:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker run -it --env-file .env my_container"><pre>docker run -it --env-file .env my_container</pre></div>
+<p dir="auto">Our .env file looks like the following one:</p>
+<div data-snippet-clipboard-copy-content="CLIENT_ID=&quot;xxxx&quot;
+CLIENT_SECRET=&quot;xxxx&quot;
+ENV=&quot;dev&quot;
+DEBUG=&quot;True&quot;
+HOST=&quot;0.0.0.0&quot;
+PORT=5000"><pre><code>CLIENT_ID="xxxx"
+CLIENT_SECRET="xxxx"
+ENV="dev"
+DEBUG="True"
+HOST="0.0.0.0"
+PORT=5000
+</code></pre></div>
+<p dir="auto">After this modification, rebuild the image <code>docker build -t tgr .</code> and run it using:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker rm -f tgr;
+docker run -it  --name tgr -p 5000:5000 --env-file .env  tgr"><pre>docker rm -f tgr<span>;</span>
+docker run -it  --name tgr -p 5000:5000 --env-file .env  tgr</pre></div>
+<p dir="auto">Our application runs using <code>python app.py</code> which is the webserver that ships with Flask and it's great for development and local execution of your program, however, it's not designed to run in a production mode, whether it's a monolithic app or a microservice.</p>
+<p dir="auto">A production server typically receives abuse from spammers, script kiddies, and should be able to handle high traffic. In our case, a good solution is using a WSGI HTTP server like Gunicorn (or uWsgi).</p>
+<p dir="auto">First, let's install <code>gunicorn</code> with the following command: <code>pip install gunicorn</code>. This will require us to update our <code>requirements.txt</code> with <code>pip freeze &gt; requirements.txt</code></p>
+<p dir="auto">This is why we are going to change our Docker file:</p>
+<div data-snippet-clipboard-copy-content="FROM python:3
+ENV PYTHONUNBUFFERED 1
+RUN adduser pyuser
+
+RUN mkdir /app
+WORKDIR /app
+COPY requirements.txt /app
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+COPY . .
+RUN chmod +x app.py
+
+RUN chown -R pyuser:pyuser /app
+USER pyuser
+
+
+EXPOSE 5000
+CMD [&quot;gunicorn&quot;, &quot;app:app&quot;, &quot;-b&quot;, &quot;0.0.0.0:5000&quot;]"><pre><code>FROM python:3
+ENV PYTHONUNBUFFERED 1
+RUN adduser pyuser
+
+RUN mkdir /app
+WORKDIR /app
+COPY requirements.txt /app
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+COPY . .
+RUN chmod +x app.py
+
+RUN chown -R pyuser:pyuser /app
+USER pyuser
+
+
+EXPOSE 5000
+CMD ["gunicorn", "app:app", "-b", "0.0.0.0:5000"]
+</code></pre></div>
+<p dir="auto">In order to optimize the Wsgi server, we need to set the number of its workers and threads to:</p>
+<div data-snippet-clipboard-copy-content="workers = multiprocessing.cpu_count() * 2 + 1
+threads = 2 * multiprocessing.cpu_count()"><pre><code>workers = multiprocessing.cpu_count() * 2 + 1
+threads = 2 * multiprocessing.cpu_count()
+</code></pre></div>
+<p dir="auto">This is why we are going to create another Python configuration file (<code>config.py</code>):</p>
+<div dir="auto" data-snippet-clipboard-copy-content="import multiprocessing
+workers = multiprocessing.cpu_count() * 2 + 1
+threads = 2 * multiprocessing.cpu_count()"><pre><span>import</span> <span>multiprocessing</span>
+<span>workers</span> <span>=</span> <span>multiprocessing</span>.<span>cpu_count</span>() <span>*</span> <span>2</span> <span>+</span> <span>1</span>
+<span>threads</span> <span>=</span> <span>2</span> <span>*</span> <span>multiprocessing</span>.<span>cpu_count</span>()</pre></div>
+<p dir="auto">In the same file, we are going to include other configurations of Gunicorn:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="from os import environ as env
+bind = env.get(&quot;HOST&quot;,&quot;0.0.0.0&quot;) +&quot;:&quot;+ env.get(&quot;PORT&quot;, 5000)"><pre><span>from</span> <span>os</span> <span>import</span> <span>environ</span> <span>as</span> <span>env</span>
+<span>bind</span> <span>=</span> <span>env</span>.<span>get</span>(<span>"HOST"</span>,<span>"0.0.0.0"</span>) <span>+</span><span>":"</span><span>+</span> <span>env</span>.<span>get</span>(<span>"PORT"</span>, <span>5000</span>)</pre></div>
+<p dir="auto">This is the final <code>config.py</code> file:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="import multiprocessing
+workers = multiprocessing.cpu_count() * 2 + 1
+threads = 2 * multiprocessing.cpu_count()
+
+from os import environ as env
+bind = env.get(&quot;HOST&quot;,&quot;0.0.0.0&quot;) +&quot;:&quot;+ env.get(&quot;PORT&quot;, 5000)"><pre><span>import</span> <span>multiprocessing</span>
+<span>workers</span> <span>=</span> <span>multiprocessing</span>.<span>cpu_count</span>() <span>*</span> <span>2</span> <span>+</span> <span>1</span>
+<span>threads</span> <span>=</span> <span>2</span> <span>*</span> <span>multiprocessing</span>.<span>cpu_count</span>()
+
+<span>from</span> <span>os</span> <span>import</span> <span>environ</span> <span>as</span> <span>env</span>
+<span>bind</span> <span>=</span> <span>env</span>.<span>get</span>(<span>"HOST"</span>,<span>"0.0.0.0"</span>) <span>+</span><span>":"</span><span>+</span> <span>env</span>.<span>get</span>(<span>"PORT"</span>, <span>5000</span>)</pre></div>
+<p dir="auto">In consequence, we should adapt the Dockerfile to the new Gunicorn configuration by changing the last line to :</p>
+<div data-snippet-clipboard-copy-content="CMD [&quot;gunicorn&quot;, &quot;app:app&quot;, &quot;--config=config.py&quot;]"><pre><code>CMD ["gunicorn", "app:app", "--config=config.py"]
+</code></pre></div>
+<p dir="auto">Now, build <code>docker build -t tgr .</code> and run <code> docker run -it --env-file .env -p 5000:5000 tgr</code>.</p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Pushing the Image to a Remote Registry</h2><a id="user-content-pushing-the-image-to-a-remote-registry" aria-label="Permalink: Pushing the Image to a Remote Registry" href="#pushing-the-image-to-a-remote-registry"></a></p>
+<p dir="auto">A Docker registry is a storage and distribution system for named Docker images.</p>
+<p dir="auto">The images we built are stored in our local environment and can only be used if you deploy locally. However, if you choose to deploy a Kubernetes cluster in a cloud or any different environment, these images will be not found. This is why we need to push the build images to a remote registry.</p>
+<p dir="auto">Think of container registries as a git system for Docker images.</p>
+<p dir="auto">There are plenty of containers registries:</p>
+<ul dir="auto">
+<li>Dockerhub</li>
+<li>Amazon Elastic Registry (ECR)</li>
+<li>Azure Container Registry (ACR)</li>
+<li>Google Container Registry (GCR)</li>
+<li>CoreOS Quay</li>
+</ul>
+<p dir="auto">You can also host your private container registry that supports OAuth, LDAP and Active Directory authentication using the registry provided by Docker:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker run -d -p 5000:5000 --restart=always --name registry registry:2"><pre>docker run -d -p 5000:5000 --restart=always --name registry registry:2</pre></div>
+<p dir="auto">More about self-hosting a registry can be found in <a href="https://docs.docker.com/registry/deploying/" rel="nofollow">the official Docker documentation</a>.</p>
+<p dir="auto">We are going to use Dockerhub; this is why you need to create an account on <a href="https://hub.docker.com/" rel="nofollow">hub.docker.com</a>.</p>
+<p dir="auto">Now, using Docker CLI, login:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker login"><pre>docker login</pre></div>
+<p dir="auto">Now rebuild the image using the new tag:</p>
+<div data-snippet-clipboard-copy-content=" docker build -t <username>/<image_name>:<tag_version> ."><pre lang="<username>/<image_name>:<tag_version>"><code> docker build -t &lt;username&gt;/&lt;image_name&gt;:&lt;tag_version&gt; .
+</code></pre></div>
+<p dir="auto">Example:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker build -t eon01/tgr:1 ."><pre>docker build -t eon01/tgr:1 <span>.</span></pre></div>
+<p dir="auto">Finally, push the image:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker push eon01/tgr:1"><pre>docker push eon01/tgr:1</pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">A Security Notice</h2><a id="user-content-a-security-notice" aria-label="Permalink: A Security Notice" href="#a-security-notice"></a></p>
+<p dir="auto">Many of the publicly (and even private Docker images) seems to be secure, but it's not the case. When we built our image, we told Docker to copy all the images from the application folder to the image and we push it to an external public registry.</p>
+<div dir="auto" data-snippet-clipboard-copy-content="COPY . .        "><pre><span>COPY</span> . .        </pre></div>
+<p dir="auto">Or</p>
+<div data-snippet-clipboard-copy-content="ADD . ."><pre><code>ADD . .
+</code></pre></div>
+<p dir="auto">The above commands will even copy the <code>.env</code> file containing our secrets.</p>
+<p dir="auto">A good solution is to tell Docker to ignore these files during the build using a <code>.dockerignore</code> file:</p>
+<div data-snippet-clipboard-copy-content="**.git
+**.gitignore
+**README.md
+**env.*
+**Dockerfile*
+**docker-compose*
+**.env"><pre><code>**.git
+**.gitignore
+**README.md
+**env.*
+**Dockerfile*
+**docker-compose*
+**.env
+</code></pre></div>
+<p dir="auto">At this stage, you should remove any image that you pushed to a distant registry, reset the Github tokens, build the new image without any cache:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker build -t eon01/tgr:1 . --no-cache"><pre>docker build -t eon01/tgr:1 <span>.</span> --no-cache</pre></div>
+<p dir="auto">Push it again:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="docker push eon01/tgr:1"><pre>docker push eon01/tgr:1</pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Installing Minikube</h2><a id="user-content-installing-minikube" aria-label="Permalink: Installing Minikube" href="#installing-minikube"></a></p>
+<p dir="auto">One of the fastest ways to try Kubernetes is using Minkube, which will create a virtual machine for you and deploy a ready-to-use Kubernetes cluster.</p>
+<p dir="auto">Before you begin the installation, you need to make sure that your laptop supports virtualization:</p>
+<p dir="auto">If your using Linux, run the following command and make sure that the output is not empty:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="grep -E --color 'vmx|svm' /proc/cpuinfo"><pre>grep -E --color <span><span>'</span>vmx|svm<span>'</span></span> /proc/cpuinfo</pre></div>
+<p dir="auto">Mac users should execute:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="sysctl -a | grep -E --color 'machdep.cpu.features|VMX'"><pre>sysctl -a <span>|</span> grep -E --color <span><span>'</span>machdep.cpu.features|VMX<span>'</span></span></pre></div>
+<p dir="auto">If you see <code>VMX</code> in the output, the VT-x feature is enabled in your machine.</p>
+<p dir="auto">Windows users should use <code>systeminfo</code> and you should see the following output:</p>
+<div data-snippet-clipboard-copy-content="Hyper-V Requirements:     VM Monitor Mode Extensions: Yes
+                          Virtualization Enabled In Firmware: Yes
+                          Second Level Address Translation: Yes
+                          Data Execution Prevention Available: Yes"><pre><code>Hyper-V Requirements:     VM Monitor Mode Extensions: Yes
+                          Virtualization Enabled In Firmware: Yes
+                          Second Level Address Translation: Yes
+                          Data Execution Prevention Available: Yes
+</code></pre></div>
+<p dir="auto">If everything is okay, you need to install a hypervisor. You have a list of possibilities here:</p>
+<ul dir="auto">
+<li><a href="https://www.linux-kvm.org/" rel="nofollow">KVM</a></li>
+<li><a href="https://www.virtualbox.org/wiki/Downloads" rel="nofollow">VirtualBox</a></li>
+<li><a href="https://github.com/moby/hyperkit">HyperKit</a></li>
+<li><a href="https://www.vmware.com/products/fusion" rel="nofollow">VMware Fusion</a></li>
+<li><a href="https://msdn.microsoft.com/en-us/virtualization/hyperv_on_windows/quick_start/walkthrough_install" rel="nofollow">Hyper-V</a></li>
+</ul>
+<p dir="auto">Some of these hypervisors are only compatible with some OSs like Hyper-V (formerly known as Windows Server Virtualization) for windows.</p>
+<p dir="auto">VirtualBox is however cross-platform, and this is why we are going to use it here. Make sure to <a href="https://www.virtualbox.org/wiki/Downloads" rel="nofollow">follow the instructions</a> to install it.</p>
+<p dir="auto">Now, install Minikube.</p>
+<p dir="auto">Linux systems:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 &amp;&amp; chmod +x minikube
+sudo install minikube /usr/local/bin"><pre>curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 <span>&amp;&amp;</span> chmod +x minikube
+sudo install minikube /usr/local/bin</pre></div>
+<p dir="auto">MacOs:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="brew cask install minikube
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64 &amp;&amp; chmod +x minikube
+sudo mv minikube /usr/local/bin"><pre>brew cask install minikube
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64 <span>&amp;&amp;</span> chmod +x minikube
+sudo mv minikube /usr/local/bin</pre></div>
+<p dir="auto">Windows:</p>
+<p dir="auto">Use Chocolatey as an administrator:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="choco install minikube"><pre>choco install minikube</pre></div>
+<p dir="auto">Or use <a href="https://github.com/kubernetes/minikube/releases/latest/download/minikube-installer.exe">the installer binary</a>.</p>
+<p dir="auto">Minikube does not support all Kubernetes features (like load balancing for example), however, you can find the most important features there:</p>
+<p dir="auto">Minikube supports the following Kubernetes features:</p>
+<ul dir="auto">
+<li>DNS</li>
+<li>NodePorts</li>
+<li>ConfigMaps and Secrets</li>
+<li>Dashboards</li>
+<li>Container Runtime: Docker, <a href="https://github.com/rkt/rkt">rkt</a>, <a href="https://github.com/kubernetes-incubator/cri-o">CRI-O</a>, and <a href="https://github.com/containerd/containerd">containerd</a></li>
+<li>Enabling CNI (Container Network Interface)</li>
+<li>Ingress</li>
+</ul>
+<p dir="auto">You can also add different addons like:</p>
+<ul dir="auto">
+<li>addon-manager</li>
+<li>dashboard</li>
+<li>default-storageclass</li>
+<li>efk</li>
+<li>freshpod</li>
+<li>gvisor</li>
+<li>heapster</li>
+<li>ingress</li>
+<li>logviewer</li>
+<li>metrics-server</li>
+<li>nvidia-driver-installer</li>
+<li>nvidia-gpu-device-plugin</li>
+<li>registry</li>
+<li>registry-creds</li>
+<li>storage-provisioner</li>
+<li>storage-provisioner-gluster</li>
+</ul>
+<p dir="auto">If you run <code>minikube start</code> a cluster called minikube will be created; however, you have other choices rather than just creating a regular Minikube cluster. In this example, we are going to create a cluster called "workshop", enable a UI to browse the API and activate tailing logs:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="minikube start -p workshop --extra-config=apiserver.enable-swagger-ui=true --alsologtostderr"><pre>minikube start -p workshop --extra-config=apiserver.enable-swagger-ui=true --alsologtostderr</pre></div>
+<p dir="auto">You have plenty of other options to start a Minikube cluster; you can, for instance, choose the Kubernetes version and the VM driver:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="minikube start --kubernetes-version=&quot;v1.12.0&quot; --vm-driver=&quot;virtualbox&quot;  "><pre>minikube start --kubernetes-version=<span><span>"</span>v1.12.0<span>"</span></span> --vm-driver=<span><span>"</span>virtualbox<span>"</span></span>  </pre></div>
+<p dir="auto">Start the new cluster:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="minikube start -p workshop --extra-config=apiserver.enable-swagger-ui=true --alsologtostderr"><pre>minikube start -p workshop --extra-config=apiserver.enable-swagger-ui=true --alsologtostderr</pre></div>
+<p dir="auto">You can get detailed information about the cluster using:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl cluster-info"><pre>kubectl cluster-info</pre></div>
+<p dir="auto">If you didn't install kubectl, <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl" rel="nofollow">follow the official instructions</a>.</p>
+<p dir="auto">You can open the dashboard using <code>minikube -p workshop dashboard </code></p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Deploying to Kubernetes</h2><a id="user-content-deploying-to-kubernetes" aria-label="Permalink: Deploying to Kubernetes" href="#deploying-to-kubernetes"></a></p>
+<p dir="auto">We have three main ways to deploy our container to Kubernetes and scale it to N replica.</p>
+<p dir="auto">The first one is the original form of replication in Kubernetes, and it's called <strong>Replication Controller</strong>.</p>
+<p dir="auto">Even if Replica Sets replace it, it's still used in some codes.</p>
+<p dir="auto">This is a typical example:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: app
+spec:
+  replicas: 3
+  selector:
+    app: app
+  template:
+    metadata:
+      name: app
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: tgr
+        image: reg/app:v1
+        ports:
+        - containerPort: 80"><pre><span>apiVersion</span>: <span>v1</span>
+<span>kind</span>: <span>ReplicationController</span>
+<span>metadata</span>:
+  <span>name</span>: <span>app</span>
+<span>spec</span>:
+  <span>replicas</span>: <span>3</span>
+  <span>selector</span>:
+    <span>app</span>: <span>app</span>
+  <span>template</span>:
+    <span>metadata</span>:
+      <span>name</span>: <span>app</span>
+      <span>labels</span>:
+        <span>app</span>: <span>app</span>
+    <span>spec</span>:
+      <span>containers</span>:
+      - <span>name</span>: <span>tgr</span>
+        <span>image</span>: <span>reg/app:v1</span>
+        <span>ports</span>:
+        - <span>containerPort</span>: <span>80</span></pre></div>
+<p dir="auto">We can also use Replica Sets, another way to deploy an app and replicate it:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="apiVersion: extensions/v1beta1
+ kind: ReplicaSet
+ metadata:
+   name: app
+ spec:
+   replicas: 3
+   selector:
+     matchLabels:
+       app: app
+   template:
+     metadata:
+       labels:
+         app: app
+         environment: dev
+     spec:
+       containers:
+       - name: app
+         image: reg/app:v1
+         ports:
+         - containerPort: 80"><pre><span>apiVersion</span>: <span>extensions/v1beta1</span>
+ <span>kind</span>: <span>ReplicaSet</span>
+ <span>metadata</span>:
+   <span>name</span>: <span>app</span>
+ <span>spec</span>:
+   <span>replicas</span>: <span>3</span>
+   <span>selector</span>:
+     <span>matchLabels</span>:
+       <span>app</span>: <span>app</span>
+   <span>template</span>:
+     <span>metadata</span>:
+       <span>labels</span>:
+         <span>app</span>: <span>app</span>
+         <span>environment</span>: <span>dev</span>
+     <span>spec</span>:
+       <span>containers</span>:
+       - <span>name</span>: <span>app</span>
+         <span>image</span>: <span>reg/app:v1</span>
+         <span>ports</span>:
+         - <span>containerPort</span>: <span>80</span></pre></div>
+<p dir="auto">Replica Set and Replication Controller do almost the same thing.</p>
+<p dir="auto">They ensure that you have a specified number of pod replicas running at any given time in your cluster.</p>
+<p dir="auto">There are however, some differences.</p>
+<p dir="auto">As you may notice, we are using <code>matchLabels</code> instead of <code>label</code>.</p>
+<p dir="auto">Replica Set use Set-Based selectors while replication controllers use Equity-Based selectors.</p>
+<p dir="auto">Selectors match Kubernetes objects (like pods) using the constraints of the specified label, and we are going to see an example in a Deployment specification file.</p>
+<p dir="auto"><strong>Label selectors</strong> with <strong>equality-based requirements</strong> use three operators:<code>=</code>,<code>==</code> and <code>!=</code>.</p>
+<div data-snippet-clipboard-copy-content="environment = production
+tier != frontend
+app == my_app (similar to app = my_app)"><pre><code>environment = production
+tier != frontend
+app == my_app (similar to app = my_app)
+</code></pre></div>
+<p dir="auto">In the last example, we used this notation:</p>
+<div data-snippet-clipboard-copy-content=" ...
+ spec:
+   replicas: 3
+   selector:
+     matchLabels:
+       app: app
+   template:
+     metadata:
+...     "><pre><code> ...
+ spec:
+   replicas: 3
+   selector:
+     matchLabels:
+       app: app
+   template:
+     metadata:
+...     
+</code></pre></div>
+<p dir="auto">We could have used  <strong>set-based requirements</strong>:</p>
+<div data-snippet-clipboard-copy-content="...
+spec:
+   replicas: 3
+   selector:
+     matchExpressions:
+      - {key: app, operator: In, values: [app]}     
+  template:
+     metadata:
+..."><pre><code>...
+spec:
+   replicas: 3
+   selector:
+     matchExpressions:
+      - {key: app, operator: In, values: [app]}     
+  template:
+     metadata:
+...
+</code></pre></div>
+<p dir="auto">If we have more than 1 value for the app key, we can use:</p>
+<div data-snippet-clipboard-copy-content="...
+spec:
+   replicas: 3
+   selector:
+     matchExpressions:
+      - {key: app, operator: In, values: [app, my_app, myapp, application]}     
+  template:
+     metadata:
+..."><pre><code>...
+spec:
+   replicas: 3
+   selector:
+     matchExpressions:
+      - {key: app, operator: In, values: [app, my_app, myapp, application]}     
+  template:
+     metadata:
+...
+</code></pre></div>
+<p dir="auto">And if we have other keys, we can use them like in the following example:</p>
+<div data-snippet-clipboard-copy-content="...
+spec:
+  replicas: 3
+  selector:
+    matchExpressions:
+     - {key: app, operator: In, values: [app]}
+     - {key: tier, operator: NotIn, values: [frontend]}
+     - {key: environment, operator: NotIn, values: [production]}
+template:
+    metadata:
+..."><pre><code>...
+spec:
+  replicas: 3
+  selector:
+    matchExpressions:
+     - {key: app, operator: In, values: [app]}
+     - {key: tier, operator: NotIn, values: [frontend]}
+     - {key: environment, operator: NotIn, values: [production]}
+template:
+    metadata:
+...
+</code></pre></div>
+<p dir="auto">Newer Kubernetes resources such as Jobs, Deployments, ReplicaSets, and DaemonSets all support set-based requirements as well.</p>
+<p dir="auto">This is an example of how we use Kubectl with selectors :</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl delete pods -l 'env in (production, staging, testing)'"><pre>kubectl delete pods -l <span><span>'</span>env in (production, staging, testing)<span>'</span></span></pre></div>
+<p dir="auto">Until now, we have seen that the Replication Controller and Replica Set are two ways to deploy our container and manage it in a Kubernetes cluster. However, the recommended approach is using a Deployment that configures a ReplicaSet.</p>
+<p dir="auto">It is rather unlikely that we will ever need to create Pods directly for a production use-case since Deployments manages to create Pods for us through ReplicaSets.</p>
+<p dir="auto">This is a simple Pod definition:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="apiVersion: v1
+kind: Pod
+metadata:
+  name: infinite
+  labels:
+    env: production
+    owner: eon01
+spec:
+  containers:
+  - name: infinite
+    image: eon01/infinite"><pre><span>apiVersion</span>: <span>v1</span>
+<span>kind</span>: <span>Pod</span>
+<span>metadata</span>:
+  <span>name</span>: <span>infinite</span>
+  <span>labels</span>:
+    <span>env</span>: <span>production</span>
+    <span>owner</span>: <span>eon01</span>
+<span>spec</span>:
+  <span>containers</span>:
+  - <span>name</span>: <span>infinite</span>
+    <span>image</span>: <span>eon01/infinite</span></pre></div>
+<p dir="auto">In practice, we need:</p>
+<ol dir="auto">
+<li><strong>A Deployment object</strong> : Containers are specified here.</li>
+<li><strong>A Service object</strong>: An abstract way to expose an application running on a set of Pods as a network service.</li>
+</ol>
+<p dir="auto">This is a Deployment object that creates three replicas of the container app running the image "reg/app:v1". These containers can be reached using port 80:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: app
+        image: reg/app:v1
+        ports:
+        - containerPort: 80"><pre><span>apiVersion</span>: <span>extensions/v1beta1</span>
+<span>kind</span>: <span>Deployment</span>
+<span>metadata</span>:
+  <span>name</span>: <span>app</span>
+<span>spec</span>:
+  <span>replicas</span>: <span>3</span>
+  <span>template</span>:
+    <span>metadata</span>:
+      <span>labels</span>:
+        <span>app</span>: <span>app</span>
+    <span>spec</span>:
+      <span>containers</span>:
+      - <span>name</span>: <span>app</span>
+        <span>image</span>: <span>reg/app:v1</span>
+        <span>ports</span>:
+        - <span>containerPort</span>: <span>80</span></pre></div>
+<p dir="auto">This is the Deployment file we will use (save it to <code>kubernetes/api-deployment.yaml</code>:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tgr
+  labels:
+    name: tgr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: tgr
+  template:
+    metadata:
+      name: tgr
+      labels:
+        name: tgr
+    spec:
+      containers:
+        - name: tgr
+          image: eon01/tgr:1
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          env:
+            - name: CLIENT_ID
+              value: &quot;xxxx&quot;
+            - name: CLIENT_SECRET
+              value: &quot;xxxxxxxxxxxxxxxxxxxxx&quot;
+            - name: ENV
+              value: &quot;prod&quot;
+            - name: DEBUG
+              value: &quot;False&quot;
+            - name: HOST
+              value: &quot;0.0.0.0&quot;
+            - name: PORT
+              value: &quot;5000&quot;"><pre><span>apiVersion</span>: <span>apps/v1</span>
+<span>kind</span>: <span>Deployment</span>
+<span>metadata</span>:
+  <span>name</span>: <span>tgr</span>
+  <span>labels</span>:
+    <span>name</span>: <span>tgr</span>
+<span>spec</span>:
+  <span>replicas</span>: <span>1</span>
+  <span>selector</span>:
+    <span>matchLabels</span>:
+      <span>name</span>: <span>tgr</span>
+  <span>template</span>:
+    <span>metadata</span>:
+      <span>name</span>: <span>tgr</span>
+      <span>labels</span>:
+        <span>name</span>: <span>tgr</span>
+    <span>spec</span>:
+      <span>containers</span>:
+        - <span>name</span>: <span>tgr</span>
+          <span>image</span>: <span>eon01/tgr:1</span>
+          <span>ports</span>:
+            - <span>containerPort</span>: <span>5000</span>
+          <span>resources</span>:
+            <span>requests</span>:
+              <span>memory</span>: <span>128Mi</span>
+            <span>limits</span>:
+              <span>memory</span>: <span>256Mi</span>
+          <span>env</span>:
+            - <span>name</span>: <span>CLIENT_ID</span>
+              <span>value</span>: <span><span>"</span>xxxx<span>"</span></span>
+            - <span>name</span>: <span>CLIENT_SECRET</span>
+              <span>value</span>: <span><span>"</span>xxxxxxxxxxxxxxxxxxxxx<span>"</span></span>
+            - <span>name</span>: <span>ENV</span>
+              <span>value</span>: <span><span>"</span>prod<span>"</span></span>
+            - <span>name</span>: <span>DEBUG</span>
+              <span>value</span>: <span><span>"</span>False<span>"</span></span>
+            - <span>name</span>: <span>HOST</span>
+              <span>value</span>: <span><span>"</span>0.0.0.0<span>"</span></span>
+            - <span>name</span>: <span>PORT</span>
+              <span>value</span>: <span><span>"</span>5000<span>"</span></span></pre></div>
+<p dir="auto">Let's first talk about the API version; in the first example, we used the <code>extensions/v1beta1</code> and in the second one, we used  <code>apps/v1</code>. You may know that Kubernetes project development is very active, and it may be confusing sometimes to follow all the software updates.</p>
+<p dir="auto">In Kubernetes version 1.9, <code>apps/v1</code> is introduced, and <code>extensions/v1beta1</code>, <code>apps/v1beta1</code> and <code>apps/v1beta2</code> are deprecated.</p>
+<p dir="auto">To make things simpler, to know which version of the API you need to use, use the command:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl api-versions"><pre>kubectl api-versions</pre></div>
+<p dir="auto">This above command will give you the API versions compatible with your cluster.</p>
+<ul dir="auto">
+<li>
+<p dir="auto"><strong>v1</strong> was the first stable release of the Kubernetes API. It contains many core objects.</p>
+</li>
+<li>
+<p dir="auto"><strong>apps/v1</strong> is the most popular API group in Kubernetes, and it includes functionality related to running applications on Kubernetes, like Deployments, RollingUpdates, and ReplicaSets.</p>
+</li>
+<li>
+<p dir="auto"><strong>autoscaling/v1</strong> allows pods to be autoscaled based on different resource usage metrics.</p>
+</li>
+<li>
+<p dir="auto"><strong>batch/v1</strong> is related to batch processing and and jobs</p>
+</li>
+<li>
+<p dir="auto"><strong>batch/v1beta1</strong> is the beta release of batch/v1</p>
+</li>
+<li>
+<p dir="auto"><strong>certificates.k8s.io/v1beta1</strong> validates network certificates for secure communication in your cluster.</p>
+</li>
+<li>
+<p dir="auto"><strong>extensions/v1beta1</strong>  includes many new, commonly used features. In Kubernetes 1.6, some of these features were relocated from <code>extensions</code> to specific API groups like <code>apps</code> .</p>
+</li>
+<li>
+<p dir="auto"><strong>policy/v1beta1</strong> enables setting a pod disruption budget and new pod security rules</p>
+</li>
+<li>
+<p dir="auto"><strong>rbac.authorization.k8s.io/v1</strong> includes extra functionality for Kubernetes RBAC (role-based access control)</p>
+</li>
+<li>
+<p dir="auto">..etc</p>
+</li>
+</ul>
+<p dir="auto">Let's deploy the pod now using the Deployment file we created.</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl apply -f kubernetes/api-deployment.yaml"><pre>kubectl apply -f kubernetes/api-deployment.yaml</pre></div>
+<p dir="auto">Note that you can use <code>kubectl create -f kubernetes/api-deployment.yaml</code> command. However, there's a difference, between <code>apply</code> and <code>create</code>.</p>
+<p dir="auto"><code>kubectl create</code> is what we call <a href="https://kubernetes.io/docs/tutorials/object-management-kubectl/imperative-object-management-configuration/" rel="nofollow">Imperative Management of Kubernetes Objects Using Configuration Files</a>. <code>kubectl create</code> overwrites all changes, and if a resource is having the same id already exists, it will encounter an error.</p>
+<p dir="auto">Using this approach, you tell the Kubernetes API what you want to create, replace, or delete, not how you want your K8s cluster world to look like.</p>
+<p dir="auto"><code>kubectl apply</code> is what we call <a href="https://kubernetes.io/docs/tutorials/object-management-kubectl/declarative-object-management-configuration/" rel="nofollow">Declarative Management of Kubernetes Objects Using Configuration Files</a> approach. <code>kubectl apply</code> makes incremental changes. If an object already exists and you want to apply a new value for replica without deleting and recreating the object again, then <code>kubectl apply</code> is what you need. <code>kubectl apply</code> can also be used even if the object (e.g deployment) does not exist yet.</p>
+<p dir="auto">In the Deployment configuration, we also defined our container. We will run a single container here since the replica is set to <code>1</code>. In the same time, our container will use the image <code>eon01/tgr:1</code>. Since our container will need some environment variables, the best way is to provide them using the Kubernetes deployment definition file.</p>
+<p dir="auto">Also, we can add many other configurations, like the requested memory and its limit. The goal here is not using all that Kubernetes allows is to use in a Deployment file, but to see some of the essential features.</p>
+<div dir="auto" data-snippet-clipboard-copy-content="    spec:
+      containers:
+        - name: tgr
+          image: eon01/tgr:1
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          env:
+            - name: CLIENT_ID
+              value: &quot;xxxx&quot;
+            - name: CLIENT_SECRET
+              value: &quot;xxxxxxxxxxxxxxxxxxxxx&quot;
+            - name: ENV
+              value: &quot;prod&quot;
+            - name: DEBUG
+              value: &quot;False&quot;
+            - name: HOST
+              value: &quot;0.0.0.0&quot;
+            - name: PORT
+              value: &quot;5000&quot;"><pre>    <span>spec</span>:
+      <span>containers</span>:
+        - <span>name</span>: <span>tgr</span>
+          <span>image</span>: <span>eon01/tgr:1</span>
+          <span>ports</span>:
+            - <span>containerPort</span>: <span>5000</span>
+          <span>resources</span>:
+            <span>requests</span>:
+              <span>memory</span>: <span>128Mi</span>
+            <span>limits</span>:
+              <span>memory</span>: <span>256Mi</span>
+          <span>env</span>:
+            - <span>name</span>: <span>CLIENT_ID</span>
+              <span>value</span>: <span><span>"</span>xxxx<span>"</span></span>
+            - <span>name</span>: <span>CLIENT_SECRET</span>
+              <span>value</span>: <span><span>"</span>xxxxxxxxxxxxxxxxxxxxx<span>"</span></span>
+            - <span>name</span>: <span>ENV</span>
+              <span>value</span>: <span><span>"</span>prod<span>"</span></span>
+            - <span>name</span>: <span>DEBUG</span>
+              <span>value</span>: <span><span>"</span>False<span>"</span></span>
+            - <span>name</span>: <span>HOST</span>
+              <span>value</span>: <span><span>"</span>0.0.0.0<span>"</span></span>
+            - <span>name</span>: <span>PORT</span>
+              <span>value</span>: <span><span>"</span>5000<span>"</span></span></pre></div>
+<p dir="auto">In some cases, the Docker registry can be private, and in this case, pulling the image needs authentication. In this case, we need to add the <code>imagePullSecrets </code> configuration:</p>
+<div data-snippet-clipboard-copy-content="...
+  containers:
+  - name: private-reg-container
+    image: <your-private-image>
+  imagePullSecrets:
+  - name: registry-credentials
+  ..."><pre><code>...
+  containers:
+  - name: private-reg-container
+    image: &lt;your-private-image&gt;
+  imagePullSecrets:
+  - name: registry-credentials
+  ...
+</code></pre></div>
+<p dir="auto">This is how the <code>registry-credentials</code> secret is created:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl create secret docker-registry registry-credentials --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>"><pre>kubectl create secret docker-registry registry-credentials --docker-server=<span>&lt;</span>your-registry-server<span>&gt;</span> --docker-username=<span>&lt;</span>your-name<span>&gt;</span> --docker-password=<span>&lt;</span>your-pword<span>&gt;</span> --docker-email=<span>&lt;</span>your-email<span>&gt;</span></pre></div>
+<p dir="auto">You can also apply/create the <code>registry-credentials</code> using a YAML file. This is an example:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="apiVersion: v1
+kind: Secret
+metadata:
+  ...
+  name: registry-credentials
+  ...
+data:
+  .dockerconfigjson: adjAalkazArrA ... JHJH1QUIIAAX0=
+type: kubernetes.io/dockerconfigjson"><pre><span>apiVersion</span>: <span>v1</span>
+<span>kind</span>: <span>Secret</span>
+<span>metadata</span>:
+  <span>...</span>
+  <span>name</span>: <span>registry-credentials</span>
+  <span>...</span>
+<span>data</span>:
+  <span>.dockerconfigjson</span>: <span>adjAalkazArrA ... JHJH1QUIIAAX0=</span>
+<span>type</span>: <span>kubernetes.io/dockerconfigjson</span></pre></div>
+<p dir="auto">If you decode the .dockerconfigjson file using <code>base64 --decode</code> command, you will understand that it's a simple file storing the configuration to access a registry:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl get secret regcred --output=&quot;jsonpath={.data.\.dockerconfigjson}&quot; | base64 --decode"><pre>kubectl get secret regcred --output=<span><span>"</span>jsonpath={.data.\.dockerconfigjson}<span>"</span></span> <span>|</span> base64 --decode</pre></div>
+<p dir="auto">You will get a similar output to the following one:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="{&quot;auths&quot;:{&quot;your.private.registry.domain.com&quot;:{&quot;username&quot;:&quot;eon01&quot;,&quot;password&quot;:&quot;xxxxxxxxxxx&quot;,&quot;email&quot;:&quot;aymen@email.com&quot;,&quot;auth&quot;:&quot;dE3xxxxxxxxx&quot;}}}"><pre>{<span>"auths"</span>:{<span>"your.private.registry.domain.com"</span>:{<span>"username"</span>:<span><span>"</span>eon01<span>"</span></span>,<span>"password"</span>:<span><span>"</span>xxxxxxxxxxx<span>"</span></span>,<span>"email"</span>:<span><span>"</span>aymen@email.com<span>"</span></span>,<span>"auth"</span>:<span><span>"</span>dE3xxxxxxxxx<span>"</span></span>}}}</pre></div>
+<p dir="auto">Again, let's decode the "auth" value using <code>echo "dE3xxxxxxxxx"|base64 --decode </code> and it will give you something like <code>eon01:xxxxxxxx</code> which has the format <code>username:password</code>.</p>
+<p dir="auto">Now let's see if the deployment is done, let's see how many pods we have:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl get pods"><pre>kubectl get pods</pre></div>
+<p dir="auto">This command will show all the pods within a cluster.</p>
+<p dir="auto">We can scale our deployment using a command similar to the following one:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl scale --replicas=<expected_replica_num> deployment <deployment_name>"><pre>kubectl scale --replicas=<span>&lt;</span>expected_replica_num<span>&gt;</span> deployment <span>&lt;</span>deployment_name<span>&gt;</span></pre></div>
+<p dir="auto">Our deployment is called <code>tgr</code> since it's the name we gave to it in the Deployment configuration. You can also make verification by typing <code>kubectl get deployment</code>. Let's scale it:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl scale --replicas=2 deployment tgr"><pre>kubectl scale --replicas=2 deployment tgr</pre></div>
+<p dir="auto">Each of these containers will be accessible on port 500 from outside the container but not from outside the cluster.</p>
+<p dir="auto">The number of pods/containers running for our API can be variable and may change dynamically.</p>
+<p dir="auto">We can set up a load balancer that will balance traffic between the two pods we created, but since each pod can disappear to be recreated, its hostname and address will change.</p>
+<p dir="auto">In all cases, pods are not meant to receive traffic directly, but they need to be exposed to traffic using a Service. In other words, the set of Pods running in one moment in time could be different from the set of Pods running that application a moment later.</p>
+<p dir="auto">At the moment, the only service running is the cluster IP (which is related to Minikube and give us access to the cluster we created):</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl get services"><pre>kubectl get services</pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Services</h2><a id="user-content-services" aria-label="Permalink: Services" href="#services"></a></p>
+<p dir="auto">In Kubernetes, since Pods are mortals, we should create an abstraction that defines a logical set of Pods and how to access them. This is the role of Services.</p>
+<p dir="auto">In our case, creating a load balancer is a suitable solution. This is the configuration file of a Service object that will listen on the port 80 and load-balance traffic to the Pod with the label <code>name</code>equals to <code>app</code> . The latter is accessible internally using the port 5000 like it's defined in the Deployment configuration:</p>
+<div data-snippet-clipboard-copy-content="...
+          ports:
+            - containerPort: 5000
+...            "><pre><code>...
+          ports:
+            - containerPort: 5000
+...            
+</code></pre></div>
+<p dir="auto">This is how the Service looks like:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="apiVersion: v1
+kind: Service
+metadata:
+  name: lb
+  labels:
+    name: lb
+spec:
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    name: tgr
+  type: LoadBalancer"><pre><span>apiVersion</span>: <span>v1</span>
+<span>kind</span>: <span>Service</span>
+<span>metadata</span>:
+  <span>name</span>: <span>lb</span>
+  <span>labels</span>:
+    <span>name</span>: <span>lb</span>
+<span>spec</span>:
+  <span>ports</span>:
+  - <span>port</span>: <span>80</span>
+    <span>targetPort</span>: <span>5000</span>
+  <span>selector</span>:
+    <span>name</span>: <span>tgr</span>
+  <span>type</span>: <span>LoadBalancer</span></pre></div>
+<p dir="auto">Save this file to <code>kubernetes/api-service.yaml</code> and deploy it using <code>kubectl apply -f kubernetes/api-service.yaml</code>.</p>
+<p dir="auto">If you type <code>kubectl get service</code>, you will get the list of Services running in our local cluster:</p>
+<div data-snippet-clipboard-copy-content="NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.96.0.1       <none>        443/TCP        51m
+lb           LoadBalancer   10.99.147.117   <pending>     80:30546/TCP   21s"><pre><code>NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.96.0.1       &lt;none&gt;        443/TCP        51m
+lb           LoadBalancer   10.99.147.117   &lt;pending&gt;     80:30546/TCP   21s
+</code></pre></div>
+<p dir="auto">Not that the ClusterIP does not have an external IP while the app Service external IP is pending.
+No need to wait for the external IP of the created service, since Minikube does not really deploy a load balancer and this feature will only work if you configure a Load Balancer provider.</p>
+<p dir="auto">If you are using a Cloud provider, say AWS, an AWS load balancer will be set up for you, GKE will provide a Cloud Load Balancer..etc You may also configure other types of load balancers.</p>
+<p dir="auto">There are different types of Services that we can use to expose access to the API publicly:</p>
+<ul dir="auto">
+<li><code>ClusterIP</code>:  is the default Kubernetes service. It exposes the Service on a cluster-internal IP. You can access it using the Kubernetes proxy.</li>
+</ul>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="https://github.com/eon01/kubernetes-workshop/blob/master/images/clusterip.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<blockquote>
+<p dir="auto">Illustration by <a href="https://twitter.com/ahmetb" rel="nofollow">Ahmet Alp Balkan</a> via <a href="https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0" rel="nofollow">Medium</a>.</p>
+</blockquote>
+<ul dir="auto">
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/#nodeport" rel="nofollow"><code>NodePort</code></a>: Exposes the Service on each Node’s (VM's) IP at a static port called the <code>NodePort</code>.  (In our example, we have a single node). This is a primitive way to make an application accessible from outside the cluster and is not suitable for many use cases since your nodes (VMs) IP addresses may change at any time. The service is accessible using <code>&lt;NodeIP&gt;:&lt;NodePort&gt;</code>.</li>
+</ul>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="https://github.com/eon01/kubernetes-workshop/blob/master/images/nodeport.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<blockquote>
+<p dir="auto">Illustration by <a href="https://twitter.com/ahmetb" rel="nofollow">Ahmet Alp Balkan</a> via <a href="https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0" rel="nofollow">Medium</a>.</p>
+</blockquote>
+<ul dir="auto">
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/#loadbalancer" rel="nofollow"><code>LoadBalancer</code></a>: This is more advanced than a <code>NodePort</code> Service. Usually, a Load Balancer exposes a Service externally using a cloud provider’s load balancer. <code>NodePort</code> and <code>ClusterIP</code> Services, to which the external load balancer routes, are automatically created.</li>
+</ul>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="https://github.com/eon01/kubernetes-workshop/blob/master/images/loadbalancer.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<blockquote>
+<p dir="auto">Illustration by <a href="https://twitter.com/ahmetb" rel="nofollow">Ahmet Alp Balkan</a> via <a href="https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0" rel="nofollow">Medium</a>.</p>
+</blockquote>
+<p dir="auto">We created a Load Balancer using a Service on our Minikube cluster, but since we don't have a Load Balancer to run, we can access the API service using the Cluster IP followed by the Service internal Port:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="minikube -p workshop ip"><pre>minikube -p workshop ip</pre></div>
+<p dir="auto">Output:</p>
+<div data-snippet-clipboard-copy-content="192.168.99.100"><pre><code>192.168.99.100
+</code></pre></div>
+<p dir="auto">Now execute <code>kubectl get services</code> :</p>
+<div data-snippet-clipboard-copy-content="NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.96.0.1       <none>        443/TCP        51m
+lb           LoadBalancer   10.99.147.117   <pending>     80:30546/TCP   21s"><pre><code>NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.96.0.1       &lt;none&gt;        443/TCP        51m
+lb           LoadBalancer   10.99.147.117   &lt;pending&gt;     80:30546/TCP   21s
+</code></pre></div>
+<p dir="auto">Use the IP <code>192.168.99.199</code> followed by the port <code>30546</code> to access the API.</p>
+<p dir="auto">You can test this using a <code>curl</code> command:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="curl &quot;http://192.168.99.100:30546/?l=python&amp;n=1&quot;
+
+---
+{&quot;repos&quot;:[{&quot;archive_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/{archive_format}{/ref}&quot;,&quot;archived&quot;:false,&quot;assignees_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/assignees{/user}&quot;,&quot;blobs_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/blobs{/sha}&quot;,&quot;branches_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/branches{/branch}&quot;,&quot;clone_url&quot;:&quot;https://github.com/vinta/awesome-python.git&quot;,&quot;collaborators_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/collaborators{/collaborator}&quot;,&quot;comments_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/comments{/number}&quot;,&quot;commits_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/commits{/sha}&quot;,&quot;compare_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/compare/{base}...{head}&quot;,&quot;contents_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/contents/{+path}&quot;,&quot;contributors_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/contributors&quot;,&quot;created_at&quot;:&quot;2014-06-27T21:00:06Z&quot;,&quot;default_branch&quot;:&quot;master&quot;,&quot;deployments_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/deployments&quot;,&quot;description&quot;:&quot;A curated list of awesome Python frameworks, libraries, software and resources&quot;,&quot;disabled&quot;:false,&quot;downloads_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/downloads&quot;,&quot;events_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/events&quot;,&quot;fork&quot;:false,&quot;forks&quot;:13929,&quot;forks_count&quot;:13929,&quot;forks_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/forks&quot;,&quot;full_name&quot;:&quot;vinta/awesome-python&quot;,&quot;git_commits_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/commits{/sha}&quot;,&quot;git_refs_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/refs{/sha}&quot;,&quot;git_tags_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/tags{/sha}&quot;,&quot;git_url&quot;:&quot;git://github.com/vinta/awesome-python.git&quot;,&quot;has_downloads&quot;:true,&quot;has_issues&quot;:true,&quot;has_pages&quot;:true,&quot;has_projects&quot;:false,&quot;has_wiki&quot;:false,&quot;homepage&quot;:&quot;https://awesome-python.com/&quot;,&quot;hooks_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/hooks&quot;,&quot;html_url&quot;:&quot;https://github.com/vinta/awesome-python&quot;,&quot;id&quot;:21289110,&quot;issue_comment_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/issues/comments{/number}&quot;,&quot;issue_events_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/issues/events{/number}&quot;,&quot;issues_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/issues{/number}&quot;,&quot;keys_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/keys{/key_id}&quot;,&quot;labels_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/labels{/name}&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;languages_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/languages&quot;,&quot;license&quot;:{&quot;key&quot;:&quot;other&quot;,&quot;name&quot;:&quot;Other&quot;,&quot;node_id&quot;:&quot;MDc6TGljZW5zZTA=&quot;,&quot;spdx_id&quot;:&quot;NOASSERTION&quot;,&quot;url&quot;:null},&quot;merges_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/merges&quot;,&quot;milestones_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/milestones{/number}&quot;,&quot;mirror_url&quot;:null,&quot;name&quot;:&quot;awesome-python&quot;,&quot;network_count&quot;:13929,&quot;node_id&quot;:&quot;MDEwOlJlcG9zaXRvcnkyMTI4OTExMA==&quot;,&quot;notifications_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/notifications{?since,all,participating}&quot;,&quot;open_issues&quot;:482,&quot;open_issues_count&quot;:482,&quot;owner&quot;:{&quot;avatar_url&quot;:&quot;https://avatars2.githubusercontent.com/u/652070?v=4&quot;,&quot;events_url&quot;:&quot;https://api.github.com/users/vinta/events{/privacy}&quot;,&quot;followers_url&quot;:&quot;https://api.github.com/users/vinta/followers&quot;,&quot;following_url&quot;:&quot;https://api.github.com/users/vinta/following{/other_user}&quot;,&quot;gists_url&quot;:&quot;https://api.github.com/users/vinta/gists{/gist_id}&quot;,&quot;gravatar_id&quot;:&quot;&quot;,&quot;html_url&quot;:&quot;https://github.com/vinta&quot;,&quot;id&quot;:652070,&quot;login&quot;:&quot;vinta&quot;,&quot;node_id&quot;:&quot;MDQ6VXNlcjY1MjA3MA==&quot;,&quot;organizations_url&quot;:&quot;https://api.github.com/users/vinta/orgs&quot;,&quot;received_events_url&quot;:&quot;https://api.github.com/users/vinta/received_events&quot;,&quot;repos_url&quot;:&quot;https://api.github.com/users/vinta/repos&quot;,&quot;site_admin&quot;:false,&quot;starred_url&quot;:&quot;https://api.github.com/users/vinta/starred{/owner}{/repo}&quot;,&quot;subscriptions_url&quot;:&quot;https://api.github.com/users/vinta/subscriptions&quot;,&quot;type&quot;:&quot;User&quot;,&quot;url&quot;:&quot;https://api.github.com/users/vinta&quot;},&quot;private&quot;:false,&quot;pulls_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/pulls{/number}&quot;,&quot;pushed_at&quot;:&quot;2019-08-16T15:21:42Z&quot;,&quot;releases_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/releases{/id}&quot;,&quot;size&quot;:4994,&quot;ssh_url&quot;:&quot;git@github.com:vinta/awesome-python.git&quot;,&quot;stargazers_count&quot;:71222,&quot;stargazers_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/stargazers&quot;,&quot;statuses_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/statuses/{sha}&quot;,&quot;subscribers_count&quot;:5251,&quot;subscribers_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/subscribers&quot;,&quot;subscription_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/subscription&quot;,&quot;svn_url&quot;:&quot;https://github.com/vinta/awesome-python&quot;,&quot;tags_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/tags&quot;,&quot;teams_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/teams&quot;,&quot;trees_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/trees{/sha}&quot;,&quot;updated_at&quot;:&quot;2019-08-17T16:11:44Z&quot;,&quot;url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python&quot;,&quot;watchers&quot;:71222,&quot;watchers_count&quot;:71222}],&quot;status&quot;:&quot;ok&quot;}
+"><pre>curl <span><span>"</span>http://192.168.99.100:30546/?l=python&amp;n=1<span>"</span></span>
+
+---
+{"repos":[{"archive_url":"https://api.github.com/repos/vinta/awesome-python/{archive_format}{/ref}","archived":false,"assignees_url":"https://api.github.com/repos/vinta/awesome-python/assignees{/user}","blobs_url":"https://api.github.com/repos/vinta/awesome-python/git/blobs{/sha}","branches_url":"https://api.github.com/repos/vinta/awesome-python/branches{/branch}","clone_url":"https://github.com/vinta/awesome-python.git","collaborators_url":"https://api.github.com/repos/vinta/awesome-python/collaborators{/collaborator}","comments_url":"https://api.github.com/repos/vinta/awesome-python/comments{/number}","commits_url":"https://api.github.com/repos/vinta/awesome-python/commits{/sha}","compare_url":"https://api.github.com/repos/vinta/awesome-python/compare/{base}...{head}","contents_url":"https://api.github.com/repos/vinta/awesome-python/contents/{+path}","contributors_url":"https://api.github.com/repos/vinta/awesome-python/contributors","created_at":"2014-06-27T21:00:06Z","default_branch":"master","deployments_url":"https://api.github.com/repos/vinta/awesome-python/deployments","description":"A curated list of awesome Python frameworks, libraries, software and resources","disabled":false,"downloads_url":"https://api.github.com/repos/vinta/awesome-python/downloads","events_url":"https://api.github.com/repos/vinta/awesome-python/events","fork":false,"forks":13929,"forks_count":13929,"forks_url":"https://api.github.com/repos/vinta/awesome-python/forks","full_name":"vinta/awesome-python","git_commits_url":"https://api.github.com/repos/vinta/awesome-python/git/commits{/sha}","git_refs_url":"https://api.github.com/repos/vinta/awesome-python/git/refs{/sha}","git_tags_url":"https://api.github.com/repos/vinta/awesome-python/git/tags{/sha}","git_url":"git://github.com/vinta/awesome-python.git","has_downloads":true,"has_issues":true,"has_pages":true,"has_projects":false,"has_wiki":false,"homepage":"https://awesome-python.com/","hooks_url":"https://api.github.com/repos/vinta/awesome-python/hooks","html_url":"https://github.com/vinta/awesome-python","id":21289110,"issue_comment_url":"https://api.github.com/repos/vinta/awesome-python/issues/comments{/number}","issue_events_url":"https://api.github.com/repos/vinta/awesome-python/issues/events{/number}","issues_url":"https://api.github.com/repos/vinta/awesome-python/issues{/number}","keys_url":"https://api.github.com/repos/vinta/awesome-python/keys{/key_id}","labels_url":"https://api.github.com/repos/vinta/awesome-python/labels{/name}","language":"Python","languages_url":"https://api.github.com/repos/vinta/awesome-python/languages","license":{"key":"other","name":"Other","node_id":"MDc6TGljZW5zZTA=","spdx_id":"NOASSERTION","url":null},"merges_url":"https://api.github.com/repos/vinta/awesome-python/merges","milestones_url":"https://api.github.com/repos/vinta/awesome-python/milestones{/number}","mirror_url":null,"name":"awesome-python","network_count":13929,"node_id":"MDEwOlJlcG9zaXRvcnkyMTI4OTExMA==","notifications_url":"https://api.github.com/repos/vinta/awesome-python/notifications{?since,all,participating}","open_issues":482,"open_issues_count":482,"owner":{"avatar_url":"https://avatars2.githubusercontent.com/u/652070?v=4","events_url":"https://api.github.com/users/vinta/events{/privacy}","followers_url":"https://api.github.com/users/vinta/followers","following_url":"https://api.github.com/users/vinta/following{/other_user}","gists_url":"https://api.github.com/users/vinta/gists{/gist_id}","gravatar_id":"","html_url":"https://github.com/vinta","id":652070,"login":"vinta","node_id":"MDQ6VXNlcjY1MjA3MA==","organizations_url":"https://api.github.com/users/vinta/orgs","received_events_url":"https://api.github.com/users/vinta/received_events","repos_url":"https://api.github.com/users/vinta/repos","site_admin":false,"starred_url":"https://api.github.com/users/vinta/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/vinta/subscriptions","type":"User","url":"https://api.github.com/users/vinta"},"private":false,"pulls_url":"https://api.github.com/repos/vinta/awesome-python/pulls{/number}","pushed_at":"2019-08-16T15:21:42Z","releases_url":"https://api.github.com/repos/vinta/awesome-python/releases{/id}","size":4994,"ssh_url":"git@github.com:vinta/awesome-python.git","stargazers_count":71222,"stargazers_url":"https://api.github.com/repos/vinta/awesome-python/stargazers","statuses_url":"https://api.github.com/repos/vinta/awesome-python/statuses/{sha}","subscribers_count":5251,"subscribers_url":"https://api.github.com/repos/vinta/awesome-python/subscribers","subscription_url":"https://api.github.com/repos/vinta/awesome-python/subscription","svn_url":"https://github.com/vinta/awesome-python","tags_url":"https://api.github.com/repos/vinta/awesome-python/tags","teams_url":"https://api.github.com/repos/vinta/awesome-python/teams","trees_url":"https://api.github.com/repos/vinta/awesome-python/git/trees{/sha}","updated_at":"2019-08-17T16:11:44Z","url":"https://api.github.com/repos/vinta/awesome-python","watchers":71222,"watchers_count":71222}],"status":"ok"}
+</pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Inconvenience of Load Balancer Service</h2><a id="user-content-inconvenience-of-load-balancer-service" aria-label="Permalink: Inconvenience of Load Balancer Service" href="#inconvenience-of-load-balancer-service"></a></p>
+<p dir="auto">Typically, load balancers are provisioned by the Cloud provider you're using.</p>
+<p dir="auto">A load balancer can handle one service but imagine if you have ten services, each one will need a load balancer; this is when it becomes costly.</p>
+<p dir="auto">The best solution, in this case, is set up an Ingress controller that acts as a smart router and can be deployed at the edge of the cluster, therefore in the front of all the services you deploy.</p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="https://github.com/eon01/kubernetes-workshop/blob/master/images/ingress.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<blockquote>
+<p dir="auto">Illustration by <a href="https://twitter.com/ahmetb" rel="nofollow">Ahmet Alp Balkan</a> via <a href="https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0" rel="nofollow">Medium</a>.</p>
+</blockquote>
+<p dir="auto"><h2 tabindex="-1" dir="auto">An API Gateway</h2><a id="user-content-an-api-gateway" aria-label="Permalink: An API Gateway" href="#an-api-gateway"></a></p>
+<p dir="auto">Ambassador is an Open Source Kubernetes-Native API Gateway built on the Envoy Proxy. It provides a solution for traffic management and application security. It's described as is a specialized control plane that translates Kubernetes annotations to Envoy configuration.</p>
+<p dir="auto">All traffic is directly handled by the high-performance Envoy Proxy.</p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="https://github.com/eon01/kubernetes-workshop/blob/master/images/ambassador-arch.png"><img src="data:application/octet-stream;base64," alt=""></a></p>
+<p dir="auto">Photo credit: <a href="https://www.getambassador.io/concepts/architecture" rel="nofollow">https://www.getambassador.io/concepts/architecture</a></p>
+<p dir="auto">As it's described in <a href="https://www.envoyproxy.io/" rel="nofollow">Envoy official website</a>:</p>
+<blockquote>
+<p dir="auto">Originally built at <strong>Lyft</strong>, Envoy is a high-performance C++ distributed proxy designed for single services and applications, as well as a communication bus and “universal data plane” designed for large microservice “service mesh” architectures. Built on the learnings of solutions such as NGINX, HAProxy, hardware load balancers, and cloud load balancers, Envoy runs alongside every application and abstracts the network by providing common features in a platform-agnostic manner. When all service traffic in an infrastructure flows via an Envoy mesh, it becomes easy to visualize problem areas via consistent observability, tune overall performance, and add substrate features in a single place.</p>
+</blockquote>
+<p dir="auto">We are going to use Ambassador as an API Gateway; we no longer need the load balancer service we created in the first part. Let's remove it:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl delete -f kubernetes/api-service.yaml"><pre>kubectl delete -f kubernetes/api-service.yaml</pre></div>
+<p dir="auto">To deploy Ambassador in your <strong>default</strong> namespace, first, you need to check if Kubernetes has RBAC enabled:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl cluster-info dump --namespace kube-system | grep authorization-mode"><pre>kubectl cluster-info dump --namespace kube-system <span>|</span> grep authorization-mode</pre></div>
+<p dir="auto">If RBAC is enabled:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl apply -f https://getambassador.io/yaml/ambassador/ambassador-rbac.yaml"><pre>kubectl apply -f https://getambassador.io/yaml/ambassador/ambassador-rbac.yaml</pre></div>
+<p dir="auto">Without RBAC, you can use:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl apply -f https://getambassador.io/yaml/ambassador/ambassador-no-rbac.yaml"><pre>kubectl apply -f https://getambassador.io/yaml/ambassador/ambassador-no-rbac.yaml</pre></div>
+<p dir="auto">Ambassador is deployed as a Kubernetes Service that references the ambassador Deployment you deployed previously. Create the following YAML and put it in a file called <code>kubernetes/ambassador-service.yaml</code>.</p>
+<div data-snippet-clipboard-copy-content="---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ambassador
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+   - port: 80
+     targetPort: 8080
+  selector:
+    service: ambassador"><pre><code>---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ambassador
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+   - port: 80
+     targetPort: 8080
+  selector:
+    service: ambassador
+</code></pre></div>
+<p dir="auto">Deploy the service:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl apply -f ambassador-service.yaml"><pre>kubectl apply -f ambassador-service.yaml</pre></div>
+<p dir="auto">Now let's use this file containing the Deployment configuration for our API as well as the Ambassador Service configuration relative to the same Deployment. Call this file <code>kubernetes/api-deployment-with-ambassador.yaml</code>:</p>
+<div data-snippet-clipboard-copy-content="---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tgr
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind: Mapping
+      name: tgr_mapping
+      prefix: /
+      service: tgr:5000
+
+spec:
+  ports:
+  - name: tgr
+    port: 5000
+    targetPort: 5000
+  selector:
+    app: tgr
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tgr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tgr
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: tgr
+    spec:
+      containers:
+      - name: tgr
+        image: eon01/tgr:1
+        ports:
+          - containerPort: 5000
+        env:
+          - name: CLIENT_ID
+            value: &quot;453486b9225e0e26c525&quot;
+          - name: CLIENT_SECRET
+            value: &quot;a63e841d5c18f41b9264a1a2ac0675a1f903ee8c&quot;
+          - name: ENV
+            value: &quot;prod&quot;
+          - name: DEBUG
+            value: &quot;False&quot;
+          - name: HOST
+            value: &quot;0.0.0.0&quot;
+          - name: PORT
+            value: &quot;5000&quot;"><pre><code>---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tgr
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind: Mapping
+      name: tgr_mapping
+      prefix: /
+      service: tgr:5000
+
+spec:
+  ports:
+  - name: tgr
+    port: 5000
+    targetPort: 5000
+  selector:
+    app: tgr
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tgr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tgr
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: tgr
+    spec:
+      containers:
+      - name: tgr
+        image: eon01/tgr:1
+        ports:
+          - containerPort: 5000
+        env:
+          - name: CLIENT_ID
+            value: "453486b9225e0e26c525"
+          - name: CLIENT_SECRET
+            value: "a63e841d5c18f41b9264a1a2ac0675a1f903ee8c"
+          - name: ENV
+            value: "prod"
+          - name: DEBUG
+            value: "False"
+          - name: HOST
+            value: "0.0.0.0"
+          - name: PORT
+            value: "5000"
+</code></pre></div>
+<p dir="auto">Deploy the previously created configuration:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl apply -f kubernetes/api-deployment-with-ambassador.yaml"><pre>kubectl apply -f kubernetes/api-deployment-with-ambassador.yaml</pre></div>
+<p dir="auto">Let's test things out: We need the external IP for Ambassador:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl get svc -o wide ambassador"><pre>kubectl get svc -o wide ambassador</pre></div>
+<p dir="auto">You should see something like:</p>
+<div data-snippet-clipboard-copy-content="NAME         TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE    SELECTOR
+ambassador   LoadBalancer   10.103.201.130   <pending>     80:30283/TCP   9m2s   service=ambassador"><pre><code>NAME         TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE    SELECTOR
+ambassador   LoadBalancer   10.103.201.130   &lt;pending&gt;     80:30283/TCP   9m2s   service=ambassador
+</code></pre></div>
+<p dir="auto">If you are using Minikube, it is normal to see the external IP in the <code>pending</code> state.</p>
+<p dir="auto">We can use <code>minikube -p workshop  service list</code> to get the Ambassador IP. You will get an output similar to the following:</p>
+<div data-snippet-clipboard-copy-content="|-------------|------------------|-----------------------------|
+|  NAMESPACE  |       NAME       |             URL             |
+|-------------|------------------|-----------------------------|
+| default     | ambassador       | http://192.168.99.100:30283 |
+| default     | ambassador-admin | http://192.168.99.100:30084 |
+| default     | kubernetes       | No node port                |
+| default     | tgr              | No node port                |
+| kube-system | kube-dns         | No node port                |
+|-------------|------------------|-----------------------------|
+"><pre><code>|-------------|------------------|-----------------------------|
+|  NAMESPACE  |       NAME       |             URL             |
+|-------------|------------------|-----------------------------|
+| default     | ambassador       | http://192.168.99.100:30283 |
+| default     | ambassador-admin | http://192.168.99.100:30084 |
+| default     | kubernetes       | No node port                |
+| default     | tgr              | No node port                |
+| kube-system | kube-dns         | No node port                |
+|-------------|------------------|-----------------------------|
+
+</code></pre></div>
+<p dir="auto">Now you can use the API using the IP <code> http://192.168.99.100:30283</code>:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="curl &quot;http://192.168.99.100:30283/?l=python&amp;n=1&quot;
+---
+{&quot;repos&quot;:[{&quot;archive_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/{archive_format}{/ref}&quot;,&quot;archived&quot;:false,&quot;assignees_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/assignees{/user}&quot;,&quot;blobs_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/blobs{/sha}&quot;,&quot;branches_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/branches{/branch}&quot;,&quot;clone_url&quot;:&quot;https://github.com/vinta/awesome-python.git&quot;,&quot;collaborators_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/collaborators{/collaborator}&quot;,&quot;comments_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/comments{/number}&quot;,&quot;commits_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/commits{/sha}&quot;,&quot;compare_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/compare/{base}...{head}&quot;,&quot;contents_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/contents/{+path}&quot;,&quot;contributors_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/contributors&quot;,&quot;created_at&quot;:&quot;2014-06-27T21:00:06Z&quot;,&quot;default_branch&quot;:&quot;master&quot;,&quot;deployments_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/deployments&quot;,&quot;description&quot;:&quot;A curated list of awesome Python frameworks, libraries, software and resources&quot;,&quot;disabled&quot;:false,&quot;downloads_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/downloads&quot;,&quot;events_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/events&quot;,&quot;fork&quot;:false,&quot;forks&quot;:13933,&quot;forks_count&quot;:13933,&quot;forks_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/forks&quot;,&quot;full_name&quot;:&quot;vinta/awesome-python&quot;,&quot;git_commits_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/commits{/sha}&quot;,&quot;git_refs_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/refs{/sha}&quot;,&quot;git_tags_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/tags{/sha}&quot;,&quot;git_url&quot;:&quot;git://github.com/vinta/awesome-python.git&quot;,&quot;has_downloads&quot;:true,&quot;has_issues&quot;:true,&quot;has_pages&quot;:true,&quot;has_projects&quot;:false,&quot;has_wiki&quot;:false,&quot;homepage&quot;:&quot;https://awesome-python.com/&quot;,&quot;hooks_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/hooks&quot;,&quot;html_url&quot;:&quot;https://github.com/vinta/awesome-python&quot;,&quot;id&quot;:21289110,&quot;issue_comment_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/issues/comments{/number}&quot;,&quot;issue_events_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/issues/events{/number}&quot;,&quot;issues_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/issues{/number}&quot;,&quot;keys_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/keys{/key_id}&quot;,&quot;labels_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/labels{/name}&quot;,&quot;language&quot;:&quot;Python&quot;,&quot;languages_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/languages&quot;,&quot;license&quot;:{&quot;key&quot;:&quot;other&quot;,&quot;name&quot;:&quot;Other&quot;,&quot;node_id&quot;:&quot;MDc6TGljZW5zZTA=&quot;,&quot;spdx_id&quot;:&quot;NOASSERTION&quot;,&quot;url&quot;:null},&quot;merges_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/merges&quot;,&quot;milestones_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/milestones{/number}&quot;,&quot;mirror_url&quot;:null,&quot;name&quot;:&quot;awesome-python&quot;,&quot;network_count&quot;:13933,&quot;node_id&quot;:&quot;MDEwOlJlcG9zaXRvcnkyMTI4OTExMA==&quot;,&quot;notifications_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/notifications{?since,all,participating}&quot;,&quot;open_issues&quot;:482,&quot;open_issues_count&quot;:482,&quot;owner&quot;:{&quot;avatar_url&quot;:&quot;https://avatars2.githubusercontent.com/u/652070?v=4&quot;,&quot;events_url&quot;:&quot;https://api.github.com/users/vinta/events{/privacy}&quot;,&quot;followers_url&quot;:&quot;https://api.github.com/users/vinta/followers&quot;,&quot;following_url&quot;:&quot;https://api.github.com/users/vinta/following{/other_user}&quot;,&quot;gists_url&quot;:&quot;https://api.github.com/users/vinta/gists{/gist_id}&quot;,&quot;gravatar_id&quot;:&quot;&quot;,&quot;html_url&quot;:&quot;https://github.com/vinta&quot;,&quot;id&quot;:652070,&quot;login&quot;:&quot;vinta&quot;,&quot;node_id&quot;:&quot;MDQ6VXNlcjY1MjA3MA==&quot;,&quot;organizations_url&quot;:&quot;https://api.github.com/users/vinta/orgs&quot;,&quot;received_events_url&quot;:&quot;https://api.github.com/users/vinta/received_events&quot;,&quot;repos_url&quot;:&quot;https://api.github.com/users/vinta/repos&quot;,&quot;site_admin&quot;:false,&quot;starred_url&quot;:&quot;https://api.github.com/users/vinta/starred{/owner}{/repo}&quot;,&quot;subscriptions_url&quot;:&quot;https://api.github.com/users/vinta/subscriptions&quot;,&quot;type&quot;:&quot;User&quot;,&quot;url&quot;:&quot;https://api.github.com/users/vinta&quot;},&quot;private&quot;:false,&quot;pulls_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/pulls{/number}&quot;,&quot;pushed_at&quot;:&quot;2019-08-16T15:21:42Z&quot;,&quot;releases_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/releases{/id}&quot;,&quot;size&quot;:4994,&quot;ssh_url&quot;:&quot;git@github.com:vinta/awesome-python.git&quot;,&quot;stargazers_count&quot;:71269,&quot;stargazers_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/stargazers&quot;,&quot;statuses_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/statuses/{sha}&quot;,&quot;subscribers_count&quot;:5254,&quot;subscribers_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/subscribers&quot;,&quot;subscription_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/subscription&quot;,&quot;svn_url&quot;:&quot;https://github.com/vinta/awesome-python&quot;,&quot;tags_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/tags&quot;,&quot;teams_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/teams&quot;,&quot;trees_url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python/git/trees{/sha}&quot;,&quot;updated_at&quot;:&quot;2019-08-19T08:21:51Z&quot;,&quot;url&quot;:&quot;https://api.github.com/repos/vinta/awesome-python&quot;,&quot;watchers&quot;:71269,&quot;watchers_count&quot;:71269}],&quot;status&quot;:&quot;ok&quot;}
+"><pre>curl <span><span>"</span>http://192.168.99.100:30283/?l=python&amp;n=1<span>"</span></span>
+---
+{"repos":[{"archive_url":"https://api.github.com/repos/vinta/awesome-python/{archive_format}{/ref}","archived":false,"assignees_url":"https://api.github.com/repos/vinta/awesome-python/assignees{/user}","blobs_url":"https://api.github.com/repos/vinta/awesome-python/git/blobs{/sha}","branches_url":"https://api.github.com/repos/vinta/awesome-python/branches{/branch}","clone_url":"https://github.com/vinta/awesome-python.git","collaborators_url":"https://api.github.com/repos/vinta/awesome-python/collaborators{/collaborator}","comments_url":"https://api.github.com/repos/vinta/awesome-python/comments{/number}","commits_url":"https://api.github.com/repos/vinta/awesome-python/commits{/sha}","compare_url":"https://api.github.com/repos/vinta/awesome-python/compare/{base}...{head}","contents_url":"https://api.github.com/repos/vinta/awesome-python/contents/{+path}","contributors_url":"https://api.github.com/repos/vinta/awesome-python/contributors","created_at":"2014-06-27T21:00:06Z","default_branch":"master","deployments_url":"https://api.github.com/repos/vinta/awesome-python/deployments","description":"A curated list of awesome Python frameworks, libraries, software and resources","disabled":false,"downloads_url":"https://api.github.com/repos/vinta/awesome-python/downloads","events_url":"https://api.github.com/repos/vinta/awesome-python/events","fork":false,"forks":13933,"forks_count":13933,"forks_url":"https://api.github.com/repos/vinta/awesome-python/forks","full_name":"vinta/awesome-python","git_commits_url":"https://api.github.com/repos/vinta/awesome-python/git/commits{/sha}","git_refs_url":"https://api.github.com/repos/vinta/awesome-python/git/refs{/sha}","git_tags_url":"https://api.github.com/repos/vinta/awesome-python/git/tags{/sha}","git_url":"git://github.com/vinta/awesome-python.git","has_downloads":true,"has_issues":true,"has_pages":true,"has_projects":false,"has_wiki":false,"homepage":"https://awesome-python.com/","hooks_url":"https://api.github.com/repos/vinta/awesome-python/hooks","html_url":"https://github.com/vinta/awesome-python","id":21289110,"issue_comment_url":"https://api.github.com/repos/vinta/awesome-python/issues/comments{/number}","issue_events_url":"https://api.github.com/repos/vinta/awesome-python/issues/events{/number}","issues_url":"https://api.github.com/repos/vinta/awesome-python/issues{/number}","keys_url":"https://api.github.com/repos/vinta/awesome-python/keys{/key_id}","labels_url":"https://api.github.com/repos/vinta/awesome-python/labels{/name}","language":"Python","languages_url":"https://api.github.com/repos/vinta/awesome-python/languages","license":{"key":"other","name":"Other","node_id":"MDc6TGljZW5zZTA=","spdx_id":"NOASSERTION","url":null},"merges_url":"https://api.github.com/repos/vinta/awesome-python/merges","milestones_url":"https://api.github.com/repos/vinta/awesome-python/milestones{/number}","mirror_url":null,"name":"awesome-python","network_count":13933,"node_id":"MDEwOlJlcG9zaXRvcnkyMTI4OTExMA==","notifications_url":"https://api.github.com/repos/vinta/awesome-python/notifications{?since,all,participating}","open_issues":482,"open_issues_count":482,"owner":{"avatar_url":"https://avatars2.githubusercontent.com/u/652070?v=4","events_url":"https://api.github.com/users/vinta/events{/privacy}","followers_url":"https://api.github.com/users/vinta/followers","following_url":"https://api.github.com/users/vinta/following{/other_user}","gists_url":"https://api.github.com/users/vinta/gists{/gist_id}","gravatar_id":"","html_url":"https://github.com/vinta","id":652070,"login":"vinta","node_id":"MDQ6VXNlcjY1MjA3MA==","organizations_url":"https://api.github.com/users/vinta/orgs","received_events_url":"https://api.github.com/users/vinta/received_events","repos_url":"https://api.github.com/users/vinta/repos","site_admin":false,"starred_url":"https://api.github.com/users/vinta/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/vinta/subscriptions","type":"User","url":"https://api.github.com/users/vinta"},"private":false,"pulls_url":"https://api.github.com/repos/vinta/awesome-python/pulls{/number}","pushed_at":"2019-08-16T15:21:42Z","releases_url":"https://api.github.com/repos/vinta/awesome-python/releases{/id}","size":4994,"ssh_url":"git@github.com:vinta/awesome-python.git","stargazers_count":71269,"stargazers_url":"https://api.github.com/repos/vinta/awesome-python/stargazers","statuses_url":"https://api.github.com/repos/vinta/awesome-python/statuses/{sha}","subscribers_count":5254,"subscribers_url":"https://api.github.com/repos/vinta/awesome-python/subscribers","subscription_url":"https://api.github.com/repos/vinta/awesome-python/subscription","svn_url":"https://github.com/vinta/awesome-python","tags_url":"https://api.github.com/repos/vinta/awesome-python/tags","teams_url":"https://api.github.com/repos/vinta/awesome-python/teams","trees_url":"https://api.github.com/repos/vinta/awesome-python/git/trees{/sha}","updated_at":"2019-08-19T08:21:51Z","url":"https://api.github.com/repos/vinta/awesome-python","watchers":71269,"watchers_count":71269}],"status":"ok"}
+</pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Edge Proxy vs Service Mesh</h2><a id="user-content-edge-proxy-vs-service-mesh" aria-label="Permalink: Edge Proxy vs Service Mesh" href="#edge-proxy-vs-service-mesh"></a></p>
+<p dir="auto">You may have heard of tools like Istio and Linkerd and it may be confusing to compare Ambassador or Envoy to these tools. We are going to understand the differences here.</p>
+<p dir="auto">Istio is described as a tool to connect, secure, control, and observe services.The same features are implemented by its alternatives like Linkerd or Consul. These tools are called Service Mesh.</p>
+<p dir="auto">Ambassador is a, API gateway for services (or microservices) and it's deployed at the edge of your network. It routes incoming traffic to a cluster internal services and this what we call "north-south" traffic.</p>
+<p dir="auto">Istio, in the other hand, is a service mesh for Kubernetes services (or microservices). It's designed to add application-level Layer (L7) observability, routing, and resilience to service-to-service traffic and this is what we call "east-west" traffic.</p>
+<p dir="auto">The fact that both Istio and Ambassador are built using Envoy, does not mean they have the same features or usability. Therefore, they can be deployed together in the same cluster.</p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Accessing the Kubernetes API</h2><a id="user-content-accessing-the-kubernetes-api" aria-label="Permalink: Accessing the Kubernetes API" href="#accessing-the-kubernetes-api"></a></p>
+<p dir="auto">If you remember, when we created our Minikube cluster we used <code>--extra-config=apiserver.enable-swagger-ui=true</code>. This configuration makes the Kubernetes API "browsable" via a web browser.</p>
+<p dir="auto">When using Minikube, in order to access the Kubernetes API using a browser, we need to create a proxy:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl proxy --port=8080 &amp;"><pre>kubectl proxy --port=8080 <span>&amp;</span></pre></div>
+<p dir="auto">Now we can test this out using Curl:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="curl http://localhost:8080/api/
+---
+{
+  &quot;kind&quot;: &quot;APIVersions&quot;,
+  &quot;versions&quot;: [
+    &quot;v1&quot;
+  ],
+  &quot;serverAddressByClientCIDRs&quot;: [
+    {
+      &quot;clientCIDR&quot;: &quot;0.0.0.0/0&quot;,
+      &quot;serverAddress&quot;: &quot;192.168.99.100:8443&quot;
+    }
+  ]
+}"><pre>curl http://localhost:8080/api/
+---
+{
+  <span><span>"</span>kind<span>"</span></span>: <span><span>"</span>APIVersions<span>"</span></span>,
+  <span><span>"</span>versions<span>"</span></span>: [
+    <span><span>"</span>v1<span>"</span></span>
+  ],
+  <span><span>"</span>serverAddressByClientCIDRs<span>"</span></span>: [
+    {
+      <span><span>"</span>clientCIDR<span>"</span></span>: <span><span>"</span>0.0.0.0/0<span>"</span></span>,
+      <span><span>"</span>serverAddress<span>"</span></span>: <span><span>"</span>192.168.99.100:8443<span>"</span></span>
+    }
+  ]
+}</pre></div>
+<p dir="auto">We can get a list of the APIs and resources we can access by visiting: <code>http://localhost:8080/</code>.</p>
+<p dir="auto">For instance, we can get a list of metrics here <code>http://localhost:8080/metrics</code>.</p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Using an API Client</h2><a id="user-content-using-an-api-client" aria-label="Permalink: Using an API Client" href="#using-an-api-client"></a></p>
+<p dir="auto">We are going to use the Kubernetes client:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="pip install kubernetes"><pre>pip install kubernetes</pre></div>
+<div dir="auto" data-snippet-clipboard-copy-content="# import json
+# import requests
+# @app.route('/pods')
+# def monitor():
+#
+#     api_url = &quot;http://kubernetes.default.svc/api/v1/pods/&quot;
+#     response = requests.get(api_url)
+#     if response.status_code == 200:
+#         return json.loads(response.content.decode('utf-8'))
+#     else:
+#         return None"><pre><span># import json</span>
+<span># import requests</span>
+<span># @app.route('/pods')</span>
+<span># def monitor():</span>
+<span>#</span>
+<span>#     api_url = "http://kubernetes.default.svc/api/v1/pods/"</span>
+<span>#     response = requests.get(api_url)</span>
+<span>#     if response.status_code == 200:</span>
+<span>#         return json.loads(response.content.decode('utf-8'))</span>
+<span>#     else:</span>
+<span>#         return None</span></pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Accessing the API from inside a POD</h2><a id="user-content-accessing-the-api-from-inside-a-pod" aria-label="Permalink: Accessing the API from inside a POD" href="#accessing-the-api-from-inside-a-pod"></a></p>
+<p dir="auto">By default, a Pod is associated with a service account, and a credential (token) for that service account is placed into the filesystem tree of each container in that Pod, at <code>/var/run/secrets/kubernetes.io/serviceaccount/token</code>.</p>
+<p dir="auto">Let's try to go inside a Pod and access the API. Use <code>kubectl get pods</code> to get a list of pods</p>
+<div data-snippet-clipboard-copy-content="NAME                          READY   STATUS    RESTARTS   AGE
+ambassador-64d8b877f9-4bzvn   1/1     Running   0          103m
+ambassador-64d8b877f9-b68w6   1/1     Running   0          103m
+ambassador-64d8b877f9-vw9mm   1/1     Running   0          103m
+tgr-8d78d599f-pt5xx           1/1     Running   0          4m17s"><pre><code>NAME                          READY   STATUS    RESTARTS   AGE
+ambassador-64d8b877f9-4bzvn   1/1     Running   0          103m
+ambassador-64d8b877f9-b68w6   1/1     Running   0          103m
+ambassador-64d8b877f9-vw9mm   1/1     Running   0          103m
+tgr-8d78d599f-pt5xx           1/1     Running   0          4m17s
+</code></pre></div>
+<p dir="auto">Now log inside the API Pod:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kubectl exec -it tgr-8d78d599f-pt5xx bash"><pre>kubectl <span>exec</span> -it tgr-8d78d599f-pt5xx bash</pre></div>
+<p dir="auto">Assign the token to a variable:</p>
+<div data-snippet-clipboard-copy-content="KUBE_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"><pre><code>KUBE_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+</code></pre></div>
+<p dir="auto">Notice that the token file is added automatically by Kubernetes.</p>
+<p dir="auto">We also have other variables already set like:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="echo $KUBERNETES_SERVICE_HOST
+10.96.0.1
+
+echo $KUBERNETES_PORT_443_TCP_PORT
+443
+
+echo $HOSTNAME
+tgr-8d78d599f-pt5xx"><pre><span>echo</span> <span>$KUBERNETES_SERVICE_HOST</span>
+10.96.0.1
+
+<span>echo</span> <span>$KUBERNETES_PORT_443_TCP_PORT</span>
+443
+
+<span>echo</span> <span>$HOSTNAME</span>
+tgr-8d78d599f-pt5xx</pre></div>
+<p dir="auto">We are going to use these variables to access the list of Pods using this Curl command:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="curl -sSk -H &quot;Authorization: Bearer $KUBE_TOKEN&quot; https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/api/v1/namespaces/default/pods"><pre>curl -sSk -H <span><span>"</span>Authorization: Bearer <span>$KUBE_TOKEN</span><span>"</span></span> https://<span>$KUBERNETES_SERVICE_HOST</span>:<span>$KUBERNETES_PORT_443_TCP_PORT</span>/api/v1/namespaces/default/pods</pre></div>
+<p dir="auto">At this stage, you should have an error output saying that you don't have the rights to access this API endpoint, which is normal:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="{
+  &quot;kind&quot;: &quot;Status&quot;,
+  &quot;apiVersion&quot;: &quot;v1&quot;,
+  &quot;metadata&quot;: {
+
+  },
+  &quot;status&quot;: &quot;Failure&quot;,
+  &quot;message&quot;: &quot;pods \&quot;tgr-8d78d599f-pt5xx\&quot; is forbidden: User \&quot;system:serviceaccount:default:default\&quot; cannot get resource \&quot;pods\&quot; in API group \&quot;\&quot; in the namespace \&quot;default\&quot;&quot;,
+  &quot;reason&quot;: &quot;Forbidden&quot;,
+  &quot;details&quot;: {
+    &quot;name&quot;: &quot;tgr-8d78d599f-pt5xx&quot;,
+    &quot;kind&quot;: &quot;pods&quot;
+  },
+  &quot;code&quot;: 403
+}"><pre>{
+  <span>"kind"</span>: <span><span>"</span>Status<span>"</span></span>,
+  <span>"apiVersion"</span>: <span><span>"</span>v1<span>"</span></span>,
+  <span>"metadata"</span>: {
+
+  },
+  <span>"status"</span>: <span><span>"</span>Failure<span>"</span></span>,
+  <span>"message"</span>: <span><span>"</span>pods <span>\"</span>tgr-8d78d599f-pt5xx<span>\"</span> is forbidden: User <span>\"</span>system:serviceaccount:default:default<span>\"</span> cannot get resource <span>\"</span>pods<span>\"</span> in API group <span>\"\"</span> in the namespace <span>\"</span>default<span>\"</span><span>"</span></span>,
+  <span>"reason"</span>: <span><span>"</span>Forbidden<span>"</span></span>,
+  <span>"details"</span>: {
+    <span>"name"</span>: <span><span>"</span>tgr-8d78d599f-pt5xx<span>"</span></span>,
+    <span>"kind"</span>: <span><span>"</span>pods<span>"</span></span>
+  },
+  <span>"code"</span>: <span>403</span>
+}</pre></div>
+<p dir="auto">The Pod is using the default Service Account and it does not have the right to list the Pods.</p>
+<p dir="auto">In order to fix this, exit the container and create a file called <code>kubernetes/service-account.yaml</code>, add the following lines:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pods-list
+rules:
+- apiGroups: [&quot;&quot;]
+  resources: [&quot;pods&quot;]
+  verbs: [&quot;list&quot;]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pods-list
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: pods-list
+  apiGroup: rbac.authorization.k8s.io
+"><pre><span>kind</span>: <span>ClusterRole</span>
+<span>apiVersion</span>: <span>rbac.authorization.k8s.io/v1</span>
+<span>metadata</span>:
+  <span>name</span>: <span>pods-list</span>
+<span>rules</span>:
+- <span>apiGroups</span>: <span>[""]</span>
+  <span>resources</span>: <span>["pods"]</span>
+  <span>verbs</span>: <span>["list"]</span>
+---
+<span>kind</span>: <span>ClusterRoleBinding</span>
+<span>apiVersion</span>: <span>rbac.authorization.k8s.io/v1</span>
+<span>metadata</span>:
+  <span>name</span>: <span>pods-list</span>
+<span>subjects</span>:
+- <span>kind</span>: <span>ServiceAccount</span>
+  <span>name</span>: <span>default</span>
+  <span>namespace</span>: <span>default</span>
+<span>roleRef</span>:
+  <span>kind</span>: <span>ClusterRole</span>
+  <span>name</span>: <span>pods-list</span>
+  <span>apiGroup</span>: <span>rbac.authorization.k8s.io</span>
+</pre></div>
+<p dir="auto">Then apply the new configuration using <code>kubectl apply -f kubernetes/service-account.yaml</code>.</p>
+<p dir="auto">Now you can access the list of Pods:</p>
+<div dir="auto" data-snippet-clipboard-copy-content="{
+  &quot;kind&quot;: &quot;PodList&quot;,
+  &quot;apiVersion&quot;: &quot;v1&quot;,
+  &quot;metadata&quot;: {
+    &quot;selfLink&quot;: &quot;/api/v1/namespaces/default/pods/&quot;,
+    &quot;resourceVersion&quot;: &quot;19589&quot;
+  },
+  &quot;items&quot;: [
+    {
+      &quot;metadata&quot;: {
+        &quot;name&quot;: &quot;ambassador-64d8b877f9-4bzvn&quot;,
+        &quot;generateName&quot;: &quot;ambassador-64d8b877f9-&quot;,
+        &quot;namespace&quot;: &quot;default&quot;,
+        &quot;selfLink&quot;: &quot;/api/v1/namespaces/default/pods/ambassador-64d8b877f9-4bzvn&quot;,
+        &quot;uid&quot;: &quot;63f62ede-de77-441d-85f7-daf9cbc7040f&quot;,
+        &quot;resourceVersion&quot;: &quot;1047&quot;,
+        &quot;creationTimestamp&quot;: &quot;2019-08-19T08:12:47Z&quot;,
+        &quot;labels&quot;: {
+          &quot;pod-template-hash&quot;: &quot;64d8b877f9&quot;,
+          &quot;service&quot;: &quot;ambassador&quot;
+        },
+        &quot;annotations&quot;: {
+          &quot;consul.hashicorp.com/connect-inject&quot;: &quot;false&quot;,
+          &quot;sidecar.istio.io/inject&quot;: &quot;false&quot;
+        },
+        &quot;ownerReferences&quot;: [
+          {
+            &quot;apiVersion&quot;: &quot;apps/v1&quot;,
+            &quot;kind&quot;: &quot;ReplicaSet&quot;,
+            &quot;name&quot;: &quot;ambassador-64d8b877f9&quot;,
+            &quot;uid&quot;: &quot;383c2e4b-7179-4806-b7bf-3682c7873a10&quot;,
+            &quot;controller&quot;: true,
+            &quot;blockOwnerDeletion&quot;: true
+          }
+        ]
+      },
+      &quot;spec&quot;: {
+        &quot;volumes&quot;: [
+          {
+            &quot;name&quot;: &quot;ambassador-token-rdqq6&quot;,
+            &quot;secret&quot;: {
+              &quot;secretName&quot;: &quot;ambassador-token-rdqq6&quot;,
+              &quot;defaultMode&quot;: 420
+            }
+          }
+        ],
+        &quot;containers&quot;: [
+          {
+            &quot;name&quot;: &quot;ambassador&quot;,
+            &quot;image&quot;: &quot;quay.io/datawire/ambassador:0.75.0&quot;,
+            &quot;ports&quot;: [
+              {
+                &quot;name&quot;: &quot;http&quot;,
+                &quot;containerPort&quot;: 8080,
+                &quot;protocol&quot;: &quot;TCP&quot;
+              },
+..."><pre>{
+  <span>"kind"</span>: <span><span>"</span>PodList<span>"</span></span>,
+  <span>"apiVersion"</span>: <span><span>"</span>v1<span>"</span></span>,
+  <span>"metadata"</span>: {
+    <span>"selfLink"</span>: <span><span>"</span>/api/v1/namespaces/default/pods/<span>"</span></span>,
+    <span>"resourceVersion"</span>: <span><span>"</span>19589<span>"</span></span>
+  },
+  <span>"items"</span>: [
+    {
+      <span>"metadata"</span>: {
+        <span>"name"</span>: <span><span>"</span>ambassador-64d8b877f9-4bzvn<span>"</span></span>,
+        <span>"generateName"</span>: <span><span>"</span>ambassador-64d8b877f9-<span>"</span></span>,
+        <span>"namespace"</span>: <span><span>"</span>default<span>"</span></span>,
+        <span>"selfLink"</span>: <span><span>"</span>/api/v1/namespaces/default/pods/ambassador-64d8b877f9-4bzvn<span>"</span></span>,
+        <span>"uid"</span>: <span><span>"</span>63f62ede-de77-441d-85f7-daf9cbc7040f<span>"</span></span>,
+        <span>"resourceVersion"</span>: <span><span>"</span>1047<span>"</span></span>,
+        <span>"creationTimestamp"</span>: <span><span>"</span>2019-08-19T08:12:47Z<span>"</span></span>,
+        <span>"labels"</span>: {
+          <span>"pod-template-hash"</span>: <span><span>"</span>64d8b877f9<span>"</span></span>,
+          <span>"service"</span>: <span><span>"</span>ambassador<span>"</span></span>
+        },
+        <span>"annotations"</span>: {
+          <span>"consul.hashicorp.com/connect-inject"</span>: <span><span>"</span>false<span>"</span></span>,
+          <span>"sidecar.istio.io/inject"</span>: <span><span>"</span>false<span>"</span></span>
+        },
+        <span>"ownerReferences"</span>: [
+          {
+            <span>"apiVersion"</span>: <span><span>"</span>apps/v1<span>"</span></span>,
+            <span>"kind"</span>: <span><span>"</span>ReplicaSet<span>"</span></span>,
+            <span>"name"</span>: <span><span>"</span>ambassador-64d8b877f9<span>"</span></span>,
+            <span>"uid"</span>: <span><span>"</span>383c2e4b-7179-4806-b7bf-3682c7873a10<span>"</span></span>,
+            <span>"controller"</span>: <span>true</span>,
+            <span>"blockOwnerDeletion"</span>: <span>true</span>
+          }
+        ]
+      },
+      <span>"spec"</span>: {
+        <span>"volumes"</span>: [
+          {
+            <span>"name"</span>: <span><span>"</span>ambassador-token-rdqq6<span>"</span></span>,
+            <span>"secret"</span>: {
+              <span>"secretName"</span>: <span><span>"</span>ambassador-token-rdqq6<span>"</span></span>,
+              <span>"defaultMode"</span>: <span>420</span>
+            }
+          }
+        ],
+        <span>"containers"</span>: [
+          {
+            <span>"name"</span>: <span><span>"</span>ambassador<span>"</span></span>,
+            <span>"image"</span>: <span><span>"</span>quay.io/datawire/ambassador:0.75.0<span>"</span></span>,
+            <span>"ports"</span>: [
+              {
+                <span>"name"</span>: <span><span>"</span>http<span>"</span></span>,
+                <span>"containerPort"</span>: <span>8080</span>,
+                <span>"protocol"</span>: <span><span>"</span>TCP<span>"</span></span>
+              },
+<span>...</span></pre></div>
+<p dir="auto">What about creating your own monitoring/observability solution using Python (or any other programming language) and the Kubernetes API ?
+This could be probably the subject of the upcoming workshop.</p>
+<hr>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Star History</h2><a id="user-content-star-history" aria-label="Permalink: Star History" href="#star-history"></a></p>
+<p dir="auto"><a href="https://star-history.com/#eon01/kubernetes-workshop&amp;Date" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Star History Chart" data-canonical-src="https://api.star-history.com/svg?repos=eon01/kubernetes-workshop&amp;type=Date"></a></p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Thanks to all the contributors!</h2><a id="user-content-thanks-to-all-the-contributors" aria-label="Permalink: Thanks to all the contributors!" href="#thanks-to-all-the-contributors"></a></p>
+<a href="https://github.com/eon01/kubernetes-workshop/graphs/contributors">
+  <img src="data:application/octet-stream;base64," data-canonical-src="https://contrib.rocks/image?repo=eon01/kubernetes-workshop">
+</a>
+<hr>
+<p dir="auto">If this workshop solved some of your problems, please consider giving it a star and/or buying me a coffee:</p>
+<p dir="auto"><a href="https://www.buymeacoffee.com/joinFAUN" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Buy Me A Coffee"></a></p>
+</article></div></div>
+  </div>
+</body>
+</html>

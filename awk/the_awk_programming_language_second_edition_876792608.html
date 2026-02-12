@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The AWK Programming Language, Second Edition</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>The AWK Programming Language, Second Edition</h1>
+    <p><strong>URL:</strong> <a href="https://awk.dev">https://awk.dev</a></p>
+    <p><strong>Tags:</strong> awk</p>
+    <p><strong>Bookmark ID:</strong> 876792608</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page">
+
+
+
+<p>
+<span size="-1"> Updated
+Mon Feb  5 10:22:02 EST 2024
+</span>
+
+</p><p>
+<a href="https://www.amazon.com/dp/0138269726"><img src="data:application/octet-stream;base64," width="285"></a> &nbsp; &nbsp; &nbsp;
+
+</p><p> Available in paperback and e-book formats.
+Order at <a href="https://www.amazon.com/dp/0138269726">Amazon</a> and other fine booksellers.
+
+
+</p><h3>Introduction</h3>
+
+This page holds material related to the
+second edition of <i>The AWK Programming Language</i>.
+The first edition was written by Al Aho, Brian Kernighan and Peter Weinberger
+in 1988.  Awk has evolved since then, there are multiple implementations,
+and of course the computing world has changed enormously.  The new
+edition of the Awk book reflects some of those changes.
+
+<p> The book is now available on paper and electronically.
+We are continuing to add material that we hope will be of interest --
+historical documents, bits of code, and occasional essays on Awk and
+related topics.
+
+</p><p> <img src="data:application/octet-stream;base64,"> The table of contents and preface of the
+new edition is <a href="https://awk.dev/pp1-13.pdf">here</a>.
+
+</p><p> Programs and data files are now
+available, though not in a very orderly form.  Download
+ <a href="https://awk.dev/programs.tar">programs.tar</a> (33 MB).
+
+</p><p> Contact us at <tt>info@awk.dev</tt>.
+
+</p><h3> Errata </h3>
+
+<p> (These are listed in page number order.)
+
+</p><p> Sep 20, 2023, page 3, line -5:
+
+</p><p> The input line <tt>Kathy 15.50 10</tt> should be in italic.
+Thanks to Galen Menzel for spotting this error.
+
+</p><p> Oct 6, 2023, page 9, line -2:
+
+</p><p> It should say "<tt>$2</tt> is less than 20 ..." to match the
+code.  Thanks to Kevin Lo for spotting this error.
+
+</p><p> Oct 10, 2023, page 24:
+
+</p><p> The test at the top of the page should be
+
+</p><pre>NR == 10 { exit }
+</pre>
+
+Otherwise the code prints 11 lines, not 10.  Thanks to
+Mark Konezny.
+
+<p> Sep 16, 2023, pages 26 and 27:
+
+</p><p> The streaming version of <tt>mc</tt>
+one page 26 prints
+output in 7 columns, not 5, since the loop starts with <tt>n</tt> set to zero
+and ends with <tt>n</tt> = 6.  Here's a better version:
+</p><pre>{ out = sprintf("%s%-10.10s  ", out, $0)
+  if (++n &gt;= 5) {
+    print substr(out, 1, length(out)-2)
+    out = ""
+    n = 0
+  }
+}
+</pre>
+
+<p> The second version of <tt>mc</tt> on page 27 has a different problem: it
+doesn't include the two spaces between columns when computing the
+number of columns, so the result is always too high.  Probably easiest
+fixed like this:
+</p><pre>  ncol = int(60 / (max+2) + 0.5)  # int(x) returns integer value of x
+</pre>
+
+Many thanks to 郭济琳 (Jilin Guo) for spotting these errors.
+
+<p> Oct 8, 2023, page 32, line 9:
+
+</p><p> The expression <tt>s = s $n++ " "</tt> in the function <tt>rest</tt>
+works on Awk but not on Gawk.  It's an ambiguity in resolving the
+precedences of the prefix <tt>$</tt> and the postfix <tt>++</tt>.
+Fixed by adding parentheses:
+</p><pre>s = s $(n++) " "
+</pre>
+
+The same construction appears near the middle of the page and is
+fixed in the same way.
+
+Thanks to 郭济琳 (Jilin Guo).
+
+
+<p> Oct 8, 2023, page 33, line -10:
+
+</p><p> The <tt>split</tt> function is better written as
+</p><pre>split(date, d)
+</pre>
+
+to properly handle single-digit days that might be preceded by
+two spaces instead of one.  Alternatively, the third argument
+could be <tt>/&nbsp; +/</tt>.
+
+Thanks to 郭济琳 (Jilin Guo).
+
+<p> Nov 4, 2023, page 42, line -10:
+
+</p><p> The test should be <tt>$5 &lt; 0.5</tt> to match the text,
+which says "What about beer with less that say 0.5%?"
+
+Thanks to 郭济琳 (Jilin Guo).
+
+</p><p> Nov 21, 2023, page 88:
+
+</p><p> The derivation at the bottom of the page is missing a
+couple of intermediate states.  It should read
+</p><pre>Sentence -&gt; Nounphrase Verbphrase
+         -&gt; the girl Verbphrase
+         -&gt; the girl Verb Modlist Adverb
+         -&gt; the girl runs Modlist Adverb
+         -&gt; the girl runs very Modlist Adverb
+         -&gt; the girl runs very very Modlist Adverb
+         -&gt; the girl runs very very Adverb
+         -&gt; the girl runs very very quickly
+</pre>
+
+Thanks to Eran Yarkon. 
+
+<p> Nov 21, 2023, page 94, line -10:
+
+</p><p> In
+
+</p><pre>pfx = tolower($0)
+gsub(/[^A-Za-z]/, "", pfx)
+</pre>
+
+the RE doesn't need <tt>A-Z</tt> since <tt>pfx</tt> has no upper case letters.
+
+Thanks to Eran Yarkon.
+
+<p> Nov 27, 2023, page 111, line 8 of section 7.2:
+
+</p><p> The display should read <tt>title</tt> <i>caption</i>, not <tt>label</tt>.
+
+</p><p> On page 114, the line <tt>{ ok = 1 }</tt> about 12 lines up
+from the bottom of the page doesn't do anything since <tt>ok</tt>
+is set to zero by the next pattern.
+
+</p><p> On page 115, inside the <tt>for</tt> loop in the END block,
+there's no need to test <tt>flag</tt> again; it's never empty at this point.
+
+Thanks to Eran Yarkon for these.
+
+
+
+
+</p><h3> Awk for Exploratory Data Analysis (Sep 21, 2023) </h3>
+
+Awk has always been a good tool for taking a quick look at some dataset.
+How many items of what kind are there?  What is the range of numeric
+values in some field?  Are there anomalies in the data, like rows with
+too many or too few fields?
+
+<p> A new chapter in the book talks about using Awk for this kind of
+analysis, using a couple of datasets.  But there are plenty of other
+examples as well.  BWK co-taught a course in the Humanities sequence
+at Princeton where Awk was taught to some very non-technical students
+as a tool for looking at some neat data about English poetry.
+
+</p><p>  <a href="https://awk.dev/eda.html">This essay</a> describes some of what went on there; it might give you
+some ideas about how Awk can be used in a different domain.
+
+
+</p><h3> Interesting Threads </h3>
+
+<a href="https://benhoyt.com/writings/awk-make/">Ben Hoyt</a>, author of
+GoAwk and one of the expert technical reviewers of the second edition,
+has an interesting blog post on an implementation of the Unix
+<tt>make</tt> command in 60 lines of Awk, along with a Python version
+for comparison.  One wouldn't make <tt>make</tt> in Awk, as Ben notes,
+but it's a good vehicle for learning how something works.  (Sep 21, 2023)
+
+<p> There's a Hacker News thread on Ben's original post
+ <a href="https://news.ycombinator.com/item?id=37460815">here</a>,
+with some interesting comments.
+
+
+
+
+</p><h3> Awk Source and Documentation </h3>
+
+Awk source is maintained at
+ <a href="https://github.com/onetrueawk/awk">https://github.com/onetrueawk/awk</a>.
+
+<p> Gawk releases are at
+ <a href="https://ftp.gnu.org/gnu/gawk/">  https://ftp.gnu.org/gnu/gawk</a>;
+
+the Gawk manual is
+ <a href="https://www.gnu.org/software/gawk/manual/">here</a>.
+
+</p><p> Arnold Robbins has compiled a list of
+
+ <a href="https://www.gnu.org/software/gawk/manual/html_node/Other-Versions.html">other implementations</a>
+of Awk.
+
+</p><h3>Historical Documents</h3>
+
+The citations in the original Awk book have by now become quite dusty,
+but some of the material is still interesting and potentially useful.
+Here are references to some of the documents, perhaps updated.
+
+
+<ul>
+
+ <a href="https://awk.dev/awk.spe.pdf"><i>AWK - A Pattern Scanning and Processing Language</i></a>,
+the original Awk paper from <i>Software Practice and Experience</i>, 1979.
+
+<!-- This paper from 1978 appears to be an internal memo (though not formatted as such)
+from which the SPE paper was derived:
+ <a href="awk.paper.1978.pdf">here</a>
+-->
+
+
+<p>
+ <a href="https://awk.dev/cstr118.pdf">CSTR 118</a>:
+
+An internal technical report on Awk, dated June 1985, so it's not the
+original language but more or less the one described in the Awk book
+in 1988.
+
+</p><p>
+ <a href="https://github.com/arnoldrobbins/dformat">dformat</a>:
+   Dformat is an Awk program, originally written by Jon Bentley,
+   for drawing data-format diagrams.
+   The version here comes from Arnold Robbins (to whom thanks),
+   who has fixed it up and made it work properly in today's environments.
+
+</p><p>
+
+ <a href="https://awk.dev/chem.pdf">chem</a>:
+
+Chem was an experiment in little languages, a language for describing chemical
+structure diagrams.  (Think benzene rings on steroids.)  It wasn't much used
+but it was a good exercise.
+
+The link above is to a somewhat blurry but complete PDF of the original chem paper
+by Bentley, Lynn Jelinski and bwk, published in <i>Computational Chemistry</i> in
+1987.
+
+</p><p>
+ <a href="https://netlib.org/typesetting/indexing.tools"> indexing programs:</a>
+
+One of the examples in the original Awk book was a simplified version of
+indexing tools first created by Jon Bentley, and used both for both
+editions of the book.  The link above provides the code; the
+ <a href="https://awk.dev/epbwk011.pdf">paper</a> was published in
+<i>Electronic Publishing -- Origination Dissemination and Design</i> in 1988.
+The second edition of the book has somewhat modified code.
+Thanks to Taj Khattra for finding the EP-ODD source.
+
+</p><p>
+ <a href="https://www.usenix.org/legacy/publications/compsystems/1991/win_bentley.pdf">Algorithm animation</a>:
+   by Jon Bentley and bwk.
+The paper <i> A System for Algorithm Animation </i> (1991) describes a
+system for embedding simple graphics commands in program output that
+could be used to display an "animated" version of the output.  It all
+worked on monochrome displays, so it's totally dated now, but it was
+neat at the time.  The original Computing Science Technical Report (CSTR) 132 is
+ <a href="https://awk.dev/anim.cstr132.pdf">here</a>.
+
+</p><p>
+
+ <a href="https://netlib.org/typesetting/"> Netlib's typesetting collection </a>
+  Includes some links to chem and indexing programs
+
+</p><p>
+ <a href="https://a-z.readthedocs.io/en/latest/awk.html">Interview with Al Aho</a>
+  about Awk in <i>Computerworld</i>, May 2008
+
+</p><p>
+ <a href="https://cacm.acm.org/opinion/interviews/47064-an-interview-with-brian-kernighan-co-developer-of-awk-and-ampl/fulltext">Interview with Brian Kernighan</a> about Awk and AMPL, <i>Computerworld</i>, October 2009
+
+</p></ul>
+
+
+<!-- https://www.grymoire.com/Unix/Awk.html
+Very thorough manual with examples, though somewhat dated;
+originally written in 1994, with occasional updates.
+
+https://exercism.org/tracks/awk/exercises
+
+-->
+
+
+<h3> Autre temps, autres Awks </h3>
+
+<li> There is a room named "Awk" in the
+<a href="https://www.uio.no/om/finn-fram/omrader/gaustad/ga06">Ole-Johan Dahl informatics building</a>
+at the University of Oslo.
+Dahl and Kristen Nygaard received the ACM Turing Award
+in 2001 for the creation of Simula 67 and the development
+of object-oriented programming.
+
+Many of the  <a href="http://magnus.li/ifirooms">rooms</a>
+in the building are named after programming languages;
+Awk is in good company.
+
+(from
+ <a href="https://news.ycombinator.com/item?id=36550086"><i>Hacker News</i></a>,
+July 3, 2023)
+
+</li><li> A treasured memory from our late friend and colleague, Dennis Ritchie,
+posted on local Unix systems in 1986:
+
+<pre>awk.news (dmr) Tue Jul 15 23:47:57 1986
+
+   Rosa Miller, a Tlinget [sic] Indian who lives in Juneau, ... is a member
+   of the Dipper House of the Dog Salmon Clan of the Raven Moiety of the
+   Awk Tribe of the Tlingit (pronounced KLINK-it) Nation....
+
+   Mrs. Miller contends that the Awk Tribal Council in Juneau was set up by
+   people who were not Awks but, as she calls them, "Johnny come latelies"
+   to the area....
+	   New York Times, 7/14, p. A8
+
+   CORRECTION
+
+   Because of a transmission error, the Alaska Journal yesterday,
+   from Anchorage, misidentified an Indian tribe.  It is the Auk, not Awk.
+	   New York Times, 7/15, p. B1
+</pre>
+
+</li><li>
+ From the Oxford English Dictionary (with thanks to Nelson Beebe):
+
+<pre>Awk (adj, obs;  also awke, auk, awck) [from ON afug, turned the wrong way, back foremost, perverse]
+
+1. Directed the other way or in the wrong direction, back-handed, from the left hand.
+1634:  "With an awke stroke gaue hym a grete wounde."
+
+2. Untoward, froward, perverse, in nature or disposition.
+1642:  "Our natures more crooked, inconstante, awk, and perverse."
+
+3. Out of the way, odd, strange (rare) [fortunately]
+
+4. Untoward to deal with, awkward to use, clumsy.
+
+There are also awkly, awkness, awkward, awkwardish, awkwardly, awkwardness, and awky.
+</pre>
+
+</li><li>
+ Nelson also adds:
+
+<pre>In Scotland, upon April Day, they have a custom of ``hunting the gowk
+...', properly, a cuckoo, and is used here, metaphorically in vulgar
+language, for a fool.  This is done by sending silly people upon
+fools' errands from place to place, by means of a letter in which it
+is written: ``On the first day of April, Hunt the gowk another mile.''
+
+		John Brand's ``Observations on Popular Antiquities, 1813''
+		(c) Jeffrey Kacirk
+</pre>
+
+<br>
+</li><li>
+ This triumph of the advertiser's art didn't last very long,
+unfortunately.  We are grateful to A&amp;W Restaurants for their
+support.
+
+<center> <img src="data:application/octet-stream;base64," width="30%"> </center>
+
+
+</li><li>
+A cartoon from Russell Myers' <i>Broom Hilda</i> in June 2018:
+
+<center> <img src="data:application/octet-stream;base64," width="60%"> </center>
+
+<br>
+</li><li>
+Ozan Yigit spotted this artwork on a Danish TV show and identified it with
+Google image search: A lithographic art print by Gérard Gasiorowski from
+Galerie Maeght in Paris for an exhibition in 1982.
+
+<br>
+<center> <img src="data:application/octet-stream;base64," width="60%"> </center>
+
+
+<br>
+</li><li>
+An old but good cartoon from <i>User Friendly</i>, by J. D. "Illiad" Frazer:
+
+<br>
+<center> <img src="data:application/octet-stream;base64," width="70%"> </center>
+
+
+<p> Do you have one to add?  Send it along!  Mail to <tt>info@awk.dev</tt>.
+</p></li></div>
+  </div>
+</body>
+</html>

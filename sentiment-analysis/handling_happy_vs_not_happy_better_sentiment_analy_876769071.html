@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Handling ‘Happy’ vs ‘Not Happy’: Better sentiment analysis with sentimentr</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Handling ‘Happy’ vs ‘Not Happy’: Better sentiment analysis with sentimentr</h1>
+    <p><strong>URL:</strong> <a href="https://www.r-bloggers.com/handling-happy-vs-not-happy-better-sentiment-analysis-with-sentimentr-in-r">https://www.r-bloggers.com/handling-happy-vs-not-happy-better-sentiment-analysis-with-sentimentr-in-r</a></p>
+    <p><strong>Tags:</strong> sentiment-analysis, _r_</p>
+    <p><strong>Bookmark ID:</strong> 876769071</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+					
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+
+	<p>Sentiment Analysis is one of the most obvious things Data Analysts with unlabelled Text data (with no score or no rating) end up doing in an attempt to extract some insights out of it and the same Sentiment analysis is also one of the potential research areas for any NLP (Natural Language Processing) enthusiasts. </p>
+<p>For an analyst, the same sentiment analysis is a pain in the neck because most of the primitive packages/libraries handling sentiment analysis perform a simple dictionary lookup and calculate a final composite score based on the number of occurrences of positive and negative words. But that often ends up in a lot of false positives, with a very obvious case being ‘happy’ vs ‘not happy’ – Negations, in general <strong>Valence Shifters</strong>. </p>
+<p>Consider this sentence: ‘I am not very happy’. Any Primitive Sentiment Analysis Algorithm would just flag this sentence positive because of the word ‘happy’ that apparently would appear in the positive dictionary. But reading this sentence we know this is not a positive sentence. </p>
+<p>While we could build our own way to handle these negations, there are couple of new R-packages that could do this with ease. One such package is <code>sentimentr</code> developed by <a href="https://github.com/trinker" rel="nofollow" target="_blank">Tyler Rinker</a>. </p>
+<h2>Installing the package</h2>
+<p>sentimentr can be installed from <a href="https://cran.r-project.org/web/packages/sentimentr/index.html" rel="nofollow" target="_blank">CRAN</a> or the development version can be installed from github. </p>
+<pre>install.packages('sentimentr')
+#or
+library(devtools)
+install_github('trinker/sentimentr')
+</pre>
+
+<p>The author of the package himself explaining what does <code>sentimentr</code> do that other packages don’t and why does it matter?</p>
+<p>“sentimentr attempts to take into account valence shifters (i.e., negators, amplifiers (intensifiers), de-amplifiers (downtoners), and adversative conjunctions) while maintaining speed. Simply put, sentimentr is an augmented dictionary lookup. The next questions address why it matters.”</p>
+<h3>Sentiment Scoring:</h3>
+<p>sentimentr offers sentiment analysis with two functions: 1. <code>sentiment_by()</code> 2. <code>sentiment()</code></p>
+<p>Aggregated (Averaged) Sentiment Score for a given text with <code>sentiment_by</code></p>
+<pre>sentiment_by('I am not very happy', by = NULL)
+
+   element_id sentence_id word_count   sentiment
+1:          1           1          5 -0.06708204
+
+</pre>
+<p>But this might not help much when we have multiple sentences with different polarity, hence sentence-level scoring with <code>sentiment</code> would help here. </p>
+<pre>sentiment('I am not very happy. He is very happy')
+
+   element_id sentence_id word_count   sentiment
+1:          1           1          5 -0.06708204
+2:          1           2          4  0.67500000
+
+</pre>
+<p>Both the functions return a dataframe with four columns:</p>
+<p>1. <code>element_id </code>– ID / Serial Number of the given text<br>
+2. <code>sentence_id</code> – ID / Serial Number of the sentence and this is equal to element_id in case of <code>sentiment_by</code><br>
+3. <code>word_count</code> – Number of words in the given sentence<br>
+4. <code>sentiment</code> – Sentiment Score of the given sentence</p>
+<h2>Extract Sentiment Keywords</h2>
+<p>The <code>extract_sentiment_terms()</code> function helps us extract the keywords – both positive and negative that was part of the sentiment score calculation. sentimentr also supports pipe operator <code>%&gt;%</code> which makes it easier to write multiple lines of code with less assignment and also cleaner code. </p>
+<pre>'My life has become terrible since I met you and lost money' %&gt;% extract_sentiment_terms()
+   element_id sentence_id      negative positive
+1:          1           1 terrible,lost    money
+
+</pre>
+<h3>Sentiment Highlighting:</h3>
+<p>And finally, the <code>highight()</code> function coupled with <code>sentiment_by()</code> that gives a html output with parts of sentences nicely highlighted with green and red color to show its polarity. Trust me, This might seem trivial but it really helps while making Presentations to share the results, discuss False positives and to identify the room for improvements in the accuracy.</p>
+<pre>'My life has become terrible since I met you and lost money. But I still have got a little hope left in me' %&gt;% 
+  sentiment_by(by = NULL) %&gt;%
+  highlight()
+</pre>
+<p>Output Screenshot:<br>
+<a href="https://i1.wp.com/datascienceplus.com/wp-content/uploads/2017/11/polarity.png?ssl=1" rel="nofollow" target="_blank"><img loading="lazy" src="https://i2.wp.com/datascienceplus.com/wp-content/uploads/2017/11/polarity-490x87.png?w=450&amp;ssl=1" alt="" srcset_temp="https://i2.wp.com/datascienceplus.com/wp-content/uploads/2017/11/polarity-490x87.png?w=450&amp;ssl=1 490w, https://datascienceplus.com/wp-content/uploads/2017/11/polarity-300x54.png 300w, https://datascienceplus.com/wp-content/uploads/2017/11/polarity.png 762w" sizes="(max-width: 490px) 100vw, 490px" data-recalc-dims="1" data-old-src="data:application/octet-stream;base64," data-lazy-src="https://i2.wp.com/datascienceplus.com/wp-content/uploads/2017/11/polarity-490x87.png?w=450&amp;is-pending-load=1#038;ssl=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></a></p>
+<p>Try using <code>sentimentr</code> for your sentiment analysis and text analytics project and do share your feedback in comments. Complete code used here is available on <a href="https://github.com/amrrs/datascienceplus_codes/blob/master/sentimentr_basics.R" rel="nofollow" target="_blank">my github</a>.</p>
+<ul></ul><p><strong><p>Related Post</p></strong></p><ol><li><a href="https://datascienceplus.com/creating-reporting-template-with-glue-in-r/" rel="nofollow" title="Permanent Link toCreating Reporting Template with Glue in R" target="_blank">Creating Reporting Template with Glue in R</a></li><li><a href="https://datascienceplus.com/predict-employee-turnover-with-python/" rel="nofollow" title="Permanent Link toPredict Employee Turnover With Python" target="_blank">Predict Employee Turnover With Python</a></li><li><a href="https://datascienceplus.com/making-a-shiny-dashboard-using-highcharter-analyzing-inflation-rates/" rel="nofollow" title="Permanent Link toMaking a Shiny dashboard using ‘highcharter’ – Analyzing Inflation Rates" target="_blank">Making a Shiny dashboard using ‘highcharter’ – Analyzing Inflation Rates</a></li><li><a href="https://datascienceplus.com/time-series-analysis-in-r-part-2-time-series-transformations/" rel="nofollow" title="Permanent Link toTime Series Analysis in R Part 2: Time Series Transformations" target="_blank">Time Series Analysis in R Part 2: Time Series Transformations</a></li><li><a href="https://datascienceplus.com/time-series-analysis-in-r-part-1-the-time-series-object/" rel="nofollow" title="Permanent Link toTime Series Analysis in R Part 1: The Time Series Object" target="_blank">Time Series Analysis in R Part 1: The Time Series Object</a></li></ol>
+
+		
+
+            <!-- Share buttons by mashshare.net - Version: 3.8.0-->
+							</div></div>
+  </div>
+</body>
+</html>

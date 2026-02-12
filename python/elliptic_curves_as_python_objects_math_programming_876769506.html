@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Elliptic Curves as Python Objects | Math ∩ Programming</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Elliptic Curves as Python Objects | Math ∩ Programming</h1>
+    <p><strong>URL:</strong> <a href="https://jeremykun.com/2014/02/24/elliptic-curves-as-python-objects">https://jeremykun.com/2014/02/24/elliptic-curves-as-python-objects</a></p>
+    <p><strong>Tags:</strong> algorithms-math, python</p>
+    <p><strong>Bookmark ID:</strong> 876769506</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><p>This article was ported from my old Wordpress blog <a href="https://jeremykun.wordpress.com/2014/02/24/elliptic-curves-as-python-objects/">here,</a> If you see any issues with the rendering or layout, please <a href="mailto:mathintersectprogramming@gmail.com">send me an email</a>.</p><div itemprop="articleBody" id="content"><p><a href="https://www.jeremykun.com/2014/02/16/elliptic-curves-as-algebraic-structures/" title="Elliptic Curves as Algebraic Structures">Last time</a> we saw a geometric version of the algorithm to add points on elliptic curves. We went quite deep into the formal setting for it (projective space $ \mathbb{P}^2$), and we spent a lot of time talking about the right way to define the “zero” object in our elliptic curve so that our issues with vertical lines would disappear.</p><p>With that understanding in mind we now finally turn to code, and write classes for curves and points and implement the addition algorithm. As usual, <a href="https://github.com/j2kun/elliptic-curves-rationals" rel="external">all of the code</a> we wrote in this post is available on <a href="https://github.com/j2kun" rel="external">this blog’s Github page</a>.</p><h2 id="points-and-curves">Points and Curves</h2><p>Every introductory programming student has probably written the following program in some language for a class representing a point.</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>class</span> <span>Point</span>(object):
+</span></span><span><span>    <span>def</span> __init__(self, x, y):
+</span></span><span><span>        self<span>.</span>x <span>=</span> x
+</span></span><span><span>        self<span>.</span>y <span>=</span> y
+</span></span></code></pre></div><p>It’s the simplest possible nontrivial class: an x and y value initialized by a constructor (and in Python all member variables are public).</p><p>We want this class to represent a point on an elliptic curve, and overload the addition and negation operators so that we can do stuff like this:</p><div><pre tabindex="0"><code data-lang="python"><span><span>p1 <span>=</span> Point(<span>3</span>,<span>7</span>)
+</span></span><span><span>p2 <span>=</span> Point(<span>4</span>,<span>4</span>)
+</span></span><span><span>p3 <span>=</span> p1 <span>+</span> p2
+</span></span></code></pre></div><p>But as we’ve spent quite a while discussing, the addition operators depend on the features of the elliptic curve they’re on (we have to draw lines and intersect it with the curve). There are a few ways we could make this happen, but in order to make the code that uses these classes as simple as possible, we’ll have each point contain a reference to the curve they come from. So we need a curve class.</p><p>It’s pretty simple, actually, since the class is just a placeholder for the coefficients of the defining equation. We assume the equation is already in the Weierstrass normal form, but if it weren’t one could perform a whole bunch of algebra to get it in that form (and you can see how convoluted the process is in <a href="https://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=8&amp;ved=0CHAQFjAH&amp;url=http%3A%2F%2Ftrac.sagemath.org%2Fraw-attachment%2Fticket%2F3416%2Fcubic_to_weierstrass_documentation.pdf&amp;ei=ruz_Uov-DOjhyQGCo4BQ&amp;usg=AFQjCNHyMPTkzhy9KhgNr-MB0pI6pJXNTw&amp;sig2=xT_VE49cQW7GvGnXlbn7Zw&amp;bvm=bv.61535280,d.aWc&amp;cad=rja" rel="external">this short report</a> or <a href="http://web.archive.org/web/20160312013615/https://pendientedemigracion.ucm.es/BUCM/mat/doc8354.pdf" rel="external">page 115 (pdf p. 21) of this book</a>). To be safe, we’ll add a few extra checks to make sure the curve is smooth.</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>class</span> <span>EllipticCurve</span>(object):
+</span></span><span><span>   <span>def</span> __init__(self, a, b):
+</span></span><span><span>      <span># assume we're already in the Weierstrass form</span>
+</span></span><span><span>      self<span>.</span>a <span>=</span> a
+</span></span><span><span>      self<span>.</span>b <span>=</span> b
+</span></span><span><span>
+</span></span><span><span>      self<span>.</span>discriminant <span>=</span> <span>-</span><span>16</span> <span>*</span> (<span>4</span> <span>*</span> a<span>*</span>a<span>*</span>a <span>+</span> <span>27</span> <span>*</span> b <span>*</span> b)
+</span></span><span><span>      <span>if</span> <span>not</span> self<span>.</span>isSmooth():
+</span></span><span><span>         <span>raise</span> <span>Exception</span>(<span>"The curve </span><span>%s</span><span> is not smooth!"</span> <span>%</span> self)
+</span></span><span><span>
+</span></span><span><span>   <span>def</span> <span>isSmooth</span>(self):
+</span></span><span><span>      <span>return</span> self<span>.</span>discriminant <span>!=</span> <span>0</span>
+</span></span><span><span>
+</span></span><span><span>   <span>def</span> <span>testPoint</span>(self, x, y):
+</span></span><span><span>      <span>return</span> y<span>*</span>y <span>==</span> x<span>*</span>x<span>*</span>x <span>+</span> self<span>.</span>a <span>*</span> x <span>+</span> self<span>.</span>b
+</span></span><span><span>
+</span></span><span><span>   <span>def</span> __str__(self):
+</span></span><span><span>      <span>return</span> <span>'y^2 = x^3 + </span><span>%G</span><span>x + </span><span>%G</span><span>'</span> <span>%</span> (self<span>.</span>a, self<span>.</span>b)
+</span></span><span><span>
+</span></span><span><span>   <span>def</span> __eq__(self, other):
+</span></span><span><span>      <span>return</span> (self<span>.</span>a, self<span>.</span>b) <span>==</span> (other<span>.</span>a, other<span>.</span>b)
+</span></span></code></pre></div><p>And here’s some examples of creating curves</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>&gt;&gt;&gt;</span> EllipticCurve(a<span>=</span><span>17</span>, b<span>=</span><span>1</span>)
+</span></span><span><span>y<span>^</span><span>2</span> <span>=</span> x<span>^</span><span>3</span> <span>+</span> <span>17</span>x <span>+</span> <span>1</span>
+</span></span><span><span><span>&gt;&gt;&gt;</span> EllipticCurve(a<span>=</span><span>0</span>, b<span>=</span><span>0</span>)
+</span></span><span><span>Traceback (most recent call last):
+</span></span><span><span>  [<span>...</span>]
+</span></span><span><span><span>Exception</span>: The curve y<span>^</span><span>2</span> <span>=</span> x<span>^</span><span>3</span> <span>+</span> <span>0</span>x <span>+</span> <span>0</span> <span>is</span> <span>not</span> smooth<span>!</span>
+</span></span></code></pre></div><p>So there we have it. Now when we construct a Point, we add the curve as the extra argument and a safety-check to make sure the point being constructed is on the given elliptic curve.</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>class</span> <span>Point</span>(object):
+</span></span><span><span>   <span>def</span> __init__(self, curve, x, y):
+</span></span><span><span>      self<span>.</span>curve <span>=</span> curve <span># the curve containing this point</span>
+</span></span><span><span>      self<span>.</span>x <span>=</span> x
+</span></span><span><span>      self<span>.</span>y <span>=</span> y
+</span></span><span><span>
+</span></span><span><span>      <span>if</span> <span>not</span> curve<span>.</span>testPoint(x,y):
+</span></span><span><span>         <span>raise</span> <span>Exception</span>(<span>"The point </span><span>%s</span><span> is not on the given curve </span><span>%s</span><span>"</span> <span>%</span> (self, curve))
+</span></span></code></pre></div><p>Note that this last check will serve as a coarse unit test for all of our examples. If we mess up then more likely than not the “added” point won’t be on the curve at all. More precise testing is required to be bullet-proof, of course, but we leave explicit tests to the reader as an excuse to get their hands wet with equations.</p><p>Some examples:</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>&gt;&gt;&gt;</span> c <span>=</span> EllipticCurve(a<span>=</span><span>1</span>,b<span>=</span><span>2</span>)
+</span></span><span><span><span>&gt;&gt;&gt;</span> Point(c, <span>1</span>, <span>2</span>)
+</span></span><span><span>(<span>1</span>, <span>2</span>)
+</span></span><span><span><span>&gt;&gt;&gt;</span> Point(c, <span>1</span>, <span>1</span>)
+</span></span><span><span>Traceback (most recent call last):
+</span></span><span><span>  [<span>...</span>]
+</span></span><span><span><span>Exception</span>: The point (<span>1</span>, <span>1</span>) <span>is</span> <span>not</span> on the given curve y<span>^</span><span>2</span> <span>=</span> x<span>^</span><span>3</span> <span>+</span> <span>1</span>x <span>+</span> <span>2</span>
+</span></span></code></pre></div><p>Before we go ahead and implement addition and the related functions, we need to be decide how we want to represent the ideal point $ [0 : 1 : 0]$. We have two options. The first is to do <em>everything</em> in projective coordinates and define a whole system for doing projective algebra. Considering we only have one point to worry about, this seems like overkill (but could be fun). The second option, and the one we’ll choose, is to have a special subclass of Point that represents the ideal point.</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>class</span> <span>Ideal</span>(Point):
+</span></span><span><span>   <span>def</span> __init__(self, curve):
+</span></span><span><span>      self<span>.</span>curve <span>=</span> curve
+</span></span><span><span>
+</span></span><span><span>   <span>def</span> __str__(self):
+</span></span><span><span>      <span>return</span> <span>"Ideal"</span>
+</span></span></code></pre></div><p>Note the inheritance is denoted by the parenthetical (Point) in the first line. Each function we define on a Point will require a 1-2 line overriding function in this subclass, so we will only need a small amount of extra bookkeeping. For example, negation is quite easy.</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>class</span> <span>Point</span>(object):
+</span></span><span><span>   <span>...</span>
+</span></span><span><span>   <span>def</span> __neg__(self):
+</span></span><span><span>      <span>return</span> Point(self<span>.</span>curve, self<span>.</span>x, <span>-</span>self<span>.</span>y)
+</span></span><span><span>
+</span></span><span><span><span>class</span> <span>Ideal</span>(Point):
+</span></span><span><span>   <span>...</span>
+</span></span><span><span>   <span>def</span> __neg__(self):
+</span></span><span><span>      <span>return</span> self
+</span></span></code></pre></div><p>Note that Python allows one to override the prefix-minus operation by defining <code>__neg__</code> on a custom object. There are similar functions for addition (<code>__add__</code>), subtraction, and pretty much every built-in python operation. And of course addition is where things get more interesting. For the ideal point it’s trivial.</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>class</span> <span>Ideal</span>(Point):
+</span></span><span><span>   <span>...</span>
+</span></span><span><span>   <span>def</span> __add__(self, Q):
+</span></span><span><span>      <span>return</span> Q
+</span></span></code></pre></div><p>Why does this make sense? Because (as we’ve said last time) the ideal point is the additive identity in the group structure of the curve. So by all of our analysis, $ P + 0 = 0 + P = P$, and the code is satisfyingly short.</p><p>For distinct points we have to follow the algorithm we used last time. Remember that the trick was to form the line $ L(x)$ passing through the two points being added, substitute that line for $ y$ in the elliptic curve, and then figure out the coefficient of $ x^2$ in the resulting polynomial. Then, using the two existing points, we could solve for the third root of the polynomial using <a href="http://en.wikipedia.org/wiki/Vieta%27s_formulas" rel="external">Vieta’s formula</a>.</p><p>In order to do that, we need to analytically solve for the coefficient of the $ x^2$ term of the equation $ L(x)^2 = x^3 + ax + b$. It’s tedious, but straightforward. First, write</p><p>$$\displaystyle L(x) = \left ( \frac{y_2 – y_1}{x_2 – x_1} \right ) (x – x_1) + y_1$$</p><p>The first step of expanding $ L(x)^2$ gives us</p><p>$$\displaystyle L(x)^2 = y_1^2 + 2y_1 \left ( \frac{y_2 – y_1}{x_2 – x_1} \right ) (x – x_1) + \left [ \left (\frac{y_2 – y_1}{x_2 – x_1} \right ) (x – x_1) \right ]^2$$</p><p>And we notice that the only term containing an $ x^2$ part is the last one. Expanding that gives us</p><p>$$\displaystyle \left ( \frac{y_2 – y_1}{x_2 – x_1} \right )^2 (x^2 – 2xx_1 + x_1^2)$$</p><p>And again we can discard the parts that don’t involve $ x^2$. In other words, if we were to rewrite $ L(x)^2 = x^3 + ax + b$ as $ 0 = x^3 – L(x)^2 + ax + b$, we’d expand all the terms and get something that looks like</p><p>$$\displaystyle 0 = x^3 – \left ( \frac{y_2 – y_1}{x_2 – x_1} \right )^2 x^2 + C_1x + C_2$$</p><p>where $ C_1, C_2$ are some constants that we don’t need. Now using Vieta’s formula and calling $ x_3$ the third root we seek, we know that</p><p>$$\displaystyle x_1 + x_2 + x_3 = \left ( \frac{y_2 – y_1}{x_2 – x_1} \right )^2$$</p><p>Which means that $ x_3 = \left ( \frac{y_2 – y_1}{x_2 – x_1} \right )^2 – x_2 – x_1$. Once we have $ x_3$, we can get $ y_3$ from the equation of the line $ y_3 = L(x_3)$.</p><p>Note that this only works if the two points we’re trying to add are different! The other two cases were if the points were the same or lying on a vertical line. These gotchas will manifest themselves as conditional branches of our add function.</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>class</span> <span>Point</span>(object):
+</span></span><span><span>   <span>...</span>
+</span></span><span><span>   <span>def</span> __add__(self, Q):
+</span></span><span><span>      <span>if</span> isinstance(Q, Ideal):
+</span></span><span><span>         <span>return</span> self
+</span></span><span><span>
+</span></span><span><span>      x_1, y_1, x_2, y_2 <span>=</span> self<span>.</span>x, self<span>.</span>y, Q<span>.</span>x, Q<span>.</span>y
+</span></span><span><span>
+</span></span><span><span>      <span>if</span> (x_1, y_1) <span>==</span> (x_2, y_2):
+</span></span><span><span>         <span># use the tangent method</span>
+</span></span><span><span>         <span>...</span>
+</span></span><span><span>      <span>else</span>:
+</span></span><span><span>         <span>if</span> x_1 <span>==</span> x_2:
+</span></span><span><span>            <span>return</span> Ideal(self<span>.</span>curve) <span># vertical line</span>
+</span></span><span><span>
+</span></span><span><span>         <span># Using Vieta's formula for the sum of the roots</span>
+</span></span><span><span>         m <span>=</span> (y_2 <span>-</span> y_1) <span>/</span> (x_2 <span>-</span> x_1)
+</span></span><span><span>         x_3 <span>=</span> m<span>*</span>m <span>-</span> x_2 <span>-</span> x_1
+</span></span><span><span>         y_3 <span>=</span> m<span>*</span>(x_3 <span>-</span> x_1) <span>+</span> y_1
+</span></span><span><span>
+</span></span><span><span>         <span>return</span> Point(self<span>.</span>curve, x_3, <span>-</span>y_3)
+</span></span></code></pre></div><p>First, we check if the two points are the same, in which case we use the tangent method (which we do next). Supposing the points are different, if their $ x$ values are the same then the line is vertical and the third point is the ideal point. Otherwise, we use the formula we defined above. Note the subtle and crucial minus sign at the end! The point $ (x_3, y_3)$ is the third point of intersection, but we still have to do the reflection to get the sum of the two points.</p><p>Now for the case when the points $ P, Q$ are actually the same. We’ll call it $ P = (x_1, y_1)$, and we’re trying to find $ 2P = P+P$. As per our algorithm, we compute the tangent line $ J(x)$ at $ P$. In order to do this we need just a tiny bit of calculus. To find the slope of the tangent line we implicitly differentiate the equation $ y^2 = x^3 + ax + b$ and get</p><p>$$\displaystyle \frac{dy}{dx} = \frac{3x^2 + a}{2y}$$</p><p>The only time we’d get a vertical line is when the denominator is zero (you can verify this by taking limits if you wish), and so $ y=0$ implies that $ P+P = 0$ and we’re done. The fact that this can ever happen for a nonzero $ P$ should be surprising to any reader unfamiliar with groups! But without delving into <a href="https://www.jeremykun.com/2012/12/08/groups-a-primer/" title="Groups — A Primer">a deep conversation</a> about the different kinds of group structures out there, we’ll have to settle for such nice surprises.</p><p>In the other case $ y \neq 0$, we plug in our $ x,y$ values into the derivative and read off the slope $ m$ as $ (3x_1^2 + a)/(2y_1)$. Then using the same point slope formula for a line, we get $ J(x) = m(x-x_1) + y_1$, and we can use the same technique (and the same code!) from the first case to finish.</p><p>There is only one minor wrinkle we need to smooth out: can we be sure Vieta’s formula works? In fact, the real problem is this: how do we know that $ x_1$ is a <em>double</em> root of the resulting cubic? Well, this falls out again from that very abstract and powerful <a href="http://en.wikipedia.org/wiki/B%C3%A9zout%27s_theorem" rel="external">theorem of Bezout</a>. There is a lot of technical algebraic geometry (and a very interesting but complicated notion of <em>dimension</em>) hiding behind the curtain here. But for our purposes it says that our tangent line intersects the elliptic curve with multiplicity 2, and this gives us a double root of the corresponding cubic.</p><p>And so in the addition function all we need to do is change the slope we’re using. This gives us a nice and short implementation</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>def</span> __add__(self, Q):
+</span></span><span><span>      <span>if</span> isinstance(Q, Ideal):
+</span></span><span><span>         <span>return</span> self
+</span></span><span><span>
+</span></span><span><span>      x_1, y_1, x_2, y_2 <span>=</span> self<span>.</span>x, self<span>.</span>y, Q<span>.</span>x, Q<span>.</span>y
+</span></span><span><span>
+</span></span><span><span>      <span>if</span> (x_1, y_1) <span>==</span> (x_2, y_2):
+</span></span><span><span>         <span>if</span> y_1 <span>==</span> <span>0</span>:
+</span></span><span><span>            <span>return</span> Ideal(self<span>.</span>curve)
+</span></span><span><span>
+</span></span><span><span>         <span># slope of the tangent line</span>
+</span></span><span><span>         m <span>=</span> (<span>3</span> <span>*</span> x_1 <span>*</span> x_1 <span>+</span> self<span>.</span>curve<span>.</span>a) <span>/</span> (<span>2</span> <span>*</span> y_1)
+</span></span><span><span>      <span>else</span>:
+</span></span><span><span>         <span>if</span> x_1 <span>==</span> x_2:
+</span></span><span><span>            <span>return</span> Ideal(self<span>.</span>curve)
+</span></span><span><span>
+</span></span><span><span>         <span># slope of the secant line</span>
+</span></span><span><span>         m <span>=</span> (y_2 <span>-</span> y_1) <span>/</span> (x_2 <span>-</span> x_1)
+</span></span><span><span>
+</span></span><span><span>      x_3 <span>=</span> m<span>*</span>m <span>-</span> x_2 <span>-</span> x_1
+</span></span><span><span>      y_3 <span>=</span> m<span>*</span>(x_3 <span>-</span> x_1) <span>+</span> y_1
+</span></span><span><span>
+</span></span><span><span>      <span>return</span> Point(self<span>.</span>curve, x_3, <span>-</span>y_3)
+</span></span></code></pre></div><p>What’s interesting is how little the data of the curve comes into the picture. Nothing depends on $ b$, and only one of the two cases depends on $ a$. This is one reason the Weierstrass normal form is so useful, and it may bite us in the butt later in the few cases we don’t have it (for special number fields).</p><p>Here are some examples.</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>&gt;&gt;&gt;</span> C <span>=</span> EllipticCurve(a<span>=-</span><span>2</span>,b<span>=</span><span>4</span>)
+</span></span><span><span><span>&gt;&gt;&gt;</span> P <span>=</span> Point(C, <span>3</span>, <span>5</span>)
+</span></span><span><span><span>&gt;&gt;&gt;</span> Q <span>=</span> Point(C, <span>-</span><span>2</span>, <span>0</span>)
+</span></span><span><span><span>&gt;&gt;&gt;</span> P<span>+</span>Q
+</span></span><span><span>(<span>0.0</span>, <span>-</span><span>2.0</span>)
+</span></span><span><span><span>&gt;&gt;&gt;</span> Q<span>+</span>P
+</span></span><span><span>(<span>0.0</span>, <span>-</span><span>2.0</span>)
+</span></span><span><span><span>&gt;&gt;&gt;</span> Q<span>+</span>Q
+</span></span><span><span>Ideal
+</span></span><span><span><span>&gt;&gt;&gt;</span> P<span>+</span>P
+</span></span><span><span>(<span>0.25</span>, <span>1.875</span>)
+</span></span><span><span><span>&gt;&gt;&gt;</span> P<span>+</span>P<span>+</span>P
+</span></span><span><span>Traceback (most recent call last):
+</span></span><span><span>  <span>...</span>
+</span></span><span><span><span>Exception</span>: The point (<span>-</span><span>1.958677685950413</span>, <span>0.6348610067618328</span>) <span>is</span> <span>not</span> on the given curve y<span>^</span><span>2</span> <span>=</span> x<span>^</span><span>3</span> <span>+</span> <span>-</span><span>2</span>x <span>+</span> <span>4</span><span>!</span>
+</span></span><span><span>
+</span></span><span><span><span>&gt;&gt;&gt;</span> x <span>=</span> <span>-</span><span>1.958677685950413</span>
+</span></span><span><span><span>&gt;&gt;&gt;</span> y <span>=</span> <span>0.6348610067618328</span>
+</span></span><span><span><span>&gt;&gt;&gt;</span> y<span>*</span>y <span>-</span> x<span>*</span>x<span>*</span>x <span>+</span> <span>2</span><span>*</span>x <span>-</span> <span>4</span>
+</span></span><span><span><span>-</span><span>3.9968028886505635e-15</span>
+</span></span></code></pre></div><p>And so we crash headfirst into our first floating point arithmetic issue. We’ll vanquish this monster more permanently later in this series (in fact, we’ll just scrap it entirely and define our <em>own</em> number system!), but for now here’s a quick fix:</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>&gt;&gt;&gt;</span> <span>import</span> fractions
+</span></span><span><span><span>&gt;&gt;&gt;</span> frac <span>=</span> fractions<span>.</span>Fraction
+</span></span><span><span><span>&gt;&gt;&gt;</span> C <span>=</span> EllipticCurve(a <span>=</span> frac(<span>-</span><span>2</span>), b <span>=</span> frac(<span>4</span>))
+</span></span><span><span><span>&gt;&gt;&gt;</span> P <span>=</span> Point(C, frac(<span>3</span>), frac(<span>5</span>))
+</span></span><span><span><span>&gt;&gt;&gt;</span> P<span>+</span>P<span>+</span>P
+</span></span><span><span>(Fraction(<span>-</span><span>237</span>, <span>121</span>), Fraction(<span>845</span>, <span>1331</span>))
+</span></span></code></pre></div><p>Now that we have addition and negation, the rest of the class is just window dressing. For example, we want to be able to use the subtraction symbol, and so we need to implement <code>__sub__</code></p><div><pre tabindex="0"><code data-lang="python"><span><span><span>def</span> __sub__(self, Q):
+</span></span><span><span>   <span>return</span> self <span>+</span> <span>-</span>Q
+</span></span></code></pre></div><p>Note that because the Ideal point is a subclass of point, it inherits all of these special functions while it only needs to override <code>__add__</code> and <code>__neg__</code>. Thank you, polymorphism! The last function we want is a <em>scaling</em> function, which efficiently adds a point to itself $ n$ times.</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>class</span> <span>Point</span>(object):
+</span></span><span><span>   <span>...</span>
+</span></span><span><span>   <span>def</span> __mul__(self, n):
+</span></span><span><span>      <span>if</span> <span>not</span> isinstance(n, int):
+</span></span><span><span>         <span>raise</span> <span>Exception</span>(<span>"Can't scale a point by something which isn't an int!"</span>)
+</span></span><span><span>      <span>else</span>:
+</span></span><span><span>            <span>if</span> n <span>&lt;</span> <span>0</span>:
+</span></span><span><span>                <span>return</span> <span>-</span>self <span>*</span> <span>-</span>n
+</span></span><span><span>            <span>if</span> n <span>==</span> <span>0</span>:
+</span></span><span><span>                <span>return</span> Ideal(self<span>.</span>curve)
+</span></span><span><span>            <span>else</span>:
+</span></span><span><span>                Q <span>=</span> self
+</span></span><span><span>                R <span>=</span> self <span>if</span> n <span>&amp;</span> <span>1</span> <span>==</span> <span>1</span> <span>else</span> Ideal(self<span>.</span>curve)
+</span></span><span><span>
+</span></span><span><span>                i <span>=</span> <span>2</span>
+</span></span><span><span>                <span>while</span> i <span>&lt;=</span> n:
+</span></span><span><span>                    Q <span>=</span> Q <span>+</span> Q
+</span></span><span><span>
+</span></span><span><span>                    <span>if</span> n <span>&amp;</span> i <span>==</span> i:
+</span></span><span><span>                        R <span>=</span> Q <span>+</span> R
+</span></span><span><span>
+</span></span><span><span>                    i <span>=</span> i <span>&lt;&lt;</span> <span>1</span>
+</span></span><span><span>   <span>return</span> R
+</span></span><span><span>
+</span></span><span><span>   <span>def</span> __rmul__(self, n):
+</span></span><span><span>      <span>return</span> self <span>*</span> n
+</span></span><span><span>
+</span></span><span><span><span>class</span> <span>Ideal</span>(Point):
+</span></span><span><span>    <span>...</span>
+</span></span><span><span>    <span>def</span> __mul__(self, n):
+</span></span><span><span>        <span>if</span> <span>not</span> isinstance(n, int):
+</span></span><span><span>            <span>raise</span> <span>Exception</span>(<span>"Can't scale a point by something which isn't an int!"</span>)
+</span></span><span><span>        <span>else</span>:
+</span></span><span><span>            <span>return</span> self
+</span></span></code></pre></div><p>The scaling function allows us to quickly compute $ nP = P + P + \dots + P$ ($ n$ times). Indeed, the fact that we can do this more efficiently than performing $ n$ additions is what makes elliptic curve cryptography work. We’ll take a deeper look at this in the next post, but for now let’s just say what the algorithm is doing.</p><p>Given a number written in binary $ n = b_kb_{k-1}\dots b_1b_0$, we can write $ nP$ as</p><p>$$\displaystyle b_0 P + b_1 2P + b_2 4P + \dots + b_k 2^k P$$</p><p>The advantage of this is that we can compute each of the $ P, 2P, 4P, \dots, 2^kP$ iteratively using only $ k$ additions by multiplying by 2 (adding something to itself) $ k$ times. Since the number of bits in $ n$ is $ k= \log(n)$, we’re getting a huge improvement over $ n$ additions.</p><p>The algorithm is given above in code, but it’s a simple bit-shifting trick. Just have $ i$ be some power of two, shifted by one at the end of every loop. Then start with $ Q_0$ being $ P$, and replace $ Q_{j+1} = Q_j + Q_j$, and in typical programming fashion we drop the indices and overwrite the variable binding at each step (Q = Q+Q). Finally, we have a variable $ R$ to which $ Q_j$ is added when the $ j$-th bit of $ n$ is a 1 (and ignored when it’s 0). The rest is bookkeeping.</p><p>Note that <code>__mul__</code> only allows us to write something like <code>P \* n</code>, but the standard notation for scaling is <code>n \* P</code>. This is what <code>__rmul__</code> allows us to do.</p><p>We could add many other helper functions, such as ones to allow us to treat points as if they were lists, checking for equality of points, comparison functions to allow one to sort a list of points in lex order, or a function to transform points into more standard types like tuples and lists. We have done a few of these that you can see if you visit the <a href="https://github.com/j2kun/elliptic-curves-rationals" rel="external">code repository</a>, but we’ll leave flushing out the class as an exercise to the reader.</p><p>Some examples:</p><div><pre tabindex="0"><code data-lang="python"><span><span><span>&gt;&gt;&gt;</span> <span>import</span> fractions
+</span></span><span><span><span>&gt;&gt;&gt;</span> frac <span>=</span> fractions<span>.</span>Fraction
+</span></span><span><span><span>&gt;&gt;&gt;</span> C <span>=</span> EllipticCurve(a <span>=</span> frac(<span>-</span><span>2</span>), b <span>=</span> frac(<span>4</span>))
+</span></span><span><span><span>&gt;&gt;&gt;</span> P <span>=</span> Point(C, frac(<span>3</span>), frac(<span>5</span>))
+</span></span><span><span><span>&gt;&gt;&gt;</span> Q <span>=</span> Point(C, frac(<span>-</span><span>2</span>), frac(<span>0</span>))
+</span></span><span><span><span>&gt;&gt;&gt;</span> P<span>-</span>Q
+</span></span><span><span>(Fraction(<span>0</span>, <span>1</span>), Fraction(<span>-</span><span>2</span>, <span>1</span>))
+</span></span><span><span><span>&gt;&gt;&gt;</span> P<span>+</span>P<span>+</span>P<span>+</span>P<span>+</span>P
+</span></span><span><span>(Fraction(<span>2312883</span>, <span>1142761</span>), Fraction(<span>-</span><span>3507297955</span>, <span>1221611509</span>))
+</span></span><span><span><span>&gt;&gt;&gt;</span> <span>5</span><span>*</span>P
+</span></span><span><span>(Fraction(<span>2312883</span>, <span>1142761</span>), Fraction(<span>-</span><span>3507297955</span>, <span>1221611509</span>))
+</span></span><span><span><span>&gt;&gt;&gt;</span> Q <span>-</span> <span>3</span><span>*</span>P
+</span></span><span><span>(Fraction(<span>240</span>, <span>1</span>), Fraction(<span>3718</span>, <span>1</span>))
+</span></span><span><span><span>&gt;&gt;&gt;</span> <span>-</span><span>20</span><span>*</span>P
+</span></span><span><span>(Fraction(<span>872171688955240345797378940145384578112856996417727644408306502486841054959621893457430066791656001</span>, <span>520783120481946829397143140761792686044102902921369189488390484560995418035368116532220330470490000</span>), Fraction(<span>-</span><span>27483290931268103431471546265260141280423344817266158619907625209686954671299076160289194864753864983185162878307166869927581148168092234359162702751</span>, <span>11884621345605454720092065232176302286055268099954516777276277410691669963302621761108166472206145876157873100626715793555129780028801183525093000000</span>))
+</span></span></code></pre></div><p>As one can see, the precision gets very large very quickly. One thing we’ll do to avoid such large numbers (but hopefully not sacrifice security) is to work in finite fields, the simplest version of which is to compute modulo some prime.</p><p>So now we have a concrete understanding of the algorithm for adding points on elliptic curves, and a working Python program to do this for rational numbers or floating point numbers (if we want to deal with precision issues). Next time we’ll continue this train of thought and upgrade our program (with very little work!) to work over other simple number fields. Then we’ll delve into the cryptographic issues, and talk about how one might encode messages on a curve and use algebraic operations to encode their messages.</p><p>Until then!</p><hr><hr></div></div>
+  </div>
+</body>
+</html>

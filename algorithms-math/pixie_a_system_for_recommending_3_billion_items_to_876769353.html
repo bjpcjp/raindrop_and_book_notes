@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pixie: a system for recommending 3 billion items to 200 million users in</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Pixie: a system for recommending 3 billion items to 200 million users in</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2018/05/23/pixie-a-system-for-recommending-3-billion-items-to-200-million-users-in-real-time">https://blog.acolyer.org/2018/05/23/pixie-a-system-for-recommending-3-billion-items-to-200-million-users-in-real-time</a></p>
+    <p><strong>Tags:</strong> algorithms-math, recommenders</p>
+    <p><strong>Bookmark ID:</strong> 876769353</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-7097">
+	<!-- .entry-header -->
+
+	<div>
+		<p><a href="https://dl.acm.org/citation.cfm?id=3186183">Pixie: a system for recommending 3+ billion items to 200+ million users in real-time</a> Eksombatchai et al., <em>WWW’18</em></p>
+<p>(<em>If you don’t have ACM Digital Library access, the paper can be accessed either by following the link above directly from The Morning Paper blog site, or from the <a href="https://www2018.thewebconf.org/proceedings/">WWW 2018 proceedings</a> page</em>).</p>
+<blockquote><p>
+  Pinterest is a visual catalog with several billion <em>pins</em>, which are visual bookmarks containing a description, a link, and an image or a video. A major problem faced at Pinterest is to provide personalized, engaging, and timely recommendations from a pool of 3+ billion items to 200+ million monthly active users.
+</p></blockquote>
+<p>Stating the obvious, 3 billion or so items is a <em>lot</em> to draw recommendations from. This paper describes how Pinterest do it. One of the requirements is that recommendations need to be calculated in real-time on-demand. I’m used to thinking about the shift from batch to real-time in terms of improved business responsiveness, more up-to-date information, continuous processing, and so on. Pinterest give another really good reason which is obvious with hindsight, but hadn’t struck me before: when you compute recommendations using a batch process, you have to calculate the recommendations for every user every batch cycle (e.g. once a day). This is necessary because you don’t know which ones will actually be required in  the current window. When only a small subset of the overall user base will actually need recommendations though, you’re wasting a lot of resources computing all the other values which will never be used. When you can make recommendations in real-time though, you only have to compute the recommendations you’re actually going to use.</p>
+<p>Pinterest’s scalable real-time recommendation system is called Pixie, and it currently drives more than 80% of all user engagement.</p>
+<h3>Pins, boards, and recommendations</h3>
+<p>In the world of Pinterest, users view pins and curate them into collections called boards. There are hundreds of millions of users undertaking this manual categorisation of  pins into boards.</p>
+<blockquote><p>
+  Thus, we can think of Pinterest as a giant human curated bipartite graph of 7 billion pins and boards, and over 100 billion edges.
+</p></blockquote>
+<p>Through the paper you’ll see the following notation: <em>P</em> denotes a set of pins, and <em>B</em> a set of boards. <em>E(p)</em> represents board nodes connected to pin <em>p</em>, and <em>E(b)</em> represents pins connected to board <em>b</em>.</p>
+<p>The central recommendation problem is this: given a query set <em>Q</em>  comprising a set of pins and corresponding weights, return a set of pins (or boards) that the user may be interested in.</p>
+<blockquote><p>
+  The query set Q is user-specific and is generated dynamically after every action of the user— most recently interacted pins have high weights while pins from a long time ago have low weights.
+</p></blockquote>
+<p>Among other things, Pixie recommendations are used to show a grid of pins in a user’s ‘homefeed’ (home page) that the user might find relevant to save in their board. Whenever a user clicks on a pin, Pixie is used to show related pins. When a user views one of their own boards, Pixie is used to suggest other pins to be saved to the board. Pixie is also used to recommend “Picked for you” boards.</p>
+<blockquote><p>
+  These are only a few examples of applications that use Pixie — others include the email and personalized articles. Over half of all the pins that users <em>save</em> each day on Pinterest come from systems backed by Pixie.
+</p></blockquote>
+<h3>Pixie random walks</h3>
+<p>Pixie generates recommendations using random walks. We start with a simplified random walk algorithm, and then transform it step by step into Pixie.</p>
+<p>Consider a single starting pin <em>q</em>. We can simulate a number of random walks starting from q, and record the visit count for each candidate pin the algorithm visits. The higher the visit count for a pin, the more related it is to the original seed pin <em>q</em>.  The number of steps in each random walk is controlled by a parameter <img src="https://s0.wp.com/latex.php?latex=%5Calpha&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=%5Calpha&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=%5Calpha&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="\alpha">, and the total number of steps across all walks is <em>N</em>. The total time taken is determined by <em>N</em>, and is independent of the graph size.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/05/pixie-alg-1.jpeg?w=520" alt=""></p>
+<p>To arrive at the Pixie Random Walk algorithm we now need to apply four enhancements to the basic procedure above:</p>
+<ol>
+<li>Biasing the walk towards user-specific pins</li>
+<li>Using multiple weighted query pins</li>
+<li>Boosting pins relating to multiple query pins</li>
+<li>Early stopping to minimise the number of steps (time) while maintaining result quality</li>
+</ol>
+<h4>User bias</h4>
+<p>We want user-specific recommendations, even when starting from the same query pins. An example is biasing towards pins and boards in the same language as the user’s settings.</p>
+<blockquote><p>
+  We solve the problem of biasing the random walk by changing the random edge selection to be biased based on user features… In practice, this modification turns out to be very important as it improves personalization, quality, and topicality of recommendations, which then leads to higher engagement.
+</p></blockquote>
+<p>The set of user features <em>U</em> are passed as an input to the process along with the query pins.</p>
+<h4>Multiple weighted query pins</h4>
+<p>Pixie makes recommendations based on multiple input query pins, not just a single pin. Each pin in the query set is assigned a different weight based on the time and type of interactions the user has had with the pin. The random walk algorithm is run for each query pin in the set, with each run capturing its own set of visit counts.</p>
+<blockquote><p>
+  An important insight here is that the number of steps required to obtain meaningful visit counts depends on the query pin’s degree. Recommending from a high-degree query pin that occurs in many boards requires many more steps than from a pin with a small degree. Hence, we scale the number of steps allocated to each query pin to be proportional to its degree.
+</p></blockquote>
+<p>For each pin a scaling factor <img src="https://s0.wp.com/latex.php?latex=s_q&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=s_q&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=s_q&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="s_q"> is calculated as follows, where <em>C</em> is the maximum pin degree in the graph.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/05/pixie-eqn-1.jpeg?w=420" alt=""></p>
+<p>Using the scaling factor, the number of steps <img src="https://s0.wp.com/latex.php?latex=N_q&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=N_q&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=N_q&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="N_q"> allocated to a query starting from pin <em>q</em> with weight <img src="https://s0.wp.com/latex.php?latex=w_q&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=w_q&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=w_q&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="w_q"> is given by:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/05/pixie-eqn-2.jpeg?w=420" alt=""></p>
+<p>The visits counts generated from each query pin are them combined using the method described next.</p>
+<h4>Boosting</h4>
+<p>Candidates with high visit counts from multiple query pins are considered more relevant to the query  than candidates that may have an equally high visit count but where all of those visits come from a single query pin. Thus rather than simply aggregating visit counts across all seed pins, the following formula is used to combine them:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/05/pixie-eqn-3.jpeg?w=420" alt=""></p>
+<p>Consider a query with four initial query pins. If the visit counts for a given pin at the end of a a set of random walks are [16,0,0,0] then the combined visit score will be 16 still. But if the visit counts are [4,4,4,4] then the combined visit score will be (2+2+2+2)^2 = 64.</p>
+<h4>Early stopping</h4>
+<p>Since we’re making recommendations in real-time, and the user is waiting, faster response times are much better.  Once a set of top candidate pins has become stable, we can terminate the random walking early. As an efficient approximation to this, Pixie stops when at least <img src="https://s0.wp.com/latex.php?latex=n_p&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=n_p&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=n_p&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="n_p"> candidate pins have been visited at least <img src="https://s0.wp.com/latex.php?latex=n_v&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002" srcset="https://s0.wp.com/latex.php?latex=n_v&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002 1x, https://s0.wp.com/latex.php?latex=n_v&amp;bg=eeeeee&amp;fg=666666&amp;s=0&amp;c=20201002&amp;zoom=4.5 4x" alt="n_v"> times.  The evaluation in the paper shows that such early stopping produces almost the same results as a long random walk, but in about half the number of steps. Thus it speeds up the algorithm by a factor of 2.</p>
+<h4>Putting it all together</h4>
+<p>Combining all the elements above, we end up with the following:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2018/05/pixie-algs-2-and-3.jpeg?w=520" alt=""></p>
+<p>There’s still one more piece of the puzzle that is important to Pixie’s overall performance: pruning the graph that is used as input to the whole process.</p>
+<blockquote><p>
+  The original Pinterest graph has 7 billion nodes and over 100 billion edges. However, not all boards on Pinterest are topically focused. Large diverse boards diffuse the walk in too many directions, which then leads to low recommendation performance. Similarly, many pins are mis-categorized into wrong boards. The graph pruning procedure cleans the graph and makes it more topically focused.
+</p></blockquote>
+<p>LDA topic models are run on each pin description in a board to obtain topic vectors. Boards with high entropy in topic vectors are removed from the graph, along with all their edges. Pin with very high degree are also pruned via selective edge removal, which discards edges connecting to boards where there is low cosine similarity between the topic vector of the pin and the board.</p>
+<p>The pruned graph has approximately 1 billion boards, 2 billion pins, and 17 billion edges. In the evaluation, recommendations from the pruned graph are shown to be 58% more relevant to the user.</p>
+<h3>Implementation details</h3>
+<p>For each node edges are stored in an adjacency list, and the adjacency lists are concatenated into one contiguous <em>edgeVec</em> array.  Visit counts are maintained in open addressing hash table with linear probing.  The number of steps <em>N</em> provides an upper bound on the number of keys the hash table needs to support, and to avoid resizing an array of size <em>N</em> is conservatively allocated at the outset.</p>
+<p>The pruned graph is generated by from a Hadoop pipeline followed by a graph compiler.  The graph compiler runs on a single terabyte-scale RAM machine and outputs a pruned graph in binary format. Graph generation is run once per day.</p>
+<p>Pixie is deployed on Amazon AWS r3.8xlarge machines with 244GB of RAM. The pruned Pinterest graph fits into about 120GB of main memory. Having the whole graph in memory on a single machine means that:</p>
+<ol>
+<li>The random walk does not have to cross machines, bringing huge performance benefits</li>
+<li>Queries can be answered in real-time and multiple walks can be executed on the graph in parallel</li>
+<li>Pixie can be scaled an parallelized by simply adding more machines to the cluster.</li>
+</ol>
+<p>At 99%-ile latency Pixie takes 60ms to produce recommendations, and a single Pixie server can serve about 1,200 recommendation requests per second. The overall cluster servers around 100,000 requests per second.</p>
+<blockquote><p>
+  Thanks to the high performance, scalability, and generic nature of the Pixie architecture and algorithms, we anticipate a bright future with new algorithms and graphs featuring novel node types and edge definitions for even more applications at Pinterest.
+</p></blockquote>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+
+	</article></div>
+  </div>
+</body>
+</html>

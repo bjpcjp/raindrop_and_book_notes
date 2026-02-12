@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Episode 365 - Automate Rake Tasks | Drifting Ruby</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Episode 365 - Automate Rake Tasks | Drifting Ruby</h1>
+    <p><strong>URL:</strong> <a href="https://www.driftingruby.com/episodes/automate-rake-tasks">https://www.driftingruby.com/episodes/automate-rake-tasks</a></p>
+    <p><strong>Tags:</strong> rake, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876788462</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-controller="highlight">
+<pre># Terminal
+bin/rails g model release task
+bin/rails g task release execute
+bin/rails g task hello world
+bin/rails g task company something
+
+# Just a neat example of executing code from the shell
+bin/rails runner "Release.all.destroy_all"
+
+# Add in your deployment scripts
+bin/rails release:execute</pre><pre># lib/tasks/release.rake
+require 'task_runner'
+
+namespace :release do
+  desc "Rake tasks execute each release"
+  task execute: :environment do
+    TaskRunner.execute("hello:world", force_run: true)
+    TaskRunner.execute("company:something")
+    TaskRunner.execute("company:bad")
+    TaskRunner.execute("company:something")
+  end
+end</pre><pre># lib/tasks/task_runner.rb
+class TaskRunner
+  def self.execute(task, force_run: false)
+    new(task, force_run).execute
+  end
+
+  def initialize(task, force_run)
+    @task = task
+    @force_run = force_run
+  end
+
+  def execute
+    puts "\n\n"
+    return if already_executed?
+
+    puts green("#{@task} execute started.")
+    start_timer
+    Rake::Task[@task].invoke
+    stop_timer
+    puts green("#{@task} finished in #{elapsed_time} seconds.")
+
+    record_task_record
+  rescue StandardError =&gt; e
+    puts red("#{@task} failed. Error: #{e.message}")
+  end
+
+  private
+
+  def already_executed?
+    return false if @force_run == true
+
+    executed = Release.find_by(task: @task).present?
+    puts yellow("#{@task} already executed.") if executed
+    executed
+  end
+
+  def start_timer
+    @start_timer ||= Time.now.to_f
+  end
+
+  def stop_timer
+    @stop_timer ||= Time.now.to_f
+  end
+
+  def elapsed_time
+    '%.2f' % (stop_timer - start_timer)
+  end
+
+  def record_task_record
+    return if @force_run == true
+    Release.create(task: @task)
+  end
+
+  def red(string); "\e[31m#{string}\e[0m"; end
+  def green(string); "\e[32m#{string}\e[0m"; end
+  def yellow(string); "\e[33m#{string}\e[0m"; end
+end</pre><pre># lib/tasks/hello.rake
+namespace :hello do
+  desc "Say hello"
+  task world: :environment do
+    puts "Hello World!"
+    sleep 0.5
+  end
+end</pre><pre># lib/tasks/company.rake
+namespace :company do
+  desc "change records or something"
+  task something: :environment do
+    puts "this is the company something rake task"
+    puts "this rake task (company:something) is being executed"
+  end
+
+  desc "bad code"
+  task bad: :environment do
+    puts "bad code"
+    raise "this is an error"
+  end
+end</pre>
+</div></div>
+  </div>
+</body>
+</html>

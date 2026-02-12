@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Introduction To Machine Learning Deployment Using Docker and Kubernetes</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Introduction To Machine Learning Deployment Using Docker and Kubernetes</h1>
+    <p><strong>URL:</strong> <a href="https://mlfromscratch.com/deployment-introduction">https://mlfromscratch.com/deployment-introduction</a></p>
+    <p><strong>Tags:</strong> devops, docker, kubernetes, machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876773637</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="site-main">
+
+        <article>
+
+            
+
+
+                <figure>
+                    <img srcset="https://mlfromscratch.com/web/20221004064058im_/https://mlfromscratch.com/content/images/size/w300/2020/01/painless_deployment.jpg 300w, https://mlfromscratch.com/web/20221004064058im_/https://mlfromscratch.com/content/images/size/w600/2020/01/painless_deployment.jpg 600w, https://mlfromscratch.com/web/20221004064058im_/https://mlfromscratch.com/content/images/size/w1200/2020/01/painless_deployment.jpg 1000w, https://mlfromscratch.com/web/20221004064058im_/https://mlfromscratch.com/content/images/size/w2000/2020/01/painless_deployment.jpg 2000w" sizes="(max-width: 800px) 400px,
+                            (max-width: 1170px) 1170px,
+                                2000px" src="https://mlfromscratch.com/web/20221004064058im_/https://mlfromscratch.com/content/images/size/w2000/2020/01/painless_deployment.jpg" alt="Introduction To Machine Learning Deployment Using Docker and Kubernetes">
+                </figure>
+                <div>
+                        <p>Deployment is perhaps one of the most overlooked topics in the Machine Learning world. But it most certainly is important, if you want to get into the industry as a Machine Learning Engineer (MLE). In this article, we will take a sober look at how painless this process can be, if you just know the small ins and outs of the technologies involved in deployment.</p><p><a href="http://web.archive.org/web/20221004064058/https://github.com/casperbh96/MilesPerGallonPrediction">All the files for this project are available on GitHub</a>, and you can perhaps use this project as a Hello World application, such that you have something running and later on replace it with something more complex.</p><!--kg-card-begin: markdown--><h2 id="tableofcontentsclicktoscroll">Table of Contents (Click To Scroll)</h2>
+<ol>
+<li><a href="#setup-installation">Setup &amp; Installation</a>
+<ul>
+<li><a href="#setup-installation">Installing The Tools</a></li>
+<li><a href="#creating-your-cluster">Creating Your Cluster</a>
+<ul>
+<li><a href="#step-1-choosing-the-cluster-type-for-your-clusters">Step 1: Choosing The Cluster Type For Your Clusters</a></li>
+<li><a href="#step-2-automatic-scaling-automatic-upgrades-and-automatic-repairs">Step 2: Automatic Scaling, Automatic Upgrades And Automatic Repairs</a></li>
+</ul>
+</li>
+<li><a href="#after-your-cluster-is-created">After Your Cluster Is Created</a></li>
+</ul>
+</li>
+<li><a href="#what-is-docker-and-kubernetes">What Is Docker And Kubernetes?</a></li>
+<li><a href="#making-a-sample-project">A Sample Project</a>
+<ul>
+<li><a href="#training-a-random-forest-model">Training A Random Forest Model</a></li>
+<li><a href="#making-models-accessible-through-a-service">Making Models Accessible Through A Service</a></li>
+</ul>
+</li>
+<li><a href="#the-deployment-with-docker-and-kubernetes">The Deployment With Docker And Kubernetes</a>
+<ul>
+<li><a href="#making-a-dockerfile">Making A Dockerfile</a></li>
+<li><a href="#building-pushing-an-image-to-google-cloud">Building And Pushing An Image To Google Cloud</a></li>
+<li><a href="#deploying-with-kubernetes">Deploying With Kubernetes</a>
+<ul>
+<li><a href="#creating-a-deployment">Creating A Deployment</a></li>
+<li><a href="#creating-a-service">Creating A Service</a></li>
+<li><a href="#how-do-i-access-my-application">How Do I Access My Application?</a></li>
+<li><a href="#diagnosing-and-checking-in-on-our-application">Diagnosing And Checking In On Our Application</a></li>
+</ul>
+</li>
+<li><a href="#making-a-request-to-our-application">Making A Request To Our Application</a></li>
+</ul>
+</li>
+</ol>
+<!--kg-card-end: markdown--><h2 id="setup-installation">Setup &amp; Installation</h2><p>These are all the steps to set up your environment. We are going to be using Google Cloud Platform (GCP), as they are largely the leader in Kubernetes, and they are also the one's who developed and open-sourced the internal project. The main benefits of using GCP is that it has a great UI/UX and is easy to set up. The same cannot be said for their competitors.</p><ol><li>You probably already have a Google account. Sign up for <a href="http://web.archive.org/web/20221004064058/https://cloud.google.com/">Google Cloud Platform</a> and get <strong><em>$300 free credits</em></strong>. You have to enter your credit card, but it won't be charged unless you give them permission. Remember to <a href="http://web.archive.org/web/20221004064058/https://cloud.google.com/billing/docs/how-to/modify-project#enable_billing_for_a_project">enable billing</a>.</li><li>Download the <a href="http://web.archive.org/web/20221004064058/https://cloud.google.com/sdk/docs/">Google Cloud SDK</a>.</li><li>Export the SDK to PATH by finding the path to the SDK bin folder.<br>a. &nbsp; &nbsp;<strong>Windows: </strong>Add an environmental variable. 1) Open search and search for "Edit the environment variables", 2) Click on the "Environment Variables" button at the bottom, 3) For your user, double click Path in "User variables for &lt;user&gt;" OR click new if it does not exist (Variable Name is "Path"). Click new and enter the path to the SDK bin folder and save.<br>b. &nbsp; &nbsp;<strong>MacOS</strong>: In Terminal, type in <code>nano ~/.bash_profile</code> and add the path to your bin folder as a new line in the file.<br><code>export PATH="/Applications/google-cloud-sdk/bin"</code><br>Save by doing CTRL+O, press Enter/Return and press CTRL+X.<br>c. &nbsp; &nbsp;<strong>Linux:</strong> Depending on the distribution and what you have installed, there could be different profiles for Terminal. Check <code>nano ~/.bash_profile</code>, <code>nano ~/.bash_login</code>, <code>nano ~/.profile</code> or <code>nano ~/.bashrc</code>. Add the path to the bin folder of the SDK:<br><code>export PATH="/Applications/google-cloud-sdk/bin"</code><br>Save by doing CTRL+O, press Enter/Return and press CTRL+X.</li><li>Download Docker. Note that you cannot use Docker with Windows Home – consider using a local Ubuntu VM by using <a href="http://web.archive.org/web/20221004064058/https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v">Hyper-V</a> on Windows instead.<br>a. &nbsp; &nbsp;<strong>Windows</strong> Pro/Enterprise/Education: Sign up and download <a href="http://web.archive.org/web/20221004064058/https://docs.docker.com/docker-for-windows/install/">Docker Desktop on Windows</a>. Once logged in, you can download Docker. Make sure the program is running and that you are logged in locally.<br>b. &nbsp; &nbsp;<strong>MacOS</strong>: Sign up and download <a href="http://web.archive.org/web/20221004064058/https://docs.docker.com/docker-for-mac/install/">Docker Desktop on Mac</a>. Once logged in, you can download Docker. Make sure the program is running and that you are logged in locally.<br>c. &nbsp; &nbsp;<strong>Linux</strong>: Use the three following command to download and start Docker: <br>1) <code>apt install docker.io</code>, 2) <code>systemctl start docker</code>, and 3) <code>systemctl enable docker</code>. You can login with <code>docker login</code> if you have a registry you want to login in to.</li><li>After this is done, you should be able to type <code>gcloud init</code> and configure the SDK for the setup.<br>a. &nbsp; &nbsp;Type Y, press enter and log into your account when gcloud displays: <em>"You must log in to continue. Would you like to log in (Y/n)?"</em><br>b. &nbsp; &nbsp;Type the number of your project, mine was 1, and press enter when gcloud displays: <em>"Please enter numeric choice or text value (must exactly match list item)"</em><br>c. &nbsp; &nbsp;Type n and press enter when gcloud displays: <em>"Do you want to configure a default Compute Region and Zone? (Y/n)?"</em></li><li>You need to use <code>gcloud auth configure-docker</code> in the Terminal to be able to push your containers later on. If this does not run, try restarting Terminal.</li></ol><p>After you have prepared the tools, we need to create a cluster, such that we can go through using these tools to deploy a Machine Learning application.</p><h3 id="creating-your-cluster">Creating Your Cluster</h3><p>Creating your cluster is very individual and down to what your needs are. For this tutorial, I simply need 1 node, since we are just deploying a toy dataset that just needs to work remotely. If you want to replicate my cluster, adjust the number of nodes to 1, make the machine type g1-small and create your cluster – these are the only steps I took for this article.</p><p>We will go through the options, but before please go ahead and create your cluster in the <a href="http://web.archive.org/web/20221004064058/https://console.cloud.google.com/kubernetes">Kubernetes Engine</a>.</p><h4 id="step-1-choosing-the-cluster-type-for-your-clusters">Step 1: Choosing The Cluster Type For Your Clusters</h4><p>Consider the resources your application needs. Are you doing Deep Learning? Then you will need GPUs, so you need to use the <em>"GPU Accelerated Computing"</em> cluster template in the left side.</p><p>If you want high availability, you should make use of the cluster template <em>"Highly Available"</em> in the left sidebar. If your application has a need for CPU power or lots of RAM, then choose those cluster templates.</p><p>Remember that you can actually combine these templates, so you can have highly available GPU nodes by using the location type of regional.</p><figure><img src="http://web.archive.org/web/20221004064058im_/https://mlfromscratch.com/content/images/2020/01/image-10.png"></figure><h4 id="step-2-automatic-scaling-automatic-upgrades-and-automatic-repairs">Step 2: Automatic Scaling, Automatic Upgrades And Automatic Repairs</h4><p>While creating the cluster, you should pay attention to the menu under <em>"Machine Configuration"</em> &gt; <em>"More Options"</em>.</p><p>What if your application hits the front page of Hacker News or some big blog or magazine? Are you sure that your application can handle that amount of traffic? You should enable autoscaling, such that Kubernetes automatically scales your application up and down when needed. Just enter the maximum number of nodes you are prepared to pay for if your application experiences a huge load.</p><figure><img src="http://web.archive.org/web/20221004064058im_/https://mlfromscratch.com/content/images/2020/01/image-12.png"></figure><p>Another great option is auto-upgrading and auto-repairing. The nodes can actually be automatically upgraded with no downtime, just by enabling auto-upgrade – this ensures there is fewer security flaws and the latest features of the stable version.</p><p>If a node is somehow failing or not ready to be used, Kubernetes can take care of automatically restoring and making the node work again. Auto-repairing does this, by monitoring all nodes with health checks, multiple times an hour.</p><figure><img src="http://web.archive.org/web/20221004064058im_/https://mlfromscratch.com/content/images/2020/01/image-13.png"></figure><h3 id="after-your-cluster-is-created">After Your Cluster Is Created</h3><p>After you have created your cluster, you want to connect to your cluster in your local Terminal. You can connect to the cluster by clicking on <em>"Connect"</em>, and copy the line of code that pops up under <em>"Command-line access"</em>.</p><figure><img src="http://web.archive.org/web/20221004064058im_/https://mlfromscratch.com/content/images/2020/01/connect_gcp.png"></figure><p>Normally, I don't recommend YouTube videos. But the following YouTube video is a very comprehensive and great explanation of Docker and Kubernetes. It even answers <em>why</em> we want to use Docker and Kubernetes, and <em>why</em> we shifted away from VMs to containers.</p><figure><iframe width="480" height="270" src="http://web.archive.org/web/20221004064058if_/https://www.youtube.com/embed/u8dW8DrcSmo?feature=oembed" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></figure><p>The basic idea of Kubernetes consists of Ingress', Services, Deployments and Pods. We can think about the Ingress as a Load Balancer between multiple services, and we can think about a Service as a Load Balancer between the Pods of a specific Deployment. For this article, we will not be using an Ingress, since we have just a single container, but you should look into it, since you will likely need it for larger applications or when doing a microservice architecture.</p><figure><img src="http://web.archive.org/web/20221004064058im_/https://mlfromscratch.com/content/images/2020/01/architecture.png"><figcaption>Overview of how Kubernetes distributes your traffic. Screenshot from the <a href="#what-is-docker-and-kubernetes">video above</a>.</figcaption></figure><h2 id="making-a-sample-project">Making A Sample Project</h2><p>We are deploying a machine learning model on the <a href="http://web.archive.org/web/20221004064058/https://archive.ics.uci.edu/ml/datasets/auto+mpg">Auto MPG dataset</a>, which is a toy dataset. Let's walk through the steps of training a Random Forest model.</p><h3 id="training-a-random-forest-model">Training A Random Forest Model</h3><p>To train a model, we don't have to do much work with the chosen dataset. We start by importing the packages we need, as well as the classes from the core folder.</p><!--kg-card-begin: markdown--><pre><code>from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+import joblib
+
+from core.clean_data import CleanData
+from core.predict_data import PredictData
+from core.load_data import LoadData
+</code></pre>
+<!--kg-card-end: markdown--><p>Then we instantiate the classes, such that we can call all the functions from the classes later on.</p><!--kg-card-begin: markdown--><pre><code>loader = LoadData()
+cleaner = CleanData()
+predicter = PredictData()
+</code></pre>
+<!--kg-card-end: markdown--><p>The next step is loading the dataset into a dataframe, which we provided a function for in the LoadData class. When we call the function, we use Pandas to read a data table, and then we specify the column names from the class. Remember to check out the <a href="http://web.archive.org/web/20221004064058/https://github.com/casperbh96/MilesPerGallonPrediction">GitHub repository to see the full code</a>.</p><!--kg-card-begin: markdown--><pre><code>df = loader.load_dataset_as_df()
+</code></pre>
+<!--kg-card-end: markdown--><p>Now that we have the dataset loaded, we want to think about what preprocessing steps we need to take, to be able to make a model. I found that there are some question marks in the <em>horsepower</em> feature of the dataset, so we need to get rid of those rows.</p><p>The CleanData class has a function for this, where we specify the dataframe to only contain the rows where horsepower does not contain a question mark – in other words, it removes the rows where horsepower has a question mark instead of a number. In a similar fashion as the loader, we called the class cleaner by the following line of code.</p><!--kg-card-begin: markdown--><pre><code>df = cleaner.clear_question_marks(df)
+</code></pre>
+<!--kg-card-end: markdown--><p>The next and last step before training our model is specifying which feature we want to predict. Naturally, for this dataset at least, we want to predict the <em>mpg</em> feature, which is miles per gallon for a car.</p><p>What happens here is that we split the dataset into training and testing, where <em>y</em> is the feature we are trying to predict, and <em>X</em> is the features we are using to predict <em>y</em>.</p><!--kg-card-begin: markdown--><pre><code>y = df['mpg']
+X = cleaner.drop_unused_columns(df)
+
+X_train, X_test, y_train, y_test = train_test_split(
+                                    X, y, 
+                                    test_size=0.2, 
+                                    random_state=42
+                                   )
+</code></pre>
+<!--kg-card-end: markdown--><p>Now we are finally ready to do fit a random forest model to the dataset, since it has been cleaned and prepared for the algorithm.</p><p>We start off by instantiating the Random Forest with default parameters, and then we tell scikit-learn to train a random forest model with the training data. After that is done, we can predict on the testing data, and we can also score how well the predictions went.</p><!--kg-card-begin: markdown--><pre><code>rf = RandomForestRegressor()
+rf.fit(X_train, y_train)
+
+pred = predicter.predict(X_test, rf)
+score = predicter.score_r2(y_test)
+</code></pre>
+<!--kg-card-end: markdown--><p>The absolute last step is "dumping" the model, which means exporting it to a file, that we can load into Python at another point in time. For this, we use joblib.</p><!--kg-card-begin: markdown--><pre><code>joblib.dump(rf, "models/rf_model.pkl")
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="making-models-accessible-through-a-service">Making Models Accessible Through A Service</h3><p>Now that we have a model, we need a way to expose it as a service. Flask is the most common way to do this, and it will scale easily. The first step is to create the Flask app by <code>app = Flask(__name__)</code>, and then a function <code>def</code> with an annotation <code>@</code>, a route <code>/</code> and a methods parameters <code>methods=[]</code>.</p><p>Upon running the script, the following code imports the random forest model we exported earlier. Then once someone asks us at the specified route, we make predictions and return them.</p><!--kg-card-begin: markdown--><pre><code>from core.clean_data import CleanData
+from core.predict_data import PredictData
+from core.load_data import LoadData
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+loader = LoadData()
+cleaner = CleanData()
+model = loader.load_model_from_path('./models/rf_model.pkl')
+predicter = PredictData(model)
+
+@app.route("/", methods=['POST'])
+def do_prediction():
+    json = request.get_json()
+    df = loader.json_to_df(json)
+    df = cleaner.clear_question_marks(df)
+    X = cleaner.drop_car_name(df)
+
+    prediction = predicter.predict(X)
+    return jsonify(prediction[0])
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
+</code></pre>
+<!--kg-card-end: markdown--><p>When we run this code, we have told flask to run the method <code>do_prediction()</code>, if someone queries the any computers IP on port 5000 (e.g. locally <code>localhost:5000</code>). This does not expose it to the world yet, though, since we need a cloud provider for that. This is simply the entrypoint to our application, which we will package and ship off to a cloud provider.</p><h2 id="the-deployment-with-docker-and-kubernetes">The Deployment With Docker And Kubernetes</h2><p>This section combines the powerful combination of Docker, Kubernetes and Machine Learning to expose your application to the world. The following information was not easy to learn, although it seems easy now.</p><h3 id="making-a-dockerfile">Making A Dockerfile</h3><p>The very first thing we always do is: <em>creating a Dockerfile</em>. By making a Dockerfile, we take only the necessary files from our project and package them into an image. We want the image to be as small as possible, so we don't want to clutter it with tons of unnecessary files.</p><p>The syntax is not hard to learn. Let me give you a brief overview of the commands used in this Dockerfile.</p><!--kg-card-begin: markdown--><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FROM</td>
+<td>This specifies the base image, which is usually a Python image for Machine Learning. You can browse base images on <a href="http://web.archive.org/web/20221004064058/https://hub.docker.com/search?q=&amp;type=image">Docker Hub</a>.</td>
+</tr>
+<tr>
+<td>WORKDIR</td>
+<td>This command changes (and creates) the directory within the image to the specified path.</td>
+</tr>
+<tr>
+<td>RUN</td>
+<td>This runs a command in Terminal inside the image. It could be anything, but don't clutter it up.</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>This specifies the files to add <em>from</em> your directory <em>to</em> a directory in the image (also creates directory if it does not exist).</td>
+</tr>
+<tr>
+<td>EXPOSE</td>
+<td>This command opens up a specific port number, like port 5000.</td>
+</tr>
+<tr>
+<td>CMD</td>
+<td>Takes the argument for running the application.</td>
+</tr>
+</tbody>
+</table>
+<!--kg-card-end: markdown--><p>Now, the following is the Dockerfile, which I created for this project. We run the installation of packages directly by specifying the names of the packages, instead of through a requirements.txt file, like one would usually do.</p><p>After having installed all the packages and added the necessary files, we tell Docker to run the command <code>gunicorn --bind 0.0.0.0:5000 main:app</code>, which is the syntax for using Gunicorn. We <em>always</em> want to use Gunicorn on top of Flask, because it is suited as a production service, where as Flask is suited for development purposes. The application will work exactly the same in development and production.</p><p>The <em>main</em> is the filename without the extension (main.py), and the <em>app</em> is what we called the Flask app in the file. So if you change the name, you also have to change it here.</p><!--kg-card-begin: markdown--><pre><code>FROM python:3.7
+
+WORKDIR /app
+
+RUN pip install pandas scikit-learn flask gunicorn
+
+ADD ./core ./core
+ADD ./models ./models
+ADD main.py main.py
+
+EXPOSE 5000
+
+CMD [ "gunicorn", "--bind", "0.0.0.0:5000", "main:app" ]
+</code></pre>
+<!--kg-card-end: markdown--><p>The image does not create itself though. The Dockerfile just lists the specifics of how the image should look like – so we need a way to build the image, before we can use it.</p><h3 id="building-pushing-an-image-to-google-cloud">Building &amp; Pushing An Image To Google Cloud</h3><p>To be able to push the image to Google Cloud, we have to build it, tag it and push it. Luckily for you, I have mostly automated this process for Google Cloud, to the point where you just have to enter your details once and change the version number when you want to update the images.</p><p>First, you need to find your project id. You can find your project in the top left and you can find your ID by clicking on the arrow on the right.</p><figure><img src="http://web.archive.org/web/20221004064058im_/https://mlfromscratch.com/content/images/2019/12/image-7--1-.png"></figure><p>All you have to enter is the address, project id, repository and version, and then this script will build and push the image. Use that ID for your project id.</p><!--kg-card-begin: markdown--><pre><code>#!/bin/bash
+ADDRESS=gcr.io
+PROJECT_ID=macro-authority-266522
+REPOSITORY=auto
+VERSION=0.17
+
+docker build -t ${PROJECT_ID}:${VERSION} .
+ID="$(docker images | grep ${REPOSITORY} | head -n 1 | awk '{print $3}')"
+
+docker tag ${ID} $ADDRESS/${PROJECT_ID}/${REPOSITORY}:${VERSION}
+
+docker push $ADDRESS/${PROJECT_ID}/${REPOSITORY}:${VERSION}
+</code></pre>
+<!--kg-card-end: markdown--><p>You can run the image with git bash or terminal <code>sh build_push_image.sh</code>. You should run this script instead of manually running these commands each time.</p><p>Alternatively, you can experiment with using <code>docker build</code>, <code>docker tag</code> and <code>docker push</code> yourself.</p><h3 id="deploying-with-kubernetes">Deploying With Kubernetes</h3><p>The image is now built and pushed to the cloud. To be able to run it, we need to create a deployment and service file, which is defined in the syntax of YAML.</p><p>I'm going to show you how to deploy the product now. The general procedure is the following steps.</p><ol><li>Create/Update the actual containers.</li><li>Update the details in the bash script and run it. If you want to update the container, you just have to update the version in the script.</li><li>Update the details of the image in the deployment YAML file. If you want to update the container, you just have to update the version in the image.</li><li>Run the <code>kubectl apply -f &lt;filename&gt;.yml</code> command on a deployment or service.</li></ol><h4 id="creating-a-deployment">Creating A Deployment</h4><p>Below, you can see the <code>deployment.yaml</code> file that I used – it works by naming your project (rename <em>mpg</em>) and specifying the url for the image. When we apply this deployment, we have specified for Kubernetes to create 3 replicas, which are called Pods – a pod will run one instance of the container.</p><!--kg-card-begin: markdown--><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mpg
+  labels:
+    app: mpg
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mpg
+  template:
+    metadata:
+      labels:
+        app: mpg
+    spec:
+      containers:
+      - name: auto
+        image: gcr.io/macro-authority-266522/auto:0.17
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+</code></pre>
+<!--kg-card-end: markdown--><p>The containerPort is set 5000, because that is the port we set in our Flask application. The image is set to <code>gcr.io/&lt;project_id&gt;/&lt;repository&gt;:&lt;version&gt;</code>, which is the same variable names as in the bash file from earlier.</p><p>When you have such a deployment file, you very simply run the below line of code.</p><!--kg-card-begin: markdown--><pre><code>kubectl apply -f deployment.yml
+</code></pre>
+<!--kg-card-end: markdown--><p>It should say <code>deployment.apps/mpg created</code> when you create it for the first time, and it will also give you another message if you update the image.</p><p>Remember we can always go back and reapply this deployment file, if we have made changes to the container. It really is as simple as running the apply command once again, after having changed the version number in your bash script to push to the cloud and in the deployment file.</p><p>Though, we are not quite done yet. The application you made is running in the cloud, but it's not exposed yet. Let me introduce services.</p><h4 id="creating-a-service">Creating A Service</h4><p>A service is also defined in a YAML file, just like the deployment. You use the same command to make and update a service. This is why some DevOps engineers are called YAML engineers, because most of the configuration for deployments are done using YAML files just like these one's presented here.</p><p>Below is the <code>service.yaml</code> file used for this tutorial. You want to specify the type to be a Load Balancer, since that will distribute traffic equally amongst the available pods from your deployments. This enables for immense scaling capacity, since you can just create more nodes in your cluster and create more pods.</p><p>We called our deployment <em>mpg</em>, so we specify the app in the selector to be the same app name, such that this service is linked to our deployment. The <em>port</em> is set to 80, because that defaults to just the external-ip address, while the <em>targetPort </em>is set to 5000, since that is what we specified in the deployment file and Flask application.</p><!--kg-card-begin: markdown--><pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: mlfromscratch
+spec:
+  type: LoadBalancer
+  selector:
+    app: mpg
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+</code></pre>
+<!--kg-card-end: markdown--><p>Quite simply as before, we apply the service in the same way as the deployment.</p><!--kg-card-begin: markdown--><pre><code>kubectl apply -f service.yml
+</code></pre>
+<!--kg-card-end: markdown--><p>And we get back a response <code>service/mlfromscratch created</code>. </p><p>Ok, now we know that everything is created. Let me give you a rundown of how you can access your deployment.</p><h4 id="how-do-i-access-my-application">How Do I Access My Application?</h4><p>First things first, let's take a look at what we just created, shall we? The very first command to run is (note that "service" can be shortened to "svc").</p><!--kg-card-begin: markdown--><pre><code>kubectl get service
+</code></pre>
+<!--kg-card-end: markdown--><p>We get back a response. Your <code>EXTERNAL-IP</code> might still say <code>&lt;pending&gt;</code>, but it will come through rather quickly with the actual public ip. Mine took 2 minutes to come online and another 2 minutes to give me the response I was expecting, instead of endlessly loading. Note that we don't care about the service named <em>kubernetes</em>, but instead the name specified in your service, which in this case was <em>mlfromscratch</em>.</p><!--kg-card-begin: markdown--><table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>TYPE</th>
+<th>CLUSTER-IP</th>
+<th>EXTERNAL-IP</th>
+<th>PORT(S)</th>
+<th>AGE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kubernetes</td>
+<td>ClusterIP</td>
+<td>10.12.0.1</td>
+<td><code>&lt;none&gt;</code></td>
+<td>443/TCP</td>
+<td>20m</td>
+</tr>
+<tr>
+<td>mlfromscratch</td>
+<td>LoadBalancer</td>
+<td>10.12.15.238</td>
+<td>35.225.0.74</td>
+<td>80:30408/TCP</td>
+<td>5m14s</td>
+</tr>
+</tbody>
+</table>
+<!--kg-card-end: markdown--><p>All we have to do to access the application is access the external-ip from the service, and that's it! We just made a Machine Learning model ready to serve predictions at an endpoint. Ideally, we would query this IP-address from another service/product, such that we continually could use these predictions. You could even make your own SaaS by turning this into a microservice and deploying it using <a href="http://web.archive.org/web/20221004064058/https://github.com/casperbh96/Flask-Stripe-MySQL-Bootstrapped">this Flask template I integrated with Stripe</a>.</p><h4 id="diagnosing-and-checking-in-on-our-application">Diagnosing And Checking In On Our Application</h4><p>Sometimes you want to check what the console prints or just the status of the application to see if it's running, and if there is any errors.</p><p>Just like we used the <code>kubectl get service</code> command to get information about our services earlier, we can use it to get information on pieces of our Kubernetes or just access it all through this command. Optionally we can add <code>-o wide</code> at the end for even more information.</p><!--kg-card-begin: markdown--><pre><code>kubectl get svc,deployment,pods -o wide
+</code></pre>
+<!--kg-card-end: markdown--><p>The above command will give us a look at the pods. They should say running under status, else, your application is not working like expected and you need to go back and make sure that it runs locally.</p><p>After getting a specific pod name, we could see the logs for that specific pod and see what happened. Tail can also be <code>--tail=1h</code> to see the last hour of logs instead of just 20 lines.</p><!--kg-card-begin: markdown--><pre><code>kubectl logs -f pod/mpg-768578c99c-lt6j2 --tail=20
+</code></pre>
+<!--kg-card-end: markdown--><p>Similarly to these get command, we have other a whole bunch of commands that you can list by typing <code>kubectl</code> in your Terminal. Most interestingly you can delete your deployments and services, e.g. <code>kubectl delete -f service.yaml</code>, if you just want to start over.</p><!--kg-card-begin: markdown--><pre><code>Basic Commands (Beginner):
+  create         Create a resource from a file or from stdin.
+  expose         Take a replication controller, service, deployment or pod and expose it as a new Kubernetes Service
+  run            Run a particular image on the cluster
+  set            Set specific features on objects
+
+Basic Commands (Intermediate):
+  explain        Documentation of resources
+  get            Display one or many resources
+  edit           Edit a resource on the server
+  delete         Delete resources by filenames, stdin, resources and names, or by resources and label selector
+
+Deploy Commands:
+  rollout        Manage the rollout of a resource
+  scale          Set a new size for a Deployment, ReplicaSet, Replication Controller, or Job
+  autoscale      Auto-scale a Deployment, ReplicaSet, or ReplicationController
+
+Cluster Management Commands:
+  certificate    Modify certificate resources.
+  cluster-info   Display cluster info
+  top            Display Resource (CPU/Memory/Storage) usage.
+  cordon         Mark node as unschedulable
+  uncordon       Mark node as schedulable
+  drain          Drain node in preparation for maintenance
+  taint          Update the taints on one or more nodes
+
+Troubleshooting and Debugging Commands:
+  describe       Show details of a specific resource or group of resources
+  logs           Print the logs for a container in a pod
+  attach         Attach to a running container
+  exec           Execute a command in a container
+  port-forward   Forward one or more local ports to a pod
+  proxy          Run a proxy to the Kubernetes API server
+  cp             Copy files and directories to and from containers.
+  auth           Inspect authorization
+
+Advanced Commands:
+  diff           Diff live version against would-be applied version
+  apply          Apply a configuration to a resource by filename or stdin
+  patch          Update field(s) of a resource using strategic merge patch
+  replace        Replace a resource by filename or stdin
+  wait           Experimental: Wait for a specific condition on one or many resources.
+  convert        Convert config files between different API versions
+  kustomize      Build a kustomization target from a directory or a remote url.
+
+Settings Commands:
+  label          Update the labels on a resource
+  annotate       Update the annotations on a resource
+  completion     Output shell completion code for the specified shell (bash or zsh)
+
+Other Commands:
+  api-resources  Print the supported API resources on the server
+  api-versions   Print the supported API versions on the server, in the form of "group/version"
+  config         Modify kubeconfig files
+  plugin         Provides utilities for interacting with plugins.
+  version        Print the client and server version information
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="making-a-request-to-our-application">Making A Request To Our Application</h3><p>We have the external-ip from earlier, which we are going to reuse here. The following JSON request can now be sent as with a HTTP POST method, and we will receive the expected response.</p><!--kg-card-begin: markdown--><pre><code>{
+    "cylinders": 8,
+    "displacement": 307.0,
+    "horsepower": 130.0,
+    "weight": 3504,
+    "acceleration": 12.0,
+    "model_year": 70,
+    "origin": 1,
+    "car_name": "chevrolet chevelle malibu"
+}
+</code></pre>
+<!--kg-card-end: markdown--><p>In just 0.29 seconds, we received the prediction of this car, and our machine learning model predicted <code>16.383</code>. </p><figure><img src="http://web.archive.org/web/20221004064058im_/https://mlfromscratch.com/content/images/2020/01/image-7.png"><figcaption>Postman request with the provided JSON body.</figcaption></figure><p>Or from a Python script.</p><!--kg-card-begin: markdown--><pre><code>import json
+import requests
+data = {
+    "cylinders": 8,
+    "displacement": 307.0,
+    "horsepower": 130.0,
+    "weight": 3504,
+    "acceleration": 12.0,
+    "model_year": 70,
+    "origin": 1,
+    "car_name": "chevrolet chevelle malibu"
+}
+r = requests.post('http://35.225.0.74', json=data)</code></pre>
+<!--kg-card-end: markdown--><p>Printing <code>r.text</code> gives us the prediction $16.383$, and printing <code>r.status_code</code> gives us a HTTP status code of $200$.</p>
+                    </div>
+
+                
+
+        </article>
+
+    </div></div>
+  </div>
+</body>
+</html>

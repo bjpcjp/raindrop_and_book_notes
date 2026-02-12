@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>https://dhruvonmath.com/2019/04/04/kernels</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>https://dhruvonmath.com/2019/04/04/kernels</h1>
+    <p><strong>URL:</strong> <a href="https://dhruvonmath.com/2019/04/04/kernels">https://dhruvonmath.com/2019/04/04/kernels</a></p>
+    <p><strong>Tags:</strong> algorithms-math, machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876771891</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article>
+  
+  <time datetime="2019-04-04T00:00:00+00:00">04 Apr 2019</time>
+  
+<p>In the last few posts we’ve focused heavily on <a href="https://dhruvonmath.com/web/20230205213247/https://www.dhruvonmath.com/2018/12/31/matrices/">matrices</a> and their <a href="https://dhruvonmath.com/web/20230205213247/https://www.dhruvonmath.com/2019/03/20/pagerank/">applications</a>. In this post we’re going to use matrices to learn about Kernels.</p>
+
+<p>The Kernel of a function is the set of points that the function sends to <span><span><math><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span></span>. Amazingly, once we know this set, we can immediately characterize how the matrix (or linear function) maps its inputs to its outputs.</p>
+
+<p>I hope that by the end of this post you will:</p>
+
+<ol>
+  <li>Understand what a Kernel of a function is and how it helps us understand a function better.</li>
+  <li>Realize that the inverses of output points are always some translation of the Kernel (for linear functions).</li>
+  <li>See that there are many pretty patterns and coincidences that flow out of the properties of linear functions.</li>
+</ol>
+
+<hr>
+
+<h3 id="functions-across-spaces">Functions Across Spaces</h3>
+
+<p>In previous posts, we noticed how matrices are just linear functions. We found that the matrices we studied just rotate or stretch a vector in some way.</p>
+
+<p><img src="http://web.archive.org/web/20230205213247im_/https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CocoaDrawingGuide/Art/scaling_2x.png">
+    An example of a function that stretches its input. Source: http://developer.apple.com.
+</p>
+
+<p>But we only studied <strong>square matrices<strong> (i.e. 2x2 or 3x3 matrices). What happens when our matrices aren’t square?</strong></strong></p>
+
+<p>Let’s start with a 2x3 matrix that represents a linear function <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span>. Let’s study a function <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span> defined by the matrix <span><span><math><semantics><mrow><mi>F</mi></mrow><annotation encoding="application/x-tex">F</annotation></semantics></math></span></span>:</p>
+
+<p><span><span><span><math><semantics><mrow><mi>F</mi><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>3</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex"> F = \begin{bmatrix} 2 &amp; 1 &amp; 0 \\ 0 &amp; 1 &amp; 3 \end{bmatrix} </annotation></semantics></math></span></span></span></p>
+
+<p>What happens if I apply this matrix on a vector <span><span><math><semantics><mrow><mi>v</mi><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">v = \begin{bmatrix} 3 \\ 2 \\ 1 \end{bmatrix}</annotation></semantics></math></span></span>?</p>
+
+<p>Let’s find out:</p>
+
+<p><span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>F</mi><mi>v</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>3</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>F</mi><mi>v</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>8</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>5</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+F v &amp;= \begin{bmatrix} 2 &amp; 1 &amp; 0 \\ 0 &amp; 1 &amp; 3 \end{bmatrix} \begin{bmatrix} 3 \\ 2 \\ 1 \end{bmatrix} \\
+F v &amp;= \begin{bmatrix} 8 \\ 5 \end{bmatrix}
+\end{aligned}</annotation></semantics></math></span></span></span></p>
+
+<p>In other words, <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>8</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>5</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f(\begin{bmatrix} 3 \\ 2 \\ 1 \end{bmatrix}) = \begin{bmatrix} 8 \\ 5 \end{bmatrix})</annotation></semantics></math></span></span>.</p>
+
+<p>So <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span> effectively takes a point in 3 Dimensions, (<span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix}3 \\ 2 \\ 1\end{bmatrix}</annotation></semantics></math></span></span>) and sends it to a point in 2 Dimensions (<span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>8</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>5</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 8 \\ 5 \end{bmatrix}</annotation></semantics></math></span></span>). We can see this below:</p>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/r_3_to_r_2.jpeg">
+    <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span> maps points from <span><span><math><semantics><mrow><msup><mi>R</mi><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">R^3</annotation></semantics></math></span></span> to <span><span><math><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">R^2</annotation></semantics></math></span></span>.
+</p>
+
+<p>We interact with functions that take points from 3D to 2D all the time. For instance, everytime you take a picture with a camera you are taking a 3D space (the world you see), and collapsing it onto a 2D space (the camera sensor).</p>
+
+<p><img src="http://web.archive.org/web/20230205213247im_/https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Pinhole-camera.svg/1200px-Pinhole-camera.svg.png">
+    A camera converts a 3D object (the tree) into a 2d representation (image). Source: Wikipedia.
+</p>
+
+<p>The input space for <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span> is <span><span><math><semantics><mrow><msup><mi>R</mi><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">R^3</annotation></semantics></math></span></span> and the output space is <span><span><math><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">R^2</annotation></semantics></math></span></span>. More formally, we write this as:</p>
+
+<p><span><span><span><math><semantics><mrow><mi>f</mi><mo>:</mo><msup><mi>R</mi><mn>3</mn></msup><mo>→</mo><msup><mi>R</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">f: R^3 \rightarrow R^2</annotation></semantics></math></span></span></span></p>
+
+<h3 id="losing-information">Losing Information</h3>
+
+<p>Returning to the example of cameras, when we take pictures, we squash a 3D world onto a 2D sensor. In the process, we lose some amount of information primarily related to depth.</p>
+
+<p><strong>Specifically, points that are far away will appear close to each other even though they may be quite distant.</strong></p>
+
+<p>Eventually, points infinitely far away on the horizon all <em>collapse</em> onto the same point. We can see this in the example image below.</p>
+
+<p><img src="http://web.archive.org/web/20230205213247im_/https://images.unsplash.com/photo-1554976757-606d486f5d92?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2204&amp;q=80">
+    Notice how the pillars above appear closer and closer together even though they are staying the same distance apart. We have lost information about the distance between this pillars when converting to 2D. Image source: Unsplash.
+</p>
+
+<p>So just like a camera, will our function also “lose” some information when it moves points from 3D to 2D? Will it <em>collapse</em> multiple points from the input to the same point in the output?</p>
+
+<hr>
+
+<h3 id="the-kernel---set-of-points-that-map-to-0">The Kernel - Set of Points that Map to 0</h3>
+
+<p>To answer this, let’s start by seeing all the points <span><span><math><semantics><mrow><mi>v</mi><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><msub><mi>v</mi><mn>1</mn></msub></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><msub><mi>v</mi><mn>2</mn></msub></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><msub><mi>v</mi><mn>3</mn></msub></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">v = \begin{bmatrix} v_1 \\ v_2 \\ v_3 \end{bmatrix}</annotation></semantics></math></span></span> that map onto the origin of the output space - <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 0 \\ 0 \end{bmatrix}</annotation></semantics></math></span></span>. This gives us a good starting point for understanding which points from our input hit the same point in the output.</p>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/map_to_0.jpeg">
+    Which points map to <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix}0 \\ 0\end{bmatrix}</annotation></semantics></math></span></span>?
+</p>
+
+<p>We want to solve:</p>
+
+<p><span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>F</mi><mi>v</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>3</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>x</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>y</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>z</mi></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+Fv &amp;= \begin{bmatrix} 0 \\ 0 \end{bmatrix} \\
+\begin{bmatrix} 2 &amp; 1 &amp; 0 \\ 0 &amp; 1 &amp; 3 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \end{bmatrix} &amp;= \begin{bmatrix} 0 \\ 0 \end{bmatrix}
+\end{aligned}</annotation></semantics></math></span></span></span></p>
+
+<p>Carrying out this multiplication, we see this is satisfied when:</p>
+
+<p><span><span><span><math><semantics><mrow><mn>2</mn><mi>x</mi><mo>+</mo><mi>y</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">2x + y = 0</annotation></semantics></math></span></span></span>
+<span><span><span><math><semantics><mrow><mi>y</mi><mo>+</mo><mn>3</mn><mi>z</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">y + 3z = 0</annotation></semantics></math></span></span></span></p>
+
+<p>
+
+Solving this for each variable in terms of <span><span><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span></span>, we find:
+
+<span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>x</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mo>−</mo><mfrac><mrow><mi>y</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>z</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mo>−</mo><mfrac><mrow><mi>y</mi></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+x &amp;= -\frac{y}{2} \\
+z &amp;= -\frac{y}{3}
+\end{aligned}</annotation></semantics></math></span></span></span>
+
+So, <span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(\begin{bmatrix} 0 \\ 0\end{bmatrix})</annotation></semantics></math></span></span> is a line parameterized by:
+
+<span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>x</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mo>−</mo><mfrac><mrow><mi>t</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>y</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>t</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>z</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mo>−</mo><mfrac><mrow><mi>t</mi></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+x &amp;= -\frac{t}{2} \\
+y &amp;= t \\
+z &amp;= -\frac{t}{3} \\
+\end{aligned}</annotation></semantics></math></span></span></span>
+
+for some <span><span><math><semantics><mrow><mi>t</mi><mo>∈</mo><mi>R</mi></mrow><annotation encoding="application/x-tex">t \in R</annotation></semantics></math></span></span>.
+
+</p>
+
+<p>This line is shown below. Some points on this line are:
+<span><span><math><semantics><mrow><msub><mi>v</mi><mn>1</mn></msub><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">v_1 = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}</annotation></semantics></math></span></span>, 
+<span><span><math><semantics><mrow><msub><mi>v</mi><mn>2</mn></msub><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>6</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>2</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">v_2 = \begin{bmatrix} -3 \\ 6 \\ -2 \end{bmatrix}</annotation></semantics></math></span></span>, <span><span><math><semantics><mrow><msub><mi>v</mi><mn>3</mn></msub><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>4</mn><mi mathvariant="normal">.</mi><mn>5</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>9</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>3</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">v_3 = \begin{bmatrix} -4.5 \\ 9 \\ -3 \end{bmatrix}</annotation></semantics></math></span></span>.</p>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/kernel_line.png">
+    The Kernel of <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span> is the set of points that <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span> maps to <span><span><math><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span></span>. In this case, it forms a line.
+</p>
+
+<p>
+There’s a term for this set - <strong>the Kernel</strong>. We call it the Kernel because this set of vectors maps to the origin, or the core, of the output space.
+</p>
+
+<p>In our specific case, the Kernel is a line. When <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span> maps this line to the point <span><span><math><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span></span>, we lose information about the line - in the output space, the points on the line are no longer distinguishable.</p>
+
+<p>Returning to our camera analogy, this is similar to how all points on the horizon are no longer distinguishable after the conversion from 3D to 2D. <strong>Thus, you can think of the Kernel as a quick way to see how the function compresses or loses information.</strong></p>
+
+<hr>
+
+<h4 id="terminology-aside">Terminology Aside</h4>
+
+<p>Let’s get some more quick terminology out of the way before proceeding. We’re going to use the following terms:</p>
+
+<ol>
+  <li>
+    <p><strong>Image</strong> - the set of outputs of the function (i.e. everything in <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(x)</annotation></semantics></math></span></span>). The image of a point <span><span><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span></span> is just <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(x)</annotation></semantics></math></span></span>.</p>
+  </li>
+  <li>
+    <p><strong>Pre-Image</strong> - the set of inputs for the function (i.e. the <span><span><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span></span> in <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(x)</annotation></semantics></math></span></span>). The pre-image of a point <span><span><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span></span> is just <span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mi>y</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(y)</annotation></semantics></math></span></span>.</p>
+  </li>
+</ol>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/pre-image.jpeg">
+    In the above example, the function <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span> maps the oval (Pre-Image) on the left to the point (Image) on the right.
+</p>
+
+<hr>
+
+<h3 id="translations-of-the-kernel---mapping-to-11beginbmatrix-1--1-endbmatrix11">Translations of the Kernel - Mapping to <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 1 \\ 1 \end{bmatrix}</annotation></semantics></math></span></span></h3>
+
+<p>We found the set of points that map to <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 0 \\ 0 \end{bmatrix}</annotation></semantics></math></span></span> (i.e. the pre-image of the origin). We call this set the Kernel or <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> for short.</p>
+
+<p>Can we now similarly find the set of points that map to <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 1 \\ 1 \end{bmatrix}</annotation></semantics></math></span></span>?</p>
+
+<div><p>
+We're going to do this to show something really cool:
+</p><ul>
+<li>
+Once you know the pre-image of <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 0 \\ 0 \end{bmatrix}</annotation></semantics></math></span></span>, it's super simple to find the pre-image of <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 1 \\ 1 \end{bmatrix}</annotation></semantics></math></span></span> or any other point for that matter.
+</li>
+</ul>
+</div>
+
+<hr>
+
+<h4 id="finding-the-pre-image">Finding the pre-image</h4>
+
+<p>Let’s start by finding the points that maps to <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 1 \\ 1 \end{bmatrix}</annotation></semantics></math></span></span> as before.</p>
+
+<p><span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>F</mi><mi>v</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>3</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>x</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>y</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>z</mi></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+F v &amp;= \begin{bmatrix} 1 \\ 1 \end{bmatrix} \\
+\begin{bmatrix} 2 &amp; 1 &amp; 0 \\ 0 &amp; 1 &amp; 3 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \end{bmatrix} &amp;= \begin{bmatrix} 1 \\ 1 \end{bmatrix}
+\end{aligned}</annotation></semantics></math></span></span></span></p>
+
+<p>Solving for each variable, we find that this is just the line defined by:</p>
+
+<p><span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>x</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mfrac><mrow><mn>1</mn><mo>−</mo><mi>t</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>y</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>t</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>z</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mfrac><mrow><mn>1</mn><mo>−</mo><mi>t</mi></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+x &amp;= \frac{1-t}{2} \\
+y &amp;= t \\
+z &amp;= \frac{1-t}{3}
+\end{aligned}</annotation></semantics></math></span></span></span></p>
+
+<p>for some <span><span><math><semantics><mrow><mi>t</mi><mo>∈</mo><mi>R</mi></mrow><annotation encoding="application/x-tex">t \in R</annotation></semantics></math></span></span>.</p>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/inverse_of_1.png">
+    <span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(\begin{bmatrix}1 \\ 1 \end{bmatrix})</annotation></semantics></math></span></span> is the set of points that <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span> maps to <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 1 \\ 1 \end{bmatrix}</annotation></semantics></math></span></span>. This is also a line. Notice how similar it is to the line for <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span>.
+</p>
+<p>Some valid point are:</p>
+
+<p><span><span><math><semantics><mrow><mi>v</mi><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">v = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}</annotation></semantics></math></span></span>, <span><span><math><semantics><mrow><mi>v</mi><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>7</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>2</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">v = \begin{bmatrix} -3 \\ 7 \\ -2 \end{bmatrix}</annotation></semantics></math></span></span>.</p>
+
+<p><strong>This line looks awfully similar to the line for <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> doesn’t it?</strong></p>
+
+<p>Let’s see them both on the same graph. Notice that they’re parallel to each other!</p>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/K_and_f_inverse_1.png">
+    Notice that <span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(\begin{bmatrix}1 \\ 1\end{bmatrix})</annotation></semantics></math></span></span> is parallel to <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span>. In other words, <span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(\begin{bmatrix}1 \\ 1\end{bmatrix})</annotation></semantics></math></span></span> is just <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> shifted over.
+</p>
+
+<hr>
+
+<h4 id="translating-the-kernel">Translating the Kernel</h4>
+
+<p>So what’s the relation between the two lines we plotted above - <span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(\begin{bmatrix}1 \\ 1\end{bmatrix})</annotation></semantics></math></span></span> and <span><span><math><semantics><mrow><mi>K</mi><mo>=</mo><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">K = f^{-1}(\begin{bmatrix} 0 \\ 0 \end{bmatrix})</annotation></semantics></math></span></span>?</p>
+
+<p><strong><span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(\begin{bmatrix} 1 \\ 1 \end{bmatrix})</annotation></semantics></math></span></span> is just a translation of <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span>.</strong></p>
+
+<p>It is a translation by any vector <span><span><math><semantics><mrow><mi>v</mi><mo>∈</mo><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">v \in f^{-1}(\begin{bmatrix}1 \\ 1\end{bmatrix})</annotation></semantics></math></span></span>.</p>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/kernel_translation.gif">
+    Adding <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> to <span><span><math><semantics><mrow><mi>v</mi></mrow><annotation encoding="application/x-tex">v</annotation></semantics></math></span></span> gives us the full pre-image, <span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(\begin{bmatrix} 1 \\ 1 \end{bmatrix})</annotation></semantics></math></span></span>. 
+</p>
+
+<p>Or said another way,</p>
+
+<p><span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo><mo>=</mo><mi>v</mi><mo>+</mo><mi>K</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mrow><mtext>,&nbsp;for&nbsp;any&nbsp;</mtext><mstyle scriptlevel="0" displaystyle="false"><mi>v</mi><mo>∈</mo><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mstyle></mrow></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+f^{-1}(\begin{bmatrix}1 \\ 1\end{bmatrix}) = v + K &amp; \text{, for any $v \in f^{-1}(\begin{bmatrix}1 \\ 1\end{bmatrix})$} \\
+\end{aligned}</annotation></semantics></math></span></span></span>
+</p>
+
+<p>This seems kind of too good to be true. Is it? Let’s test it out!</p>
+
+<ol>
+  <li>
+    <p>Let’s take a point <span><span><math><semantics><mrow><mi>k</mi><mo>∈</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">k \in K</annotation></semantics></math></span></span>. For instance, <span><span><math><semantics><mrow><mi>k</mi><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>6</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">k = \begin{bmatrix} -3 \\ 6 \\ 2 \end{bmatrix}</annotation></semantics></math></span></span>.</p>
+  </li>
+  <li>
+    <p>Let’s take a <span><span><math><semantics><mrow><mi>v</mi><mo>∈</mo><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">v \in f^{-1}(\begin{bmatrix} 1 \\ 1 \end{bmatrix})</annotation></semantics></math></span></span> like <span><span><math><semantics><mrow><mi>v</mi><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">v = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}</annotation></semantics></math></span></span>.</p>
+  </li>
+</ol>
+
+<p>What’s <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>k</mi><mo>+</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(k + v)</annotation></semantics></math></span></span>?</p>
+
+<p><span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>f</mi><mo>(</mo><mi>k</mi><mo>+</mo><mi>v</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>f</mi><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>6</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>+</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>f</mi><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>7</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>F</mi><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>7</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>3</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>3</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>7</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>2</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+f(k + v) &amp;= f(\begin{bmatrix} -3 \\ 6 \\ 2 \end{bmatrix} + \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}) \\
+&amp;= f(\begin{bmatrix} -3 \\ 7 \\ 2 \end{bmatrix}) \\
+&amp;= F \begin{bmatrix} -3 \\ 7 \\ 2 \end{bmatrix} \\
+&amp;= \begin{bmatrix} 2 &amp; 1 &amp; 0 \\ 0 &amp; 1 &amp; 3 \end{bmatrix} \begin{bmatrix} -3 \\ 7 \\ 2 \end{bmatrix} \\
+&amp;= \begin{bmatrix} 1 \\ 1 \end{bmatrix}
+\end{aligned}</annotation></semantics></math></span></span></span></p>
+
+<p>So it is indeed the case here that <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>k</mi><mo>+</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(k+v)</annotation></semantics></math></span></span> is <span><span><math><semantics><mrow><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix}1 \\1 \end{bmatrix}</annotation></semantics></math></span></span>!</p>
+
+<hr>
+
+<h3 id="all-translations-of-the-kernel-are-pre-images">All Translations of the Kernel are Pre-Images</h3>
+
+<p>Ok there’s something kind of mind blowing going on here:</p>
+
+<ol>
+  <li>We took one point in <span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(\begin{bmatrix} 1 \\ 1 \end{bmatrix})</annotation></semantics></math></span></span>.</li>
+  <li>We added <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> to it.</li>
+  <li>And suddenly we got <strong>ALL</strong> of <span><span><math><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>(</mo><mrow><mo fence="true">[</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn></mrow></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">f^{-1}(\begin{bmatrix} 1 \\ 1 \end{bmatrix})</annotation></semantics></math></span></span>!</li>
+</ol>
+
+<p>In fact this is true more generally!</p>
+
+<p>
+If you give me <strong>ANY</strong> point that maps to some point <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v)</annotation></semantics></math></span></span>, say <span><span><math><semantics><mrow><mi>v</mi></mrow><annotation encoding="application/x-tex">v</annotation></semantics></math></span></span>, then I can find <strong>ALL</strong> the points that map to <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v)</annotation></semantics></math></span></span> by just adding <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span>.
+</p>
+
+<hr>
+
+<h3 id="breaking-down-why">Breaking Down Why</h3>
+
+<p>Let’s break the above statement down into two parts.</p>
+
+<ol>
+  <li>First, we’re saying that given some <span><span><math><semantics><mrow><mi>v</mi></mrow><annotation encoding="application/x-tex">v</annotation></semantics></math></span></span>, all points in the set <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span> will map to the same place as <span><span><math><semantics><mrow><mi>v</mi></mrow><annotation encoding="application/x-tex">v</annotation></semantics></math></span></span> (i.e. <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>+</mo><mi>K</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v) = f(v+K)</annotation></semantics></math></span></span>).</li>
+  <li>Next, these are ALL the points that map to <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v)</annotation></semantics></math></span></span>. Or, every point that maps to <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v)</annotation></semantics></math></span></span> must be in the set <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span>.</li>
+</ol>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/two_parts.jpeg">
+    The first statement (left hand side) simply states that all points on the line <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span> must map to <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v)</annotation></semantics></math></span></span>. The second statement says that if a point maps to <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v)</annotation></semantics></math></span></span>, like <span><span><math><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span></span>, and <span><span><math><semantics><mrow><mi>B</mi></mrow><annotation encoding="application/x-tex">B</annotation></semantics></math></span></span> above, then they must also fall on the line <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span>.
+</p>
+
+<p>Let’s prove each of the above statements more formally, starting with the first.</p>
+
+<h5 id="1-all-points-in-the-set-vkvkvk-will-map-to-the-same-place-as-vvv">1. all points in the set <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span> will map to the same place as <span><span><math><semantics><mrow><mi>v</mi></mrow><annotation encoding="application/x-tex">v</annotation></semantics></math></span></span></h5>
+
+<p>A more formal way of saying this is:</p>
+
+<p><span><span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>+</mo><mi>K</mi><mo>)</mo><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo><mtext>,&nbsp;for&nbsp;any&nbsp;</mtext><mi>v</mi><mo>∈</mo><msup><mi>R</mi><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">f(v+K) = f(v) \text{, for any } v \in R^3 </annotation></semantics></math></span></span></span></p>
+
+<p>Let’s break down why this is true. Take any <span><span><math><semantics><mrow><mi>k</mi><mo>∈</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">k \in K</annotation></semantics></math></span></span> (in the kernel). Then,</p>
+
+<p><span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>+</mo><mi>k</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>+</mo><mi>f</mi><mo>(</mo><mi>k</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow><mtext>Since&nbsp;&nbsp;is&nbsp;a&nbsp;linear&nbsp;function</mtext><mstyle scriptlevel="0" displaystyle="false"><mi>f</mi></mstyle></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>+</mo><mi>k</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>+</mo><mn>0</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mtext>Since&nbsp;</mtext><mi>k</mi><mo>∈</mo><mi>K</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>+</mo><mi>k</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+f(v+k) &amp;= f(v) + f(k) &amp; \text{Since $f$ is a linear function} \\
+f(v+k) &amp;= f(v) + 0 &amp; \text{Since } k \in K\\
+f(v+k) &amp;= f(v)
+\end{aligned}</annotation></semantics></math></span></span></span></p>
+
+<p>The below video shows this visually.</p>
+
+<div>
+    <iframe src="http://web.archive.org/web/20230205213247if_/https://player.vimeo.com/video/330255721?quality=720p" width="640" height="564" frameborder="0" allow="autoplay; fullscreen" allowfullscreen=""></iframe>
+    <p>
+        By decomposing <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">v+k</annotation></semantics></math></span></span> into <span><span><math><semantics><mrow><mi>v</mi></mrow><annotation encoding="application/x-tex">v</annotation></semantics></math></span></span>, and <span><span><math><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span></span>, we see that <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>+</mo><mi>k</mi><mo>)</mo><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v+k) = f(v)</annotation></semantics></math></span></span>.
+    </p>
+</div>
+
+<p>Additionally, given this is true for some <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">v+k</annotation></semantics></math></span></span>, <strong>this is true for all points on the line <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span></strong>. The reason is that the different amounts of <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> all contribute nothing different and it’s only the value of <span><span><math><semantics><mrow><mi>v</mi></mrow><annotation encoding="application/x-tex">v</annotation></semantics></math></span></span> that matters to <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span>. This is shown below:</p>
+
+<div>
+    <iframe src="http://web.archive.org/web/20230205213247if_/https://player.vimeo.com/video/331617105?quality=720p" width="640" height="480" frameborder="0" allow="autoplay; fullscreen" allowfullscreen=""></iframe>
+    <p>
+        Any point in <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span>, such as <span><span><math><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span></span>, <span><span><math><semantics><mrow><msup><mi>k</mi><mo mathvariant="normal">′</mo></msup></mrow><annotation encoding="application/x-tex">k'</annotation></semantics></math></span></span>, and <span><span><math><semantics><mrow><msup><mi>k</mi><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup></mrow><annotation encoding="application/x-tex">k''</annotation></semantics></math></span></span>, does not change the result of <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span>. Hence, <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>+</mo><mi>K</mi><mo>)</mo><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v+K) = f(v)</annotation></semantics></math></span></span>.
+    </p>
+</div>
+
+<p>Let’s now move to the next statement.</p>
+
+<hr>
+
+<h5 id="2-every-point-that-maps-to-fvfvfv-must-be-in-the-set-vkvkvk">2. Every point that maps to <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v)</annotation></semantics></math></span></span> must be in the set <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span></h5>
+
+<p>Essentially, this is saying that there can be no point <span><span><math><semantics><mrow><mi>w</mi></mrow><annotation encoding="application/x-tex">w</annotation></semantics></math></span></span> such that <span><span><math><semantics><mrow><mi>w</mi></mrow><annotation encoding="application/x-tex">w</annotation></semantics></math></span></span> maps to <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v)</annotation></semantics></math></span></span> but is not in <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span>.</p>
+
+<p>Let’s prove this.</p>
+
+<p>Choose any <span><span><math><semantics><mrow><mi>v</mi><mo separator="true">,</mo><mi>w</mi></mrow><annotation encoding="application/x-tex">v, w</annotation></semantics></math></span></span> such that <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>=</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup></mrow><annotation encoding="application/x-tex">f(v) = v'</annotation></semantics></math></span></span> and <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>w</mi><mo>)</mo><mo>=</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup></mrow><annotation encoding="application/x-tex">f(w) = v'</annotation></semantics></math></span></span>. We wish to show that <span><span><math><semantics><mrow><mi>w</mi><mo>∈</mo><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">w \in v+K</annotation></semantics></math></span></span>.</p>
+
+<ol>
+  <li>Let <span><span><math><semantics><mrow><msup><mi>w</mi><mo mathvariant="normal">′</mo></msup><mo>=</mo><mi>w</mi><mo>−</mo><mi>v</mi></mrow><annotation encoding="application/x-tex">w' = w - v</annotation></semantics></math></span></span>.</li>
+  <li>Then <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><msup><mi>w</mi><mo mathvariant="normal">′</mo></msup><mo>)</mo><mo>=</mo><mi>f</mi><mo>(</mo><mi>w</mi><mo>−</mo><mi>v</mi><mo>)</mo><mo>=</mo><mi>f</mi><mo>(</mo><mi>w</mi><mo>)</mo><mo>−</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">f(w') = f(w - v) = f(w) - f(v) = 0</annotation></semantics></math></span></span>.</li>
+  <li>Hence <span><span><math><semantics><mrow><msup><mi>w</mi><mo mathvariant="normal">′</mo></msup><mo>∈</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">w' \in K</annotation></semantics></math></span></span> (as all points that map to <span><span><math><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span></span> are in <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span>).</li>
+  <li>Thus, <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><msup><mi>w</mi><mo mathvariant="normal">′</mo></msup><mo>∈</mo><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v + w' \in v +K</annotation></semantics></math></span></span>.</li>
+  <li>Since <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><msup><mi>w</mi><mo mathvariant="normal">′</mo></msup><mo>=</mo><mi>v</mi><mo>+</mo><mi>w</mi><mo>−</mo><mi>v</mi><mo>=</mo><mi>w</mi></mrow><annotation encoding="application/x-tex">v+w' = v + w - v = w</annotation></semantics></math></span></span>,  <span><span><math><semantics><mrow><mi>w</mi><mo>∈</mo><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">w \in v +K</annotation></semantics></math></span></span>.</li>
+</ol>
+
+<p>So we’ve successfully proved our two points!</p>
+
+<hr>
+
+<h3 id="the-relation-between-translations-of-kkk-and-points-in-the-image">The Relation Between Translations of <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> and Points in the Image</h3>
+
+<p>We’ve already seen something really cool - every translation of <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> is the full pre-image of a point in <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span>.</p>
+
+<p>Now is there any relation between how far apart two translations of <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> are (say <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span> and <span><span><math><semantics><mrow><mi>w</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">w+K</annotation></semantics></math></span></span>) and how far apart their images are (<span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v)</annotation></semantics></math></span></span>, <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><mi>w</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">f(w)</annotation></semantics></math></span></span>)?</p>
+
+<p>Yes!</p>
+
+<p>
+If <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span> and <span><span><math><semantics><mrow><mi>w</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">w+K</annotation></semantics></math></span></span> are <span><span><math><semantics><mrow><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup></mrow><annotation encoding="application/x-tex">v'</annotation></semantics></math></span></span> apart, their images will be <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v')</annotation></semantics></math></span></span> apart!
+
+<br>
+
+</p>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/distances.jpeg">
+    If <span><span><math><semantics><mrow><mi>v</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">v+K</annotation></semantics></math></span></span> and <span><span><math><semantics><mrow><mi>w</mi><mo>+</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">w+K</annotation></semantics></math></span></span> are <span><span><math><semantics><mrow><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup></mrow><annotation encoding="application/x-tex">v'</annotation></semantics></math></span></span> apart, their images will be <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v')</annotation></semantics></math></span></span> apart.
+</p>
+
+<p>Why is this the case? It again follows pretty simply:</p>
+
+<p><span><span><span><math><semantics><mrow><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>w</mi><mo>+</mo><mi>K</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>v</mi><mo>+</mo><mi>K</mi><mo>+</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup><mo>+</mo><mi>K</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow><mtext>Since&nbsp;&nbsp;and&nbsp;&nbsp;are&nbsp;&nbsp;apart</mtext><mstyle scriptlevel="0" displaystyle="false"><mi>w</mi><mo>+</mo><mi>K</mi></mstyle><mstyle scriptlevel="0" displaystyle="false"><mi>v</mi><mo>+</mo><mi>K</mi></mstyle><mstyle scriptlevel="0" displaystyle="false"><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup></mstyle></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>w</mi><mo>+</mo><mi>K</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>v</mi><mo>+</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup><mo>+</mo><mi>K</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mtext>&nbsp;</mtext></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>f</mi><mo>(</mo><mi>w</mi><mo>+</mo><mi>K</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>+</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup><mo>+</mo><mi>K</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow><mtext>apply&nbsp;</mtext><mstyle scriptlevel="0" displaystyle="false"><mi>f</mi></mstyle></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>f</mi><mo>(</mo><mi>w</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>+</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow><mtext>Since&nbsp;</mtext><mstyle scriptlevel="0" displaystyle="false"><mi>f</mi><mo>(</mo><mi>w</mi><mo>+</mo><mi>K</mi><mo>)</mo><mo>=</mo><mi>f</mi><mo>(</mo><mi>w</mi><mo>)</mo></mstyle></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>f</mi><mo>(</mo><mi>w</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>f</mi><mo>(</mo><mi>v</mi><mo>)</mo><mo>+</mo><mi>f</mi><mo>(</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mtext>Hence&nbsp;f(v’)&nbsp;apart</mtext></mrow></mstyle></mtd></mtr></mtable></mrow><annotation encoding="application/x-tex">\begin{aligned}
+w+K &amp;= v+K + v'+K &amp; \text{Since $w+K$ and $v+K$ are $v'$ apart} \\
+w+K &amp;= v+v' + K &amp; \text{ } \\
+f(w+K) &amp;= f(v+v'+K) &amp; \text{apply $f$} \\
+f(w) &amp;= f(v+v') &amp; \text{Since $f(w+K) = f(w)$} \\
+f(w) &amp;= f(v) + f(v') &amp; \text{Hence f(v') apart}
+\end{aligned}</annotation></semantics></math></span></span></span></p>
+
+<hr>
+
+<h3 id="overall-space">Overall Space</h3>
+
+<p>Let’s now take a step back and view what’s happening in the overall space.</p>
+
+<p>Every point in the image can be seen as the image of some translation of <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span>. As we move <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> around, we get new points in the image!</p>
+
+<p><img src="https://dhruvonmath.com/web/20230205213247im_/https://www.dhruvonmath.com/public/images/kernels/overall_space.gif">
+</p>
+
+<hr>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>We’ve now seen some really cool things that you may not have noticed before:</p>
+
+<ol>
+  <li>Every matrix is a linear function and that linear function will have some <strong>kernel</strong> <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span> that maps to <span><span><math><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span></span>.</li>
+  <li>All pre-images of output points are just going to be <strong>translations of <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span></strong>.</li>
+  <li>If <span><span><math><semantics><mrow><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup></mrow><annotation encoding="application/x-tex">v'</annotation></semantics></math></span></span> is the distance between the translations of <span><span><math><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span></span>, <span><span><math><semantics><mrow><mi>f</mi><mo>(</mo><msup><mi>v</mi><mo mathvariant="normal">′</mo></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">f(v')</annotation></semantics></math></span></span> is the distance between their images.</li>
+</ol>
+
+<p>The last point actually leads us to the first isomorphism theorem of group theory. This broadly states that the relation between the sets of pre-images of a special type of function known as a homomorphism (in our case <span><span><math><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span></span>) is the exact same as the relation between the set of output points (we’ll go into this in the next blog post!).</p>
+
+<p>There are many practical uses of this knowledge but I wanted to share it for simpler reasons.  Sometimes math is just pretty - it has all these cool properties that fit together so nicely that you can’t help but enjoy seeing them.</p>
+
+<p>For example:</p>
+
+<ol>
+  <li>
+    <p>Who would have thought that all the pre-image sets are just translations of each other?</p>
+  </li>
+  <li>
+    <p>Or that the relation between these pre-image sets mirrors the relation between the points in the image?</p>
+  </li>
+</ol>
+
+<p>I hope you enjoyed getting a taste of some abstract algebra and I’ll see you in the next post!</p>
+
+
+  
+</article></div>
+  </div>
+</body>
+</html>

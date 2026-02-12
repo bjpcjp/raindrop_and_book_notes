@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Go · How I Start.</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Go · How I Start.</h1>
+    <p><strong>URL:</strong> <a href="http://howistart.org/posts/go/1">http://howistart.org/posts/go/1</a></p>
+    <p><strong>Tags:</strong> golang</p>
+    <p><strong>Bookmark ID:</strong> 876784012</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><span>Written by</span>
+Peter Bourgon<br><span>on&nbsp;</span><time datetime="2014-09-01 00:00:00 +0000 UTC">September 1, 2014</time></p><h2>Go</h2><p>Go is a lovely little programming language
+designed by <a href="https://en.wikipedia.org/wiki/Go_(programming_language)#History">smart people you can trust</a>
+and continuously improved by <a href="https://groups.google.com/forum/#!forum/golang-nuts">a large and growing open-source community</a>.</p><p>Go is meant to be simple, but sometimes the conventions can be a little hard to grasp.
+I’d like to show you how I start all of my Go projects, and how to use Go’s idioms.
+Let’s build a backend service for a web app.</p><ol><li><a href="#setting-up-your-environment">Setting up your environment</a></li><li><a href="#a-new-project">A new project</a></li><li><a href="#making-a-web-server">Making a web server</a></li><li><a href="#adding-more-routes">Adding more routes</a></li><li><a href="#querying-multiple-apis">Querying multiple APIs</a></li><li><a href="#make-it-concurrent">Make it concurrent</a></li><li><a href="#simplicity">Simplicity</a></li><li><a href="#further-exercises">Further exercises</a></li></ol><h2 id="setting-up-your-environment">Setting up your environment</h2><p>The first step is, of course, to install Go.
+You can use <a href="https://golang.org/doc/install">the binary distribution for your operating system</a> from the official site.
+If you use Homebrew on Mac, <code>brew install go</code> works well.
+When you’re done, this should work:</p><pre tabindex="0"><code>$ go version
+go version go 1.3.1 darwin/amd64
+</code></pre><p>Once installed, the only other thing to do is to set your GOPATH.
+This is the root directory that will hold all of your Go code and built artifacts.
+The Go tooling will create 3 subdirectories in your GOPATH: bin, pkg, and src.
+Some people set it to something like <code>$HOME/go</code>, but I prefer plain <code>$HOME</code>.
+Make sure it gets exported to your environment.
+If you use bash, something like this should work:</p><pre tabindex="0"><code>$ echo 'export GOPATH=$HOME' &gt;&gt; $HOME/.profile
+$ source $HOME/.profile
+$ go env | grep GOPATH
+GOPATH="/Users/peter"
+</code></pre><p>There are a lot of editors and plugins available for Go.
+I’m personally a huge fan of Sublime Text and the excellent <a href="https://github.com/DisposaBoy/GoSublime">GoSublime</a> plugin.
+But the language is straightforward enough, especially for a small project, that a plain text editor is more than sufficient.
+I work with professional, full-time Go developers who still use vanilla vim, without even syntax highlighting.
+You definitely don’t need more than that to get started.
+As always, simplicity is king.</p><h2 id="a-new-project">A new project</h2><p>With a functioning environment, we’ll make a new directory for the project.
+The Go toolchain expects all source code to exist within $GOPATH/src, so we always work there.
+The toolchain can also directly import and interact with projects hosted on sites like GitHub or Bitbucket,
+assuming they live in the right place.</p><p>For this example, create a new, empty repository on GitHub. I’ll assume it’s called “hello”.
+Then, make a home for it in your $GOPATH.</p><pre tabindex="0"><code>$ mkdir -p $GOPATH/src/github.com/your-username
+$ cd $GOPATH/src/github.com/your-username
+$ git clone <a href="https://howistart.org/cdn-cgi/l/email-protection" data-cfemail="7b1c120f3b1c120f130e1955181416">[email&nbsp;protected]</a>:your-username/hello
+$ cd hello
+</code></pre><p>Great.
+Create <code>main.go</code>, which will be our absolute-minimum Go program.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>package</span> <span>main</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>main</span><span>()</span> <span>{</span>
+</span></span><span><span>    <span>println</span><span>(</span><span>"hello!"</span><span>)</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Invoke <code>go build</code> to compile everything in the current directory.
+It’ll produce a binary with the same name as the directory.</p><pre tabindex="0"><code>$ go build
+$ ./hello
+hello!
+</code></pre><p>Easy!
+Even after several years of writing Go, I still start all of my new projects like this.
+An empty git repo, a <code>main.go</code>, and a little bit of typing.</p><p>Since we took care to follow the common conventions, your application is automatically <code>go get</code>-able.
+If you commit and push this single file to GitHub, anyone with a working Go installation should be able to do this:</p><pre tabindex="0"><code>$ go get github.com/your-username/hello
+$ $GOPATH/bin/hello
+hello!
+</code></pre><h2 id="making-a-web-server">Making a web server</h2><p>Let’s turn our hello, world into a web server.
+Here’s the full program.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>package</span> <span>main</span>
+</span></span><span><span>
+</span></span><span><span><span>import</span> <span>"net/http"</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>main</span><span>()</span> <span>{</span>
+</span></span><span><span>    <span>http</span><span>.</span><span>HandleFunc</span><span>(</span><span>"/"</span><span>,</span> <span>hello</span><span>)</span>
+</span></span><span><span>    <span>http</span><span>.</span><span>ListenAndServe</span><span>(</span><span>":8080"</span><span>,</span> <span>nil</span><span>)</span>
+</span></span><span><span><span>}</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>hello</span><span>(</span><span>w</span> <span>http</span><span>.</span><span>ResponseWriter</span><span>,</span> <span>r</span> <span>*</span><span>http</span><span>.</span><span>Request</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>w</span><span>.</span><span>Write</span><span>([]</span><span>byte</span><span>(</span><span>"hello!"</span><span>))</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>There’s a little bit to unpack.
+First, we need to import the <a href="https://golang.org/pkg/net/http">net/http</a> package from the standard library.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>import</span> <span>"net/http"</span>
+</span></span></code></pre></div><p>Then, in the main function, we install a handler function at the root path of our webserver.
+<a href="https://golang.org/pkg/net/http/#HandleFunc">http.HandleFunc</a> operates on the default HTTP router, officially called a
+<a href="https://golang.org/pkg/net/http/#ServeMux">ServeMux</a>.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>http</span><span>.</span><span>HandleFunc</span><span>(</span><span>"/"</span><span>,</span> <span>hello</span><span>)</span>
+</span></span></code></pre></div><p>The function hello is an <a href="https://golang.org/pkg/net/http/#HandlerFunc">http.HandlerFunc</a>,
+which means it has a specific type signature, and can be passed as an argument to HandleFunc.
+Every time a new request comes into the HTTP server matching the root path, the server will spawn a new goroutine executing the hello function.
+And the hello function simply uses the <a href="https://golang.org/pkg/net/http/#ResponseWriter">http.ResponseWriter</a> to write a response to the client.
+Since http.ResponseWriter.Write takes the more general <code>[]byte</code>, or byte-slice, as a parameter, we do a simple type conversion of our string.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>func</span> <span>hello</span><span>(</span><span>w</span> <span>http</span><span>.</span><span>ResponseWriter</span><span>,</span> <span>r</span> <span>*</span><span>http</span><span>.</span><span>Request</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>w</span><span>.</span><span>Write</span><span>([]</span><span>byte</span><span>(</span><span>"hello!"</span><span>))</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Finally, we start the HTTP server on port 8080 and with the default ServeMux via <a href="https://golang.org/pkg/net/http/#ListenAndServe">http.ListenAndServe</a>.
+That’s a synchronous, or blocking, call, which will keep the program alive until interrupted.
+Compile and run just as before.</p><pre tabindex="0"><code>$ go build
+$ ./hello
+</code></pre><p>And in another terminal, or your browser, make an HTTP request.</p><pre tabindex="0"><code>$ curl http://localhost:8080
+hello!
+</code></pre><p>Easy!
+No frameworks to install, no dependencies to download, no project skeletons to create.
+Even the binary itself is native code, statically linked, with no runtime dependencies.
+Plus, the standard library’s HTTP server is production-grade, with defenses against common attacks.
+It can serve requests directly from the live internet—no intermediary required.</p><h2 id="adding-more-routes">Adding more routes</h2><p>We can do something more interesting than just say hello.
+Let’s take a city as input, call out to a weather API, and forward a response with the temperature.
+The <a href="http://openweathermap.org/">OpenWeatherMap</a>
+provides a <a href="http://openweathermap.org/api">simple and free API</a>
+for <a href="http://openweathermap.org/current">current forecast info</a>.
+<a href="http://home.openweathermap.org/users/sign_up">Register</a> for a free
+account to get an API key. OpenWeatherMap’s API can be <a href="http://api.openweathermap.org/data/2.5/weather?APPID=YOUR_API_KEY&amp;q=Tokyo">queried by
+city</a>.
+It returns responses like this (partially redacted):</p><div><pre tabindex="0"><code data-lang="json"><span><span><span>{</span>
+</span></span><span><span>    <span>"name"</span><span>:</span> <span>"Tokyo"</span><span>,</span>
+</span></span><span><span>    <span>"coord"</span><span>:</span> <span>{</span>
+</span></span><span><span>        <span>"lon"</span><span>:</span> <span>139.69</span><span>,</span>
+</span></span><span><span>        <span>"lat"</span><span>:</span> <span>35.69</span>
+</span></span><span><span>    <span>},</span>
+</span></span><span><span>    <span>"weather"</span><span>:</span> <span>[</span>
+</span></span><span><span>        <span>{</span>
+</span></span><span><span>            <span>"id"</span><span>:</span> <span>803</span><span>,</span>
+</span></span><span><span>            <span>"main"</span><span>:</span> <span>"Clouds"</span><span>,</span>
+</span></span><span><span>            <span>"description"</span><span>:</span> <span>"broken clouds"</span><span>,</span>
+</span></span><span><span>            <span>"icon"</span><span>:</span> <span>"04n"</span>
+</span></span><span><span>        <span>}</span>
+</span></span><span><span>    <span>],</span>
+</span></span><span><span>    <span>"main"</span><span>:</span> <span>{</span>
+</span></span><span><span>        <span>"temp"</span><span>:</span> <span>296.69</span><span>,</span>
+</span></span><span><span>        <span>"pressure"</span><span>:</span> <span>1014</span><span>,</span>
+</span></span><span><span>        <span>"humidity"</span><span>:</span> <span>83</span><span>,</span>
+</span></span><span><span>        <span>"temp_min"</span><span>:</span> <span>295.37</span><span>,</span>
+</span></span><span><span>        <span>"temp_max"</span><span>:</span> <span>298.15</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Go is a statically-typed language, so we should create a structure that mirrors this response format.
+We don’t need to capture every piece of information, just the stuff we care about.
+For now, let’s just get the city name and temperature, which is (hilariously) returned in Kelvin.
+We’ll define a struct to represent the data we need returned by the weather API.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>type</span> <span>weatherData</span> <span>struct</span> <span>{</span>
+</span></span><span><span>    <span>Name</span> <span>string</span> <span>`json:"name"`</span>
+</span></span><span><span>    <span>Main</span> <span>struct</span> <span>{</span>
+</span></span><span><span>        <span>Kelvin</span> <span>float64</span> <span>`json:"temp"`</span>
+</span></span><span><span>    <span>}</span> <span>`json:"main"`</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>The <code>type</code> keyword defines a new type, which we call <code>weatherData</code>, and declare as a struct.
+Each field in the struct has a name (e.g. <code>Name</code>, <code>Main</code>),
+a type (<code>string</code>, another anonymous <code>struct</code>),
+and what’s known as a tag.
+Tags are like metadata, and allow us to use the <a href="https://golang.org/pkg/encoding/json">encoding/json</a> package to
+directly unmarshal the API’s response into our struct.
+It’s a bit more typing compared to dynamic languages like Python or Ruby,
+but it gets us the highly desirable property of type safety.
+For more about JSON and Go, see
+<a href="https://blog.golang.org/json-and-go">this blog post</a>, or
+<a href="https://gobyexample.com/json">this example code</a>.</p><p>We’ve defined the structure, and now we need to define a way to populate it.
+Let’s write a function to do that.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>func</span> <span>query</span><span>(</span><span>city</span> <span>string</span><span>)</span> <span>(</span><span>weatherData</span><span>,</span> <span>error</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>resp</span><span>,</span> <span>err</span> <span>:=</span> <span>http</span><span>.</span><span>Get</span><span>(</span><span>"http://api.openweathermap.org/data/2.5/weather?APPID=YOUR_API_KEY&amp;q="</span> <span>+</span> <span>city</span><span>)</span>
+</span></span><span><span>    <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>        <span>return</span> <span>weatherData</span><span>{},</span> <span>err</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>defer</span> <span>resp</span><span>.</span><span>Body</span><span>.</span><span>Close</span><span>()</span>
+</span></span><span><span>
+</span></span><span><span>    <span>var</span> <span>d</span> <span>weatherData</span>
+</span></span><span><span>
+</span></span><span><span>    <span>if</span> <span>err</span> <span>:=</span> <span>json</span><span>.</span><span>NewDecoder</span><span>(</span><span>resp</span><span>.</span><span>Body</span><span>).</span><span>Decode</span><span>(</span><span>&amp;</span><span>d</span><span>);</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>        <span>return</span> <span>weatherData</span><span>{},</span> <span>err</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>return</span> <span>d</span><span>,</span> <span>nil</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>The function takes a string representing the city, and returns a weatherData struct and an error.
+This is the fundamental error-handling idiom in Go.
+Functions encode behavior, and behaviors typically can fail.
+For us, the GET request against OpenWeatherMap can fail for any number of reasons,
+and the data returned might not be what we expect.
+In either case, we return a non-nil error to the client,
+who’s expected to deal it in a way that makes sense in the calling context.</p><p>If the <a href="https://golang.org/pkg/net/http/#Get">http.Get</a> succeeds,
+we <a href="https://golang.org/doc/effective_go.html#defer">defer</a> a call to close the response body,
+which will execute when we leave the function scope (when we return from the query function)
+and is an elegant form of resource management.
+Meanwhile, we allocate a weatherData struct, and use a <a href="https://golang.org/pkg/encoding/json/#Decoder">json.Decoder</a>
+to unmarshal from the response body directly into our struct.</p><p>As an aside, the <a href="https://golang.org/pkg/encoding/json/#NewDecoder">json.NewDecoder</a> leverages an elegant feature of Go, which are
+<a href="https://go-book.appspot.com/interfaces.html">interfaces</a>.
+The Decoder doesn’t take a concrete HTTP response body; rather, it takes an <a href="https://golang.org/pkg/io/#Reader">io.Reader</a> interface,
+which the <a href="https://golang.org/pkg/net/http/#Response">http.Response.Body</a> happens to satisfy.
+The Decoder supplies a behavior (Decode) which works just by invoking methods on types that satisfy other behaviors (Read).
+In Go, we tend to implement behavior in terms of functions operating on interfaces.
+It gives us a clean separation of data and control planes, easy testability with mocks, and code that’s a lot easier to reason about.</p><p>Finally, if the decode succeeds, we return the weatherData to the caller, with a nil error to indicate success.
+Now let’s wire that function up to a request handler.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>http</span><span>.</span><span>HandleFunc</span><span>(</span><span>"/weather/"</span><span>,</span> <span>func</span><span>(</span><span>w</span> <span>http</span><span>.</span><span>ResponseWriter</span><span>,</span> <span>r</span> <span>*</span><span>http</span><span>.</span><span>Request</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>city</span> <span>:=</span> <span>strings</span><span>.</span><span>SplitN</span><span>(</span><span>r</span><span>.</span><span>URL</span><span>.</span><span>Path</span><span>,</span> <span>"/"</span><span>,</span> <span>3</span><span>)[</span><span>2</span><span>]</span>
+</span></span><span><span>
+</span></span><span><span>    <span>data</span><span>,</span> <span>err</span> <span>:=</span> <span>query</span><span>(</span><span>city</span><span>)</span>
+</span></span><span><span>    <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>        <span>http</span><span>.</span><span>Error</span><span>(</span><span>w</span><span>,</span> <span>err</span><span>.</span><span>Error</span><span>(),</span> <span>http</span><span>.</span><span>StatusInternalServerError</span><span>)</span>
+</span></span><span><span>        <span>return</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>w</span><span>.</span><span>Header</span><span>().</span><span>Set</span><span>(</span><span>"Content-Type"</span><span>,</span> <span>"application/json; charset=utf-8"</span><span>)</span>
+</span></span><span><span>    <span>json</span><span>.</span><span>NewEncoder</span><span>(</span><span>w</span><span>).</span><span>Encode</span><span>(</span><span>data</span><span>)</span>
+</span></span><span><span><span>})</span>
+</span></span></code></pre></div><p>Here, we’re definining the handler inline, rather than as a separate function.
+We use <a href="https://golang.org/pkg/strings/#SplitN">strings.SplitN</a>
+to take everything in the path after <code>/weather/</code> and treat it as the city.
+We make our query, and if there’s an error, we report it to the client with the
+<a href="https://golang.org/pkg/net/http/#Error">http.Error</a> helper function.
+We need to return at that point, so the HTTP request is completed.
+Otherwise, we tell our client that we’re going to send them JSON data, and use
+<a href="https://golang.org/pkg/encoding/json/#NewEncoder">json.NewEncoder</a> to JSON-encode the weatherData directly.</p><p>The code so far is nice and procedural, and easy to understand.
+No opportunity for misinterpretation, and no way to miss the common errors.
+If we move the “hello, world” handler to <code>/hello</code>, and make the necessary imports, we have our complete program:</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>package</span> <span>main</span>
+</span></span><span><span>
+</span></span><span><span><span>import</span> <span>(</span>
+</span></span><span><span>    <span>"encoding/json"</span>
+</span></span><span><span>    <span>"net/http"</span>
+</span></span><span><span>    <span>"strings"</span>
+</span></span><span><span><span>)</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>main</span><span>()</span> <span>{</span>
+</span></span><span><span>    <span>http</span><span>.</span><span>HandleFunc</span><span>(</span><span>"/hello"</span><span>,</span> <span>hello</span><span>)</span>
+</span></span><span><span>
+</span></span><span><span>    <span>http</span><span>.</span><span>HandleFunc</span><span>(</span><span>"/weather/"</span><span>,</span> <span>func</span><span>(</span><span>w</span> <span>http</span><span>.</span><span>ResponseWriter</span><span>,</span> <span>r</span> <span>*</span><span>http</span><span>.</span><span>Request</span><span>)</span> <span>{</span>
+</span></span><span><span>        <span>city</span> <span>:=</span> <span>strings</span><span>.</span><span>SplitN</span><span>(</span><span>r</span><span>.</span><span>URL</span><span>.</span><span>Path</span><span>,</span> <span>"/"</span><span>,</span> <span>3</span><span>)[</span><span>2</span><span>]</span>
+</span></span><span><span>
+</span></span><span><span>        <span>data</span><span>,</span> <span>err</span> <span>:=</span> <span>query</span><span>(</span><span>city</span><span>)</span>
+</span></span><span><span>        <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>            <span>http</span><span>.</span><span>Error</span><span>(</span><span>w</span><span>,</span> <span>err</span><span>.</span><span>Error</span><span>(),</span> <span>http</span><span>.</span><span>StatusInternalServerError</span><span>)</span>
+</span></span><span><span>            <span>return</span>
+</span></span><span><span>        <span>}</span>
+</span></span><span><span>
+</span></span><span><span>        <span>w</span><span>.</span><span>Header</span><span>().</span><span>Set</span><span>(</span><span>"Content-Type"</span><span>,</span> <span>"application/json; charset=utf-8"</span><span>)</span>
+</span></span><span><span>        <span>json</span><span>.</span><span>NewEncoder</span><span>(</span><span>w</span><span>).</span><span>Encode</span><span>(</span><span>data</span><span>)</span>
+</span></span><span><span>    <span>})</span>
+</span></span><span><span>
+</span></span><span><span>    <span>http</span><span>.</span><span>ListenAndServe</span><span>(</span><span>":8080"</span><span>,</span> <span>nil</span><span>)</span>
+</span></span><span><span><span>}</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>hello</span><span>(</span><span>w</span> <span>http</span><span>.</span><span>ResponseWriter</span><span>,</span> <span>r</span> <span>*</span><span>http</span><span>.</span><span>Request</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>w</span><span>.</span><span>Write</span><span>([]</span><span>byte</span><span>(</span><span>"hello!"</span><span>))</span>
+</span></span><span><span><span>}</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>query</span><span>(</span><span>city</span> <span>string</span><span>)</span> <span>(</span><span>weatherData</span><span>,</span> <span>error</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>resp</span><span>,</span> <span>err</span> <span>:=</span> <span>http</span><span>.</span><span>Get</span><span>(</span><span>"http://api.openweathermap.org/data/2.5/weather?APPID=YOUR_API_KEY&amp;q="</span> <span>+</span> <span>city</span><span>)</span>
+</span></span><span><span>    <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>        <span>return</span> <span>weatherData</span><span>{},</span> <span>err</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>defer</span> <span>resp</span><span>.</span><span>Body</span><span>.</span><span>Close</span><span>()</span>
+</span></span><span><span>
+</span></span><span><span>    <span>var</span> <span>d</span> <span>weatherData</span>
+</span></span><span><span>
+</span></span><span><span>    <span>if</span> <span>err</span> <span>:=</span> <span>json</span><span>.</span><span>NewDecoder</span><span>(</span><span>resp</span><span>.</span><span>Body</span><span>).</span><span>Decode</span><span>(</span><span>&amp;</span><span>d</span><span>);</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>        <span>return</span> <span>weatherData</span><span>{},</span> <span>err</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>return</span> <span>d</span><span>,</span> <span>nil</span>
+</span></span><span><span><span>}</span>
+</span></span><span><span>
+</span></span><span><span><span>type</span> <span>weatherData</span> <span>struct</span> <span>{</span>
+</span></span><span><span>    <span>Name</span> <span>string</span> <span>`json:"name"`</span>
+</span></span><span><span>    <span>Main</span> <span>struct</span> <span>{</span>
+</span></span><span><span>        <span>Kelvin</span> <span>float64</span> <span>`json:"temp"`</span>
+</span></span><span><span>    <span>}</span> <span>`json:"main"`</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Build and run it, same as before.</p><pre tabindex="0"><code>$ go build
+$ ./hello
+</code></pre><pre tabindex="0"><code>$ curl http://localhost:8080/weather/tokyo
+{"name":"Tokyo","main":{"temp":295.9}}
+</code></pre><p>Commit and push!</p><h2 id="querying-multiple-apis">Querying multiple APIs</h2><p>Maybe we can build a more accurate temperature for a city, by querying and averaging multiple weather APIs.
+Unfortunately for us, most weather APIs require authentication.
+So, get yourself an API key for <a href="http://www.wunderground.com/weather/api">Weather Underground</a>.</p><p>Since we want the same behavior from all of our weather APIs, it makes sense to encode that behavior as an interface.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>type</span> <span>weatherProvider</span> <span>interface</span> <span>{</span>
+</span></span><span><span>    <span>temperature</span><span>(</span><span>city</span> <span>string</span><span>)</span> <span>(</span><span>float64</span><span>,</span> <span>error</span><span>)</span> <span>// in Kelvin, naturally
+</span></span></span><span><span><span></span><span>}</span>
+</span></span></code></pre></div><p>Now, we can transform our old OpenWeatherMap query function into a type that satisfies the weatherProvider interface.
+Since we don’t need to store any state to make the HTTP GET, we’ll just use an empty struct.
+And we’ll add a simple line of logging, so we can see what’s happening.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>type</span> <span>openWeatherMap</span> <span>struct</span><span>{}</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>(</span><span>w</span> <span>openWeatherMap</span><span>)</span> <span>temperature</span><span>(</span><span>city</span> <span>string</span><span>)</span> <span>(</span><span>float64</span><span>,</span> <span>error</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>resp</span><span>,</span> <span>err</span> <span>:=</span> <span>http</span><span>.</span><span>Get</span><span>(</span><span>"http://api.openweathermap.org/data/2.5/weather?APPID=YOUR_API_KEY&amp;q="</span> <span>+</span> <span>city</span><span>)</span>
+</span></span><span><span>    <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>        <span>return</span> <span>0</span><span>,</span> <span>err</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>defer</span> <span>resp</span><span>.</span><span>Body</span><span>.</span><span>Close</span><span>()</span>
+</span></span><span><span>
+</span></span><span><span>    <span>var</span> <span>d</span> <span>struct</span> <span>{</span>
+</span></span><span><span>        <span>Main</span> <span>struct</span> <span>{</span>
+</span></span><span><span>            <span>Kelvin</span> <span>float64</span> <span>`json:"temp"`</span>
+</span></span><span><span>        <span>}</span> <span>`json:"main"`</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>if</span> <span>err</span> <span>:=</span> <span>json</span><span>.</span><span>NewDecoder</span><span>(</span><span>resp</span><span>.</span><span>Body</span><span>).</span><span>Decode</span><span>(</span><span>&amp;</span><span>d</span><span>);</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>        <span>return</span> <span>0</span><span>,</span> <span>err</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>log</span><span>.</span><span>Printf</span><span>(</span><span>"openWeatherMap: %s: %.2f"</span><span>,</span> <span>city</span><span>,</span> <span>d</span><span>.</span><span>Main</span><span>.</span><span>Kelvin</span><span>)</span>
+</span></span><span><span>    <span>return</span> <span>d</span><span>.</span><span>Main</span><span>.</span><span>Kelvin</span><span>,</span> <span>nil</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Since we only want to extract the Kelvin temperature from the response, we can define the response struct inline.
+Otherwise, it’s pretty much the same as the query function, just defined as a method on an openWeatherMap struct.
+That way, we can use an instance of openWeatherMap as a weatherProvider.</p><p>Let’s do the same for the Weather Underground.
+The only difference is we need to provide an API key.
+We’ll store the key in the struct, and use it in the method.
+It will be a very similar function.</p><p>(Note that the Weather Underground doesn’t disambiguate cities quite as nicely as OpenWeatherMap.
+We’re skipping some important logic to handle ambiguous city names for the purposes of the example.)</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>type</span> <span>weatherUnderground</span> <span>struct</span> <span>{</span>
+</span></span><span><span>    <span>apiKey</span> <span>string</span>
+</span></span><span><span><span>}</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>(</span><span>w</span> <span>weatherUnderground</span><span>)</span> <span>temperature</span><span>(</span><span>city</span> <span>string</span><span>)</span> <span>(</span><span>float64</span><span>,</span> <span>error</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>resp</span><span>,</span> <span>err</span> <span>:=</span> <span>http</span><span>.</span><span>Get</span><span>(</span><span>"http://api.wunderground.com/api/"</span> <span>+</span> <span>w</span><span>.</span><span>apiKey</span> <span>+</span> <span>"/conditions/q/"</span> <span>+</span> <span>city</span> <span>+</span> <span>".json"</span><span>)</span>
+</span></span><span><span>    <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>        <span>return</span> <span>0</span><span>,</span> <span>err</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>defer</span> <span>resp</span><span>.</span><span>Body</span><span>.</span><span>Close</span><span>()</span>
+</span></span><span><span>
+</span></span><span><span>    <span>var</span> <span>d</span> <span>struct</span> <span>{</span>
+</span></span><span><span>        <span>Observation</span> <span>struct</span> <span>{</span>
+</span></span><span><span>            <span>Celsius</span> <span>float64</span> <span>`json:"temp_c"`</span>
+</span></span><span><span>        <span>}</span> <span>`json:"current_observation"`</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>if</span> <span>err</span> <span>:=</span> <span>json</span><span>.</span><span>NewDecoder</span><span>(</span><span>resp</span><span>.</span><span>Body</span><span>).</span><span>Decode</span><span>(</span><span>&amp;</span><span>d</span><span>);</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>        <span>return</span> <span>0</span><span>,</span> <span>err</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>kelvin</span> <span>:=</span> <span>d</span><span>.</span><span>Observation</span><span>.</span><span>Celsius</span> <span>+</span> <span>273.15</span>
+</span></span><span><span>    <span>log</span><span>.</span><span>Printf</span><span>(</span><span>"weatherUnderground: %s: %.2f"</span><span>,</span> <span>city</span><span>,</span> <span>kelvin</span><span>)</span>
+</span></span><span><span>    <span>return</span> <span>kelvin</span><span>,</span> <span>nil</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Now that we have a couple of weather providers, let’s write a function to query them all, and return the average temperature.
+For simplicity, if we encounter any errors, we’ll just give up.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>func</span> <span>temperature</span><span>(</span><span>city</span> <span>string</span><span>,</span> <span>providers</span> <span>...</span><span>weatherProvider</span><span>)</span> <span>(</span><span>float64</span><span>,</span> <span>error</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>sum</span> <span>:=</span> <span>0.0</span>
+</span></span><span><span>
+</span></span><span><span>    <span>for</span> <span>_</span><span>,</span> <span>provider</span> <span>:=</span> <span>range</span> <span>providers</span> <span>{</span>
+</span></span><span><span>        <span>k</span><span>,</span> <span>err</span> <span>:=</span> <span>provider</span><span>.</span><span>temperature</span><span>(</span><span>city</span><span>)</span>
+</span></span><span><span>        <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>            <span>return</span> <span>0</span><span>,</span> <span>err</span>
+</span></span><span><span>        <span>}</span>
+</span></span><span><span>
+</span></span><span><span>        <span>sum</span> <span>+=</span> <span>k</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>return</span> <span>sum</span> <span>/</span> <span>float64</span><span>(</span><span>len</span><span>(</span><span>providers</span><span>)),</span> <span>nil</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Notice that the function definition is very close to the weatherProvider temperature method.
+If we collect the individual weatherProviders into a type, and define the temperature method on that type,
+we can implement a meta-weatherProvider, comprised of other weatherProviders.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>type</span> <span>multiWeatherProvider</span> <span>[]</span><span>weatherProvider</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>(</span><span>w</span> <span>multiWeatherProvider</span><span>)</span> <span>temperature</span><span>(</span><span>city</span> <span>string</span><span>)</span> <span>(</span><span>float64</span><span>,</span> <span>error</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>sum</span> <span>:=</span> <span>0.0</span>
+</span></span><span><span>
+</span></span><span><span>    <span>for</span> <span>_</span><span>,</span> <span>provider</span> <span>:=</span> <span>range</span> <span>w</span> <span>{</span>
+</span></span><span><span>        <span>k</span><span>,</span> <span>err</span> <span>:=</span> <span>provider</span><span>.</span><span>temperature</span><span>(</span><span>city</span><span>)</span>
+</span></span><span><span>        <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>            <span>return</span> <span>0</span><span>,</span> <span>err</span>
+</span></span><span><span>        <span>}</span>
+</span></span><span><span>
+</span></span><span><span>        <span>sum</span> <span>+=</span> <span>k</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>return</span> <span>sum</span> <span>/</span> <span>float64</span><span>(</span><span>len</span><span>(</span><span>w</span><span>)),</span> <span>nil</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Perfect.
+We can pass a multiWeatherProvider anywhere that accepts a weatherProvider.</p><p>Now, we can wire that up to our HTTP server, very similar to before.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>func</span> <span>main</span><span>()</span> <span>{</span>
+</span></span><span><span>    <span>mw</span> <span>:=</span> <span>multiWeatherProvider</span><span>{</span>
+</span></span><span><span>        <span>openWeatherMap</span><span>{},</span>
+</span></span><span><span>        <span>weatherUnderground</span><span>{</span><span>apiKey</span><span>:</span> <span>"your-key-here"</span><span>},</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>http</span><span>.</span><span>HandleFunc</span><span>(</span><span>"/weather/"</span><span>,</span> <span>func</span><span>(</span><span>w</span> <span>http</span><span>.</span><span>ResponseWriter</span><span>,</span> <span>r</span> <span>*</span><span>http</span><span>.</span><span>Request</span><span>)</span> <span>{</span>
+</span></span><span><span>        <span>begin</span> <span>:=</span> <span>time</span><span>.</span><span>Now</span><span>()</span>
+</span></span><span><span>        <span>city</span> <span>:=</span> <span>strings</span><span>.</span><span>SplitN</span><span>(</span><span>r</span><span>.</span><span>URL</span><span>.</span><span>Path</span><span>,</span> <span>"/"</span><span>,</span> <span>3</span><span>)[</span><span>2</span><span>]</span>
+</span></span><span><span>
+</span></span><span><span>        <span>temp</span><span>,</span> <span>err</span> <span>:=</span> <span>mw</span><span>.</span><span>temperature</span><span>(</span><span>city</span><span>)</span>
+</span></span><span><span>        <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>            <span>http</span><span>.</span><span>Error</span><span>(</span><span>w</span><span>,</span> <span>err</span><span>.</span><span>Error</span><span>(),</span> <span>http</span><span>.</span><span>StatusInternalServerError</span><span>)</span>
+</span></span><span><span>            <span>return</span>
+</span></span><span><span>        <span>}</span>
+</span></span><span><span>
+</span></span><span><span>        <span>w</span><span>.</span><span>Header</span><span>().</span><span>Set</span><span>(</span><span>"Content-Type"</span><span>,</span> <span>"application/json; charset=utf-8"</span><span>)</span>
+</span></span><span><span>        <span>json</span><span>.</span><span>NewEncoder</span><span>(</span><span>w</span><span>).</span><span>Encode</span><span>(</span><span>map</span><span>[</span><span>string</span><span>]</span><span>interface</span><span>{}{</span>
+</span></span><span><span>            <span>"city"</span><span>:</span> <span>city</span><span>,</span>
+</span></span><span><span>            <span>"temp"</span><span>:</span> <span>temp</span><span>,</span>
+</span></span><span><span>            <span>"took"</span><span>:</span> <span>time</span><span>.</span><span>Since</span><span>(</span><span>begin</span><span>).</span><span>String</span><span>(),</span>
+</span></span><span><span>        <span>})</span>
+</span></span><span><span>    <span>})</span>
+</span></span><span><span>
+</span></span><span><span>    <span>http</span><span>.</span><span>ListenAndServe</span><span>(</span><span>":8080"</span><span>,</span> <span>nil</span><span>)</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Compile, run, and GET, just as before.
+In addition to the JSON response, you’ll see some output in your server logs.</p><pre tabindex="0"><code>$ ./hello
+2015/01/01 13:14:15 openWeatherMap: tokyo: 295.46
+2015/01/01 13:14:16 weatherUnderground: tokyo: 273.15
+</code></pre><pre tabindex="0"><code>$ curl http://localhost:8080/weather/tokyo
+{"city":"tokyo","temp":284.30499999999995,"took":"821.665230ms"}
+</code></pre><p>Commit and push!</p><h2 id="make-it-concurrent">Make it concurrent</h2><p>Right now we just query the APIs synchronously, one after the other.
+But there’s no reason we couldn’t query them at the same time.
+That should decrease our response times.</p><p>To do that, we leverage Go’s concurrency primitives: goroutines and channels.
+We’ll spawn each API query in its own goroutine, which will run concurrently.
+We’ll collect the responses in a single channel, and perform the average calculation when everything is finished.</p><div><pre tabindex="0"><code data-lang="go"><span><span><span>func</span> <span>(</span><span>w</span> <span>multiWeatherProvider</span><span>)</span> <span>temperature</span><span>(</span><span>city</span> <span>string</span><span>)</span> <span>(</span><span>float64</span><span>,</span> <span>error</span><span>)</span> <span>{</span>
+</span></span><span><span>    <span>// Make a channel for temperatures, and a channel for errors.
+</span></span></span><span><span><span></span>    <span>// Each provider will push a value into only one.
+</span></span></span><span><span><span></span>    <span>temps</span> <span>:=</span> <span>make</span><span>(</span><span>chan</span> <span>float64</span><span>,</span> <span>len</span><span>(</span><span>w</span><span>))</span>
+</span></span><span><span>    <span>errs</span> <span>:=</span> <span>make</span><span>(</span><span>chan</span> <span>error</span><span>,</span> <span>len</span><span>(</span><span>w</span><span>))</span>
+</span></span><span><span>
+</span></span><span><span>    <span>// For each provider, spawn a goroutine with an anonymous function.
+</span></span></span><span><span><span></span>    <span>// That function will invoke the temperature method, and forward the response.
+</span></span></span><span><span><span></span>    <span>for</span> <span>_</span><span>,</span> <span>provider</span> <span>:=</span> <span>range</span> <span>w</span> <span>{</span>
+</span></span><span><span>        <span>go</span> <span>func</span><span>(</span><span>p</span> <span>weatherProvider</span><span>)</span> <span>{</span>
+</span></span><span><span>            <span>k</span><span>,</span> <span>err</span> <span>:=</span> <span>p</span><span>.</span><span>temperature</span><span>(</span><span>city</span><span>)</span>
+</span></span><span><span>            <span>if</span> <span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>                <span>errs</span> <span>&lt;-</span> <span>err</span>
+</span></span><span><span>                <span>return</span>
+</span></span><span><span>            <span>}</span>
+</span></span><span><span>            <span>temps</span> <span>&lt;-</span> <span>k</span>
+</span></span><span><span>        <span>}(</span><span>provider</span><span>)</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>sum</span> <span>:=</span> <span>0.0</span>
+</span></span><span><span>
+</span></span><span><span>    <span>// Collect a temperature or an error from each provider.
+</span></span></span><span><span><span></span>    <span>for</span> <span>i</span> <span>:=</span> <span>0</span><span>;</span> <span>i</span> <span>&lt;</span> <span>len</span><span>(</span><span>w</span><span>);</span> <span>i</span><span>++</span> <span>{</span>
+</span></span><span><span>        <span>select</span> <span>{</span>
+</span></span><span><span>        <span>case</span> <span>temp</span> <span>:=</span> <span>&lt;-</span><span>temps</span><span>:</span>
+</span></span><span><span>            <span>sum</span> <span>+=</span> <span>temp</span>
+</span></span><span><span>        <span>case</span> <span>err</span> <span>:=</span> <span>&lt;-</span><span>errs</span><span>:</span>
+</span></span><span><span>            <span>return</span> <span>0</span><span>,</span> <span>err</span>
+</span></span><span><span>        <span>}</span>
+</span></span><span><span>    <span>}</span>
+</span></span><span><span>
+</span></span><span><span>    <span>// Return the average, same as before.
+</span></span></span><span><span><span></span>    <span>return</span> <span>sum</span> <span>/</span> <span>float64</span><span>(</span><span>len</span><span>(</span><span>w</span><span>)),</span> <span>nil</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre></div><p>Now, our requests take as long as the slowest individual weatherProvider.
+And we only needed to change the behavior of the multiWeatherProvider,
+which, notably, still satisfies the simple, synchronous weatherProvider interface.</p><p>Commit and push!</p><h2 id="simplicity">Simplicity</h2><p>We’ve gone from ‘hello world’ to a concurrent, REST-ish backend server in a handful of steps and using only the Go standard library.
+Our code can be fetched and deployed on <a href="https://golang.org/doc/install#requirements">nearly any server architecture</a>.
+The resulting binary is self-contained and fast.
+And, most importantly, the code is straightforward to read and reason about.
+It can easily be maintained and extended, as necessary.
+I believe all of these properties are a function of Go’s steady and philosophic devotion to simplicity.
+As Rob “Commander” Pike puts it,
+<a href="https://commandcenter.blogspot.com/2012/06/less-is-exponentially-more.html">less is exponentially more</a>.</p><h2 id="further-exercises">Further exercises</h2><p><a href="https://github.com/peterbourgon/how-i-start-go">Fork</a> the final code on github.</p><p>Can you add another weatherProvider? (Hint: <a href="https://developer.forecast.io/">forecast.io</a> is a good one.)</p><p>Can you implement a timeout in the multiWeatherProvider? (Hint: look at <a href="https://golang.org/pkg/time/#After">time.After</a>.)</p></div></div>
+  </div>
+</body>
+</html>

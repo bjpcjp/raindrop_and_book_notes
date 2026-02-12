@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cross-chain Deals and Adversarial Commerce</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Cross-chain Deals and Adversarial Commerce</h1>
+    <p><strong>URL:</strong> <a href="http://muratbuffalo.blogspot.com/2019/12/cross-chain-deals-and-adversarial.html">http://muratbuffalo.blogspot.com/2019/12/cross-chain-deals-and-adversarial.html</a></p>
+    <p><strong>Tags:</strong> ecommerce, game-theory, prodmgmt, trust</p>
+    <p><strong>Bookmark ID:</strong> 876785166</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="post-body-652283157088368614">
+<p><a href="https://arxiv.org/pdf/1905.09743.pdf">This paper appeared in VLDB'19 and is authored by Maurice Herlihy, Barbara Liskov, and Liuba Shrira.</a></p><p>
+
+How can autonomous, mutually-distrusting parties cooperate safely and effectively?</p><p>
+
+This question is very important for enabling commerce. The trading world answered this question so far by relying on a trusted third party, and in the worst case, on the government/rule-of-law to litigate parties deviating from their contracts. With prevalence of e-commerce and decentralization, this question is recently &nbsp;considered in *trustless* settings by modern distributed data management systems.</p><p>
+
+Solving the trustless multi-party cooperation when all the parties use the same blockchain is achievable via smartcontracts, but solving the problem where the parties use different blockchains bring many additional challenges. Some of these challenges are familiar to us from the classical distributed systems research on distributed transactions, such as how to combine multiple steps into a single atomic action, how to recover from failures, and how to synchronize concurrent access to data. But considering the <b><i>cross-chain multi-party collaboration</i></b>&nbsp;in a trustless setting requires reconsidering/revising that work, because here the participants are autonomous and potentially adversarial.</p><h2>
+Cross-chain deal&nbsp;</h2><p>
+The paper proposes the <b><i>cross-chain deal</i></b> as a new computational abstraction for structuring complex distributed exchanges in an adversarial setting. The paper starts by clarifying the distinctions between cross-chain deals with atomic transactions, and cross-chain swaps.</p><p>
+
+Cross-chain deals differ from atomic transactions, because</p><ul>
+<li>transactions perform complex distributed state changes, while deals simply exchange assets among parties</li>
+<li>transactions use “all-or-nothing” semantics to preserve global invariants, however each autonomous party in a deal can decide independently whether it finds an outcome satisfactory</li>
+<li>transactions assume crash failures, whereas deals assume byzantine faults</li>
+</ul><p>
+Cross-chain deals also differ from cross-chain swaps. In cross-chain swaps, each party sets up an unconditional transfer, thus they are incapable of expressing standard financial transactions such as arbitrage and auctions.</p><ul>
+<li>Consider an arbitrage example where Alice pays Bob with coins she receives from Carol, and sells Carol a ticket she receives from Bob. Alice cannot commit to either transfer at the start of a swap protocol because she does not own those assets.&nbsp;</li>
+<li>Auctions also cannot be expressed as swaps because the auction’s outcome (reserve price exceeded, identity of winner) cannot be determined until all bids have been submitted.</li>
+</ul><p>
+In contrast to transactions and swaps, deals address the demands of adversarial commerce better:</p><ul>
+<li>In adversarial commerce each party decides for itself whether to participate in a particular interaction.&nbsp;</li>
+<li>Parties agree to follow a common protocol, an agreement that can be monitored, but not enforced.&nbsp;</li>
+<li>Correctness is local and selfish: all parties that follow the protocol end up “no worse off” than when they started, even in the presence of faulty or malicious behavior by an arbitrary number of other parties.&nbsp;</li>
+</ul>
+<p>
+The paper uses the following running example. &nbsp;Bob decides to sell two coveted tickets to a hit play for 100 coins. Alice knows that Carol would be willing to pay 101 coins for those tickets, so Alice moves to broker a deal between Bob and Carol. Alice devises a cross-chain deal, to be executed by Alice, Bob, and Carol, and communicating through contracts running on various blockchains. If all goes as planned, all transfers take place, and if anything goes wrong (someone crashes or tries to cheat), no honest party should end up worse off.<br>
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj9zDXH4La3ONZRkelqeYdrTwn6ts-2wuBrl145-1nMMcHDRAlimr2WTtWokUIr1geMdlD6P6KhvgB0iPBkMAiTOqEgSkfZrQN73V8zyovQsE4XXxd3vvTkcghIWM2YJhYwU7EiIK9XHa0/s1600/ccdealmatrix.png" imageanchor="1"><img height="145" src="data:application/octet-stream;base64," width="400"></a></p><p>
+
+Property 1: For every protocol execution, every compliant party ends up with an acceptable payoff.</p><p>
+
+Property 2: No asset belonging to a compliant party is escrowed forever.</p><p>
+
+Property 3: If all parties are compliant and willing to accept their proposed payoffs, then all transfers happen (all parties’ payoffs are All).</p><p>
+
+The paper describes two alternative protocols for implementing cross-chain deals</p><ul>
+<li>Timelock protocol, based on synchronous communication, is fully decentralized</li>
+<li>CBC protocol, based on semi-synchronous communication, requires a globally shared ledger</li>
+</ul><p>
+Before discussing the two protocols, we first discuss the general framework for cross-chain deals.</p><h2>
+How Cross-Chain Deals Work</h2><p>
+An <b><i>escrow</i></b>&nbsp;is used for </p><u>ensuring that a single asset cannot be transferred to different parties at the same time.</u><p> Here is what happens when P places a in escrow during deal D:<br>
+Pre: Owns(P, a)<br>
+Post: Owns(D, a) and Owns_C (P, a) and Owns_A(P, a)</p><p>
+
+The precondition states that P can escrow A only if P owns a. The postcondition states that ownership of a is transferred from P to D (via the escrow contract), but P remains the owner of a in both Commit and Abort.</p><p>
+
+These are the phases of a cross-chain deal.</p><ul>
+<li>Clearing Phase: A market-clearing service discovers and broadcasts the participants, the proposed transfers, and pos- sibly other deal-specific information.</li>
+<li>Escrow Phase: Parties escrow their outgoing assets. E.g., Bob escrows his tickets and Carol her coins.</li>
+<li>Transfer Phase: The parties perform the sequence of tentative ownership transfers according to the deal. E.g., Bob tentatively transfers the tickets to Alice, who subsequently transfers them to Carol.</li>
+<li>Validation phase: Once the tentative transfers are complete, each party checks that the deal is the same as proposed by the (untrusted) market-clearing service, and that its incoming assets are properly escrowed (so they cannot be double-spent). E.g., Carol checks that the tickets to be transferred are escrowed, that the seats are (at least as good as) the ones agreed upon, and that she is not about to somehow overpay.</li>
+<li>Commit phase: The parties vote on whether to make the tentative transfers permanent. If all parties vote to commit, the escrowed assets are transferred to their new owners, otherwise they are refunded to their original owners.</li>
+</ul><p>
+A tentative transfer commits if it becomes permanent, and it aborts if it is discarded. <b><u>A deal commits if all its tentative transfers commit, and it aborts if all its tentative transfers abort.</u></b></p><p>
+
+<i>(<b>Remark:</b> I think this formulation does not capture what happens if neither commit or abort gets satisfied for a deal, i.e, where some tentative transfers commit and some tentative transfers abort. For example, tentative transfers may commit for Carol, but the tentative transfers for Bob may get aborted.&nbsp;</i><br>
+<i>In the beginning the paper said that "all or nothing semantics" is impossible to satisfy with adversarial participants: "it may be possible that some transfers commit and other abort provided that no compliant party is worse-off." But I can't see how the formulation above captures this.)</i></p><h2>
+Timelock Protocol</h2><p>
+Timelock protocol is the first protocol paper discusses for implementing cross-chain deals. It is fully decentralized but it assumes a synchronous network model where blockchain propagation time is known and bounded.</p><p>
+
+In the timelock protocol, escrowed assets are released if all parties vote to commit. Parties do not explicitly vote to abort. Timeouts are used for ensuring that escrowed assets are not locked up forever. Each escrow contract’s timeout for a party’s commit vote depends on the length of the path along which that vote was forwarded.</p><p>
+
+Phases of the deal:</p><ul>
+<li>Clearing: The market-clearing service broadcasts to all parties in the deal, the deal identifier D, the list of parties plist, a commit phase starting time t0 used to compute timeouts, and the timeout delay $\Delta$. Because t0 and $\Delta$ are used only to compute timeouts, their values do not affect normal execution times. If deals take minutes (or hours), then $\Delta$ could be measured in hours (or days).</li>
+<li>Escrow: Each party places its outgoing assets in escrow through an escrow contract escrow(D,$D_{info}$,a) on that asset’s blockchain.&nbsp;</li>
+<li>Transfer: Party P transfers an asset (or assets) a tentatively owned by P to party Q by sending transfer(D,a,Q)$to the escrow contract on the asset’s blockchain.</li>
+<li>Validation: Each party examines its escrowed incoming assets to see if they represent an acceptable payoff and the deal information provided by the market-clearing service is correct. If so, the party votes to commit.</li>
+<li>Commit: Each compliant party sends a commit vote to the escrow contract for each incoming asset. A party uses commit(D,v,p) to vote directly and to forward votes to the deal’s escrow contracts, where v is the voter and p is the path signature for v’s vote. For example, if Alice is forwarding Bob’s vote then v is Bob, and p contains first Bob’s signature, and then Alice’s signature.&nbsp;</li>
+</ul><p>
+A contract releases the escrowed asset to the new owner(s) when it accepts a commit vote from every party. If the contract has not accepted a vote from every party by time $t0+N*\Delta$, where N is the number of parties, it will never accept the missing votes, so the contract times out and refunds its escrowed assets to the original owners.</p><p>
+
+This may violate "all-or-nothing" semantics, as the paper explains. Suppose that Bob acquires Alice and Carol’s votes on time, and forwards them to claim the coins, but Alice and Carol are driven offline before they can forward Bob’s vote to the ticket blockchain, so Bob ends up with both the coins and the tickets. In this case, technically, Alice and Carol have deviated from the protocol by not claiming their assets in time. (To alleviate this problem, $\Delta$ should be chosen large enough to make sustained denial-of-service attacks prohibitively expensive.)</p><p>
+
+Assuming synchrony assumptions hold, the paper proves the following for the timelock protocol.</p><p>
+
+Theorem 1. The timelock protocol satisfies safety.</p><p>
+
+Theorem 2. The timelock protocol satisfies weak liveness: no compliant party’s outgoing assets are locked up forever.</p><p>
+
+Theorem 3. The timelock protocol satisfies strong liveness.</p><h2>
+CBC Protocol</h2><p>
+The second protocol the paper proposes for implementing cross-chain deals is the CBC protocol. CBC does not assume fully-synchronous communication as in timelock, so it is not susceptible to timing related attacks. But in return it requires a globally shared certified blockchain (CBC) as a kind of shared log among the parties. The paper argues that this loss of decentralization is inevitable: <b><i><u>no protocol that tolerates periods of asynchrony can be decentralized</u></i></b>&nbsp;(following the FLP result).</p><ul>
+<li>If all parties are compliant, then if the deal commits (resp. aborts) at any asset’s blockchain, it must commit (resp. abort) at all of them.</li>
+<li>Initially, the deal’s state is bivalent: both commit and abort are possible outcomes. But the deal’s state cannot remain bivalent forever, so it must be possible to reach a (bivalent) critical state where each party is about to take a decisive step.</li>
+<li>A potentially decisive step forcing an eventual commit cannot take place at a different blockchain than a potentially decisive step forcing an eventual abort, because then it would be impossible to determine which happened first, hence which one was truly decisive.&nbsp;</li>
+</ul>
+<p><i>(<b>Remark:</b> Hmm... The requirement in the last bullet could be solved by using quorum intersection, as in Paxos. Paxos is also prone to FLP result, but it still preserves safety in a fully asynchronous setup thanks to its use of quorums and ballotnumbers for leaders. So I suppose instead of a shared CBC, it is possible---but cumbersome--- to use a byzantine Paxos protocol to coordinate the commit/abort decision across multiple chains. The question then becomes, is Paxos decentralized? Paxos uses a leader, but the leaders are exchangeable, when one leader is not making progress, another leader can safely emerge to conclude the consensus.)</i></p><p>
+
+OK, back to the CBC protocol. Instead of voting on individual assets, each party votes on the CBC whether to commit or abort the entire deal. In the absence of full synchrony, since the parties cannot use timed escrow, &nbsp;they vote to abort if validation fails, or if too much time has passed.</p><p>
+
+A party can extract a proof from the CBC that particular votes were recorded in a particular order. A party claiming an asset (or a refund) presents a proof of commit (or abort) to the contract managing that asset. The contract checks the proof’s validity and carries out the requested transfers if the proof is valid. A proof of commit proves that every party voted to commit the deal before any party voted to abort. A proof of abort proves that some party voted to abort before every party voted to commit.</p><p>
+
+Phases of the protocol</p><ul>
+<li>Clearing: The market-clearing service broadcasts a unique identifier D and a list of participating parties plist. If more than one startDeal for D is recorded on the CBC, the earliest is considered definitive.</li>
+<li>Escrow: Each party places its outgoing assets in escrow escrow(D,plist,h,a,...)</li>
+<li>Transfer: Party P transfers an asset (or assets) a tentatively owned by P to party Q by sending transfer(D,a,Q) to the escrow contract on the asset’s blockchain.</li>
+<li>Validation: Each party checks that its proposed payoff is acceptable and that assets are properly escrowed with the correct plist and h.</li>
+<li>Commit: Each party X publishes either a commit or abort vote for D on the CBC via commit(D, h, X) or abort(D, h, X).</li>
+</ul><p>
+Safety is satisfied because complaint parties agree on whether a deal commits or aborts. Weak liveness is satisfied because any compliant party whose assets are locked up for too long will eventually vote to abort. Strong liveness is satisfied in periods when the network is synchronous because every party votes to commit before any party votes to abort.</p><h2>
+Discussion</h2><p>
+I really enjoyed reading the paper. The problem the authors take on is very ambitious and important. I also found both protocols intriguing. The CBC protocol is simpler than the timelock protocol, as it uses a shared blockchain for coordination. In contrast to the timelock protocol, the CBC protocol tolerates asynchronous periods, and its cost and latency is better. Doing things completely decentralized increases the costs, and <a href="http://muratbuffalo.blogspot.com/2014/07/distributed-is-not-necessarily-more.html">some centralization can help cut costs quickly</a>.</p><p>
+
+Both protocols do use an escrow, and the escrow is a bit of a crotch, and another entity/contract to pay to as well. The paper says that "Escrow plays the role of classical concurrency control, ensuring that a single asset cannot be transferred to different parties at the same time." This is a bit of a blanket statement, and I wonder if there is indeed no other way to ensure concurrency control across chains to ensure that an asset cannot be transferred to different parties at the same time.
+</p></div></div>
+  </div>
+</body>
+</html>

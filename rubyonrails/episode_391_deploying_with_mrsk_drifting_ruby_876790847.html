@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Episode 391 - Deploying with MRSK | Drifting Ruby</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Episode 391 - Deploying with MRSK | Drifting Ruby</h1>
+    <p><strong>URL:</strong> <a href="https://www.driftingruby.com/episodes/deploying-with-mrsk">https://www.driftingruby.com/episodes/deploying-with-mrsk</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876790847</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-controller="highlight">
+<pre># Terminal
+bundle update rails
+bundle add mrsk
+mrsk init
+bundle lock --add-platform aarch64-linux
+bundle lock --add-platform x86_64-linux
+bin/rails credentials:edit
+mrsk app help
+mrsk server bootstrap
+mrsk deploy
+mrsk app logs
+mrsk app logs --help
+mrsk app logs -n 1000</pre><pre># Gemfile
+gem "rails", github: "rails/rails", branch: "main"
+gem "mrsk", "~&gt; 0.8.4"</pre><pre># config/environments/production.rb
+
+config.public_file_server.enabled = true
+
+<em># Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.</em>
+config.assume_ssl = true
+
+logger           = ActiveSupport::Logger.new(STDOUT)
+logger.formatter = config.log_formatter
+config.logger    = ActiveSupport::TaggedLogging.new(logger)</pre><pre># config/application.rb
+config.load_defaults 7.1</pre><pre># .gitignore
+.env</pre><pre># .env
+MRSK_REGISTRY_PASSWORD=change-this
+RAILS_MASTER_KEY=another-env</pre><pre># Dockerfile
+<em># syntax = docker/dockerfile:1</em>
+
+<em># Make sure it matches the Ruby version in .ruby-version and Gemfile</em>
+ARG RUBY_VERSION=3.2.1
+FROM ruby:$RUBY_VERSION-slim as base
+
+<em># Rails app lives here</em>
+WORKDIR /rails
+
+<em># Set production environment</em>
+ENV RAILS_ENV="production" \
+    BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development"
+
+
+<em># Throw-away build stage to reduce size of final image</em>
+FROM base as build
+
+<em># Install packages need to build gems and node modules</em>
+RUN apt-get update -qq &amp;&amp; \
+    apt-get install -y build-essential curl default-libmysqlclient-dev git libpq-dev libvips node-gyp pkg-config python-is-python3
+
+<em># Install JavaScript dependencies</em>
+ARG NODE_VERSION=19.7.0
+ARG YARN_VERSION=1.22.19
+
+ENV PATH=/usr/local/node/bin:$PATH
+RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ &amp;&amp; \
+    /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node &amp;&amp; \
+    npm install -g yarn@$YARN_VERSION &amp;&amp; \
+    rm -rf /tmp/node-build-master
+
+<em># Install application gems</em>
+COPY --link Gemfile Gemfile.lock ./
+RUN bundle install &amp;&amp; \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git &amp;&amp; \
+    bundle exec bootsnap precompile --gemfile
+
+
+<em># Install node modules</em>
+COPY --link package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+<em># Copy application code</em>
+COPY --link . .
+
+<em># Precompile bootsnap code for faster boot times</em>
+RUN bundle exec bootsnap precompile app/ lib/
+
+<em># Precompiling assets for production without requiring secret RAILS_MASTER_KEY</em>
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+
+
+<em># Final stage for app image</em>
+FROM base
+
+RUN apt-get update -qq &amp;&amp; \
+    apt-get install --no-install-recommends -y default-mysql-client libsqlite3-0 libvips postgresql-client &amp;&amp; \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+<em># Run and own the application files as a non-root user for security</em>
+RUN useradd rails
+USER rails:rails
+
+<em># Copy built artifacts: gems, application</em>
+COPY --from=build --chown=rails:rails /usr/local/bundle /usr/local/bundle
+COPY --from=build --chown=rails:rails /rails /rails
+
+<em># Entrypoint prepares the database.</em>
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+
+<em># Start the server by default, this can be overwritten at runtime</em>
+EXPOSE 3000
+CMD ["./bin/rails", "server"]</pre><pre># bin/docker-entrypoint
+<em>#!/bin/bash -e</em>
+
+<em># If running the rails server then create or migrate existing database</em>
+if [ "${*}" == "./bin/rails server" ]; then
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"</pre><pre># config/deploy.yml
+<em># Name of your application. Used to uniquely configure containers.</em>
+service: drexample
+
+<em># Name of the container image.</em>
+image: kobaltz/drexample
+
+<em># Deploy to these servers.</em>
+servers:
+  - 68.183.134.186
+  - 68.183.134.85
+
+<em># Credentials for your image host.</em>
+registry:
+<em>  # Specify the registry server, if you're not using Docker Hub</em>
+<em>  # server: registry.digitalocean.com / ghcr.io / ...</em>
+  username: kobaltz
+  password:
+    - MRSK_REGISTRY_PASSWORD
+
+<em># Inject ENV variables into containers (secrets come from .env).</em>
+env:
+  secret:
+    - RAILS_MASTER_KEY
+
+<em># Call a broadcast command on deploys.</em>
+<em># audit_broadcast_cmd:</em>
+<em>#   bin/broadcast_to_bc</em>
+
+<em># Use a different ssh user than root</em>
+<em># ssh:</em>
+<em>#   user: app</em>
+
+<em># Configure builder setup.</em>
+<em># builder:</em>
+<em>#   args:</em>
+<em>#     RUBY_VERSION: 3.2.0</em>
+<em>#   secrets:</em>
+<em>#     - GITHUB_TOKEN</em>
+<em>#   remote:</em>
+<em>#     arch: amd64</em>
+<em>#     host: ssh://app@192.168.0.1</em>
+
+<em># Use accessory services (secrets come from .env).</em>
+<em># accessories:</em>
+<em>#   db:</em>
+<em>#     image: mysql:8.0</em>
+<em>#     host: 192.168.0.2</em>
+<em>#     port: 3306</em>
+<em>#     env:</em>
+<em>#       clear:</em>
+<em>#         MYSQL_ROOT_HOST: '%'</em>
+<em>#       secret:</em>
+<em>#         - MYSQL_ROOT_PASSWORD</em>
+<em>#     files:</em>
+<em>#       - config/mysql/production.cnf:/etc/mysql/my.cnf</em>
+<em>#       - db/production.sql.erb:/docker-entrypoint-initdb.d/setup.sql</em>
+<em>#     directories:</em>
+<em>#       - data:/var/lib/mysql</em>
+<em>#   redis:</em>
+<em>#     image: redis:7.0</em>
+<em>#     host: 192.168.0.2</em>
+<em>#     port: 6379</em>
+<em>#     directories:</em>
+<em>#       - data:/data</em>
+
+<em># Configure custom arguments for Traefik</em>
+<em># traefik:</em>
+<em>#   args:</em>
+<em>#     accesslog: true</em>
+<em>#     accesslog.format: json</em>
+
+<em># Configure a custom healthcheck (default is /up on port 3000)</em>
+<em># healthcheck:</em>
+<em>#   path: /healthz</em>
+<em>#   port: 4000</em></pre><pre># config/database.yml
+production:
+  &lt;&lt;: *default
+  url: &lt;%= Rails.application.credentials.database_url %&gt;</pre><pre># credentials file
+database_url: postgres://username:password@host:port/databasename</pre>
+</div></div>
+  </div>
+</body>
+</html>

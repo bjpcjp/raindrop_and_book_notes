@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Let’s Build a Simple Interpreter. Part 18: Executing Procedure Calls</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Let’s Build a Simple Interpreter. Part 18: Executing Procedure Calls</h1>
+    <p><strong>URL:</strong> <a href="https://ruslanspivak.com/lsbasi-part18">https://ruslanspivak.com/lsbasi-part18</a></p>
+    <p><strong>Tags:</strong> compilers, cpus</p>
+    <p><strong>Bookmark ID:</strong> 876773915</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+                
+                    <blockquote>
+<p><em><span>“</span>Do the best you can until you know better. Then when you know better, do better.” ― Maya&nbsp;Angelou</em></p>
+</blockquote>
+<p>It’s a huge milestone for us today! Because today we will extend our interpreter to execute procedure calls. If that’s not exciting, I don’t know what is.&nbsp;:)</p>
+<p><img alt="" src="data:application/octet-stream;base64," width="640"></p>
+<p>Are you ready? Let’s get to&nbsp;it!</p>
+<p><br>
+Here is the sample program we’ll focus on in this&nbsp;article:</p>
+<div><pre><span></span><span>program</span><span> </span><span>Main</span><span>;</span>
+
+<span>procedure</span><span> </span><span>Alpha</span><span>(</span><span>a</span><span> </span><span>:</span><span> </span><span>integer</span><span>;</span><span> </span><span>b</span><span> </span><span>:</span><span> </span><span>integer</span><span>)</span><span>;</span>
+<span>var</span><span> </span><span>x</span><span> </span><span>:</span><span> </span><span>integer</span><span>;</span>
+<span>begin</span>
+<span>   </span><span>x</span><span> </span><span>:=</span><span> </span><span>(</span><span>a</span><span> </span><span>+</span><span> </span><span>b</span><span> </span><span>)</span><span> </span><span>*</span><span> </span><span>2</span><span>;</span>
+<span>end</span><span>;</span>
+
+<span>begin</span><span> </span><span>{ Main }</span>
+
+<span>   </span><span>Alpha</span><span>(</span><span>3</span><span> </span><span>+</span><span> </span><span>5</span><span>,</span><span> </span><span>7</span><span>)</span><span>;</span><span>  </span><span>{ procedure call }</span>
+
+<span>end</span><span>.</span><span>  </span><span>{ Main }</span>
+</pre></div>
+
+
+<p>It has one procedure declaration and one procedure call<em>.</em> We will limit our focus today to procedures that can access their parameters and local variables only. We will cover nested procedure calls and accessing non-local variables in the next two&nbsp;articles.</p>
+<p><br>
+Let’s describe an algorithm that our interpreter needs to implement to be able to execute the <em>Alpha(3 + 5, 7)</em> procedure call in the program&nbsp;above.</p>
+<p>Here is the algorithm for executing a procedure call, step by&nbsp;step:</p>
+<ol>
+<li>
+<p>Create an activation&nbsp;record</p>
+</li>
+<li>
+<p>Save procedure arguments (actual parameters) in the activation&nbsp;record</p>
+</li>
+<li>
+<p>Push the activation record onto the call&nbsp;stack</p>
+</li>
+<li>
+<p>Execute the body of the&nbsp;procedure</p>
+</li>
+<li>
+<p>Pop the activation record off the&nbsp;stack</p>
+</li>
+</ol>
+<p>Procedure calls in our interpreter are handled by the <em>visit_ProcedureCall</em> method. The method is currently&nbsp;empty:</p>
+<div><pre><span></span><span>class</span> <span>Interpreter</span><span>(</span><span>NodeVisitor</span><span>):</span>
+    <span>...</span>
+
+    <span>def</span> <span>visit_ProcedureCall</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+        <span>pass</span>
+</pre></div>
+
+
+<p>Let’s go over each step in the algorithm and write code for the <em>visit_ProcedureCall</em> method to execute procedure&nbsp;calls.</p>
+<p>Let’s get&nbsp;started!</p>
+<p><br>
+<em>Step 1. Create an activation&nbsp;record</em></p>
+<p>If you remember from the <a href="https://ruslanspivak.com/lsbasi-part17">previous article</a>, an <em>activation record (<span>AR</span>)</em> is a dictionary-like object for maintaining information about the currently executing invocation of a procedure or function, and also the program itself. The activation record for a procedure, for example, contains the current values of its formal parameters and the current values of its local variables. So, to store the procedure’s arguments and local variables, we need to create an <span>AR</span> first. Recall that the <em>ActivationRecord</em> constructor takes 3 parameters: <em>name</em>, <em>type</em>, and <em>nesting_level</em>. And here’s what we need to pass to the constructor when creating an <span>AR</span> for a procedure&nbsp;call:</p>
+<ul>
+<li>
+<p>We need to pass the procedure’s name as the <em>name</em> parameter to the&nbsp;constructor</p>
+</li>
+<li>
+<p>We also need to specify <span>PROCEDURE</span> as the <em>type</em> of the <span>AR</span></p>
+</li>
+<li>
+<p>And we need to pass 2 as the <em>nesting_level</em> for the procedure call because the program’s nesting level is set to 1 (You can see that in the <em>visit_Program</em> method of the&nbsp;interpreter)</p>
+</li>
+</ul>
+<p>Before we extend the <em>visit_ProcedureCall</em> method to create an activation record for a procedure call, we need to add the <span>PROCEDURE</span> type to the <em>ARType</em> enumeration. Let’s do this&nbsp;first:</p>
+<div><pre><span></span><span>class</span> <span>ARType</span><span>(</span><span>Enum</span><span>):</span>
+    <span>PROGRAM</span>   <span>=</span> <span>'PROGRAM'</span>
+    <span>PROCEDURE</span> <span>=</span> <span>'PROCEDURE'</span>
+</pre></div>
+
+
+<p>Now, let’s update the <em>visit_ProcedureCall</em> method to create an activation record with the appropriate arguments that we described earlier in the&nbsp;text:</p>
+<div><pre><span></span><span>def</span> <span>visit_ProcedureCall</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+    <span>proc_name</span> <span>=</span> <span>node</span><span>.</span><span>proc_name</span>
+
+    <span>ar</span> <span>=</span> <span>ActivationRecord</span><span>(</span>
+        <span>name</span><span>=</span><span>proc_name</span><span>,</span>
+        <span>type</span><span>=</span><span>ARType</span><span>.</span><span>PROCEDURE</span><span>,</span>
+        <span>nesting_level</span><span>=</span><span>2</span><span>,</span>
+    <span>)</span>
+</pre></div>
+
+
+<p>Writing code to create an activation record was easy once we figured out what to pass to the <em>ActivationRecord</em> constructor as&nbsp;arguments.</p>
+<p><br>
+<em>Step 2. Save procedure arguments in the activation&nbsp;record</em></p>
+<blockquote>
+<p><span>ASIDE</span>: <em>Formal parameters</em> are parameters that show up in the declaration of a procedure. <em>Actual parameters</em> (also known as <em>arguments</em>) are different variables and expressions passed to the procedure in a particular procedure&nbsp;call.</p>
+</blockquote>
+<p>Here is a list of steps that describes the high-level actions the interpreter needs to take to save procedure arguments in the activation&nbsp;record:</p>
+<ol type="a">
+<li>Get a list of the procedure’s formal&nbsp;parameters</li>
+
+<li>Get a list of the procedure’s actual parameters&nbsp;(arguments)</li>
+
+<li>For each formal parameter, get the corresponding actual parameter and save the pair in the procedure’s activation record by using the formal parameter’s name as a key and the actual parameter (argument), after having evaluated it, as the&nbsp;value</li>
+</ol>
+
+<p>If we have the following procedure declaration and procedure&nbsp;call:</p>
+<div><pre><span></span><span>procedure</span><span> </span><span>Alpha</span><span>(</span><span>a</span><span> </span><span>:</span><span> </span><span>integer</span><span>;</span><span> </span><span>b</span><span> </span><span>:</span><span> </span><span>integer</span><span>)</span><span>;</span>
+
+<span>Alpha</span><span>(</span><span>3</span><span> </span><span>+</span><span> </span><span>5</span><span>,</span><span> </span><span>7</span><span>)</span><span>;</span>
+</pre></div>
+
+
+<p>Then after the above three steps have been executed, the procedure’s <span>AR</span> contents should look like&nbsp;this:</p>
+<div><pre><span></span><span>2</span><span>:</span><span> </span><span>PROCEDURE</span><span> </span><span>Alpha</span>
+<span>   </span><span>a</span><span>                   </span><span>:</span><span> </span><span>8</span>
+<span>   </span><span>b</span><span>                   </span><span>:</span><span> </span><span>7</span>
+</pre></div>
+
+
+<p>Here is the code that implements the steps&nbsp;above:</p>
+<div><pre><span></span><span>proc_symbol</span> <span>=</span> <span>node</span><span>.</span><span>proc_symbol</span>
+
+<span>formal_params</span> <span>=</span> <span>proc_symbol</span><span>.</span><span>formal_params</span>
+<span>actual_params</span> <span>=</span> <span>node</span><span>.</span><span>actual_params</span>
+
+<span>for</span> <span>param_symbol</span><span>,</span> <span>argument_node</span> <span>in</span> <span>zip</span><span>(</span><span>formal_params</span><span>,</span> <span>actual_params</span><span>):</span>
+    <span>ar</span><span>[</span><span>param_symbol</span><span>.</span><span>name</span><span>]</span> <span>=</span> <span>self</span><span>.</span><span>visit</span><span>(</span><span>argument_node</span><span>)</span>
+</pre></div>
+
+
+<p>Let’s take a closer look at the steps and the&nbsp;code.</p>
+<p><br>
+a) First, we need to get a list of the procedure’s formal parameters. Where can we get them from? They are available in the respective procedure symbol created during the semantic analysis phase. To jog your memory, here is the definition of the <em>ProcedureSymbol</em>&nbsp;class:</p>
+<div><pre><span></span><span>class</span> <span>Symbol</span><span>:</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>name</span><span>,</span> <span>type</span><span>=</span><span>None</span><span>):</span>
+        <span>self</span><span>.</span><span>name</span> <span>=</span> <span>name</span>
+        <span>self</span><span>.</span><span>type</span> <span>=</span> <span>type</span>
+
+
+<span>class</span> <span>ProcedureSymbol</span><span>(</span><span>Symbol</span><span>):</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>name</span><span>,</span> <span>formal_params</span><span>=</span><span>None</span><span>):</span>
+        <span>super</span><span>()</span><span>.</span><span>__init__</span><span>(</span><span>name</span><span>)</span>
+        <span># a list of VarSymbol objects</span>
+        <span>self</span><span>.</span><span>formal_params</span> <span>=</span> <span>[]</span> <span>if</span> <span>formal_params</span> <span>is</span> <span>None</span> <span>else</span> <span>formal_params</span>
+</pre></div>
+
+
+<p>And here’s the contents of the <em>global</em> scope (program level), which shows a string representation of the <em>Alpha</em> procedure symbol with its formal&nbsp;parameters:</p>
+<div><pre><span></span><span>SCOPE (SCOPED SYMBOL TABLE)</span>
+<span>===========================</span>
+Scope name     : global
+Scope level    : 1
+Enclosing scope: None
+<span>Scope (Scoped symbol table) contents</span>
+<span>------------------------------------</span>
+INTEGER: &lt;BuiltinTypeSymbol(name='INTEGER')&gt;
+   REAL: &lt;BuiltinTypeSymbol(name='REAL')&gt;
+  Alpha: &lt;ProcedureSymbol(name=Alpha, parameters=[<span>&lt;VarSymbol(name='a', type='INTEGER')&gt;</span>, &lt;VarSymbol(name='b', type='INTEGER')&gt;])&gt;
+</pre></div>
+
+
+<p>Okay, we now know where to get the formal parameters from. How do we get to the procedure symbol from the <em>ProcedureCall</em> <span>AST</span> <em>node</em> variable? Let’s take a look at the <em>visit_ProcedureCall</em> method code that we’ve written so&nbsp;far:</p>
+<div><pre><span></span><span>def</span> <span>visit_ProcedureCall</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+    <span>proc_name</span> <span>=</span> <span>node</span><span>.</span><span>proc_name</span>
+
+    <span>ar</span> <span>=</span> <span>ActivationRecord</span><span>(</span>
+        <span>name</span><span>=</span><span>proc_name</span><span>,</span>
+        <span>type</span><span>=</span><span>ARType</span><span>.</span><span>PROCEDURE</span><span>,</span>
+        <span>nesting_level</span><span>=</span><span>2</span><span>,</span>
+    <span>)</span>
+</pre></div>
+
+
+<p>We can get access to the procedure symbol by adding the following statement to the code&nbsp;above:</p>
+<div><pre><span></span><span>proc_symbol</span> <span>=</span> <span>node</span><span>.</span><span>proc_symbol</span>
+</pre></div>
+
+
+<p>But if you look at the definition of the <em>ProcedureCall</em> class from the <a href="https://ruslanspivak.com/lsbasi-part17">previous article</a>, you can see that the class doesn’t have <em>proc_symbol</em> as a&nbsp;member:</p>
+<div><pre><span></span><span>class</span> <span>ProcedureCall</span><span>(</span><span>AST</span><span>):</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>proc_name</span><span>,</span> <span>actual_params</span><span>,</span> <span>token</span><span>):</span>
+        <span>self</span><span>.</span><span>proc_name</span> <span>=</span> <span>proc_name</span>
+        <span>self</span><span>.</span><span>actual_params</span> <span>=</span> <span>actual_params</span>  <span># a list of AST nodes</span>
+        <span>self</span><span>.</span><span>token</span> <span>=</span> <span>token</span>
+</pre></div>
+
+
+<p>Let’s fix that and extend the <em>ProcedureCall</em> class to have the <em>proc_symbol</em>&nbsp;field:</p>
+<div><pre><span></span><span>class</span> <span>ProcedureCall</span><span>(</span><span>AST</span><span>):</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>proc_name</span><span>,</span> <span>actual_params</span><span>,</span> <span>token</span><span>):</span>
+        <span>self</span><span>.</span><span>proc_name</span> <span>=</span> <span>proc_name</span>
+        <span>self</span><span>.</span><span>actual_params</span> <span>=</span> <span>actual_params</span>  <span># a list of AST nodes</span>
+        <span>self</span><span>.</span><span>token</span> <span>=</span> <span>token</span>
+        <span># a reference to procedure declaration symbol</span>
+        <span>self</span><span>.</span><span>proc_symbol</span> <span>=</span> <span>None</span>
+</pre></div>
+
+
+<p>That was easy. Now, where should we set the <em>proc_symbol</em> so that it has the right value (a reference to the respective procedure symbol) for the interpretation phase? As I’ve mentioned earlier, the procedure symbol gets created during the semantic analysis phase. We can store it in the <em>ProcedureCall</em> <span>AST</span> node during the node traversal done by the semantic analyzer’s <em>visit_ProcedureCall</em>&nbsp;method.</p>
+<p>Here is the original&nbsp;method:</p>
+<div><pre><span></span><span>class</span> <span>SemanticAnalyzer</span><span>(</span><span>NodeVisitor</span><span>):</span>
+    <span>...</span>
+
+    <span>def</span> <span>visit_ProcedureCall</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+        <span>for</span> <span>param_node</span> <span>in</span> <span>node</span><span>.</span><span>actual_params</span><span>:</span>
+            <span>self</span><span>.</span><span>visit</span><span>(</span><span>param_node</span><span>)</span>
+</pre></div>
+
+
+<p>Because we have access to the current scope when traversing the <span>AST</span> tree in the semantic analyzer, we can look up the procedure symbol by a procedure name and then store the procedure symbol in the <em>proc_symbol</em> variable of the <em>ProcedureCall</em> <span>AST</span> node. Let’s do&nbsp;this:</p>
+<div><pre><span></span><span>class</span> <span>SemanticAnalyzer</span><span>(</span><span>NodeVisitor</span><span>):</span>
+    <span>...</span>
+
+    <span>def</span> <span>visit_ProcedureCall</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+        <span>for</span> <span>param_node</span> <span>in</span> <span>node</span><span>.</span><span>actual_params</span><span>:</span>
+            <span>self</span><span>.</span><span>visit</span><span>(</span><span>param_node</span><span>)</span>
+
+        <span>proc_symbol</span> <span>=</span> <span>self</span><span>.</span><span>current_scope</span><span>.</span><span>lookup</span><span>(</span><span>node</span><span>.</span><span>proc_name</span><span>)</span>
+        <span># accessed by the interpreter when executing procedure call</span>
+        <span>node</span><span>.</span><span>proc_symbol</span> <span>=</span> <span>proc_symbol</span>
+</pre></div>
+
+
+<p>In the code above, we simply resolve a procedure name to its procedure symbol, which is stored in one of the scoped symbol tables (in our case in the <em>global</em> scope, to be exact), and then assign the procedure symbol to the <em>proc_symbol</em> field of the <em>ProcedureCall</em> <span>AST</span>&nbsp;node.</p>
+<p>For our sample program, after the semantic analysis phase and the actions described above, the <span>AST</span> tree will have a link to the <em>Alpha</em> procedure symbol in the global&nbsp;scope:</p>
+<p><img alt="" src="data:application/octet-stream;base64," width="640"></p>
+<p>As you can see in the picture above, this setup allows us to get the procedure’s formal parameters from the interpreter’s <em>visit_ProcedureCall</em> method - when evaluating a <em>ProcedureCall</em> node - by simply accessing the <em>formal_params</em> field of the <em>proc_symbol</em> variable stored in the <em>ProcedureCall</em> <span>AST</span>&nbsp;node:</p>
+<div><pre><span></span><span>proc_symbol</span> <span>=</span> <span>node</span><span>.</span><span>proc_symbol</span>
+
+<span>proc_symbol</span><span>.</span><span>formal_params</span>  <span># aka parameters</span>
+</pre></div>
+
+
+<p><br>
+b) After we get the list of formal parameters, we need to get a list of the procedure’s actual parameters (arguments). Getting the list of arguments is easy because they are readily available from the <em>ProcedureCall</em> <span>AST</span> <em>node</em>&nbsp;itself:</p>
+<div><pre><span></span><span>node</span><span>.</span><span>actual_params</span>  <span># aka arguments</span>
+</pre></div>
+
+
+<p><br>
+c) And the last step. For each formal parameter, we need to get the corresponding actual parameter and save the pair in the procedure’s activation record by using the formal parameter’s name as the key and the actual parameter (argument), after having evaluated it, as the&nbsp;value</p>
+<p>Let’s take a look at the code that does building of the key-value pairs using the Python <a href="https://docs.python.org/3/library/functions.html#zip">zip()</a>&nbsp;function:</p>
+<div><pre><span></span><span>proc_symbol</span> <span>=</span> <span>node</span><span>.</span><span>proc_symbol</span>
+
+<span>formal_params</span> <span>=</span> <span>proc_symbol</span><span>.</span><span>formal_params</span>
+<span>actual_params</span> <span>=</span> <span>node</span><span>.</span><span>actual_params</span>
+
+<span>for</span> <span>param_symbol</span><span>,</span> <span>argument_node</span> <span>in</span> <span>zip</span><span>(</span><span>formal_params</span><span>,</span> <span>actual_params</span><span>):</span>
+    <span>ar</span><span>[</span><span>param_symbol</span><span>.</span><span>name</span><span>]</span> <span>=</span> <span>self</span><span>.</span><span>visit</span><span>(</span><span>argument_node</span><span>)</span>
+</pre></div>
+
+
+<p>Once you know how the Python <a href="https://docs.python.org/3/library/functions.html#zip">zip()</a> function works, the <em>for</em> loop above should be easy to understand. Here’s a Python shell demonstration of the <a href="https://docs.python.org/3/library/functions.html#zip">zip()</a> function in&nbsp;action:</p>
+<div><pre><span></span>&gt;&gt;&gt; formal_params = ['a', 'b', 'c']
+&gt;&gt;&gt; actual_params = [1, 2, 3]
+&gt;&gt;&gt;
+&gt;&gt;&gt; zipped = zip(formal_params, actual_params)
+&gt;&gt;&gt;
+&gt;&gt;&gt; list(zipped)
+[('a', 1), ('b', 2), ('c', 3)]
+</pre></div>
+
+
+<p>The statement to store the key-value pairs in the activation record is very&nbsp;straightforward:</p>
+<div><pre><span></span><span>ar</span><span>[</span><span>param_symbol</span><span>.</span><span>name</span><span>]</span> <span>=</span> <span>self</span><span>.</span><span>visit</span><span>(</span><span>argument_node</span><span>)</span>
+</pre></div>
+
+
+<p>The key is the name of a formal parameter, and the value is the evaluated value of the argument passed to the procedure&nbsp;call.</p>
+<p>Here is the interpreter’s <em>visit_ProcedureCall</em> method with all the modifications we’ve done so&nbsp;far:</p>
+<div><pre><span></span><span>class</span> <span>Interpreter</span><span>(</span><span>NodeVisitor</span><span>):</span>
+    <span>...</span>
+
+    <span>def</span> <span>visit_ProcedureCall</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+        <span>proc_name</span> <span>=</span> <span>node</span><span>.</span><span>proc_name</span>
+
+        <span>ar</span> <span>=</span> <span>ActivationRecord</span><span>(</span>
+            <span>name</span><span>=</span><span>proc_name</span><span>,</span>
+            <span>type</span><span>=</span><span>ARType</span><span>.</span><span>PROCEDURE</span><span>,</span>
+            <span>nesting_level</span><span>=</span><span>2</span><span>,</span>
+        <span>)</span>
+
+        <span>proc_symbol</span> <span>=</span> <span>node</span><span>.</span><span>proc_symbol</span>
+
+        <span>formal_params</span> <span>=</span> <span>proc_symbol</span><span>.</span><span>formal_params</span>
+        <span>actual_params</span> <span>=</span> <span>node</span><span>.</span><span>actual_params</span>
+
+        <span>for</span> <span>param_symbol</span><span>,</span> <span>argument_node</span> <span>in</span> <span>zip</span><span>(</span><span>formal_params</span><span>,</span> <span>actual_params</span><span>):</span>
+            <span>ar</span><span>[</span><span>param_symbol</span><span>.</span><span>name</span><span>]</span> <span>=</span> <span>self</span><span>.</span><span>visit</span><span>(</span><span>argument_node</span><span>)</span>
+</pre></div>
+
+
+<p><br>
+<em>Step 3. Push the activation record onto the call&nbsp;stack</em></p>
+<p>After we’ve created the <span>AR</span> and put all the procedure’s parameters into the <span>AR</span>, we need to push the <span>AR</span> onto the stack. It’s super easy to do. We need to add just one line of&nbsp;code:</p>
+<div><pre><span></span><span>self</span><span>.</span><span>call_stack</span><span>.</span><span>push</span><span>(</span><span>ar</span><span>)</span>
+</pre></div>
+
+
+<p>Remember: an <span>AR</span> of a currently executing procedure is always at the top of the stack. This way the currently executing procedure has easy access to its parameters and local variables. Here is the updated <em>visit_ProcedureCall</em>&nbsp;method:</p>
+<div><pre><span></span><span>def</span> <span>visit_ProcedureCall</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+    <span>proc_name</span> <span>=</span> <span>node</span><span>.</span><span>proc_name</span>
+
+    <span>ar</span> <span>=</span> <span>ActivationRecord</span><span>(</span>
+        <span>name</span><span>=</span><span>proc_name</span><span>,</span>
+        <span>type</span><span>=</span><span>ARType</span><span>.</span><span>PROCEDURE</span><span>,</span>
+        <span>nesting_level</span><span>=</span><span>2</span><span>,</span>
+    <span>)</span>
+
+    <span>proc_symbol</span> <span>=</span> <span>node</span><span>.</span><span>proc_symbol</span>
+
+    <span>formal_params</span> <span>=</span> <span>proc_symbol</span><span>.</span><span>formal_params</span>
+    <span>actual_params</span> <span>=</span> <span>node</span><span>.</span><span>actual_params</span>
+
+    <span>for</span> <span>param_symbol</span><span>,</span> <span>argument_node</span> <span>in</span> <span>zip</span><span>(</span><span>formal_params</span><span>,</span> <span>actual_params</span><span>):</span>
+        <span>ar</span><span>[</span><span>param_symbol</span><span>.</span><span>name</span><span>]</span> <span>=</span> <span>self</span><span>.</span><span>visit</span><span>(</span><span>argument_node</span><span>)</span>
+
+    <span>self</span><span>.</span><span>call_stack</span><span>.</span><span>push</span><span>(</span><span>ar</span><span>)</span>
+</pre></div>
+
+
+<p><br>
+<em>Step 4. Execute the body of the&nbsp;procedure</em></p>
+<p>Now that everything has been set up, let’s execute the body of the procedure. The only problem is that neither the <em>ProcedureCall</em> <span>AST</span> <em>node</em> nor the procedure symbol <em>proc_symbol</em> knows anything about the body of the respective procedure&nbsp;declaration.</p>
+<p>How do we get access to the body of the procedure declaration during execution of a procedure call? In other words, when traversing the <span>AST</span> tree and visiting the <em>ProcedureCall</em> <span>AST</span> node during the interpretation phase, we need to get access to the <em>block_node</em> variable of the corresponding <em>ProcedureDecl</em> node. The <em>block_node</em> variable holds a reference to an <span>AST</span> sub-tree that represents the body of the procedure. How can we access that variable from the <em>visit_ProcedureCall</em> method of the <em>Interpreter</em> class? Let’s think about&nbsp;it.</p>
+<p>We already have access to the procedure symbol that contains information about the procedure declaration, like the procedure’s formal parameters, so let’s find a way to store a reference to the <em>block_node</em> in the procedure symbol itself. The right spot to do that is the semantic analyzer’s <em>visit_ProcedureDecl</em> method. In this method we have access to both the procedure symbol and the procedure’s body, the <em>block_node</em> field of the <em>ProcedureDecl</em> <span>AST</span> node that points to the procedure body’s <span>AST</span>&nbsp;sub-tree.</p>
+<p>We have a procedure symbol, and we have a <em>block_node</em>. Let’s store a pointer to the <em>block_node</em> in the <em>block_ast</em> field of the <em>proc_symbol</em>:</p>
+<div><pre><span></span><span>class</span> <span>SemanticAnalyzer</span><span>(</span><span>NodeVisitor</span><span>):</span>
+
+    <span>def</span> <span>visit_ProcedureDecl</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+        <span>proc_name</span> <span>=</span> <span>node</span><span>.</span><span>proc_name</span>
+        <span>proc_symbol</span> <span>=</span> <span>ProcedureSymbol</span><span>(</span><span>proc_name</span><span>)</span>
+        <span>...</span>
+        <span>self</span><span>.</span><span>log</span><span>(</span><span>f</span><span>'LEAVE scope: </span><span>{</span><span>proc_name</span><span>}</span><span>'</span><span>)</span>
+
+        <span># accessed by the interpreter when executing procedure call</span>
+        <span>proc_symbol</span><span>.</span><span>block_ast</span> <span>=</span> <span>node</span><span>.</span><span>block_node</span>
+</pre></div>
+
+
+<p>And to make it explicit, let’s also extend the <em>ProcedureSymbol</em> class and add the <em>block_ast</em> field to&nbsp;it:</p>
+<div><pre><span></span><span>class</span> <span>ProcedureSymbol</span><span>(</span><span>Symbol</span><span>):</span>
+    <span>def</span> <span>__init__</span><span>(</span><span>self</span><span>,</span> <span>name</span><span>,</span> <span>formal_params</span><span>=</span><span>None</span><span>):</span>
+        <span>...</span>
+        <span># a reference to procedure's body (AST sub-tree)</span>
+        <span>self</span><span>.</span><span>block_ast</span> <span>=</span> <span>None</span>
+</pre></div>
+
+
+<p>In the picture below you can see the extended <em>ProcedureSymbol</em> instance that stores a reference to the corresponding procedure’s body (a <em>Block</em> node in the <span>AST</span>):</p>
+<p><img alt="" src="data:application/octet-stream;base64," width="640"></p>
+<p>With all the above, executing the body of the procedure in the procedure call becomes as simple as visiting the procedure declaration’s <em>Block</em> <span>AST</span> node accessible through the <em>block_ast</em> field of the procedure’s <em>proc_symbol</em>:</p>
+<div><pre><span></span><span>self</span><span>.</span><span>visit</span><span>(</span><span>proc_symbol</span><span>.</span><span>block_ast</span><span>)</span>
+</pre></div>
+
+
+<p><br>
+Here is the fully updated <em>visit_ProcedureCall</em> method of the <em>Interpreter</em>&nbsp;class:</p>
+<div><pre><span></span><span>def</span> <span>visit_ProcedureCall</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+    <span>proc_name</span> <span>=</span> <span>node</span><span>.</span><span>proc_name</span>
+
+    <span>ar</span> <span>=</span> <span>ActivationRecord</span><span>(</span>
+        <span>name</span><span>=</span><span>proc_name</span><span>,</span>
+        <span>type</span><span>=</span><span>ARType</span><span>.</span><span>PROCEDURE</span><span>,</span>
+        <span>nesting_level</span><span>=</span><span>2</span><span>,</span>
+    <span>)</span>
+
+    <span>proc_symbol</span> <span>=</span> <span>node</span><span>.</span><span>proc_symbol</span>
+
+    <span>formal_params</span> <span>=</span> <span>proc_symbol</span><span>.</span><span>formal_params</span>
+    <span>actual_params</span> <span>=</span> <span>node</span><span>.</span><span>actual_params</span>
+
+    <span>for</span> <span>param_symbol</span><span>,</span> <span>argument_node</span> <span>in</span> <span>zip</span><span>(</span><span>formal_params</span><span>,</span> <span>actual_params</span><span>):</span>
+        <span>ar</span><span>[</span><span>param_symbol</span><span>.</span><span>name</span><span>]</span> <span>=</span> <span>self</span><span>.</span><span>visit</span><span>(</span><span>argument_node</span><span>)</span>
+
+    <span>self</span><span>.</span><span>call_stack</span><span>.</span><span>push</span><span>(</span><span>ar</span><span>)</span>
+
+    <span># evaluate procedure body</span>
+    <span>self</span><span>.</span><span>visit</span><span>(</span><span>proc_symbol</span><span>.</span><span>block_ast</span><span>)</span>
+</pre></div>
+
+
+<p>If you remember from the <a href="https://ruslanspivak.com/lsbasi-part17">previous article</a>, the <em>visit_Assignment</em> and <em>visit_Var</em> methods use an <span>AR</span> at the top of the call stack to access and store&nbsp;variables:</p>
+<div><pre><span></span><span>def</span> <span>visit_Assign</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+    <span>var_name</span> <span>=</span> <span>node</span><span>.</span><span>left</span><span>.</span><span>value</span>
+    <span>var_value</span> <span>=</span> <span>self</span><span>.</span><span>visit</span><span>(</span><span>node</span><span>.</span><span>right</span><span>)</span>
+
+    <span>ar</span> <span>=</span> <span>self</span><span>.</span><span>call_stack</span><span>.</span><span>peek</span><span>()</span>
+    <span>ar</span><span>[</span><span>var_name</span><span>]</span> <span>=</span> <span>var_value</span>
+
+<span>def</span> <span>visit_Var</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+    <span>var_name</span> <span>=</span> <span>node</span><span>.</span><span>value</span>
+
+    <span>ar</span> <span>=</span> <span>self</span><span>.</span><span>call_stack</span><span>.</span><span>peek</span><span>()</span>
+    <span>var_value</span> <span>=</span> <span>ar</span><span>.</span><span>get</span><span>(</span><span>var_name</span><span>)</span>
+
+    <span>return</span> <span>var_value</span>
+</pre></div>
+
+
+<p>These methods stay unchanged. When interpreting the body of a procedure, these methods will store and access values from the <span>AR</span> of the currently executing procedure, which will be at the top of the stack. We’ll see shortly how it all fits and works&nbsp;together.</p>
+<p><br>
+<em>Step 5. Pop the activation record off the&nbsp;stack</em></p>
+<p>After we’re done evaluating the body of the procedure, we no longer need the procedure’s <span>AR</span>, so we pop it off the call stack right before leaving the <em>visit_ProcedureCall</em> method. Remember, the top of the call stack contains an <span>AR</span> for a currently executing procedure, function, or program, so once we’re done evaluating one of those routines, we need to pop their respective <span>AR</span> off the call stack using the call stack’s <em>pop()</em>&nbsp;method:</p>
+<div><pre><span></span><span>self</span><span>.</span><span>call_stack</span><span>.</span><span>pop</span><span>()</span>
+</pre></div>
+
+
+<p>Let’s put it all together and also add some logging to the <em>visit_ProcedureCall</em> method to log the contents of the <em>call stack</em> right after pushing the procedure’s <span>AR</span> onto the <em>call stack</em> and right before popping it off the&nbsp;stack:</p>
+<div><pre><span></span><span>def</span> <span>visit_ProcedureCall</span><span>(</span><span>self</span><span>,</span> <span>node</span><span>):</span>
+    <span>proc_name</span> <span>=</span> <span>node</span><span>.</span><span>proc_name</span>
+
+    <span>ar</span> <span>=</span> <span>ActivationRecord</span><span>(</span>
+        <span>name</span><span>=</span><span>proc_name</span><span>,</span>
+        <span>type</span><span>=</span><span>ARType</span><span>.</span><span>PROCEDURE</span><span>,</span>
+        <span>nesting_level</span><span>=</span><span>2</span><span>,</span>
+    <span>)</span>
+
+    <span>proc_symbol</span> <span>=</span> <span>node</span><span>.</span><span>proc_symbol</span>
+
+    <span>formal_params</span> <span>=</span> <span>proc_symbol</span><span>.</span><span>formal_params</span>
+    <span>actual_params</span> <span>=</span> <span>node</span><span>.</span><span>actual_params</span>
+
+    <span>for</span> <span>param_symbol</span><span>,</span> <span>argument_node</span> <span>in</span> <span>zip</span><span>(</span><span>formal_params</span><span>,</span> <span>actual_params</span><span>):</span>
+        <span>ar</span><span>[</span><span>param_symbol</span><span>.</span><span>name</span><span>]</span> <span>=</span> <span>self</span><span>.</span><span>visit</span><span>(</span><span>argument_node</span><span>)</span>
+
+    <span>self</span><span>.</span><span>call_stack</span><span>.</span><span>push</span><span>(</span><span>ar</span><span>)</span>
+
+    <span>self</span><span>.</span><span>log</span><span>(</span><span>f</span><span>'ENTER: PROCEDURE </span><span>{</span><span>proc_name</span><span>}</span><span>'</span><span>)</span>
+    <span>self</span><span>.</span><span>log</span><span>(</span><span>str</span><span>(</span><span>self</span><span>.</span><span>call_stack</span><span>))</span>
+
+    <span># evaluate procedure body</span>
+    <span>self</span><span>.</span><span>visit</span><span>(</span><span>proc_symbol</span><span>.</span><span>block_ast</span><span>)</span>
+
+    <span>self</span><span>.</span><span>log</span><span>(</span><span>f</span><span>'LEAVE: PROCEDURE </span><span>{</span><span>proc_name</span><span>}</span><span>'</span><span>)</span>
+    <span>self</span><span>.</span><span>log</span><span>(</span><span>str</span><span>(</span><span>self</span><span>.</span><span>call_stack</span><span>))</span>
+
+    <span>self</span><span>.</span><span>call_stack</span><span>.</span><span>pop</span><span>()</span>
+</pre></div>
+
+
+<p><br>
+Let’s take our modified interpreter for a ride and see how it executes procedure calls. Download the following sample program from <a href="https://github.com/rspivak/lsbasi/tree/master/part18">GitHub</a> or save it as <a href="https://github.com/rspivak/lsbasi/blob/master/part18/part18.pas">part18.pas</a>:</p>
+<div><pre><span></span><span>program</span><span> </span><span>Main</span><span>;</span>
+
+<span>procedure</span><span> </span><span>Alpha</span><span>(</span><span>a</span><span> </span><span>:</span><span> </span><span>integer</span><span>;</span><span> </span><span>b</span><span> </span><span>:</span><span> </span><span>integer</span><span>)</span><span>;</span>
+<span>var</span><span> </span><span>x</span><span> </span><span>:</span><span> </span><span>integer</span><span>;</span>
+<span>begin</span>
+<span>   </span><span>x</span><span> </span><span>:=</span><span> </span><span>(</span><span>a</span><span> </span><span>+</span><span> </span><span>b</span><span> </span><span>)</span><span> </span><span>*</span><span> </span><span>2</span><span>;</span>
+<span>end</span><span>;</span>
+
+<span>begin</span><span> </span><span>{ Main }</span>
+
+<span>   </span><span>Alpha</span><span>(</span><span>3</span><span> </span><span>+</span><span> </span><span>5</span><span>,</span><span> </span><span>7</span><span>)</span><span>;</span><span>  </span><span>{ procedure call }</span>
+
+<span>end</span><span>.</span><span>  </span><span>{ Main }</span>
+</pre></div>
+
+
+<p>Download the interpreter file <a href="https://github.com/rspivak/lsbasi/blob/master/part18/spi.py">spi.py</a> from <a href="https://github.com/rspivak/lsbasi/tree/master/part18/">GitHub</a> and run it on the command line with the following&nbsp;arguments:</p>
+<div><pre><span></span>$<span> </span>python<span> </span>spi.py<span> </span>part18.pas<span> </span>--stack
+ENTER:<span> </span>PROGRAM<span> </span>Main
+CALL<span> </span>STACK
+<span>1</span>:<span> </span>PROGRAM<span> </span>Main
+
+
+ENTER:<span> </span>PROCEDURE<span> </span>Alpha
+CALL<span> </span>STACK
+<span>2</span>:<span> </span>PROCEDURE<span> </span>Alpha
+<span>   </span>a<span>                   </span>:<span> </span><span>8</span>
+<span>   </span>b<span>                   </span>:<span> </span><span>7</span>
+<span>1</span>:<span> </span>PROGRAM<span> </span>Main
+
+
+LEAVE:<span> </span>PROCEDURE<span> </span>Alpha
+CALL<span> </span>STACK
+<span>2</span>:<span> </span>PROCEDURE<span> </span>Alpha
+<span>   </span>a<span>                   </span>:<span> </span><span>8</span>
+<span>   </span>b<span>                   </span>:<span> </span><span>7</span>
+<span>   </span>x<span>                   </span>:<span> </span><span>30</span>
+<span>1</span>:<span> </span>PROGRAM<span> </span>Main
+
+
+LEAVE:<span> </span>PROGRAM<span> </span>Main
+CALL<span> </span>STACK
+<span>1</span>:<span> </span>PROGRAM<span> </span>Main
+</pre></div>
+
+
+<p>So far, so good. Let’s take a closer look at the output and inspect the contents of the call stack during program and procedure&nbsp;execution.</p>
+<p>1. The interpreter first&nbsp;prints</p>
+<div><pre><span></span><span>ENTER</span><span>:</span><span> </span><span>PROGRAM</span><span> </span><span>Main</span>
+<span>CALL</span><span> </span><span>STACK</span>
+<span>1</span><span>:</span><span> </span><span>PROGRAM</span><span> </span><span>Main</span>
+</pre></div>
+
+
+<p>when visiting the <em>Program</em> <span>AST</span> node before executing the body of the program. At this point the <em>call stack</em> has one <em>activation record.</em> This activation record is at the top of the call stack and it’s used for storing global variables. Because we don’t have any global variables in our sample program, there is nothing in the activation&nbsp;record.</p>
+<p>2. Next, the interpreter&nbsp;prints</p>
+<div><pre><span></span><span>ENTER</span><span>:</span><span> </span><span>PROCEDURE</span><span> </span><span>Alpha</span>
+<span>CALL</span><span> </span><span>STACK</span>
+<span>2</span><span>:</span><span> </span><span>PROCEDURE</span><span> </span><span>Alpha</span>
+<span>   </span><span>a</span><span>                   </span><span>:</span><span> </span><span>8</span>
+<span>   </span><span>b</span><span>                   </span><span>:</span><span> </span><span>7</span>
+<span>1</span><span>:</span><span> </span><span>PROGRAM</span><span> </span><span>Main</span>
+</pre></div>
+
+
+<p>when it visits the <em>ProcedureCall</em> <span>AST</span> node for the <em>Alpha(3 + 5, 7)</em> procedure call. At this point the body of the <em>Alpha</em> procedure hasn’t been evaluated yet and the <em>call stack</em> has two activation records: one for the <em>Main</em> program at the bottom of the stack (nesting level 1) and one for the <em>Alpha</em> procedure call, at the top of the stack (nesting level 2). The <span>AR</span> at the top of the stack holds the values of the procedure arguments <em>a</em> and <em>b</em> only; there is no value for the local variable <em>x</em> in the <span>AR</span> because the body of the procedure hasn’t been evaluated&nbsp;yet.</p>
+<p>3. Up next, the interpreter&nbsp;prints</p>
+<div><pre><span></span><span>LEAVE</span><span>:</span><span> </span><span>PROCEDURE</span><span> </span><span>Alpha</span>
+<span>CALL</span><span> </span><span>STACK</span>
+<span>2</span><span>:</span><span> </span><span>PROCEDURE</span><span> </span><span>Alpha</span>
+<span>   </span><span>a</span><span>                   </span><span>:</span><span> </span><span>8</span>
+<span>   </span><span>b</span><span>                   </span><span>:</span><span> </span><span>7</span>
+<span>   </span><span>x</span><span>                   </span><span>:</span><span> </span><span>30</span>
+<span>1</span><span>:</span><span> </span><span>PROGRAM</span><span> </span><span>Main</span>
+</pre></div>
+
+
+<p>when it’s about to leave the <em>ProcedureCall</em> <span>AST</span> node for the <em>Alpha(3 + 5, 7)</em> procedure call but before popping off the <span>AR</span> for the <em>Alpha</em>&nbsp;procedure.</p>
+<p>From the output above, you can see that in addition to the procedure arguments, the <span>AR</span> for the currently executing procedure <em>Alpha</em> now also contains the result of the assignment to the local variable <em>x</em>, the result of executing the <em>x := (a + b ) * 2;</em> statement in the body of the procedure. At this point the call stack visually looks like&nbsp;this:</p>
+<p><img alt="" src="data:application/octet-stream;base64," width="260"></p>
+<p>4. And finally the interpreter&nbsp;prints</p>
+<div><pre><span></span><span>LEAVE</span><span>:</span><span> </span><span>PROGRAM</span><span> </span><span>Main</span>
+<span>CALL</span><span> </span><span>STACK</span>
+<span>1</span><span>:</span><span> </span><span>PROGRAM</span><span> </span><span>Main</span>
+</pre></div>
+
+
+<p>when it leaves the <em>Program</em> <span>AST</span> node but before it pops off the <span>AR</span> for the main program. As you can see, the activation record for the main program is the only <span>AR</span> left in the stack because the <span>AR</span> for the <em>Alpha</em> procedure call got popped off the stack earlier, right before finishing executing the <em>Alpha</em> procedure&nbsp;call.</p>
+<p><br>
+That’s it. Our interpreter successfully executed a procedure call. If you’ve reached this far,&nbsp;congratulations!</p>
+<p><img alt="" src="data:application/octet-stream;base64," width="200"></p>
+<p>It is a huge milestone for us. Now you know how to execute procedure calls. And if you’ve been waiting for this article for a long time, thank you for your&nbsp;patience.</p>
+<p>That’s all for today. In the next article, we’ll expand on the current material and talk about executing nested procedure calls. So stay tuned and see you next&nbsp;time!</p>
+<p><br>
+<em>Resources used in preparation for this article (links are affiliate&nbsp;links):</em></p>
+<ol>
+<li><a target="_blank" href="https://www.amazon.com/gp/product/193435645X/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=193435645X&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=5d5ca8c07bff5452ea443d8319e7703d">Language Implementation Patterns: Create Your Own Domain-Specific and General Programming Languages (Pragmatic Programmers)</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></li>
+<li><a target="_blank" href="https://www.amazon.com/gp/product/0470177071/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0470177071&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=542d1267e34a529e0f69027af20e27f3">Writing Compilers and Interpreters: A Software Engineering Approach</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></li>
+<li><a target="_blank" href="https://www.amazon.com/gp/product/0124104096/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0124104096&amp;linkCode=as2&amp;tag=russblo0b-20&amp;linkId=8db1da254b12fe6da1379957dda717fc">Programming Language Pragmatics, Fourth Edition</a><img src="data:application/octet-stream;base64," width="1" height="1" alt=""></li>
+</ol>
+<p>Get the edge and stay sharp. Subscribe to Beyond Basics for free and get new posts without missing a beat!</p>
+
+
+
+
+<p><br>
+<strong>All articles in this series:</strong>
+
+</p><ul>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part1/">Let's Build A Simple Interpreter. Part 1.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part2/">Let's Build A Simple Interpreter. Part 2.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part3/">Let's Build A Simple Interpreter. Part 3.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part4/">Let's Build A Simple Interpreter. Part 4.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part5/">Let's Build A Simple Interpreter. Part 5.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part6/">Let's Build A Simple Interpreter. Part 6.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part7/">Let's Build A Simple Interpreter. Part 7.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part8/">Let's Build A Simple Interpreter. Part 8.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part9/">Let's Build A Simple Interpreter. Part 9.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part10/">Let's Build A Simple Interpreter. Part 10.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part11/">Let's Build A Simple Interpreter. Part 11.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part12/">Let's Build A Simple Interpreter. Part 12.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part13/">Let's Build A Simple Interpreter. Part 13.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part14/">Let's Build A Simple Interpreter. Part 14.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part15/">Let's Build A Simple Interpreter. Part 15.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part16/">Let's Build A Simple Interpreter. Part 16.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part17/">Let's Build A Simple Interpreter. Part 17.</a>
+  </li>
+  <li>
+    <a href="https://ruslanspivak.com/lsbasi-part18/">Let's Build A Simple Interpreter. Part 18.</a>
+  </li>
+</ul>
+
+            </div></div>
+  </div>
+</body>
+</html>

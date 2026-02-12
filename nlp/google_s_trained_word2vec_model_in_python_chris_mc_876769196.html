@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Google's trained Word2Vec model in Python · Chris McCormick</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Google's trained Word2Vec model in Python · Chris McCormick</h1>
+    <p><strong>URL:</strong> <a href="http://mccormickml.com/2016/04/12/googles-pretrained-word2vec-model-in-python">http://mccormickml.com/2016/04/12/googles-pretrained-word2vec-model-in-python</a></p>
+    <p><strong>Tags:</strong> nlp, word2vec</p>
+    <p><strong>Bookmark ID:</strong> 876769196</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <header>
+        <h3>
+          <a href="http://mccormickml.com/" title="Home">Chris McCormick</a>
+
+          <!--- Display the About, Archive, etc. pages in the header --->
+          
+              &nbsp;&nbsp;&nbsp;<small><a href="http://mccormickml.com/about/">About</a></small>
+          
+              &nbsp;&nbsp;&nbsp;<small><a href="https://www.chrismccormick.ai/subscribe?utm_source=blog&amp;utm_medium=banner&amp;utm_campaign=newsletter&amp;utm_content=blog_menu1">Newsletter</a></small>
+          
+              &nbsp;&nbsp;&nbsp;<small><a href="https://www.chrismccormick.ai/membership?utm_source=blog&amp;utm_medium=banner&amp;utm_campaign=membership&amp;utm_content=blog_header2">Membership</a></small>
+          
+              &nbsp;&nbsp;&nbsp;<small><a href="http://mccormickml.com/archive/">Blog Archive</a></small>
+          
+
+        </h3>
+        <!---- I could use this to include the tag line, but it looks cluttered...
+        <h3 class="masthead-title">
+             <small>Machine Learning Tutorials and Insights</small>
+        </h3>
+        ----->
+        
+        <small>Become an NLP expert with videos &amp; code for BERT and beyond → Join <a href="https://www.chrismccormick.ai/membership?utm_source=blog&amp;utm_medium=banner&amp;utm_campaign=membership&amp;utm_content=blog_header2">NLP Basecamp</a> now!</small>
+        
+
+      </header>
+
+      <main>
+        <article>
+  
+  <time datetime="2016-04-12T23:00:00-07:00">12 Apr 2016</time>
+  <p>In this post I’m going to describe how to get Google’s <em>pre-trained</em> Word2Vec model up and running in Python to play with.</p>
+
+<p>As an interface to word2vec, I decided to go with a Python package called gensim. gensim appears to be a popular NLP package, and has some nice documentation and tutorials, including for word2vec.</p>
+
+<p>You can download Google’s pre-trained model <a href="https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing" title="Google's pre-trained Word2Vec model">here</a>. It’s 1.5GB! It includes word vectors for a vocabulary of 3 million words and phrases that they trained on roughly 100 billion words from a Google News dataset. The vector length is 300 features.</p>
+
+<p>Loading this model using gensim is a piece of cake; you just need to pass in the path to the model file (update the path in the code below to wherever you’ve placed the file).</p>
+
+<figure><pre><code data-lang="py"><span>import</span> <span>gensim</span>
+
+<span># Load Google's pre-trained Word2Vec model.
+</span><span>model</span> <span>=</span> <span>gensim</span><span>.</span><span>models</span><span>.</span><span>Word2Vec</span><span>.</span><span>load_word2vec_format</span><span>(</span><span>'./model/GoogleNews-vectors-negative300.bin'</span><span>,</span> <span>binary</span><span>=</span><span>True</span><span>)</span>  </code></pre></figure>
+
+<p>However, if you’re running 32-bit Python (like I was) you’re going to get a memory error!</p>
+
+<p>This is because gensim allocates a big matrix to hold all of the word vectors, and if you do the math…</p>
+
+<figure><pre><code data-lang="text">3 million words * 300 features * 4bytes/feature = ~3.35GB</code></pre></figure>
+
+<p>…that’s a big matrix!</p>
+
+<p>Assuming you’ve got a 64-bit machine and a decent amount of RAM (I’ve got 16GB; maybe you could get away with 8GB?), your best bet is to switch to 64-bit Python. I had a little trouble with this–see my notes down at the end of the post.</p>
+
+<h2 id="inspecting-the-model">Inspecting the Model</h2>
+<p>I have a small Python project on GitHub called <a href="https://github.com/chrisjmccormick/inspect_word2vec">inspect_word2vec</a> that loads Google’s model, and inspects a few different properties of it.</p>
+
+<p>If you’d like to browse the 3M word list in Google’s pre-trained model, you can just look at the text files in the <a href="https://github.com/chrisjmccormick/inspect_word2vec/tree/master/vocabulary">vocabulary folder</a> of that project. I split the word list across 50 files, and each text file contains 100,000 entries from the model. I split it up like this so your editor wouldn’t completely choke (hopefully) when you try to open them. The words are stored in their original order–I haven’t sorted the list alphabetically. I don’t know what determined the original order.</p>
+
+<p>Here are some the questions I had about the vocabulary, which I answered in this project:</p>
+
+<ul>
+  <li>Does it include stop words?
+    <ul>
+      <li>Answer: Some stop words like “a”, “and”, “of” are <em>excluded</em>, but others like “the”, “also”, “should” are <em>included</em>.</li>
+    </ul>
+  </li>
+  <li>Does it include misspellings of words?
+    <ul>
+      <li>Answer: Yes. For instance, it includes both “mispelled” and “misspelled”–the latter is the correct one.</li>
+    </ul>
+  </li>
+  <li>Does it include commonly paired words?
+    <ul>
+      <li>Answer: Yes. For instance, it includes “Soviet_Union” and “New_York”.</li>
+    </ul>
+  </li>
+  <li>Does it include numbers?
+    <ul>
+      <li>Answer: Not directly; e.g., you won’t find “100”. But it does include entries like “###MHz_DDR2_SDRAM” where I’m assuming the ‘#’ are intended to match any digit.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Here’s a selection of 30 “terms” from the vocabulary. Pretty weird stuff in there!</p>
+
+<figure><pre><code data-lang="text">Al_Qods
+Surendra_Pal
+Leaflet
+guitar_harmonica
+Yeoval
+Suhardi
+VoATM
+Streaming_Coverage
+Vawda
+Lisa_Vanderpump
+Nevern
+Saleema
+Saleemi
+rbracken@centredaily.com
+yellow_wagtails
+P_&amp;C;
+CHICOPEE_Mass._WWLP
+Gardiners_Rd
+Nevers
+Stocks_Advance_Paced
+IIT_alumnus
+Popery
+Kapumpa
+fashionably_rumpled
+WDTV_Live
+ARTICLES_##V_##W
+Yerga
+Weegs
+Paris_IPN_Euronext
+##bFM_Audio_Simon</code></pre></figure>
+
+<h2 id="64-bit-python-on-windows">64-bit Python on Windows</h2>
+<p>It took me some effort get a 64-bit Python setup with gensim up and running, so I thought I’d share my steps.</p>
+
+<p>I had been using Python(x, y) to get a nice machine learning-oriented Python environment up and running. However, there doesn’t appear to be a 64-bit release of Python(x, y) yet…</p>
+
+<p>I found a package called WinPython that does include 64-bit support. It looks to be actively supported, and includes all of the features I cared about from Python(x, y) (it includes the Spyder IDE and scikit-learn with all its dependencies).</p>
+
+<p>Head over to the homepage for WinPython <a href="https://winpython.github.io/" title="WinPython homepage">here</a>. I initially tried WinPython for Python 3.5, but ran into some issues, and ended up just going with Python 2.7, which worked fine!</p>
+
+<p>You may already have this, but for Python 2.7 you will need the <a href="https://www.microsoft.com/en-us/download/details.aspx?id=15336" title="VS C++ 2008 Redistributable">Microsoft Visual C++ 2008 Redistributable Package (x64)</a>.</p>
+
+<p>I’m using the following version: <a href="https://sourceforge.net/projects/winpython/files/WinPython_2.7/2.7.10.3/WinPython-64bit-2.7.10.3.exe/download" title="Download on SourceForge">WinPython-64bit-2.7.10.3</a></p>
+
+<p>You can extract WinPython wherever you want; I put mine right under C:.</p>
+
+<p>WinPython doesn’t put itself in the Windows registry or on the system path; however, it does include some batch scripts for doing this. Look under <code>C:\WinPython-64bit-3.5.1.2\scripts\</code> and you’ll find <code>env.bat</code> and <code>register_python.bat</code>.</p>
+
+<p>Open a Windows command prompt and run those two batch scripts. Then, in the same command window, you can install gensim easily by executing the following on the command line: <code>easy_install -U gensim</code></p>
+
+<p>That should do it! With any luck, you should now be able to run the Python code at the top of the post to import Google’s model.</p>
+
+
+  
+  
+  
+  
+  
+  
+  
+</article>
+
+      </main>
+      
+      
+    </div></div>
+  </div>
+</body>
+</html>

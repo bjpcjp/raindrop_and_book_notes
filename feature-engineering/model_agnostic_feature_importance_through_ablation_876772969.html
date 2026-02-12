@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Model-agnostic feature importance through ablation - Samuel Taylor</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Model-agnostic feature importance through ablation - Samuel Taylor</h1>
+    <p><strong>URL:</strong> <a href="https://www.samueltaylor.org/articles/feature-importance-for-any-model.html">https://www.samueltaylor.org/articles/feature-importance-for-any-model.html</a></p>
+    <p><strong>Tags:</strong> feature-engineering</p>
+    <p><strong>Bookmark ID:</strong> 876772969</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page">
+<span><a href="https://www.samueltaylor.org/index.html">Home</a> &gt; <a href="https://www.samueltaylor.org/articles/index.html">Articles</a> &gt; Model-agnostic feature importance through ablation</span>
+
+<p><img src="https://www.samueltaylor.org/static/img/selecting_a_record_grande.jpg"></p>
+<p>Feature importances are, well, important. We can use them to provide a
+rudimentary level of interpretability; if a feature has higher importance, it
+has greater impact on the target variable. Some machine learning models have an
+innate way of calculating feature importance (decision trees, for instance).
+Others don't have a way of doing this (for example, support vector machines
+using an RBF kernel). Further, some models result in a set of coefficients (like
+linear regression) that are easy to misinterpret (e.g. if you have two features
+with dramatically different scales).</p>
+<p>Feature ablation is a technique for calculating feature importances that works
+for all machine learning models. Given a dataset of <em>n</em> rows and <em>m</em> features, the
+procedure goes like this:</p>
+<ol>
+<li>Train the model on your train set and calculate a score on the test set.  You
+   can pick whatever scoring metric you like.</li>
+<li>For each of the <em>m</em> features, remove it from the training data and train the
+   model. Then, calculate the score on the test set.</li>
+<li>Rank the features by the difference between the original score (from the
+   model with all features) and the score for the model using all features but
+   one.</li>
+</ol>
+<h2>Example code</h2>
+<p>Here's an example of how we could actually perform this procedure in Python
+using scikit-learn.</p>
+<p>First, we import some things we'll need: <code>load_digits</code> will load in the digits
+dataset. SVC is the model we'll use. <code>train_test_split</code> is a utility method that
+splits the dataset into training and testing portions. <code>sklearn.metrics</code> has a lot
+of pre-defined metrics in it.</p>
+<div><pre><span></span><span>from</span> <span>sklearn.datasets</span> <span>import</span> <span>load_digits</span>
+<span>from</span> <span>sklearn.svm</span> <span>import</span> <span>SVC</span>
+<span>from</span> <span>sklearn.model_selection</span> <span>import</span> <span>train_test_split</span>
+<span>import</span> <span>sklearn.metrics</span> <span>as</span> <span>mx</span>
+</pre></div>
+
+<p>We load and split the data.</p>
+<div><pre><span></span><span>data</span> <span>=</span> <span>load_digits</span><span>()</span>
+<span>X_train</span><span>,</span> <span>X_test</span><span>,</span> <span>y_train</span><span>,</span> <span>y_test</span> <span>=</span> <span>train_test_split</span><span>(</span><span>data</span><span>.</span><span>data</span><span>,</span> <span>data</span><span>.</span><span>target</span><span>,</span> <span>test_size</span><span>=</span><span>0.2</span><span>,</span> <span>random_state</span><span>=</span><span>42</span><span>)</span>
+</pre></div>
+
+<p>Now we define a function which will train and score a model for us. Given the
+data, it creates and trains a support vector machine, then returns the accuracy.
+Finally, we store the score of our model with all features into <code>base_score</code>.</p>
+<div><pre><span></span><span>def</span> <span>score_model</span><span>(</span><span>X_train</span><span>,</span> <span>X_test</span><span>,</span> <span>y_train</span><span>,</span> <span>y_test</span><span>):</span>
+    <span>clf</span> <span>=</span> <span>SVC</span><span>(</span><span>gamma</span><span>=</span><span>'scale'</span><span>,</span> <span>kernel</span><span>=</span><span>'rbf'</span><span>)</span>
+    <span>clf</span><span>.</span><span>fit</span><span>(</span><span>X_train</span><span>,</span> <span>y_train</span><span>)</span>
+    <span>y_pred</span> <span>=</span> <span>clf</span><span>.</span><span>predict</span><span>(</span><span>X_test</span><span>)</span>
+    <span>return</span> <span>mx</span><span>.</span><span>accuracy_score</span><span>(</span><span>y_test</span><span>,</span> <span>y_pred</span><span>)</span>
+
+<span>base_score</span> <span>=</span> <span>score_model</span><span>(</span><span>X_train</span><span>,</span> <span>X_test</span><span>,</span> <span>y_train</span><span>,</span> <span>y_test</span><span>)</span>
+</pre></div>
+
+<p>Then, we iterate through all features, creating an array <code>use_column</code> which we use
+to select all columns except for the one which we're currently scoring. We store
+the score of a given model in the list <code>scores</code>.</p>
+<div><pre><span></span><span>scores</span> <span>=</span> <span>[]</span>
+
+<span>for</span> <span>i</span> <span>in</span> <span>range</span><span>(</span><span>X_train</span><span>.</span><span>shape</span><span>[</span><span>1</span><span>]):</span>
+    <span>use_column</span> <span>=</span> <span>[</span><span>ndx</span> <span>!=</span> <span>i</span> <span>for</span> <span>ndx</span> <span>in</span> <span>range</span><span>(</span><span>X_train</span><span>.</span><span>shape</span><span>[</span><span>1</span><span>])]</span>
+    <span>scores</span><span>.</span><span>append</span><span>(</span><span>score_model</span><span>(</span><span>X_train</span><span>[:,</span> <span>use_column</span><span>],</span>
+                              <span>X_test</span><span>[:,</span> <span>use_column</span><span>],</span>
+                              <span>y_train</span><span>,</span>
+                              <span>y_test</span><span>))</span>
+</pre></div>
+
+<p>Finally, we get the top 10 features.</p>
+<div><pre><span></span><span>sorted</span><span>(</span><span>enumerate</span><span>([</span><span>base_score</span> <span>-</span> <span>s</span> <span>for</span> <span>s</span> <span>in</span> <span>scores</span><span>]),</span>
+       <span>key</span><span>=</span><span>lambda</span> <span>ndx_score</span><span>:</span> <span>ndx_score</span><span>[</span><span>1</span><span>],</span>
+       <span>reverse</span><span>=</span><span>True</span><span>)[:</span><span>10</span><span>]</span>
+
+<span>"""</span>
+<span>[(12, 0.005555555555555647),</span>
+<span> (21, 0.005555555555555647),</span>
+<span> (5, 0.002777777777777879),</span>
+<span> (10, 0.002777777777777879),</span>
+<span> (17, 0.002777777777777879),</span>
+<span> (18, 0.002777777777777879),</span>
+<span> (20, 0.002777777777777879),</span>
+<span> (34, 0.002777777777777879),</span>
+<span> (37, 0.002777777777777879),</span>
+<span> (46, 0.002777777777777879)]</span>
+<span>"""</span>
+</pre></div>
+
+<h2>Relation to stepwise regression</h2>
+<p>You may recognize this idea as being similar to <a rel="nofollow" href="https://en.wikipedia.org/wiki/Stepwise_regression#Main_approaches">backward stepwise
+regression</a>.
+Wasserman (2005) describes this technique for model selection as "we start with
+the biggest model and drop one variable at a time" (p. 221). We drop variables
+until the score has decreased beyond some acceptable level or until we have
+reached the desired number of features. He notes that this is a greedy search
+and is not "guaranteed to find the model with the best score." If we were to use
+<a rel="nofollow" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html">scikit's recursive feature
+elimination</a>
+in combination with this feature ablation technique, we would be using backward
+stepwise regression.</p>
+<p>If you do decide to apply stepwise regression, be careful with the test set used
+to evaluate the features. If you choose features that optimize the score on the
+test set, you are overfitting to the test set (and any metrics calculated for
+the test set will be incorrect). If performing stepwise regression, I would
+recommend splitting the training set into 5 folds and performing cross
+validation to select features. After that process, metrics calculated on the
+test set remain valid (because it was not used during training).</p>
+<h2>Conclusion</h2>
+<p>This technique provides a general way to calculate feature importances for any
+classification or regression model (even those that don't natively support
+them). It's also an element of a feature selection technique called stepwise
+regression.</p>
+<hr>
+<p>Comments? Questions? Concerns? Please tweet me
+<a rel="nofollow" href="https://twitter.com/SamuelDataT">@SamuelDataT</a> or email me (sgt at this
+domain). Thanks!</p>
+<h2>References</h2>
+<ul>
+<li>Wasserman, L. (2005).&nbsp;<em>All of statistics: A concise course in statistical
+  inference</em>. New York: Springer.</li>
+<li>Grande, E. <em>Browsing record store shelves</em>.
+  <a rel="nofollow" href="https://unsplash.com/photos/0vY082Un2pk">Unsplash</a>.</li>
+</ul>
+  
+
+</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>How Fast Is Ruby 3 on Rails? - FastRuby.io | Rails Upgrade Service</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>How Fast Is Ruby 3 on Rails? - FastRuby.io | Rails Upgrade Service</h1>
+    <p><strong>URL:</strong> <a href="https://fastruby.io/blog/rails/ruby/performance/how-fast-is-ruby-3-on-rails.html">https://fastruby.io/blog/rails/ruby/performance/how-fast-is-ruby-3-on-rails.html</a></p>
+    <p><strong>Tags:</strong> ruby, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876777397</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><section>
+      <p>If you’ve been following me awhile, you know that I was <a href="https://engineering.appfolio.com/appfolio-engineering/2016/6/3/ruby-fellow-hired" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">hired by AppFolio <span>
+              opens a new window
+            </span></a> years ago to measure Ruby 3’s performance, especially on Rails. This has been a long trip. And that very first project is finally over: Ruby 3 exists and I can check its final, released Rails performance.</p>
+
+<p>If you <strong><em>have</em></strong> been following along, the numbers in this post won’t surprise you. But it’s important to do the final measurement. If you haven’t been following, this will bring you up to date.</p>
+
+<!--more-->
+
+<h2 id="what-am-i-measuring">What Am I Measuring?</h2>
+
+<p>In concept, I’m measuring “how fast is Ruby 3 versus Ruby 2.6 or 2.7 for a typical real-world Rails workload?”</p>
+
+<p>“Typical real-world workload” is a vague, hand-wavy concept. But there are a lot of specifics that can back it up. I used <a href="https://engineering.appfolio.com/appfolio-engineering/2018/4/2/rails-ruby-bench-what-and-why" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">Rails Ruby Bench <span>
+              opens a new window
+            </span></a>, something I’ve written for this purpose and used for years now.</p>
+
+<p><a href="https://github.com/noahgibbs/rails_ruby_bench" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">Rails Ruby Bench <span>
+              opens a new window
+            </span></a> runs a copy of <a href="https://github.com/discourse/discourse" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">Discourse <span>
+              opens a new window
+            </span></a>, a common and popular Rails app to host internet forums. It’s one of the biggest available “real” open-source Rails apps, making it a fine choice for “real world” benchmarking. RRB runs a set of simulated pseudorandom user requests against the running Rails app, and times how long they all take to finish. So it’s a throughput test. <a href="https://engineering.appfolio.com/appfolio-engineering/2019/11/28/how-do-i-use-rails-ruby-bench" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">You can run it yourself if you like <span>
+              opens a new window
+            </span></a>, though it’s a bit complex and finicky. The dark side of using real-world software is hitting real-world complexity and bugs.</p>
+
+<p>The Ruby versions I measured were my hacked Ruby 3.0 versus 2.6.6 and 2.7.1.</p>
+
+<p>RRB has run against AWS m4.2xlarge instances for nearly its whole existence. That’s what I’m doing again. For now: m4.2xlarge instances, 10 processes, 6 threads/process, the same as I’ve been <a href="https://rubykaigi.org/2017/presentations/codefolio.html" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">using for over 3 years <span>
+              opens a new window
+            </span></a> for this purpose. With this post, it has fulfilled its purpose: to measure the total speedup from 2.0 to 3.0 of a typical real-world Ruby on Rails application.</p>
+
+<p>And I can finally stop supporting some hideous old hacks to make that possible.</p>
+
+<p>These results are running 90 batches per Ruby version of 15,000 requests each. That’s enough to get pretty solid results, but not to detect the tiniest differences. If you need to detect the tiniest differences in speed, you should probably be analysing your own workload more carefully instead. Anything below about half a percent in speed is going to be dwarfed by differences for your own specific operations. It kinda breaks the abstraction of asking “how fast is Ruby 2.X?” — at some point you don’t care about the language generally, you care about the parts of it that you specifically use a lot.</p>
+
+<h2 id="methodology-and-extra-pitfalls">Methodology and Extra Pitfalls</h2>
+
+<p>This post <a href="https://www.fastruby.io/blog/rails/performance/ruby/hows-the-performance-of-ruby-3.0.0-preview1.html" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">clearly follows the methodology of my 3.0.0-preview1 review <span>
+              opens a new window
+            </span></a>, of course. The main difference is that the Ruby branch was updated to the final release of 3.0.</p>
+
+<p>Since I’m benchmarking with very old code for compatibility reasons, I hacked together <a href="https://github.com/noahgibbs/ruby/tree/new_fake_2_8" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">a fake branch of Ruby 3 <span>
+              opens a new window
+            </span></a> that doesn’t remove some of the deprecated features and reports its version number as 2.8 instead of 3.0. The branch includes all the new Ruby 3 code except for <a href="https://github.com/noahgibbs/ruby/commit/17f4f604254b50cdc2c43eb8264f8cbf42c4ce59" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">a recently-added per-thread deadlock detection feature <span>
+              opens a new window
+            </span></a> that replaced a <a href="https://en.wikipedia.org/wiki/Bit" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">bit <span>
+              opens a new window
+            </span></a> I still needed for a deprecated feature. The per-thread deadlock detection feature isn’t be used in my benchmark, especially because it didn’t exist until after Ruby 2.7.</p>
+
+<p>Here are those reverted features:</p>
+
+<p><img src="data:application/octet-stream;base64," alt="A variety of Ruby 3.0.0 deprecations-turned-errors I Reverted - you can find them in the commits list on GitHub, too."></p>
+
+<p>Using a hacked version of the latest Ruby with Rails 4.2 means there were several incompatible code chunks in ancient dependencies. Specifically:</p>
+
+<ul>
+  <li>I had to change tzinfo-1.2.3/lib/tzinfo/ruby_core_support.rb in its one-liner for “open_file”. It was passing the options as a hash, not keywords. Ruby 3.0 keyword-passing changes broke this.</li>
+  <li>Discourse uses discourse/lib/freedom_patches/ams_include_without_root.rb, a horrible old monkeypatch for ActionModel 0.8/0.9, and it causes an infinite recursion. I made discourse/app/serializers/topic_list_item_serializer.rb’s method last_poster_username return a static string, sidestepping the problem. Sigh.</li>
+</ul>
+
+<p>And a new hack, apparently due to something about my hideously-hacked Ruby 3.0 branch that lies about its version number:</p>
+
+<ul>
+  <li>I had to rebuild BigDecimal 1.3.5 to remove three instances of rb_check_safe_obj() from the C extension code. Since safe mode isn’t being used, it does nothing. But it also doesn’t link correctly to the (no-op, only a warning) code.</li>
+</ul>
+
+<p>These are pretty trivial changes, so I shouldn’t be unfairly benefiting or penalizing Ruby 3.0 compared to 2.6 or 2.7. The discourse change (probably the biggest for performance) was also made where it would affect every Ruby version, not just 3.0.</p>
+
+<h2 id="results">Results</h2>
+
+<p>First off, I <strong><em>did not</em></strong> see the occasional crashes with high numbers of threads, that <a href="https://www.fastruby.io/blog/rails/performance/ruby/hows-the-performance-of-ruby-3.0.0-preview1.html" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">I saw in Ruby 3.0.0-preview1 <span>
+              opens a new window
+            </span></a>. I was worried they were because of my changes to the Ruby code, but apparently it was just that 3.0.0-preview1 wasn’t the most stable prerelease. The final released Ruby 3.0 seems to be fine.</p>
+
+<p>Second, when I initially ran 30 batches of 15,000 HTTP requests per batch… The performance numbers were nearly identical. 169.1 reqs/sec, 171.4 reqs/sec and 170.8 reqs/sec. Particularly for version 2.7 versus 3.0, that’s well within the noise threshold, where the test is just saying “these look pretty much the same to me.” They were within 0.6 requests/second of each other with a standard deviation of 1.39. That’s basically identical.</p>
+
+<p>So: Ruby 3.0.0-preview1 had been a few percentage points slower than 2.7. Tested to the same tolerances, Ruby 3.0.0’s release version was <strong><em>exactly</em></strong> the same speed as 2.7.</p>
+
+<p>I’m a glutton for punishment, so I started another VM instance and ran another 60 batches of 15,000 requests for each Ruby version.</p>
+
+<p>Let’s have a table for at least <em>some</em> visual variation, shall we?</p>
+
+<table>
+    <thead>
+        <tr><td></td><th>Ruby 2.6.6</th><th>Ruby 2.7.1</th><th>Ruby 3.0.0</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Median Throughput</th><td>171.1</td><td>173.0</td><td>172.8</td>
+        </tr>
+        <tr>
+            <th>Fastest Run of 60</th><td>174.5</td><td>175.5</td><td>176.4</td>
+        </tr>
+        <tr>
+            <th>Slowest Run of 60</th><td>168.6</td><td>171.3</td><td>169.2</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>This is once again well within the noise threshold. Ruby 3.0 has a <strong><em>tiny</em></strong> bit more variance than 2.7, but by so little that it could easily just be random. And none of these have <strong><em>much</em></strong> variance — nothing that would suggest the test is unstable or that it’s getting lots of outliers and averaging them out. The 2.7 and 3.0 results are basically identical.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Ruby 3.0.0-preview1 was a tiny bit slower than 2.7. The release 3.0 is exactly the same speed as 2.7. Preview1 would also occasionally crash for me in a way that might have been the hackiness of my testing… But apparently wasn’t. The release version of 3.0 had zero crashes during any of my testing. So I think preview1 was a bit unstable — it happens with prerelease versions sometimes.</p>
+
+<p>Does that mean Ruby 3 failed in its promises? <a href="http://codefol.io/posts/is-ruby-3-actually-three-times-faster/" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">I don’t think so, personally <span>
+              opens a new window
+            </span></a>. But that’s not what this article is about.</p>
+
+<p>This article is asking “how is the Rails performance of Ruby 3.0.0?” And the answer is “exactly the same as Ruby 2.7.1, which is about two percent better than 2.6.6.” You can <a href="https://engineering.appfolio.com/appfolio-engineering/2019/3/7/ruby-speed-roundup-20-through-26" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">get more historical perspective on that here <span>
+              opens a new window
+            </span></a>. The total comes to 1.75x the speed of (75% faster than) Ruby 2.0.0-p0.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="A graph showing the fast-then-slow gain of speed from Ruby 2.0.0-p0 to Ruby 2.7 and 3.0"></p>
+
+<p>If you’re into the low-level crunchy details of Ruby performance, <a href="https://fastruby.io/blog/tags/performance" rel="external nofollow noopener noreferrer" target="_blank" title="Opens a new window">FastRuby.io also has a whole category of performance posts <span>
+              opens a new window
+            </span></a> which you may enjoy.</p>
+
+    </section></div>
+  </div>
+</body>
+</html>

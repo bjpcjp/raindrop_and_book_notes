@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>150 successful machine learning models: 6 lessons learned at Booking.com</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>150 successful machine learning models: 6 lessons learned at Booking.com</h1>
+    <p><strong>URL:</strong> <a href="https://blog.acolyer.org/2019/10/07/150-successful-machine-learning-models">https://blog.acolyer.org/2019/10/07/150-successful-machine-learning-models</a></p>
+    <p><strong>Tags:</strong> experiments, machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876772080</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article id="post-9141">
+	<!-- .entry-header -->
+
+	<div>
+		<p><a href="https://www.kdd.org/kdd2019/accepted-papers/view/150-successful-machine-learning-models-6-lessons-learned-at-booking.com">150 successful machine learning models: 6 lessons learned at Booking.com</a> Bernadi et al., <em>KDD’19</em></p>
+<p>Here’s a paper that will reward careful study for many organisations. We’ve previously looked at the <a href="https://blog.acolyer.org/2018/12/17/applied-machine-learning-at-facebook-a-datacenter-infrastructure-perspective/">deep penetration of machine learning models in the product stacks of leading companies</a>, and also some of the <a href="https://blog.acolyer.org/2017/10/03/tfx-a-tensorflow-based-production-scale-machine-learning-platform/">pre-requisites for being successful with it</a>. Today’s paper choice is a wonderful summary of lessons learned integrating around 150 successful customer facing applications of machine learning at Booking.com. Oddly enough given the paper title, the six lessons are never explicitly listed or enumerated in the body of the paper, but they can be inferred from the division into sections. My interpretation of them is as follows:</p>
+<ol>
+<li>Projects introducing machine learned models deliver strong business value</li>
+<li>Model performance is not the same as business performance</li>
+<li>Be clear about the problem you’re trying to solve</li>
+<li>Prediction serving latency matters</li>
+<li>Get early feedback on model quality</li>
+<li>Test the business impact of your models using randomised controlled trials (follows from #2)</li>
+</ol>
+<p>There are way more than 6 good pieces of advice contained within the paper though!</p>
+<blockquote><p>We found that driving true business impact is amazingly hard, plus it is difficult to isolate and understand the connection between efforts on modeling and the observed impact… Our main conclusion is that an iterative, hypothesis driven process, integrated with other disciplines was fundamental to build 150 successful products enabled by machine learning.</p></blockquote>
+<p>In case you’re tempted to stop reading at this point, please don’t interpret that quote as saying that investing in machine learning isn’t worth it. On the contrary, developing an organisational capability to design, build, and deploy successful machine learned models in user-facing contexts is, in my opinion, as fundamental to an organisation’s competitiveness as all the other characteristics of high-performing organisations highlighted in the <a href="https://cloud.google.com/blog/products/devops-sre/the-2019-accelerate-state-of-devops-elite-performance-productivity-and-scaling">State of DevOps reports</a>. (And by the way, wouldn’t it be wonderful to see data confirming or denying that hypothesis in future reports!).</p>
+<h3>Context</h3>
+<p>You’ve probably heard of Booking.com, ‘the world’s largest online travel agent.’ Delivering a great experience to their users is made challenging by a number of factors:</p>
+<ul>
+<li>The stakes are high for recommendations – booking a stay at the wrong place is much worse than streaming a movie you don’t like!</li>
+<li>User’s provide scant information about what they’re really looking for when booking a trip</li>
+<li>The supply of accommodation is constrained, and changing prices impact guest preferences</li>
+<li>Guest preferences may change each time they use the platform (if e.g. booking only once or twice per year)</li>
+<li>There is a lot of rich information available regarding accommodations, which can be overwhelming for users</li>
+</ul>
+<h3>Different types of model</h3>
+<p>With around 150 models now in production, you won’t be surprised to hear that machine learning has touched many parts of the Booking.com experience. Some models are very <em>specific</em>, focusing on a particular use case in a particular context (e.g. recommendations tailored for one point in the funnel), other models act as a <em>semantic layer</em>, modelling concepts that can be generally useful in many contexts. For example, a model indicating how flexible a user is with respect to the destination of their trip.</p>
+<p>The models deployed at Booking.com can be grouped into six broad categories:</p>
+<ul>
+<li><strong>Traveller preferences models</strong> operate in the semantic layer, and make broad predictions about user preferences (e.g., degree of flexibiilty).</li>
+<li><strong>Traveller context models</strong>, also semantic, which predictions about the context in which a trip is taking place (e.g. with family, with friends, for business, …).</li>
+<li><strong>Item space navigation models</strong> which track what a user browses to inform recommendations both the the user’s history and the catalog as a whole.</li>
+<li><strong>User interface optimisation models</strong> optimise elements of the UI such as background images, font sizes, buttons etc. Interestingly here, “<em>we found that it is hardly the case that one specific value is optimal across the board, so our models consider context and user information to decide the best user interface</em>.”</li>
+<li><strong>Content curation models</strong> curate human-generated content such as reviews to decide which ones to show</li>
+<li><strong>Content augmentation models</strong> compute additional information about elements of a trip, such as which options are currently great value, or how prices in an area are trending.</li>
+</ul>
+<h3>Lesson 1: projects introducing machine learned models deliver strong business value</h3>
+<p>All of these families of models have provided business value at Booking.com. Moreover, compared to other <em>successful</em> projects that have been deployed but did not use machine learning, the machine learning based projects tend to deliver <em>higher returns</em>.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/10/booking.com-fig-2.jpeg?w=480" alt=""></p>
+<p>Once deployed, beyond the immediate business benefit they often go on to become a foundation for further product development. The following figure shows the impact of a succession of deployments, each building on the original and further improving the business outcome.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/10/booking.com-fig-3.jpeg?w=480" alt=""></p>
+<h3>Lesson 2: model performance is not the same as business performance</h3>
+<p>Booking.com estimate the value delivered by a model through randomized controlled trials which measure the impact on business metrics.</p>
+<blockquote><p>An interesting finding is that increasing the performance of a model does not necessarily translate into a gain in [business] value.</p></blockquote>
+<p>This could be for a number of reasons including saturation of business value (there’s no more to extract, whatever you do); segment saturation due to smaller populations being exposed to a treatment (as the old and new models are largely in agreement); over-optimisation on a proxy metric (e.g. clicks) that fails to convert into the desired business metric (e.g. conversion); and the <em>uncanny valley</em> effect, which is best explained through the following picture:</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/10/booking.com-fig-5.jpeg?w=480" alt=""></p>
+<h3>Lesson 3: be clear about the problem you’re trying to solve</h3>
+<p>Before you start building models, it’s worth spending time carefully constructing a definition of the problem you are trying to solve.</p>
+<blockquote><p>The Problem Construction Process takes as input a business case or concept and outputs a well-defined modeling problem (usually a supervised machine learning problem), such that a good solution effectively models the given business case or concept.</p></blockquote>
+<p>Some of the most powerful improvements come not from improving a model in the context of a given setup, but changing the setup itself. For example, changing a user preference model based on clink data to a natural language processing problem based on guest review data.</p>
+<blockquote><p>In general we found that often the best problem is not the one that comes to mind immediately and that changing the set up is a very effective way to unlock value.</p></blockquote>
+<h3>Lesson 4: prediction serving latency matters</h3>
+<p>Here we have yet another data point on the <a href="https://blog.acolyer.org/2017/09/26/seven-rules-of-thumb-for-web-site-experimenters/">impact of performance on business metrics</a>. In a experiment introducing synthetic latency, Booking.com found that an increase of about 30% in latency cost about 0.5% in conversion rates “<em>a relevant cost for our business</em>“.</p>
+<blockquote><p>This is particularly relevant for machine learned models since they require significant computational resources when making predictions. Even mathematically simple models have the potential of introducing relevant latency.</p></blockquote>
+<p>Booking.com go to some lengths to minimise the latency introduced by models, including horizontally scaled distributed copies of models, a in-house developed custom linear prediction engine, favouring models with fewer parameters, batching requests, and pre-computation and/or caching.</p>
+<h3>Lesson 5: get early feedback on model quality</h3>
+<blockquote><p>When models are serving requests, it is crucial to monitor the quality of their output but this poses at least two challenges…</p></blockquote>
+<ul>
+<li>Incomplete feedback due to the difficulty of observing true labels</li>
+<li>Delayed feedback e.g. a prediction made at time of booking as to whether a user will leave a review cannot be assessed until after the trip has been made.</li>
+</ul>
+<p>One tactic Booking. com have successfully deployed in these situations with respect to binary classifiers is to look at the distribution of responses generated by the model. “<em>Smooth bimodal distributions with one clear stable point are signs of a model that successfully distinguishes two classes</em>.” Other shapes (see figure below) can be indicative of a model that is struggling.</p>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/10/booking.com-fig-7.jpeg?w=480" alt=""></p>
+<blockquote><p>…Response Distribution Analysis has proved to be a very useful tool that allows us to detect defects in the models very early.</p></blockquote>
+<h3>Lesson 6: test the business impact of your models through randomised controlled trials</h3>
+<blockquote><p>The large majority of the successful use cases of machine learning studied in this work have been enabled by sophisticated experiment designs, either to guide the development process or in order to detect their impact.</p></blockquote>
+<p>The paper includes suggestions for how to set up the experiments under different circumstances.</p>
+<ul>
+<li>When not all subjects are eligible to be exposed to a change (e.g., they don’t have a feature the model requires), create treatment and non-treatments groups from within the eligible subset.</li>
+</ul>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/10/booking.com-fig-8.jpeg?w=480" alt=""></p>
+<ul>
+<li>If the model only produces outputs that influence the user experience in a subset of cases, then further restrict the treatment and non-treatment groups to only those cases where the model produces a user-observable output (which won’t of course be seen in the non-treatment group). To assess the impact of performance add a third control group where the model is not invoked at all.</li>
+</ul>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/10/booking.com-fig-9.jpeg?w=480" alt=""></p>
+<ul>
+<li>When comparing models we are interested in situations where the two models <em>disagree</em>, and we use as a baseline a control group that invokes the current model (assuming we’re testing a current model against a candidate improvement). That leads to an experiment design which looks like this:</li>
+</ul>
+<p><img src="https://blog.acolyer.org/wp-content/uploads/2019/10/booking.com-fig-10.jpeg?w=480" alt=""></p>
+<p>The last word:</p>
+<blockquote><p>Hypothesis driven iteration and interdisciplinary integration are the core of our approach to deliver value with machine learning, and we wish this work to serve as guidance to other machine learning practitioners and spark further investigations on the topic.</p></blockquote>
+			</div><!-- .entry-content -->
+
+	<!-- .entry-footer -->
+
+	</article></div>
+  </div>
+</body>
+</html>

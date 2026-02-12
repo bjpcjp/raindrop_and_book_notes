@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Use the Rails helper highlight when showing search results | Boring Rails:</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Use the Rails helper highlight when showing search results | Boring Rails:</h1>
+    <p><strong>URL:</strong> <a href="https://boringrails.com/tips/rails-highlight-search-results">https://boringrails.com/tips/rails-highlight-search-results</a></p>
+    <p><strong>Tags:</strong> rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876777578</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+<p>Use the Rails <code>highlight</code> helper to wrap search result matches in <code>&lt;mark&gt;</code> tags.</p>
+
+<p><img src="data:application/octet-stream;base64," alt="Rails highlight helper"></p>
+
+<p>Highlight the search term “comment” in a list of notifcations</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>Pass the search term to your controller via params (e.g. <code>params[:search]</code>) and use that to filter down your results.</p>
+
+<div><pre><code><span># app/controllers/inbox_controller.rb</span>
+<span>class</span> <span>InboxController</span> <span>&lt;</span> <span>ApplicationController</span>
+  <span>def</span> <span>index</span>
+    <span>@notifications</span> <span>=</span> <span>Current</span><span>.</span><span>user</span><span>.</span><span>notifications</span><span>.</span><span>for_search</span><span>(</span><span>params</span><span>[</span><span>:search</span><span>])</span>
+  <span>end</span>
+<span>end</span>
+
+<span># app/models/notification.rb</span>
+<span>class</span> <span>Notification</span> <span>&lt;</span> <span>ApplicationRecord</span>
+  <span>belongs_to</span> <span>:recipient</span><span>,</span> <span>class_name: </span><span>"User"</span>
+
+  <span>validates</span> <span>:message</span><span>,</span> <span>presence: </span><span>true</span>
+
+  <span>def</span> <span>self</span><span>.</span><span>for_search</span><span>(</span><span>term</span><span>)</span>
+    <span>if</span> <span>term</span><span>.</span><span>present?</span>
+      <span># Implement searching however you'd like</span>
+      <span>where</span><span>(</span><span>"message ILIKE ?"</span><span>,</span> <span>"%</span><span>#{</span><span>term</span><span>}</span><span>%"</span><span>)</span>
+    <span>else</span>
+      <span>all</span>
+    <span>end</span>
+  <span>end</span>
+<span>end</span>
+</code></pre></div>
+
+<p>Render the notifications and use <code>TextHelper#highlight</code> on the message to emphasis the matching query.</p>
+
+<div><pre><code><span>&lt;%</span> <span>@notifications</span><span>.</span><span>each</span> <span>do</span> <span>|</span><span>notification</span><span>|</span> <span>%&gt;</span>
+  <span>&lt;%=</span> <span>link_to</span> <span>highlight</span><span>(</span><span>notification</span><span>.</span><span>message</span><span>,</span> <span>params</span><span>[</span><span>:search</span><span>]),</span> <span>notification</span> <span>%&gt;</span>
+<span>&lt;%</span> <span>end</span> <span>%&gt;</span>
+</code></pre></div>
+
+<p>You can style the <code>&lt;mark&gt;</code> tag however you’d like.</p>
+
+<div><pre><code><span>mark</span> <span>{</span>
+  <span>background-color</span><span>:</span> <span>yellow</span><span>;</span>
+<span>}</span>
+</code></pre></div>
+
+<h2 id="options">Options</h2>
+
+<p>You can pass either a string, array, or a regex as the phrase to match. Matches are case-insensitive.</p>
+
+<div><pre><code><span>highlight</span><span>(</span><span>'Boring Rails is the best'</span><span>,</span> <span>'rails'</span><span>)</span>
+<span># =&gt; Boring &lt;mark&gt;Rails&lt;/mark&gt; is the best</span>
+
+<span>highlight</span><span>(</span><span>'Boring Rails is the best'</span><span>,</span> <span>/rails|best/</span><span>)</span>
+<span># =&gt; Boring &lt;mark&gt;Rails&lt;/mark&gt; is the &lt;mark&gt;best&lt;/mark&gt;</span>
+
+<span>highlight</span><span>(</span><span>'Boring Rails is the best'</span><span>,</span> <span>[</span><span>'is'</span><span>,</span> <span>'best'</span><span>])</span>
+<span># =&gt; Boring Rails &lt;mark&gt;is&lt;/mark&gt; the &lt;mark&gt;best&lt;/mark&gt;</span>
+</code></pre></div>
+
+<p>If there are no matches or you leave the phrase blank, everything still works fine.</p>
+
+<div><pre><code><span>highlight</span><span>(</span><span>'Boring Rails is the best'</span><span>,</span> <span>'JavaScript'</span><span>)</span>
+<span># =&gt; Boring Rails is the best</span>
+
+<span>highlight</span><span>(</span><span>'Boring Rails is the best'</span><span>,</span> <span>''</span><span>)</span> <span># nil works too</span>
+<span># =&gt; Boring Rails is the best</span>
+</code></pre></div>
+
+<p>You can also override the HTML markup wrapped around the matches using the <code>highlighter</code> option. Use <code>\1</code> to reference the match. The output is sanitized by default</p>
+
+<div><pre><code><span>highlight</span><span>(</span><span>'Boring is best'</span><span>,</span> <span>'best'</span><span>,</span> <span>highlighter: </span><span>'&lt;b&gt;\1&lt;/b&gt;'</span><span>)</span>
+<span># =&gt; Boring is &lt;b&gt;best&lt;/b&gt;</span>
+
+<span>highlight</span><span>(</span><span>'Boring is best'</span><span>,</span> <span>'best'</span><span>,</span> <span>highlighter: </span><span>'&lt;a href="tagged?q=\1"&gt;\1&lt;/a&gt;'</span><span>)</span>
+<span># =&gt; Boring is &lt;a href=\"tagged?q=best\"&gt;best&lt;/a&gt;</span>
+</code></pre></div>
+
+<p>If you need to run additional code, you can pass a block to render instead.</p>
+
+<div><pre><code><span>highlight</span><span>(</span><span>'Blog: Boring Rails'</span><span>,</span> <span>'rails'</span><span>)</span> <span>do</span> <span>|</span><span>match</span><span>|</span>
+  <span>link_to</span><span>(</span><span>match</span><span>,</span> <span>public_share_path</span><span>(</span><span>term: </span><span>match</span><span>))</span>
+<span>end</span>
+<span># =&gt; Blog: Boring &lt;a href="/public/share?term=Rails"&gt;Rails&lt;/a&gt;</span>
+</code></pre></div>
+
+<h2 id="additional-resources">Additional Resources</h2>
+
+<p>Rails API Docs: <a href="https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/TextHelper.html#method-i-highlight">TextHelper#highlight</a></p>
+</div></div>
+  </div>
+</body>
+</html>

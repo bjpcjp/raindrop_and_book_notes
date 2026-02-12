@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>A visual guide to SSH tunnels</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>A visual guide to SSH tunnels</h1>
+    <p><strong>URL:</strong> <a href="https://robotmoon.com/ssh-tunnels">https://robotmoon.com/ssh-tunnels</a></p>
+    <p><strong>Tags:</strong> crypto, devops, linux</p>
+    <p><strong>Bookmark ID:</strong> 876777554</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="app" data-v-app="">
+      <div data-v-537a6321="" id="introduction">
+          
+          <nav data-v-537a6321="">
+            <ul data-v-537a6321="">
+              <li data-v-537a6321=""><a href="#introduction" data-v-537a6321="">Introduction</a></li>
+              <li data-v-537a6321=""><a href="#port-forwarding" data-v-537a6321="">Port forwarding</a>
+                <ul data-v-537a6321="">
+                  <li data-v-537a6321=""><a href="#local-port-forwarding" data-v-537a6321="">Local</a></li>
+                  <li data-v-537a6321=""><a href="#remote-port-forwarding" data-v-537a6321="">Remote</a></li>
+                  <li data-v-537a6321=""><a href="#dynamic-port-forwarding" data-v-537a6321="">Dynamic</a></li>
+                </ul>
+              </li>
+              <li data-v-537a6321=""><a href="#jump-hosts" data-v-537a6321="">Jump hosts</a></li>
+              <li data-v-537a6321=""><a href="#reliable-ssh-tunnels" data-v-537a6321="">Reliable SSH tunnels</a></li>
+              <li data-v-537a6321=""><a href="#more-examples" data-v-537a6321="">More examples</a></li>
+              <li data-v-537a6321=""><a href="#resources" data-v-537a6321="">Resources</a></li>
+            </ul>
+          </nav>
+          <p data-v-537a6321="">This page explains use cases and examples of SSH tunnels while visually presenting the traffic flows. For example, here's a reverse tunnel that allows only users from IP address 1.2.3.4 access to port 80 on the SSH client through an SSH server.</p>
+          <div data-v-537a6321="">
+            <div data-v-537a6321=""><svg data-icon="user" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path fill="currentColor" d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"></path>
+              </svg><p><span>1.2.3.4</span></p></div>
+            
+            <div data-v-537a6321=""><p><span>ssh-server:8080</span></p></div>
+            
+            <div data-v-537a6321=""><p><span>localhost:80</span></p></div>
+          </div>
+          <p data-v-537a6321="">SSH tunnels are encrypted TCP connections between SSH clients and servers that allows traffic entering one side of the tunnel to transparently exit through the other. While the term originally referred to tunnels using TUN/TAP virtual network interfaces, it's commonly used to refer to SSH port forwarding nowadays. Use cases include:</p>
+          <ul data-v-537a6321="">
+            <li data-v-537a6321="">Providing encrypted channels for protocols that use plaintext</li>
+            <li data-v-537a6321="">Opening backdoors into private networks</li>
+            <li data-v-537a6321="">Bypassing firewalls</li>
+          </ul>
+          
+          <p data-v-537a6321="">This page is a work-in-progress. Feel free to&nbsp;<a href="https://github.com/linrock/ssh-tunnels" data-v-537a6321="">suggest examples or corrections on Github</a></p>
+        </div>
+      <div data-v-f18b4bf8="" id="port-forwarding">
+          <header data-v-f18b4bf8="">
+            <h2 data-v-f18b4bf8="">Port forwarding</h2>
+            <h3 data-v-f18b4bf8="">Forwards a port from one system (local or remote) to another</h3>
+          </header>
+          <div data-v-f18b4bf8="">
+            <h4 data-v-f18b4bf8="">Local port forwarding</h4>
+            <div data-v-f18b4bf8="">
+              <div data-v-f18b4bf8=""><p><span>127.0.0.1:5432</span></p></div>
+              
+              <div data-v-f18b4bf8=""><p><span>ssh-server</span></p></div>
+              
+              <div data-v-f18b4bf8=""><p><span>127.0.0.1:5432</span></p></div>
+            </div>
+            <p data-v-f18b4bf8="">Local port forwarding allows you to forward traffic on the SSH client to some destination through an SSH server. This lets you access remote services over an encrypted connection as if they were local services. Example use cases:</p>
+            <ul data-v-f18b4bf8="">
+              <li data-v-f18b4bf8="">Accessing a remote service (redis, memcached, etc.) listening on internal IPs</li>
+              <li data-v-f18b4bf8="">Locally accessing resources available on a private network</li>
+              <li data-v-f18b4bf8="">Transparently proxying a request to a remote service</li>
+            </ul>
+            
+          </div>
+          <div data-v-f18b4bf8="">
+            <h4 data-v-f18b4bf8="">Remote port forwarding</h4>
+            <div data-v-f18b4bf8="">
+              
+              
+              <div data-v-f18b4bf8=""><p><span>ssh-server:8080</span></p></div>
+              
+              <div data-v-f18b4bf8=""><p><span>localhost:80</span></p></div>
+            </div>
+            <p data-v-f18b4bf8="">Remote port forwarding allows you to forward traffic on an SSH server to a destination through either the SSH client or another remote host. This gives users on public networks access to resources on private networks. Example use cases:</p>
+            <ul data-v-f18b4bf8="">
+              <li data-v-f18b4bf8="">Making a local development server available over a public network</li>
+              <li data-v-f18b4bf8="">Granting IP-restricted access to a remote resource on a private network</li>
+            </ul>
+            
+          </div>
+          <div data-v-f18b4bf8="">
+            <h4 data-v-f18b4bf8="">Dynamic port forwarding</h4>
+            <div data-v-f18b4bf8="">
+              <div data-v-f18b4bf8=""><p><span>*:3000</span></p></div>
+              
+              <div data-v-f18b4bf8=""><p><span>ssh-server</span></p></div>
+              
+              <div data-v-f18b4bf8=""><svg id="cloud-icon" data-icon="cloud" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                  <path fill="currentColor" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path>
+                </svg><p><span>*:*</span></p></div>
+            </div>
+            <p data-v-f18b4bf8="">Dynamic port forwarding opens a SOCKS proxy on the SSH client that lets you forward TCP traffic through the SSH server to a remote host.</p>
+          </div>
+          <div data-v-f18b4bf8="">
+            <h4 data-v-f18b4bf8="">Forwarding from privileged ports</h4>
+            <p data-v-f18b4bf8="">If you want to open a privileged port (ports 1-1023) to forward traffic, you'll need to run SSH with superuser privileges on the system that opens the port.</p><p><code data-v-f18b4bf8="">sudo ssh -L 80:example.com:80 ssh-server</code></p><div data-v-f18b4bf8="">
+              <div data-v-f18b4bf8=""><p><span>127.0.0.1:80</span></p></div>
+              
+              <div data-v-f18b4bf8=""><p><span>ssh-server</span></p></div>
+              
+              <div data-v-f18b4bf8=""><svg id="cloud-icon" data-icon="cloud" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                  <path fill="currentColor" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path>
+                </svg><p><span>example.com:80</span></p></div>
+            </div>
+          </div>
+          <div data-v-f18b4bf8="">
+            <h4 data-v-f18b4bf8="">SSH command-line flags</h4>
+            <p data-v-f18b4bf8="">These are some useful SSH command-line flags when establishing tunnels</p><p><code data-v-f18b4bf8="">-f # forks the ssh process into the background<br data-v-f18b4bf8="">-n # prevents reading from STDIN<br data-v-f18b4bf8="">-N # do not run remote commands. Used when only forwarding ports<br data-v-f18b4bf8="">-T # disables TTY allocation</code></p><p data-v-f18b4bf8="">Here's an example of a command you would run to create an SSH tunnel in the background that forwards a local port through the ssh server.</p><p><code data-v-f18b4bf8="">ssh -fnNT -L 127.0.0.1:8080:example.org:80 ssh-server</code></p><p data-v-f18b4bf8="">For brevity, the examples below will leave out these command-line flags.</p>
+          </div>
+        </div>
+      <div data-v-43f80376="" id="local-port-forwarding">
+          <header data-v-43f80376="">
+            <h2 data-v-43f80376="">Local port forwarding</h2>
+            <h3 data-v-43f80376="">Forwards connections from a port on a local system to a port on a remote host</h3>
+          </header>
+          <div data-v-43f80376=""><p><code data-v-43f80376="">ssh -L 127.0.0.1:8080:example.org:80 ssh-server</code></p><div data-v-43f80376="">
+              <div data-v-43f80376=""><p><span>127.0.0.1:8080</span></p></div>
+              
+              <div data-v-43f80376=""><p><span>ssh-server</span></p></div>
+              
+              <div data-v-43f80376=""><svg id="cloud-icon" data-icon="cloud" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                  <path fill="currentColor" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path>
+                </svg><p><span>example.org:80</span></p></div>
+            </div>
+            <p data-v-43f80376="">Forwards connections to 127.0.0.1:8080 on your local system to port 80 on example.org through ssh-server. The traffic between your local system and ssh-server is wrapped in an SSH tunnel, but the traffic between ssh-server and example.org is not. From the perspective of example.org the traffic originates from ssh-server.</p>
+          </div>
+          <div data-v-43f80376=""><p><code data-v-43f80376="">ssh -L 8080:example.org:80 ssh-server</code><code data-v-43f80376="">ssh -L *:8080:example.org:80 ssh-server</code></p><div data-v-43f80376="">
+              <div data-v-43f80376=""><p><span>*:8080</span></p></div>
+              
+              <div data-v-43f80376=""><p><span>ssh-server</span></p></div>
+              
+              <div data-v-43f80376=""><svg id="cloud-icon" data-icon="cloud" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                  <path fill="currentColor" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path>
+                </svg><p><span>example.org:80</span></p></div>
+            </div>
+            <p data-v-43f80376="">Forwards connections to port 8080 on all interfaces on your local system to example.org:80 through a tunnel to ssh-server.</p>
+          </div>
+          <div data-v-43f80376=""><p><code data-v-43f80376="">ssh -L 192.168.0.1:5432:127.0.0.1:5432 ssh-server</code></p><div data-v-43f80376="">
+              <div data-v-43f80376=""><p><span>192.168.0.1:5432</span></p></div>
+              
+              <div data-v-43f80376=""><p><span>ssh-server</span></p></div>
+              
+              <div data-v-43f80376=""><p><span>127.0.0.1:5432</span></p></div>
+            </div>
+            <p data-v-43f80376="">Forwards connections to 192.168.0.1:5432 on your local system to 127.0.0.1:5432 on ssh-server. Note that 127.0.0.1 here is localhost from the viewpoint of ssh-server.</p>
+          </div>
+          <div data-v-43f80376="">
+            <h4 data-v-43f80376="">SSH configurations</h4>
+            <p data-v-43f80376="">Make sure that TCP forwarding is enabled on the SSH server. By default it should be.</p>
+            <div data-v-43f80376=""><p><span>/etc/ssh/sshd_config</span></p></div><p><code data-v-43f80376="">AllowTcpForwarding yes</code></p><p data-v-43f80376="">If you're forwarding ports on interfaces other than 127.0.0.1 then you'll need to enable GatewayPorts on your local system, either within ssh_config or as a command-line option</p>
+            <div data-v-43f80376=""><p><span>/etc/ssh/ssh_config</span></p></div><p><code data-v-43f80376="">GatewayPorts yes</code>
+          </p></div>
+          <h4 data-v-43f80376="">Use cases</h4>
+          <p data-v-43f80376="">If you want to use a secure connection to access a remote service that communicates over plaintext. For example, redis and memcached all use plaintext protocols. If you securely access one of these services on a remote server over public networks, you can tunnel a connection from your local system to the remote server instead of having it listen over the public internet.</p>
+        </div>
+      <div data-v-35b67caa="" id="remote-port-forwarding">
+          <header data-v-35b67caa="">
+            <h2 data-v-35b67caa="">Remote port forwarding</h2>
+            <h3 data-v-35b67caa="">Forwards a port on a remote system to another system</h3>
+          </header>
+          <div data-v-35b67caa=""><p><code data-v-35b67caa="">ssh -R 8080:localhost:80 ssh-server</code></p><div data-v-35b67caa="">
+              
+              
+              <div data-v-35b67caa=""><p><span>ssh-server:8080</span></p></div>
+              
+              <div data-v-35b67caa=""><p><span>localhost:80</span></p></div>
+            </div>
+            <p data-v-35b67caa="">Forwards traffic to all interfaces on port 8080 on ssh-server to localhost port 80 on your local computer. If one of these interfaces is available to the public internet, traffic connecting to port 8080 will be forwarded to your local system.</p>
+          </div>
+          <div data-v-35b67caa=""><p><code data-v-35b67caa="">ssh -R 1.2.3.4:8080:localhost:80 ssh-server</code></p><div data-v-35b67caa="">
+              <div data-v-35b67caa=""><svg data-icon="user" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                  <path fill="currentColor" d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"></path>
+                </svg><p><span>1.2.3.4</span></p></div>
+              
+              <div data-v-35b67caa=""><p><span>ssh-server:8080</span></p></div>
+              
+              <div data-v-35b67caa=""><p><span>localhost:80</span></p></div>
+            </div>
+            <p data-v-35b67caa="">Forwards traffic to ssh-server:8080 to localhost:80 on your local system while only allowing access to the SSH tunnel entrance on ssh-server from IP address 1.2.3.4. Use The GatewayPorts clientspecified directive with this.</p>
+          </div>
+          <div data-v-35b67caa=""><p><code data-v-35b67caa="">ssh -R 8080:example.org:80 ssh-server</code></p><div data-v-35b67caa="">
+              
+              
+              <div data-v-35b67caa=""><p><span>ssh-server:8080</span></p></div>
+              
+              
+              
+              <div data-v-35b67caa=""><svg id="cloud-icon" data-icon="cloud" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                  <path fill="currentColor" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path>
+                </svg><p><span>example.org:80</span></p></div>
+            </div>
+            <p data-v-35b67caa="">Forwards traffic to all interfaces on ssh-server:8080 to localhost:80 on your local system. From your local system, traffic is then forwarded to example.org:80. From the perspective of example.org the traffic is originating from your local system.</p>
+          </div>
+          <div data-v-35b67caa="">
+            <h4 data-v-35b67caa="">SSH server configuration</h4>
+            <div data-v-35b67caa=""><p><span>/etc/ssh/sshd_config</span></p></div>
+            <p data-v-35b67caa="">By default, forwarded ports are not accessible to the public internet. You'll need to add this to your sshd_config on your remote server to forward public internet traffic to your local computer.</p><p><code data-v-35b67caa="">GatewayPorts yes</code></p><p data-v-35b67caa="">Or if you'd like to specify which clients are allowed access, you can use the following in your sshd_config instead</p><p><code data-v-35b67caa="">GatewayPorts clientspecified</code>
+          </p></div>
+        </div>
+      <div data-v-43c5d2e8="" id="dynamic-port-forwarding">
+          <header data-v-43c5d2e8="">
+            <h2 data-v-43c5d2e8="">Dynamic port forwarding</h2>
+            <h3 data-v-43c5d2e8="">Forward traffic from a range of ports to a remote server</h3>
+          </header>
+          <div data-v-43c5d2e8=""><p><code data-v-43c5d2e8="">ssh -D 3000 ssh-server</code></p><div data-v-43c5d2e8="">
+              <div data-v-43c5d2e8=""><p><span>*:3000</span></p></div>
+              
+              <div data-v-43c5d2e8=""><p><span>ssh-server</span></p></div>
+              
+              <div data-v-43c5d2e8=""><svg id="cloud-icon" data-icon="cloud" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                  <path fill="currentColor" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path>
+                </svg><p><span>*:*</span></p></div>
+            </div>
+            <p data-v-43c5d2e8="">Opens a SOCKS proxy on port 3000 of all interfaces on your local system. This allows you to forward traffic sent through the proxy to the ssh-server on any port or destination host. By default, SSH will use the SOCKS5 protocol, which forwards TCP and UDP traffic.</p>
+          </div>
+          <div data-v-43c5d2e8=""><p><code data-v-43c5d2e8="">ssh -D 127.0.0.1:3000 ssh-server</code></p><div data-v-43c5d2e8="">
+              <div data-v-43c5d2e8=""><p><span>127.0.0.1:3000</span></p></div>
+              
+              <div data-v-43c5d2e8=""><p><span>ssh-server</span></p></div>
+              
+              <div data-v-43c5d2e8=""><svg id="cloud-icon" data-icon="cloud" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                  <path fill="currentColor" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path>
+                </svg><p><span>*:*</span></p></div>
+            </div>
+            <p data-v-43c5d2e8="">Opens a SOCKS proxy on 127.0.0.1:3000 on your local system.</p>
+          </div>
+          <p data-v-43c5d2e8="">When you have a SOCKS proxy running, you can configure your web browser to use the proxy to access resources as if connections were originating from ssh-server. For example, if ssh-server had access to other servers within a private network, by using using a SOCKS proxy you could access those other servers locally as if you were on the network, without needing to set up a VPN.</p>
+          <div data-v-43c5d2e8="">
+            <p data-v-43c5d2e8="">When you have a SOCKS proxy running, you can test it like so</p><p><code data-v-43c5d2e8="">curl -x socks5://127.0.0.1:12345 https://example.org</code>
+          </p></div>
+          <div data-v-43c5d2e8="">
+            <h4 data-v-43c5d2e8="">SSH client configuration</h4>
+            <div data-v-43c5d2e8=""><p><span>/etc/ssh/ssh_config</span></p></div>
+            <p data-v-43c5d2e8="">If you want the SOCKS proxy to be available to more interfaces than just localhost, make sure to enable GatewayPorts on your local system.</p><p><code data-v-43c5d2e8="">GatewayPorts yes</code></p><p data-v-43c5d2e8="">Since GatewayPorts is being configured on the SSH client here, you can also configure it with a command-line option instead of ssh_config.</p><p><code data-v-43c5d2e8="">ssh -o GatewayPorts=yes -D 3000 ssh-server</code>
+          </p></div>
+        </div>
+      <div data-v-1fb1408b="" id="jump-hosts">
+          <header data-v-1fb1408b="">
+            <h2 data-v-1fb1408b="">Jump hosts and proxy commands</h2>
+            <h3 data-v-1fb1408b="">Transparently connecting to a remote host through intermediate hosts</h3>
+          </header>
+          <div data-v-1fb1408b=""><p><code data-v-1fb1408b="">ssh -J user1@jump-host user2@remote-host</code><code data-v-1fb1408b="">ssh -o "ProxyJump user1@jump-host" user2@remote-host</code></p><div data-v-1fb1408b="">
+              
+              
+              <div data-v-1fb1408b=""><p><span>user1@jump-host</span></p></div>
+              
+              <div data-v-1fb1408b=""><p><span>user2@remote-host</span></p></div>
+            </div>
+            <p data-v-1fb1408b="">Establishes an SSH connection with jump-host and forwards TCP traffic to remote-host. Connecting to remote-host through an intermediate jump-host. The above command should work out of the box if jump-host already has SSH access to remote-host. If it does not, you can use agent forwarding to forward the SSH identity of your local computer to remote-host.</p>
+          </div>
+          <div data-v-1fb1408b=""><p><code data-v-1fb1408b="">ssh -J jump-host1,jump-host2 ssh-server</code></p><div data-v-1fb1408b="">
+              
+              
+              <div data-v-1fb1408b=""><p><span>jump-host1</span></p></div>
+              
+              <div data-v-1fb1408b=""><p><span>jump-host2</span></p></div>
+              
+              <div data-v-1fb1408b=""><p><span>ssh-server</span></p></div>
+            </div>
+            <p data-v-1fb1408b="">You can specify multiple comma-separated jump hosts.</p>
+          </div>
+          <div data-v-1fb1408b=""><p><code data-v-1fb1408b="">ssh -o ProxyCommand="nc -X 5 -x localhost:3000 %h %p" user@remote-host</code></p><div data-v-1fb1408b="">
+              
+              
+              <div data-v-1fb1408b=""><p><span>proxy-host:3128</span></p></div>
+              
+              <div data-v-1fb1408b=""><p><span>user2@remote-host</span></p></div>
+            </div>
+            <p data-v-1fb1408b="">Connecting to a remote server through a SOCKS5 proxy using netcat. From the perspective of the server, the originating IP is from proxy-host. However, the SSH connection itself is end-to-end encrypted so proxy-host only sees an encrypted stream of traffic between the local system and remote-host.</p>
+          </div>
+          <div data-v-1fb1408b="">
+            <h4 data-v-1fb1408b="">SSH client configuration</h4>
+            <div data-v-1fb1408b=""><p><span>/etc/ssh/ssh_config</span></p></div>
+            <p data-v-1fb1408b="">To enable agent forwarding, you can use ssh-add to add your local SSH identity to your local ssh agent.</p><p><code data-v-1fb1408b="">ssh-add</code>
+          </p></div>
+        </div>
+      <div data-v-23d996ea="" id="reliable-ssh-tunnels">
+          <header data-v-23d996ea="">
+            <h2 data-v-23d996ea="">Reliable SSH Tunnels</h2>
+            <h3 data-v-23d996ea="">How to keep SSH tunnels open through network failures</h3>
+          </header>
+          <div data-v-23d996ea="">
+            <p data-v-23d996ea="">The commands listed above work on an ad-hoc basis, but if you want to maintain SSH tunnels through network outages or unreliable connections, you'll have to do some additional setup.</p>
+            <p data-v-23d996ea="">By default, the TCP connection used to establish an SSH tunnel may time out after a period of inactivity. To prevent timeouts, you can configure the server to send heartbeat messages.</p>
+            <div data-v-23d996ea=""><p><span>/etc/ssh/sshd_config</span></p></div><p><code data-v-23d996ea="">ClientAliveInterval 15<br data-v-23d996ea="">ClientAliveCountMax 4</code></p><p data-v-23d996ea="">You can also configure the client to send heartbeat messages.</p>
+            <div data-v-23d996ea=""><p><span>/etc/ssh/ssh_config</span></p></div><p><code data-v-23d996ea="">ServerAliveInterval 15<br data-v-23d996ea="">ServerAliveCountMax 4</code>
+          </p></div>
+          <div data-v-23d996ea="">
+            <h4 data-v-23d996ea="">Using AutoSSH</h4>
+            <p data-v-23d996ea="">While the above options may prevent a connection from dropping due to inactivity, they will not re-establish dropped connections. To ensure that an SSH tunnel will be re-established, you can use autossh, which builds an SSH tunnel and monitors its health.</p>
+            <p data-v-23d996ea="">AutoSSH accepts the same arguments for port forwarding as SSH.</p><p><code data-v-23d996ea="">autossh -R 2222:localhost:22 ssh-server</code></p><div data-v-23d996ea="">
+              
+              
+              <div data-v-23d996ea=""><p><span>ssh-server:2222</span></p></div>
+              
+              <div data-v-23d996ea=""><p><span>localhost:22</span></p></div>
+            </div>
+            <p data-v-23d996ea="">This establishes a reverse tunnel that comes back after network failures. By default, AutoSSH will open extra ports on the SSH client and server for health checks. If traffic appears to no longer pass between the health check ports, AutoSSH will restart the SSH tunnel.</p>
+          </div>
+          <div data-v-23d996ea=""><p><code data-v-23d996ea="">autossh -R 2222:localhost:22 \<br data-v-23d996ea="">&nbsp;&nbsp;-M 0 \<br data-v-23d996ea="">&nbsp;&nbsp;-o "ServerAliveInterval 10" -o "ServerAliveCountMax 3" \<br data-v-23d996ea="">&nbsp;&nbsp;remote-host</code></p><p data-v-23d996ea="">Using the -M 0 flag disables the health check ports and allows the SSH client to handle the health checks. In this example, the SSH client expects the server to send a heartbeat every 10 seconds. If 3 heartbeats fail in a row, the SSH client exits, and AutoSSH will re-establish a new connection.</p>
+          </div>
+        </div>
+      <div data-v-957842c4="" id="more-examples">
+          <header data-v-957842c4="">
+            <h2 data-v-957842c4="">More examples and use cases</h2>
+          </header>
+          <div data-v-957842c4="">
+            <h4 data-v-957842c4="">Transparent access to remote resource on a private network</h4>
+            <p data-v-957842c4="">Let's say there's a git repository on a private network that's only accessible through a private server on the network. This server is not accessible to the public internet. You have direct access to the server, but don't have VPN access to the private network.</p>
+            <div data-v-957842c4="">
+              <div data-v-957842c4=""><p><span>private-server</span></p></div>
+              
+              <div data-v-957842c4=""><p><span>git@private-network</span></p></div>
+            </div>
+            <p data-v-957842c4="">For convenience, you'd like to access this private git repository as if you were connecting to it directly from your local system. If you have SSH access to another server that's accessible from both your local system and the private server, you can accomplish this by establishing an SSH tunnel and using a couple of ProxyCommand directives.</p><p><code data-v-957842c4="">ssh -L 127.0.0.1:22:127.0.0.1:2222 intermediate-host</code></p><div data-v-957842c4="">
+              <div data-v-957842c4=""><p><span>127.0.0.1:2222</span></p></div>
+              
+              <div data-v-957842c4=""><p><span>127.0.0.1:22</span></p></div>
+            </div>
+            <p data-v-957842c4="">This forwards port 2222 on intermediate-host to port 22 on the private server. Now, if you SSH to port 2222 from intermediate-host, you're connecting to the SSH server on the private server despite the private server not being accessible by the public internet.</p><p><code data-v-957842c4="">ssh -p 2222 user@localhost</code></p><p data-v-957842c4="">If you'd like to make the backdoor even more convenient, you can add some directives to your local ~/.ssh/config</p><p><code data-v-957842c4="">Host git.private.network<br data-v-957842c4="">&nbsp;&nbsp;HostName git.private.network<br data-v-957842c4="">&nbsp;&nbsp;ForwardAgent yes<br data-v-957842c4="">&nbsp;&nbsp;ProxyCommand ssh private nc %h %p<p>Host private<br data-v-957842c4="">&nbsp;&nbsp;HostName localhost<br data-v-957842c4="">&nbsp;&nbsp;Port 2222<br data-v-957842c4="">&nbsp;&nbsp;User private-user<br data-v-957842c4="">&nbsp;&nbsp;ForwardAgent yes<br data-v-957842c4="">&nbsp;&nbsp;ProxyCommand ssh tunnel@intermediate-host nc %h %p</p></code></p><div data-v-957842c4="">
+              
+              
+              <div data-v-957842c4=""><p><span>127.0.0.1:2222</span></p></div>
+              
+              <div data-v-957842c4=""><p><span>127.0.0.1:22</span></p></div>
+            </div>
+            <p data-v-957842c4="">Now you have access to the private git repository as if you were on the private network.</p>
+          </div>
+          <div data-v-957842c4="">
+            <h4 data-v-957842c4="">UDP over SSH tunnels</h4>
+            <p data-v-957842c4="">TODO</p>
+          </div>
+        </div>
+      <section id="resources" data-v-e1fa7d94="">
+        <p data-v-e1fa7d94="">
+          <header data-v-e1fa7d94="">
+            <h2 data-v-e1fa7d94="">Resources</h2>
+          </header>
+          <nav data-v-e1fa7d94=""><a href="https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Tunnels" data-v-e1fa7d94="">OpenSSH cookbook</a><a href="http://www.harding.motd.ca/autossh/" data-v-e1fa7d94="">AutoSSH</a></nav>
+        </p>
+      </section>
+      
+    </div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using window functions for advanced data analysis</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using window functions for advanced data analysis</h1>
+    <p><strong>URL:</strong> <a href="https://www.datasciencecentral.com/using-window-functions-for-advanced-data-analysis">https://www.datasciencecentral.com/using-window-functions-for-advanced-data-analysis</a></p>
+    <p><strong>Tags:</strong> analytics, sql</p>
+    <p><strong>Bookmark ID:</strong> 876795629</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><figure><img decoding="async" src="https://www.datasciencecentral.com/wp-content/uploads/2024/04/1619995106780.jpg" alt="Window Functions for Advanced Data Analysis" loading="lazy" data-src="https://www.datasciencecentral.com/wp-content/uploads/2024/04/1619995106780.jpg" data-old-src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></figure>
+
+
+<p>Window functions are an advanced feature of SQL that provides powerful tools for detailed data analysis and manipulation without grouping data into single output rows, which is common in aggregate functions. These functions operate on a set of rows and return a value for each row based on the calculation against the set.</p>
+
+
+
+<p>In this article, we delve into window functions in SQL Server. You will learn how to apply various window functions, including moving averages, ranking, and cumulative sums, to achieve comprehensive analytics on data sets.&nbsp;</p>
+
+
+
+<p>You will also see how to partition and filter data using the window functions.&nbsp;</p>
+
+
+
+<p>Finally, you will study some best practices and pitfalls to avoid when working with the Window functions. These are the types of things that are covered during the more advanced SQL workshops that are <a href="http://acuitytraining.co.uk/">available online</a>.</p>
+
+
+
+<p><strong>Note:</strong> We will use the <a href="https://github.com/microsoft/sql-server-samples/blob/master/samples/databases/northwind-pubs/instpubs.sql">Microsoft Pubs database</a> as an example to execute various window function queries.&nbsp;</p>
+
+
+
+<h2>Understanding window functions</h2>
+
+
+
+<p>Window functions are used for calculations across sets of rows related to the current row. Unlike standard aggregate functions, window functions do not collapse rows and allow us to perform calculations across rows related to the current row. This capability is crucial for running totals, moving averages, and cumulative statistics, which are invaluable for time-series data analysis, <a href="https://www.datasciencecentral.com/how-sql-python-amp-mql-are-changing-investment-management/">financial data,</a> inventory management, and more.</p>
+
+
+
+<p>With window functions, you can specify a “window” of rows related to the current row over which SQL Server performs a calculation. You can define this window using clauses like OVER, PARTITION BY, and ORDER BY.</p>
+
+
+
+<h2>Basic syntax</h2>
+
+
+
+<p>The basic syntax for a window function is:</p>
+
+
+
+<figure><p><code>{function_name}() OVER (<br>&nbsp; &nbsp; [PARTITION BY column_name]<br>&nbsp; &nbsp; [ORDER BY column_name [ASC|DESC]]<br>)</code></p></figure>
+
+
+
+<p>Each part of the syntax has a specific purpose:</p>
+
+
+
+<ul>
+<li><strong>{function_name}():</strong> This is the window function you want to apply. SQL supports various window functions such as <strong><em>SUM()</em></strong><em>, </em><strong><em>AVG()</em></strong><em>, </em><strong><em>COUNT()</em></strong><em>, </em><strong><em>RANK()</em></strong><em>, </em><strong><em>ROW_NUMBER()</em></strong>, and more. These functions can compute values over a specified range of rows.</li>
+</ul>
+
+
+
+<ul>
+<li><strong>OVER:</strong> This keyword defines the window over which the SQL server executes the function. It signifies the start of the window specification.</li>
+
+
+
+<li><strong>PARTITION BY:</strong> Divides the data into partitions (or groups) to which the function is applied. If you don’t include the <strong><em>PARTITION BY</em></strong> clause, all the rows will be treated as a single partition.&nbsp;</li>
+
+
+
+<li><strong>ORDER BY:</strong> Defines the order of data within each partition.</li>
+</ul>
+
+
+
+<h2>Practical scenarios using window functions</h2>
+
+
+
+<p>Let’s explore some practical scenarios using window functions on the Microsoft Pubs database. We will look into calculating moving averages, ranking, and cumulative sums.</p>
+
+
+
+<h3>Calculating moving averages for sales quantities</h3>
+
+
+
+<p>Moving averages smooth out data series and are commonly used to understand trends.&nbsp;<br>Let’s calculate a moving average for the sales quantities in the <strong><em>sales</em></strong> table of the Pubs database.</p>
+
+
+
+<p><code><strong>USE</strong> pubs<p><strong>SELECT</strong> ord_num, ord_date, qty,<br><strong>AVG</strong>(qty) <strong>OVER</strong> (<strong>ORDER</strong> <strong>BY</strong> qty <strong>ROWS</strong> <strong>UNBOUNDED</strong> <strong>PRECEDING</strong>) <strong>AS</strong> MovingAvgQty<br><strong>FROM</strong> sales;</p></code></p>
+
+
+
+<p><strong>Output:</strong></p>
+
+
+
+<ul>
+<li><img alt="Using window functions for advanced data analysis" decoding="async" src="https://lh7-us.googleusercontent.com/qTfmRpBDqhHgdbOga4tv2u6ZWYR4Eg_qXgdULytap9_4MjK4j7EUWXfvLBwQNYrJHlQe3UILgkn_vTU6uqNs-erYEUoEegNlgj-2mbOUPAMtTALccoPbsbGOOImQZL4-nBRKDWLI8KtnsND-DLmEww" data-old-src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></li>
+</ul>
+
+
+
+<p>In the above query, we use the <strong><em>AVG</em></strong> window functions to calculate the moving average for the <strong><em>qty</em></strong> column. The <strong><em>ROWS UNBOUNDED PRECEDING</em></strong> means we want to calculate the moving average of all the previous rows up to the current ones.&nbsp;</p>
+
+
+
+<p>You can also calculate the moving average for a specific number of previous rows.&nbsp;</p>
+
+
+
+<p>For example, the following script returns the moving average for the previous two rows and the current row. Notice here that we cast the <strong><em>qty</em></strong> column to a floating type to have a precise average value.&nbsp;</p>
+
+
+
+<p><code><strong>USE</strong> pubs<p><strong>SELECT</strong> ord_num, ord_date, qty,<br><strong>AVG</strong>(<strong>CAST</strong>(qty <strong>AS</strong> float)) <strong>OVER</strong> (<strong>ORDER</strong> <strong>BY</strong> qty <strong>ROWS</strong> <strong>BETWEEN</strong> 2 <strong>PRECEDING</strong> <strong>AND</strong> <strong>CURRENT</strong> <strong>ROW</strong>) <strong>AS</strong> MovingAvgQty<br><strong>FROM</strong> sales;</p></code></p>
+
+
+
+<p><strong>Output:</strong></p>
+
+
+
+<figure><img alt="Using window functions for advanced data analysis" decoding="async" src="https://lh7-us.googleusercontent.com/vJbGa2w2S5wLfp8bbv79bNVtS_9d3QPk_69-F-hlpvG8wqT4e_Ozb8S-CnTQiyhgDfRoW7YNdSPaIFyv81w6wisDhI7bmRX1dHFKVPEKqk8TL_ri6JlKULCo6aA5XC-9v8CcpwDBr1fwgN7LsXbXBQ" data-old-src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></figure>
+
+
+
+<h3>Ranking Sales Data by Price</h3>
+
+
+
+<p>Ranking can help in comparing items, like listing products by sales price.&nbsp;</p>
+
+
+
+<p>Let’s see an example where we rank the total sales price for each sale. We will first join the <strong><em>sales</em></strong> and <strong><em>titles</em></strong> tables. Next, we will calculate the total sale price for each record by multiplying <strong><em>qty</em></strong> with the <strong><em>price</em></strong> column of the corresponding tables). Finally, we will use the <strong><em>RANK</em></strong> function to rank all the records in descending order of the total sale price. This will give you information about which sale made the most money.&nbsp;</p>
+
+
+
+<p><code><strong>SELECT</strong><br>&nbsp; &nbsp; S.ord_num,<br>&nbsp; &nbsp; S.ord_date,<br>&nbsp; &nbsp; S.qty,<br>&nbsp; &nbsp; T.title,<br>&nbsp; &nbsp; S.qty * T.price <strong>AS</strong> TotalSalePrice,<br>&nbsp; &nbsp; <strong>RANK</strong>() <strong>OVER</strong> (<strong>ORDER</strong> <strong>BY</strong> S.qty * T.price <strong>DESC</strong>) <strong>AS</strong> SalesRank<br><strong>FROM</strong><br>&nbsp; &nbsp; sales S<br><strong>JOIN</strong><br>&nbsp; &nbsp; titles T <strong>ON</strong> S.title_id = T.title_id;</code></p>
+
+
+
+<p><strong>Output:</strong></p>
+
+
+
+<figure><img alt="Using window functions for advanced data analysis" decoding="async" src="https://lh7-us.googleusercontent.com/T_Smwf1F1Dxw5BwpOVBXtZUXvFf0u8r_iVtGE7mImwFGhw5IhM49GX0sc0JHcpLbe_ZqdIir8aas9aJypHNqB5Yk8sBLVkJDjVRcAL-KzGRTmhTYYqnbXZQpNNGFxGaanAm6vG3tyXaZqS-DE_SPww" data-old-src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></figure>
+
+
+
+<h3>Cumulative Sums of Total Sales Price</h3>
+
+
+
+<p>Cumulative sums are useful for running totals, which can be essential for inventory or account balance tracking.&nbsp;</p>
+
+
+
+<p>For example, let’s calculate the cumulative total sale prices for all the rows in the <strong><em>sales</em></strong> table. As we did previously, we will join the <strong><em>sales</em></strong> and <strong><em>titles</em></strong> column to calculate the total sale price for each row.</p>
+
+
+
+<p>Next, you can use the <strong><em>SUM</em></strong> window function to calculate the cumulative sales by ordering the results using the <strong><em>ord_date</em></strong> column. This will return you the cumulative sales by date.&nbsp;&nbsp;</p>
+
+
+
+<div><p><strong>USE</strong> pubs;</p><p><code><strong>SELECT</strong><br>&nbsp; &nbsp; S.ord_num,<br>&nbsp; &nbsp; S.ord_date,<br>&nbsp; &nbsp; S.qty,<br>&nbsp; &nbsp; T.title,<br>&nbsp; &nbsp; S.qty * T.price <strong>AS</strong> TotalSalePrice,<br>&nbsp; &nbsp; <strong>SUM</strong>(S.qty * T.price) <strong>OVER</strong> (<strong>ORDER</strong> <strong>BY</strong> s.ord_date <strong>ROWS</strong> <strong>UNBOUNDED</strong> <strong>PRECEDING</strong>) <strong>AS</strong> CumulativeSales<br><strong>FROM</strong><br>&nbsp; &nbsp; sales S<br><strong>JOIN</strong><br>&nbsp; &nbsp; titles T <strong>ON</strong> S.title_id = T.title_id;</code></p></div>
+
+
+
+<p><strong>Output:</strong></p>
+
+
+
+<figure><img alt="Using window functions for advanced data analysis" decoding="async" src="https://lh7-us.googleusercontent.com/_f2sX84pzwRwQsFm5ydZT5dHWYRpELSHTX34NOAIFr4o3eGS5Jb_pWlRGVxRKyYqDO6t6ddNR4pE8ZBWx8eS8vRDNkYMdEbFGu_Amzmfewim-oCAs0247dLZDd9_CUIcVHYqQ9RcgyEOkxnfZ64RdQ" data-old-src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></figure>
+
+
+
+<h2>Partitioning and&nbsp; Filtering with Window Functions</h2>
+
+
+
+<p>You can partition and filter records in a window function using the PARTITION BY and the CASE statement.&nbsp;</p>
+
+
+
+<h3>Partitioning with PARTITION BY Clause</h3>
+
+
+
+<p>You can use the <strong>PARTITION BY</strong> clause in conjunction with window functions. This allows you to apply window functions separately for each partition.&nbsp;</p>
+
+
+
+<p>For example, the following query returns cumulative prices for various title types in the <strong><em>titles </em></strong>table.&nbsp;</p>
+
+
+
+<p><code><strong>USE</strong> pubs;<p><strong>SELECT</strong><br>&nbsp; &nbsp; title_id,<br>&nbsp; &nbsp; title,<br>&nbsp; &nbsp; <strong>type</strong>,<br>&nbsp; &nbsp; price,<br>&nbsp; &nbsp; <strong>SUM</strong>(price) <strong>OVER</strong> (<strong>PARTITION</strong> <strong>BY</strong> <strong>type</strong> <strong>ORDER</strong> <strong>BY</strong> price <strong>ROWS</strong> <strong>UNBOUNDED</strong> <strong>PRECEDING</strong>) <strong>AS</strong> CumulativePriceByType<br><strong>FROM</strong><br>&nbsp; &nbsp; titles</p></code></p>
+
+
+
+<p><strong>Output:</strong></p>
+
+
+
+<figure><img alt="Using window functions for advanced data analysis" decoding="async" src="https://lh7-us.googleusercontent.com/_vECtePuJTZ8jfA1ADjyPi3EXSszRgvpVItr1y8QYb4123cv3H3Rvw25A2hUQcUQAbBP0o3E_O4wZQLJxC52e7hgEXFZ2TFiVkHoHzENnBy7ICDta6cWWfL4axWJ-A8CNPmJJOm_xZ3k52ZEhIcWUA" data-old-src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></figure>
+
+
+
+<p>In the above output, cumulative prices are calculated separately for each title type.&nbsp;</p>
+
+
+
+<h3>Filtering with CASE Statement</h3>
+
+
+
+<p>You can use the CASE statement inside a window function to filter the records before applying the window function.</p>
+
+
+
+<p>For example, you can use the following query containing the <strong><em>CASE</em></strong> statement if you only want to include titles in the cumulative sum where the price is greater than $10:</p>
+
+
+
+<figure><p><code><strong>SELECT</strong><br>&nbsp; &nbsp; title_id,<br>&nbsp; &nbsp; title,<br>&nbsp; &nbsp; <strong>type</strong>,<br>&nbsp; &nbsp; price,<br>&nbsp; &nbsp; <strong>SUM</strong>(<strong>CASE</strong> <strong>WHEN</strong> price &gt; 10 <strong>THEN</strong> price <strong>ELSE</strong> 0 <strong>END</strong>)<br>&nbsp; &nbsp; &nbsp; &nbsp; <strong>OVER</strong> (<strong>PARTITION</strong> <strong>BY</strong> <strong>type</strong> <strong>ORDER</strong> <strong>BY</strong> price <strong>ROWS</strong> <strong>UNBOUNDED</strong> <strong>PRECEDING</strong>) <strong>AS</strong> CumulativePriceByType<br><strong>FROM</strong><br>&nbsp; &nbsp; titles<br><strong>ORDER</strong> <strong>BY</strong><br>&nbsp; &nbsp; <strong>type</strong>,<br>&nbsp; &nbsp; price;</code></p></figure>
+
+
+
+<p><strong>Output:</strong></p>
+
+
+
+<figure><img alt="Using window functions for advanced data analysis" decoding="async" src="https://lh7-us.googleusercontent.com/1sfVslHCpMx9KgDkO5PBKfpy-E_j65lvblUT5--wUJzocc9uDaBG3WKMswdyPxxlVGlbiqqTkuXDOSk8sYz9TugEame66e5fmDGmI8hXeypJ-ZqVPffcSuvIgcIaZ38WrwIdsPbeL2u_v8ck2NR2vQ" data-old-src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></figure>
+
+
+
+<h2>Best Practices and Common Pitfalls When Using Window Functions</h2>
+
+
+
+<p>Let’s now discuss some of the best practices and common pitfalls to avoid when using window functions in SQL Server.&nbsp;</p>
+
+
+
+<h3>Best practices</h3>
+
+
+
+<ul>
+<li><strong>Indexing for Performance:</strong> Ensure columns used in <strong><em>ORDER BY</em></strong> and <strong><em>PARTITION BY</em></strong> are indexed to improve query performance, especially with large datasets.</li>
+</ul>
+
+
+
+<ul>
+<li><strong>Use PARTITION BY Judiciously:</strong> Use<strong><em> PARTITION BY</em></strong> thoughtfully. Overpartitioning, especially by columns with high cardinality, can reduce performance. Balance meaningful data segmentation with efficiency.</li>
+</ul>
+
+
+
+<ul>
+<li><strong>Limit Window Frames:</strong> Use specific boundaries like <strong><em>ROWS</em></strong> or <strong><em>RANGE</em></strong> to limit window sizes instead of defaulting to UNBOUNDED PRECEDING, which improves performance by reducing the number of rows processed.</li>
+</ul>
+
+
+
+<h3>Common pitfalls</h3>
+
+
+
+<ul>
+<li><strong>Ignoring NULL Values:</strong> Window functions include NULL values by default. To ensure accuracy, exclude or handle NULLs as necessary.</li>
+</ul>
+
+
+
+<ul>
+<li><strong>Forgetting to Order Data:</strong> Omitting <strong><em>ORDER BY</em></strong> can yield incorrect results since the order of rows affects calculations like running totals or moving averages.</li>
+</ul>
+
+
+
+<ul>
+<li><strong>Performance Issues:</strong> Be mindful of potential performance issues with large datasets or complex queries. Check execution plans to identify and mitigate bottlenecks.</li>
+</ul>
+
+
+
+<h2>Conclusion</h2>
+
+
+
+<p>Window functions in SQL Server are indispensable tools for anyone seeking to perform <a href="https://www.datasciencecentral.com/sql-server-powering-your-data-warehouse-with-insights-and-efficiency/">sophisticated data analysis</a> without the constraints of traditional aggregate functions. Their ability to operate over a set of rows and dynamically compute values makes them essential for various applications—from financial modelling and time-series analysis to inventory management.</p>
+
+
+
+<p>In this article, you saw how SQL window functions work with the help of different practical scenarios. You also learned how to partition and filter data using window functions and what are the best practices and pitfalls to avoid when using window functions.&nbsp;</p>
+</div></div>
+  </div>
+</body>
+</html>

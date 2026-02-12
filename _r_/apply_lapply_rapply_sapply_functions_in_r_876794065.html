@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>apply lapply rapply sapply functions in R</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>apply lapply rapply sapply functions in R</h1>
+    <p><strong>URL:</strong> <a href="http://www.dataperspective.info/2016/03/apply-lapply-rapply-sapply-functions-r.html">http://www.dataperspective.info/2016/03/apply-lapply-rapply-sapply-functions-r.html</a></p>
+    <p><strong>Tags:</strong> _r_</p>
+    <p><strong>Bookmark ID:</strong> 876794065</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div dir="ltr" trbidi="on" id="post-body-4494756101058617652" itemprop="articleBody"><p>
+As part of <a href="http://www.dataperspective.info/2015/12/datasciencewithR.html" target="_blank">Data Science with R</a>, this is third tutorial after <a href="http://www.dataperspective.info/2016/02/basic-data-types-in-r.html" target="_blank">basic data types</a>,<a href="http://www.dataperspective.info/2016/02/control-structures-loops-in-r.html" target="_blank">control structures</a> in r.</p><p>
+
+One of the issues with for loop is its memory consumption and its slowness in executing a repetitive task at hand. Often dealing with large data and iterating it, for loop is not advised. R provides many few alternatives to be applied on vectors for looping operations. In this section, we deal with&nbsp;<b>apply</b>&nbsp;function and its variants:</p><div>
+<p><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiHcHkj15oYsyShkf6Ro7nW1b0qSA6waN23zO-tP7qDCB_rroZaucfk_cqG_nwZ56vvaP5t6437ugu3SRm3V3i3yAqwHKhuvw600ndu1nUohZxTGcWxOmPpO-GOFrQszdoGbD4ObOXurs_r/s1600/apply_family.PNG" imageanchor="1"><img height="273" src="data:application/octet-stream;base64," width="280"></a></p>
+</div>
+
+
+<pre>?apply
+</pre>
+<p><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBzBuo_LfW4cfrX_-PFoTAsJ-9ghtA_uB3yhdX-0XoNuSbPm1ijdaBGMsGVluQwcMlgT4fNJ8drBcFiihO5cZw4ZjCZtH8vVwT-c25cUG3N7xChgmYRUvIrOfcUzmMwFkkZAQ8SwtLBoi7/s1600/apply_r_help.PNG" imageanchor="1"><img height="178" src="data:application/octet-stream;base64," width="280"></a></p>
+<p>
+
+<b> Datasets for apply family tutorial</b></p><pre><em> For understanding the apply functions in R we use,the data from 1974 Motor Trend
+US magazine which comprises fuel consumption and 10 aspects of automobile design and
+performance for 32 automobiles (1973–74 models).
+</em> 
+data("mtcars")
+head(mtcars)
+                   mpg cyl disp  hp drat    wt  qsec vs am gear carb
+Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1
+<em> 
+
+Reynolds (1994) describes a small part of a study of the long-term temperature dynamics
+of beaver Castor canadensis in north-central Wisconsin. Body temperature was measured by
+telemetry every 10 minutes for four females, but data from a one period of less than a 
+day for each of two animals is used there.</em> 
+
+data(beavers)
+head(t(beaver1)[1:4,1:10])
+        [,1]   [,2]   [,3]   [,4]   [,5]   [,6]   [,7]   [,8]    [,9]   [,10]
+day   346.00 346.00 346.00 346.00 346.00 346.00 346.00 346.00  346.00  346.00
+time  840.00 850.00 900.00 910.00 920.00 930.00 940.00 950.00 1000.00 1010.00
+temp   36.33  36.34  36.35  36.42  36.55  36.69  36.71  36.75   36.81   36.88
+activ   0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00    0.00    0.00
+
+</pre>
+<p><b> apply():</b><br>
+apply() function is the base function. We will learn how to apply family functions by trying out the code. apply() function takes 3 arguments:
+</p><ul>
+<li>data matrix</li>
+<li>row/column operation, - 1 for row wise operation, 2 for column wise operation</li>
+<li>function to be applied on the data.</li>
+</ul>
+<pre><em> 
+when 1 is passed as second parameter, the function max is applied row wise and gives
+us the result. In the below example, row wise maximum value is calculated.Since we 
+have four types of attributes we got 4 results.
+</em> 
+apply(t(beaver1),1,max) 
+    day    time    temp   activ 
+ 347.00 2350.00   37.53    1.00 
+
+<em> 
+When 2 is passed as second  parameter the function  mean is applied column wise.
+In the below example mean function is applied on each column and mean for each 
+column is calculated. Hence  we can see results for each column.
+</em> 
+apply(mtcars,2,mean) 
+       mpg        cyl       disp         hp       drat         wt       qsec         vs         am       gear       carb 
+ 20.090625   6.187500 230.721875 146.687500   3.596563   3.217250  17.848750   0.437500   0.406250   3.687500   2.812500 
+<em> 
+We can also pass custom function instead of default functions. For example in 
+the below example let us divide each column element with modulus of 10.
+For this we use a custom function which takes each element from each column and
+apply the modulus operation.
+</em> 
+head(apply(mtcars,2,function(x) x%%10))
+                  mpg cyl disp hp drat    wt qsec vs am gear carb
+Mazda RX4         1.0   6    0  0 3.90 2.620 6.46  0  1    4    4
+Mazda RX4 Wag     1.0   6    0  0 3.90 2.875 7.02  0  1    4    4
+Datsun 710        2.8   4    8  3 3.85 2.320 8.61  1  1    4    1
+Hornet 4 Drive    1.4   6    8  0 3.08 3.215 9.44  1  0    3    1
+Hornet Sportabout 8.7   8    0  5 3.15 3.440 7.02  0  0    3    2
+Valiant           8.1   6    5  5 2.76 3.460 0.22  1  0    3    1
+</pre>
+<p><b><br></b>
+<b>
+lapply():</b><br>
+lapply function is applied for operations on list objects and returns a list object of same length of original set.<br>
+lapply function in R, returns a list of the same length as input list object, each element of which is the result of applying FUN to the corresponding element of list.
+</p><pre><em> #create a list with 2 elements</em> 
+l = (a=1:10,b=11:20) <em> # the mean of the value in each element</em>
+lapply(l, mean)
+$a
+[1] 5.5
+$b
+[1] 15.5
+class(lapply(l, mean))
+[1] "list
+<em>  # the sum of the values in each element</em> 
+lapply(l, sum)
+$a
+[1] 55
+
+$b
+[1] 155
+
+
+
+</pre>
+<p><b>sapply():</b><br>
+sapply is wrapper class to lapply with difference being it returns vector or matrix instead
+of list object.</p><pre><em> 
+ # create a list with 2 elements</em> 
+ l = (a=1:10,b=11:20) <em> # mean of values using sapply </em>
+sapply(l, mean)
+   a    b 
+ 5.5 15.5
+</pre>
+
+<p><b>tapply():</b><br>
+tapply() is a very powerful function that lets you break a vector into pieces and then apply some function to each of the pieces. 
+In the below code, first each of mpg in mtcars data is grouped by cylinder type and then mean() function is calculated.
+</p><pre>str(mtcars$cyl)
+ num [1:32] 6 6 4 6 8 6 8 4 4 6 ...
+levels(as.factor(mtcars$cyl))
+[1] "4" "6" "8"
+<em>
+In the dataset we have 3 types of cylinders and now we want to see the average mpg
+for each cylinder type.
+</em>
+tapply(mtcars$mpg,mtcars$cyl,mean)
+       4        6        8 
+26.66364 19.74286 15.10000 
+
+<em>In the output above we see that the average mpg for 4 cylinder engine 
+is 26.664, 6-cyinder engine is 19.74 and 8-cylinder engine is 15.10
+</em></pre>
+<p><b><br></b>
+<b>by():</b><br>
+by works similar to group by function in SQL, applied to factors, where in we may apply operations on individual results set.
+In the below example, we apply colMeans() function to all the observations on iris dataset grouped by Species.
+</p><pre>data(iris) 
+'data.frame': 150 obs. of  5 variables:
+ $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+ $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+ $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+ $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+ $ Species     : Factor w/ 3 levels "setosa","versicolor",..: 1 1 1 1 1 1 1 1 1 1 ...
+
+by(iris[,1:4],iris$Species,colMeans)
+iris$Species: setosa
+Sepal.Length  Sepal.Width Petal.Length  Petal.Width 
+       5.006        3.428        1.462        0.246 
+------------------------------------------------------------------------------------ 
+iris$Species: versicolor
+Sepal.Length  Sepal.Width Petal.Length  Petal.Width 
+       5.936        2.770        4.260        1.326 
+------------------------------------------------------------------------------------ 
+iris$Species: virginica
+Sepal.Length  Sepal.Width Petal.Length  Petal.Width 
+       6.588        2.974        5.552        2.026 
+</pre>
+
+<p><b>rapply():</b><br>
+rapply() is a recursive version of lapply.<br>
+rapply() applies a function recursively on each element of the list with 2 modes for "how" parameter.
+If how = "replace", each element of the list which is not itself a list and has a class included in classes
+is replaced by the result of applying f to the element.If the mode is how = "list" or how = "unlist",
+the list is copied, all non-list elements which have a class included in classes are replaced by the result 
+of applying f to the element and all others are replaced by deflt. Finally, if how = "unlist", unlist(recursive = TRUE) 
+is called on the result.<br>
+'</p><pre>l2 = list(a = 1:10, b = 11:20,c=c('d','a','t','a'))
+l2
+$a
+ [1]  1  2  3  4  5  6  7  8  9 10
+
+$b
+ [1] 11 12 13 14 15 16 17 18 19 20
+
+$c
+[1] "d" "a" "t" "a"
+
+rapply(l2, mean, how = "list", classes = "integer")
+$a
+[1] 5.5
+
+$b
+[1] 15.5
+
+$c
+NULL
+
+rapply(l2, mean, how = "unlist", classes = "integer")
+ a    b 
+ 5.5 15.5 
+ 
+rapply(l2, mean, how = "replace", classes = "integer")
+$a
+[1] 5.5
+
+$b
+[1] 15.5
+
+$c
+[1] "d" "a" "t" "a"
+</pre>
+
+<p><b>mapply():</b><br>
+mapply is a multivariate version of sapply.
+By R definition, mapply is a multivariate version of sapply. mapply applies FUN to the first elements of each ... argument,
+the second elements, the third elements, and so on. Arguments are recycled if necessary.
+Its purpose is to be able to vectorize arguments to a function that is not usually accepting vectors as arguments.
+In short, mapply applies a Function to Multiple List or multiple Vector Arguments.
+In the below example word function is applied to vector argument LETTERS. 
+'
+</p><pre>word = function(C, k) paste(rep.int(C, k), collapse = "")
+utils::str(mapply(word, LETTERS[1:6], 6:1, SIMPLIFY = FALSE))
+List of 6
+ $ A: chr "AAAAAA"
+ $ B: chr "BBBBB"
+ $ C: chr "CCCC"
+ $ D: chr "DDD"
+ $ E: chr "EE"
+ $ F: chr "F"
+ </pre>
+</div></div>
+  </div>
+</body>
+</html>

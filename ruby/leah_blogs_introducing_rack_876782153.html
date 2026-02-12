@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>leah blogs: Introducing Rack</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>leah blogs: Introducing Rack</h1>
+    <p><strong>URL:</strong> <a href="http://chneukirchen.org/blog/archive/2007/02/introducing-rack.html">http://chneukirchen.org/blog/archive/2007/02/introducing-rack.html</a></p>
+    <p><strong>Tags:</strong> ruby</p>
+    <p><strong>Bookmark ID:</strong> 876782153</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+<p>Dabbling in my own web framework experiments, I noticed that there is
+a lot of code duplication among frameworks since they essentially all
+do the same things.  And still, every Ruby web framework developer is
+writing his own handlers for every webserver he wants to use.
+Hopefully, the framework users are satisfied with that choice.</p>
+
+<p>However, in essence, dealing with HTTP is rather easy.  In the end,
+you get a request and return a response.  Let’s do the easiest thing
+ possible: The canonical format of a HTTP request probably is a hash of
+a CGI-like environment (that’s what most frameworks I’ve looked at
+deal with, internally), and a response consists of three parts: a
+status, a set of headers, and a body.</p>
+
+<p>This could be easily mapped onto a method call in Ruby, looking
+like this:</p>
+
+<pre><code>class HelloWorld
+  def call(env)
+    [200, {"Content-Type" =&gt; "text/plain"}, ["Hello world!"]]
+  end
+end
+</code></pre>
+
+<p>You’ve just seen the most simple <strong>Rack</strong> application.</p>
+
+<p><a href="http://chneukirchen.org/darcs/darcsweb.cgi?r=rack;a=summary">Rack</a>
+aims to provide a minimal API for connecting web servers and web
+frameworks. </p>
+
+<p>Informally, a <em>Rack application</em> is a thing that responds to <code>#call</code> and
+takes a hash as argument, returning an array of status, headers and a
+body.  The body needs to respond to <code>#each</code> and then successively
+return strings that represent the response body.  The hash given
+contains a CGI-ish set of environment variables and some special
+values, like the body stream of the request (<code>env['rack.input']</code>),
+or information about the run-time environment (e.g. <code>env['rack.run_once']</code>).</p>
+
+<p>Please note that this API is mainly used by framework developers and
+usually will not be exposed to framework users.  It may seem a bit
+clumsy at first, or you may have expected a more “polished” API, but
+the important thing is that the API is very simple (notice that it
+even can be satisfied by a <code>lambda</code>) and not hard to adopt.
+(The Camping adapter is a mere five lines of code.)</p>
+
+<p>On top of this minimal API, there are libraries for commonly used
+things like query parsing or cookie handling and provide more
+convenience (<code>Rack::Request</code> and <code>Rack::Response</code>) that you are free
+to use if you wish.</p>
+
+<p>But the really cool thing about Rack is that it provides an extremely
+easy way to combine these web applications.  After all, they are only
+Ruby objects with a single method that matters.  And the thing that
+<code>call</code>s you must not really be a web server, but could as well be a
+different application!  Let me show you a few Rack filters (or
+“middleware”) that already exist:</p>
+
+<ul>
+<li><p><code>Rack::ShowExceptions</code> catches all thrown exceptions and wraps
+them nicely in an helpful 500-page adapted from Django.</p></li>
+<li><p><code>Rack::CommonLogger</code> does Apache-style logs.</p></li>
+<li><p><code>Rack::URLMap</code> redirects to different Rack applications depending on
+the path and host (a very simple router).</p></li>
+</ul>
+
+<p>There is another tool, <code>Rack::Lint</code> that checks if your applications
+and filters play nicely with others so everything ought to work together.</p>
+
+<p>What do you gain if your web framework/server/application supports Rack?</p>
+
+<ul>
+<li><p>Handlers for WEBrick, Mongrel and plain CGI (soon FastCGI, too), and
+every new webserver that provides a Rack handler.
+(Let <em>n</em> and <em>m</em> be the amount of servers and frameworks, without
+Rack it’s n*m, but with it’s n+m, which means less work for
+everyone.)</p></li>
+<li><p>The possibility to run several applications inside a single webserver
+without external configuration.</p></li>
+<li><p>Easier (integration and functional) testing, since everything can
+easily be mocked.  (Helpers for this are coming soon, too.)</p></li>
+<li><p>A greater diversity among frameworks, since writers now can concentrate
+on the parts that make it special and stop wasting their time on boring
+things.</p></li>
+<li><p>More synergistic effects: Compare “That upload handler you wrote for
+IOWA is really great, too bad I use Camping.” with “That upload
+handler you wrote for Rack works great for me too!”</p></li>
+</ul>
+
+<p>Currently, Rack is supported by
+<a href="http://code.whytheluckystiff.net/camping/">Camping</a> (adapter included
+with Rack) and <a href="http://ramaze.rubyforge.org/">Ramaze</a>, more adapters
+are in the works (a Rails one would be a really cool contribution,
+hint, hint).</p>
+
+<p>(If you are into Python, you’ll notice a lot of similarities between
+Rack and <a href="http://wsgi.org/wsgi/">WSGI</a> and
+<a href="http://pythonpaste.org/">Paste</a>.  That’s fully intended, as I think
+WSGI helped the Python web landscape really a lot.)</p>
+
+<p>A Rubyforge project has been requested, and a first release will
+happen really soon.  If you’d like to help, contact me <a href="mailto:chneukirchen@gmail.com">by
+mail</a> or via IRC (chris2@#ruby-lang on
+FreeNode).</p>
+
+<p><small>NP: Tom Waits—Innocent When You Dream</small></p>
+
+</div></div>
+  </div>
+</body>
+</html>

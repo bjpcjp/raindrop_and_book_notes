@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Martin Heinz - Personal Website & Blog</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Martin Heinz - Personal Website & Blog</h1>
+    <p><strong>URL:</strong> <a href="https://martinheinz.dev/blog/13">https://martinheinz.dev/blog/13</a></p>
+    <p><strong>Tags:</strong> python</p>
+    <p><strong>Bookmark ID:</strong> 876773727</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><article><div><!--[--><p><i>Python</i> haters always say, that one of reasons they don't want to use it, is that it's <i>slow</i>. Well, whether specific program - regardless of programming language used - is fast or slow is very much dependant on developer who wrote it and their skill and ability to write <i>optimized</i> and <i>fast</i> programs. </p><p> So, let's prove some people wrong and let's see how we can improve performance of our <i>Python</i> programs and make them really fast! </p><h2>Timing and Profiling</h2><p> Before we start optimizing anything, we first need to find out which parts of our code actually slow down the whole program. Sometimes the bottleneck of the program might be obvious, but in case you don't know where it is, then here are options you have for finding out: </p><p><i>Note: This is the program I will be using for demonstration purposes, it computes <code>e</code> to power of <code>X</code> (taken from Python docs):</i></p><pre><code>
+# slow_program.py
+from decimal import *
+
+def exp(x):
+    getcontext().prec += 2
+    i, lasts, s, fact, num = 0, 0, 1, 1, 1
+    while s != lasts:
+        lasts = s
+        i += 1
+        fact *= i
+        num *= x
+        s += num / fact
+    getcontext().prec -= 2
+    return +s
+
+exp(Decimal(150))
+exp(Decimal(400))
+exp(Decimal(3000))
+</code></pre><h3>The Laziest "Profiling"</h3><p> First off, the simplest and honestly very lazy solution - Unix <code>time</code> command: </p><pre><code>
+~ $ time python3.8 slow_program.py
+
+real	0m11,058s
+user	0m11,050s
+sys 	0m0,008s
+</code></pre><p> This could work, if you just want to time your whole program, which is usually not enough... </p><h3>The Most Detailed Profiling</h3><p> On the other end of spectrum is <code>cProfile</code>, which will give you <i>too much</i> information: </p><pre><code>
+~ $ python3.8 -m cProfile -s time slow_program.py
+         1297 function calls (1272 primitive calls) in 11.081 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        3   11.079    3.693   11.079    3.693 slow_program.py:4(exp)
+        1    0.000    0.000    0.002    0.002 {built-in method _imp.create_dynamic}
+      4/1    0.000    0.000   11.081   11.081 {built-in method builtins.exec}
+        6    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x9d12c0}
+        6    0.000    0.000    0.000    0.000 abc.py:132(__new__)
+       23    0.000    0.000    0.000    0.000 _weakrefset.py:36(__init__)
+      245    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+        2    0.000    0.000    0.000    0.000 {built-in method marshal.loads}
+       10    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1233(find_spec)
+      8/4    0.000    0.000    0.000    0.000 abc.py:196(__subclasscheck__)
+       15    0.000    0.000    0.000    0.000 {built-in method posix.stat}
+        6    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
+        1    0.000    0.000    0.000    0.000 __init__.py:357(namedtuple)
+       48    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:57(_path_join)
+       48    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:59(&lt;listcomp&gt;)
+        1    0.000    0.000   11.081   11.081 slow_program.py:1(&lt;module&gt;)
+...
+</code></pre><p> Here, we ran the testing script with <code>cProfile</code> module and <code>time</code> argument, so that lines are ordered by internal time (<code>cumtime</code>). This gives us <i>a lot</i> of information, the lines you can see above are about 10% of the actual output. From this we can see that <code>exp</code> function is the culprit (<i>surprise, surprise</i>) and now we can get little more specific with timing and profiling... </p><h3>Timing Specific Functions</h3><p> Now that we know where to direct our attention, we might want to time the slow function, without measuring rest of the code. For that we can use simple decorator: </p><pre><code>
+def timeit_wrapper(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()  # Alternatively, you can use time.process_time()
+        func_return_val = func(*args, **kwargs)
+        end = time.perf_counter()
+        print('{0:&lt;10}.{1:&lt;8} : {2:&lt;8}'.format(func.__module__, func.__name__, end - start))
+        return func_return_val
+    return wrapper
+</code></pre><p> This decorator can be then applied to function under test like so: </p><pre><code>
+@timeit_wrapper
+def exp(x):
+    ...
+
+print('{0:&lt;10} {1:&lt;8} {2:^8}'.format('module', 'function', 'time'))
+exp(Decimal(150))
+exp(Decimal(400))
+exp(Decimal(3000))
+</code></pre><p> This gives us output like this: </p><pre><code>
+~ $ python3.8 slow_program.py
+module     function   time  
+__main__  .exp      : 0.003267502994276583
+__main__  .exp      : 0.038535295985639095
+__main__  .exp      : 11.728486061969306
+</code></pre><p> One thing to consider is <i>what kind</i> of time we actually (want to) measure. Time package provides <code>time.perf_counter</code> and <code>time.process_time</code>. The difference here is that <code>perf_counter</code> returns absolute value, which includes time when your Python program process is not running, therefore it might be impacted by machine load. On the other hand <code>process_time</code> returns only <i>user time</i> (excluding <i>system time</i>), which is only the time of your process. </p><h2>Making It Faster</h2><p> Now, for the fun part. Let's make your Python programs run faster. I'm (mostly) not going to show you some hacks, tricks and code snippets that will magically solve your performance issues. This is more about general ideas and strategies, which when used, can make a huge impact on performance, in some cases up to 30% speed-up. </p><h3>Use Built-in Data Types</h3><p> This one is pretty obvious. Built-in data types are very fast, especially in comparison to our custom types like trees or linked lists. That's mainly because the built-ins are implemented in <i>C</i>, which we can't really match in speed when coding in Python. </p><h3>Caching/Memoization with <code>lru_cache</code></h3><p> I already shown this one in previous blog post <a href="https://martinheinz.dev/blog/4">here</a>, but I think it's worth repeating it with simple example: </p><pre><code>
+import functools
+import time
+
+# caching up to 12 different results
+@functools.lru_cache(maxsize=12)
+def slow_func(x):
+    time.sleep(2)  # Simulate long computation
+    return x
+
+slow_func(1)  # ... waiting for 2 sec before getting result
+slow_func(1)  # already cached - result returned instantaneously!
+
+slow_func(3)  # ... waiting for 2 sec before getting result
+</code></pre><p> The function above simulates heavy computation using <code>time.sleep</code>. When called first time with parameter <code>1</code>, it waits for 2 seconds and only then returns result. When called again, the result is already cached so it skips body of function and returns result immediately. For more <i>real life</i> example see previous blog post <a href="https://martinheinz.dev/blog/4">here</a>. </p><h3>Use Local Variables</h3><p> This has to do with speed of lookup of variables in each scope. I'm writing <i>each scope</i>, because it's not just about using local vs. global variables. There's actually difference in speed of lookup even between - let's say - local variable in function (fastest), class-level attribute (e.g. <code>self.name</code> - slower) and global for example imported function like <code>time.time</code> (slowest). </p><p> You can improve performance, by using seemingly unnecessary (straight-up useless) assignments like this: </p><pre><code>
+#  Example #1
+class FastClass:
+
+    def do_stuff(self):
+        temp = self.value  # this speeds up lookup in loop
+        for i in range(10000):
+            ...  # Do something with `temp` here
+
+#  Example #2
+import random
+
+def fast_function():
+    r = random.random
+    for i in range(10000):
+        print(r())  # calling `r()` here, is faster than global random.random()
+</code></pre><h3>Use Functions</h3><p> This might seem counter intuitive, as calling function will put more stuff onto stack and create overhead from function returns, but it relates to previous point. If you just put your whole code into one file without putting it into function, it will be much slower because of global variables. Therefore you can speed up your code just by wrapping whole code in <code>main</code> function and calling it once, like so: </p><pre><code>
+
+def main():
+    ...  # All your previously global code
+
+main()
+</code></pre><h3>Don't Access Attributes</h3><p> Another thing that might slow down your programs is <i>dot operator</i> (<code>.</code>) which is used when accessing object attributes. This operator triggers dictionary lookup using <code>__getattribute__</code>, which creates extra overhead in your code. So, how can we actually avoid (limit) using it? </p><pre><code>
+#  Slow:
+import re
+
+def slow_func():
+    for i in range(10000):
+        re.findall(regex, line)  # Slow!
+
+#  Fast:
+from re import findall
+
+def fast_func():
+    for i in range(10000):
+        findall(regex, line)  # Faster!
+</code></pre><h3>Beware of Strings</h3><p> Operations on strings can get quite slow when ran in loop using for example <i>modulus</i> (<code>%s</code>) or <code>.format()</code>. What better options do we have? Based on recent <a href="https://twitter.com/raymondh/status/1205969258800275456">tweet from Raymond Hettinger</a>, the only thing we should be using is <i>f-string</i>, it's most readable, concise AND the fastest method. So, based on that tweet, this is the list of methods you can use - fastest to slowest: </p><pre><code>
+f'{s} {t}'  # Fast!
+s + '  ' + t 
+' '.join((s, t))
+'%s %s' % (s, t) 
+'{} {}'.format(s, t)
+Template('$s $t').substitute(s=s, t=t)  # Slow!
+</code></pre><h3>Generators Can Be Fast</h3><p> Generators are not inherently faster as they were made to allow for lazy computation, which saves memory rather than time. However, the saved memory can be cause for your program to actually run faster. How? Well, if you have large dataset and you don't use generators (iterators), then the data might overflow CPUs <i>L1 cache</i>, which will slow down lookup of values in memory significantly. </p><p> When it comes to performance, it's very import that CPU can save all the data it's working on, as close as possible, which is in the cache. You can watch <a href="https://www.youtube.com/watch?v=OSGv2VnC0go&amp;t=8m17s">Raymond Hettingers talk</a>, where he mentions this issues. </p><h2>Conclusion</h2><p> First rule of optimization is to <i>not do it</i>. But, if you really have to, then I hope these few tips help you with that. If you want to read more Python articles, then you might want to check out my previous blog post on testing <a href="https://martinheinz.dev/blog/7">here</a> and general tips and tricks <a href="https://martinheinz.dev/blog/1">here (part 1.)</a> or <a href="https://martinheinz.dev/blog/4">here (part 2.)</a>.</p><!--]--></div></article></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lessons learned porting 50k loc from Java to Go</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Lessons learned porting 50k loc from Java to Go</h1>
+    <p><strong>URL:</strong> <a href="https://blog.kowalczyk.info/article/19f2fe97f06a47c3b1f118fd06851fad/lessons-learned-porting-50k-loc-from-java-to-go.html">https://blog.kowalczyk.info/article/19f2fe97f06a47c3b1f118fd06851fad/lessons-learned-porting-50k-loc-from-java-to-go.html</a></p>
+    <p><strong>Tags:</strong> golang</p>
+    <p><strong>Bookmark ID:</strong> 876770917</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div id="post">
+<p>I was contracted to port a large Java code base to Go.</p>
+
+<p>The code in question is a Java client for <a target="_blank" href="https://ravendb.net/">RavenDB</a>, a NoSQL JSON document database. Code with tests was around 50 thousand lines.</p>
+
+<p>The result of the port is a <a target="_blank" href="https://github.com/ravendb/ravendb-go-client">Go client</a>.</p>
+
+<p>This article describes what I’ve learn in the process.</p>
+
+<h2 id="testing-code-coverage"><p>Testing, code coverage</p><a href="#testing-code-coverage">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h2>
+
+<p>Large projects benefit greatly from automated testing and tracking code coverage.</p>
+
+<p>I used TravisCI and AppVeyor for testing. <a target="_blank" href="http://codecov.io/">Codecov.io</a> for code coverage. There are many other services.</p>
+
+<p>I used both AppVeyor and TravisCI because a year ago Travis didn’t have Windows support and AppVeyor didn’t have Linux support.</p>
+
+<p>Today if I was settings this up from scratch, I would stick with just AppVeyor, as it can now do both Linux and Windows testing and the future of TravisCI is murky, after it was acquired by private equity firm and reportedly fired the original dev team.</p>
+
+<p>Codecov is barely adequate. For Go, they count non-code lines (comments etc.) as not executed. It’s impossible to get 100% code coverage as reported by the tool. Coveralls seems to have the same problem.</p>
+
+<p>It’s better than nothing but there’s an opportunity to do things better, especially for Go programs.</p>
+
+<h2 id="go-s-race-detector-is-great"><p>Go’s race detector is great</p><a href="#go-s-race-detector-is-great">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h2>
+
+<p>Parts of the code use concurrency and it’s really easy to get concurrency wrong.</p>
+
+<p>Go provides race detector that can be enabled with <code>-race</code> flag during compilation.</p>
+
+<p>It slows down the program but additional checks can detect if you’re concurrently modifying the same memory location.</p>
+
+<p>I always run tests with <code>-race</code> enabled and it alerted me to numerous races, which allowed me to fix them promptly.</p>
+
+<h2 id="building-custom-tools-for-testing"><p>Building custom tools for testing</p><a href="#building-custom-tools-for-testing">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h2>
+
+<p>In a project that big it’s impossible to verify correctness by inspection. Too much code to hold in your head at once.</p>
+
+<p>When a test fails, it can be a challenge to figure out why just from the information in the test failure.</p>
+
+<p>Database client driver talks to RavenDB database server over HTTP using JSON to encode commands and results.</p>
+
+<p>When porting Java tests to Go, it was very useful to be able to capture the HTTP traffic between Java client and server and compare it with HTTP traffic generated by Go port.</p>
+
+<p>I built custom tools to help me do that.</p>
+
+<p>For capturing HTTP traffic in Java client, I built a <a target="_blank" href="https://github.com/kjk/httplogproxy">logging HTTP proxy</a> in Go and directed Java client to use that HTTP proxy.</p>
+
+<p>For Go client, I built <a target="_blank" href="https://github.com/ravendb/ravendb-go-client/blob/20fade9ee6d22d60c7babf4a155c4de5bf4cfd3b/request_executor.go#L23">a hook in the library</a> that allows to intercept HTTP requests. I used it to log the traffic to a file.</p>
+
+<p>I was then able to compare HTTP traffic generated by Java client to traffic generated by my Go port and spot the differences.</p>
+
+<h2 id="porting-process"><p>Porting process</p><a href="#porting-process">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h2>
+
+<p>You can’t just start porting 50 thousand lines of code in random order. Without testing and validating after every little step I’m sure I would be defeated by complexity.</p>
+
+<p>I was new to RavenDB and Java code base. My first step was to get a high-level understanding how Java code works.</p>
+
+<p>At the core the client talks to the server via HTTP protocol. I captured the traffic, looked at it and wrote the simplest Go code to talk the server.</p>
+
+<p>When that was working it gave me confidence I’ll be able to replicate the functionality.</p>
+
+<p>My first milestone was to port enough code to be able to port the simplest Java test.</p>
+
+<p>I used a combination of bottom-up and top-down approach.</p>
+
+<p>Bottom-up part is where I identified the code at the bottom of call chain responsible for sending commands to the server and parsing responses and ported those.</p>
+
+<p>The top-down part is where I stepped through the test I was porting to identify which parts of the code need to be ported to implement that part.</p>
+
+<p>After successfully porting the first step, the rest of the work was porting one test at a time, also porting all the necessary code needed to make the test work.</p>
+
+<p>After the tests were ported and passing, I did improvements to make the code more Go-ish.</p>
+
+<p>I believe that this step-by-step approach was crucial to completing the work.</p>
+
+<p>Psychologically, when faced with a year-long project, it’s important to have smaller, intermediate milestones. Hitting those kept me motivated.</p>
+
+<p>Keeping the code compiling, running and passing tests at all times is also good. Allowing bugs to accumulate can make it very hard to fix them when you finally get to it.</p>
+
+<h2 id="challenges-of-porting-java-to-go"><p>Challenges of porting Java to Go</p><a href="#challenges-of-porting-java-to-go">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h2>
+
+<p>The objective of the port was to keep it as close as possible to Java code base, as it needs to be kept in sync with Java changes in the future.</p>
+
+<p>I’m somewhat surprised how much code I ported in a line-by-line fashion. The most time consuming part of the port was reversing the order of variable declaration, from Java’s <code>type name</code> to Go’s <code>name type</code>. I wish there was a tool that would do that part for me.</p>
+
+<h3 id="string-vs-string"><p>String vs. string</p><a href="#string-vs-string">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>In Java, <code>String</code> is an object that really is a reference (a pointer). As a result, a string can be <code>null</code>.</p>
+
+<p>In Go <code>string</code> is a value type. It can’t be <code>nil</code>, only empty.</p>
+
+<p>It wasn’t a big deal and most of the time I could mechanically replace <code>null</code> with <code>""</code>.</p>
+
+<h3 id="errors-vs-exceptions"><p>Errors vs. exceptions</p><a href="#errors-vs-exceptions">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>Java uses exceptions to communicate errors.</p>
+
+<p>Go returns values of <code>error</code> interface.</p>
+
+<p>Porting wasn’t difficult but it did require changing lots of function signatures to return error values and propagate them up the call stack.</p>
+
+<h3 id="generics"><p>Generics</p><a href="#generics">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>Go doesn’t have them (yet).</p>
+
+<p>Porting generic APIs was the biggest challenge.</p>
+
+<p>Here’s an example of a generic method in Java:</p>
+<pre tabindex="0"><code><span><span><span>public</span> <span>&lt;</span><span>T</span><span>&gt;</span> <span>T</span> <span>load</span><span>(</span><span>Class</span><span>&lt;</span><span>T</span><span>&gt;</span> <span>clazz</span><span>,</span> <span>String</span> <span>id</span><span>)</span> <span>{</span>
+</span></span></code></pre>
+<p>And the caller:</p>
+<pre tabindex="0"><code><span><span><span>Foo</span> <span>foo</span> <span>=</span> <span>load</span><span>(</span><span>Foo</span><span>.</span><span>class</span><span>,</span> <span>"id"</span><span>)</span>
+</span></span></code></pre>
+<p>In Go, I used two strategies.</p>
+
+<p>One is to use <code>interface{}</code>, which combines value and its type, similar to <code>object</code> in Java. This is not preferred approach. While it works, operating on <code>interface{}</code> is clumsy for the user of the library.</p>
+
+<p>In some cases I was able to use reflection and the above code was ported as:</p>
+<pre tabindex="0"><code><span><span><span>func</span> <span>Load</span><span>(</span><span>result</span> <span>interface</span><span>{},</span> <span>id</span> <span>string</span><span>)</span> <span>error</span>
+</span></span></code></pre>
+<p>I could use reflection to query type of <code>result</code> and create values of that type from JSON document.</p>
+
+<p>And the caller side:</p>
+<pre tabindex="0"><code><span><span><span>var</span> <span>result</span> <span>*</span><span>Foo</span>
+</span></span><span><span><span>err</span> <span>:=</span> <span>Load</span><span>(</span><span>&amp;</span><span>result</span><span>,</span> <span>"id"</span><span>)</span>
+</span></span></code></pre>
+<h3 id="function-overloading"><p>Function overloading</p><a href="#function-overloading">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>Go doesn’t have it (and most likely will never have it).</p>
+
+<p>I can’t say I found a good solution to port those.</p>
+
+<p>In some cases overloading was used to create shorter helpers:</p>
+<pre tabindex="0"><code><span><span><span>void</span> <span>foo</span><span>(</span><span>int</span> <span>a</span><span>,</span> <span>String</span> <span>b</span><span>)</span> <span>{}</span>
+</span></span><span><span><span>void</span> <span>foo</span><span>(</span><span>int</span> <span>a</span><span>)</span> <span>{</span> <span>foo</span><span>(</span><span>a</span><span>,</span> <span>null</span><span>);</span> <span>}</span>
+</span></span></code></pre>
+<p>Sometimes I would just drop the shorter helper.</p>
+
+<p>Sometimes I would write 2 functions:</p>
+<pre tabindex="0"><code><span><span><span>func</span> <span>foo</span><span>(</span><span>a</span> <span>int</span><span>)</span> <span>{}</span>
+</span></span><span><span><span>func</span> <span>fooWithB</span><span>(</span><span>a</span> <span>int</span><span>,</span> <span>b</span> <span>string</span><span>)</span> <span>{}</span>
+</span></span></code></pre>
+<p>When number of potential arguments was large I would sometimes do:</p>
+<pre tabindex="0"><code><span><span><span>type</span> <span>FooArgs</span> <span>struct</span> <span>{</span>
+</span></span><span><span>	<span>A</span> <span>int</span>
+</span></span><span><span>	<span>B</span> <span>string</span>
+</span></span><span><span><span>}</span>
+</span></span><span><span><span>func</span> <span>foo</span><span>(</span><span>args</span> <span>*</span><span>FooArgs</span><span>)</span> <span>{</span> <span>}</span>
+</span></span></code></pre>
+<h3 id="inheritance"><p>Inheritance</p><a href="#inheritance">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>Go is not especially object-oriented and doesn’t have inheritance.</p>
+
+<p>Simple cases of inheritance can be ported with embedding.</p>
+<pre tabindex="0"><code><span><span><span>class</span> <span>B</span> <span>:</span> <span>A</span> <span>{</span> <span>}</span>
+</span></span></code></pre>
+<p>Can sometimes be ported as:</p>
+<pre tabindex="0"><code><span><span><span>type</span> <span>A</span> <span>struct</span> <span>{</span> <span>}</span>
+</span></span><span><span><span>type</span> <span>B</span> <span>struct</span> <span>{</span>
+</span></span><span><span>	<span>A</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre>
+<p>We’ve embedded <code>A</code> inside <code>B</code>, so <code>B</code> inherit all the methods and fields of <code>A</code>.</p>
+
+<p>It doesn’t work for virtual functions.</p>
+
+<p>There is no good way to directly port code that uses virtual functions.</p>
+
+<p>One option to emulate virtual function is to use embedding of structs and function pointers. This essentially re-implements virtual table that Java gives you for free as part of <code>object</code> implementation.</p>
+
+<p>Another option is to write a stand-alone function that dispatches the right function for a given type by using type switch.</p>
+
+<h3 id="interfaces"><p>Interfaces</p><a href="#interfaces">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>Both Java and Go have interfaces but they are different things, like apples and salami.</p>
+
+<p>A few times I did create a Go interface type that replicated Java interface.</p>
+
+<p>In more cases I dropped interfaces and instead exposed concrete structs in the API.</p>
+
+<h3 id="circular-imports-between-packages"><p>Circular imports between packages</p><a href="#circular-imports-between-packages">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>Java allows circular imports between packages.</p>
+
+<p>Go does not.</p>
+
+<p>As a result I was not able to replicate the package structure of Java code in my port.</p>
+
+<p>For simplicity I went with a single package. Not ideal, because it ended up being very large package. So large, in fact, that Go 1.10 couldn’t handle so many source files in a single package on Windows. Luckily it was fixed in Go 1.11.</p>
+
+<h3 id="private-public-protected"><p>Private, public, protected</p><a href="#private-public-protected">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>Go’s designers are under-appreciated. Their ability to simplify concepts is unmatched and access control is one example of that.</p>
+
+<p>Other languages gravitate to fine-grained access control: public, private, protected specified with the smallest possible granularity (per class field and method).</p>
+
+<p>As a result a library implementing some functionality has the same access to other classes in the same library as external code using that library.</p>
+
+<p>Go simplified that by only having public vs. private and scoping access to package level.</p>
+
+<p>That makes more sense.</p>
+
+<p>When I write a library to, say, parse markdown, I don’t want to expose internals of the implementation to users of the library. But hiding those internals from myself is counter-productive.</p>
+
+<p>Java programmers noticed that issue and sometimes use an interface as a hack to fix over-exposed classes. By returning an interface instead of a a concrete class, you can hide some of the public APIs available to direct users of the class.</p>
+
+<h3 id="concurrency"><p>Concurrency</p><a href="#concurrency">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>Go’s concurrency is simply the best and a built-in race detector is of great help in repelling concurrency bugs.</p>
+
+<p>That being said, in my first porting pass I went with emulating Java APIs. For example, I implemented a facsimile of Java’s <code>CompletableFuture</code> class.</p>
+
+<p>Only after the code was working I would re-structure it to be more idiomatic Go.</p>
+
+<h3 id="fluent-function-chaining"><p>Fluent function chaining</p><a href="#fluent-function-chaining">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>RavenDB has very sophisticated querying capabilities. Java client uses method chaining for building queries:</p>
+<pre tabindex="0"><code><span><span><span>List</span><span>&lt;</span><span>ReduceResult</span><span>&gt;</span> <span>results</span> <span>=</span> <span>session</span><span>.</span><span>query</span><span>(</span><span>User</span><span>.</span><span>class</span><span>)</span>
+</span></span><span><span>                        <span>.</span><span>groupBy</span><span>(</span><span>"name"</span><span>)</span>
+</span></span><span><span>                        <span>.</span><span>selectKey</span><span>()</span>
+</span></span><span><span>                        <span>.</span><span>selectCount</span><span>()</span>
+</span></span><span><span>                        <span>.</span><span>orderByDescending</span><span>(</span><span>"count"</span><span>)</span>
+</span></span><span><span>                        <span>.</span><span>ofType</span><span>(</span><span>ReduceResult</span><span>.</span><span>class</span><span>)</span>
+</span></span><span><span>                        <span>.</span><span>toList</span><span>();</span>
+</span></span></code></pre>
+<p>This only works in languages that communicate errors via exceptions. When a function additionally returns an error, it’s no longer possible to chain it like that.</p>
+
+<p>To replicate chaining in Go I used a “stateful error” approach:</p>
+<pre tabindex="0"><code><span><span><span>type</span> <span>Query</span> <span>struct</span> <span>{</span>
+</span></span><span><span>	<span>err</span> <span>error</span>
+</span></span><span><span><span>}</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>(</span><span>q</span> <span>*</span><span>Query</span><span>)</span> <span>WhereEquals</span><span>(</span><span>field</span> <span>string</span><span>,</span> <span>val</span> <span>interface</span><span>{})</span> <span>*</span><span>Query</span> <span>{</span>
+</span></span><span><span>	<span>if</span> <span>q</span><span>.</span><span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>		<span>return</span> <span>q</span>
+</span></span><span><span>	<span>}</span>
+</span></span><span><span>	<span>// logic that might set q.err
+</span></span></span><span><span><span></span>	<span>return</span> <span>q</span>
+</span></span><span><span><span>}</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>(</span><span>q</span> <span>*</span><span>Query</span><span>)</span> <span>GroupBy</span><span>(</span><span>field</span> <span>string</span><span>)</span> <span>*</span><span>Query</span> <span>{</span>
+</span></span><span><span><span>if</span> <span>q</span><span>.</span><span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>		<span>return</span> <span>q</span>
+</span></span><span><span>	<span>}</span>
+</span></span><span><span>	<span>// logic that might set q.err
+</span></span></span><span><span><span></span>	<span>return</span> <span>q</span>
+</span></span><span><span><span>}</span>
+</span></span><span><span>
+</span></span><span><span><span>func</span> <span>(</span><span>q</span> <span>*</span><span>Query</span><span>)</span> <span>Execute</span><span>(</span><span>result</span> <span>inteface</span><span>{})</span> <span>error</span> <span>{</span>
+</span></span><span><span>	<span>if</span> <span>q</span><span>.</span><span>err</span> <span>!=</span> <span>nil</span> <span>{</span>
+</span></span><span><span>		<span>return</span> <span>q</span><span>.</span><span>err</span>
+</span></span><span><span>	<span>}</span>
+</span></span><span><span>	<span>// do logic
+</span></span></span><span><span><span></span><span>}</span>
+</span></span></code></pre>
+<p>This can be chained:</p>
+<pre tabindex="0"><code><span><span><span>var</span> <span>result</span> <span>*</span><span>Foo</span>
+</span></span><span><span><span>err</span> <span>:=</span> <span>NewQuery</span><span>().</span><span>WhereEquals</span><span>(</span><span>"Name"</span><span>,</span> <span>"Frank"</span><span>).</span><span>GroupBy</span><span>(</span><span>"Age"</span><span>).</span><span>Execute</span><span>(</span><span>&amp;</span><span>result</span><span>)</span>
+</span></span></code></pre>
+<h3 id="json-marshaling"><p>JSON marshaling</p><a href="#json-marshaling">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>Java doesn’t have a built-in marshaling and the client uses Jackson JSON library.</p>
+
+<p>Go has JSON support in standard library but it doesn’t provide as many hooks for tweaking marshaling process.</p>
+
+<p>I didn’t try to match all of Java’s functionality as what is provided by Go’s built-in JSON support seems to be flexible enough.</p>
+
+<h3 id="go-code-is-shorter"><p>Go code is shorter</p><a href="#go-code-is-shorter">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h3>
+
+<p>This is not so much a property of Java but the culture which dictates what is considered an idiomatic code.</p>
+
+<p>In Java setter and getter methods are common. As a result, Java code:</p>
+<pre tabindex="0"><code><span><span><span>class</span> <span>Foo</span> <span>{</span>
+</span></span><span><span>	<span>private</span> <span>int</span> <span>bar</span><span>;</span>
+</span></span><span><span>
+</span></span><span><span>	<span>public</span> <span>void</span> <span>setBar</span><span>(</span><span>int</span> <span>bar</span><span>)</span> <span>{</span>
+</span></span><span><span>		<span>this</span><span>.</span><span>bar</span> <span>=</span> <span>bar</span><span>;</span>
+</span></span><span><span>	<span>}</span>
+</span></span><span><span>
+</span></span><span><span>	<span>public</span> <span>int</span> <span>getBar</span><span>()</span> <span>{</span>
+</span></span><span><span>		<span>return</span> <span>this</span><span>.</span><span>bar</span><span>;</span>
+</span></span><span><span>	<span>}</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre>
+<p>ends up in Go as:</p>
+<pre tabindex="0"><code><span><span><span>type</span> <span>Foo</span> <span>struct</span> <span>{</span>
+</span></span><span><span>	<span>Bar</span> <span>int</span>
+</span></span><span><span><span>}</span>
+</span></span></code></pre>
+<p>3 lines vs. 11 lines. It does add up when you have a lot of classes with lots of members.</p>
+
+<p>Most other code ends up being of equivalent length.</p>
+
+<h2 id="notion-for-organizing-the-work"><p>Notion for organizing the work</p><a href="#notion-for-organizing-the-work">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h2>
+
+<p>I’m a heavy user of <a target="_blank" href="https://www.notion.so/">Notion.so</a>, a hierarchical note taking application.</p>
+
+<p>Here’s how I used Notion to organize my work on Go port:</p>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAk8AAAKiCAMAAAD4w8gAAAAC4lBMVEX///+ysa83NS9RT0pxcGuzsrDs7Ovf395PTkg9OzZdXFeJiIW/v73x8fCUk5B3dnK4t7Xz8/OlpKH6+fk7OTOCgX3k5ONKSEO0s7H8/PyamZZEQj26ubf+/v5hYFtgXlnW1tXr6uqrqqiop6RfXVnh4eDv7+/U09JVU07g39729vaSkY7Qz86Eg39iYVx1dG+Qj4zq6uldW1bOzczr6+toZ2JXVVDl5eSYl5S9vLqBf3xaWVRnZWGpqKX6+vqGhYHy8vJtbGdLSkTb29nc3NuQj4vPz839/f3IyMZubGiZmJXt7ezKyshBPzrExMLS0dCIh4PDwsCWlZLm5uV+fHj39/d9fHj4+PhoZmJkYl1bWVWmpaPGxcNlZF+bmpfFxMOfnpvJyMfZ2NdIRkHw8PCJh4SNjIlZV1Le3t3k4+KDgn7V1NPHx8VTUkzV1dSenZpraWV6eHR8e3fY19asq6n29fWOjYp3dXFqaGSFg4Dd3dx2dHBWVVDg4N/KycjHxsT5+fiqqaahoJ2xsK27uricm5iLioatrKnT09H19fTi4uHn5ubS0tGxsa6Mi4e2tbNkY16npqTv7u5SUUxycGzu7u2Mi4h7enZOTEewr62FhIG1tbKdnJl/fnrBwL+Uko/o6Oe0tLKiop+8vLqHhoKXlpOgn5y4uLY/PTdzcm6ko6Curau5uLb09PR6eXXj4uKVlJHa2tm+vbvy9POCgH04NjC3trRubWjR0dDo6OjZ2djy8fHX19bf3t64t7ZzcW1hX1tkYl5mZGCTko5pZ2TLy8mvrqxta2iioZ6Pjop+fXnNzMvOzsz5+fnc29rl5OOGhYLT09J4d3PMzMrCwb/k4+PDw8HX19WGhIGCgHxMSkVwbmpGRD7p6ejn5+dvbmqtraq8u7n7+/ujoqD19PT4+PdvbWnr6+qmpaLCwcB7eXXAv77z8vLAwL7u7u7GxcStrKrf3t3R0M/p6Of5+PiKiYV5PZDvAAAucElEQVR4AezAgQAAAACAoP2pF6kIAAAAAAAAAAAAAAAAAACA2TXL9sZ1LYzuKGXujaaZNHWKkJtOmdPhMg0zMzMzMzMzXoZ/eCy/VmLVQ+BDebw+SXIsy/WqtLVtD5N4k5JTyElS05hJekZmVjZJcuKXzM3LpwTE9Qmk/8XnuE8SPq5A9Qn4xwcoAXF9AoUB532SBIs0u0+MJ2uUWLg++UOh4iCeeYnDPtnVgU/eUCgjnQmKSymxcH3KISJfGRfFcod9qqisqqqqzoGt4b/GfPIQUaTGsGwCJR6uT+SrRdFZn+qqSFBazwQNAatP1Ngkis3kkoA+Ufmv6BO1tDKdtnbFp6o6vZSWSi6J6FOHKHaQIKUz2sVZ+sRJwobJUyCAYOo0vTi9m4i0nl4vY97avn6YYbjTPzCYzrxDw3afaGSU6cxQfJop2mb5CFj68c0W/cyZG+9n3vyCBUEsjQtnRL2MBRdNSiFJJHkxZ0uWRppxN+ZtefqXLebLs0ln7ooljPlzV5rX6q/u7eKMd0WbbTWHcH0qXa6XeLMoruLMxL9aI5ohSlMmk86atXqx1ke0bj0zia6LeTB3A5o2brL5BBNZucWnyQMb9UJrC9l82rzFuiOET1vDWBq1bduZSfqqhWSwYyMaBvNUn5I5BrBwJ2dgV7txq7uZSY6t5gyuT6V7mDENjNnRT9+rHyrWC02NpLNPtBVh+ZJE95sedNUygDlH9UmrwZWU3ln6gXVkBf0cZCbBZtnPtEMItTThSIzD+0nnSFjWRxWfaqdjAPujDJj65h9lcYPUmkO4+YJjTBA6TvApXJN1YsY4jhA60CBmrpNENH8ezPLNEi3rt21rED/xwAPR1NXFGWIi1ScZnkVPKT4F5/T023xCOsHLBLn7lbxDMzUHkXAP+ZngtBYTwosm6RMQA9DOMJ2jM06sEud2BDDfNp09ceJc5nlSay4O5jP5hWE0XrxkPGVtFeyhZiHJHI2ovQ2GzRxFNgk/qb9serD8ClF3WJQ67T55MP/BpzhHr9p9Cl/TqD9LPP21a6RPwesLKXvq/lxRvpFNFLgpji+ZS3SSC4Ob9VOS01WfQpf6+0t9m8MyUVuE+1nFdEYIyJqL0z7d6tbIyvyW2+ZUk71LrDhT8b88OpO0OYyxxXdIR0TAdyvhAT8pJWQeu08deNbxfCamIDWAQj8iasesyG5Kn65rsfhtVzaOQ1wspB6jqUPxKa0Ht2jeBXriEzBT3isgIGsuzvqEMBrkZ0WRvTZj4FWYKrQ5eJqX65mV0Wp4UHyfdDo/7RN2iaus+zvtWphhBVJ9QqiGhWgV+pFtnZac64hxMgbT1o4mxacHAUOyB0yhU0y3gorkfCJSai4OxeORGstUERjvZybwiapHhQLYo5XjqVtpRgvcaf6kTwjqWWfMJyjDoaHE2g86yjH7eRiJD3cGGRx5JI7jlGlTcYri02MixHwKHpr/JLZBjJBac3HGJ3MPhFzQU26EvNFnK0yfMAdMmSxWm+ndP+ZTkWgOb7b6hJ8oCU2bT6ti+SebT2I08Am62XzyfMYn8iX743tTtebijE/UkyYjlzuL9dLzbPl4mhFkiCVnHx4sHiESheDrPmFPX+v7Dp8ey/gJPtnWuxkox5daHLb7hBBPYeGM+nSsfraaiyM+YVe9KAX/93GLUOqezhhfGUXyiU6Jwtod3+HTkZBoDV4i1aciZnhq7QcRP5lpgNFqxSeM7Wi+KAYOIP8aeRgL4X21Np/kRuAFjSX/GRfxl73m4lx+nJ3RIEQR5hTpk7FPf9lkBr44q/UVAqPXp77sUyC7+iX+/c8HyB6PY9IClrwDIrpd2apPyBfURPA9BPxfZewluvWmN9zmkwy4w93QxpMt0yGIvzrG1Fyc8onecuTDK++K8Old4fogg0/ydxWPzC8E6FWGEcDOKyx8f4jHVkC7TyrIZsfzBcihjo6QxJIXxfdY/CkpPiGCRz4TxzF3Co7hFLtPyHfye4WFhfXpYow5rOvDthMfkeIYU3NxzKf8o8g4xgJYfivu0+YwmlCjkSCL8Y0+8TkLCT6pzecDtvzT36yvclSfAue5+jkpVmrA/44UguIT5lkJfAK4gFpzccwnvMvgb+Xfn//jn/BJhiZYf5RXsHiH8i0+TdyhfcP34+jnX34c3PJvGusT9X/0jz3Xt4KbAx7BteM+gfZdDGAXER9AdN2YmotzPiHCZRmvaHjIy4L/2at54FN868RWWXZIuV6x8DxoDtDXfPIf+vDffiKbT/6kp/mkYPZT8M7P/A/7+kn1CeTn5frVc7W9tX5jwJ02n0CgufaYWEWjM8QcmfLUGHrd//7fb6slFC7Syx8DL65/Yee+jRSAoQAK3uG9j6iBCiDCl0ERlEMXqEDsz8jwZndGFeglsoM/7kFP64n3Ddzc0/Z89LZclWLH492RUjqNt+zpP9MbVfvDy+sKvLGI6S17CnEjkPvQU9wI5AZ6area2dPvGpuCadITegI9oSf0BHpCT+gJ9ISe0BPuqwAAAAAAAAAAAAAAAAAAAAAAsGfvntprSaIwAH9Vg+pojWKzx6wxb8ZG1Zi4G9vm5dj2fayxzvlVp3r17nALEdb7JF2K1s7XCrcus3/M/5/BIqMIohqX35xz+e4tl/PEas6TGNNsbDeWK3lae6eN62D8NCzl3R1OawuoBhcZH/rEDzpv8i1HBoDSmkjBuoawphb+n7jz6XbrlptVZaGItFacJ++cNxGXKSrwhg7ewDI+xASm10CF1jsVnm14AkjlWSbAhuwo52G1gtUWPFAEG5p+n263aLnL86QtbGSgyDvimfhIVEQ8oPUDWI6zA1JQlHu0LSX9eH+Tb5lnsknOEA9iFyc547Rt4XKXH5+ylrinUCkxofVE3jypNDBWJ5xP4kF5lp3nHHHWsjzFx+kgMrDJhrdbtdz8edLO85QmVEhMTqLo8anBg5Elm/fwxWt8u+1d7vjUYJDi8yJvt2y5+Y9PziNBBFGZqanVeXKez1Jq6VHfOhfnWybwgLLrp9BChU3wvUnOkel2q5abP09JOfEra3KnJ7w7J+JTlKLsH7HapFX5lr3jWzluiXJ5AukwguXXTLdbl4l0KGF6eZ68i2bcGt2XSp5sVcu8IsRa5Umt0Z2ckDwpzec9IYQQQgghhBBCCCGEEEIIIcTam51LzUOI2t01nPMrhFiDPHHz9W+/D0KItcoTXfXHqz0QYo3yhLv/pIuwhHdaNz99eTUhu+zHruZLngV67j+r+ZIXQvvg2RY48rnmT946DKkbXu3q+usJ4HQdWLCOzs4OiB2SJ8z//dG5y/L09JVXPtf1NirX3vLPlb2XNMHec+hjt13SNNLSrC0OvPER8+8VCqzjjSPuP6MrHBHp6StffPE9sCtvHMC6ss6jNLLIft2HEYEpqvK31cmiPOnvPlb/elsrT2j977MbVvz2y4kn3YnKHXIR8Glkzj3voCfw0i/HTHz0ubYw0VeIjyOw0059HB0n3NbUc7TzyHnioMexMXky+8eF48CLIIUl+LNVXZ74DVaVC3697Zqn4dSLK/L0Yd+doL5321RH97Bu+/8GdHz+Sd3RPxwXx8f9cMH75t49fNYa2FtXt4+9q+ySI0mSHrVQpe2TLwh7daKBVGuhFmIQBMvMmcv9pKF3b5iXqecIlpmxjxG+HDMzM/2VK0/zdIWiO2e71KWsUj63Dw1R7p4x06aIyKp0sz86ia+kuPyaa3euXiddJYHq5vSdr/jlj/zVl9bx6rN++llEQVQRvmBb3PDttywCn0Kguul5VnxCwel5gbxLlE97f7tGzqe3rB14HfHgul0Hn3Dr2h0/fOAHl9d/+umT78KnA3cffOSG1Rf/9cqjf3Nq/LfDs6frrxUB71t51/K11wS0X0Hs4PjbB4P7lD3X1/3EUNlY+SoGXz0uLjqfTjTtXcxybiseH8fSEgZdD+lG1R7VyDhArj9eVA6k06qsGhUNDiBY4CDVrBcrUDGWMpPE9fGAJ+lSWQpCPAQdZ43gCC7ZTIlkUuOzTDKjLE+qltUW8wAZLU8w6Yy65dOH/lTxIVI+2Xl8sOPnlomvuZZ2rj53mQ6eff7f3TDZwpa/IHw6dZKeNWEbnV194qnx+172sr+pv+rx/djKg7dhaTI+XXX17df+9QeegICgfFo+ctfd79/9PRi76E1w0oc6HMVz61Mxlj8N/sjHhU+6hlVlRIMrj4bNv35T0TA+DQKC0BddnJH/VPmvqEr5/yORjEUR/56G6xKugiMmJYIpySQm39lmlOTFOBmNW84T2KjOqFM+/enfK/404RPO47VcCo8LuvKzoWbBP6wyRooxo9dF+P/Rf9x9418fxFdJPfiNW9/4FvlrnaVJ5ifBp09+6X1Cvp2SFONrjhF98rNXSvTnD3M3fAJXODR8Ai2EPMKH7DSOIAkwPjGIxsHGz+k6NOXlFfzpWQc46g+CwFrOpEQwJVQIbDPK8jhsOU+gozajTvmUYMP5iZRPuj697aNfnAzuerby6Vm3/lNRFDtfRnT0wcNH9esEP3Lrx19mDesHjoFPoebTuKgmKSdl6Tr4xhecBp+uw+3duJgDn0Ch4UhWAjs4haDBj80nMA+jhADVoLESKJg2UwsZ2KREdEqoENhmZHm6UYQt5snGyzaqM9Itsxs+4Swu4HY+HXz0wNod+yc3+A/v/s7xn32N8unz93/uoc9/45+rE1de9a7D/1J/FT4tP/emf/2QvAuw/tNP+9jqngp8Go5OXfmG0btwVtr1+pV3/tStX6W9ay+KzXsSt9z4Pnrqc765fPwDX6U4+pEu1yfT1ZRRDGPzGB6acn2SY0/KJ4tCUGAIjkhYOiVU4GSdsTzd6Laahz8dRm1GXa5POIsL9rbziXbtXxms7N8l70N+6asvWd2JO/+PPrhj93vuPfmDk7cv/w1fkTkQxPpm8F23EfhE//aK3fsefQYBt71rx5cm5/CPvmD37lfce9DeLzA+3XOsCz5h1y6rGHXXs9O4vJafn8Anicf4aIiDTaA4Ss9PKZ+0oPKiKlkFRyQunVLAicdmZHlybcxlC3m2rWbnp0U4j7fj9O/d8BG6CHjt1U/sZr8jln1nLPd3J+T8h9szWYxk+9IzlAzq/R3VSlENn+y+b6kc6JFctUB0W0n5JAVxYYkZLTGIarufTSngjsxmZHnyyrgMW8xTMEabGc37PN6OY5ff8aJTu19Ls0f3n7dsclTlkL6RiB+3BQ7d5rWXmOd5vB0vftvu3W9758voUsSeQY4JnwZtwM7NNLj0QALZgwcpnt4Nn1LkfOo32m+l7RTIdEkiQoZybs9nGn6LDMMFADkcDofD4XA4HA6Hw+FwOByX4puYzFt7U7D+nC99qIgCTyHDjss4+s6nLXzchccqCq7sY7x2Pm372o5+8ynvrXI+uR5GDmsbwLNweH5kiOaBxH6UmBOu4Ke6geEcn6SA8M0MTFvNTIM+MhLwCMn410e9sYpxPQxrGwCf4rgAKWCaBboYnyTI+KTr06BGyic1MG03M8XxqzmxnSn6tD65HgYoo3ziYA/nCl82dnCiF6kwPm2yPkUUbTMztZaAEGQIZV0Po2d+NeBT81ByC58QKy98Nz6F0GpmKr8ELGqToQ745HoY8lT5gR/o5vnMbH2KJGjhk0SATxe6PhFjfWISdLM+uR7Gq2+9/Zab/6krPYxRdn7ajE/M1o7RwqeqlFbgsjID01YzU5yf8HoH5yfXw3jkye9a7k4PA20DhfUYyM2W8Wk4svs7gAcSDcJxen8nt4njdUmFgWmbmakF4z5SrgYL7IsF18O45YWRcj2MvngJdt8S4HoY148evnH3P37U9DA67kfI8O/b4pO/Gz5/PYwweOBFd69MakK/oD/rEwy+Ay0U+q+Hcb0MfvmzV3bBJ0f/9TBuGb2uPmp1oIfh6L8exuT7oV/9KgY70MNw9F0PQ74fePQtHelhOFwPw9E9XA/D0TlcD8Ox+HoYDofrYTgcDofD4XA4HA6Hw+FwOBzz9+fctqh3bvKJKVyYyWfcaiBaKPI8x/z9ObfNpyyYw4XzCRSZmk+W55i/P+d2+YQis+ETlrrp+YQ818NYGH9OvDgIBKuUpUDIJwSAHoiAnSYFqR6yIoGhkYEpPJbJ5zktDZ7MKcgQWC4WLXWVMQgjX6LETl5ZH01Gob1xQvhkQh0htJuDWp7rYXTqzyn/58fwlZIKse6mCwhYFz5pBB4b1LC8CDhkU2g1+TzXCzopxoNQ/6wmU6wmn9bVrpoeaC5F76joezTiHMhrNwfVPNfD6NKfszEntI5yDihlW1cTUde3sLSI8cmm0Gqil2hpgFfobsdkbY/UhmbV9ECIzsj2Ow7IazcHbfJcD6NDf07ExPI3EIt/41JCCggkyBjWlAxWpI1PLSafqZaGvICCHG2y2Gw5TmbaPFjd8ALFGj6FgLx2c9Amrz96GDwQ6H/RI/+B7jxgUfw58XJkPbMIFUCBbH2KLPVRR8LSItOtT6B4yidb5szkM3LkOkxw3voUx7Y+Ia/VHNTy+qOH8eJJH8wn/xO6BQfXHnyEcszfn9NOR5ydn+qA9aIMFoH6CMuLZHzKTD6JWeqm56eUTyHoX99MPouyjIhLeDEc6fnJxDlCuzloktcfPYyaRm9FG8LRQx+mBfTnxN1bxJbBOFNLNO6mWJiFCDvLIyw3+ZSfzUc6N/kkZtSNqZaG8gkslx/M5BO0bTQ9Gl7I1Ubrst9BnAN57eagltcbPQyh0WGVVYlPeh5RD/w5sQNut4gBjOgirwd6GET0sPSACr5cVj3w52z8oMOlY/K5vz96GEQ773+j5jD3wp8z1JIOczH5dD0MoiicnAmfHK6HMfnyts8QcPk29zuH62HQ6Rd8QUYErz38efro4Z+jOIr01bffQY4p4XoYsh1+GQN4v8D4dMW15HA9jO3g4JpveLOB62HM9PMWh+thOFwPw+FwPQw8pzSFbC8zTQ98ytJ3OKbnU0sN55PD+TRDOGBod1b4dAYP8dloeUKdNMfFeV6ewicz2Wy8PIn1ARZi3qyC9QVYbwFFZPQKjlg/6iQNLmxcsFF8ch2UZtYdEBOTTfPyDJrLvGkF6wvQZ+MQcIT6BQcH2+90P8pHhTXJaGayaV5U2X6XV2jqN70FktcvOPI+FHk0X7Y0ttHAiJHNqixkFCnnTDZb+LShQtMX0DwX3mNfIF+fOFufqjIdrZY2XZ/An1Y+ZRWavgBcgnu6PjmCnZ/QaZmO5uenOMrOT5vxiXnTCsNRdn4Kfn7qJQLuw6QDe8A2ynZ3lt31wa36nMmm8akY2/3dphW0L8B6CyhIOvUajm04aboXp+thtPhz2u42mAr/RQar0Gu4HsYUJtWj4UwqOHI9DIfD9TAc20cf9DBssCd+ZY4562GcN/jatx6l+cHRAz0MG1S/1znC0QM9jHRw+PZbyNE9+qSHkQ6+er5++Y4e6GGkg8Hb77YJ18NoBp1Ps4DrYTSDkvVa3++2CdfDSAdvufF99NTnfHP5+Ae+SnH0I+SYGq6HYYN4v8D4dM8xcrgexrbw2qufSA7Xw9g+/PMW18NwOFwPw+F6GHP055y+zzx7Fy3yRi1hNNFsCRww6anyzMljweH+nIGnb/nL+YR5TM8n5Dmf+uTPiZzpHYQzPnGk6fmEPOfTJevPSSyD6r1pWhoqjaH9VKhF5pcJzkIGA+Q0sQw1w1SyhqVyNJRkEEa+SBbDlzO1A1XxDuSJM0tZIQ/dqSHT6qgvfjZz/txoNtox3J8TzXVnCvOO0p5NlcZQiQt4TZlfJvhkbZwWiER9RYLxgfhafXH1jYLlZ6x9OaWs2YGaeEdgvMmseXK9ycQzrQ5zBDXnT8EGs9G5wP05TZtA0iiXxiDz6lS/TPtFEyOTJZqZk6yAthvJKGYkWZIQONHQ4GDN8XUeRpEnqdmEUCZz1hPkZqM0F7g/p0ZE6GMk0hgYN69O+GXqNc7ZI3KUkIxPQlYZaLqOZSAEimotqXzSqQUT75AwraZ5IQjFMq0OhCfOn/J6zM1GMUqO7vw50/UpsmlppNIYZF6d8MtM1ydi7KsmlmF80gULV5DRaunI0tCO7un6JMm2PkmejFrecJJX5VodsDA/lK1PudkoObr256zK885PITk/CUJ6fmr8Mpnt/GT2mJaofNIVUA9cUoDC0lKFMsYnswM18Q7JA2uQJzxcCpRrdcARNHH+FGw0G3V07s9ZlbL9wHvTtDRss4HEhXl1wi8TfGpkMEBOFcswPkUGa/QCMjocYYWUKxmf1A7UxDuU5NHyQNXNtDpS508gNxt1dO/PORv6Wl0AjJgeed7iKVi7Hgb8OS8ycrmN7tHuE/pLrocx+/Wpe7mNrmE+oa6HMS84XA/D4XoY8vz4yve+bCbPZzpcD+OO73vgY0/771e7HsZM4HoY0s+569mnTroexizgehjSz3nwmePC9TBmAdfDeNELH7j705NyrocxC7gexuTEvuNdfzkuXL9gFnA9DIk+eQrtoR3xCY8ccfsTukUZt1LC4qsZOvNtD66HIdF3rDxMpocxvzfFOei3aho+Ia39A7NO+eR6GDsvf9Y/33T/56lFD6N7PhVlMQ2fJN75tDh6GE/9yx0H/uJV1IUehnluNg8vRvlcrXmOv2khiDwZOVPK7NEzoJYsgTlpQzjXWxAZFbgqkT95OeBCselVkK8opj6NydMwLd0OgrQfAtSUL0EG64dYIh6LsYYHy+0IrocBz03wCb6ZZWWemxz0qZBK/vASipuGSMXYugS0DcF6CxAvy/UIhzK0Cshwcbx5PlOiUMz4VA/TetXW7UCU9UNICZliqLmNf6DD9bpMntsVXA+DQ9KcxqFujrLn0OzRXesECGx553cJpM+CazwzBvBizRaUTdsMDIht73bQ5MyrUfsJZI9Femuu62F0gYQMgZtN+Xw+hWB/QuVTHWd8ktyETxZvHQx4WFKyGGXTNoP8rNTa7WCMs4hKSMT1liYXwItsjQhZruthGLpbnyIJUj6l/QlsHHqM9QnxCZ+kkHKOWcqmbQb5+tTe7ZCvTzLMkaMpGNiTy/IPI8/tCq6HMcrOTzmfIuuNiLxqHTDF2PikbQjnPQue8klbBYo1kgzrbzE+2fmpGOP81NLtsKEfQqqXBd6ksy7kKEF5rqM74OYMfKJQ70PGp+FoNKzXLOnpRscBEzrRS+OTtiE0fOKY8UlbBfTmTfse5KI5n+phptZuh7wfQhmoe5xcCjeoSyxDWe4iwAFazekBf3cH7UM/Qsf4H5o93B3U0X3Dg8PhcDgcDofD4XA4HK6H4egYrofhcD0Mh+thODqA62FgSJ4i33f5MkYe+Q/05k0Nh+thYKjas3ps7afXQbC1Bx+hC4LD9TAwdOzAhyddLWhuOHrow3RhcLgeRj2EBmEeQwf+Sc+j6eFwPQzjE4zyA/j05QvuNne4HgaGOOETM10gHK6HgaEwYSpdt7qzlU/z9uecXX/k8PFb6WOPfEECGq6HgaH409KhAXW6y8tqAf05O+GTXQYR0/PJ9TCaI/rqx552a0Sz+eHP52oY8/fn7JRPtihOzyfXw8CQbJF3HyR9vyBTw5izP6cZXeJFSZbGXClAKKFUODFgNDWZSyeUNlQ0A61RJ4RPqrNBZsKptaXRKWkWZ94kBtYs6n+WCWjIRaCe0UhiuB7GwbWyWih/TrO0NAmKQGHAJFFmK6UWVdWJSsLUNEqVNlQ0Q1kwLkxngyg14TRvvFQIY2MMeMq6ciYiGIEkQtUzOFB1xPUw7POWBfPnzCUoJE5+55AJDJB5z3FQpQ1r+pQ42++Qau3rWltC89N4HhMChRNLlQalIhgyB7k0qOh6GIvrzykBiQSFvGp/YlSRCN3/xurS2Wz3DZ8Cp+enkPKpqW3zSJHFxLLg/10aIiiRXcFvzdGQZeN0PYxF9edUi0VBwifT9kmlViQ+cmTjxXnrUxxvuj5pbbugYbOY9bOyQuE3E9CQ4pMQJHcra+t6GFP4c5qlpbye8cnOT3AnR60wLuDSKaMpn4aj5vxUVuBVIq9hklF2GrdNK4sh/r9Iw/9r5Fqy8xPUM37jRFXP07F4/pxmdGkSFMYnkzUEnxC6JCRluYIqbTR8kuqjddnvoLOR8gm1JaMsloY5n9IY0FToA4RE5BC3EPIdEomOHvhzdvDmvcP9Of+/vTsNauPM8zj+784hyROa8qKFaGSFMIAkVwAMLSNjJwDGU5RnMGRZKYcTthTwjIuSs4PxUbPeyMaeuBKKTBgH7PWGOTz3fd9XbjP3hadq7vses+fxfvtpiUaATUWh90D+fmaStKV+1C/0q+d5JEs/FWZUwO9zAgAAAABAHwbwf9aHAfowAPowQB9G9/1v8tCG4RL6MB6d1r0el9owQB/G6dQ7VJ5cacMAfRgimsqTC20YoA/DyZMLbRigD8PJE20YrqAPw7U8gT4MJ0/utGGAPgwnT3YbhjJR+UExvabM7B2WAoE+DNGWvV/g5KkmLniJ6MNwsw0D9GHw9y3rAH0YWA99GAB9GAAAAAAAAAAAAPRhgD4M0IcB0IcB+jDKPrRDj27qduUTmqAPw3P9w4+1qyu40IgB+jDuHhM5dl5zpRED9GEog0OtLjVigD4MObJ9wwWXGjFAH8a+0WhE3GkwAH0Y8YGRuLiTJ9CHUbL7LR8WxYVGDNCHcWLoDdZ5u5xGjI2NbwtsfmhGTO+jUijQh6HpiuG8X+Dk6cGIgD4MNxoxQB8GjRigDwP0YeD/AH0YAAAAAAAAAAAA9GGAPgyAPgzQhwH6MNTnx53yC7n7lP3NYum+/02ewj+fCfowhvcffOwvftojtsDp6IHW4KnQo9O611N4Hwbow1Df5yyrb89GNt5yWAJbBkpOp97h9RTehwH6MDQrT6HbGsKi1L2vzv7xYPtfhfdhgD6Mrp0HD5wJ5vLUqlJkOnkqsA8D9GGozbnv6NdzedLy81R4fwHow1Da2rePqUGmuSciMjlVS55eIvowlOHoYbH7MNTUFerv7LDzVHgfBujDKKmu+/7tI2fFVnZn9P73Ds2InafC+zBAH8bGr/uCX3u15Ow76js/E3DyVAR9GKAPYxWgDwP0YYA+DIA+DAAAAAAAAAAAAPowQB8G6MMA6MMAfRhlH9qhOzcGXv7ygLx0oA/Dc/3Dj7UvXKP3nipZA9CHcfeYyLHzmihHSg/LmoA+DMvgUKsonr2DsjagD0OObN9wQZQedd+agD6MfaPRiNi0RFLWBPRhxAdG4uJOnkAfRsnut3xYcnrXuN6BPowTQ2+wztwlyuCOY2tqxAB9GJquGM77BTRi0Ifhmt6tNwrow3CBO3/fAvowQB8GQB8GAAAAAAAAAAAAfRigDwP0YQD0YYA+jOTrKvSaAyFXPp8J+jBKfnmsbzo6TB+GK+jDEEvPngh9GG6hD2Pj0Y9spA/DHfRhmLr+lzcKfRjuoA+jLfbAdHOc/gJ30IdhlxporuQJ9GE4eaIPwwX0YURSw33T0c30YbiCPoyP7vb75r4g66APA/RhgD4M0IcB0IcB+jDWOQAAAAAAAAAAQOMFQOMFaLwAjReg8UK/rv+vRY48Prsyas4nyK/MtAb7Ridkdc417COn+8LhXNr+tt56R+PF8fserOiRsyOnA7J6nqq+/pnlebrv+Iz3FxtlVc417KPe6Z1dspR96cm5cHHkicYLiW3dXSLK6nla8XSbumm3XsiqFq9hH5n+OrkCo4E8FUnjhUjr0GC4wejobG+Tjs4tgYlRX0V1YOH+cMMrZ4PnfxVSq5vXk2vFcPKkWi9k15zPP3o2sqdVJBI8ETpQo9fUWek4uc23oy7vGnYfwruz2R0c6rWuZd2zLfH5BsNeCQ17xPlLsp7ReJENhpUnOWxFI1LRF9s6Gm8deudinio0z8GWeNtj50+W/HqhFcNZ7677TUg+cdPZ1mD/b0utPKZGSnqGTv7stv3DHm/0r24d6OxYvIadmus3i9LR2R8aHGqJjzdWW5cOdby2pnbc4/3xeyPWCFm3aLzIz1PXzl6Vh8nosF0z4OSpvkx6dFMtR04rRtPCfvzHD3Q7j3S4uamjM/W77db58ZZJjzcVUqthfp5e33vgNUOmWEKpxnHt8U6zdn9EXTq33vWHpNrrkXWLxotEMtt1op7Usvpz4c7DYuhKIunkyRAxs3lyWjE8ko3Ih9+yNSZS/rGBCmvAcLQ3MtUVbtAVTZ0u2kKenKOSEUMUc+oLd166LdXb2eHkaWGErGs0XlwYOBqwn9RNla17h2WypSscDneErpAnpxXjiVye5MKGo4Gqysd/fqN1Zln9ltP1ZWPbn7zRGp908uRcY0memprf0djUmvhYf4g8FU/jhXotn6rYHRP7SW3a8Pv6Mtkcba+NabfK8jzVTj2evrDQiuHsx2eCB2qnjv7svUErK71TlZusW4YeidXeV+LkyblGMjF3IaLWOyVw7qd3tnn2tpzIXnqbt7duYcRE5QfF9JoyY4V7faHxQtf9936oTLJPamCL/4TYNby+ufiKPAXu8+346EIrhpOnjX8/8oczweAfS608VVWqdpXATFSveJ0zPznXWPZ+Zqu+ScYbm5uyl87c7k+tyFNNXFAMjRcoAPtxN4H9OEDjBWi8WDMBAAAAAAAAAAAAAAAAgB65EsP+dlL4eo+sbukpwN5PxWUl4xfGFcPiuT78YvJkaIun45qyV//0aVnBSDWY5OmlIE+6/uBnVgbCbAhnw2Kq+hQxDBGt4U+q7sQ5R335PHz9O726daqEG3T132TiDu+fP2IPsYfqhnWTPchMvEw3NcOwztJ0XRMUaZ6Uz35ueZ5UglSeVK7MRDKZMNWfFiccdaPcmgw3qPsMK06aiKaOE8ml81MyoYk1OvstT003xdA1+1FxLeVJhUklSEUj+TKPml40yc+THQl1lh0tlS71B5WcpXmyh5iG2Gdohogz811DWO/UbPNzlQ9dMUWMRNLJk83UvR4nTyooahpamSczV8vi5MnzsuS1lif245pKR0rNT6bYPInrzeUbbM8tnvz5Sc1jK/Ok4qNcy3ni/QLNLsb0ZvdP2XVtYfHKZeqdanJy8rS4fzJl5f6JPF3r72dqstAPpqnVKpywX9+FxdAN03BaoU1nvbNf31n/UXnKJVGxTrfv0c0r5wlIEQUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwLUjPatcHpOrGbto35eOxdJim3/qqXlxTyYtKCaBizFRVs3T/ImxWNo5fW3IE3nKZCSXp7ET8+QJq+ZJTT8i8/80n0lnZmfTIhKbnc1f1QJ187Kw2s3OXgyMXVZrpDV011MXA9kHUTeLNXo2IxK7uMsaHlMPlXeszlLDrEiWP6X+q65yeTAtkrYHo2jypP5RM0VmNmMdZyRmPduxvKc4e+zMT2OXMyKZi4HAxdztaoyUBzIqLJdjVk4y1kOlVUKXHM+XqzOtU9TQtLqKlc+0/ej/TJ6KJ092YKz/qkjZx+mMMyfZ0jHJz5MKgDpQQ/Lylv1jxg6Iyo99Q/6x2Herkc5VJJPNFYooT3Y45usC2TzN133r4qwSW7qHcvKkTrPHOXmyb7DvsoOiMqTGqPvzj+1Xk06evrUQP4mpxRVFlCdJZzIZWZyfYlfdMzvzU6DuyvNTLC1Xy1M6s3J+SqvHtmcwFFGe5v9FbckzT6nNUWzJCuSsfCv3T06e7Buc/dPV8pTdqS3mKZPbP5XP2zehiPKknmeRTJ210mXUwWzeSy61EubnSeXHvtvJk31DOjssJlfLk/2qsW4xT+r0i7vSErNHoZg4e+mV1DIFFEKtXlfLk5pdgALMP3V57P/+zWoAAAAAAAAAAAAAX/xS1pcFWLsHanKeEsCFPInytqefeYUAbuXJ6Hv2VEgAl/Ikg88Z3ZKnvyUu0tTcOC7SOzRo6qaYuq5XvGqfLLHvqC+RFJFLX4+JA+RJvvzCuTZZ1Os3RUy/1yOybaAkm6f7jldX3Fkm+VLB1nGxzDy0WQo1ORcWFGuepPwrT94tjnhLtUhq/85eGW88F8jmyRSpbolLPqPhpWdCjUVR5qkm67g4kontY+ONf9PYH4q3tIqTp3/M5WmiPejf/YNkQtd1TSya1xP4VY0ePBOI7GkViQRP7Jrz+UfPSvbO46P+kR8sjBIxKs9U/KsaawiKME/lX7KpPDmqm5viGyKpxvEer2chT6HMQH2ZWGJbp/sOTUf/reO1NbXJXJ6SvzkUu81vHiltb5PUSMknbjrbGuwP2Xfu+UVd3cA9N+ZGbRZD31YWUmPHBUWWp+OzOcdlSZ7MYKT33ifMKY8VqVyeLCNxUSZ3dokMR6udNcvKk1g8Xk0ONzd1dKZC9hyXSGbz1Kc2ZHWLo1riRbrekafZ7+bMLs1TU/OZ/nOBpuabE9tEcvvxSz/rFts2FYVwg5Gfp+6e7Rt8umYFpjcy1SXlHxuo0BMLk5f9EPmjyFOR5mnR0jy1tU/f2ypj2+eae8XZP2U585OWn6cTwc+c/YJXk7L6Lafry6oqH//5jQvz09CgyKY9EWcUeSrePL2tJsdYmifR3rdzUKRab4mvzNPw/um+roP7h/PzNLnn4Z9/TddEeqcqN0nt1NGfvTeYy5O/0dNzS+mRZaO2eXvrBEWWp/Iv5ZQvy9PgUGeHSGRPIrkyT1I+6vONlkt+ns6O+mve6NVEqiorqyRwJhj8Y+nCevfGGv9o1fJRmdv9KUHx78cL5ryPcEUqbIJrfD9eiN469T7ClZEn9uOFSr1vbkJEyBN5WuK4AGv+fKbji+Lw/O8QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAG73j39ZABd/H+EpAVz7Peqnn3mFAG7lyeh79lRIAJfyJIPPGd2SJ5nwv1NEwg2aAAXnSb78wrm2JXnSN1xYlqdL05vlRQF5kvKvPHl3fp72PtQfUHnid+xQaJ5qso7n5ymxacjM5mmiPejf/QMxdF1PJPd9LRh8/ohUfd3ne75NgJV5Kv+SbVmeSu7cXaLyFNs63XdoOrp5/OT5xzp+u31g1zejp77V3vBtTyopLwb4PWqVp+Tw/pNPWHma3NklMhyttte7umCfSGrgxvaGY93dIXlRwO9RqzzJzNRFK0/bGsJqY27YedJ0pSE8Meff8U3ytBx5WrQyT0dGb/c685OWnZ+GLoXD4ZJukarRyioBlubpbTU5xso8yaGduibD+6f7ug7uH5bJPZ/59/8YmT509q3fT95RGztKnrAiT+Vfyim/Qp5CJ3VNpHzU5xstFzl7UH/N2MSoz//6v207bb/kA1bdjwNu7scBd/fjwBrylI88wY3PZzq+KA7PiyIAAAAAAAAAAAAuoQ8DoA8D9GGAPgzQh5FIylVc+ocJAQrqw1glTzMPbRagsD4MlSfAtT6MZLjhlbPB878Kte6JiLTu7ApsqtErvnq3/b3O7vtr9POHZGLUV1EdkGO7/cE7BKugD8PKU4XmOdgSr6pMSVt7/X/eMHRy+JHg6YDK08z73l1706HY1tF469A7OzpL433kCav3YYQb6sukRzcDWxrH4y2bSga2BCSUam6y8tTR+V8BEZmMDltJ2/7qztILoYBgNfRhqA4MMXVT+ryDrZVVtVNatlTM+n/2WAxdSSR/MKKPHBOshj4MJ08lI39sT4Vy89O9T1h5so9FJlu6wuFwR0hCmYFSwWrow3DyJNW3PNQnoVPBk8M3B0+FrDyFTvleZe2fNkfba2ParSVnfh4vJU9YvQ9jMU9dO0uPiJTdHNWjN5fZr+/KHonqNbvkB7v9vrn4+N9ZhRkTAvfQhwHQhwH6MEAfBujDKJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhfpvQhUR2v48b+MAAAAASUVORK5CYII=" alt=""></p>
+
+<p>Here’s what’s there:</p>
+
+<ul>
+<li><p>not shown above, I have a page that is a calendar view where I take short notes about what I work on on a given day and how much time I spent. This is important information since it was a hourly contract. Thanks to those notes I know that I spent 601 hours over 11 months</p></li>
+
+<li><p>clients like to know the progress. I had a page for each month were I summarized the work done like this:
+<img src="data:image/png;base64,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" alt=""></p>
+
+<p>Those pages were shared with the client.</p></li>
+
+<li><p>A short-term todo list helps when starting work each day:
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJcAAAAkCAMAAACzH1iQAAAAZlBMVEX////v7+9iYVyysa+Uk5A3NS/Ozcx+fHj39/eJiIV7eXV6eXVubWjR0dDW1tXKyshbWVWCgH3l5eQ4NjCcm5ipqKVPTki8vLrCwcC3trRTUkxhYFtvbmqfnpvn5+fy9PNxcGvf395xfrPwAAABcklEQVR42u2UBbrcMBCD7QxumZbR979kR99SqH3MVjiRrd+UdG/t0ytQ5apc74qrclWuyvU9jYlnJc75UG7iguVJ9OPnrzGuDfdD9/s9jnwbLqbjtRzyvbnk95+RireNDkMR9HxcIqvlsGJt8jFURWJQmVOiZhFmvnhEzPNhPpOwptwIrm7T2afPgiIoCrsbzkltIkrM4SIRupkL+vK1zwUScIFPzd0UT9cOwMv0zXODbxxYFOC4N+/2lxvFoQGp4YgTC6HWe3IBCiSI8ElBc6kzMMeqYQEiKPEAgi4XjqQMU3DxsSCK3W8c0fodcgSKMDbvThjFYJ25EIhuGXKpQOYXrjJxFLvfvCekbNFfeoqwg/YnclmXTn9Fvw65gAENuO71nyDUOpsd59dxvBByPkJzdNaF6zK/BlxuNM51r/8q4UxYVYRRyIb1GIgsrHzMwfBexhHrUeICrlOLQrDjC5y357qntiVVVVVVVVVVVb1K/QW0NxqWBt6RXwAAAABJRU5ErkJggg==" alt=""></p></li>
+
+<li><p>I even managed invoices as Notion pages and used “Export to PDF” function to generate PDF version of the invoice</p></li>
+</ul>
+
+<h2 id="additional-resources"><p>Additional resources</p><a href="#additional-resources">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+	<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+</a>
+</h2>
+
+<p>I’ve provided some additional commentary in response to questions:</p>
+
+<ul>
+<li>in <a target="_blank" href="https://news.ycombinator.com/item?id=19589614">Hacker News discussion</a></li>
+<li>in <a target="_blank" href="https://old.reddit.com/r/golang/comments/ba0lsm/lessons_learned_porting_50k_loc_from_java_to_go/">/r/golang discussion</a></li>
+</ul>
+
+<p>Other material:</p>
+
+<ul>
+<li>if you need a NoSQL, JSON document database, give <a target="_blank" href="https://ravendb.net/">RavenDB</a> a try. It’s chock full of advanced features</li>
+<li>if you’re interested in Notion, I’m world’s most advanced user of Notion:
+
+<ul>
+<li>I <a href="https://blog.kowalczyk.info/article/88aee8f43620471aa9dbcad28368174c/how-i-reverse-engineered-notion-api.html">reverse engineered</a> Notion API</li>
+<li>I wrote an unofficial <a target="_blank" href="https://github.com/kjk/notionapi">Go library</a> for Notion API</li>
+<li>all content on this website is written in Notion and published with <a href="https://blog.kowalczyk.info/article/a8cf04d756ec4963905960822b004440/powering-a-blog-with-notion-and-netlify.html">my custom toolchain</a></li>
+</ul></li>
+</ul>
+
+</div></div>
+  </div>
+</body>
+</html>

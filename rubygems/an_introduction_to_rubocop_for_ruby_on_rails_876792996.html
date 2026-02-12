@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>An Introduction to RuboCop for Ruby on Rails</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>An Introduction to RuboCop for Ruby on Rails</h1>
+    <p><strong>URL:</strong> <a href="https://blog.appsignal.com/2023/09/06/an-introduction-to-rubocop-for-ruby-on-rails.html">https://blog.appsignal.com/2023/09/06/an-introduction-to-rubocop-for-ruby-on-rails.html</a></p>
+    <p><strong>Tags:</strong> rubygems, rubyonrails</p>
+    <p><strong>Bookmark ID:</strong> 876792996</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p>Good code has a lot to do with how readable it is. As developers, we more often read code than write it. As my Perl teacher told us many times: the flexibility of Perl's syntax was its best and worst trait at the same time. Ruby's syntax was influenced partly by Perl and is also quite flexible.</p>
+<p>Whatever language you pick, set some guidelines to avoid overusing a language's flexibility. Style guides for Ruby abound on the web, and it's not difficult to pick a style nowadays. But there is not much point in having copious debates on style and whether a proposed change follows a guide. Style enforcement is best left to a tool.</p>
+<p>Such tools are called linters and static code analyzers. The de facto standard for Ruby in that category is RuboCop. Here follows an introduction to RuboCop: what it is, how it helps developers, how to use it, and some key practical use cases.</p>
+<h2 id="what-is-rubocop-for-ruby">What Is RuboCop for Ruby?</h2>
+<p>First, RuboCop is a great tool to lint a code base and ensure a specific coding style is followed (such as indentation, spacing, naming conventions, etc.). It's heavily configurable on that level through many rules, called "cops". Each can be activated (or not) and tailored (for example, the number of characters per line).</p>
+<p>Ensuring a specific coding style is followed helps reduce developers' cognitive load in writing and reading code. It's not a matter of code looking "nice"; it's rather a matter of code looking similar to the rest of the code base.</p>
+<p>The second side of RuboCop is its ability to analyze code statically for quick insights into code complexity and potential code issues, such as the misuse of variables.</p>
+<p>As RuboCop is a little utility, it's easily run within a CI pipeline and in any developer's IDE. Thus, RuboCop's feedback can be integrated into the key places where it matters: when code is being written and before it's merged into the code base.</p>
+<h2 id="how-to-use-rubocop-for-ruby">How to Use RuboCop for Ruby</h2>
+<p>Style is a matter of taste, so it is entirely subjective. Remember the main point behind using a linter: it's just there to help follow a chosen style because it gives us more capacity to do what matters in any project.</p>
+<p>By default, RuboCop will enforce the style defined in the <a href="https://rubystyle.guide/">Ruby Community Style Guide</a>. We can tailor it to our specific tastes and context, but let's rely on this basic set of rules to learn how to use RuboCop.</p>
+<h3 id="simple-use-of-rubocop">Simple Use of RuboCop</h3>
+<p>Adding RuboCop to a project is as simple as adding the <code>rubocop</code> gem to the development and test group in the Gemfile.</p>
+
+<p>There are also several complimentary gems you can use, including:</p>
+<ul>
+<li><a href="https://rubygems.org/gems/rubocop-rails">rubocop-rails</a></li>
+<li><a href="https://rubygems.org/gems/rubocop-rspec">rubocop-rspec</a></li>
+<li><a href="https://rubygems.org/gems/rubocop-performance">rubocop-performance</a></li>
+</ul>
+<p>Those last two will be useful for many of you.</p>
+<p>Once the gem, or gems, is installed, we can run <code>rubocop</code> from within the root folder of the Ruby application.</p>
+
+<p>This will print out a report of all "offenses" and how many can be automatically fixed.</p>
+<p>For example:</p>
+
+<p>Let's dissect the only offense we have kept in this example.</p>
+<p><a href="https://docs.rubocop.org/rubocop/cops_naming.html#namingmethodparametername">RuboCop's documentation</a> explains that this issue:</p>
+<blockquote>
+<p>Checks method parameter names for how descriptive they are. It is highly configurable.</p>
+</blockquote>
+<p>This is followed by an explanation of the configuration that can be made for this specific rule (we will cover that soon).</p>
+
+<p>What will be of interest to most are the <a href="https://docs.rubocop.org/rubocop/cops_naming.html#namingmethodparametername">examples of good and bad styles</a>, as checked by this rule:</p>
+
+<p>We can apply this advice and rewrite the code to match the required style. RuboCop can often fix the issue it has found (we will look at this a bit later).</p>
+<h3 id="configuring-rules-in-rubocop">Configuring Rules in RuboCop</h3>
+<p>By default, out of the box, RuboCop comes with a default set of pre-configured rules. The documentation will tell you <a href="https://github.com/rubocop/rubocop/blob/master/config/default.yml">Rubocop's default rules</a>.</p>
+<p>Configuring RuboCop for a project is done through the <code>.rubocop.yml</code> file at the project's root. This can be tailored further in sub-folders, but I wouldn't recommend it.
+And, of course, it's also possible to have system-wide configuration files within the user's home folder: <code>~/.rubocop.yml</code> or <code>~/.config/rubocop/config.yml</code>.</p>
+<p>Here is a simple example of such a configuration:</p>
+
+<p>Let's reuse the previous rule: <code>Naming/MethodParameterName</code>.</p>
+
+<p>There are a lot of things that can be tailored in the RuboCop configuration file. The documentation can help you pick the rules you want to use, but a few other options are available to give you a starting point beyond the default rules.</p>
+<p>The Ruby style guide matches RuboCop's default configuration, for example. But you can also find other guides like the <a href="https://relaxed.ruby.style/">Relaxed Ruby Style</a>, and some companies - such as <a href="https://ruby-style-guide.shopify.dev/">Shopify</a> - share theirs.</p>
+<h3 id="arguments-in-rubocop">Arguments in RuboCop</h3>
+<p>RuboCop can be run without arguments for a basic check, but we can add on a few arguments for different effects:</p>
+<ul>
+<li><code>-a</code> : to auto-correct offenses, but only when it's safe to do so.</li>
+<li><code>-A</code>: to auto-correct offenses, even when it's not safe to do so.</li>
+<li><code>-E</code>: to display extra details for each offense listed.</li>
+<li><code>-S</code>: to display style guide URLs in the offense messages.</li>
+</ul>
+<p>Those are the main options we might be interested in. <code>-E</code> and <code>-S</code> are great to add whenever you run RuboCop to check the code base. They both give more details for developers to figure out what to do.
+<code>-a</code> and <code>-A</code> are handy to quickly take care of the "small" issues, but beware of the automatic side. It might do well enough for minor style offenses, such as spaces, but other things might not be that simple.</p>
+<h3 id="bending-the-law">Bending the Law</h3>
+<p>In some rare cases, you might want a RuboCop rule or rules to be disabled around one or several lines in a file. This is generally frowned upon, as it creates a precedent many developers won't hesitate to replicate. Yet it might still be useful to know how to do this hack for certain cases.</p>
+<p>The way to disable a rule and then re-enable it is to use a pair of comments:</p>
+
+<p>This will disable and enable two rules: <code>Layout/ClassStructure</code>, and <code>Style/AndOr</code>.</p>
+<p>In the previous example, you can also disable whole sections (or departments) of rules by using the department name: <code>Layout</code> or <code>Style</code>.</p>
+<p>Finally, you can also disable all the rules in one go.</p>
+
+<h2 id="rubocop-in-practice">RuboCop in Practice</h2>
+<p>Now that we have seen what it is and how to use it, let's review how we might use RuboCop in our day to day.</p>
+<h3 id="local-uses">Local Uses</h3>
+<p>As discussed before, a linter's purpose is to ensure a standard style is used throughout a code base. Standards are how we help each other work together without putting up complex conversion and compensation schemes.
+When building a house, standards are the way every carpenter knows how to work together. The actual details will be a bit different from one house to another, but, using the standard, the work different carpenters do will match.</p>
+<p>RuboCop helps software engineers work together by keeping their code up to a certain standard style.</p>
+<p>The simplest way to use RuboCop is to run it before making a commit or once in a while before pushing commits to a remote repository. As described in the first part of this post, using <code>rubocop *</code> will run a check of the code base and display any offenses for you to fix.</p>
+<p>You can then use the <code>-a</code> or <code>-A</code> option on another run to get some or all offenses fixed by RuboCop.</p>
+
+<p>You can also fix them yourself, of course.</p>
+<h3 id="within-an-ide">Within an IDE</h3>
+<p>Some IDEs and text editors have RuboCop plugins, so you can get notices about style offenses while working directly on code.
+The only issue with these is the configuration, which can be fiddly.</p>
+<h3 id="integration-with-ci">Integration with CI</h3>
+<p>It's important to run RuboCop within CI pipelines.</p>
+<p>Usually, we run linters such as RuboCop as part of a pipeline's first steps to notify the author of code changes about any offense quickly. We also consider such infractions important, so they will block the Pull or Merge request in its tracks. A merge should not be possible if the style is not correct.</p>
+<p>If your project relies on GitHub's Actions, you can find a RuboCop action. You can build similar steps for any CI/CD pipeline out there. The principle is simple: run RuboCop against the code base as an early block within the pipeline; if there is an infraction, it will return a non-zero code, and the CI will treat that as a failure. The output can be used more easily as an artifact.</p>
+<p>The <code>-f</code> option will allow you to tailor the output format. This can be practical when running RuboCop in the CI pipeline: in markdown, HTML, or GitHub. I'd advise starting with markdown or HTML, but you should also consider the fairly readable default format.</p>
+<h2 id="adopting-rubocop-in-a-new-project">Adopting RuboCop in a New Project</h2>
+<p>Many projects start without a coding style or diverge from one for some reason. Getting such code bases back in the fold is often challenging and hard work.</p>
+<p>The first run of RuboCop in such a context will usually output a fairly long list. Trying to solve all offenses at once is foolish. Instead, RuboCop allows us to generate a to-do list.</p>
+<p>Running RuboCop with the <code>--auto-gen-config</code> option will generate the <code>todo</code> file. This file will disable any rule that is not respected. It's located within the project folder <code>.rubocop_todo.yml</code>.</p>
+<p>Disabling all the rules that are not respected rather than fixing them might seem counterproductive. But we don't stop here. This step ensures we don't face a mountain of work.
+We can remove a rule from the ignore list and fix all offenses against it, working our way, one rule at a time, through the to-do list and the code base.</p>
+<p>This approach — of ignoring infractions to one or more rules within multiple files and then fixing the infractions one by one in many files — is doable, but will require a lot of back and forth between files. You might end up changing several files and several lines multiple times over the course of the process.</p>
+<p>Another method is to use a "per file" approach. Using the following syntax within the to-do list file, you will ignore infractions to all cops in the files listed.</p>
+
+<p>You can work your way through those files one by one: removing the file from the list, running RuboCop against it, and then fixing all offenses.</p>
+<p>Whichever approach you pick, you must remember this is a step towards improvement through continuous learning and effort. You need a strategy and vision that works well with that: include enough Slack time within the team schedule, or set specific times aside to work on this issue.</p>
+<h2 id="making-rubocop-easier-to-use-with-standard-ruby">Making RuboCop Easier to Use with Standard Ruby</h2>
+<p>RuboCop and coding style guides have helped us determine standards for each project and team. We should only debate what code is doing, not how it looks.</p>
+<p>Some Ruby developers have made the point that we can even forego adjusting RuboCop's configuration. The idea is simple: after so many years working with Ruby, we more or less know how Ruby code should look, so a style that works for most will be quite okay.</p>
+<p>This approach is known as <a href="https://github.com/standardrb/standard">Standard Ruby</a>. It can also be completed with plugins, including one for Ruby on Rails projects.</p>
+<h2 id="wrapping-up">Wrapping Up</h2>
+<p>RuboCop is, alongside Bundler, a good friend to any Ruby developer. As we have seen, it's easy to run it locally to get a list of offenses against a project's style standard.</p>
+<p>We have also seen how RuboCop can fix a lot of those offenses on its own, and how to work our way through a long list of offenses if we start from a large backlog.</p>
+<p>RuboCop is a tool in your toolbox; code style is only meant to help a team work together and shouldn't be a perpetual topic of debate. Yet, we have also seen that if you find it tedious to figure out a style for your project, you should look into projects such as Standard Ruby.</p>
+<p>Happy coding!</p>
+<p><strong>P.S. If you'd like to read Ruby Magic posts as soon as they get off the press, <a href="https://blog.appsignal.com/ruby-magic">subscribe to our Ruby Magic newsletter and never miss a single post</a>!</strong></p></div></div>
+  </div>
+</body>
+</html>

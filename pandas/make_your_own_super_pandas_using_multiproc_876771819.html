@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Make your own Super Pandas using Multiproc</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Make your own Super Pandas using Multiproc</h1>
+    <p><strong>URL:</strong> <a href="https://mlwhiz.com/blog/2019/04/22/python_pandas_multiproc">https://mlwhiz.com/blog/2019/04/22/python_pandas_multiproc</a></p>
+    <p><strong>Tags:</strong> pandas, python</p>
+    <p><strong>Bookmark ID:</strong> 876771819</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div><p><em><strong>Parallelization is awesome.</strong></em></p><p>We data scientists have got laptops with quad-core, octa-core, turbo-boost. We work with servers with even more cores and computing power.</p><p><em><strong>But do we really utilize the raw power we have at hand?</strong></em></p><p>Instead, we wait for time taking processes to finish. Sometimes for hours, when urgent deliverables are at hand.</p><p>Can we do better? Can we get better?</p><p>In this series of posts named <strong><a href="https://towardsdatascience.com/tagged/python-shorts" target="_blank" rel="nofollow noopener">Python Shorts</a>
+,</strong> I will explain some simple constructs provided by Python, some essential tips and some use cases I come up with regularly in my Data Science work.</p><p><em><strong>This post is about using the computing power we have at hand and applying it to the data structure we use most.</strong></em></p><h2 id="problem-statement">Problem Statement</h2><p>We have got a huge pandas data frame, and we want to apply a complex function to it which takes a lot of time.</p><p>For this post, I will use data from the Quora Insincere Question Classification on Kaggle, and we need to create some numerical features like length, the number of punctuations, etc. on it.</p><p>The competition was a Kernel-based competition and the code needed to run in 2 hours. So every minute was essential, and there was too much time going in preprocessing.</p><p><em><strong>Can we use parallelization to get extra performance out of our code?</strong></em></p><p>Yes, we can.</p><h2 id="parallelization-using-just-a-single-function">Parallelization using just a single function</h2><p><img src="data:application/octet-stream;base64," alt="Can we make all our cores run?">
+<em>Can we make all our cores run?</em></p><p>Let me first start with defining the function I want to use to create our features. add_features is the toy function we wish to apply to our data.</p><div><pre><code data-lang="py"><span>import</span> <span>random</span>
+<span>import</span> <span>pandas</span> <span>as</span> <span>pd</span>
+<span>import</span> <span>numpy</span> <span>as</span> <span>np</span>
+<span>from</span> <span>multiprocessing</span> <span>import</span>  Pool
+
+<span>def</span> <span>add_features</span>(df):
+    df[<span>'question_text'</span>] = df[<span>'question_text'</span>].apply(<span>lambda</span> x:<span>str</span>(x))
+    df[<span>"lower_question_text"</span>] = df[<span>"question_text"</span>].apply(<span>lambda</span> x: x.lower())
+    df[<span>'total_length'</span>] = df[<span>'question_text'</span>].apply(<span>len</span>)
+    df[<span>'capitals'</span>] = df[<span>'question_text'</span>].apply(<span>lambda</span> comment: <span>sum</span>(<span>1</span> <span>for</span> c <span>in</span> comment <span>if</span> c.isupper()))
+    df[<span>'caps_vs_length'</span>] = df.apply(<span>lambda</span> row: <span>float</span>(row[<span>'capitals'</span>])/<span>float</span>(row[<span>'total_length'</span>]),
+                                axis=<span>1</span>)
+    df[<span>'num_words'</span>] = df.question_text.str.count(<span>'\S+'</span>)
+    df[<span>'num_unique_words'</span>] = df[<span>'question_text'</span>].apply(<span>lambda</span> comment: <span>len</span>(<span>set</span>(w <span>for</span> w <span>in</span> comment.split())))
+    df[<span>'words_vs_unique'</span>] = df[<span>'num_unique_words'</span>] / df[<span>'num_words'</span>]
+    df[<span>'num_exclamation_marks'</span>] = df[<span>'question_text'</span>].apply(<span>lambda</span> comment: comment.count(<span>'!'</span>))
+    df[<span>'num_question_marks'</span>] = df[<span>'question_text'</span>].apply(<span>lambda</span> comment: comment.count(<span>'?'</span>))
+    df[<span>'num_punctuation'</span>] = df[<span>'question_text'</span>].apply(<span>lambda</span> comment: <span>sum</span>(comment.count(w) <span>for</span> w <span>in</span> <span>'.,;:'</span>))
+    df[<span>'num_symbols'</span>] = df[<span>'question_text'</span>].apply(<span>lambda</span> comment: <span>sum</span>(comment.count(w) <span>for</span> w <span>in</span> <span>'*&amp;$%'</span>))
+    df[<span>'num_smilies'</span>] = df[<span>'question_text'</span>].apply(<span>lambda</span> comment: <span>sum</span>(comment.count(w) <span>for</span> w <span>in</span> (<span>':-)'</span>, <span>':)'</span>, <span>';-)'</span>, <span>';)'</span>)))
+    df[<span>'num_sad'</span>] = df[<span>'question_text'</span>].apply(<span>lambda</span> comment: <span>sum</span>(comment.count(w) <span>for</span> w <span>in</span> (<span>':-&lt;'</span>, <span>':()'</span>, <span>';-()'</span>, <span>';('</span>)))
+    df[<span>"mean_word_len"</span>] = df[<span>"question_text"</span>].apply(<span>lambda</span> x: np.mean([<span>len</span>(w) <span>for</span> w <span>in</span> <span>str</span>(x).split()]))
+    <span>return</span> df
+</code></pre></div><p>We can use parallelized apply using the below function.</p><div><pre><code data-lang="py"><span>def</span> <span>parallelize_dataframe</span>(df, func, n_cores=<span>4</span>):
+    df_split = np.array_split(df, n_cores)
+    pool = Pool(n_cores)
+    df = pd.concat(pool.map(func, df_split))
+    pool.close()
+    pool.join()
+    <span>return</span> df
+</code></pre></div><p>What does it do? It breaks the dataframe into n_cores parts, and spawns n_cores processes which apply the function to all the pieces.</p><p>Once it applies the function to all the split dataframes, it just concatenates the split dataframe and returns the full dataframe to us.</p><h3 id="how-can-we-use-it">How can we use it?</h3><p>It is pretty simple to use.</p><div><pre><code data-lang="py">train = parallelize_dataframe(train_df, add_features)
+</code></pre></div><h3 id="does-this-work">Does this work?</h3><p>To check the performance of this parallelize function, I ran %%timeit magic on this function in my Jupyter notebook in a Kaggle Kernel.</p><p><img src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>vs. just using the function as it is:</p><p><img src="data:application/octet-stream;base64," alt="MLWhiz: Data Science, Machine Learning, Artificial Intelligence"></p><p>As you can see I gained some performance just by using the parallelize function. And it was using a kaggle kernel which has only got 2 CPUs.</p><p>In the actual competition, there was a lot of computation involved, and the add_features function I was using was much more involved. And this parallelize function helped me immensely to reduce processing time and get a
+<a href="https://mlwhiz.com/blog/2019/02/19/siver_medal_kaggle_learnings/">Silver medal</a>
+.</p><p>Here is the
+<a href="https://www.kaggle.com/mlwhiz/parallelization-kernel" target="_blank" rel="nofollow noopener">kernel</a>
+with the full code.</p><h2 id="conclusion">Conclusion</h2><p><strong>Parallelization is not a silver bullet; it is buckshot.</strong> It won’t solve all your problems, and you would still have to work on optimizing your functions, but it is a great tool to have in your arsenal.</p><p>Time never comes back, and sometimes we have a shortage of it. At these times we should be able to use parallelization easily.</p><blockquote><h2 id="parallelization-is-not-a-silver-bullet-it-is-a-buckshot">Parallelization is not a silver bullet it is a buckshot</h2></blockquote><p>Also if you want to learn more about Python 3, I would like to call out an excellent course on Learn
+<a href="https://coursera.pxf.io/0JMOOY" target="_blank" rel="nofollow noopener">Intermediate level Python</a>
+from the University of Michigan. Do check it out.</p><p>I am going to be writing more beginner friendly posts in the future too. Let me know what you think about the series. Follow me up at
+<a href="https://mlwhiz.medium.com/" target="_blank" rel="nofollow noopener">&lt;strong&gt;Medium&lt;/strong&gt;</a>
+or Subscribe to my
+<a href="https://mlwhiz.com/">&lt;strong&gt;blog&lt;/strong&gt;</a>
+to be informed about them. As always, I welcome feedback and constructive criticism and can be reached on Twitter
+<a href="https://twitter.com/MLWhiz" target="_blank" rel="nofollow noopener">@mlwhiz</a>
+.</p><p><a href="https://coursera.pxf.io/coursera" rel="nofollow"><img alt="Start your future with a Data Analysis Certificate." src="data:application/octet-stream;base64,"></a></p><p><a href="https://disqus.com/">comments powered by </a></p></div></div>
+  </div>
+</body>
+</html>

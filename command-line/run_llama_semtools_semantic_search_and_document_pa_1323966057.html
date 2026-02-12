@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>run-llama/semtools: Semantic search and document parsing tools for the command line</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>run-llama/semtools: Semantic search and document parsing tools for the command line</h1>
+    <p><strong>URL:</strong> <a href="https://github.com/run-llama/semtools">https://github.com/run-llama/semtools</a></p>
+    <p><strong>Tags:</strong> semantic-search, command-line</p>
+    <p><strong>Bookmark ID:</strong> 1323966057</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-hpc="true"><article itemprop="text"><p dir="auto"><h2 tabindex="-1" dir="auto">SemTools</h2><a id="user-content-semtools" aria-label="Permalink: SemTools" href="https://github.com/run-llama/semtools#semtools"></a></p>
+<blockquote>
+<p dir="auto">Semantic search and document parsing tools for the command line</p>
+</blockquote>
+<p dir="auto">A collection of high-performance CLI tools for document processing and semantic search, built with Rust for speed and reliability.</p>
+<ul dir="auto">
+<li><strong><code>parse</code></strong> - Parse documents (PDF, DOCX, etc.) using, by default, the LlamaParse API into markdown format</li>
+<li><strong><code>search</code></strong> - Local semantic keyword search using multilingual embeddings with cosine similarity matching and per-line context matching</li>
+</ul>
+<p dir="auto"><strong>NOTE:</strong> By default, <code>parse</code> uses LlamaParse as a backend. Get your API key today for free at <a href="https://cloud.llamaindex.ai/" rel="nofollow">https://cloud.llamaindex.ai</a>. <code>search</code> remains local-only.</p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Key Features</h2><a id="user-content-key-features" aria-label="Permalink: Key Features" href="https://github.com/run-llama/semtools#key-features"></a></p>
+<ul dir="auto">
+<li><strong>Fast semantic search</strong> using model2vec embeddings, without the burden of a vector database</li>
+<li><strong>Reliable document parsing</strong> with caching and error handling</li>
+<li><strong>Unix-friendly</strong> design with proper stdin/stdout handling</li>
+<li><strong>Configurable</strong> distance thresholds and returned chunk sizes</li>
+<li><strong>Multi-format support</strong> for parsing documents (PDF, DOCX, PPTX, etc.)</li>
+<li><strong>Concurrent processing</strong> for better parsing performance</li>
+</ul>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Quick Start</h2><a id="user-content-quick-start" aria-label="Permalink: Quick Start" href="https://github.com/run-llama/semtools#quick-start"></a></p>
+<p dir="auto">Prerequisites:</p>
+<ul dir="auto">
+<li><a href="https://www.rust-lang.org/tools/install" rel="nofollow">Rust + Cargo</a></li>
+<li>For the <code>parse</code> tool: LlamaIndex Cloud API key</li>
+</ul>
+<p dir="auto">Install:</p>
+<div dir="auto"><pre><span><span>#</span> install entire crate</span>
+cargo install semtools
+
+<span><span>#</span> install only parse</span>
+cargo install semtools --no-default-features --features=parse
+
+<span><span>#</span> install only search</span>
+cargo install semtools --no-default-features --features=search</pre></div>
+<p dir="auto">Basic Usage:</p>
+<div dir="auto"><pre><span><span>#</span> Parse some files</span>
+parse my_dir/<span>*</span>.pdf
+
+<span><span>#</span> Search some (text-based) files</span>
+search <span><span>"</span>some keywords<span>"</span></span> <span>*</span>.txt --max-distance 0.3 --n-lines 5
+
+<span><span>#</span> Combine parsing and search</span>
+parse my_docs/<span>*</span>.pdf <span>|</span> xargs search <span><span>"</span>API endpoints<span>"</span></span></pre></div>
+<p dir="auto">Advanced Usage:</p>
+<div dir="auto"><pre><span><span>#</span> Combine with grep for exact-match pre-filtering and distance thresholding</span>
+parse <span>*</span>.pdf <span>|</span> xargs cat <span>|</span> grep -i <span><span>"</span>error<span>"</span></span> <span>|</span> search <span><span>"</span>network error<span>"</span></span> --max-distance 0.3
+
+<span><span>#</span> Pipeline with content search (note the 'cat')</span>
+find <span>.</span> -name <span><span>"</span>*.md<span>"</span></span> <span>|</span> xargs parse <span>|</span> xargs search <span><span>"</span>installation<span>"</span></span>
+
+<span><span>#</span> Combine with grep for filtering (grep could be before or after parse/search!)</span>
+parse docs/<span>*</span>.pdf <span>|</span> xargs search <span><span>"</span>API<span>"</span></span> <span>|</span> grep -A5 <span><span>"</span>authentication<span>"</span></span>
+
+<span><span>#</span> Save search results</span>
+parse report.pdf <span>|</span> xargs cat <span>|</span> search <span><span>"</span>summary<span>"</span></span> <span>&gt;</span> results.txt</pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">CLI Help</h2><a id="user-content-cli-help" aria-label="Permalink: CLI Help" href="https://github.com/run-llama/semtools#cli-help"></a></p>
+<div dir="auto"><pre>parse --help
+A CLI tool <span>for</span> parsing documents using various backends
+
+Usage: parse [OPTIONS] <span>&lt;</span>FILES<span>&gt;</span>...
+
+Arguments:
+  <span>&lt;</span>FILES<span>&gt;</span>...  Files to parse
+
+Options:
+  -c, --parse-config <span>&lt;</span>PARSE_CONFIG<span>&gt;</span>  Path to the config file. Defaults to <span>~</span>/.parse_config.json
+  -b, --backend <span>&lt;</span>BACKEND<span>&gt;</span>            The backend <span>type</span> to use <span>for</span> parsing. Defaults to <span><span>`</span>llama-parse<span>`</span></span> [default: llama-parse]
+  -v, --verbose                      Verbose output <span>while</span> parsing
+  -h, --help                         Print <span>help</span>
+  -V, --version                      Print version</pre></div>
+<div dir="auto"><pre>search --help
+A CLI tool <span>for</span> fast semantic keyword search
+
+Usage: search [OPTIONS] <span>&lt;</span>QUERY<span>&gt;</span> [FILES]...
+
+Arguments:
+  <span>&lt;</span>QUERY<span>&gt;</span>     Query to search <span>for</span> (positional argument)
+  [FILES]...  Files or directories to search
+
+Options:
+  -n, --n-lines <span>&lt;</span>N_LINES<span>&gt;</span>            How many lines before/after to <span>return</span> as context [default: 3]
+      --top-k <span>&lt;</span>TOP_K<span>&gt;</span>                The top-k files or texts to <span>return</span> (ignored <span>if</span> max_distance is set) [default: 3]
+  -m, --max-distance <span>&lt;</span>MAX_DISTANCE<span>&gt;</span>  Return all results with distance below this threshold (0.0+)
+  -i, --ignore-case                  Perform case-insensitive search (default is false)
+  -h, --help                         Print <span>help</span>
+  -V, --version                      Print version</pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Configuration</h2><a id="user-content-configuration" aria-label="Permalink: Configuration" href="https://github.com/run-llama/semtools#configuration"></a></p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Parse Tool Configuration</h3><a id="user-content-parse-tool-configuration" aria-label="Permalink: Parse Tool Configuration" href="https://github.com/run-llama/semtools#parse-tool-configuration"></a></p>
+<p dir="auto">By default, the <code>parse</code> tool uses the LlamaParse API to parse documents.</p>
+<p dir="auto">It will look for a <code>~/.parse_config.json</code> file to configure the API key and other parameters.</p>
+<p dir="auto">Otherwise, it will fallback to looking for a <code>LLAMA_CLOUD_API_KEY</code> environment variable and a set of default parameters.</p>
+<p dir="auto">To configure the <code>parse</code> tool, create a <code>~/.parse_config.json</code> file with the following content (defaults are shown below):</p>
+<div dir="auto"><pre>{
+  <span>"api_key"</span>: <span><span>"</span>your_llama_cloud_api_key_here<span>"</span></span>,
+  <span>"num_ongoing_requests"</span>: <span>10</span>,
+  <span>"base_url"</span>: <span><span>"</span>https://api.cloud.llamaindex.ai<span>"</span></span>,
+  <span>"check_interval"</span>: <span>5</span>,
+  <span>"max_timeout"</span>: <span>3600</span>,
+  <span>"max_retries"</span>: <span>10</span>,
+  <span>"retry_delay_ms"</span>: <span>1000</span>,
+  <span>"backoff_multiplier"</span>: <span>2.0</span>,
+  <span>"parse_kwargs"</span>: {
+    <span>"parse_mode"</span>: <span><span>"</span>parse_page_with_agent<span>"</span></span>,
+    <span>"model"</span>: <span><span>"</span>openai-gpt-4-1-mini<span>"</span></span>,
+    <span>"high_res_ocr"</span>: <span><span>"</span>true<span>"</span></span>,
+    <span>"adaptive_long_table"</span>: <span><span>"</span>true<span>"</span></span>,
+    <span>"outlined_table_extraction"</span>: <span><span>"</span>true<span>"</span></span>,
+    <span>"output_tables_as_HTML"</span>: <span><span>"</span>true<span>"</span></span>
+  }
+}</pre></div>
+<p dir="auto">Or just set via environment variable:</p>
+<div dir="auto"><pre><span>export</span> LLAMA_CLOUD_API_KEY=<span><span>"</span>your_api_key_here<span>"</span></span></pre></div>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Agent Use Case Examples</h2><a id="user-content-agent-use-case-examples" aria-label="Permalink: Agent Use Case Examples" href="https://github.com/run-llama/semtools#agent-use-case-examples"></a></p>
+<ul dir="auto">
+<li><a href="https://github.com/run-llama/semtools/blob/main/examples/use_with_coding_agents.md">Using Semtools with Coding Agents</a></li>
+<li><a href="https://github.com/run-llama/semtools/blob/main/examples/use_with_mcp.md">Using Semtools with MCP</a></li>
+</ul>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Future Work</h2><a id="user-content-future-work" aria-label="Permalink: Future Work" href="https://github.com/run-llama/semtools#future-work"></a></p>
+<ul>
+<li> More parsing backends (something local-only would be great!)</li>
+<li> Allowing model selection for the search tool</li>
+</ul>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Contributing</h2><a id="user-content-contributing" aria-label="Permalink: Contributing" href="https://github.com/run-llama/semtools#contributing"></a></p>
+<p dir="auto">We welcome contributions! Please see <a href="https://github.com/run-llama/semtools/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for guidelines.</p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">License</h2><a id="user-content-license" aria-label="Permalink: License" href="https://github.com/run-llama/semtools#license"></a></p>
+<p dir="auto">This project is licensed under the MIT License - see the <a href="https://github.com/run-llama/semtools/blob/main/LICENSE">LICENSE</a> file for details.</p>
+<p dir="auto"><h2 tabindex="-1" dir="auto">Acknowledgments</h2><a id="user-content-acknowledgments" aria-label="Permalink: Acknowledgments" href="https://github.com/run-llama/semtools#acknowledgments"></a></p>
+<ul dir="auto">
+<li><a href="https://cloud.llamaindex.ai/" rel="nofollow">LlamaIndex/LlamaParse</a> for document parsing capabilities</li>
+<li><a href="https://github.com/MinishLab/model2vec-rs">model2vec-rs</a>for fast embedding generation</li>
+<li><a href="https://github.com/ashvardanian/simsimd">simsimd</a> for efficient similarity computation</li>
+</ul>
+</article></div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>trusche/httplog: Log outgoing HTTP requests in ruby</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>trusche/httplog: Log outgoing HTTP requests in ruby</h1>
+    <p><strong>URL:</strong> <a href="https://rubyweekly.com/link/83856/ad5e785e3b">https://rubyweekly.com/link/83856/ad5e785e3b</a></p>
+    <p><strong>Tags:</strong> browsers, devops, http</p>
+    <p><strong>Bookmark ID:</strong> 876773680</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div data-hpc="true"><article itemprop="text"><p dir="auto"><h2 tabindex="-1" dir="auto">httplog</h2><a id="user-content-httplog" aria-label="Permalink: httplog" href="#httplog"></a></p>
+<p dir="auto"><a href="http://badge.fury.io/rb/httplog" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Gem Version" data-canonical-src="https://badge.fury.io/rb/httplog.svg"></a>
+<a href="https://app.travis-ci.com/trusche/httplog" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Build Status" data-canonical-src="https://app.travis-ci.com/trusche/httplog.svg?token=puaZacCmspVoUFGP2EYr&amp;branch=master"></a>
+<a href="https://codeclimate.com/github/trusche/httplog" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Code Climate" data-canonical-src="https://codeclimate.com/github/trusche/httplog.svg"></a>
+<a href="https://img.shields.io/github/release/trusche/httplog.svg" rel="nofollow"><img src="data:application/octet-stream;base64," alt="Release Version" data-canonical-src="https://img.shields.io/github/release/trusche/httplog.svg"></a></p>
+<p dir="auto">Log outgoing HTTP requests made from your application. Helps with debugging pesky API error responses, or just generally understanding what's going on under the hood.</p>
+<p dir="auto">Requires ruby &gt;= 2.6.</p>
+<p dir="auto">This gem works with the following ruby modules and libraries:</p>
+<ul dir="auto">
+<li><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/net/http/rdoc/index.html" rel="nofollow">Net::HTTP</a> v4+</li>
+<li><a href="https://github.com/typhoeus/ethon">Ethon</a></li>
+<li><a href="https://github.com/geemus/excon">Excon</a></li>
+<li><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/open-uri/rdoc/index.html" rel="nofollow">OpenURI</a></li>
+<li><a href="https://github.com/toland/patron">Patron</a></li>
+<li><a href="https://github.com/nahi/httpclient">HTTPClient</a></li>
+<li><a href="https://github.com/jnunemaker/httparty">HTTParty</a></li>
+<li><a href="https://github.com/httprb/http">HTTP</a></li>
+</ul>
+<p dir="auto">These libraries are at least partially supported, where they use one of the above as adapters, but not explicitly tested - YMMV:</p>
+<ul dir="auto">
+<li><a href="https://github.com/technoweenie/faraday">Faraday</a></li>
+<li><a href="https://github.com/typhoeus/typhoeus">Typhoeus</a></li>
+</ul>
+<p dir="auto">In theory, it should also work with any library built on top of these. But the difference between theory and practice is bigger in practice than in theory.</p>
+<p dir="auto">This is very much a development and debugging tool; it is <strong>not recommended</strong> to
+use this in a production environment as it is monkey-patching the respective HTTP implementations.
+You have been warned - use at your own risk.</p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Installation</h3><a id="user-content-installation" aria-label="Permalink: Installation" href="#installation"></a></p>
+<div><pre><code>gem install httplog
+</code></pre></div>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Usage</h3><a id="user-content-usage" aria-label="Permalink: Usage" href="#usage"></a></p>
+<div><pre><code>require 'httplog' # require this *after* your HTTP gem of choice
+</code></pre></div>
+<p dir="auto">By default, this will log all outgoing HTTP requests and their responses to $stdout on DEBUG level.</p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Notes on content types</h3><a id="user-content-notes-on-content-types" aria-label="Permalink: Notes on content types" href="#notes-on-content-types"></a></p>
+<ul dir="auto">
+<li>Binary data from response bodies (as indicated by the <code>Content-Type</code> header)is not logged.</li>
+<li>Text data (<code>text/*</code> and most <code>application/*</code> types) is encoded as UTF-8, with invalid characters replaced. If you need to inspect raw non-UTF data exactly as sent over the wire, this tool is probably not for you.</li>
+</ul>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Configuration</h3><a id="user-content-configuration" aria-label="Permalink: Configuration" href="#configuration"></a></p>
+<p dir="auto">You can override the following default options:</p>
+<div dir="auto"><pre><span>HttpLog</span><span>.</span><span>configure</span> <span>do</span> |<span>config</span>|
+
+  <span># Enable or disable all logging</span>
+  <span>config</span><span>.</span><span>enabled</span> <span>=</span> <span>true</span>
+
+  <span># You can assign a different logger or method to call on that logger</span>
+  <span>config</span><span>.</span><span>logger</span> <span>=</span> <span>Logger</span><span>.</span><span>new</span><span>(</span>$stdout<span>)</span>
+  <span>config</span><span>.</span><span>logger_method</span> <span>=</span> <span>:log</span>
+
+  <span># I really wouldn't change this...</span>
+  <span>config</span><span>.</span><span>severity</span> <span>=</span> <span>Logger</span>::<span>Severity</span>::<span>DEBUG</span>
+
+  <span># Tweak which parts of the HTTP cycle to log...</span>
+  <span>config</span><span>.</span><span>log_connect</span>   <span>=</span> <span>true</span>
+  <span>config</span><span>.</span><span>log_request</span>   <span>=</span> <span>true</span>
+  <span>config</span><span>.</span><span>log_headers</span>   <span>=</span> <span>false</span>
+  <span>config</span><span>.</span><span>log_data</span>      <span>=</span> <span>true</span>
+  <span>config</span><span>.</span><span>log_status</span>    <span>=</span> <span>true</span>
+  <span>config</span><span>.</span><span>log_response</span>  <span>=</span> <span>true</span>
+  <span>config</span><span>.</span><span>log_benchmark</span> <span>=</span> <span>true</span>
+
+  <span># ...or log all request as a single line by setting this to `true`</span>
+  <span>config</span><span>.</span><span>compact_log</span> <span>=</span> <span>false</span>
+
+  <span># You can also log in JSON format</span>
+  <span>config</span><span>.</span><span>json_log</span> <span>=</span> <span>false</span>
+
+  <span># Prettify the output - see below</span>
+  <span>config</span><span>.</span><span>color</span> <span>=</span> <span>false</span>
+
+  <span># Limit logging based on URL patterns</span>
+  <span>config</span><span>.</span><span>url_whitelist_pattern</span> <span>=</span> <span>nil</span>
+  <span>config</span><span>.</span><span>url_blacklist_pattern</span> <span>=</span> <span>nil</span>
+
+  <span># Mask sensitive information in request and response JSON data.</span>
+  <span># Enable global JSON masking by setting the parameter to `/.*/`</span>
+  <span>config</span><span>.</span><span>url_masked_body_pattern</span> <span>=</span> <span>nil</span>
+
+  <span># You can specify any custom JSON serializer that implements `load` and `dump` class methods</span>
+  <span># to parse JSON responses</span>
+  <span>config</span><span>.</span><span>json_parser</span> <span>=</span> <span>JSON</span>
+
+  <span># When using graylog, you can supply a formatter here - see below for details</span>
+  <span>config</span><span>.</span><span>graylog_formatter</span> <span>=</span> <span>nil</span>
+
+  <span># Mask the values of sensitive request parameters</span>
+  <span>config</span><span>.</span><span>filter_parameters</span> <span>=</span> <span>%w[</span><span>password</span><span>]</span>
+  
+  <span># Customize the prefix with a proc or lambda</span>
+  <span>config</span><span>.</span><span>prefix</span> <span>=</span> <span>-&gt;</span><span>{</span> <span>"[httplog] <span><span>#{</span><span>Time</span><span>.</span><span>now</span><span>}</span></span> "</span> <span>}</span>
+<span>end</span></pre></div>
+<p dir="auto">If you want to use this in a Rails app, I'd suggest configuring this specifically for each environment. A global initializer is not a good idea since <code>HttpLog</code> will be undefined in production. Because you're <strong>not using this in production</strong>, right? :)</p>
+<div dir="auto"><pre><span># config/environments/development.rb</span>
+
+<span>HttpLog</span><span>.</span><span>configure</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>logger</span> <span>=</span> <span>Rails</span><span>.</span><span>logger</span>
+<span>end</span></pre></div>
+<p dir="auto">If you're running a (hopefully patched) legacy Rails 3 app, you may need to set
+<code>config.logger_method = :add</code> due to its somewhat unusual logger.</p>
+<p dir="auto">You can colorize the output to make it stand out in your logfile, either with a single color
+for the text:</p>
+<div dir="auto"><pre><span>HttpLog</span><span>.</span><span>configure</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>color</span> <span>=</span> <span>:red</span>
+<span>end</span></pre></div>
+<p dir="auto">Or with a color hash for text and background:</p>
+<div dir="auto"><pre><span>HttpLog</span><span>.</span><span>configure</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>color</span> <span>=</span> <span>{</span><span>color</span>: <span>:black</span><span>,</span> <span>background</span>: <span>:yellow</span><span>}</span>
+<span>end</span></pre></div>
+<p dir="auto">For more color options please refer to the <a href="https://github.com/sickill/rainbow">rainbow documentation</a></p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Graylog logging</h3><a id="user-content-graylog-logging" aria-label="Permalink: Graylog logging" href="#graylog-logging"></a></p>
+<p dir="auto">If you use Graylog and want to use its search features such as "benchmark:&gt;1 AND method:PUT",
+you can use this configuration:</p>
+<div dir="auto"><pre><span>FORMATTER</span> <span>=</span> <span>Lograge</span>::<span>Formatters</span>::<span>KeyValue</span><span>.</span><span>new</span>
+
+<span>HttpLog</span><span>.</span><span>configure</span> <span>do</span> |<span>config</span>|
+  <span>config</span><span>.</span><span>logger</span>            <span>=</span> &lt;<span>your</span> <span>GELF</span>::<span>Logger</span>&gt;
+  <span>config</span><span>.</span><span>logger_method</span>     <span>=</span> <span>:add</span>
+  <span>config</span><span>.</span><span>severity</span>          <span>=</span> <span>GELF</span>::<span>Levels</span>::<span>DEBUG</span>
+  <span>config</span><span>.</span><span>graylog_formatter</span> <span>=</span> <span>FORMATTER</span>
+<span>end</span></pre></div>
+<p dir="auto">You also can use GELF Graylog format this way:</p>
+<div dir="auto"><pre><span>class</span> <span>Lograge</span>::<span>Formatters</span>::<span>Graylog2HttpLog</span> &lt; <span>Lograge</span>::<span>Formatters</span>::<span>Graylog2</span>
+  <span>def</span> <span>short_message</span> <span>data</span>
+    <span>data</span><span>[</span><span>:response_body</span><span>]</span> <span>=</span> <span>data</span><span>[</span><span>:response_body</span><span>]</span><span>.</span><span>to_s</span><span>.</span><span>byteslice</span><span>(</span><span>0</span><span>,</span> <span>32_766</span><span>)</span> <span>unless</span> <span>data</span><span>[</span><span>:response_body</span><span>]</span><span>.</span><span>blank?</span>
+    <span>"[httplog] [<span><span>#{</span><span>data</span><span>[</span><span>:response_code</span><span>]</span><span>}</span></span>] <span><span>#{</span><span>data</span><span>[</span><span>:method</span><span>]</span><span>}</span></span> <span><span>#{</span><span>data</span><span>[</span><span>:url</span><span>]</span><span>}</span></span>"</span>
+  <span>end</span>
+<span>end</span>
+
+<span>FORMATTER</span> <span>=</span> <span>Lograge</span>::<span>Formatters</span>::<span>Graylog2HttpLog</span><span>.</span><span>new</span></pre></div>
+<p dir="auto">Or define your own class that implements the <code>call</code> method</p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Compact logging</h3><a id="user-content-compact-logging" aria-label="Permalink: Compact logging" href="#compact-logging"></a></p>
+<p dir="auto">If the log is too noisy for you, but you don't want to completely disable it either, set the <code>compact_log</code> option to <code>true</code>. This will log each request in a single line with method, request URI, response status and time, but no data or headers. No need to disable any other options individually.</p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">JSON logging</h3><a id="user-content-json-logging" aria-label="Permalink: JSON logging" href="#json-logging"></a></p>
+<p dir="auto">If you want to log HTTP requests in a JSON format, set the <code>json_log</code> option to <code>true</code>. You can combine this with <code>compact_log</code> to only log the basic request metrics without headers and bodies.</p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Parameter filtering</h3><a id="user-content-parameter-filtering" aria-label="Permalink: Parameter filtering" href="#parameter-filtering"></a></p>
+<p dir="auto">Just like in Rails, you can filter the values of sensitive parameters by setting the <code>filter_parameters</code> to an array of (lower case) keys. The value for "password" is filtered by default.</p>
+<p dir="auto"><strong>Please note</strong> that this will <strong>only filter the request data</strong> with well-formed parameters (in the URL, the headers, and the request data) but <strong>not the response</strong>. It does not currently filter JSON request data either, just standard "key=value" pairs in the request body.</p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Example</h3><a id="user-content-example" aria-label="Permalink: Example" href="#example"></a></p>
+<p dir="auto">With the default configuration, the log output might look like this:</p>
+<div><pre><code>[httplog] Connecting: localhost:80
+[httplog] Sending: GET http://localhost:9292/index.html
+[httplog] Status: 200
+[httplog] Benchmark: 0.00057 seconds
+[httplog] Response:
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Test Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;This is the test page.&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div>
+<p dir="auto">With <code>log_headers = true</code> and a parameter 'password' in the request query and headers:</p>
+<div><pre><code>[httplog] Connecting: localhost:80
+[httplog] Sending: GET http://localhost:9292/index.html?password=[FILTERED]
+[httplog] Header: accept: *.*
+[httplog] Header: password=[FILTERED]
+[httplog] Status: 200
+[httplog] Benchmark: 0.00057 seconds
+[httplog] Response:
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Test Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;This is the test page.&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div>
+<p dir="auto">With <code>compact_log</code> enabled, the same request might look like this:</p>
+<div><pre><code>[httplog] GET http://localhost:9292/index.html completed with status code 200 in 0.00057 seconds
+</code></pre></div>
+<p dir="auto">With <code>json_log</code> enabled:</p>
+<div><pre><code>[httplog] {"method":"GET","url":"localhost:80","request_body":null, "request_headers":{"foo":"bar"}, "response_code":200,"response_body":"&lt;html&gt;\n      &lt;head&gt;\n        &lt;title&gt;Test Page&lt;/title&gt;\n      &lt;/head&gt;\n      &lt;body&gt;\n        &lt;h1&gt;This is the test page.&lt;/h1&gt;\n      &lt;/body&gt;\n    &lt;/html&gt;","response_headers":{"foo":"bar"},"benchmark":0.00057}
+</code></pre></div>
+<p dir="auto">And with <code>json_log</code> <em>and</em> <code>compact_log</code> enabled:</p>
+<div><pre><code>[httplog] {"method":"GET","url":"localhost:80","response_code":200,"benchmark":0.00057}
+</code></pre></div>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Known Issues</h3><a id="user-content-known-issues" aria-label="Permalink: Known Issues" href="#known-issues"></a></p>
+<p dir="auto">Following are some known quirks and issues with particular libraries. If you know a workaround or have
+a suggestion for a fix, please open an issue or, even better, submit a pull request!</p>
+<ul dir="auto">
+<li>
+<p dir="auto">Requests types other than GET and POST have not been explicitly tested.
+They may or may not be logged, depending on the implementation details of the underlying library.
+If they are not for a particular library, please feel free to open an issue with the details.</p>
+</li>
+<li>
+<p dir="auto">When using OpenURI, the reading of the HTTP response body is deferred,
+so it is not available for logging. This will be noted in the logging statement:</p>
+<div><pre><code>  [httplog] Connecting: localhost:80
+  [httplog] Sending: GET http://localhost:9292/index.html
+  [httplog] Status: 200
+  [httplog] Benchmark: 0.000617 seconds
+  [httplog] Response: (not available yet)
+</code></pre></div>
+</li>
+<li>
+<p dir="auto">When using HTTPClient, the TCP connection establishment will be logged
+<em>after</em> the HTTP request and headers, due to the way HTTPClient is organized.</p>
+<div><pre><code> [httplog] Sending: GET http://localhost:9292/index.html
+ [httplog] Header: accept: */*
+ [httplog] Header: foo: bar
+ [httplog] Connecting: localhost:9292
+ [httplog] Status: 200
+ [httplog] Benchmark: 0.001562 seconds
+</code></pre></div>
+</li>
+<li>
+<p dir="auto">Also when using HTTPClient, make sure you include <code>httplog</code> <strong>after</strong> <code>httpclient</code> in your <code>Gemfile</code>.</p>
+</li>
+<li>
+<p dir="auto">When using Ethon or Patron, and any library based on them (such as Typhoeus),
+the TCP connection is not logged (since it's established by libcurl).</p>
+</li>
+<li>
+<p dir="auto">Benchmarking only covers the time between starting the HTTP request and receiving the response. It does <em>not</em> cover the time it takes to establish the TCP connection.</p>
+</li>
+</ul>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Running the specs</h3><a id="user-content-running-the-specs" aria-label="Permalink: Running the specs" href="#running-the-specs"></a></p>
+<p dir="auto">Make sure you have the necessary dependencies installed by running <code>bundle install</code>.
+Then simply run <code>bundle exec rspec spec</code>.
+This will launch a simple rack server on port 9292 and run all tests locally against that server.</p>
+<p dir="auto"><h3 tabindex="-1" dir="auto">Contributing</h3><a id="user-content-contributing" aria-label="Permalink: Contributing" href="#contributing"></a></p>
+<p dir="auto">If you have any issues with or feature requests for httplog,
+please <a href="https://github.com/trusche/httplog/issues">open an issue</a> on GitHub
+or fork the project and send a pull request. <strong>Please include passing specs with all pull requests.</strong></p>
+</article></div></div>
+  </div>
+</body>
+</html>

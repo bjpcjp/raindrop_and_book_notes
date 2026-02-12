@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>5–10x Faster Hyperparameter Tuning with HalvingGridSearch</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>5–10x Faster Hyperparameter Tuning with HalvingGridSearch</h1>
+    <p><strong>URL:</strong> <a href="https://www.dataknowsall.com/hyperparameter.html">https://www.dataknowsall.com/hyperparameter.html</a></p>
+    <p><strong>Tags:</strong> hyperparameters, machine-learning</p>
+    <p><strong>Bookmark ID:</strong> 876782852</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+      <article>
+        <time datetime="2022-03-05 21:53:00">
+          March 5, 2024
+        </time>
+        
+        <div>
+            
+              <p><img src="data:application/octet-stream;base64," width="50" loading="eager" alt="Picture of Brian Roepke">
+            By&nbsp;
+            
+            <span>&nbsp;·&nbsp;</span>            
+            <span>
+              
+              
+              
+              
+
+              
+                7 minute read
+              
+            </span>          
+          </p></div>
+        <p><span id="hs_cos_wrapper_post_body" data-hs-cos-general-type="meta_field" data-hs-cos-type="rich_text"><h2>What is Hyperparameter Tuning?</h2>
+<p><strong>Hyperparameter tuning</strong> is a method in which you finely tune a machine learning model. Hyperparameters are <strong>not specifically learned</strong> during the training process but can be adjusted to optimize how a model performs. Here are a few tips I like to think about when it comes to hyperparameter tuning:</p>
+<!--more-->
+<ol>
+<li>Hyperparameter tuning is generally the <strong>final step</strong> you should perform when building a model, right before the final evaluation.</li>
+<li>You will <strong>not get dramatically different results</strong> from tuning parameters. The biggest influences on a model's performance are feature selection and model selection.</li>
+<li>Hyperparameter tuning can assist with the <strong>generalization of a model</strong>, reducing overfit.</li>
+</ol>
+<p>That being said, Tuning your model is an important step in the workflow. Here is a quick visual that might help you understand the process.</p>
+<p><img src="data:application/octet-stream;base64," width="800" height="522" loading="lazy" alt="hyper_00" srcset="data:application/octet-stream;base64, 400w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w, data:application/octet-stream;base64, 1600w, data:application/octet-stream;base64, 2000w, data:application/octet-stream;base64, 2400w" sizes="(max-width: 800px) 100vw, 800px"></p>
+<ol>
+<li><strong>Data Preparation</strong>: The process of <a href="https://dataknowsall.com/blog/textcleaning.html">cleaning</a> your data and preparing it for machine learning.</li>
+<li><strong>Exploratory Data Analysis</strong>: This is a step you should always perform. The process of exploring a new dataset and understanding data distributions, correlations, and more. See <a href="https://dataknowsall.com/blog/eda.html">this post</a> for a step-by-step guide.</li>
+<li><strong>Feature Engineering and Selection</strong>: The process of creating <em>new features</em> (columns) from your data and choosing the <em>best features</em> based on how much they contribute to the model's performance.</li>
+<li><strong>Model Selection</strong>: Utilizing cross-validation to choose which algorithm performs best based on an evaluation metric.</li>
+<li><strong>Hyper Parameter Tuning</strong>: The process described in this post.</li>
+<li><strong>Model Evaluation</strong>: Choosing the right <a href="https://dataknowsall.com/blog/modeleval.html">performance metric</a> and evlaulating results.</li>
+</ol>
+<h2>Examples of Hyper Parameters</h2>
+<p>Some examples of hyperparameters are:</p>
+<ul>
+<li>Which <strong>solver</strong> should I use in a logistic regression model?</li>
+<li>What is the best value for <strong>C</strong>, or the regularization constant?</li>
+<li>What regularization <strong>penalty</strong> should I use?</li>
+<li>What should be the <strong>maximum depth</strong> allowed for my decision tree?</li>
+<li>The <strong>number of trees</strong> should I include in my random forest?</li>
+</ul>
+<p>Much of this could be very complex to figure out on your own. The good news is that you can apply various techniques to search for the optimal set of parameters. Now that you have a basic understanding of what they are and how they fit into the process let's look at how it works.</p>
+<h2>Model Selection</h2>
+<p>For brevity, we will skip the initial cleaning and feature selection. This code is available in this <a href="https://github.com/broepke/Tuning/blob/main/Tuning.ipynb">Notebook</a> on GitHub. We'll take the results of our Feature Selection and create our <code>X</code>and <code>y</code> variables.</p>
+<div>
+<pre><code><span>X</span> <span>=</span> <span>df</span><span>[[</span><span>'categories'</span><span>,</span> <span>'postal_code'</span><span>,</span> <span>'text_len'</span><span>,</span> <span>'review_count'</span><span>,</span> <span>'text_clean'</span><span>]]</span><br><span>y</span> <span>=</span> <span>df</span><span>[</span><span>'target'</span><span>]</span><br></code></pre>
+</div>
+<p>Next, we have a function that allows us to repeatably create a <a href="https://dataknowsall.com/blog/sklearnpipelines.html">pipeline</a> along with an instance of a classifier.</p>
+<div>
+<pre><code><span>def</span> <span>create_pipe</span><span>(</span><span>clf</span><span>,</span> <span>ngrams</span><span>=</span><span>(</span><span>1</span><span>,</span><span>1</span><span>)):</span><p>    <span>column_trans</span> <span>=</span> <span>ColumnTransformer</span><span>(</span><br>        <span>[(</span><span>'Text'</span><span>,</span> <span>TfidfVectorizer</span><span>(</span><span>stop_words</span><span>=</span><span>'english'</span><span>,<br></span><span>                                  ngram_range</span><span>=</span><span>ngrams</span><span>),</span> <span>'text_clean'</span><span>),</span><br>         <span>(</span><span>'Categories'</span><span>,</span> <span>TfidfVectorizer</span><span>(),</span> <span>'categories'</span><span>),</span> <br>         <span>(</span><span>'OHE'</span><span>,</span> <span>OneHotEncoder</span><span>(</span><span>dtype</span><span>=</span><span>'int'</span><span>,<br></span><span>                               handle_unknown</span><span>=</span><span>'ignore'</span><span>),[</span><span>'postal_code'</span><span>]),</span><br>         <span>(</span><span>'Numbers'</span><span>,</span> <span>MinMaxScaler</span><span>(),</span> <span>[</span><span>'review_count'</span><span>,</span> <span>'text_len'</span><span>])],</span><br>        <span>remainder</span><span>=</span><span>'drop'</span><span>)</span></p><p>    <span>pipeline</span> <span>=</span> <span>Pipeline</span><span>([(</span><span>'prep'</span><span>,</span><span>column_trans</span><span>),</span><br>                         <span>(</span><span>'over'</span><span>,</span> <span>SMOTE</span><span>(</span><span>random_state</span><span>=</span><span>42</span><span>)),</span><br>                         <span>(</span><span>'under'</span><span>,</span> <span>RandomUnderSampler</span><span>(</span><span>random_state</span><span>=</span><span>42</span><span>)),</span><br>                         <span>(</span><span>'clf'</span><span>,</span> <span>clf</span><span>)])</span></p><p>    <span>return</span> <span>pipeline</span></p></code></pre>
+</div>
+<p>The pipeline contains all of the preprocessing steps required. Next, we can perform a classic <strong>Cross-Validation</strong> to find the best model.</p>
+<div>
+<pre><code><span>models</span> <span>=</span> <span>{</span><span>'RandForest'</span> <span>:</span> <span>RandomForestClassifier</span><span>(</span><span>random_state</span><span>=</span><span>42</span><span>),</span><br>          <span>'LogReg'</span> <span>:</span> <span>LogisticRegression</span><span>(</span><span>random_state</span><span>=</span><span>42</span><span>)</span><br>          <span>}</span><p><span>for</span> <span>name</span><span>,</span> <span>model</span><span>,</span> <span>in</span> <span>models</span><span>.</span><span>items</span><span>():</span><br>    <span>clf</span> <span>=</span> <span>model</span><br>    <span>pipeline</span> <span>=</span> <span>create_pipe</span><span>(</span><span>clf</span><span>)</span><br>    <span>scores</span> <span>=</span> <span>cross_val_score</span><span>(</span><span>pipeline</span><span>,</span> <br>                             <span>X</span><span>,</span> <br>                             <span>y</span><span>,</span> <br>                             <span>scoring</span><span>=</span><span>'f1_macro'</span><span>,</span> <br>                             <span>cv</span><span>=</span><span>3</span><span>,</span> <br>                             <span>n_jobs</span><span>=</span><span>1</span><span>,</span> <br>                             <span>error_score</span><span>=</span><span>'raise'</span><span>)</span></p><p>&nbsp; &nbsp; &nbsp;print(name, ': Mean f1 Macro: %.3f and <br>           Standard Deviation: (%.3f)' % (np.mean(scores),<br>           np.std(scores))) </p></code></pre>
+</div>
+<div>
+<pre><code>RandForest : Mean f1 Macro: 0.785 and Standard Deviation: (0.003)<br>LogReg : Mean f1 Macro: 0.854 and Standard Deviation: (0.001)<br></code></pre>
+</div>
+<p>Overall, we can see that the <code>LogisticRegression</code> classifier performed better on this data than the <code>RandomForestClassifier</code>. As mentioned above, <em>feature engineering</em>, <em>feature selection</em>, and <em>model selection</em> will give you the biggest gains when training your model, so we always start here.</p>
+<h2>Accessing Model Parameters in a Pipelines</h2>
+<p>One of the first things I want to point out is how to access the parameters of a model in a <a href="https://dataknowsall.com/blog/sklearnpipelines.html">pipeline</a>. Normally, when you have an estimator (model) instance, you call <code>estimator.get_params()</code>, and you can see them. The process is the same in pipelines; however, the resulting output is slightly different.</p>
+<p>When accessing parameters directly from an estimator, the output will be a value such as <code>C</code>. In contrast, in a pipeline, the output will first have the name you gave the estimator along with <em>double-underscores</em> and then finally the parameter name like <code>clf__C</code>; knowing how to access parameters is important since you need these names to build a parameter grid to search.</p>
+<p>The following is the output from my pipeline, truncated for brevity. You can see at the end of the list the classifier parameters, all of which are currently the defaults.</p>
+<div>
+<pre><code><span>pipeline</span><span>.</span><span>get_params</span><span>()</span><br></code></pre>
+</div>
+<div>
+<pre><code>{'memory': None,<br> 'steps': [('prep',<br>   ColumnTransformer(transformers=[('Text', <br>                                   TfidfVectorizer(stop_words='english'),<br>                                    'text_clean'),<br>                                   ('Categories', TfidfVectorizer(), 'categories'),<br>                                   ('OHE',<br>                                    OneHotEncoder(dtype='int',<br>                                                  handle_unknown='ignore'),<br>                                    ['postal_code']),<br>                                   ('Numbers', MinMaxScaler(),<br>                                    ['review_count', 'text_len'])])),<p>... truncated for brevity ...</p><p> 'clf__C': 1.0,<br> 'clf__class_weight': None,<br> 'clf__dual': False,<br> 'clf__fit_intercept': True,<br> 'clf__intercept_scaling': 1,<br> 'clf__l1_ratio': None,<br> 'clf__max_iter': 500,<br> 'clf__multi_class': 'auto',<br> 'clf__n_jobs': None,<br> 'clf__penalty': 'l2',<br> 'clf__random_state': 42,<br> 'clf__solver': 'lbfgs',<br> 'clf__tol': 0.0001,<br> 'clf__verbose': 0,<br> 'clf__warm_start': False}</p></code></pre>
+</div>
+<h2>Grid Search</h2>
+<p>The first method we'll explore is the <a href="https://scikit-learn.org/stable/modules/grid_search.html#grid-search">Grid Seach Cross Validation</a> which employs the same logic that we would use for regular cross-validation used for model selection. However, the Grid Search iterates through every combination of parameters and performs cross-validation, and returns the best model. The first step here is to create a parameter grid, and we do this by constructing a list of dictionaries for the GridSearch to iterate through.</p>
+<div>
+<pre><code><span>parameters</span> <span>=</span> <span>[{</span><span>'clf__solver'</span> <span>:</span> <span>[</span><span>'newton-cg'</span><span>,</span> <span>'lbfgs'</span><span>,</span> <span>'sag'</span><span>,</span> <span>'liblinear'</span><span>],</span><br>               <span>'clf__C'</span> <span>:</span> <span>[</span><span>.1</span><span>,</span> <span>1</span><span>,</span> <span>10</span><span>,</span> <span>100</span><span>,</span> <span>1000</span><span>],</span><br>               <span>'prep__Text__ngram_range'</span><span>:</span> <span>[(</span><span>1</span><span>,</span> <span>1</span><span>),</span> <span>(</span><span>2</span><span>,</span> <span>2</span><span>),</span> <span>(</span><span>1</span><span>,</span> <span>2</span><span>)]}]</span><br></code></pre>
+</div>
+<p>Alternatively, you can add more than one dictionary to the list. It will iterate through the <em>combinations of each dictionary</em> independently; useful if you have some parameters that are not compatible with others. For example, in <code>LogisticRegression</code>, certain penalty values only work with certain solvers.</p>
+<div>
+<pre><code><span>parameters</span> <span>=</span> <span>[</span><br>  <span>{</span><span>'clf__penalty'</span><span>:</span> <span>[</span><span>'l1'</span><span>,</span> <span>'l2'</span><span>],</span> <span>'clf__solver'</span> <span>:</span> <span>[</span><span>'liblinear'</span><span>]},</span><br>  <span>{</span><span>'clf__penalty'</span><span>:</span> <span>[</span><span>'l1'</span><span>,</span> <span>'none'</span><span>],</span> <span>'clf__solver'</span> <span>:</span> <span>[</span><span>'newton-cg'</span><span>]},</span><br>  <span>]</span><br></code></pre>
+</div>
+<p>Now that we have our parameter grid, we can first create an instance of our base classifier as well and pass that to our pipeline function.</p>
+<div>
+<pre><code><span>clf</span> <span>=</span> <span>LogisticRegression</span><span>(</span><span>random_state</span><span>=</span><span>42</span><span>,</span> <span>max_iter</span><span>=</span><span>500</span><span>)</span><br><span>pipeline</span> <span>=</span> <span>create_pipe</span><span>(</span><span>clf</span><span>)</span><br></code></pre>
+</div>
+<p>Next we'll run the Grid Search with <code>GridSearchCV</code>.</p>
+<div>
+<pre><code><span>%</span><span>time</span> <span>grid</span> <span>=</span> <span>GridSearchCV</span><span>(</span><span>pipeline</span><span>,</span> <br>                          <span>parameters</span><span>,</span> <br>                          <span>scoring</span><span>=</span><span>'f1_macro'</span><span>,</span> <br>                          <span>cv</span><span>=</span><span>3</span><span>,</span><br>                          <span>random_state</span><span>=</span><span>0</span><span>)</span><span>.</span><span>fit</span><span>(</span><span>X_train</span><span>,</span> <span>y_train</span><span>)</span><p><span>print</span><span>(</span><span>"Best cross-validation accuracy: </span><span>{:.3f}</span><span>"</span><span>.</span><span>format</span><span>(</span><span>grid</span><span>.</span><span>best_score_</span><span>))</span><br><span>print</span><span>(</span><span>"Test set score: </span><span>{:.3f}</span><span>"</span><span>.</span><span>format</span><span>(</span><span>grid</span><span>.</span><span>score</span><span>(</span><span>X_test</span><span>,</span> <span>y_test</span><span>)))</span> <br><span>print</span><span>(</span><span>"Best parameters: </span><span>{}</span><span>"</span><span>.</span><span>format</span><span>(</span><span>grid</span><span>.</span><span>best_params_</span><span>))</span></p><p><span>log_C</span> <span>=</span> <span>grid</span><span>.</span><span>best_params_</span><span>[</span><span>'clf__C'</span><span>]</span><br><span>log_solver</span> <span>=</span> <span>grid</span><span>.</span><span>best_params_</span><span>[</span><span>'clf__solver'</span><span>]</span><br><span>log_ngram</span> <span>=</span> <span>grid</span><span>.</span><span>best_params_</span><span>[</span><span>'prep__Text__ngram_range'</span><span>]</span></p></code></pre>
+</div>
+<div>
+<pre><code>58m 3s<p>Best cross-validation accuracy: 0.867<br>Test set score: 0.872<br>Best parameters: {'clf__C': 100, 'clf__solver': 'newton-cg', <br>'prep__Text__ngram_range': (1, 2)}</p></code></pre>
+</div>
+<p>Our grid search took <code>58m 3s</code> to run, producing the best parameters for each.</p>
+<p>One of the things that might jump out to you when looking at the above list is that there are quite a few potential combinations in our parameter grid. In the above example, there are <strong>4x</strong> <code>solver</code>, <strong>5x</strong> <code>C</code>, <strong>3x</strong> <code>n-grams</code>, bringing the total to <code>4 x 5 x 3 = 60</code>. Since training our model took about one minute, going through the grid once is linear to take about an hour.</p>
+<p><strong>Note</strong>: It's possible to parallelize the grid-search with the argument <code>n_jobs=-1</code>; however, I did not show the relative performance for this example.</p>
+<p>Next, let's look at a way to improve the overall performance.</p>
+<h2>Halving Search</h2>
+<p>However, there is a way to speed up a GridSearch and return very similar results in much less time. The method is known as <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.HalvingGridSearchCV.html">Successive Halving</a>. It will utilize a subset of the data early in the process to find some of the best performing parameter combinations and gradually increase the amount of data used as it narrows in on the best combinations.</p>
+<p>You can swap the <code>GridSearchCV</code> call with the HalvingGridSearchCV` call to utilize Halving Grid Search. Simple as that. Let's rerun the above search with this new approach and see how it performs.</p>
+<div>
+<pre><code><span>%</span><span>time</span> <span>grid</span> <span>=</span> <span>HalvingGridSearchCV</span><span>(</span><span>pipeline</span><span>,</span> <br>                                 <span>parameters</span><span>,</span> <br>                                 <span>scoring</span><span>=</span><span>'f1_macro'</span><span>,</span> <br>                                 <span>cv</span><span>=</span><span>3</span><span>,</span> <br>                                 <span>random_state</span><span>=</span><span>0</span><span>)</span><span>.</span><span>fit</span><span>(</span><span>X_train</span><span>,</span> <span>y_train</span><span>)</span><p><span>print</span><span>(</span><span>"Best cross-validation accuracy: </span><span>{:.3f}</span><span>"</span><span>.</span><span>format</span><span>(</span><span>grid</span><span>.</span><span>best_score_</span><span>))</span><br><span>print</span><span>(</span><span>"Test set score: </span><span>{:.3f}</span><span>"</span><span>.</span><span>format</span><span>(</span><span>grid</span><span>.</span><span>score</span><span>(</span><span>X_test</span><span>,</span> <span>y_test</span><span>)))</span> <br><span>print</span><span>(</span><span>"Best parameters: </span><span>{}</span><span>"</span><span>.</span><span>format</span><span>(</span><span>grid</span><span>.</span><span>best_params_</span><span>))</span></p><p><span>log_C_b</span> <span>=</span> <span>grid</span><span>.</span><span>best_params_</span><span>[</span><span>'clf__C'</span><span>]</span><br><span>log_solver_b</span> <span>=</span> <span>grid</span><span>.</span><span>best_params_</span><span>[</span><span>'clf__solver'</span><span>]</span><br><span>log_ngram_b</span> <span>=</span> <span>grid</span><span>.</span><span>best_params_</span><span>[</span><span>'prep__Text__ngram_range'</span><span>]</span></p></code></pre>
+</div>
+<div>
+<pre><code>14m 28s<p>Best cross-validation accuracy: 0.867<br>Test set score: 0.872<br>Best parameters: {'clf__C': 100, 'clf__solver': 'lbfgs', <br>'prep__Text__ngram_range': (1, 2)}</p></code></pre>
+</div>
+<p>Quite impressive! from an hour down to 15 minutes! In some cases, I've seen it perform even faster. We can also see that the results are quite similar. The solution selected was <code>lbfgs</code> this time versus <code>newton-cg</code>. We can compare the performance of both now.</p>
+<h2>Evaluating the Results</h2>
+<p>We have a simple function here that will take a pipeline, fit the data to a train and test set, and evaluate the results with a <em>Classification Report</em> and a <em>Confusion Matrix</em>. Let's successively go through the <strong>un-tuned model</strong>, the <strong>Grid Search tuned model</strong>, and finally, the <strong>Halving Grid Search tuned model</strong>. First up is the original model.</p>
+<p><strong>Note</strong>: The evaluation metric we're using here is <strong>F1-Macro</strong>; we are looking to balance out <em>Precision</em> and <em>Recall</em>.</p>
+<div>
+<pre><code><span>def</span> <span>fit_and_print</span><span>(</span><span>pipeline</span><span>,</span> <span>name</span><span>):</span><p>    <span>pipeline</span><span>.</span><span>fit</span><span>(</span><span>X_train</span><span>,</span> <span>y_train</span><span>)</span><br>    <span>y_pred</span> <span>=</span> <span>pipeline</span><span>.</span><span>predict</span><span>(</span><span>X_test</span><span>)</span><br>    <span>score</span> <span>=</span> <span>metrics</span><span>.</span><span>f1_score</span><span>(</span><span>y_test</span><span>,</span> <span>y_pred</span><span>,</span> <span>average</span><span>=</span><span>'macro'</span><span>)</span></p><p>    <span>print</span><span>(</span><span>metrics</span><span>.</span><span>classification_report</span><span>(</span><span>y_test</span><span>,</span> <span>y_pred</span><span>,</span> <span>digits</span><span>=</span><span>3</span><span>))</span></p><p>    <span>ConfusionMatrixDisplay</span><span>.</span><span>from_predictions</span><span>(</span><span>y_test</span><span>,</span> <br>                                            <span>y_pred</span><span>,</span> <br>                                            <span>cmap</span><span>=</span><span>plt</span><span>.</span><span>cm</span><span>.</span><span>Greys</span><span>)</span></p><p>    <span>plt</span><span>.</span><span>tight_layout</span><span>()</span><br>    <span>plt</span><span>.</span><span>title</span><span>(</span><span>name</span><span>)</span><br>    <span>plt</span><span>.</span><span>ylabel</span><span>(</span><span>'True Label'</span><span>)</span><br>    <span>plt</span><span>.</span><span>xlabel</span><span>(</span><span>'Predicted Label'</span><span>)</span><br>    <span>plt</span><span>.</span><span>tight_layout</span><span>()</span><br>    <span>plt</span><span>.</span><span>savefig</span><span>(</span><span>name</span> <span>+</span> <span>'.png'</span><span>,</span> <span>dpi</span><span>=</span><span>300</span><span>)</span> <br>    <span>plt</span><span>.</span><span>show</span><span>;</span></p></code></pre>
+</div>
+<div>
+<pre><code><span>clf</span> <span>=</span> <span>LogisticRegression</span><span>(</span><span>random_state</span><span>=</span><span>42</span><span>,</span> <span>max_iter</span><span>=</span><span>500</span><span>)</span><br><span>pipeline</span> <span>=</span> <span>create_pipe</span><span>(</span><span>clf</span><span>)</span><br><span>fit_and_print</span><span>(</span><span>pipeline</span><span>,</span> <span>'Default Parameters'</span><span>)</span><br></code></pre>
+</div>
+<div>
+<pre><code>              precision    recall  f1-score   support<p>           0      0.789     0.845     0.816      9545<br>           1      0.925     0.894     0.909     20370</p><p>    accuracy                          0.879     29915<br>   macro avg      0.857     0.869     0.863     29915<br>weighted avg      0.882     0.879     0.880     29915</p></code></pre>
+</div>
+<p><img src="data:application/octet-stream;base64," width="800" height="533" loading="lazy" alt="hyper_01" srcset="data:application/octet-stream;base64, 400w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w, data:application/octet-stream;base64, 1600w, data:application/octet-stream;base64, 2000w, data:application/octet-stream;base64, 2400w" sizes="(max-width: 800px) 100vw, 800px"></p>
+<p>Our <strong>F1-Macro</strong> score here is <code>0.863</code>. Next, let's try out the Grid Search tuned model.</p>
+<div>
+<pre><code><span>clf</span> <span>=</span> <span>LogisticRegression</span><span>(</span><span>C</span><span>=</span><span>log_C</span><span>,</span> <span>solver</span><span>=</span><span>log_solver</span><span>,</span> <span>random_state</span><span>=</span><span>42</span><span>,</span> <span>max_iter</span><span>=</span><span>500</span><span>)</span><br><span>pipeline</span> <span>=</span> <span>create_pipe</span><span>(</span><span>clf</span><span>,</span> <span>log_ngram</span><span>)</span><br><span>fit_and_print</span><span>(</span><span>pipeline</span><span>,</span> <span>'GridSearch Parameters'</span><span>)</span><br></code></pre>
+</div>
+<div>
+<pre><code>              precision    recall  f1-score   support<p>           0      0.839     0.810     0.824      9545<br>           1      0.913     0.927     0.920     20370</p><p>    accuracy                          0.890     29915<br>   macro avg      0.876     0.869     0.872     29915<br>weighted avg      0.889     0.890     0.889     29915</p></code></pre>
+</div>
+<p><img src="data:application/octet-stream;base64," width="800" height="533" loading="lazy" alt="hyper_02" srcset="data:application/octet-stream;base64, 400w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w, data:application/octet-stream;base64, 1600w, data:application/octet-stream;base64, 2000w, data:application/octet-stream;base64, 2400w" sizes="(max-width: 800px) 100vw, 800px"></p>
+<p>Our <strong>F1-Macro</strong> score here is <code>0.872</code>. Our tuning process improved the overall results for the mode, and we increased the F1-Macro score by <code>0.09</code>. Next, let's try out the Halving Grid Search tuned model.</p>
+<div>
+<pre><code><span>clf</span> <span>=</span> <span>LogisticRegression</span><span>(</span><span>C</span><span>=</span><span>log_C_b</span><span>,<br></span><span>                         solver</span><span>=</span><span>log_solver_b</span><span>,<br></span><span>                         random_state</span><span>=</span><span>42</span><span>,<br></span><span>                         max_iter</span><span>=</span><span>500</span><span>)</span><br><span>pipeline</span> <span>=</span> <span>create_pipe</span><span>(</span><span>clf</span><span>,</span> <span>log_ngram_b</span><span>)</span><br><span>fit_and_print</span><span>(</span><span>pipeline</span><span>,</span> <span>'HalvingGridSearch Parameters'</span><span>)</span><br></code></pre>
+</div>
+<div>
+<pre><code>              precision    recall  f1-score   support<p>           0      0.839     0.811     0.824      9545<br>           1      0.913     0.927     0.920     20370</p><p>    accuracy                          0.890     29915<br>   macro avg      0.876     0.869     0.872     29915<br>weighted avg      0.889     0.890     0.889     29915</p></code></pre>
+</div>
+<p><img src="data:application/octet-stream;base64," width="800" height="533" loading="lazy" alt="hyper_03" srcset="data:application/octet-stream;base64, 400w, data:application/octet-stream;base64, 800w, data:application/octet-stream;base64, 1200w, data:application/octet-stream;base64, 1600w, data:application/octet-stream;base64, 2000w, data:application/octet-stream;base64, 2400w" sizes="(max-width: 800px) 100vw, 800px"></p>
+<p>Finally, we see the results of the Halving grid search model. The F1-Macro score is the same as the Grid Search model. We cut the time to tune from 60 minutes to 15 without sacrificing tuning results. Each time you utilize these methods, your results may vary, but it's an excellent way to tune a model without taking up a ton of your time.</p>
+<h2>Conclusion</h2>
+<p>Hyperparameter tuning is a way for you to tune your model after feature selection and model selection finely have been performed. Hyperparameters are not parameters learned during the training process but rather those adjusted to improve the overall performance of your model. We saw how to access parameters in a Pipeline and perform a Grid Search to select the best. Finally, you saw how you could utilize the Halving Grid search method to reduce the time it takes to search for the best parameters. I hope you enjoyed this article. Happy model building!</p>
+<p>If you’d like to re-create this, all of this code is available in a <a href="https://github.com/broepke/Tuning/blob/main/Tuning.ipynb">Notebook</a> on GitHub.</p></span>
+        </p>     
+        
+         
+      </article>
+    </div></div>
+  </div>
+</body>
+</html>

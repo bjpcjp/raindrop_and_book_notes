@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Using the Make Utility and Makefiles in Linux [Guide]</title>
+  <style>
+    body { max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: Georgia, serif; line-height: 1.6; }
+    .metadata { background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-left: 4px solid #333; }
+    .metadata h1 { margin: 0 0 10px 0; font-size: 24px; }
+    .metadata p { margin: 5px 0; color: #666; }
+    .metadata a { color: #0066cc; text-decoration: none; }
+    .metadata a:hover { text-decoration: underline; }
+    .content { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="metadata">
+    <h1>Using the Make Utility and Makefiles in Linux [Guide]</h1>
+    <p><strong>URL:</strong> <a href="https://linuxhandbook.com/using-make">https://linuxhandbook.com/using-make</a></p>
+    <p><strong>Tags:</strong> linux, make</p>
+    <p><strong>Bookmark ID:</strong> 876789630</p>
+  </div>
+  <div class="content">
+<div id="readability-page-1" class="page"><div>
+
+<p><a href="https://www.warp.dev/?utm_source=linux_handbook&amp;utm_medium=display&amp;utm_campaign=linux_launch" target="_blank"><img src="data:application/octet-stream;base64," alt="Warp Terminal"></a></p><p>This is a complete beginner's guide to using the make command in Linux.</p><p>You'll learn:</p><ul><li>The purpose of the make command</li><li>Installation of the make command</li><li>Creating and using the makefile for a sample C project</li></ul><h2 id="what-is-the-make-utility">What is the make utility?</h2><p>The make utility is one of the handiest utilities for a programmer. Its primary purpose is to compile a medium-to-large software project. The make utility is so helpful and versatile that even the <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Makefile">Linux kernel uses it</a>! </p><p>To understand the usefulness of the make utility, one must first understand why it was needed in the first place.</p><p>As your software gets more extensive, you start relying more and more on external dependencies (i.e., libraries). Your code starts splitting into multiple files with God knows what is in each file. Compiling each file and linking them together sanely to produce necessary binaries becomes complicated.</p><blockquote>"But I can create a Bash script for that!"</blockquote><p>Why yes, you can! More power to you! But as your project grows, you must deal with incremental rebuilds. How will you handle it generically, such that the logic stays true even when your number of files increases?</p><p>This is all handled by the make utility. So let us not reinvent the wheel and see how to install and make good use of the make utility.</p><h2 id="installing-the-make-utility">Installing the make utility</h2><p>The make utility is already available in the first-party repositories of almost <span data-ez-ph-id="105"></span><em>all</em> Linux distributions.</p><p>To install make on Debian, Ubuntu, and their derivatives, use the <code>apt</code> package manager like so:</p><pre><code>sudo apt install make</code></pre><p>To install make on Fedora and RHEL-based Linux distributions, use the <code>dnf</code> package manger like so:</p><pre><code>sudo dnf install make</code></pre><p>To install make on Arch Linux and its derivatives, use the <code>pacman</code> package manager like so:</p><pre><code>sudo pacman -Sy make</code></pre><p>Now that the make utility is installed, you can proceed to understand it with examples.</p><h2 id="creating-a-basic-makefile">Creating a basic makefile</h2><p>The make utility compiles your code based on the instructions specified in the makefile in the top level directory of your project's code repository.</p><p>Below is the directory structure of my project:<span data-ez-ph-id="116"></span></p><pre><code>$ tree make-tutorial
+
+make-tutorial
+└── src
+    ├── calculator.c
+    ├── greeter.c
+    ├── main.c
+    └── userheader.h
+
+1 directory, 4 files</code></pre><p>Below are the contents of the <code><strong>main.c</strong></code> source file:</p><pre><code>#include &lt;stdio.h&gt;
+
+#include "userheader.h"
+
+int main()
+{
+    greeter_func();
+
+    printf("\nAdding 5 and 10 together gives us '%d'.\n", add(5, 10));
+    printf("Subtracting 10 from 32 results in '%d'.\n", sub(10, 32));
+    printf("If 43 is  multiplied with 2, we get '%d'.\n", mul(43, 2));
+    printf("The result of dividing any even number like 78 with 2 is a whole number like '%f'.\n", div(78, 2));
+
+    return 0;
+}</code></pre><p>Next are the contents of the <code><strong>greeter.c</strong></code> source file:<span data-ez-ph-id="109"></span></p><pre><code>#include &lt;stdio.h&gt;
+
+#include "userheader.h"
+
+void greeter_func()
+{
+    printf("Hello, user! I hope you are ready for today's basic Mathematics class!\n");
+}</code></pre><p>Below are the contents of the <code><strong>calculator.c</strong></code> source file:</p><pre><code>#include &lt;stdio.h&gt;
+
+#include "userheader.h"
+
+int add(int a, int b)
+{
+    return (a + b);
+}
+
+int sub(int a, int b)
+{
+    if (a &gt; b)
+        return (a - b);
+    else if (a &lt; b)
+        return (b - a);
+    else return 0;
+}
+
+int mul(int a, int b)
+{
+    return (a * b);
+}
+
+double div(int a, int b)
+{
+
+    if (a &gt; b)
+        return ((double)a / (double)b);
+    else if (a &lt; b)
+        return ((double)b / (double)a);
+    else
+        return 0;
+}</code></pre><p>Finally, below are the contents of the <code><strong>userheader.h</strong></code> header file:</p><pre></pre><h3 id="basics-of-a-makefile">Basics of a makefile</h3><p>Before we create a bare-bones makefile, let us take a look at the syntax of a makefile. The basic building block of a Makefile consists of one or many "rules" and "variables".</p><h3 id="rules-in-a-makefile">Rules in a makefile</h3><p>Let us first take a look at rules in the makefile. A rule of makefile has the following syntax:</p><pre><code>target : prerequisites
+    recipe
+    ...</code></pre><ul><li>A <code><strong>target</strong></code> is the name of file that will be generated by make. These are usually object files that are later on used for linking everything together.</li><li>A <code><strong>prerequisite</strong></code> is a file that is necessary for the target to be generated. This is where you usually specify your <code>.c</code>, <code>.o</code> and <code>.h</code> files.</li><li>Finally, a <code><strong>recipe</strong></code> is one or many steps needed to generate the <code>target</code>.</li></ul><h3 id="macrosvariables-in-makefile">Macros/Variables in makefile</h3><p>In C and C++, a basic language feature is variables. They allow us to store values that we might want to use in a lot of places. This helps us use the same variable name where needed. An added benefit is we only need to make one change if we need to change the value.</p><p>Similarly, a makefile can contain variables. They are sometimes referred to as <em>macros</em>. The syntax to declare a variable in a Makefile is as follows:</p><pre><code>variable = value</code></pre><p>A variable and the value(s) it holds are separated by an equals (<code>=</code>) sign. Multiple values are separated by spaces between each other.<span data-ez-ph-id="106"></span></p><p>In general, variables are used to store various items necessary for compilation. Let's say that you want to enable run-time buffer overflow detection and enable full ASLR for the executable; this can be achieved by storing all the compiler flags in one variable, like <code>CFLAGS</code>.</p><p>Below is a demonstration doing this:</p><pre><code>CFLAGS = -D_FORTIFY_SOURCE=2 -fpie -Wl,-pie</code></pre><p>We created a variable called <code>CFLAGS</code> (compiler flags) and added all of our compiler flags here.</p><p>To use our variable, we can enclose it in parentheses beginning with a dollar sign, like so:</p><pre><code>gcc $(CFLAGS) -c main.c</code></pre><p>The above line in our makefile will add all of our specified compiler flags and compile the <code>main.c</code> file as we require.</p><h4 id="automatic-variables">Automatic variables</h4><p>The make utility has a few automatic variables to help ease repetition even further. These variables are commonly used in a rule's recipe.</p><p>Some of the automatic variables are as follows:</p><table>
+<thead>
+<tr>
+<th>Automatic variables</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$@</td>
+<td>Name of the rule of target. Usually used to specify the output filename.</td>
+</tr>
+<tr>
+<td>$&lt;</td>
+<td>Name of the first pre-requisite.</td>
+</tr>
+<tr>
+<td>$?</td>
+<td>Names of all pre-requisites that are newer than the target. i.e. files that have been modified after the most recent code compilation</td>
+</tr>
+<tr>
+<td>$^</td>
+<td>Names of all pre-requisites with spaces between them.</td>
+</tr>
+</tbody>
+</table><p>You can find the full list of the automatic variables on <a href="https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html">GNU Make's official documentation</a>.</p><h4 id="implicit-variables">Implicit Variables</h4><p>Like the automatic variables covered above, make also has some variables that have a set use. As I previously used the <code>CFLAGS</code> macro/variable to store compiler flags, there are other variables that have an assumed use.</p><p>This can be thought not of as "reserved keywords" but more like the "general consensus" of naming variables.</p><p>These conventional variables are as follows:</p><table>
+<thead>
+<tr>
+<th>Implicit variables</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VPATH</td>
+<td>Make utility's equivalent of Bash's <code>PATH</code> variable. Paths are separated by the colon sign (<code>:</code>). This is empty by default.</td>
+</tr>
+<tr>
+<td>AS</td>
+<td>This is the assembler. The default is the <code>as</code> assembler.</td>
+</tr>
+<tr>
+<td>CC</td>
+<td>The program for compiling C files. The default is <code>cc</code>. (Usually, <code>cc</code> points to <code>gcc</code>.)</td>
+</tr>
+<tr>
+<td>CXX</td>
+<td>The program for compiling C++ files. The default is the <code>g++</code> compiler.</td>
+</tr>
+<tr>
+<td>CPP</td>
+<td>The program that runs the C pre-processor. The default is set to <code>$(CC) -E</code>.</td>
+</tr>
+<tr>
+<td>LEX</td>
+<td>The program that turns Lexical grammars into source code. The default is <code>lex</code>. (<strong>You should change this</strong> to <code>flex</code>.)</td>
+</tr>
+<tr>
+<td>LINT</td>
+<td>The program that lints your source code. The default is <code>lint</code>.</td>
+</tr>
+<tr>
+<td>RM</td>
+<td>The command to remove a file. The default is <code>rm -f</code>. (<strong>Please pay <i>strong</i> attention to this!</strong>)</td>
+</tr>
+<tr>
+<td>ASFLAGS</td>
+<td>This contains all the flags for the assembler.</td>
+</tr>
+<tr>
+<td>CFLAGS</td>
+<td>This contains all the flags for the C compiler (<code>cc</code>).</td>
+</tr>
+<tr>
+<td>CXXFLAGS</td>
+<td>This contains all the flags for the C++ compiler (<code>g++</code>).</td>
+</tr>
+<tr>
+<td>CPPFLAGS</td>
+<td>This contains all the flags for the C pre-processor.</td>
+</tr>
+<tr>
+<td>.PHONY</td>
+<td>Specify targets that do not resembe name of a file. An example is the "make <i>clean</i>" target; where <i>clean</i> is a value of <code>.PHONY</code></td>
+</tr>
+</tbody>
+</table><p>Comments in a makefile are like those in a shell script. They start with the pound/hash symbol (<code>#</code>) and the contents of said line (<em>after</em> the pound/hash symbol) are considered as a comment by the make utility and is ignored.</p><p>Below is an example demonstrating this:</p><pre><code>CFLAGS = -D_FORTIFY_SOURCE=2 -fpie -Wl,-pie
+# The '-D_FORTIFY_SOURCE=2' flag enables run-time buffer overflow detection
+# The flags '-fpie -Wl,-pie' are for enabling complete address space layout randomization</code></pre><h2 id="initial-draft-of-a-makefile">Initial draft of a makefile</h2><p>Now that I have described the basic syntax of a makefile's elements and also the dependency tree of my simple project, let us now write a very bare-bones Makefile to compile our code and link everything together.</p><p>Let us start with setting up the <code>CFLAGS</code>, <code>CC</code> and the <code>VPATH</code> variables that are necessary for our compilation. (This is not the complete makefile. We will be building this progressively.)</p><pre><code>CFLAGS = -Wall -Wextra
+CC = gcc
+VPATH = src</code></pre><p>With that done, let us define our rules for building. I will create 3 rules, for each <code>.c</code> file. My executable binary will be called <code>make_tutorial</code> but yours can be whatever you want!</p><pre><code>CFLAGS = -Wall -Wextra
+CC = gcc
+VPATH = src
+
+
+make_tutorial : main.o calculator.o greeter.o
+        $(CC) $(CFLAGS) $? -o $@
+
+main.o : main.c
+        $(CC) $(CFLAGS) -c $? -o $@
+
+calculator.o : calculator.c
+        $(CC) $(CFLAGS) -c $? -o $@
+
+greeter.o : greeter.c
+        $(CC) $(CFLAGS) -c $? -o $@</code></pre><p>As you can see, I am compiling all the <code>.c</code> files into object files (<code>.o</code>) and linking them together at the end.</p><p>When we run the <code>make</code> command, it will start with the first rule (<code>make_tutorial</code>). This rule is to create a final executable binary of the same name. It has 3 prerequisite object files for each <code>.c</code> files.</p><p>Each consecutive rule after the <code>make_tutorial</code> rule is creating an object file from the source file of same the name. I can understand how complex this feels. So let us break down each of these automatic and implicit variables and understand what they mean.</p><ul><li><code>$(CC)</code>: Calls the GNU C Compiler (<code>gcc</code>).</li><li><code>$(CFLAGS)</code>: An implicit variable to pass in our compiler flags like <code>-Wall</code>, etc.</li><li><code>$?</code>: Names of all prerequisite files that are newer than the target. In the rule for <code>main.o</code>, <code>$?</code> will expand to <code>main.c</code> <em>IF</em> <code>main.c</code> has been modified after <code>main.o</code> had been generated.</li><li><code>$@</code>: This is the target name. I am using this to omit typing the rule name twice. In rule for <code>main.o</code>, <code>$@</code> expands to <code>main.o</code>.</li></ul><p>Finally, the options <code>-c</code> and <code>-o</code> are <code>gcc</code>'s options for compiling/assembling source files <em>without linking</em> and specifying an output file name respectively. You can check this by running the <code>man 1 gcc</code> command in your terminal.</p><p>Now let's try and run this makefile and hope it works on first try!</p><pre><code>$ make
+gcc -Wall -Wextra -c src/main.c -o main.o
+gcc -Wall -Wextra -c src/calculator.c -o calculator.o
+gcc -Wall -Wextra -c src/greeter.c -o greeter.o
+gcc -Wall -Wextra main.o calculator.o greeter.o -o make_tutorial</code></pre><p>If you look closely, each step of compilation contains all the flags we specified in the <code>CFLAGS</code> implicit variable. We can also see that the source files were automatically sourced from the "src" directory. This occurred automatically because we specified "src" in the <code>VPATH</code> implicit variable.</p><p>Let's try and run the <code>make_tutorial</code> binary and verify if everything works as intended.</p><pre><code>$ ./make_tutorial
+Hello, user! I hope you are ready for today's basic Mathematics class!
+
+Adding 5 and 10 together gives us '15'.
+Subtracting 10 from 32 results in '22'.
+If 43 is  multiplied with 2, we get '86'.
+The result of dividing any even number like 78 with 2 is a whole number like '39.000000'.</code></pre><p><a href="https://giphy.com/gifs/maudit-maudit-frankenstein-boris-karloff-tze1mGedykiuk">via GIPHY</a></p><h2 id="improving-the-makefile">Improving the makefile</h2><p>"What is there to improve?"<br>Let us run the <code>ls</code> command you can see that for yourself ;)</p><pre><code>$ ls --group-directories-first -1
+src
+calculator.o
+greeter.o
+main.o
+Makefile
+make_tutorial</code></pre><p>Do you see the build artifacts (object files)? Yeah, they can clutter things up for the worse. Let's use our build directory and reduce this clutter.</p><p>Below is the modified makefile:</p><pre><code>CFLAGS = -Wall -Wextra
+CC = gcc
+VPATH = src:build
+
+
+make_tutorial : main.o calculator.o greeter.o
+        $(CC) $(CFLAGS) $? -o $@
+
+build/main.o : main.c
+        mkdir build
+        $(CC) $(CFLAGS) -c $? -o $@
+
+build/calculator.o : calculator.c
+        $(CC) $(CFLAGS) -c $? -o $@
+
+build/greeter.o : greeter.c
+        $(CC) $(CFLAGS) -c $? -o $@</code></pre><p>Here, I have made one simple change: I added the <code>build/</code> string before each rule that generates an object file. This will put each object file inside the "build" directory. I also added "build" to the <code>VPATH</code> variable.</p><p>If you look closely, our first compilation target is <code>make_tutorial</code>. But it will not be the target that is pedantically the first. The first target whose recipe runs is <code>main.o</code> (or rather <code>build/main.o</code>). Therefore, I added the "mkdir build" command as a recipe in the <code>main.o</code> target.</p><p>If I were to not create the "build" directory, I would get the following error:</p><pre><code>$ make
+gcc -Wall -Wextra -c src/main.c -o build/main.o
+Assembler messages:
+Fatal error: can't create build/main.o: No such file or directory
+make: *** [Makefile:12: build/main.o] Error 1</code></pre><p>Now that we have modified our makefile, let us remove the current build artifacts along with the compiled binary and rerun the make utility.</p><pre><code>$ rm -v *.o make_tutorial
+removed 'calculator.o'
+removed 'greeter.o'
+removed 'main.o'
+removed 'make_tutorial'
+
+$ make
+mkdir build
+gcc -Wall -Wextra -c src/main.c -o build/main.o
+gcc -Wall -Wextra -c src/calculator.c -o build/calculator.o
+gcc -Wall -Wextra -c src/greeter.c -o build/greeter.o
+gcc -Wall -Wextra build/main.o build/calculator.o build/greeter.o -o make_tutorial</code></pre><p>This compiled perfectly! If you look closely, we had already specified the "build" directory in the <code>VPATH</code> variable, making it possible for the make utility to search for our object files inside the "build" directory.</p><p>Our source and header files were automatically found from the "src" directory and the build artifacts (object files) were kept inside and linked from the "build" directory, just as we intended.</p><h3 id="adding-phony-targets">Adding .PHONY targets</h3><p>We can take this improvement one step further. Let's add the "make <em>clean</em>" and "make <em>run</em>" targets.</p><p>Below is our final makefile:</p><pre><code>CFLAGS = -Wall -Wextra
+CC = gcc
+VPATH = src:build
+
+
+build/bin/make_tutorial : main.o calculator.o greeter.o
+        mkdir build/bin
+        $(CC) $(CFLAGS) $? -o $@
+
+build/main.o : main.c
+        mkdir build
+        $(CC) $(CFLAGS) -c $? -o $@
+
+build/calculator.o : calculator.c
+        $(CC) $(CFLAGS) -c $? -o $@
+
+build/greeter.o : greeter.c
+        $(CC) $(CFLAGS) -c $? -o $@
+
+
+.PHONY = clean
+clean :
+        rm -rvf build
+
+
+.PHONY = run
+run: make_tutorial
+        ./build/bin/make_tutorial</code></pre><p>Everything about the build targets is the same, except for a change where I specify that I want the <code>make_tutorial</code> binary executable file placed inside the <code>build/bin/</code> directory.</p><p>Then, I set <code>.PHONY</code> variable to <code>clean</code>, to specify that <code>clean</code> is not a file that the make utility needs to worry about. It is... phony. Under the <code>clean</code> target, I specify what must be removed to "clean everything".</p><p>I do the same for the <code>run</code> target. If you are a Rust developer you will like this pattern. Like the <code>cargo run</code> command, I use the <code>make run</code> command to run the compiled binary.</p><p>For us to run the <code>make_tutorial</code> binary, it must exist. So I added it to the prerequisite for the <code>run</code> target.</p><p>Let's run <code>make clean</code> first and then run <code>make run</code> directly!</p><pre><code>$ make clean
+rm -rvf build
+removed 'build/greeter.o'
+removed 'build/main.o'
+removed 'build/calculator.o'
+removed 'build/bin/make_tutorial'
+removed directory 'build/bin'
+removed directory 'build'
+
+$ make run
+mkdir build
+gcc -Wall -Wextra -c src/main.c -o build/main.o
+gcc -Wall -Wextra -c src/calculator.c -o build/calculator.o
+gcc -Wall -Wextra -c src/greeter.c -o build/greeter.o
+mkdir build/bin
+gcc -Wall -Wextra build/main.o build/calculator.o build/greeter.o -o build/bin/make_tutorial
+./build/bin/make_tutorial
+Hello, user! I hope you are ready for today's basic Mathematics class!
+
+Adding 5 and 10 together gives us '15'.
+Subtracting 10 from 32 results in '22'.
+If 43 is  multiplied with 2, we get '86'.
+The result of dividing any even number like 78 with 2 is a whole number like '39.000000'.</code></pre><p>As you see here, we did not run the <code>make</code> command to compile our project first. Upon running the <code>make run</code>, compilation was taken care of. Let's understand how it happened.</p><p>Upon running the <code>make run</code> command, the make utility first looks at the <code>run</code> target. A prerequisite for the <code>run</code> target is our binary file that we compile. So our <code>make_tutorial</code> binary file gets compiled first.</p><p>The <code>make_tutorial</code> has its own prerequisites which are placed inside the <code>build/</code> directory. Once those object files are compiled, our <code>make_tutorial</code> binary is compiled; finally, the Make utility returns back to the <code>run</code> target and the binary file <code>./build/bin/make_tutorial</code> is executed.</p><p>such elegance much wow</p><h2 id="conclusion">Conclusion</h2><p>This article covers the basics of a makefile, a file that the make utility depends on, to simplify compilation of your software repository. This is done by starting from a basic Makefile and building it as our needs grow.</p>
+</div></div>
+  </div>
+</body>
+</html>
